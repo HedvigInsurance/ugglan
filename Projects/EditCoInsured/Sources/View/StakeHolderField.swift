@@ -3,40 +3,44 @@ import hCore
 import hCoreUI
 
 @MainActor
-public struct CoInsuredField<Content: View>: View {
-    let coInsured: CoInsuredModel?
+public struct StakeHolderField<Content: View>: View {
+    let stakeHolder: StakeHolder?
     let accessoryView: Content
     let statusPill: StatusPillType?
     let date: String
     let subTitle: String?
+    let stakeHolderType: StakeHolderType
 
     public init(
-        coInsured: CoInsuredModel? = nil,
+        stakeHolder: StakeHolder? = nil,
         accessoryView: Content,
         statusPill: StatusPillType? = nil,
         date: String? = nil,
+        stakeHolderType: StakeHolderType
     ) {
-        self.coInsured = coInsured
+        self.stakeHolder = stakeHolder
         self.accessoryView = accessoryView
         self.statusPill =
             statusPill
             ?? {
-                guard coInsured?.hasMissingData == false else { return nil }
-                if coInsured?.activatesOn != nil {
+                guard stakeHolder?.hasMissingData == false else { return nil }
+                if stakeHolder?.activatesOn != nil {
                     return .added
-                } else if coInsured?.terminatesOn != nil {
+                } else if stakeHolder?.terminatesOn != nil {
                     return .deleted
                 }
                 return nil
             }()
-        self.date = date ?? coInsured?.activatesOn ?? coInsured?.terminatesOn ?? ""
-        subTitle = coInsured?.hasMissingData ?? true ? L10n.contractNoInformation : nil
+        self.date = date ?? stakeHolder?.activatesOn ?? stakeHolder?.terminatesOn ?? ""
+        subTitle = stakeHolder?.hasMissingData ?? true ? L10n.contractNoInformation : nil
+        self.stakeHolderType = stakeHolderType
     }
 
     public var body: some View {
-        let displayTitle = coInsured?.fullName ?? L10n.contractCoinsured
+        let displayTitle = stakeHolder?.fullName ?? stakeHolderType.defaultFieldLabel
         let displaySubTitle =
-            coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
+            stakeHolder?.formattedSSN?.displayFormatSSN ?? stakeHolder?.birthDate?.birtDateDisplayFormat ?? subTitle
+            ?? ""
 
         VStack(spacing: .padding4) {
             VStack(alignment: .leading, spacing: 0) {

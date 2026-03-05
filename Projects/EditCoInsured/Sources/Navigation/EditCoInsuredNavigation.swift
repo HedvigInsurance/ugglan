@@ -4,40 +4,36 @@ import hCoreUI
 
 @MainActor
 class EditCoInsuredNavigationViewModel: ObservableObject {
-    init(
-        config: InsuredPeopleConfig
-    ) {
-        coInsuredViewModel.initializeCoInsured(with: config)
+    init(config: StakeHoldersConfig) {
+        coInsuredViewModel = .init(with: config)
     }
 
-    @Published var editCoInsuredConfig: InsuredPeopleConfig?
+    @Published var editCoInsuredConfig: StakeHoldersConfig?
     @Published var coInsuredInputModel: CoInsuredInputModel?
     @Published var selectCoInsured: SelectCoInsured?
     @Published var showProgressScreenWithSuccess = false
     @Published var showProgressScreenWithoutSuccess = false
-    @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
+    @Published var isEditCoinsuredSelectPresented: StakeHoldersConfig?
 
-    let coInsuredViewModel = InsuredPeopleScreenViewModel()
+    let coInsuredViewModel: InsuredPeopleScreenViewModel
     let intentViewModel = IntentViewModel()
 }
 
+// TODO: fix
 extension EditCoInsuredScreenType {
-    func getTrackingType(for config: InsuredPeopleConfig) -> EditCoInsuredScreenTrackingType {
+    func getTrackingType(for config: StakeHoldersConfig) -> EditCoInsuredScreenTrackingType {
         switch self {
         case .newInsurance:
             return .newInsurance
         case .none:
-            if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+            if config.numberOfMissingStakeHoldersWithoutTermination > 0 {
                 if config.fromInfoCard {
                     return .newInsurance
                 } else {
                     return .removeCoInsured
                 }
-            } else if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                return .newInsurance
-            } else {
-                return .insuredPeople
             }
+            return .insuredPeople
         }
     }
 }
@@ -74,14 +70,14 @@ private enum EditCoInsuredDetentType: TrackingViewNameProtocol {
 }
 
 public struct EditCoInsuredNavigation: View {
-    let config: InsuredPeopleConfig
+    let config: StakeHoldersConfig
     @State var openSpecificScreen: EditCoInsuredScreenType
     @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
-        config: InsuredPeopleConfig,
+        config: StakeHoldersConfig,
         openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
     ) {
         self.config = config
@@ -98,16 +94,14 @@ public struct EditCoInsuredNavigation: View {
             if openSpecificScreen == .newInsurance {
                 openNewInsuredPeopleScreen()
             } else if openSpecificScreen == .none {
-                if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                if config.numberOfMissingStakeHoldersWithoutTermination > 0 {
                     if config.fromInfoCard {
                         openNewInsuredPeopleScreen()
                     } else {
                         openRemoveCoInsuredScreen()
                     }
-                } else if config.numberOfMissingCoInsuredWithoutTermination > 0 {
-                    openNewInsuredPeopleScreen()
                 } else {
-                    openInsuredPeopleScreen()
+                    openNewInsuredPeopleScreen()
                 }
             }
         }
@@ -163,7 +157,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .none
         )
-        .configureTitle(L10n.coinsuredEditTitle)
+        .configureTitle(config.stakeHolderType.editTitle)
         .addDismissEditCoInsuredFlow()
     }
 
@@ -180,12 +174,12 @@ public struct EditCoInsuredNavigation: View {
             editCoInsuredNavigation: editCoInsuredNavigationVm
         )
         .environmentObject(editCoInsuredNavigationVm)
-        .configureTitle(L10n.contractAddConisuredInfo)
+        .configureTitle(config.stakeHolderType.addInfoTitle)
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
         CoInsuredSelectScreen(contractId: contractId, editCoInsuredNavigation: editCoInsuredNavigationVm)
-            .configureTitle(L10n.contractAddConisuredInfo)
+            .configureTitle(config.stakeHolderType.addInfoTitle)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -203,7 +197,7 @@ public struct EditCoInsuredNavigation: View {
             intentViewModel: editCoInsuredNavigationVm.intentViewModel,
             type: .delete
         )
-        .configureTitle(L10n.coinsuredEditTitle)
+        .configureTitle(config.stakeHolderType.editTitle)
     }
 
     func coInsuredInput(coInsuredInputModel: CoInsuredInputModel) -> some View {
@@ -214,15 +208,17 @@ public struct EditCoInsuredNavigation: View {
 }
 
 public struct EditCoInsuredSelectInsuranceNavigation: View {
-    let configs: [InsuredPeopleConfig]
+    let configs: [StakeHoldersConfig]
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
-    @StateObject var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
+    @StateObject var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
 
     public init(
-        configs: [InsuredPeopleConfig]
+        configs: [StakeHoldersConfig],
+        stakeHolderType: StakeHolderType
     ) {
         self.configs = configs
+        _editCoInsuredNavigationVm = .init(wrappedValue: .init(config: .init(stakeHolderType: stakeHolderType)))
     }
 
     public var body: some View {
@@ -248,12 +244,12 @@ extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
 }
 
 public struct EditCoInsuredAlertNavigation: View {
-    let config: InsuredPeopleConfig
+    let config: StakeHoldersConfig
     @StateObject var router = Router()
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
-        config: InsuredPeopleConfig
+        config: StakeHoldersConfig
     ) {
         self.config = config
     }

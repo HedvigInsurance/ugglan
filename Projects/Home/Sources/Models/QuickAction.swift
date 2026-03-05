@@ -9,6 +9,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
     case connectPayments
     case changeAddress
     case editCoInsured
+    case editCoOwners
     case upgradeCoverage
     case cancellation
 
@@ -28,6 +29,8 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
             return L10n.hcQuickActionsChangeAddressTitle
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredTitle
+        case .editCoOwners:
+            return "Edit Co-Owners"  // TODO: lokalise
         case .upgradeCoverage:
             return L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation:
@@ -51,6 +54,8 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
             return L10n.hcQuickActionsChangeAddressSubtitle
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredSubtitle
+        case .editCoOwners:
+            return "Edit your co-owners"  // TODO: lokalise
         case .upgradeCoverage:
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
@@ -80,6 +85,8 @@ extension QuickAction {
             return .changeAddress
         case .editCoInsured:
             return .coInsured
+        case .editCoOwners:
+            return .coOwners
         case .upgradeCoverage:
             return .changeTier
         case .cancellation:
@@ -95,6 +102,8 @@ extension EditType {
             return .changeAddress
         case .coInsured:
             return .editCoInsured
+        case .coOwners:
+            return .editCoOwners
         case .changeTier:
             return .upgradeCoverage
         case .cancellation:

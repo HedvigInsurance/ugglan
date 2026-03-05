@@ -1,12 +1,14 @@
 public enum EditType: String, Codable, Hashable, CaseIterable {
     case changeAddress
     case coInsured
+    case coOwners
     case changeTier
     case cancellation
 
     public var title: String {
         switch self {
         case .coInsured: return L10n.contractEditCoinsured
+        case .coOwners: return "Edit co-owners"  // TODO: Localize
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         case .changeTier: return L10n.InsuranceDetails.changeCoverage
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
@@ -19,6 +21,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
             return L10n.hcQuickActionsChangeAddressSubtitle
         case .coInsured:
             return L10n.hcQuickActionsCoInsuredSubtitle
+        case .coOwners:
+            return "Edit co-owners"  // TODO: localize
         case .changeTier:
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
