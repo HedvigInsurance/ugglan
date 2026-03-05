@@ -36,17 +36,11 @@ jobs:
 #      - name: Build project
 #        if: steps.changes.outputs.has_changes == 'true'
 #        run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO
-      - name: Set timestamp
+      - name: Push changes
         if: steps.changes.outputs.has_changes == 'true'
-        id: timestamp
-        run: echo "value=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_OUTPUT
-      - name: Create Pull Request
-        if: steps.changes.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.UGGLAN_REPO_BOT_PAT }}
-          commit-message: "chore: Updated translations ${{ steps.timestamp.outputs.value }}"
-          branch: "chore/update-translations-${{ steps.timestamp.outputs.value }}"
-          title: "chore: Update translations ${{ steps.timestamp.outputs.value }}"
-          author: "hedvig-ops-bot <infra@hedvig.com>"
-          body: ""
+        run: |
+          git config user.name "hedvig-ops-bot"
+          git config user.email "infra@hedvig.com"
+          git add -A
+          git commit -m "chore: Updated translations $(date +'%Y-%m-%d-%H%M%S')"
+          git push
