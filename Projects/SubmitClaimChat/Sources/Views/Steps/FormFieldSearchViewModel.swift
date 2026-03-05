@@ -20,11 +20,12 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
 
     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
-        searchController.delegate = self
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = L10n.searchPlaceholder
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
+
+        searchController.searchBar.tintColor = .brand(.primaryText())
 
         return searchController
     }()
@@ -124,30 +125,6 @@ extension FormFieldSearchViewModel: UISearchResultsUpdating {
         MainActor.assumeIsolated {
             let text = searchController.searchBar.text ?? ""
             searchSubject.send(text)
-            updateColors()
         }
-    }
-}
-
-extension FormFieldSearchViewModel: UISearchControllerDelegate {
-    func didPresentSearchController(_: UISearchController) {
-        updateColors()
-    }
-
-    func willPresentSearchController(_ searchController: UISearchController) {
-        // Disable animations during presentation
-        UIView.performWithoutAnimation {
-            updateColors()
-        }
-    }
-
-    func updateColors() {
-        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
-        let hColor = hTextColor.Opaque.primary
-        let color = UIColor(
-            light: hColor.colorFor(.light, .base).color.uiColor(),
-            dark: hColor.colorFor(.dark, .base).color.uiColor()
-        )
-        button?.setTitleColor(color, for: .normal)
     }
 }
