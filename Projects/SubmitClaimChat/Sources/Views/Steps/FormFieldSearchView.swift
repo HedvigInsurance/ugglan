@@ -5,22 +5,29 @@ import hCoreUI
 
 struct FormFieldSearchView: View {
     @StateObject private var vm: FormFieldSearchViewModel
-    private let onSelected: ((SingleSelectValue) -> Void)?
+    private let onSelected: ((SingleSelectValue, _ searchInput: String) -> Void)?
     @EnvironmentObject var router: Router
 
-    init(model: SearchFieldModel, onSelected: @escaping (SingleSelectValue) -> Void) {
-        self._vm = StateObject(wrappedValue: .init(stepId: model.stepId, fieldId: model.id))
+    init(model: SearchFieldModel, onSelected: @escaping (SingleSelectValue, _ searchInput: String) -> Void) {
+        self._vm = StateObject(
+            wrappedValue: .init(stepId: model.stepId, fieldId: model.id, suggestedQuery: model.suggestedQuery)
+        )
         self.onSelected = onSelected
     }
 
     var body: some View {
         hForm {
-            if let errorMessage = vm.errorMessage {
+            if isProcessingLoading && vm.searchResults.isEmpty {
+                DotsActivityIndicator(.standard)
+                    .useDarkColor
+                    .padding(.vertical, .padding16)
+            }
+            if case .error(let errorMessage) = vm.processingState {
                 errorView(message: errorMessage)
-            } else if !vm.searchInProgress {
-                notSearchState
-            } else if vm.searchResults.isEmpty {
+            } else if vm.noResults {
                 emptyResults
+            } else if !vm.searchInProgress || vm.searchController.searchBar.text?.count ?? 0 < 2 {
+                notSearchState
             } else {
                 resultsView
             }
@@ -33,16 +40,23 @@ struct FormFieldSearchView: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .hFormContentPosition(!vm.searchInProgress || vm.errorMessage != nil ? .center : .top)
+        .hFormContentPosition(
+            !vm.searchInProgress || isProcessingError || vm.noResults
+                || vm.searchController.searchBar.text?.count ?? 0 < 2 ? .center : .top
+        )
         .animation(.default, value: vm.searchInProgress)
         .animation(.default, value: vm.searchResults)
-        .animation(.default, value: vm.errorMessage)
+        .animation(.default, value: vm.processingState)
         .animation(.default, value: vm.selectedValue)
+        .animation(.default, value: vm.isDebouncing)
+        .animation(.default, value: vm.noResults)
+        .animation(.default, value: vm.searchController.searchBar.text)
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             guard let vm else { return }
             vc.navigationItem.searchController = vm.searchController
             vc.navigationItem.hidesSearchBarWhenScrolling = false
-            vc.definesPresentationContext = true
+            vc.definesPresentationContext = false
+            vm.activateSearch()
         }
     }
     private func errorView(message: String) -> some View {
@@ -50,7 +64,6 @@ struct FormFieldSearchView: View {
             description: message,
             formPosition: nil
         )
-        .transition(.opacity)
     }
 
     private var notSearchState: some View {
@@ -63,17 +76,23 @@ struct FormFieldSearchView: View {
         }
         .multilineTextAlignment(.center)
         .sectionContainerStyle(.transparent)
-        .transition(.opacity)
     }
 
     private var emptyResults: some View {
-        hText("No results")
-            .transition(.opacity)
+        hSection {
+            VStack(spacing: 0) {
+                hText("No results")
+                hText("Check your input or try searching with different keywords")
+                    .foregroundColor(hTextColor.Translucent.secondary)
+            }
+        }
+        .multilineTextAlignment(.center)
+        .sectionContainerStyle(.transparent)
     }
 
     private var resultsView: some View {
         VStack(spacing: .padding4) {
-            ForEach(vm.searchResults, id: \.title) { result in
+            ForEach(vm.searchResults, id: \.title) { [unowned vm] result in
                 hSection {
                     hRow {
                         hFieldTextContent<SingleSelectValue>(
@@ -86,7 +105,7 @@ struct FormFieldSearchView: View {
                         )
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            onSelected?(result)
+                            onSelected?(result, vm.searchController.searchBar.text ?? "")
                         }
                     }
                     .withChevronAccessory
@@ -94,15 +113,25 @@ struct FormFieldSearchView: View {
                 }
             }
         }
-        .transition(.opacity)
+    }
+
+    // Computed helpers for pattern-matching ProcessingState
+    private var isProcessingLoading: Bool {
+        if case .loading = vm.processingState { return true }
+        return false
+    }
+
+    private var isProcessingError: Bool {
+        if case .error = vm.processingState { return true }
+        return false
     }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     return FormFieldSearchView(
-        model: .init(id: "id", stepId: "stepId", title: "title"),
-        onSelected: { _ in }
+        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: nil),
+        onSelected: { _, _ in }
     )
     .embededInNavigation(tracking: "")
 }

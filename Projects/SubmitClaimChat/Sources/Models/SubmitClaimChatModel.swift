@@ -35,6 +35,7 @@ struct SearchFieldModel: Equatable, Identifiable {
     let id: String
     let stepId: String
     let title: String
+    let suggestedQuery: String?
 }
 
 enum SubmitClaimChatMessageSender {
@@ -123,6 +124,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         let minValue: String?
         let options: [ClaimIntentStepContentFormFieldOption]
         let suffix: String?
+        let suggestedQuery: String?
         let title: String
         let type: ClaimIntentStepContentFormFieldType
 
@@ -134,6 +136,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             minValue: String?,
             options: [ClaimIntentStepContentFormFieldOption],
             suffix: String?,
+            suggestedQuery: String?,
             title: String,
             type: ClaimIntentStepContentFormFieldType
         ) {
@@ -144,6 +147,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             self.minValue = minValue
             self.options = options
             self.suffix = suffix
+            self.suggestedQuery = suggestedQuery
             self.title = title
             self.type = type
         }

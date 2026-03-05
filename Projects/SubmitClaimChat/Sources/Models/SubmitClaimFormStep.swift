@@ -47,7 +47,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
 
     private func initializeFormValues() {
         for field in formModel.fields {
-            formValues[field.id] = .init(values: field.defaultValues)
+            formValues[field.id] = .init(field: field)
         }
     }
 
@@ -147,9 +147,12 @@ final class FormStepValue: ObservableObject {
     @Published var error: String?
     /// Display title for search-selected values (since the value is an opaque ID)
     @Published var selectedDisplayTitle: String?
-    init(values: [String]) {
-        self.value = values.first ?? ""
-        self.values = values
+
+    var suggestedValue: String?
+    init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
+        self.value = field.defaultValues.first ?? ""
+        self.values = field.defaultValues
+        self.suggestedValue = field.suggestedQuery
     }
 }
 

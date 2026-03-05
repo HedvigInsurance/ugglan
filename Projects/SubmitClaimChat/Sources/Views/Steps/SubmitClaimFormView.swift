@@ -74,9 +74,11 @@ struct SubmitClaimFormView: View {
         ) { [weak viewModel] model in
             FormFieldSearchView(
                 model: model,
-                onSelected: { [weak viewModel] selected in
-                    viewModel?.getFormStepValue(for: model.id).value = selected.value
-                    viewModel?.getFormStepValue(for: model.id).selectedDisplayTitle = selected.title
+                onSelected: { [weak viewModel] selected, searchText in
+                    let formValue = viewModel?.getFormStepValue(for: model.id)
+                    formValue?.value = selected.value
+                    formValue?.selectedDisplayTitle = selected.title
+                    formValue?.suggestedValue = searchText
                     viewModel?.isSearchPresented = nil
                 }
             )
@@ -256,7 +258,8 @@ struct FormFieldView: View {
             viewModel?.isSearchPresented = .init(
                 id: field.id,
                 stepId: viewModel?.claimIntent.currentStep.id ?? "",
-                title: field.title
+                title: field.title,
+                suggestedQuery: fieldViewModel.suggestedValue
             )
         }
     }

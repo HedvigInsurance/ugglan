@@ -124,6 +124,7 @@ fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormFi
         value
     }
     defaultValues
+    suggestedQuery
     minValue
     maxValue
 }
