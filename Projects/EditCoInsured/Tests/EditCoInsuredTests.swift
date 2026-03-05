@@ -105,7 +105,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
         viewModel.stakeHoldersAdded = [StakeHolder.testMemberWithSSN1, StakeHolder.testMemberWithSSN2]
         viewModel.stakeHoldersDeleted = []
-        viewModel.config.numberOfMissingStakeHolders = 2
+        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 2)
