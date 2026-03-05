@@ -12,7 +12,6 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     @Published var selectedValue: SingleSelectValue?
     @Published var isDebouncing: Bool = false
     @Published var searchText = ""
-
     private let stepId: String
     private let fieldId: String
     private let service: ClaimIntentService
@@ -25,7 +24,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = L10n.searchPlaceholder
         searchController.obscuresBackgroundDuringPresentation = false
-        searchController.hidesNavigationBarDuringPresentation = true
+        searchController.hidesNavigationBarDuringPresentation = false
 
         return searchController
     }()
