@@ -269,6 +269,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRM_CHANGES_TITLE" = "Godkänn ändringar";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
+"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till ytterligare delägare";
 "CONTRACT_ADD_COINSURED" = "Lägg till medförsäkrad";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiveras %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv till %1$@";
@@ -280,15 +281,19 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Din försäkring kommer att uppdateras den %1$@.";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Medförsäkrade uppdaterade";
 "CONTRACT_ADD_CONISURED_INFO" = "Lägg till info om medförsäkrad";
+"CONTRACT_ADD_COOWNER_INFO" = "Lägg till info om delägare";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Du behöver lägga till information för alla delägare för att gå vidare.";
+"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Delägare uppdaterade";
 "CONTRACT_BIRTH_DATE" = "Födelsedatum";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "Vad vill du ändra?";
 "CONTRACT_COINSURED" = "Medförsäkrad";
 "CONTRACT_COINSURED_ADD_PERSONAL_INFO" = "Du måste lägga till information för dina medförsäkrade";
 "CONTRACT_COINSURED_MISSING_ADD_INFO" = "Lägg till information";
-"CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi saknar information om din medförsäkrade. Lägg till det så snart som möjligt.";
-"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Vi saknar information om delägare för ditt fritidshus";
+"CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi saknar information om dina medförsäkrade. Lägg till det så snart som möjligt.";
+"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Lägg till mer information om dina medförsäkrade för bättre hjälp";
 "CONTRACT_COINSURED_MISSING_LATER" = "Gör det senare";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Din försäkring kommer att uppdateras och täcker dig + %1$d personer från och med %2$@";
+"CONTRACT_COOWNER" = "Delägare";
 "CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "Du måste lägga till information om delägarna";
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till mer information om dina delägare för bättre hjälp";
 "CONTRACT_COVERAGE_MORE_INFO" = "Mer information";
@@ -304,6 +309,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Tillagd";
 "CONTRACT_PERSONAL_IDENTITY" = "Personnummer";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Är du säker på att du vill\nta bort medförsäkrade?";
+"CONTRACT_REMOVE_COOWNER_CONFIRMATION" = "Är du säker på att du vill\nta bort delägare?";
 "CONTRACT_SSN_FETCH_INFO" = "Hämta information";
 "CONTRACT_STATUS_ACTIVE_IN_FUTURE" = "Aktiveras %1$@";
 "CONTRACT_STATUS_PENDING" = "Väntar på startdatum";
@@ -361,6 +367,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Giltighetstid";
 "Direct_Debit_Connected" = "%1$@/månad - Betalas via autogiro";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Betalsätt saknas";
+"EDIT_COOWNER_SUBTITLE" = "Redigera information för delägare i fritidshus";
+"EDIT_COOWNER_TITLE" = "Ändra medförsäkrade";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "E-post";
 "EMBARK_EXIT_BUTTON" = "Stäng";
