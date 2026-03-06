@@ -36,6 +36,7 @@ struct FormFieldSearchView: View {
             hSection {
                 hCancelButton(type: .secondary) {
                     router.dismiss()
+                    router.dismiss()
                 }
             }
             .sectionContainerStyle(.transparent)
