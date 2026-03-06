@@ -26,7 +26,7 @@ public struct SelectClaimEntrypointGroup: View {
                 )
             )
             .hFormAttachToBottom {
-                VStack {
+                VStack(alignment: .leading) {
                     ShowTagList(
                         tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map(\.displayName),
                         onTap: { tag in
@@ -263,9 +263,9 @@ struct ShowTagList: View {
 
     var body: some View {
         hSection {
-            VStack(spacing: .padding16) {
+            VStack(alignment: .leading, spacing: .padding16) {
                 showNotValid
-                TagList(tags: tagsToShow, horizontalSpacing: 4, verticalSpacing: 4) { tag in
+                TagList(tags: tagsToShow) { tag in
                     if showTags {
                         HStack(spacing: 0) {
                             getPillText(claimId: tag)
@@ -303,6 +303,16 @@ struct ShowTagList: View {
                         .accessibilityAddTraits(selection == tag ? .isSelected : [])
                     }
                 }
+                .tagFlow(
+                    .horizontal(
+                        .init(
+                            horizontalAlignment: .leading,
+                            verticalAlignment: .center,
+                            horizontalSpacing: .padding8,
+                            verticalSpacing: .padding8
+                        )
+                    )
+                )
                 hContinueButton {
                     if selection != nil, selection != "" {
                         notValid = false

@@ -9,7 +9,7 @@ struct SubmitClaimSingleSelectView: View {
 
     public var body: some View {
         hSection {
-            VStack(spacing: .padding16) {
+            VStack(alignment: .leading, spacing: .padding16) {
                 switch viewModel.model.style {
                 case .pill: pillInputView
                 case .binary: binaryInputView
@@ -36,8 +36,7 @@ struct SubmitClaimSingleSelectView: View {
 
     private var pillInputView: some View {
         TagList(
-            tags: viewModel.model.options.map { $0.id },
-            container: .vstack
+            tags: viewModel.model.options.map { $0.id }
         ) { optionId in
             let option = viewModel.model.options.first(where: { $0.id == optionId })!
             if showOptions {
@@ -54,7 +53,16 @@ struct SubmitClaimSingleSelectView: View {
                 .optionAccessibility(label: option.title)
             }
         }
-        .padding(.horizontal, -.padding4)
+        .tagFlow(
+            .horizontal(
+                .init(
+                    horizontalAlignment: .leading,
+                    verticalAlignment: .center,
+                    horizontalSpacing: .padding8,
+                    verticalSpacing: .padding8
+                )
+            )
+        )
     }
 
     private var binaryInputView: some View {
