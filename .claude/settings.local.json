@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api:*)",
+      "Read(//usr/local/bin/**)",
+      "Bash(mdfind -name gh kind:application)",
+      "Bash(brew --prefix)",
+      "Bash(export:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}

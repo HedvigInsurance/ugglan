@@ -241,6 +241,8 @@ struct FormFieldView: View {
                 .accessibilityValue(isSelected ? L10n.voiceoverOptionSelected : "")
                 .accessibilityHint(L10n.voiceoverDoubleClickTo)
             }
+            .tagFlow(.horizontal)
+            .padding(.vertical, .padding4)
             if let error = fieldViewModel.error {
                 HStack {
                     hText(error, style: .label)
