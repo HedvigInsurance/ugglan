@@ -29,6 +29,31 @@ struct SingleSelectValue: Hashable {
     let title: String
     let subtitle: String?
     let value: String
+    let imageUrl: String?
+
+    init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
+        self.title = title
+        self.subtitle = subtitle
+        self.value = value
+        self.imageUrl = imageUrl
+    }
+}
+
+struct SearchFieldModel: Equatable, Identifiable {
+    let id: String
+    let stepId: String
+    let title: String
+    let suggestedQuery: String?
+}
+
+public struct ClaimIntentFormFieldSearchResult {
+    let options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
+    let suggestedQuery: String?
+
+    public init(options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption], suggestedQuery: String?) {
+        self.options = options
+        self.suggestedQuery = suggestedQuery
+    }
 }
 
 enum SubmitClaimChatMessageSender {
@@ -117,6 +142,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         let minValue: String?
         let options: [ClaimIntentStepContentFormFieldOption]
         let suffix: String?
+        let suggestedQuery: String?
         let title: String
         let type: ClaimIntentStepContentFormFieldType
 
@@ -128,6 +154,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             minValue: String?,
             options: [ClaimIntentStepContentFormFieldOption],
             suffix: String?,
+            suggestedQuery: String?,
             title: String,
             type: ClaimIntentStepContentFormFieldType
         ) {
@@ -138,6 +165,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             self.minValue = minValue
             self.options = options
             self.suffix = suffix
+            self.suggestedQuery = suggestedQuery
             self.title = title
             self.type = type
         }
@@ -147,11 +175,13 @@ public struct ClaimIntentStepContentForm: Sendable {
         let title: String
         let subtitle: String?
         let value: String
+        let imageUrl: String?
 
-        public init(title: String, subtitle: String?, value: String) {
+        public init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
             self.title = title
             self.subtitle = subtitle
             self.value = value
+            self.imageUrl = imageUrl
         }
     }
 
@@ -163,6 +193,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case singleSelect
         case multiSelect
         case binary
+        case search
     }
 }
 

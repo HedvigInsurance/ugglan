@@ -150,6 +150,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     minValue: nil,
                                     options: [],
                                     suffix: nil,
+                                    suggestedQuery: nil,
                                     title: "Text field",
                                     type: .text
                                 ),
@@ -161,6 +162,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     minValue: nil,
                                     options: [],
                                     suffix: nil,
+                                    suggestedQuery: nil,
                                     title: "Number field",
                                     type: .number
                                 ),
@@ -176,6 +178,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                         .init(title: "Option 3", subtitle: nil, value: "3"),
                                     ],
                                     suffix: nil,
+                                    suggestedQuery: nil,
                                     title: "Single select",
                                     type: .singleSelect
                                 ),
@@ -191,8 +194,21 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                         .init(title: "Option 3", subtitle: nil, value: "3"),
                                     ],
                                     suffix: nil,
+                                    suggestedQuery: nil,
                                     title: "Multi select",
                                     type: .multiSelect
+                                ),
+                                .init(
+                                    defaultValues: [],
+                                    id: "5",
+                                    isRequired: true,
+                                    maxValue: nil,
+                                    minValue: nil,
+                                    options: [],
+                                    suffix: nil,
+                                    suggestedQuery: nil,
+                                    title: "Search",
+                                    type: .search
                                 ),
                             ]
                         )
@@ -246,6 +262,38 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 progress: 0
             )
         )
+    }
+
+    public func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> ClaimIntentFormFieldSearchResult {
+        try await Task.sleep(nanoseconds: 500_000_000)
+        let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
+            .init(
+                title: "iPhone 15 Pro",
+                subtitle: "Apple",
+                value: "iphone_15_pro",
+                imageUrl: "https://d2rro69q822tnr.cloudfront.net/produktbilder/163169278255445648779_small.jpg"
+            ),
+            .init(
+                title: "iPhone 14",
+                subtitle: "Apple",
+                value: "iphone_14",
+                imageUrl: "https://fdn2.gsmarena.com/vv/bigpic/apple-iphone-14.jpg"
+            ),
+            .init(
+                title: "Samsung Galaxy S24",
+                subtitle: "Samsung",
+                value: "galaxy_s24",
+                imageUrl: "https://fdn2.gsmarena.com/vv/bigpic/samsung-galaxy-s24.jpg"
+            ),
+            .init(title: "Google Pixel 8", subtitle: "Google", value: "pixel_8", imageUrl: nil),
+        ]
+        let filtered =
+            query.isEmpty ? allOptions : allOptions.filter { $0.title.localizedCaseInsensitiveContains(query) }
+        return ClaimIntentFormFieldSearchResult(options: filtered, suggestedQuery: nil)
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
@@ -324,6 +372,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 minValue: nil,
                                 options: [],
                                 suffix: "test",
+                                suggestedQuery: nil,
                                 title: "text",
                                 type: .text
                             ),
@@ -335,6 +384,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 minValue: nil,
                                 options: [],
                                 suffix: nil,
+                                suggestedQuery: nil,
                                 title: "number",
                                 type: .number
                             ),
@@ -349,6 +399,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
+                                suggestedQuery: nil,
                                 title: "binary",
                                 type: .binary
                             ),
@@ -360,6 +411,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 minValue: nil,
                                 options: [],
                                 suffix: nil,
+                                suggestedQuery: nil,
                                 title: "date",
                                 type: .date
                             ),
@@ -374,6 +426,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
+                                suggestedQuery: nil,
                                 title: "single select",
                                 type: .singleSelect
                             ),
@@ -388,8 +441,21 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                     .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,
+                                suggestedQuery: nil,
                                 title: "multi select",
                                 type: .multiSelect
+                            ),
+                            .init(
+                                defaultValues: [],
+                                id: "id7",
+                                isRequired: false,
+                                maxValue: nil,
+                                minValue: nil,
+                                options: [],
+                                suffix: nil,
+                                suggestedQuery: nil,
+                                title: "Search device",
+                                type: .search
                             ),
                         ]
                     )
