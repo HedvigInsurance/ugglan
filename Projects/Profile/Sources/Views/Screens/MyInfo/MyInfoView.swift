@@ -175,6 +175,9 @@ public class MyInfoViewModel: ObservableObject {
                 withAnimation {
                     viewState = .error(errorMessage: error.localizedDescription)
                 }
+            } else {
+                viewState = .error(errorMessage: error.localizedDescription)
+                self.error = error.localizedDescription
             }
             isValid()
         }

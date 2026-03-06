@@ -286,9 +286,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COINSURED_ADD_PERSONAL_INFO" = "Du måste lägga till information för dina medförsäkrade";
 "CONTRACT_COINSURED_MISSING_ADD_INFO" = "Lägg till information";
 "CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi saknar information om din medförsäkrade. Lägg till det så snart som möjligt.";
-"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Lägg till mer information om dina medförsäkrade för bättre hjälp";
+"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Vi saknar information om delägare för ditt fritidshus";
 "CONTRACT_COINSURED_MISSING_LATER" = "Gör det senare";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Din försäkring kommer att uppdateras och täcker dig + %1$d personer från och med %2$@";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "Du måste lägga till information om delägarna";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till mer information om dina delägare för bättre hjälp";
 "CONTRACT_COVERAGE_MORE_INFO" = "Mer information";
 "CONTRACT_EDIT_COINSURED" = "Ändra medförsäkrade";
 "CONTRACT_EDIT_INFO" = "Ändra";

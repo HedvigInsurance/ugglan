@@ -286,9 +286,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COINSURED_ADD_PERSONAL_INFO" = "You need to add personal information to your co-insured people";
 "CONTRACT_COINSURED_MISSING_ADD_INFO" = "Add info";
 "CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "We are missing information about your co-insured. Please add it as soon as possible.";
-"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Add more information about your co-insured for better help";
+"CONTRACT_COINSURED_MISSING_INFO_TEXT" = "We’re missing co-owner information for your vacation home";
 "CONTRACT_COINSURED_MISSING_LATER" = "Do it later";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Your insurance will be updated and cover you +%1$d people starting from %2$@";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add personal information to the co-owners";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add more information about your co-owners for better help";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
