@@ -9,6 +9,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     @Published var searchResults: [SingleSelectValue] = []
     @Published var processingState: ProcessingState = .success
     @Published var noResults: Bool = false
+    @Published var searchSuggestedQuery: String?
     @Published var selectedValue: SingleSelectValue?
     @Published var isDebouncing: Bool = false
     @Published var searchText = ""
@@ -101,14 +102,15 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
 
         processingState = .loading
         do {
-            let options = try await service.claimIntentFormFieldSearch(
+            let result = try await service.claimIntentFormFieldSearch(
                 stepId: stepId,
                 fieldId: fieldId,
                 query: query
             )
-            searchResults = options.map {
+            searchResults = result.options.map {
                 SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl)
             }
+            searchSuggestedQuery = result.suggestedQuery
             processingState = .success
             if searchResults.isEmpty && !query.isEmpty {
                 noResults = true

@@ -46,6 +46,16 @@ struct SearchFieldModel: Equatable, Identifiable {
     let suggestedQuery: String?
 }
 
+public struct ClaimIntentFormFieldSearchResult {
+    let options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
+    let suggestedQuery: String?
+
+    public init(options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption], suggestedQuery: String?) {
+        self.options = options
+        self.suggestedQuery = suggestedQuery
+    }
+}
+
 enum SubmitClaimChatMessageSender {
     case hedvig
     case member

@@ -6,5 +6,6 @@ query ClaimIntentFormFieldSearch($input: ClaimIntentFormFieldSearchInput!) {
       title
       value
     }
+    suggestedQuery
   }
 }

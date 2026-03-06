@@ -25,7 +25,7 @@ public protocol ClaimIntentClient {
         stepId: String,
         fieldId: String,
         query: String
-    ) async throws -> [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
+    ) async throws -> ClaimIntentFormFieldSearchResult
 }
 
 public struct StartClaimInput: Equatable, Identifiable {
@@ -109,7 +109,7 @@ class ClaimIntentService {
         stepId: String,
         fieldId: String,
         query: String
-    ) async throws -> [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] {
+    ) async throws -> ClaimIntentFormFieldSearchResult {
         try await client.claimIntentFormFieldSearch(stepId: stepId, fieldId: fieldId, query: query)
     }
 }

@@ -49,6 +49,7 @@ struct FormFieldSearchView: View {
         .animation(.default, value: vm.selectedValue)
         .animation(.default, value: vm.isDebouncing)
         .animation(.default, value: vm.noResults)
+        .animation(.default, value: vm.searchSuggestedQuery)
         .animation(.default, value: vm.searchController.searchBar.text)
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             guard let vm else { return }
@@ -80,10 +81,27 @@ struct FormFieldSearchView: View {
 
     private var emptyResults: some View {
         hSection {
-            VStack(spacing: 0) {
-                hText("No results found")
-                hText("Try a different word or check your spelling")
-                    .foregroundColor(hTextColor.Translucent.secondary)
+            VStack(spacing: .padding8) {
+                VStack(spacing: 0) {
+                    hText("No results found")
+                    hText("Try a different word or check your spelling")
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+                if let suggestedQuery = vm.searchSuggestedQuery {
+                    Button {
+                        vm.searchController.searchBar.text = suggestedQuery
+                    } label: {
+                        HStack(spacing: .padding4) {
+                            hText("Did you mean")
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                            hText(suggestedQuery)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .underline()
+                            hText("?")
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        }
+                    }
+                }
             }
         }
         .multilineTextAlignment(.center)
