@@ -51,9 +51,6 @@ struct AskForPushNotifications: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .background(
-            BackgroundView().ignoresSafeArea()
-        )
     }
 
     private var textContent: some View {
