@@ -7,7 +7,7 @@ struct CoInsuredSelectScreen: View {
     @ObservedObject var vm: InsuredPeopleScreenViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    let itemPickerConfig: ItemConfig<CoInsuredModel>
+    let itemPickerConfig: ItemConfig<StakeHolder>
     init(
         contractId: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -15,9 +15,9 @@ struct CoInsuredSelectScreen: View {
         self.contractId = contractId
         self.editCoInsuredNavigation = editCoInsuredNavigation
         let vm = editCoInsuredNavigation.coInsuredViewModel
-        let alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedCoInsuredList
+        let alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedStakeHolders
             .filter {
-                !editCoInsuredNavigation.coInsuredViewModel.coInsuredAdded.contains($0)
+                !editCoInsuredNavigation.coInsuredViewModel.stakeHoldersAdded.contains($0)
             }
         let intentViewModel = editCoInsuredNavigation.intentViewModel
 
@@ -85,7 +85,7 @@ struct CoInsuredSelectScreen: View {
         if intentViewModel.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
-                    coInsuredModel: CoInsuredModel(),
+                    coInsuredModel: StakeHolder(),
                     actionType: .add,
                     contractId: contractId
                 ),
@@ -98,7 +98,7 @@ struct CoInsuredSelectScreen: View {
     }
 
     var picker: some View {
-        ItemPickerScreen<CoInsuredModel>(
+        ItemPickerScreen<StakeHolder>(
             config: itemPickerConfig
         )
         .hItemPickerBottomAttachedView {
@@ -112,7 +112,7 @@ struct CoInsuredSelectScreen: View {
                     editCoInsuredNavigation.coInsuredInputModel = .init(
                         actionType: .add,
                         coInsuredModel: .init(),
-                        title: L10n.contractAddCoinsured,
+                        title: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType.addButtonTitle,
                         contractId: contractId
                     )
                 }
@@ -129,5 +129,5 @@ struct CoInsuredSelectScreen: View {
 }
 
 #Preview {
-    CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init()))
+    CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)))
 }

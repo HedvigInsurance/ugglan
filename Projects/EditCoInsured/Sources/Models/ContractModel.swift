@@ -3,10 +3,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         id: String,
         exposureDisplayName: String,
         supportsCoInsured: Bool,
+        supportsCoOwners: Bool,
         upcomingChangedAgreement: Agreement?,
         currentAgreement: Agreement?,
         terminationDate: String?,
-        coInsured: [CoInsuredModel],
+        coInsured: [StakeHolder],
+        coOwners: [StakeHolder],
         firstName: String,
         lastName: String,
         ssn: String?
@@ -14,10 +16,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.id = id
         self.exposureDisplayName = exposureDisplayName
         self.supportsCoInsured = supportsCoInsured
+        self.supportsCoOwners = supportsCoOwners
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.currentAgreement = currentAgreement
         self.terminationDate = terminationDate
         self.coInsured = coInsured
+        self.coOwners = coOwners
         self.firstName = firstName
         self.lastName = lastName
         self.ssn = ssn
@@ -29,10 +33,13 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let upcomingChangedAgreement: Agreement?
     public let terminationDate: String?
     public let supportsCoInsured: Bool
+    public let supportsCoOwners: Bool
     public let firstName: String
     public let lastName: String
     public let ssn: String?
-    public var coInsured: [CoInsuredModel]
+    public let coInsured: [StakeHolder]
+    public let coOwners: [StakeHolder]
+
     public var fullName: String {
         firstName + " " + lastName
     }
@@ -41,12 +48,20 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         coInsured.filter(\.hasMissingInfo).count
     }
 
+    public var nbOfMissingCoOwners: Int {
+        coOwners.filter(\.hasMissingInfo).count
+    }
+
     public var nbOfMissingCoInsuredWithoutTermination: Int {
         coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
-    public var showEditCoInsuredInfo: Bool {
-        supportsCoInsured && terminationDate == nil
+    public var nbOfMissingCoOwnersWithoutTermination: Int {
+        coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
+    }
+
+    public var showEditStakeHoldersInfo: Bool {
+        (supportsCoInsured || supportsCoOwners) && terminationDate == nil
     }
 }
 
@@ -74,27 +89,30 @@ public struct ProductVariant: Codable, Hashable, Sendable {
 }
 
 @MainActor
-extension InsuredPeopleConfig {
+extension StakeHoldersConfig {
     public init(
         contract: Contract,
-        preSelectedCoInsuredList: [CoInsuredModel],
-        fromInfoCard: Bool
+        preSelectedStakeHolders: [StakeHolder],
+        fromInfoCard: Bool,
+        stakeHolderType: StakeHolderType
     ) {
         self.init(
             id: contract.id,
-            contractCoInsured: contract.coInsured,
+            stakeHolders: contract.coInsured + contract.coOwners,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-            numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
-            numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
+            numberOfMissingStakeHolders: contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners,
+            numberOfMissingStakeHoldersWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination
+                + contract.nbOfMissingCoOwnersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedCoInsuredList: preSelectedCoInsuredList,
+            preSelectedStakeHolders: preSelectedStakeHolders,
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
-            fromInfoCard: fromInfoCard
+            fromInfoCard: fromInfoCard,
+            stakeHolderType: stakeHolderType
         )
     }
 }

@@ -19,7 +19,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 

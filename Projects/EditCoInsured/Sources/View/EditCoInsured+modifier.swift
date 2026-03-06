@@ -22,7 +22,9 @@ struct EditCoInsured: ViewModifier {
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
                 if contractsSupportingCoInsured.count > 1 {
                     EditCoInsuredSelectInsuranceNavigation(
-                        configs: contractsSupportingCoInsured
+                        configs: contractsSupportingCoInsured,
+                        stakeHolderType: coInsuredModel.contractsSupportingCoInsured.first!.stakeHolderType
+
                     )
                     .environmentObject(vm)
                 } else {
@@ -73,7 +75,7 @@ struct EditCoInsured: ViewModifier {
     }
 
     func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
+        missingContractConfig: StakeHoldersConfig
     ) -> some View {
         EditCoInsuredAlertNavigation(
             config: missingContractConfig

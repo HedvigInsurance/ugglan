@@ -3,28 +3,31 @@ import Foundation
 import hCore
 
 @MainActor
-public protocol ExistingCoInsured {
-    func get(contractId: String) -> [CoInsuredModel]
+public protocol ExistingStakeHolders {
+    func get(contractId: String) -> [StakeHolder]
 }
 
 @MainActor
 public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
-    @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
+    @Published public var editCoInsuredModelMissingAlert: StakeHoldersConfig?
     @Published public var editCoInsuredModelError: EditCoInsuredErrorWrapper?
     private let service = EditCoInsuredService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
-    let existingCoInsured: ExistingCoInsured
+    let existingStakeHolders: ExistingStakeHolders
 
     @MainActor
     public init(
-        existingCoInsured: ExistingCoInsured
+        existingStakeHolders: ExistingStakeHolders
     ) {
-        self.existingCoInsured = existingCoInsured
+        self.existingStakeHolders = existingStakeHolders
     }
 
-    public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
+    public func start(
+        fromContract: StakeHoldersConfig? = nil,
+        forMissingStakeHolders: Bool = false
+    ) {
         Task { @MainActor in
             do {
                 let activeContracts = try await service.fetchContracts()
@@ -34,29 +37,33 @@ public class EditCoInsuredViewModel: ObservableObject {
                         [contract]
                     })
                 } else {
-                    let contractsSupportingCoInsured =
+                    let contractsSupportingStakeHolders =
                         activeContracts
                         .filter {
-                            $0.showEditCoInsuredInfo
-                                && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
+                            $0.showEditStakeHoldersInfo
+                                && ($0.nbOfMissingCoInsuredWithoutTermination > 0
+                                    || $0.nbOfMissingCoOwnersWithoutTermination > 0
+                                    || !forMissingStakeHolders)
                         }
-                        .compactMap {
-                            InsuredPeopleConfig(
-                                contract: $0,
-                                preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
-                                fromInfoCard: true
+                        .compactMap { contract -> StakeHoldersConfig? in
+                            guard let stakeHolderType = contract.stakeHolderType else { return nil }
+                            return StakeHoldersConfig(
+                                contract: contract,
+                                preSelectedStakeHolders: existingStakeHolders.get(contractId: contract.id),
+                                fromInfoCard: true,
+                                stakeHolderType: stakeHolderType
                             )
                         }
-                    if contractsSupportingCoInsured.count > 1 {
+                    if contractsSupportingStakeHolders.count > 1 {
                         editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            contractsSupportingCoInsured
+                            contractsSupportingStakeHolders
                         })
-                    } else if !contractsSupportingCoInsured.isEmpty {
+                    } else if !contractsSupportingStakeHolders.isEmpty {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            contractsSupportingCoInsured
+                            contractsSupportingStakeHolders
                         })
                     } else {  // if empty
-                        throw EditCoInsuedError.missingContracts
+                        throw EditStakeHolderError.missingContracts
                     }
                 }
             } catch {
@@ -78,20 +85,22 @@ public class EditCoInsuredViewModel: ObservableObject {
                 }
                 if contract.upcomingChangedAgreement != nil {
                     return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
+                }
+                return switch contract.stakeHolderType {
+                case .coInsured: contract.nbOfMissingCoInsuredWithoutTermination > 0
+                case .coOwner: contract.nbOfMissingCoOwnersWithoutTermination > 0
+                case .none: false
                 }
             }
 
             if let missingContract {
+                guard let stakeHolderType = missingContract.stakeHolderType else { return }
                 try await Task.sleep(seconds: 0.4)
-                let missingContractConfig = InsuredPeopleConfig(
+                let missingContractConfig = StakeHoldersConfig(
                     contract: missingContract,
-                    preSelectedCoInsuredList: existingCoInsured.get(contractId: missingContract.id),
-                    fromInfoCard: false
+                    preSelectedStakeHolders: existingStakeHolders.get(contractId: missingContract.id),
+                    fromInfoCard: false,
+                    stakeHolderType: stakeHolderType,
                 )
                 editCoInsuredModelMissingAlert = missingContractConfig
             }
@@ -99,11 +108,21 @@ public class EditCoInsuredViewModel: ObservableObject {
     }
 }
 
-enum EditCoInsuedError: Error {
+enum EditStakeHolderError: Error {
     case missingContracts
 }
 
-extension EditCoInsuedError: LocalizedError {
+extension Contract {
+    var stakeHolderType: StakeHolderType? {
+        switch true {
+        case supportsCoInsured: .coInsured
+        case supportsCoOwners: .coOwner
+        default: nil
+        }
+    }
+}
+
+extension EditStakeHolderError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingContracts:
@@ -113,11 +132,11 @@ extension EditCoInsuedError: LocalizedError {
 }
 
 public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
-    public var contractsSupportingCoInsured: [InsuredPeopleConfig]
+    public var contractsSupportingCoInsured: [StakeHoldersConfig]
     public let openSpecificScreen: EditCoInsuredScreenType
     public init(
         openSpecificScreen: EditCoInsuredScreenType = .none,
-        contractsSupportingCoInsured: () -> [InsuredPeopleConfig]
+        contractsSupportingCoInsured: () -> [StakeHoldersConfig]
     ) {
         self.openSpecificScreen = openSpecificScreen
         self.contractsSupportingCoInsured = contractsSupportingCoInsured()

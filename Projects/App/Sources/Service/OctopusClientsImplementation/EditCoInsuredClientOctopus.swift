@@ -53,7 +53,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
     }
 
-    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
+    func sendIntent(contractId: String, coInsured: [StakeHolder]) async throws -> Intent {
         let coInsuredList = coInsured.map { coIn in
             OctopusGraphQL.CoInsuredInput(
                 firstName: GraphQLNullable(optionalValue: coIn.firstName),
@@ -115,10 +115,12 @@ extension Contract {
             id: contract.id,
             exposureDisplayName: contract.exposureDisplayName,
             supportsCoInsured: contract.supportsCoInsured,
+            supportsCoOwners: !contract.supportsCoInsured,  // TODO: for testing, revert once BE is done
             upcomingChangedAgreement: .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             currentAgreement: .init(agreement: contract.currentAgreement.fragments.agreementFragment),
             terminationDate: contract.terminationDate,
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
+            coOwners: [],  // TODO: fix, once BE is done
             firstName: firstName,
             lastName: lastName,
             ssn: ssn
@@ -149,7 +151,7 @@ extension EditCoInsured.ProductVariant {
 }
 
 @MainActor
-extension CoInsuredModel {
+extension StakeHolder {
     public init(
         data: OctopusGraphQL.CoInsuredFragment
     ) {

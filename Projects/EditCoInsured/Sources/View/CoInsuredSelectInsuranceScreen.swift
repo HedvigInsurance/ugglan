@@ -6,9 +6,9 @@ struct CoInsuredSelectInsuranceScreen: View {
     @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
     @ObservedObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     private let router: Router
-    private let itemPickerConfig: ItemConfig<InsuredPeopleConfig>
+    private let itemPickerConfig: ItemConfig<StakeHoldersConfig>
     init(
-        configs: [InsuredPeopleConfig],
+        configs: [StakeHoldersConfig],
         editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel,
         editCoInsuredViewModel: EditCoInsuredViewModel,
         router: Router
@@ -16,7 +16,7 @@ struct CoInsuredSelectInsuranceScreen: View {
         self.editCoInsuredNavigationVm = editCoInsuredNavigationVm
         self.editCoInsuredViewModel = editCoInsuredViewModel
         self.router = router
-        itemPickerConfig = ItemConfig<InsuredPeopleConfig>(
+        itemPickerConfig = ItemConfig<StakeHoldersConfig>(
             items: configs.compactMap {
                 (object: $0, displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName))
             },
