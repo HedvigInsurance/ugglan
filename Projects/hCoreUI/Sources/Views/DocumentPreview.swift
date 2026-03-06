@@ -242,7 +242,7 @@ public struct DocumentPreview: View {
                 vm?.vc = vc
             }
         }
-        .configureTitle(vm.type.name ?? "")
+        .navigationTitle(vm.type.name ?? "")
         .embededInNavigation(tracking: self)
     }
 }

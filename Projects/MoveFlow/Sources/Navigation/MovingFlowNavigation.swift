@@ -11,7 +11,7 @@ class MovingFlowQuoteManager {
     weak var viewModel: MovingFlowNavigationViewModel?
 
     func createSummaryViewModel(
-        router: Router,
+        router: NavigationRouter,
         moveQuotesModel: MoveQuotesModel?,
         selectedHomeQuote: MovingFlowQuote?,
         totalPremium: Premium,
@@ -199,7 +199,7 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
         }
     }
 
-    func setMovingFlowSummaryViewModel(router: Router) {
+    func setMovingFlowSummaryViewModel(router: NavigationRouter) {
         guard let totalPremium else { return }
         movingFlowConfirmViewModel = .init()
         quoteSummaryViewModel = quoteManager.createSummaryViewModel(
@@ -291,7 +291,7 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     private let onMoved: () -> Void
 
     public init(
@@ -301,7 +301,7 @@ public struct MovingFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: router,
             options: .extendedNavigationWidth,
             tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType

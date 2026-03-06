@@ -9,7 +9,7 @@ import hCoreUI
 
 public struct ClaimDetailView: View {
     @StateObject var vm: ClaimDetailViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(
         claim: ClaimModel?,
@@ -57,7 +57,7 @@ public struct ClaimDetailView: View {
                 }
             }
             .withAlertDismiss()
-            .configureTitle(L10n.ClaimStatusDetail.addedFiles)
+            .navigationTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation(
                 options: .extendedNavigationWidth,
                 tracking: ClaimDetailDetentType.fileUpload

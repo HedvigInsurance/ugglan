@@ -32,7 +32,7 @@ enum DirectDebitResultType {
 
 struct DirectDebitResult: View {
     let type: DirectDebitResultType
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     let retry: () -> Void
 
     var body: some View {

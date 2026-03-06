@@ -14,7 +14,7 @@ struct ContractTable: View {
     @State var onlyTerminatedInsurances = false
     @StateObject var vm = ContractTableViewModel()
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {

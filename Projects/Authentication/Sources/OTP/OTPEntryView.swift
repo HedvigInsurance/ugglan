@@ -5,7 +5,7 @@ import hCoreUI
 public struct OTPEntryView: View {
     @StateObject private var vm: OTPEntryViewModel = .init()
     @EnvironmentObject var otpVM: OTPState
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
@@ -49,7 +49,7 @@ public struct OTPEntryView: View {
 class OTPEntryViewModel: ObservableObject {
     var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false
-    weak var router: Router?
+    weak var router: NavigationRouter?
     var masking: Masking {
         Masking(type: .email)
     }

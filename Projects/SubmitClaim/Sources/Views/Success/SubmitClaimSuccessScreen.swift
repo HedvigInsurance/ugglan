@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimSuccessScreen: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
         SuccessScreen(

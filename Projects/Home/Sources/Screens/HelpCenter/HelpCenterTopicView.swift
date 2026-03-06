@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct HelpCenterTopicNavigation: View {
-    private let router = Router()
+    private let router = NavigationRouter()
     let topic: FaqTopic
 
     public init(topic: FaqTopic) {
@@ -12,7 +12,7 @@ public struct HelpCenterTopicNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large)], tracking: topic) {
+        hNavigationStack(router: router, options: [.navigationType(type: .large)], tracking: topic) {
             HelpCenterTopicView(topic: topic, router: router)
                 .navigationTitle(topic.title)
                 .withDismissButton()
@@ -21,7 +21,7 @@ public struct HelpCenterTopicNavigation: View {
                 }
                 .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                     InboxView()
-                        .configureTitle(L10n.chatConversationInbox)
+                        .navigationTitle(L10n.chatConversationInbox)
                 }
         }
     }
@@ -29,10 +29,10 @@ public struct HelpCenterTopicNavigation: View {
 
 struct HelpCenterTopicView: View {
     private var topic: FaqTopic
-    @ObservedObject var router: Router
+    @ObservedObject var router: NavigationRouter
     init(
         topic: FaqTopic,
-        router: Router
+        router: NavigationRouter
     ) {
         self.topic = topic
         self.router = router
@@ -103,6 +103,6 @@ struct HelpCenterTopicView: View {
             commonQuestions: questions,
             allQuestions: questions
         ),
-        router: Router()
+        router: NavigationRouter()
     )
 }

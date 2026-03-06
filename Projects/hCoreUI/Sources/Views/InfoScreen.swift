@@ -17,9 +17,9 @@ extension String: @retroactive Identifiable {
 struct InfoScreenWrapper: View {
     let text: String
     let dismissButtonTitle: String
-    let router = Router()
+    let router = NavigationRouter()
     var body: some View {
-        RouterHost(router: router, tracking: self) {
+        hNavigationStack(router: router, tracking: self) {
             InfoScreen(text: text, dismissButtonTitle: dismissButtonTitle, contentPosition: .compact) {
                 router.dismiss()
             }

@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ChangeCodeView: View {
     @ObservedObject private var vm: ChangeCodeViewModel
-    @EnvironmentObject private var router: Router
+    @EnvironmentObject private var router: NavigationRouter
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
@@ -25,7 +25,7 @@ class ChangeCodeViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var inputVm: TextInputViewModel
 
-    var router: Router?
+    var router: NavigationRouter?
     let foreverVm: ForeverNavigationViewModel?
 
     init(
@@ -67,5 +67,5 @@ class ChangeCodeViewModel: ObservableObject {
 
 #Preview {
     ChangeCodeView(foreverNavigationVm: .init())
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
 }
