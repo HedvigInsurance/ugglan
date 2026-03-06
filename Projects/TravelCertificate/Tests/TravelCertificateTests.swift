@@ -1,3 +1,4 @@
+import Addons
 @preconcurrency import XCTest
 import hCore
 
@@ -87,5 +88,36 @@ final class TravelCertificateTests: XCTestCase {
         await model.fetchTravelCertificateList()
 
         assert(model.list == list)
+    }
+
+    func testListWithBannerSuccess() async {
+        let list: [TravelCertificateModel] = [
+            .init(
+                id: "id",
+                date: Date(),
+                valid: true,
+                url: URL(string: "https://www.hedvig.com")
+            )!
+        ]
+        .compactMap { $0 }
+
+        let testBanner = AddonBanner(
+            contractIds: ["contractId"],
+            titleDisplayName: "Travel Plus",
+            descriptionDisplayName: "Extended travel insurance with extra coverage",
+            badges: ["Popular"],
+            addonType: .travelPlus
+        )
+
+        let mockService = MockData.createMockTravelInsuranceService(
+            fetchList: { (list, true, testBanner) }
+        )
+        sut = mockService
+
+        let model = TravelCertificatesListScreenViewModel()
+        await model.fetchTravelCertificateList()
+
+        assert(model.list == list)
+        assert(model.addonBanner == testBanner)
     }
 }

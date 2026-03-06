@@ -15,7 +15,7 @@ final class CrossSellTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testGetCrossSellSuccess() async {
+    func testGetCrossSellSuccess() async throws {
         let crossSell: CrossSells = .init(
             recommended: nil,
             others: [
@@ -44,24 +44,27 @@ final class CrossSellTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedCrossSell = try! await mockService.fetchCrossSell(.insurances)
+        let respondedCrossSell = try await mockService.fetchCrossSell(.insurances)
         assert(respondedCrossSell == crossSell)
     }
 
-    func testGetAddonBannerSuccess() async {
-        let addonBannerModel = AddonBannerModel(
-            contractIds: ["contractId"],
-            titleDisplayName: "title",
-            descriptionDisplayName: "description",
-            badges: []
-        )
+    func testGetAddonBannerSuccess() async throws {
+        let addonBanner = [
+            AddonBanner(
+                contractIds: ["contractId"],
+                titleDisplayName: "title",
+                descriptionDisplayName: "description",
+                badges: [],
+                addonType: .travelPlus
+            )
+        ]
 
         let mockService = MockData.createMockCrossSellService(
-            fetchAddonBannerModel: { _ in addonBannerModel }
+            fetchAddonBanners: { _ in addonBanner }
         )
         sut = mockService
 
-        let respondedAddonBannerModel = try! await mockService.getAddonBannerModel(source: .insurances)
-        assert(respondedAddonBannerModel == addonBannerModel)
+        let respondedAddonBanner = try await mockService.getAddonBanners(source: .insurances)
+        assert(respondedAddonBanner == addonBanner)
     }
 }

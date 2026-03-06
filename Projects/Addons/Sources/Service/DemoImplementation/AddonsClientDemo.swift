@@ -1,62 +1,58 @@
 import Foundation
+import hCore
 
 public class AddonsClientDemo: AddonsClient {
-    public init() {}
+    let offer: AddonOffer
 
-    public func getAddon(contractId _: String) async throws -> AddonOffer {
-        let currentAddon: AddonQuote = .init(
-            displayName: "45 days",
-            displayNameLong: "display name long",
-            quoteId: "quoteId45",
-            addonId: "addonId45",
-            addonSubtype: "addonSubtype45",
-            displayItems: [
-                .init(displayTitle: "Coverage", displayValue: "45 days"),
-                .init(displayTitle: "Insured people", displayValue: "You+1"),
-            ],
-            itemCost: .init(
-                premium: .init(gross: .sek(69), net: .sek(49)),
-                discounts: []
-            ),
-            addonVariant: nil,
-            documents: []
-        )
-
-        let addons: AddonOffer = .init(
-            titleDisplayName: "Travel Plus",
-            description: "Extended travel insurance with extra coverage for your travels",
-            activationDate: "2025-01-15".localDateToDate,
-            currentAddon: currentAddon,
-            quotes: [
-                currentAddon,
-                .init(
-                    displayName: "60 days",
-                    displayNameLong: "display name long",
-                    quoteId: "quoteId60",
-                    addonId: "addonId60",
-                    addonSubtype: "addonSubtype60",
-                    displayItems: [
-                        .init(displayTitle: "Coverage", displayValue: "60 days"),
-                        .init(displayTitle: "Insured people", displayValue: "You+1"),
-                    ],
-                    itemCost: .init(
-                        premium: .init(gross: .sek(79), net: .sek(59)),
-                        discounts: []
-                    ),
-                    addonVariant: .init(
-                        displayName: "",
-                        documents: [],
-                        perils: [],
-                        product: "",
-                        termsVersion: ""
-                    ),
-                    documents: []
-                ),
-            ]
-        )
-
-        return addons
+    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .offer(offer)
     }
 
-    public func submitAddon(quoteId _: String, addonId _: String) async throws {}
+    public func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .init(
+            premium: .init(gross: .sek(129), net: .sek(110)),
+            discounts: [
+                ItemDiscount(
+                    campaignCode: "BUNDLE15",
+                    displayName: "15% bundle discount",
+                    displayValue: "-19 kr/mo",
+                    explanation: "Discount for bundling addons"
+                )
+            ]
+        )
+    }
+
+    public func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return .init(
+            premium: .init(gross: .sek(399), net: .sek(399)),
+            discounts: []
+        )
+    }
+
+    public func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+    }
+
+    public func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        []
+    }
+
+    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+        return testRemoveOffer
+    }
+
+    public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
+        await delay(TimeInterval.random(in: 0.5...1.5))
+    }
+
+    public init() {
+        self.offer = testTravelOfferNoActive
+    }
+    public init(offer: AddonOffer) {
+        self.offer = offer
+    }
 }

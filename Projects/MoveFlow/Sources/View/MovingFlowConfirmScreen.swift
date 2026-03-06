@@ -43,11 +43,10 @@ public class MovingFlowConfirmViewModel: ObservableObject {
     let model = QuoteSummaryViewModel(
         contract: [],
         activationDate: Date(),
-        premium: .init(
-            gross: .sek(399),
-            net: .sek(399)
-        ),
-        isAddon: false
+        totalPrice: .comparison(
+            old: .sek(399),
+            new: .sek(399)
+        )
     ) {}
     Localization.Locale.currentLocale.send(.en_SE)
     return MovingFlowConfirmScreen(quoteSummaryViewModel: model)

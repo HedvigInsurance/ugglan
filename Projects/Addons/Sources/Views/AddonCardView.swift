@@ -4,11 +4,11 @@ import hCoreUI
 
 public struct AddonCardView: View {
     let openAddon: () -> Void
-    let addon: AddonBannerModel
+    let addon: AddonBanner
 
     public init(
         openAddon: @escaping () -> Void,
-        addon: AddonBannerModel
+        addon: AddonBanner
     ) {
         self.openAddon = openAddon
         self.addon = addon
@@ -24,7 +24,7 @@ public struct AddonCardView: View {
                             .accessibilityAddTraits(.isStaticText)
                         Spacer()
                         if let badge = addon.badges.first {
-                            hPill(text: badge, color: .grey, colorLevel: .three)
+                            hPill(text: badge, color: .grey)
                                 .hFieldSize(.small)
                         }
                     }
@@ -36,10 +36,12 @@ public struct AddonCardView: View {
             }
         }
         .hWithoutHorizontalPadding([.section])
-        .sectionContainerStyle(.opaque)
+        .sectionContainerStyle(.negative)
         .overlay(
-            RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 1)
+            RoundedRectangle(cornerRadius: .cornerRadiusXL).stroke(hBorderColor.primary, lineWidth: 1)
         )
+        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSeePriceButton)
     }
@@ -67,7 +69,8 @@ public struct AddonCardView: View {
                 contractIds: [""],
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName: "Extended travel insurance with extra coverage for your travels",
-                badges: ["Popular"]
+                badges: ["Popular"],
+                addonType: .travelPlus
             )
         )
     }

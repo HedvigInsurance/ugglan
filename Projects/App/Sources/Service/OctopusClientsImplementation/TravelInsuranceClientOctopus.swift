@@ -57,7 +57,7 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
     func getList(
         source: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
@@ -70,25 +70,22 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter(\.supportsTravelCertificate).isEmpty
 
-            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
-            let bannerResponse = try await octopus.client.fetch(
-                query: query
-            )
-            let bannerData = bannerResponse.currentMember.upsellTravelAddonBanner
+            let query = OctopusGraphQL.AddonBannersQuery(flows: source.flows)
+            let bannerResponse = try await octopus.client.fetch(query: query)
+            let bannerData = bannerResponse.currentMember.addonBanners.first
 
-            let addonBannerModelData: AddonBannerModel? = {
+            let addonBanner: AddonBanner? =
                 if let bannerData, !bannerData.contractIds.isEmpty {
-                    return AddonBannerModel(
+                    .init(
                         contractIds: bannerData.contractIds,
-                        titleDisplayName: bannerData.titleDisplayName,
+                        titleDisplayName: bannerData.displayTitleName,
                         descriptionDisplayName: bannerData.descriptionDisplayName,
-                        badges: bannerData.badges
+                        badges: bannerData.badges,
+                        addonType: .travelPlus
                     )
-                }
-                return nil
-            }()
+                } else { nil }
 
-            return (listData, canAddTravelInsuranceData, addonBannerModelData)
+            return (listData, canAddTravelInsuranceData, addonBanner)
         } catch let ex {
             throw ex
         }

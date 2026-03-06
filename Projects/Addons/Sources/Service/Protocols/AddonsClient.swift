@@ -2,9 +2,14 @@ import Foundation
 import hCore
 
 @MainActor
-public protocol AddonsClient {
-    func getAddon(contractId: String) async throws -> AddonOffer
-    func submitAddon(quoteId: String, addonId: String) async throws
+public protocol AddonsClient: Sendable {
+    func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData
+    func getAddonOfferCost(quoteId: String, addonIds: Set<String>) async throws -> ItemCost
+    func getAddonRemoveOfferCost(contractId: String, addonIds: Set<String>) async throws -> ItemCost
+    func submitAddons(quoteId: String, addonIds: Set<String>) async throws
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
+    func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer
+    func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws
 }
 
 public enum AddonsError: Error {

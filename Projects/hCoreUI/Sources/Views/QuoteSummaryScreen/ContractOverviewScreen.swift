@@ -87,8 +87,8 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
         contract:
             .init(
                 id: "id1",
-                displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
+                title: "Homeowner",
+                subtitle: "Bellmansgtan 19A",
                 premium: .init(
                     gross: .init(amount: 599, currency: "SEK"),
                     net: .init(amount: 999, currency: "SEK")
