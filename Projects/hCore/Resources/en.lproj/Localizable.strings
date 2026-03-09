@@ -34,7 +34,7 @@
 "ADDON_FLOW_SELECT_BUTTON" = "Select";
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Maximum travel limit";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Select the insurance you would like to add coverage for";
-"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Extend your travel coverage";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Extend your coverage";
 "ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Days covered when travelling";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Choose your maximum travel limit";
 "ADDON_FLOW_SUBTITLE" = "For extra safety when you are travelling abroad";
@@ -269,6 +269,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRM_CHANGES_TITLE" = "Confirm changes";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
+"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add additional co-owner";
 "CONTRACT_ADD_COINSURED" = "Add co-insured";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Activates %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Active until %1$@";
@@ -280,6 +281,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Your insurance will be updated starting from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Co-insured updated";
 "CONTRACT_ADD_CONISURED_INFO" = "Add info of co-insured";
+"CONTRACT_ADD_COOWNER_INFO" = "Add info of co-owner";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add information for all co-owners in order to proceed.";
+"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Co-owners updated";
 "CONTRACT_BIRTH_DATE" = "Date of birth";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "What do you want to edit?";
 "CONTRACT_COINSURED" = "Co-insured";
@@ -289,6 +293,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Add more information about your co-insured for better help";
 "CONTRACT_COINSURED_MISSING_LATER" = "Do it later";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Your insurance will be updated and cover you +%1$d people starting from %2$@";
+"CONTRACT_COOWNER" = "Co-owner";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add personal information to the co-owners";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add more information about your co-owners for better help";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
@@ -302,6 +309,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Added";
 "CONTRACT_PERSONAL_IDENTITY" = "Personal identity no.";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Are you sure you want to \nremove co-insured?";
+"CONTRACT_REMOVE_COOWNER_CONFIRMATION" = "Are you sure you want to \nremove co-owner?";
 "CONTRACT_SSN_FETCH_INFO" = "Fetch info";
 "CONTRACT_STATUS_ACTIVE_IN_FUTURE" = "To be activated on %1$@";
 "CONTRACT_STATUS_PENDING" = "Waiting for start date";
@@ -359,6 +367,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Duration";
 "Direct_Debit_Connected" = "%1$@/month - Paying with direct debit";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Payment not connected";
+"EDIT_COOWNER_SUBTITLE" = "Edit information for vacation home co-owners";
+"EDIT_COOWNER_TITLE" = "Edit co-owners";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "Email";
 "EMBARK_EXIT_BUTTON" = "Exit";
