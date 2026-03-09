@@ -32,11 +32,21 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     }()
 
     let suggestedQuery: String?
+    let modalTitle: String?
+    let modalSubtitle: String?
 
-    init(stepId: String, fieldId: String, suggestedQuery: String? = nil) {
+    init(
+        stepId: String,
+        fieldId: String,
+        suggestedQuery: String? = nil,
+        modalTitle: String? = nil,
+        modalSubtitle: String? = nil
+    ) {
         self.stepId = stepId
         self.fieldId = fieldId
         self.suggestedQuery = suggestedQuery
+        self.modalTitle = modalTitle
+        self.modalSubtitle = modalSubtitle
         self.service = ClaimIntentService()
         super.init()
         setupSearchSubscription()

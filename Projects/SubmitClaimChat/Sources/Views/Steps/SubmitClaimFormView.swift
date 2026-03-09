@@ -89,7 +89,7 @@ struct SubmitClaimFormView: View {
                     viewModel?.isSearchPresented = nil
                 }
             )
-            .navigationTitle("Search for your item")
+            .navigationTitle(model.title)
             .embededInNavigation(tracking: SubmitClaimModalType.search)
         }
     }
@@ -266,7 +266,9 @@ struct FormFieldView: View {
                 id: field.id,
                 stepId: viewModel?.claimIntent.currentStep.id ?? "",
                 title: field.title,
-                suggestedQuery: fieldViewModel.suggestedValue
+                suggestedQuery: fieldViewModel.suggestedValue,
+                modalTitle: field.searchData?.modalTitle ?? "",
+                modalSubtitle: field.searchData?.modalSubtitle ?? ""
             )
         }
     }

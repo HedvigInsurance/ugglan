@@ -152,7 +152,7 @@ final class FormStepValue: ObservableObject {
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
         self.value = field.defaultValues.first ?? ""
         self.values = field.defaultValues
-        self.suggestedValue = field.suggestedQuery
+        self.suggestedValue = field.searchData?.suggestedQuery
     }
 }
 

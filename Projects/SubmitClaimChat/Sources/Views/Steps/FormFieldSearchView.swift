@@ -11,7 +11,13 @@ struct FormFieldSearchView: View {
 
     init(model: SearchFieldModel, onSelected: @escaping (SingleSelectValue, _ searchInput: String) -> Void) {
         self._vm = StateObject(
-            wrappedValue: .init(stepId: model.stepId, fieldId: model.id, suggestedQuery: model.suggestedQuery)
+            wrappedValue: .init(
+                stepId: model.stepId,
+                fieldId: model.id,
+                suggestedQuery: model.suggestedQuery,
+                modalTitle: model.modalTitle,
+                modalSubtitle: model.modalSubtitle
+            )
         )
         self.onSelected = onSelected
     }
@@ -71,9 +77,13 @@ struct FormFieldSearchView: View {
     private var notSearchState: some View {
         hSection {
             VStack(spacing: 0) {
-                hText("Fill in more details about your item")
-                hText("Start searching for the item relevant to your claim")
-                    .foregroundColor(hTextColor.Translucent.secondary)
+                if let modalTitle = vm.modalTitle {
+                    hText(modalTitle)
+                }
+                if let modalSubtitle = vm.modalSubtitle {
+                    hText(modalSubtitle)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
             }
         }
         .multilineTextAlignment(.center)
@@ -166,7 +176,14 @@ struct FormFieldSearchView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     return FormFieldSearchView(
-        model: .init(id: "id", stepId: "stepId", title: "title", suggestedQuery: "sams"),
+        model: .init(
+            id: "id",
+            stepId: "stepId",
+            title: "title",
+            suggestedQuery: "sams",
+            modalTitle: "Search for your item",
+            modalSubtitle: "Start searching for the item relevant to your claim"
+        ),
         onSelected: { _, _ in }
     )
     .embededInNavigation(tracking: "")

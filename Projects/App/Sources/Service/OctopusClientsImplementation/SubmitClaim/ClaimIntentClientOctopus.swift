@@ -365,6 +365,9 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
         guard let type = fragment.type.value?.asType else {
             throw ClaimIntentError.unknownField
         }
+        let searchData: ClaimIntentStepContentForm.SearchData? = fragment.searchData.map {
+            .init(suggestedQuery: $0.suggestedQuery, modalTitle: $0.modalTitle, modalSubtitle: $0.modalSubtitle)
+        }
         self.init(
             defaultValues: fragment.defaultValues,
             id: fragment.id,
@@ -374,7 +377,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             options: fragment.options?
                 .map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl) } ?? [],
             suffix: fragment.suffix,
-            suggestedQuery: fragment.suggestedQuery,
+            searchData: searchData,
             title: fragment.title,
             type: type
         )
