@@ -88,7 +88,7 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
 #Preview {
     Dependencies.shared.add(module: Module { DateService() })
     struct MockExistingStakeHolders: ExistingStakeHolders {
-        func get(contractId: String) -> [StakeHolder] { [] }
+        func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder] { [] }
     }
     return CoInsuredProcessingScreen(
         showSuccessScreen: true,

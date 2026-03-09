@@ -214,8 +214,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                     Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
                 }
             }
-        case .editCoInsured, .editCoOwners:
-            helpCenterVm.editCoInsuredVm.start()
+        case .editCoInsured: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
+        case .editCoOwners: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coOwner)
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts

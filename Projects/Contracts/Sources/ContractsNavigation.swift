@@ -67,9 +67,17 @@ public struct ContractsNavigation<Content: View>: View {
                 onSelectedType: { selectedType in
                     contractsNavigationVm.changeYourInformationContract = nil
                     switch selectedType {
-                    case .coInsured, .coOwners:
+                    case .coInsured:
                         let configContract: StakeHoldersConfig = .init(
                             contract: contract,
+                            stakeHolderType: .coInsured,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                    case .coOwners:
+                        let configContract: StakeHoldersConfig = .init(
+                            contract: contract,
+                            stakeHolderType: .coOwner,
                             fromInfoCard: false
                         )
                         contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)

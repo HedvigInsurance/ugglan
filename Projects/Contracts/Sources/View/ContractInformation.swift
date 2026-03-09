@@ -83,11 +83,14 @@ struct ContractInformationView: View {
                                         if contract.onlyCoInsured() {
                                             let contract: StakeHoldersConfig = .init(
                                                 contract: contract,
-                                                fromInfoCard: false
-                                            )
-                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                        } else {
-                                            contractsNavigationVm.changeYourInformationContract = contract
+                                                stakeHolderType: .coInsured,
+                                                        fromInfoCard: false
+                                                    )
+
+                                                    contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                                } else {
+                                                    contractsNavigationVm.changeYourInformationContract = contract
+
                                         }
                                     }
                                 )
@@ -150,9 +153,12 @@ struct ContractInformationView: View {
                             stakeHolderType: item.stakeHolderType,
                         )
                         .onTapGesture {
-                            if contract.showEditStakeHoldersInfo, item.stakeHolder.terminatesOn == nil {
+                            if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo),
+                                item.stakeHolder.terminatesOn == nil
+                            {
                                 let contract: StakeHoldersConfig = .init(
                                     contract: contract,
+                                    stakeHolderType: item.stakeHolderType,
                                     fromInfoCard: false
                                 )
                                 contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
@@ -161,7 +167,9 @@ struct ContractInformationView: View {
                         .accessibilityAddTraits(.isButton)
                         .accessibilityAddTraits(
                             {
-                                if contract.showEditStakeHoldersInfo && item.stakeHolder.terminatesOn == nil {
+                                if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo)
+                                    && item.stakeHolder.terminatesOn == nil
+                                {
                                     return .isButton
                                 }
                                 return AccessibilityTraits()
@@ -178,19 +186,37 @@ struct ContractInformationView: View {
                 }
             }
 
-            if contract.nbOfMissingCoInsuredWithoutTermination + contract.nbOfMissingCoOwnersWithoutTermination > 0,
-                contract.showEditStakeHoldersInfo
-            {
-                hSection {
-                    CoInsuredInfoView(
-                        text: L10n.contractCoinsuredAddPersonalInfo,
-                        config: .init(contract: contract, fromInfoCard: true)
-                    )
-                    .padding(.bottom, .padding16)
-                    .accessibilityElement(children: .combine)
-                }
+            stakeHolderSection(
+                shouldShow: contract.showEditCoInsuredInfo,
+                missingCount: contract.nbOfMissingCoInsuredWithoutTermination,
+                contract: contract,
+                stakeHolderType: .coInsured,
+            )
+            stakeHolderSection(
+                shouldShow: contract.showEditCoInsuredInfo,
+                missingCount: contract.nbOfMissingCoInsuredWithoutTermination,
+                contract: contract,
+                stakeHolderType: .coOwner,
+            )
+        }
+    }
+
+    @ViewBuilder
+    private func stakeHolderSection(
+        shouldShow: Bool,
+        missingCount: Int,
+        contract: Contract,
+        stakeHolderType: StakeHolderType,
+    ) -> some View {
+        if shouldShow && missingCount > 0 {
+            hSection {
+                CoInsuredInfoView(
+                    config: .init(contract: contract, stakeHolderType: stakeHolderType, fromInfoCard: true)
+                )
+                .padding(.bottom, .padding16)
                 .accessibilityElement(children: .combine)
             }
+            .accessibilityElement(children: .combine)
         }
     }
 
@@ -259,7 +285,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func getAccessoryView(contract: Contract, stakeHolder: StakeHolder) -> some View {
-        if contract.showEditStakeHoldersInfo, stakeHolder.terminatesOn == nil {
+        if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo), stakeHolder.terminatesOn == nil {
             hCoreUIAssets.warningTriangleFilledSmall.view
         } else {
             EmptyView()
@@ -370,18 +396,13 @@ extension StakeHolder {
 public struct CoInsuredInfoView: View {
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
-    let text: String
     let config: StakeHoldersConfig
-    public init(
-        text: String,
-        config: StakeHoldersConfig
-    ) {
-        self.text = text
+    public init(config: StakeHoldersConfig) {
         self.config = config
     }
 
     public var body: some View {
-        InfoCard(text: text, type: .attention)
+        InfoCard(text: config.stakeHolderType.addPersonalInfo, type: .attention)
             .buttons([
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,

@@ -90,8 +90,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
-    public var showEditStakeHoldersInfo: Bool {
-        (supportsCoInsured || supportsCoOwners) && terminationDate == nil
+    public var showEditCoInsuredInfo: Bool {
+        supportsCoInsured && terminationDate == nil
+    }
+
+    public var showEditCoOwnersInfo: Bool {
+        supportsCoOwners && terminationDate == nil
     }
 
     @MainActor
@@ -445,26 +449,35 @@ public struct AvailableAddon: Codable, Hashable, Identifiable, Sendable {
 extension StakeHoldersConfig {
     public init(
         contract: Contract,
+        stakeHolderType: StakeHolderType,
         fromInfoCard: Bool
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
+
+        let (numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
+            switch stakeHolderType {
+            case .coInsured: (contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
+            case .coOwner: (contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
+            }
         self.init(
             id: contract.id,
             stakeHolders: contract.coInsured + contract.coOwners,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-            numberOfMissingStakeHolders: contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners,
-            numberOfMissingStakeHoldersWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination
-                + contract.nbOfMissingCoOwnersWithoutTermination,
+            numberOfMissingStakeHolders: numberOfMissingStakeHolders,
+            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedStakeHolders: store.state.fetchAllStakeHoldersNotInContract(contractId: contract.id),
+            preSelectedStakeHolders: store.state.fetchAllStakeHoldersNotInContract(
+                contractId: contract.id,
+                stakeHolderType: stakeHolderType
+            ),
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
             fromInfoCard: fromInfoCard,
-            stakeHolderType: contract.supportsCoInsured ? .coInsured : .coOwner
+            stakeHolderType: stakeHolderType
         )
     }
 }

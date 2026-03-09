@@ -19,9 +19,17 @@ public struct ContractState: StateProtocol {
         return unique.sorted(by: { $0.id > $1.id })
     }
 
-    public func fetchAllStakeHoldersNotInContract(contractId: String) -> [StakeHolder] {
+    public func fetchAllStakeHoldersNotInContract(
+        contractId: String,
+        stakeHolderType: StakeHolderType,
+    ) -> [StakeHolder] {
         guard let contract = contractForId(contractId) else { return [] }
-        let contractStakeHolders = Set(contract.coInsured + contract.coOwners)
+        let contractStakeHolders =
+            switch stakeHolderType {
+            case .coInsured: Set(contract.coInsured)
+            case .coOwner: Set(contract.coOwners)
+            }
+
         let stakeHoldersNotAdded = allStakeHolders.filter { !contractStakeHolders.contains($0) }
 
         return stakeHoldersNotAdded
@@ -54,8 +62,8 @@ extension ContractState {
 
 @MainActor
 extension ContractStore: ExistingStakeHolders {
-    public func get(contractId: String) -> [StakeHolder] {
-        state.fetchAllStakeHoldersNotInContract(contractId: contractId)
+    public func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder] {
+        state.fetchAllStakeHoldersNotInContract(contractId: contractId, stakeHolderType: stakeHolderType)
     }
 }
 

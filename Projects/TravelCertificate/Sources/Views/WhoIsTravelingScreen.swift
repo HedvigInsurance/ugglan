@@ -44,7 +44,7 @@ struct WhoIsTravelingScreen: View {
                             buttonAction: {
                                 vm.router.dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    travelCertificateNavigationVm.editCoInsuredVm.start()
+                                    travelCertificateNavigationVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
                                 }
                             }
                         )

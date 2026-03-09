@@ -35,7 +35,7 @@ struct HomeBottomScrollView: View {
                     }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
-                        navigationVm.editCoInsuredVm.start(forMissingStakeHolders: true)
+                        navigationVm.editCoInsuredVm.start(stakeHolderType: .coInsured, forMissingStakeHolders: true)
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)

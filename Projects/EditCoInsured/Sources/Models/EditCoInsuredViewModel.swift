@@ -4,7 +4,7 @@ import hCore
 
 @MainActor
 public protocol ExistingStakeHolders {
-    func get(contractId: String) -> [StakeHolder]
+    func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder]
 }
 
 @MainActor
@@ -16,55 +16,60 @@ public class EditCoInsuredViewModel: ObservableObject {
     private let service = EditCoInsuredService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingStakeHolders: ExistingStakeHolders
+    var stakeHolderType: StakeHolderType!
 
     @MainActor
-    public init(
-        existingStakeHolders: ExistingStakeHolders
-    ) {
+    public init(existingStakeHolders: ExistingStakeHolders) {
         self.existingStakeHolders = existingStakeHolders
     }
 
     public func start(
-        fromContract: StakeHoldersConfig? = nil,
+        fromContract: StakeHoldersConfig
+    ) {
+        stakeHolderType = fromContract.stakeHolderType
+        editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+            [fromContract]
+        })
+    }
+
+    public func start(
+        stakeHolderType: StakeHolderType,
         forMissingStakeHolders: Bool = false
     ) {
+        self.stakeHolderType = stakeHolderType
         Task { @MainActor in
             do {
                 let activeContracts = try await service.fetchContracts()
 
-                if let contract = fromContract {
-                    editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                        [contract]
-                    })
-                } else {
-                    let contractsSupportingStakeHolders =
-                        activeContracts
-                        .filter {
-                            $0.showEditStakeHoldersInfo
-                                && ($0.nbOfMissingCoInsuredWithoutTermination > 0
-                                    || $0.nbOfMissingCoOwnersWithoutTermination > 0
-                                    || !forMissingStakeHolders)
-                        }
-                        .compactMap { contract -> StakeHoldersConfig? in
-                            guard let stakeHolderType = contract.stakeHolderType else { return nil }
-                            return StakeHoldersConfig(
-                                contract: contract,
-                                preSelectedStakeHolders: existingStakeHolders.get(contractId: contract.id),
-                                fromInfoCard: true,
-                                stakeHolderType: stakeHolderType
-                            )
-                        }
-                    if contractsSupportingStakeHolders.count > 1 {
-                        editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            contractsSupportingStakeHolders
-                        })
-                    } else if !contractsSupportingStakeHolders.isEmpty {
-                        editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            contractsSupportingStakeHolders
-                        })
-                    } else {  // if empty
-                        throw EditStakeHolderError.missingContracts
+                let contractsSupportingStakeHolders =
+                    activeContracts
+                    .filter {
+                        $0.showEditStakeHoldersInfo
+                            && ($0.nbOfMissingCoInsuredWithoutTermination > 0
+                                || $0.nbOfMissingCoOwnersWithoutTermination > 0
+                                || !forMissingStakeHolders)
                     }
+                    .compactMap { contract in
+                        StakeHoldersConfig(
+                            contract: contract,
+                            preSelectedStakeHolders: existingStakeHolders.get(
+                                contractId: contract.id,
+                                stakeHolderType: stakeHolderType
+                            ),
+                            fromInfoCard: true,
+                            stakeHolderType: stakeHolderType
+                        )
+                    }
+                if contractsSupportingStakeHolders.count > 1 {
+                    editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                        contractsSupportingStakeHolders
+                    })
+                } else if !contractsSupportingStakeHolders.isEmpty {
+                    editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                        contractsSupportingStakeHolders
+                    })
+                } else {  // if empty
+                    throw EditStakeHolderError.missingContracts
                 }
             } catch {
                 editCoInsuredModelError = .init(errorMessage: error.localizedDescription)
@@ -86,19 +91,21 @@ public class EditCoInsuredViewModel: ObservableObject {
                 if contract.upcomingChangedAgreement != nil {
                     return false
                 }
-                return switch contract.stakeHolderType {
+                return switch stakeHolderType {
+                case .none: false
                 case .coInsured: contract.nbOfMissingCoInsuredWithoutTermination > 0
                 case .coOwner: contract.nbOfMissingCoOwnersWithoutTermination > 0
-                case .none: false
                 }
             }
 
             if let missingContract {
-                guard let stakeHolderType = missingContract.stakeHolderType else { return }
                 try await Task.sleep(seconds: 0.4)
                 let missingContractConfig = StakeHoldersConfig(
                     contract: missingContract,
-                    preSelectedStakeHolders: existingStakeHolders.get(contractId: missingContract.id),
+                    preSelectedStakeHolders: existingStakeHolders.get(
+                        contractId: missingContract.id,
+                        stakeHolderType: stakeHolderType
+                    ),
                     fromInfoCard: false,
                     stakeHolderType: stakeHolderType,
                 )
@@ -110,16 +117,6 @@ public class EditCoInsuredViewModel: ObservableObject {
 
 enum EditStakeHolderError: Error {
     case missingContracts
-}
-
-extension Contract {
-    var stakeHolderType: StakeHolderType? {
-        switch true {
-        case supportsCoInsured: .coInsured
-        case supportsCoOwners: .coOwner
-        default: nil
-        }
-    }
 }
 
 extension EditStakeHolderError: LocalizedError {
