@@ -293,7 +293,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         ]
         let filtered =
             query.isEmpty ? allOptions : allOptions.filter { $0.title.localizedCaseInsensitiveContains(query) }
-        return ClaimIntentFormFieldSearchResult(options: filtered, suggestedQuery: nil)
+        return ClaimIntentFormFieldSearchResult(options: filtered, suggestedQuery: "suggested")
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {

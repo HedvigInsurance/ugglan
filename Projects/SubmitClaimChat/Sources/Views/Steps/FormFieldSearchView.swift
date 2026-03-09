@@ -37,6 +37,7 @@ struct FormFieldSearchView: View {
             } else {
                 resultsView
             }
+            suggestionView
         }
         .hFormAlwaysAttachToBottom {
             hSection {
@@ -48,13 +49,12 @@ struct FormFieldSearchView: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(
-            isProcessingError || vm.noResults
+            isProcessingError
                 || vm.searchText.count < 2 ? .center : .top
         )
         .animation(.default, value: vm.searchResults)
         .animation(.default, value: vm.processingState)
         .animation(.default, value: vm.selectedValue)
-        .animation(.default, value: vm.isDebouncing)
         .animation(.default, value: vm.noResults)
         .animation(.default, value: vm.searchSuggestedQuery)
         .animation(.default, value: vm.searchController.searchBar.text)
@@ -98,25 +98,30 @@ struct FormFieldSearchView: View {
                     hText("Try a different word or check your spelling")
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
-                if let suggestedQuery = vm.searchSuggestedQuery {
-                    Button {
-                        vm.searchController.searchBar.text = suggestedQuery
-                    } label: {
-                        HStack(spacing: .padding4) {
-                            hText("Did you mean")
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                            hText(suggestedQuery)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .underline()
-                            hText("?")
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                        }
-                    }
-                }
             }
         }
         .multilineTextAlignment(.center)
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private var suggestionView: some View {
+        if let suggestedQuery = vm.searchSuggestedQuery, !isProcessingLoading {
+            Button {
+                vm.searchController.searchBar.text = suggestedQuery
+            } label: {
+                HStack(spacing: .padding4) {
+                    hText("Did you mean")
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                    hText(suggestedQuery)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .underline()
+                    hText("?")
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
+            }
+            .padding(.top, !vm.searchResults.isEmpty ? .padding8 : 0)
+        }
     }
 
     private var resultsView: some View {
@@ -186,5 +191,6 @@ struct FormFieldSearchView: View {
         ),
         onSelected: { _, _ in }
     )
+    .configureTitle("title")
     .embededInNavigation(tracking: "")
 }

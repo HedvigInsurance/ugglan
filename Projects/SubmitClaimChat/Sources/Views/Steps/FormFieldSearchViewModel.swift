@@ -11,7 +11,6 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     @Published var noResults: Bool = false
     @Published var searchSuggestedQuery: String?
     @Published var selectedValue: SingleSelectValue?
-    @Published var isDebouncing: Bool = false
     @Published var searchText = ""
     private let stepId: String
     private let fieldId: String
@@ -84,7 +83,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
                     self?.searchText = value
                     if value.count > 1 {
                         self?.noResults = false
-                        self?.isDebouncing = true
+                        self?.searchSuggestedQuery = nil
                     } else {
                         self?.searchResults = []
                     }
@@ -95,7 +94,6 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
             .filter({ $0.count > 1 })
             .sink { [weak self] query in
                 guard let self else { return }
-                self.isDebouncing = false
                 Task { [weak self] in
                     await self?.performSearch(query: query)
                 }
