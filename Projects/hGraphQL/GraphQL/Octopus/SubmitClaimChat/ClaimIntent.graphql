@@ -125,7 +125,11 @@ fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormFi
         imageUrl
     }
     defaultValues
-    suggestedQuery
+    searchData {
+        suggestedQuery
+        modalTitle
+        modalSubtitle
+    }
     minValue
     maxValue
 }
