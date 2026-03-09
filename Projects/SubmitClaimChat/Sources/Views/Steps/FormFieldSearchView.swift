@@ -140,8 +140,14 @@ struct FormFieldSearchView: View {
                                         .resizable()
                                         .fade(duration: 0.1)
                                         .aspectRatio(contentMode: .fit)
-                                        .frame(maxHeight: 46)
+                                        .frame(width: 38, height: 38)
+                                        .padding(.padding4)
+                                        .background(Color.white)
                                         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: .cornerRadiusXS)
+                                                .stroke(hBorderColor.primary, lineWidth: 1)
+                                        }
                                 }
                                 .frame(width: 46)
                             }
@@ -162,7 +168,14 @@ struct FormFieldSearchView: View {
                     .withChevronAccessory
                     .hRowContentAlignment(.center)
                 }
+                .overlay {
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
+                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
             }
+            .sectionContainerStyle(.negative)
         }
     }
 
@@ -185,7 +198,7 @@ struct FormFieldSearchView: View {
             id: "id",
             stepId: "stepId",
             title: "title",
-            suggestedQuery: "sams",
+            suggestedQuery: "iph",
             modalTitle: "Search for your item",
             modalSubtitle: "Start searching for the item relevant to your claim"
         ),
