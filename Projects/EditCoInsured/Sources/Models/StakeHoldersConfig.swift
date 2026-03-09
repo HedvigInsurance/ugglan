@@ -2,12 +2,12 @@ import Foundation
 import hCore
 
 public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, Sendable {
-    public var id: String
+    public let id: String
     public var stakeHolders: [StakeHolder]
-    public var contractId: String
-    public var activeFrom: String?
-    public var numberOfMissingStakeHolders: Int
-    public var numberOfMissingStakeHoldersWithoutTermination: Int
+    public let contractId: String
+    public let activeFrom: String?
+    public let numberOfMissingStakeHolders: Int
+    public let numberOfMissingStakeHoldersWithoutTermination: Int
     public let displayName: String
     public let exposureDisplayName: String?
     public let preSelectedStakeHolders: [StakeHolder]
@@ -18,8 +18,8 @@ public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, 
     public var holderFullName: String {
         holderFirstName + " " + holderLastName
     }
-    public var stakeHolderType: StakeHolderType
-    public var fromInfoCard: Bool
+    public let stakeHolderType: StakeHolderType
+    public let fromInfoCard: Bool
 
     public init(stakeHolderType: StakeHolderType) {
         stakeHolders = []
