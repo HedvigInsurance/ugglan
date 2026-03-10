@@ -287,8 +287,8 @@ public let testMultipleContractsChangeAddonInput = ChangeAddonInput(
 
 public let testAddonBanner = AddonBanner(
     contractIds: ["contractId"],
-    titleDisplayName: "Travel Plus",
-    descriptionDisplayName: "Extended travel insurance with extra coverage",
+    displayTitle: "Travel Plus",
+    displayDescription: "Extended travel insurance with extra coverage",
     badges: ["Popular"],
     addonType: .travelPlus
 )

@@ -79,8 +79,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
         [
             AddonBanner(
                 contractIds: [],
-                titleDisplayName: "Travel Plus",
-                descriptionDisplayName:
+                displayTitle: "Travel Plus",
+                displayDescription:
                     "Extended travel insurance with extra coverage for your travels",
                 badges: ["Popular"],
                 addonType: .travelPlus

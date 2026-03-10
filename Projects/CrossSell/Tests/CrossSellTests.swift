@@ -52,8 +52,8 @@ final class CrossSellTests: XCTestCase {
         let addonBanner = [
             AddonBanner(
                 contractIds: ["contractId"],
-                titleDisplayName: "title",
-                descriptionDisplayName: "description",
+                displayTitle: "title",
+                displayDescription: "description",
                 badges: [],
                 addonType: .travelPlus
             )

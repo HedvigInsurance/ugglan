@@ -12,11 +12,11 @@ struct AddonProcessingScreen: View {
             successViewTitle: L10n.addonFlowSuccessTitle,
             successViewBody: L10n.addonFlowSuccessSubtitle(vm.offer.quote.activationDate.displayDateDDMMMYYYYFormat),
             successViewButtonAction: { navigationVm.router.dismiss(withDismissingAll: true) },
-            state: $vm.submittingAddonsViewState
+            state: $vm.submittingState
         )
         .hStateViewButtonConfig(errorButtons)
         .onDeinit { [weak vm] in
-            if vm?.submittingAddonsViewState == .success {
+            if vm?.submittingState == .success {
                 Task { NotificationCenter.default.post(name: .addonsChanged, object: nil) }
             }
         }

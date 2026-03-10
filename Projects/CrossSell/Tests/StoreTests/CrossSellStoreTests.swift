@@ -120,8 +120,8 @@ extension AddonBanner {
     fileprivate static let getDefault = [
         AddonBanner(
             contractIds: ["contractId"],
-            titleDisplayName: "display name",
-            descriptionDisplayName: "description",
+            displayTitle: "display name",
+            displayDescription: "description",
             badges: [],
             addonType: .carPlus,
 

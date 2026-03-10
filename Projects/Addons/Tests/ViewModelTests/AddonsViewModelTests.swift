@@ -45,7 +45,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         await model.submitAddons()
 
-        assert(model.submittingAddonsViewState == .success)
+        assert(model.submittingState == .success)
     }
 
     func testSubmitAddonsFailure() async throws {
@@ -61,7 +61,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         await model.submitAddons()
 
-        assert(model.submittingAddonsViewState == .error(errorMessage: AddonsError.submitError.localizedDescription))
+        assert(model.submittingState == .error(errorMessage: AddonsError.submitError.localizedDescription))
     }
 
     // MARK: - Addon offer cost tests

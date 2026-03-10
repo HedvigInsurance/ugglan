@@ -19,7 +19,7 @@ public struct AddonCardView: View {
             hRow {
                 VStack(alignment: .leading, spacing: .padding8) {
                     HStack {
-                        hText(addon.titleDisplayName)
+                        hText(addon.displayTitle)
                             .accessibilityRemoveTraits(.isButton)
                             .accessibilityAddTraits(.isStaticText)
                         Spacer()
@@ -28,7 +28,7 @@ public struct AddonCardView: View {
                                 .hFieldSize(.small)
                         }
                     }
-                    hText(addon.descriptionDisplayName, style: .label)
+                    hText(addon.displayDescription, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
 
                     seePriceButton
@@ -67,8 +67,8 @@ public struct AddonCardView: View {
             openAddon: {},
             addon: .init(
                 contractIds: [""],
-                titleDisplayName: "Travel Plus",
-                descriptionDisplayName: "Extended travel insurance with extra coverage for your travels",
+                displayTitle: "Travel Plus",
+                displayDescription: "Extended travel insurance with extra coverage for your travels",
                 badges: ["Popular"],
                 addonType: .travelPlus
             )

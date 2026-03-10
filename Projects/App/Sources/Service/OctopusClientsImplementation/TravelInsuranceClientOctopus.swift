@@ -78,8 +78,8 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 if let bannerData, !bannerData.contractIds.isEmpty {
                     .init(
                         contractIds: bannerData.contractIds,
-                        titleDisplayName: bannerData.displayTitleName,
-                        descriptionDisplayName: bannerData.descriptionDisplayName,
+                        displayTitle: bannerData.displayTitleName,
+                        displayDescription: bannerData.descriptionDisplayName,
                         badges: bannerData.badges,
                         addonType: .travelPlus
                     )

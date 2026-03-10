@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct RemoveAddonProcessingView: View {
+struct RemoveAddonProcessingScreen: View {
     @EnvironmentObject var navigationVm: RemoveAddonNavigationViewModel
     @ObservedObject var vm: RemoveAddonViewModel
 

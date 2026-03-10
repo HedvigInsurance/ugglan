@@ -5,7 +5,7 @@ import hCoreUI
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
     let addonService = AddonsService()
-    @Published var submittingAddonsViewState: ProcessingState = .loading
+    @Published var submittingState: ProcessingState = .loading
     @Published var addonOfferCost: ItemCost?
     @Published var fetchingCostState: ProcessingState = .success
     @Published private var selectedAddonIds: Set<String> = []
@@ -64,7 +64,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
     func submitAddons() async {
         withAnimation {
-            self.submittingAddonsViewState = .loading
+            self.submittingState = .loading
         }
         do {
             try await addonService.submitAddons(
@@ -73,11 +73,11 @@ public class ChangeAddonViewModel: ObservableObject {
             )
             logAddonEvent()
             withAnimation {
-                self.submittingAddonsViewState = .success
+                self.submittingState = .success
             }
         } catch let exception {
             withAnimation {
-                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+                self.submittingState = .error(errorMessage: exception.localizedDescription)
             }
         }
     }
@@ -183,7 +183,7 @@ extension ChangeAddonViewModel {
             let logInfo = AddonLogInfo(
                 flow: offer.source,
                 type: addon.addonVariant.product,
-                subType: addon.subtype
+                subType: addon.subType
             )
             log.addUserAction(
                 type: .custom,

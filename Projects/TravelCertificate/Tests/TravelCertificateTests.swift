@@ -103,8 +103,8 @@ final class TravelCertificateTests: XCTestCase {
 
         let testBanner = AddonBanner(
             contractIds: ["contractId"],
-            titleDisplayName: "Travel Plus",
-            descriptionDisplayName: "Extended travel insurance with extra coverage",
+            displayTitle: "Travel Plus",
+            displayDescription: "Extended travel insurance with extra coverage",
             badges: ["Popular"],
             addonType: .travelPlus
         )

@@ -116,8 +116,8 @@ class AddonsClientOctopus: AddonsClient {
             .map { banner in
                 AddonBanner(
                     contractIds: banner.contractIds,
-                    titleDisplayName: banner.displayTitleName,
-                    descriptionDisplayName: banner.descriptionDisplayName,
+                    displayTitle: banner.displayTitleName,
+                    displayDescription: banner.descriptionDisplayName,
                     badges: banner.badges,
                     addonType: banner.flow.asAddonType
                 )

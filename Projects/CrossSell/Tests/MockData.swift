@@ -10,8 +10,8 @@ struct MockData {
             [
                 .init(
                     contractIds: ["contractId"],
-                    titleDisplayName: "title",
-                    descriptionDisplayName: "description",
+                    displayTitle: "title",
+                    displayDescription: "description",
                     badges: [],
                     addonType: .travelPlus
                 )

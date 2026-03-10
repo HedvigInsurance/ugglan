@@ -201,7 +201,7 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
     let addonVariant: AddonVariant
 
     /// Addon subtype
-    let subtype: String?
+    let subType: String?
 
     public init(
         id: String,
@@ -218,7 +218,7 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
         self.displayItems = displayItems
         self.cost = cost
         self.addonVariant = addonVariant
-        self.subtype = subType
+        self.subType = subType
     }
 }
 
@@ -240,21 +240,21 @@ public struct AddonContractInfo: Hashable, Sendable {
 
 public struct AddonBanner: Sendable, Equatable, Codable, Hashable {
     public let contractIds: [String]
-    let titleDisplayName: String
-    let descriptionDisplayName: String
+    let displayTitle: String
+    let displayDescription: String
     let badges: [String]
     public let addonType: AddonType
 
     public init(
         contractIds: [String],
-        titleDisplayName: String,
-        descriptionDisplayName: String,
+        displayTitle: String,
+        displayDescription: String,
         badges: [String],
         addonType: AddonType
     ) {
         self.contractIds = contractIds
-        self.titleDisplayName = titleDisplayName
-        self.descriptionDisplayName = descriptionDisplayName
+        self.displayTitle = displayTitle
+        self.displayDescription = displayDescription
         self.badges = badges
         self.addonType = addonType
     }

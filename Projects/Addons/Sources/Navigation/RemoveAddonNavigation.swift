@@ -56,7 +56,7 @@ public struct RemoveAddonNavigation: View {
             presented: $removeAddonNavigationVm.isProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            RemoveAddonProcessingView(vm: removeAddonVm)
+            RemoveAddonProcessingScreen(vm: removeAddonVm)
                 .embededInNavigation(tracking: RemoveAddonTrackingType.processing)
                 .environmentObject(removeAddonNavigationVm)
         }
