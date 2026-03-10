@@ -10,7 +10,7 @@ public struct AddonRemoveOffer: Equatable, Sendable {
     let pageDescription: String
 
     /// Contact info
-    let contractInfo: AddonConfig
+    let contractInfo: AddonContractInfo
 
     /// Current agreement total cost.
     let currentTotalCost: ItemCost
@@ -30,7 +30,7 @@ public struct AddonRemoveOffer: Equatable, Sendable {
     public init(
         pageTitle: String,
         pageDescription: String,
-        contractInfo: AddonConfig,
+        contractInfo: AddonContractInfo,
         currentTotalCost: ItemCost,
         baseCost: ItemCost,
         productVariant: ProductVariant,
@@ -50,10 +50,10 @@ public struct AddonRemoveOffer: Equatable, Sendable {
 
 public struct RemoveAddonInput: Identifiable, Equatable {
     public var id: String { contractInfo.contractId }
-    public let contractInfo: AddonConfig
+    public let contractInfo: AddonContractInfo
     public let preselectedAddons: Set<String>
 
-    public init(contractInfo: AddonConfig, preselectedAddons: Set<String>) {
+    public init(contractInfo: AddonContractInfo, preselectedAddons: Set<String>) {
         self.contractInfo = contractInfo
         self.preselectedAddons = preselectedAddons
     }

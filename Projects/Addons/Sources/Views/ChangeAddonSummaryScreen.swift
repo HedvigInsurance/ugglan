@@ -22,9 +22,9 @@ extension ChangeAddonViewModel {
         let typeOfContract = TypeOfContract(rawValue: offer.quote.productVariant.typeOfContract)
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
-            id: offer.config.contractId,
-            title: offer.config.variantDisplayName,
-            subtitle: offer.config.exposureName,
+            id: offer.contractInfo.contractId,
+            title: offer.contractInfo.displayName,
+            subtitle: offer.contractInfo.exposureName,
             premium: getPremium(),
             documentSection: .init(
                 documents: documents,

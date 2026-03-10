@@ -21,7 +21,7 @@ final class AddonsServiceTests: XCTestCase {
         sut = mockService
 
         let respondedAddonData = try await mockService.getAddonOffer(
-            config: testAddonConfig,
+            contractInfo: testAddonContractInfo,
             source: .insurances
         )
 
@@ -36,7 +36,7 @@ final class AddonsServiceTests: XCTestCase {
         sut = mockService
 
         let respondedAddonData = try await mockService.getAddonOffer(
-            config: testAddonConfig,
+            contractInfo: testAddonContractInfo,
             source: .insurances
         )
 
@@ -59,7 +59,7 @@ final class AddonsServiceTests: XCTestCase {
         sut = mockService
 
         let respondedOffer = try await mockService.getAddonRemoveOffer(
-            config: .init(contractId: "cId", exposureName: "eName", variantDisplayName: "dName")
+            contractInfo: .init(contractId: "cId", displayName: "dName", exposureName: "eName")
         )
 
         assert(respondedOffer == testRemoveOffer)

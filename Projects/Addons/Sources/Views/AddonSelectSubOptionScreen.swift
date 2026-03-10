@@ -97,8 +97,8 @@ struct AddonSelectSubOptionScreen: View {
             changeAddonNavigationVm: .init(
                 input: .init(
                     addonSource: .insurances,
-                    contractConfigs: [
-                        .init(contractId: "contractId", exposureName: "exposure", variantDisplayName: "displayName")
+                    contractInfos: [
+                        .init(contractId: "contractId", displayName: "displayName", exposureName: "exposure")
                     ]
                 )
             )

@@ -23,7 +23,7 @@ extension RemoveAddonViewModel {
 
         let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
             id: removeOffer.contractInfo.contractId,
-            title: removeOffer.contractInfo.variantDisplayName,
+            title: removeOffer.contractInfo.displayName,
             subtitle: removeOffer.contractInfo.exposureName,
             premium: getPremium(),
             documentSection: .init(

@@ -30,11 +30,11 @@ struct MockData {
     }
 }
 
-typealias FetchAddonOffer = (AddonConfig, AddonSource) async throws -> AddonOfferData
+typealias FetchAddonOffer = (AddonContractInfo, AddonSource) async throws -> AddonOfferData
 typealias AddonsSubmit = (String, Set<String>) async throws -> Void
 typealias FetchBanners = (Addons.AddonSource) async throws -> [Addons.AddonBanner]
 typealias FetchAddonOfferCost = (String, Set<String>) async throws -> ItemCost
-typealias FetchAddonRemoveOffer = (AddonConfig) async throws -> AddonRemoveOffer
+typealias FetchAddonRemoveOffer = (AddonContractInfo) async throws -> AddonRemoveOffer
 typealias ConfirmAddonRemoval = (String, Set<String>) async throws -> Void
 typealias FetchAddonRemoveOfferCost = (String, Set<String>) async throws -> ItemCost
 
@@ -77,9 +77,9 @@ class MockAddonsService: AddonsClient {
         self.fetchAddonRemoveOfferCost = fetchAddonRemoveOfferCost
     }
 
-    func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+    func getAddonOffer(contractInfo: AddonContractInfo, source: AddonSource) async throws -> AddonOfferData {
         events.append(.getAddon)
-        return try await fetchAddon(config, source)
+        return try await fetchAddon(contractInfo, source)
     }
 
     func submitAddons(quoteId: String, addonIds: Set<String>) async throws {
@@ -97,9 +97,9 @@ class MockAddonsService: AddonsClient {
         return try await fetchAddonOfferCost(quoteId, addonIds)
     }
 
-    func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+    func getAddonRemoveOffer(contractInfo: AddonContractInfo) async throws -> AddonRemoveOffer {
         events.append(.getAddonRemoveOffer)
-        return try await fetchAddonRemoveOffer(config)
+        return try await fetchAddonRemoveOffer(contractInfo)
     }
 
     func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {

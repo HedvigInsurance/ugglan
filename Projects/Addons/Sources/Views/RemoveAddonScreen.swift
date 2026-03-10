@@ -71,7 +71,7 @@ struct RemoveAddonScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let contractInfo: AddonConfig = .init(contractId: "1", exposureName: "exposure", variantDisplayName: "title")
+    let contractInfo: AddonContractInfo = .init(contractId: "1", displayName: "title", exposureName: "exposure")
     let offer = AddonRemoveOfferWithSelectedItems(offer: testRemoveOffer, preselectedAddons: .init(), cost: nil)
     let navigationViewModel = RemoveAddonNavigationViewModel(offer)
     return RemoveAddonScreen(.init(offer))

@@ -165,10 +165,10 @@ class PushNotificationHandler {
                     throw AddonsError.missingContracts
                 }
 
-                let addonConfigs = addonContracts.map(\.asAddonConfig)
+                let contractInfos = addonContracts.map(\.asAddonContractInfo)
                 viewModel?.isAddonPresented = .init(
                     addonSource: .deeplink,
-                    contractConfigs: addonConfigs
+                    contractInfos: contractInfos
                 )
             }
         } catch {

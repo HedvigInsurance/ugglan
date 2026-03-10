@@ -10,12 +10,12 @@ public struct AddonSelectInsuranceScreen: View {
         self.vm = vm
     }
 
-    private var itemPickerConfig: ItemConfig<AddonConfig> {
+    private var itemPickerConfig: ItemConfig<AddonContractInfo> {
         .init(
             items: {
-                let addonContractConfigs = vm.navigationVm.input.contractConfigs ?? []
+                let addonContractConfigs = vm.navigationVm.input.contractInfos ?? []
                 let items = addonContractConfigs.map {
-                    (object: $0, displayName: ItemModel(title: $0.variantDisplayName, subTitle: $0.exposureName))
+                    (object: $0, displayName: ItemModel(title: $0.displayName, subTitle: $0.exposureName))
                 }
                 return items
             }(),
@@ -23,7 +23,7 @@ public struct AddonSelectInsuranceScreen: View {
             onSelected: { selected in
                 if let selectedConfig = selected.first?.0 {
                     vm.selectedItems = selected.compactMap(\.0)
-                    vm.getAddonOffer(config: selectedConfig)
+                    vm.getAddonOffer(contractInfo: selectedConfig)
                 }
             },
             buttonText: L10n.generalContinueButton
@@ -54,7 +54,7 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
     fileprivate let navigationVm: ChangeAddonNavigationViewModel
 
     @Published var processingState = ProcessingState.success
-    @Published var selectedItems: [AddonConfig] = []
+    @Published var selectedItems: [AddonContractInfo] = []
     @Published var deflect: AddonDeflect?
 
     init(_ navigationVm: ChangeAddonNavigationViewModel) {
@@ -66,14 +66,14 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
         navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
     }
 
-    func getAddonOffer(config: AddonConfig) {
+    func getAddonOffer(contractInfo: AddonContractInfo) {
         Task { [weak self] in
             do {
                 guard let source = self?.navigationVm.input.addonSource, let service = self?.service else { return }
 
                 withAnimation { self?.processingState = .loading }
 
-                let data = try await service.getAddonOffer(config: config, source: source)
+                let data = try await service.getAddonOffer(contractInfo: contractInfo, source: source)
 
                 withAnimation { self?.processingState = .success }
                 switch data {
@@ -95,9 +95,9 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
             ChangeAddonNavigationViewModel(
                 input: .init(
                     addonSource: .insurances,
-                    contractConfigs: [
-                        .init(contractId: "1", exposureName: "1", variantDisplayName: "1"),
-                        .init(contractId: "2", exposureName: "2", variantDisplayName: "2"),
+                    contractInfos: [
+                        .init(contractId: "1", displayName: "1", exposureName: "1"),
+                        .init(contractId: "2", displayName: "2", exposureName: "2"),
                     ]
                 )
             )

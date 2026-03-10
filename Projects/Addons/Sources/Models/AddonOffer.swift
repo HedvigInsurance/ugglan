@@ -6,7 +6,7 @@ import hCore
 public struct AddonOffer: Equatable, Sendable, Identifiable {
     public let id: UUID = UUID()
 
-    let config: AddonConfig
+    let contractInfo: AddonContractInfo
     let source: AddonSource
 
     /// Title to show in offer page.
@@ -33,7 +33,7 @@ public struct AddonOffer: Equatable, Sendable, Identifiable {
     let whatsIncludedPageDescription: String
 
     public init(
-        config: AddonConfig,
+        contractInfo: AddonContractInfo,
         source: AddonSource,
         pageTitle: String,
         pageDescription: String,
@@ -43,7 +43,7 @@ public struct AddonOffer: Equatable, Sendable, Identifiable {
         whatsIncludedPageTitle: String,
         whatsIncludedPageDescription: String,
     ) {
-        self.config = config
+        self.contractInfo = contractInfo
         self.source = source
         self.pageTitle = pageTitle
         self.pageDescription = pageDescription
@@ -222,19 +222,19 @@ public struct AddonOfferQuote: Equatable, Sendable, Identifiable, Hashable {
     }
 }
 
-public struct AddonConfig: Hashable, Sendable {
+public struct AddonContractInfo: Hashable, Sendable {
     public let contractId: String
+    let displayName: String
     let exposureName: String
-    let variantDisplayName: String
 
     public init(
         contractId: String,
-        exposureName: String,
-        variantDisplayName: String
+        displayName: String,
+        exposureName: String
     ) {
         self.contractId = contractId
+        self.displayName = displayName
         self.exposureName = exposureName
-        self.variantDisplayName = variantDisplayName
     }
 }
 

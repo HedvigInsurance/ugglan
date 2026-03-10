@@ -6,16 +6,16 @@ import hCoreUI
 public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
     public let id: String = UUID().uuidString
 
-    public let contractConfigs: [AddonConfig]?
+    public let contractInfos: [AddonContractInfo]?
     let addonSource: AddonSource
     public let preselectedAddonTitle: String?
     public init(
         addonSource: AddonSource,
-        contractConfigs: [AddonConfig]? = nil,
+        contractInfos: [AddonContractInfo]? = nil,
         preselectedAddonTitle: String? = nil
     ) {
         self.addonSource = addonSource
-        self.contractConfigs = contractConfigs
+        self.contractInfos = contractInfos
         self.preselectedAddonTitle = preselectedAddonTitle
     }
 }
@@ -82,7 +82,7 @@ struct ChangeAddonNavigation: View {
             options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
-            let multipleContracts = changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1
+            let multipleContracts = changeAddonNavigationVm.input.contractInfos?.count ?? 0 > 1
             Group {
                 if multipleContracts {
                     AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))

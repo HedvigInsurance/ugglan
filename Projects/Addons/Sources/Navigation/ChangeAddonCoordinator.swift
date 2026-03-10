@@ -21,9 +21,9 @@ private struct ChangeAddonCoordinator: ViewModifier {
             }
             .detent(item: $deflect) { DeflectView(deflect: $0) }
             .onChange(of: input) { input in
-                guard let input, let configs = input.contractConfigs else { return }
+                guard let input, let contractInfos = input.contractInfos else { return }
 
-                if configs.count > 1 {
+                if contractInfos.count > 1 {
                     multipleContractsInput = input
                     self.input = nil
                     return
@@ -31,8 +31,11 @@ private struct ChangeAddonCoordinator: ViewModifier {
 
                 Task {
                     do {
-                        if let config = configs.first {
-                            let data = try await service.getAddonOffer(config: config, source: input.addonSource)
+                        if let contractInfo = contractInfos.first {
+                            let data = try await service.getAddonOffer(
+                                contractInfo: contractInfo,
+                                source: input.addonSource
+                            )
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 self.input = nil
                                 switch data {

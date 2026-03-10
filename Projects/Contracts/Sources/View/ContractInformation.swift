@@ -193,7 +193,7 @@ struct ContractInformationView: View {
         withAnimation(.easeInOut(duration: 0.2)) {
             contractsNavigationVm.isAddonPresented = .init(
                 addonSource: .insurances,
-                contractConfigs: [contract.asAddonConfig],
+                contractInfos: [contract.asAddonContractInfo],
                 preselectedAddonTitle: addonDisplayName
             )
         }
@@ -397,11 +397,11 @@ public struct CoInsuredInfoView: View {
 }
 
 extension Contract {
-    public var asAddonConfig: AddonConfig {
+    public var asAddonContractInfo: AddonContractInfo {
         .init(
             contractId: id,
-            exposureName: exposureDisplayNameShort,
-            variantDisplayName: currentAgreement?.productVariant.displayName ?? ""
+            displayName: currentAgreement?.productVariant.displayName ?? "",
+            exposureName: exposureDisplayNameShort
         )
     }
 }

@@ -116,12 +116,12 @@ struct AddonActionSheet: View {
         case .upgrade:
             contractsNavigationVm.isAddonPresented = .init(
                 addonSource: .insurances,
-                contractConfigs: [addonAction.contract.asAddonConfig],
+                contractInfos: [addonAction.contract.asAddonContractInfo],
                 preselectedAddonTitle: addonAction.displayName
             )
         case .removal:
             contractsNavigationVm.isRemoveAddonPresented = .init(
-                contractInfo: addonAction.contract.asAddonConfig,
+                contractInfo: addonAction.contract.asAddonContractInfo,
                 preselectedAddons: [addonAction.displayName]
             )
         case nil:

@@ -92,7 +92,7 @@ public struct ContractsNavigation<Content: View>: View {
                         break
                     case .removeAddons:
                         contractsNavigationVm.isRemoveAddonPresented = .init(
-                            contractInfo: contract.asAddonConfig,
+                            contractInfo: contract.asAddonContractInfo,
                             preselectedAddons: []
                         )
                     }

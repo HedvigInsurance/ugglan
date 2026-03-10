@@ -6,8 +6,8 @@ import hGraphQL
 class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
-    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
-        let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: config.contractId)
+    public func getAddonOffer(contractInfo: AddonContractInfo, source: AddonSource) async throws -> AddonOfferData {
+        let mutation = OctopusGraphQL.AddonGenerateOfferMutation(contractId: contractInfo.contractId)
         let response = try await octopus.client.mutation(mutation: mutation)
 
         guard let result = response?.addonGenerateOffer else {
@@ -21,7 +21,7 @@ class AddonsClientOctopus: AddonsClient {
         if let deflect = result.asAddonOfferDeflect {
             return .deflect(
                 .init(
-                    contractId: config.contractId,
+                    contractId: contractInfo.contractId,
                     pageTitle: deflect.pageTitle,
                     pageDescription: deflect.pageDescription,
                     type: deflect.type.asDeflectType
@@ -38,7 +38,7 @@ class AddonsClientOctopus: AddonsClient {
 
         return .offer(
             .init(
-                config: config,
+                contractInfo: contractInfo,
                 source: source,
                 pageTitle: addonOffer.pageTitle,
                 pageDescription: addonOffer.pageDescription,
@@ -72,8 +72,8 @@ class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
-        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: config.contractId)
+    public func getAddonRemoveOffer(contractInfo: AddonContractInfo) async throws -> AddonRemoveOffer {
+        let query = OctopusGraphQL.AddonRemoveStartQuery(contractId: contractInfo.contractId)
         let response = try await octopus.client.fetch(query: query)
 
         let result = response.addonRemoveStart
@@ -89,7 +89,7 @@ class AddonsClientOctopus: AddonsClient {
         return AddonRemoveOffer(
             pageTitle: offer.pageTitle,
             pageDescription: offer.pageDescription,
-            contractInfo: config,
+            contractInfo: contractInfo,
             currentTotalCost: ItemCost(fragment: offer.currentTotalCost.fragments.itemCostFragment),
             baseCost: ItemCost(fragment: offer.baseCost.fragments.itemCostFragment),
             productVariant: ProductVariant(data: offer.productVariant.fragments.productVariantFragment),

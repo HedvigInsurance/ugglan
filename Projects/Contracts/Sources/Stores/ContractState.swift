@@ -65,9 +65,9 @@ extension ContractStore: ExistingCoInsured {
 }
 
 extension ContractStore {
-    public func getAddonConfigsFor(contractIds ids: [String]) -> [AddonConfig] {
+    public func getAddonContractInfosFor(contractIds ids: [String]) -> [AddonContractInfo] {
         ids
             .compactMap { state.contractForId($0) }
-            .map(\.asAddonConfig)
+            .map(\.asAddonContractInfo)
     }
 }

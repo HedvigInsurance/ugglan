@@ -4,7 +4,7 @@ import hCore
 public class AddonsClientDemo: AddonsClient {
     let offer: AddonOffer
 
-    public func getAddonOffer(config: AddonConfig, source: AddonSource) async throws -> AddonOfferData {
+    public func getAddonOffer(contractInfo: AddonContractInfo, source: AddonSource) async throws -> AddonOfferData {
         await delay(TimeInterval.random(in: 0.5...1.5))
         return .offer(offer)
     }
@@ -40,7 +40,7 @@ public class AddonsClientDemo: AddonsClient {
         []
     }
 
-    public func getAddonRemoveOffer(config: AddonConfig) async throws -> AddonRemoveOffer {
+    public func getAddonRemoveOffer(contractInfo: AddonContractInfo) async throws -> AddonRemoveOffer {
         await delay(TimeInterval.random(in: 0.5...1.5))
         return testRemoveOffer
     }

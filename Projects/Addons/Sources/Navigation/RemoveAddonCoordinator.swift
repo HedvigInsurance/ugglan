@@ -19,7 +19,7 @@ private struct RemoveAddonCoordinator: ViewModifier {
                 if let input = input {
                     Task {
                         do {
-                            let data = try await service.getAddonRemoveOffer(config: input.contractInfo)
+                            let data = try await service.getAddonRemoveOffer(contractInfo: input.contractInfo)
                             let selectedAddons = data.removableAddons.filter {
                                 input.preselectedAddons.contains($0.displayTitle)
                             }

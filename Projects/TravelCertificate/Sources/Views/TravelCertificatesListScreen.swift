@@ -93,10 +93,10 @@ public struct TravelCertificatesListScreen: View {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let addonConfigs = contractStore.getAddonConfigsFor(contractIds: banner.contractIds)
+                    let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
                         addonSource: .travelCertificates,
-                        contractConfigs: addonConfigs
+                        contractInfos: contractInfos
                     )
                 },
                 addon: banner
