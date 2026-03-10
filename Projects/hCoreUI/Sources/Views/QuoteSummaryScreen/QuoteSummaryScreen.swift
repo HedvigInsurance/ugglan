@@ -138,6 +138,7 @@ private struct ContractCardView: View {
                         .padding(.top, .padding16)
                 }
             )
+            .hAccessibilityWithoutCombinedElements
             .hCardWithoutSpacing
             .hCardBackgroundColor(.light)
         }
