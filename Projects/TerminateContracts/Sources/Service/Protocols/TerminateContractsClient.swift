@@ -22,6 +22,10 @@ public protocol TerminateContractsClient {
         terminationContext: String
     ) async throws -> TerminateStepResponse
 
+    func skipOfferStep(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse
+
     func getNotification(
         contractId: String,
         date: Date
@@ -48,6 +52,7 @@ public enum TerminationContractStep: Equatable, Sendable {
     case setSuccessStep(model: TerminationFlowSuccessNextModel)
     case setFailedStep(model: TerminationFlowFailedNextModel)
     case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)
+    case setOfferStep(model: TerminationFlowOfferStepModel)
     case openTerminationUpdateAppScreen
 }
 
