@@ -303,6 +303,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add co-owner information for your vacation home";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
+"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Change information about co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
 "CONTRACT_EDIT_INFO_LABEL" = "Edit your insurance";
 "CONTRACT_FIRST_NAME" = "First name";
@@ -494,6 +495,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "You can't change the payment method at the moment. Please contact us to get help.";
+"KIVRA_PAYMENT_INFO" = "The invoice is sent out 14 days before due date each month to your Kivra inbox.";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";

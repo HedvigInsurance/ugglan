@@ -46,14 +46,14 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
         func infoText(for dueDate: String) -> String? {
             switch self {
             case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
-            case .kivra: "The invoice is sent out 14 days before due date each month to your kivra inbox"
+            case .kivra: L10n.kivraPaymentInfo
             default: nil
             }
         }
         var infoText: String? {
             switch self {
             case .trustly: L10n.paymentsPaymentDetailsInfoDescription
-            case .kivra: "The invoice is sent out 14 days before due date each month to your kivra inbox"
+            case .kivra: L10n.kivraPaymentInfo
             default: nil
             }
         }

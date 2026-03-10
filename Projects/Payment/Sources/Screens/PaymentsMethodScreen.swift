@@ -18,7 +18,7 @@ struct PaymentMethodScreen: View {
                 hSection {
                     InfoCard(
                         text:
-                            "You cannot change your payment method at this time. Please contact us for further assistance.",
+                            L10n.kivraPaymentInfo,
                         type: .info
                     )
                     .buttons(
