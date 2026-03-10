@@ -74,7 +74,8 @@ final class PaymentServiceTests: XCTestCase {
                 bankName: "displayName",
                 account: "descriptor",
                 mandate: "mandate",
-                chargingDayInTheMonth: 27
+                chargingDayInTheMonth: 27,
+                chargeMethod: .trustly
             )
         )
         let mockService = MockPaymentData.createMockPaymentService(
