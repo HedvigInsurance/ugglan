@@ -66,10 +66,9 @@ class hPaymentClientOctopus: hPaymentClient {
             fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
                 .moneyFragment
         )
-        let paymentChargeData = PaymentChargeData(with: paymentDetailsData)
         let upcomingPayment = PaymentData(
             with: data,
-            paymentChargeData: paymentChargeData,
+            paymentChargeData: paymentDetailsData,
             amountPerReferral: amountPerReferral
         )
         let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
@@ -109,7 +108,7 @@ extension PaymentData {
     // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
-        paymentChargeData: PaymentChargeData?,
+        paymentChargeData: OctopusGraphQL.PaymentInformationQuery.Data,
         amountPerReferral: MonetaryAmount
     ) {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
@@ -126,6 +125,8 @@ extension PaymentData {
             }
             return nil
         }()
+
+        let paymentChargeData = PaymentChargeData(with: paymentChargeData, and: chargeFragment.chargeMethod)
 
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
@@ -171,27 +172,59 @@ extension PaymentData {
                 account: nil,
                 mandate: nil,
                 chargingDayInTheMonth: nil,
-                chargeMethod: .kivra
+                chargeMethod: data.chargeMethod
             ),
             addedToThePayment: []
         )
     }
 }
 
+extension OctopusGraphQL.MemberChargeFragment {
+    var chargeMethod: PaymentChargeData.PaymentChargeMethod {
+        guard let paymentProvider = self.paymentProvider else {
+            return .unknown
+        }
+        let provider = paymentProvider.lowercased()
+        if provider == "kivra" {
+            return .kivra
+        } else if provider.hasPrefix("trustly") {
+            return .trustly
+        } else {
+            return .unknown
+        }
+    }
+}
+
 extension PaymentChargeData {
-    init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
-        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
+    init?(
+        with model: OctopusGraphQL.PaymentInformationQuery.Data,
+        and paymentsChargeMethod: PaymentChargeData.PaymentChargeMethod?
+    ) {
+        guard let paymentsChargeMethod else {
             return nil
         }
+        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
+            self.init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                chargingDayInTheMonth: nil,
+                chargeMethod: paymentsChargeMethod
+            )
+            return
+        }
+
         self.init(
             paymentMethod: chargeMethod.paymentMethod,
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
             chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth,
-            chargeMethod: .kivra
+            chargeMethod: paymentsChargeMethod
         )
     }
+
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod?) {
         guard let chargeMethod = model else {
             return nil
