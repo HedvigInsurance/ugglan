@@ -61,6 +61,15 @@ class TerminateContractsService {
         return response
     }
 
+    func skipOfferStep(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse {
+        log.info("TerminateContractsService: skipOfferStep with context: \(terminationContext)")
+        let response = try await client.skipOfferStep(terminationContext: terminationContext)
+        log.info("TerminateContractsService: skipOfferStep success context: \(response.context)")
+        return response
+    }
+
     func getNotification(
         contractId: String,
         date: Date
