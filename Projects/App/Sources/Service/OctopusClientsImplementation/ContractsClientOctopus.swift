@@ -327,6 +327,7 @@ extension FetchContractsClientOctopus {
     }
 }
 
+@MainActor
 extension ExistingAddon {
     public init(from data: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract.ExistingAddon) {
         self.init(
@@ -335,8 +336,8 @@ extension ExistingAddon {
             description: data.description,
             isRemovable: data.isRemovable,
             isUpgradable: data.isUpgradable,
-            startDate: data.startDate,
-            endDate: data.endDate
+            startDate: data.startDate?.localDateToDate,
+            endDate: data.endDate?.localDateToDate
         )
     }
 
@@ -347,8 +348,8 @@ extension ExistingAddon {
             description: data.description,
             isRemovable: data.isRemovable,
             isUpgradable: data.isUpgradable,
-            startDate: data.startDate,
-            endDate: data.endDate
+            startDate: data.startDate?.localDateToDate,
+            endDate: data.endDate?.localDateToDate
         )
     }
 }

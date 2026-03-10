@@ -369,8 +369,8 @@ public struct ExistingAddon: Codable, Hashable, Identifiable, Sendable {
     public let description: String
     public let isRemovable: Bool
     public let isUpgradable: Bool
-    public let startDate: String?
-    public let endDate: String?
+    public let startDate: Date?
+    public let endDate: Date?
 
     public init(
         id: UUID = UUID(),
@@ -379,8 +379,8 @@ public struct ExistingAddon: Codable, Hashable, Identifiable, Sendable {
         description: String,
         isRemovable: Bool,
         isUpgradable: Bool,
-        startDate: String?,
-        endDate: String?
+        startDate: Date?,
+        endDate: Date?
     ) {
         self.id = id
         self.addonVariant = addonVariant

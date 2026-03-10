@@ -231,17 +231,16 @@ struct ContractInformationView: View {
                         subtitle: existing.description,
                         actionTitle: L10n.contractOverviewAddonIsAdded,
                         buttonType: .secondary,
-                        activationDate: existing.startDate,
-                        terminationDate: existing.endDate,
+                        activationDate: existing.startDate?.displayDateDDMMMYYYYFormat,
+                        terminationDate: existing.endDate?.displayDateDDMMMYYYYFormat,
                         action: {
-                            if existing.endDate == nil {
-                                presentAddonActions(
-                                    contract: contract,
-                                    addon: existing
-                                )
-                            }
+                            presentAddonActions(
+                                contract: contract,
+                                addon: existing
+                            )
                         }
                     )
+                    .disabled(existing.endDate != nil)
                     .hButtonIsLoading(
                         contractsNavigationVm.isRemoveAddonPresented?.preselectedAddons
                             .contains(existing.displayName) == true
