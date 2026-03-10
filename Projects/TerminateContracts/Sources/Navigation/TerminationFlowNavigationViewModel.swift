@@ -111,6 +111,9 @@ class TerminationStepHandler {
         case let .setDeflectAutoCancel(model):
             router.push(TerminationFlowRouterActions.deflectAutoCancel(model: model))
             return (model, nil)
+        case let .setOfferStep(model):
+            router.push(TerminationFlowRouterActions.offerStep(model: model))
+            return (model, nil)
         }
     }
 
@@ -128,6 +131,8 @@ class TerminationStepHandler {
             return .router(action: .surveyStep(model: model))
         case .openTerminationUpdateAppScreen:
             return .final(action: .updateApp)
+        case let .setOfferStep(model):
+            return .router(action: .offerStep(model: model))
         default:
             return .final(action: .fail(model: nil))
         }
@@ -452,6 +457,8 @@ struct TerminationFlowNavigation: View {
                             openDeflectAutoDecom(model: model)
                         case let .deflectAutoCancel(model):
                             openDeflectAutoCancel(model: model)
+                        case let .offerStep(model):
+                            openOfferScreen(model: model)
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -522,6 +529,8 @@ struct TerminationFlowNavigation: View {
                 openDeflectAutoDecom(model: model)
             case let .deflectAutoCancel(model):
                 openDeflectAutoCancel(model: model)
+            case let .offerStep(model):
+                openOfferScreen(model: model)
             }
         case let .final(action):
             switch action {
@@ -592,6 +601,11 @@ struct TerminationFlowNavigation: View {
     }
     private func openDeflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel) -> some View {
         TerminationDeflectAutoCancelScreen(model: model)
+            .withDismissButton()
+    }
+
+    private func openOfferScreen(model: TerminationFlowOfferStepModel) -> some View {
+        TerminationOfferScreen(model: model, navigation: vm)
             .withDismissButton()
     }
 
@@ -694,6 +708,7 @@ public enum TerminationFlowRouterActions: Hashable {
     case surveyStep(model: TerminationFlowSurveyStepModel?)
     case deflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel)
     case deflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel)
+    case offerStep(model: TerminationFlowOfferStepModel)
     case summary
 }
 
@@ -712,6 +727,8 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: TerminationDeflectAutoDecomScreen.self)
         case .deflectAutoCancel:
             return .init(describing: TerminationDeflectAutoCancelScreen.self)
+        case .offerStep:
+            return .init(describing: TerminationOfferScreen.self)
         }
     }
 }
