@@ -1,0 +1,7 @@
+mutation FlowTerminationOfferNext($context: FlowContext!) {
+  flowTerminationOfferNext(context: $context) {
+	  id
+	  ...FlowTerminationFragment
+	  context
+  }
+}

@@ -16,6 +16,7 @@ fragment FlowTerminationFragment on Flow {
 	...FlowTerminationSurveyStepFragment
 	...FlowTerminationCarAutoDecomStepFragment
 	...FlowTerminationCarDeflectAutoCancelStepStep
+	...FlowTerminationOfferStepFragment
   }
   progress {
     clearedSteps
@@ -119,4 +120,13 @@ fragment FlowTerminationSurveyOptionFeedbackFragment on FlowTerminationSurveyOpt
 fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
     displayName
     displayValue
+}
+
+fragment FlowTerminationOfferStepFragment on FlowTerminationOfferStep {
+    id
+    title
+    description
+    buttonTitle
+    skipButtonTitle
+    action
 }
