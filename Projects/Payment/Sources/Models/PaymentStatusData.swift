@@ -20,19 +20,43 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
     let account: String?
     let mandate: String?
     let chargingDayInTheMonth: Int?
+    let chargeMethod: PaymentChargeMethod
 
     public init(
         paymentMethod: String?,
         bankName: String?,
         account: String?,
         mandate: String?,
-        chargingDayInTheMonth: Int?
+        chargingDayInTheMonth: Int?,
+        chargeMethod: PaymentChargeMethod
     ) {
         self.paymentMethod = paymentMethod
         self.bankName = bankName
         self.account = account
         self.mandate = mandate
         self.chargingDayInTheMonth = chargingDayInTheMonth
+        self.chargeMethod = chargeMethod
+    }
+
+    public enum PaymentChargeMethod: Codable, Sendable {
+        case trustly
+        case kivra
+        case unknown
+
+        func infoText(for dueDate: String) -> String? {
+            switch self {
+            case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
+            case .kivra: "The invoice is sent out 14 days before due date each month to your kivra inbox"
+            default: nil
+            }
+        }
+        var infoText: String? {
+            switch self {
+            case .trustly: L10n.paymentsPaymentDetailsInfoDescription
+            case .kivra: "The invoice is sent out 14 days before due date each month to your kivra inbox"
+            default: nil
+            }
+        }
     }
 }
 

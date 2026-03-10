@@ -54,13 +54,13 @@ class hPaymentClientOctopus: hPaymentClient {
     @Inject private var octopus: hOctopus
 
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        let query = OctopusGraphQL.PaymentDataQuery()
-        let data = try await octopus.client.fetch(query: query)
+        // Capture client on MainActor to avoid crossing actor boundary with non-Sendable `hOctopus`
+        let client = octopus.client
 
-        let paymentDetailsQuery = OctopusGraphQL.PaymentInformationQuery()
-        let paymentDetailsData = try await octopus.client.fetch(
-            query: paymentDetailsQuery
-        )
+        async let dataResult = client.fetch(query: OctopusGraphQL.PaymentDataQuery())
+        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentInformationQuery())
+
+        let (data, paymentDetailsData) = try await (dataResult, paymentDetailsResult)
 
         let amountPerReferral = MonetaryAmount(
             fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
@@ -165,7 +165,14 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: nil,
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                chargingDayInTheMonth: nil,
+                chargeMethod: .kivra
+            ),
             addedToThePayment: []
         )
     }
@@ -181,7 +188,8 @@ extension PaymentChargeData {
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
+            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth,
+            chargeMethod: .kivra
         )
     }
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod?) {
@@ -193,7 +201,8 @@ extension PaymentChargeData {
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
+            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth,
+            chargeMethod: .kivra
         )
     }
 }

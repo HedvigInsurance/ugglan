@@ -66,7 +66,8 @@ public class hPaymentClientDemo: hPaymentClient {
                     bankName: "Handelsbanken",
                     account: "****124124",
                     mandate: "Trustly",
-                    chargingDayInTheMonth: 20
+                    chargingDayInTheMonth: 20,
+                    chargeMethod: .trustly
                 ),
                 addedToThePayment: nil
             ),
@@ -141,7 +142,8 @@ public class hPaymentClientDemo: hPaymentClient {
                 bankName: "Connected bank",
                 account: "****1234",
                 mandate: nil,
-                chargingDayInTheMonth: nil
+                chargingDayInTheMonth: nil,
+                chargeMethod: .trustly
             )
         )
     }

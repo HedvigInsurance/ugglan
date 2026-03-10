@@ -59,7 +59,7 @@ struct PaymentDetailsView: View {
         }
         .withHeader(
             title: L10n.PaymentDetails.NavigationBar.title,
-            infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
+            infoButtonDescription: data.paymentChargeData?.chargeMethod.infoText,
             withoutBottomPadding: false
         )
         .sectionContainerStyle(.transparent)
@@ -250,7 +250,8 @@ struct PaymentDetailsView: View {
             bankName: "bank",
             account: "account",
             mandate: "mandate",
-            chargingDayInTheMonth: 20
+            chargingDayInTheMonth: 20,
+            chargeMethod: .trustly
         ),
         addedToThePayment: nil
     )

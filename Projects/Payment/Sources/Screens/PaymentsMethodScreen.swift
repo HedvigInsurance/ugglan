@@ -12,7 +12,28 @@ struct PaymentMethodScreen: View {
                 .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
-            ConnectPaymentBottomView(alwaysShowButton: true)
+            if data.chargeMethod == .trustly {
+                ConnectPaymentBottomView(alwaysShowButton: true)
+            } else if data.chargeMethod == .kivra {
+                hSection {
+                    InfoCard(
+                        text:
+                            "You cannot change your payment method at this time. Please contact us for further assistance.",
+                        type: .info
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: L10n.openChat,
+                                buttonAction: {
+                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                                }
+                            )
+                        ]
+                    )
+                }
+                .sectionContainerStyle(.transparent)
+            }
         }
     }
 }
@@ -25,7 +46,8 @@ struct PaymentMethodScreen: View {
             bankName: "bank name",
             account: "account",
             mandate: "mandate",
-            chargingDayInTheMonth: 26
+            chargingDayInTheMonth: 26,
+            chargeMethod: .trustly
         )
     )
 }
@@ -42,7 +64,7 @@ struct PaymentMethodView: View {
                 infoRow(
                     for: L10n.paymentsPaymentDue,
                     and: L10n.paymentsDueDescription(dueDate),
-                    infoText: L10n.paymentsPaymentDueInfo(dueDate)
+                    infoText: data.chargeMethod.infoText(for: dueDate)
                 )
             }
             regularRow(for: L10n.paymentsAccount, and: data.account)
@@ -68,20 +90,34 @@ struct PaymentMethodView: View {
         }
     }
 
-    private func infoRow(for title: String, and value: String, infoText: String) -> some View {
-        hRow {
-            hText(title)
-            Spacer()
-        }
-        .withCustomAccessory {
-            HStack {
-                hText(value)
-                hCoreUIAssets.infoFilled.view
+    @ViewBuilder
+    private func infoRow(for title: String, and value: String, infoText: String?) -> some View {
+        if let infoText {
+            hRow {
+                hText(title)
+                Spacer()
             }
-            .foregroundColor(hTextColor.Translucent.secondary)
-        }
-        .onTap {
-            self.infoText = infoText
+            .withCustomAccessory {
+                HStack {
+                    hText(value)
+                    hCoreUIAssets.infoFilled.view
+                }
+                .foregroundColor(hTextColor.Translucent.secondary)
+            }
+            .onTap {
+                self.infoText = infoText
+            }
+        } else {
+            hRow {
+                hText(title)
+                Spacer()
+            }
+            .withCustomAccessory {
+                HStack {
+                    hText(value)
+                }
+                .foregroundColor(hTextColor.Translucent.secondary)
+            }
         }
     }
 }
