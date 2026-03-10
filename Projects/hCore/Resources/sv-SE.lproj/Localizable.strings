@@ -221,6 +221,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE" = "";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE" = "";
+"CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND" = "Inga resultat";
+"CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER" = "";
+"CLAIM_CHAT_FIELD_SEARCH_SUGGESTION" = "Menade du ";
+"CLAIM_CHAT_FIELD_SEARCH_TITLE" = "";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
 "CLAIM_CHAT_FILE_UPLOAD_HINT" = "Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Ladda upp filer";
@@ -269,7 +275,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRM_CHANGES_TITLE" = "Godkänn ändringar";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
-"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till ytterligare delägare";
+"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till delägare";
 "CONTRACT_ADD_COINSURED" = "Lägg till medförsäkrad";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiveras %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv till %1$@";
@@ -281,9 +287,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Din försäkring kommer att uppdateras den %1$@.";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Medförsäkrade uppdaterade";
 "CONTRACT_ADD_CONISURED_INFO" = "Lägg till info om medförsäkrad";
-"CONTRACT_ADD_COOWNER_INFO" = "Lägg till info om delägare";
 "CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Du behöver lägga till information för alla delägare för att gå vidare.";
-"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Delägare uppdaterade";
+"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Delägarinformation uppdaterad";
 "CONTRACT_BIRTH_DATE" = "Födelsedatum";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "Vad vill du ändra?";
 "CONTRACT_COINSURED" = "Medförsäkrad";
@@ -294,8 +299,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COINSURED_MISSING_LATER" = "Gör det senare";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Din försäkring kommer att uppdateras och täcker dig + %1$d personer från och med %2$@";
 "CONTRACT_COOWNER" = "Delägare";
-"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "Du måste lägga till information om delägarna";
-"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till mer information om dina delägare för bättre hjälp";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "Du behöver lägga till information om dina delägare";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till information om delägare för ditt fritidshus";
 "CONTRACT_COVERAGE_MORE_INFO" = "Mer information";
 "CONTRACT_EDIT_COINSURED" = "Ändra medförsäkrade";
 "CONTRACT_EDIT_INFO" = "Ändra";
@@ -367,8 +372,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Giltighetstid";
 "Direct_Debit_Connected" = "%1$@/månad - Betalas via autogiro";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Betalsätt saknas";
-"EDIT_COOWNER_SUBTITLE" = "Redigera information för delägare i fritidshus";
-"EDIT_COOWNER_TITLE" = "Ändra medförsäkrade";
+"EDIT_COOWNER_SUBTITLE" = "Ändra information om delägare";
+"EDIT_COOWNER_TITLE" = "Ändra delägare";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "E-post";
 "EMBARK_EXIT_BUTTON" = "Stäng";
