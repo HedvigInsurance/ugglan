@@ -77,13 +77,9 @@ struct FormFieldSearchView: View {
     private var notSearchState: some View {
         hSection {
             VStack(spacing: 0) {
-                if let modalTitle = vm.modalTitle {
-                    hText(modalTitle)
-                }
-                if let modalSubtitle = vm.modalSubtitle {
-                    hText(modalSubtitle)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
+                hText(vm.modalTitle)
+                hText(vm.modalSubtitle)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
         .multilineTextAlignment(.center)

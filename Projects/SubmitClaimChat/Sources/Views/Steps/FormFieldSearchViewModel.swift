@@ -31,15 +31,15 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     }()
 
     let suggestedQuery: String?
-    let modalTitle: String?
-    let modalSubtitle: String?
+    let modalTitle: String
+    let modalSubtitle: String
 
     init(
         stepId: String,
         fieldId: String,
         suggestedQuery: String? = nil,
-        modalTitle: String? = nil,
-        modalSubtitle: String? = nil
+        modalTitle: String,
+        modalSubtitle: String
     ) {
         self.stepId = stepId
         self.fieldId = fieldId
@@ -53,10 +53,11 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         searchText = suggestedQuery ?? ""
     }
 
-    private var didActivate = false
+    // Have this property to trigger this only once.
+    private var didActivateSearchInitially = false
 
     func activateSearch() {
-        if !didActivate {
+        if !didActivateSearchInitially {
             // Activate without animation
             Task { [weak searchController] in
                 if let suggestedQuery, !suggestedQuery.isEmpty {
@@ -72,7 +73,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
                 await delay(0.2)
                 searchController?.searchBar.searchTextField.becomeFirstResponder()
             }
-            didActivate = true
+            didActivateSearchInitially = true
         }
     }
 
