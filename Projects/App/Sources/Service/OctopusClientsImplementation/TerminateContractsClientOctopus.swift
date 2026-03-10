@@ -71,6 +71,15 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         )
     }
 
+    func skipOfferStep(
+        terminationContext: String
+    ) async throws -> TerminateStepResponse {
+        let mutation = OctopusGraphQL.FlowTerminationOfferNextMutation(
+            context: terminationContext
+        )
+        return try await mutation.execute(\.flowTerminationOfferNext.fragments.flowTerminationFragment.currentStep)
+    }
+
     public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         let input = OctopusGraphQL.TerminationFlowNotificationInput(
             contractId: contractId,
@@ -94,6 +103,7 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
             OctopusGraphQL.Objects.FlowTerminationDeletionStep.typename,
             OctopusGraphQL.Objects.FlowTerminationCarAutoDecomStep.typename,
             OctopusGraphQL.Objects.FlowTerminationCarDeflectAutoCancelStep.typename,
+            OctopusGraphQL.Objects.FlowTerminationOfferStep.typename,
         ]
     }
 }
@@ -132,6 +142,8 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
             .flowTerminationCarDeflectAutoCancelStepStep
         {
             return (step: .setDeflectAutoCancel(model: .init(with: step)), progress)
+        } else if let step = asFlowTerminationOfferStep?.fragments.flowTerminationOfferStepFragment {
+            return (step: .setOfferStep(model: .init(with: step)), progress)
         } else {
             return (step: .openTerminationUpdateAppScreen, nil)
         }
@@ -230,6 +242,19 @@ extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: Terminati
     }
 }
 
+extension OctopusGraphQL.FlowTerminationOfferNextMutation.Data: TerminationStepContext {
+    func getContext() -> String {
+        flowTerminationOfferNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationOfferNextMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(flowTerminationOfferNext.progress?.clearedSteps ?? 0)
+            / Float(flowTerminationOfferNext.progress?.totalSteps ?? 0)
+    }
+}
+
 extension TerminationFlowDeflectAutoDecomModel {
     init(with data: OctopusGraphQL.FlowTerminationCarAutoDecomStepFragment) {
         self.init(
@@ -282,6 +307,34 @@ extension TerminationFlowSurveyStepModel {
             options: options,
             subTitleType: .default
         )
+    }
+}
+
+extension TerminationFlowOfferStepModel {
+    init(with data: OctopusGraphQL.FlowTerminationOfferStepFragment) {
+        self.init(
+            title: data.title,
+            description: data.description,
+            buttonTitle: data.buttonTitle,
+            skipButtonTitle: data.skipButtonTitle,
+            action: data.action.asOfferAction
+        )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.FlowTerminationOfferAction> {
+    var asOfferAction: TerminationOfferAction {
+        switch self {
+        case let .case(t):
+            switch t {
+            case .updateAddress:
+                return .updateAddress
+            case .changeTier:
+                return .changeTier
+            }
+        case .unknown:
+            return .updateAddress
+        }
     }
 }
 
