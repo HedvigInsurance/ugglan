@@ -7,7 +7,6 @@ struct MovingFlowConfirmScreen: View {
 
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryViewModel)
-            .hAccessibilityWithoutCombinedElements
     }
 }
 

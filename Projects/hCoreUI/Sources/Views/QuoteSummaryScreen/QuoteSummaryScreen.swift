@@ -123,7 +123,6 @@ private struct ContractCardView: View {
     ) -> some View {
         hSection {
             StatusCard(
-                onSelected: {},
                 mainContent:
                     ContractInformation(
                         title: contract.title,
@@ -133,12 +132,12 @@ private struct ContractCardView: View {
                     ),
                 title: nil,
                 subTitle: nil,
+                accessibilityWithoutCombinedElements: true,
                 bottomComponent: {
                     pricingSummary(for: contract)
                         .padding(.top, .padding16)
                 }
             )
-            .hAccessibilityWithoutCombinedElements
             .hCardWithoutSpacing
             .hCardBackgroundColor(.light)
         }
@@ -161,7 +160,6 @@ private struct ContractCardView: View {
                         QuoteDisplayItemView(displayItem: disocuntItem)
                     }
                 }
-                .accessibilityElement(children: .combine)
                 .hWithoutHorizontalPadding([.row])
             }
 
@@ -382,21 +380,5 @@ private struct PriceSummarySection: View {
         )
 
         return QuoteSummaryScreen(vm: vm)
-    })
-
-private struct EnvironmentHAccessibilityWithoutCombinedElements: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hAccessibilityWithoutCombinedElements: Bool {
-        get { self[EnvironmentHAccessibilityWithoutCombinedElements.self] }
-        set { self[EnvironmentHAccessibilityWithoutCombinedElements.self] = newValue }
     }
-}
-
-extension View {
-    public var hAccessibilityWithoutCombinedElements: some View {
-        self.environment(\.hAccessibilityWithoutCombinedElements, true)
-    }
-}
+)

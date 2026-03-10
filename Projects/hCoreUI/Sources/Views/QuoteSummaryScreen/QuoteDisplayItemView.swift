@@ -22,6 +22,7 @@ public struct QuoteDisplayItemView: View {
         .foregroundColor(hTextColor.Opaque.secondary)
         .hWithoutDivider
         .accessibilityElement(children: .combine)
+        .accessibilityHidden(displayItem.crossDisplayTitle)
     }
 
     @ViewBuilder
