@@ -116,12 +116,12 @@ struct AddonActionSheet: View {
         case .upgrade:
             contractsNavigationVm.isAddonPresented = .init(
                 addonSource: .insurances,
-                contractConfigs: [addonAction.contract.asContractConfig],
+                contractConfigs: [addonAction.contract.asAddonConfig],
                 preselectedAddonTitle: addonAction.displayName
             )
         case .removal:
             contractsNavigationVm.isRemoveAddonPresented = .init(
-                contractInfo: addonAction.contract.asContractConfig,
+                contractInfo: addonAction.contract.asAddonConfig,
                 preselectedAddons: [addonAction.displayName]
             )
         case nil:
@@ -141,6 +141,7 @@ extension Contract {
         id: "1",
         currentAgreement: nil,
         exposureDisplayName: "Bilförsäkring",
+        exposureDisplayNameShort: "Bil",
         masterInceptionDate: nil,
         terminationDate: nil,
         supportsAddressChange: false,

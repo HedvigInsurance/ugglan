@@ -57,6 +57,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             id: "contractId",
             currentAgreement: agreement,
             exposureDisplayName: "Stopvägen 59",
+            exposureDisplayNameShort: "",
             masterInceptionDate: "",
             terminationDate: nil,
             supportsAddressChange: false,

@@ -38,6 +38,7 @@ final class ContractsTests: XCTestCase {
                         addonVariant: []
                     ),
                     exposureDisplayName: "exposure display name",
+                    exposureDisplayNameShort: "exposure display name short",
                     masterInceptionDate: "2024-04-05",
                     terminationDate: nil,
                     supportsAddressChange: true,

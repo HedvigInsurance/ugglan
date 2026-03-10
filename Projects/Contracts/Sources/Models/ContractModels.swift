@@ -10,6 +10,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         id: String,
         currentAgreement: Agreement?,
         exposureDisplayName: String,
+        exposureDisplayNameShort: String,
         masterInceptionDate: String?,
         terminationDate: String?,
         supportsAddressChange: Bool,
@@ -28,6 +29,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.id = id
         self.currentAgreement = currentAgreement
         self.exposureDisplayName = exposureDisplayName
+        self.exposureDisplayNameShort = exposureDisplayNameShort
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
         self.supportsCoInsured = supportsCoInsured
@@ -47,6 +49,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let id: String
     public let currentAgreement: Agreement?
     public let exposureDisplayName: String
+    public let exposureDisplayNameShort: String
     public let masterInceptionDate: String?
     public let terminationDate: String?
     public let supportsAddressChange: Bool
