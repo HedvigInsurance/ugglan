@@ -57,6 +57,7 @@ struct ContractInformationView: View {
 
                             if let currentAgreementCost = contract.currentAgreement?.itemCost {
                                 hRowDivider()
+                                    .hWithoutHorizontalPadding([.divider])
                                     .padding(.horizontal, .padding16)
                                 ItemCostView(itemCost: currentAgreementCost)
                             }
