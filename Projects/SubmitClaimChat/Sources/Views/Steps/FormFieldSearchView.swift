@@ -94,9 +94,7 @@ struct FormFieldSearchView: View {
         hSection {
             VStack(spacing: .padding8) {
                 VStack(spacing: 0) {
-                    hText("No results found")
-                    hText("Try a different word or check your spelling")
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                    hText(L10n.claimChatFieldSearchNothingFound)
                 }
             }
         }
@@ -111,7 +109,7 @@ struct FormFieldSearchView: View {
                 vm.searchController.searchBar.text = suggestedQuery
             } label: {
                 HStack(spacing: .padding4) {
-                    hText("Did you mean")
+                    hText(L10n.claimChatFieldSearchSuggestion)
                         .foregroundColor(hTextColor.Translucent.secondary)
                     hText(suggestedQuery)
                         .foregroundColor(hTextColor.Opaque.primary)
