@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Rensa fält";
 "A11Y_CLOSE" = "Stäng";
+"A11Y_OPTION_NOT_SELECTED" = "Alternativet är inte valt";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pausa";
 /* Play action for a video, an audio recording etc. */
@@ -20,6 +21,8 @@
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
 "ADDON_CAR_PLUS_DISPLAY_NAME" = "Bil Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
+"ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring.\n\nVill du ta bort den behöver du göra det från försäkringen den är kopplad till.";
+"ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE" = "Tillägget är aktivt";
 "ADDON_FLOW_CONFIRMATION_BUTTON" = "Ja, uppgradera mitt skydd";
 "ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@ och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "ADDON_FLOW_CONFIRMATION_TITLE" = "Bekräfta uppgraderat skydd";
@@ -31,7 +34,7 @@
 "ADDON_FLOW_SELECT_BUTTON" = "Välj";
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Antal resdagar";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Välj den försäkring du vill lägga till extra skydd för";
-"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Utöka ditt reseskydd";
+"ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Utöka ditt skydd";
 "ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Välj antalet resdagar som täcks";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Välj antal resdagar";
 "ADDON_FLOW_SUBTITLE" = "För extra trygghet när du reser utomlands";
@@ -43,9 +46,13 @@
 "ADDON_FLOW_SUMMARY_INFO_TEXT" = "Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "ADDON_FLOW_SUMMARY_PRICE_SUBTITLE" = "Läggs på ditt totala månadspris";
 "ADDON_FLOW_TITLE" = "Utöka ditt reseskydd";
+"ADDON_FLOW_TITLE_GENERIC" = "Utöka ditt skydd";
 "ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Reseskydd Plus är vår utökade reseförsäkring som täcker fler händelser under resan.";
 "ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Tilläggsförsäkringen Reseskydd Plus är ett utökat skydd för dig som vill komplettera det grundläggande reseskyddet i din hemförsäkring hos Hedvig.";
 "ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "Vad är Reseskydd Plus?";
+"ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Välj ett alternativ";
+"ADDON_FLOW_UPGRADE_ADDON" = "Utöka skydd";
+"ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "Du kan utöka skyddet för det här tillägget. Det kan tas bort vid förnyelse eller uppsägning av försäkringen.";
 "ADDON_LEARN_MORE_LABEL" = "Se vad som ingår";
 "ADDON_REMOVE_CANCEL_BUTTON" = "Behåll nuvarande skydd";
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Avsluta %1$@";
@@ -214,6 +221,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Dubbelkolla att du fyllt i alla obligatoriska fält";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE" = "";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE" = "";
+"CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND" = "Inga resultat";
+"CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER" = "";
+"CLAIM_CHAT_FIELD_SEARCH_SUGGESTION" = "Menade du ";
+"CLAIM_CHAT_FIELD_SEARCH_TITLE" = "";
 "CLAIM_CHAT_FILE_TITLE" = "Uppladdade filer";
 "CLAIM_CHAT_FILE_UPLOAD_HINT" = "Du kan ladda upp bilder, PDF:er eller andra filer. Ladda bara upp filer som är relevanta för din skadeanmälan.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Ladda upp filer";
@@ -226,10 +239,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_GET_NOTIFIED" = "Bli meddelad";
 "CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "På resa";
 "CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Utanför mitt hem";
-"CLAIM_CHAT_LOCATION_SUBTITLE_ABROAD" = "I Sverige eller utomlands";
 "CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "I bostaden eller på tillhörande tomt";
 "CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "I Sverige eller utomlands";
-"CLAIM_CHAT_LOCATION_SUBTITLE_IN_HOME_COUNTRY" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "T.ex. i förråd, tvättstuga eller på stan";
 "CLAIM_CHAT_OTHER_TITLE" = "Övrig information";
 "CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Vänligen ange telefonnummer ifall vi behöver kontakta dig";
@@ -264,6 +275,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRM_CHANGES_TITLE" = "Godkänn ändringar";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
+"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till delägare";
 "CONTRACT_ADD_COINSURED" = "Lägg till medförsäkrad";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiveras %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv till %1$@";
@@ -275,17 +287,23 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Din försäkring kommer att uppdateras den %1$@.";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Medförsäkrade uppdaterade";
 "CONTRACT_ADD_CONISURED_INFO" = "Lägg till info om medförsäkrad";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Du behöver lägga till information för alla delägare för att gå vidare.";
+"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Delägarinformation uppdaterad";
 "CONTRACT_BIRTH_DATE" = "Födelsedatum";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "Vad vill du ändra?";
 "CONTRACT_COINSURED" = "Medförsäkrad";
 "CONTRACT_COINSURED_ADD_PERSONAL_INFO" = "Du måste lägga till information för dina medförsäkrade";
 "CONTRACT_COINSURED_MISSING_ADD_INFO" = "Lägg till information";
-"CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi saknar information om din medförsäkrade. Lägg till det så snart som möjligt.";
+"CONTRACT_COINSURED_MISSING_INFORMATION_LABEL" = "Vi saknar information om dina medförsäkrade. Lägg till det så snart som möjligt.";
 "CONTRACT_COINSURED_MISSING_INFO_TEXT" = "Lägg till mer information om dina medförsäkrade för bättre hjälp";
 "CONTRACT_COINSURED_MISSING_LATER" = "Gör det senare";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Din försäkring kommer att uppdateras och täcker dig + %1$d personer från och med %2$@";
+"CONTRACT_COOWNER" = "Delägare";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "Du behöver lägga till information om dina delägare";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till information om delägare för ditt fritidshus";
 "CONTRACT_COVERAGE_MORE_INFO" = "Mer information";
 "CONTRACT_EDIT_COINSURED" = "Ändra medförsäkrade";
+"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Ändra information om medförsäkrade";
 "CONTRACT_EDIT_INFO" = "Ändra";
 "CONTRACT_EDIT_INFO_LABEL" = "Ändra din försäkring";
 "CONTRACT_FIRST_NAME" = "Förnamn";
@@ -297,6 +315,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_OVERVIEW_ADDON_IS_ADDED" = "Tillagd";
 "CONTRACT_PERSONAL_IDENTITY" = "Personnummer";
 "CONTRACT_REMOVE_COINSURED_CONFIRMATION" = "Är du säker på att du vill\nta bort medförsäkrade?";
+"CONTRACT_REMOVE_COOWNER_CONFIRMATION" = "Är du säker på att du vill\nta bort delägare?";
 "CONTRACT_SSN_FETCH_INFO" = "Hämta information";
 "CONTRACT_STATUS_ACTIVE_IN_FUTURE" = "Aktiveras %1$@";
 "CONTRACT_STATUS_PENDING" = "Väntar på startdatum";
@@ -354,6 +373,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Giltighetstid";
 "Direct_Debit_Connected" = "%1$@/månad - Betalas via autogiro";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Betalsätt saknas";
+"EDIT_COOWNER_SUBTITLE" = "Ändra information om delägare";
+"EDIT_COOWNER_TITLE" = "Ändra delägare";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "E-post";
 "EMBARK_EXIT_BUTTON" = "Stäng";
@@ -374,7 +395,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL" = "Carport";
 "FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL" = "Friggebod";
 "FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL" = "Garage";
-"FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL" = "Gazebo";
+"FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL" = "Lusthus";
 "FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL" = "Växthus";
 "FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL" = "Gästhus";
 "FIELD_EXTRA_BUIDLINGS_OTHER_LABEL" = "Annat";
@@ -440,6 +461,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Ändra bank eller bankkonto";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Betalning";
+"HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Ändra eller ta bort aktiva tillägg";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Få akut hjälp på din resa";
 "HC_QUICK_ACTIONS_SICK_ABROAD_TITLE" = "Sjuk utomlands";
 "HC_QUICK_ACTIONS_TERMINATION_SUBTITLE" = "Inga bindningstider, säg upp när du vill";
@@ -460,6 +482,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
+"INSURANCE_ADDON_SUBHEADING" = "Tillägg";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "Ställ på bilen hos Transportstyrelsen för att ändra tillbaka till ditt tidigare skydd.";
 "INSURANCE_EVIDENCE.DOCUMENT_TITLE" = "Giltighetsintyg";
 "INSURANCE_EVIDENCE.EMAIL_SENT_DESCRIPTION" = "Giltighetsintyget är nu skickat till din e-post.";
@@ -472,6 +495,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Din försäkring täcker inte";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Vi försöker reparera i första hand, men om din %1$@ skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$li%%** av inköpspriset **%3$@**, alltså **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Värdering";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "";
+"KIVRA_PAYMENT_INFO" = "";
 "LETTER_TO_EIR_SUBJECT" = "Fråga angående skadeanmälan - Fordon reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
@@ -593,7 +618,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_ADDON_CONFIRMATION_BUTTON" = "Ja, ta bort";
 "REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "Den här uppgraderingen börjar gälla %1$@.";
 "REMOVE_ADDON_CONFIRMATION_TITLE" = "";
-"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din valda försäkring";
+"REMOVE_ADDON_DESCRIPTION" = "Den här tilläggsförsäkringen är aktiv och gäller ihop med din försäkring";
+"REMOVE_ADDON_DESCRIPTION_RENEWAL" = "Tilläggsförsäkringen är bunden till din försäkring och kan endast tas bort när din försäkring förnyas eller avslutas.";
 "REMOVE_ADDON_OFFER_PAGE_TITLE" = "Ta bort tillägg";
 /* Your updates will be effective from tomorrow. */
 "REMOVE_ADDON_SUCCESS_SUBTITLE" = "Den här ändringar börjar gälla %@.";

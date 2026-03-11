@@ -61,13 +61,7 @@ struct LoggedInPresentations: ViewModifier {
             ) { changeTierInput in
                 ChangeTierNavigation(input: changeTierInput)
             }
-            .modally(
-                item: $vm.isAddonPresented,
-                options: .constant(.alwaysOpenOnTop),
-                tracking: nil
-            ) { addonInput in
-                ChangeAddonNavigation(input: addonInput)
-            }
+            .handleAddons(input: $vm.isAddonPresented)
             .detent(
                 item: $vm.isAddonErrorPresented,
 

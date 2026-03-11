@@ -51,7 +51,9 @@ class PushNotificationHandler {
         case .CHANGE_TIER:
             handleChangeTierNotification(notification)
         case .ADDON_TRAVEL:
-            Task { await handleTravelAddon() }
+            Task { await handleAddon(type: .travelPlus, contractId: nil) }
+        case .ADDON_CAR_PLUS:
+            Task { await handleAddon(type: .carPlus, contractId: nil) }
         case .OPEN_CLAIM, .CLAIM_CLOSED:
             handleClaimNotification(notification)
         case .INSURANCE_EVIDENCE:
@@ -144,27 +146,29 @@ class PushNotificationHandler {
         }
     }
 
-    func handleTravelAddon() async {
+    func handleAddon(type: AddonBanner.AddonType, contractId: String?) async {
         do {
             let client: FetchContractsClient = Dependencies.shared.resolve()
-            if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
+
+            // take the first one that hast same type
+            if let addonBanner = try await client.getAddonBanners(source: .deeplink)
+                .filter({ $0.addonType == type })
+                .first
+            {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let addonContracts = bannerData.contractIds.compactMap {
+
+                let addonContracts = addonBanner.contractIds.compactMap {
                     contractStore.state.contractForId($0)
                 }
+
                 guard !addonContracts.isEmpty else {
                     throw AddonsError.missingContracts
                 }
-                let addonConfigs: [AddonConfig] = addonContracts.map {
-                    .init(
-                        contractId: $0.id,
-                        exposureName: $0.exposureDisplayName,
-                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                    )
-                }
+
+                let contractInfos = addonContracts.map(\.asAddonContractInfo)
                 viewModel?.isAddonPresented = .init(
                     addonSource: .deeplink,
-                    contractConfigs: addonConfigs
+                    contractInfos: contractInfos
                 )
             }
         } catch {
@@ -259,7 +263,14 @@ class DeepLinkHandler {
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
-            Task { [weak viewModel] in await viewModel?.handleTravelAddon() }
+            Task { [weak viewModel] in
+                await viewModel?.handleAddon(type: .travelPlus, contractId: url.getParameter(property: .contractId))
+            }
+        case .carPlusAddon:
+            Task { [weak viewModel] in
+                await viewModel?.handleAddon(type: .carPlus, contractId: url.getParameter(property: .contractId))
+            }
+
         case .editCoInsured:
             handleEditCoInsured(url: url)
         case .claimDetails:
@@ -495,8 +506,6 @@ struct LoggedInNavigation: View {
                 PDFPreview(document: document)
             case let .changeTier(input):
                 ChangeTierNavigation(input: input)
-            case let .addon(input: input):
-                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -925,8 +934,8 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(addonAdded),
-            name: .addonAdded,
+            selector: #selector(addonsChanged),
+            name: .addonsChanged,
             object: nil
         )
 
@@ -943,14 +952,43 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .claimCreated,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openChangeTier),
+            name: .openChangeTier,
+            object: nil
+        )
     }
 
-    @objc func addonAdded() {
+    @objc func addonsChanged() {
         Task {
             let store: CrossSellStore = globalPresentableStoreContainer.get()
-            await store.sendAsync(.fetchAddonBanner)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            _ = await (
+                store.sendAsync(.fetchAddonBanners),
+                contractStore.sendAsync(.fetchContracts)
+            )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+    }
+
+    @objc func openChangeTier(notification: Notification) {
+        let contractId = notification.object as? String
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            isChangeTierPresented = .init(
+                source: .betterCoverage,
+                contracts: [
+                    .init(
+                        contractId: contractId,
+                        contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: contract.exposureDisplayName
+                    )
+                ]
+
+            )
+        }
     }
 
     @objc func tierChanged() {
@@ -958,7 +996,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             await (
-                crossSellStore.sendAsync(.fetchAddonBanner),
+                crossSellStore.sendAsync(.fetchAddonBanners),
                 contractStore.sendAsync(.fetchContracts)
             )
         }
@@ -1052,8 +1090,8 @@ class LoggedInNavigationViewModel: ObservableObject {
         pushNotificationHandler.handleChangeTier(contractId: contractId)
     }
 
-    func handleTravelAddon() async {
-        await pushNotificationHandler.handleTravelAddon()
+    func handleAddon(type: AddonBanner.AddonType, contractId: String?) async {
+        await pushNotificationHandler.handleAddon(type: type, contractId: contractId)
     }
 
     func handleInsuranceEvidence() {

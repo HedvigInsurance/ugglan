@@ -6,6 +6,8 @@ import hGraphQL
 
 class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
+    @Inject private var addonClient: AddonsClient
+
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
             if let flowSource = source.asGraphQLFlowSource {
@@ -36,21 +38,8 @@ class CrossSellClientOctopus: CrossSellClient {
         return .init(recommended: recommendedCrossSell, others: otherCrossSells, discountAvailable: discountAvailable)
     }
 
-    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
-        let query = OctopusGraphQL.UpsellTravelAddonBannerCrossSellQuery(flow: .case(source.getSource))
-        let data = try await octopus.client.fetch(query: query)
-        let bannerData = data.currentMember.upsellTravelAddonBanner
-
-        if let bannerData, !bannerData.contractIds.isEmpty {
-            return AddonBannerModel(
-                contractIds: bannerData.contractIds,
-                titleDisplayName: bannerData.titleDisplayName,
-                descriptionDisplayName: bannerData.descriptionDisplayName,
-                badges: bannerData.badges
-            )
-        } else {
-            throw AddonsError.missingContracts
-        }
+    func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
+        try await addonClient.getAddonBanners(source: source)
     }
 }
 
