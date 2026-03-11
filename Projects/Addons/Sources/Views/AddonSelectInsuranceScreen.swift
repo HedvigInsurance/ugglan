@@ -62,7 +62,7 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
     }
 
     func navigateToAddonLandingScreen(offer: AddonOffer) {
-        navigationVm.changeAddonVm = .init(offer: offer)
+        navigationVm.changeAddonVm = .init(.init(offer: offer, preselectedAddonTitle: nil, cost: nil))
         navigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
     }
 

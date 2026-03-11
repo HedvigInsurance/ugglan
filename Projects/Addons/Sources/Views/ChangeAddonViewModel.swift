@@ -11,19 +11,20 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published private var selectedAddonIds: Set<String> = []
     let offer: AddonOffer
 
-    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
-        self.offer = offer
+    init(_ addonOffer: AddonOfferWithSelectedItems) {
+        offer = addonOffer.offer
         switch offer.quote.addonOfferContent {
         case let .selectable(data):
             if let first = data.quotes.first {
-                self.selectedAddonIds = [first.id]
+                selectedAddonIds = [first.id]
             }
         case let .toggleable(data):
             let preselectedIds = data.quotes
-                .filter { $0.displayTitle == preselectedAddonTitle }
+                .filter { $0.displayTitle == addonOffer.preselectedAddonTitle }
                 .map(\.id)
-            self.selectedAddonIds = Set(preselectedIds)
+            selectedAddonIds = Set(preselectedIds)
         }
+        addonOfferCost = addonOffer.cost
     }
 
     public var selectedAddons: [AddonOfferQuote] {

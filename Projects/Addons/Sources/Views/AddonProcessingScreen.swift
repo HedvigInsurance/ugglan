@@ -37,7 +37,13 @@ struct AddonProcessingScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     return AddonProcessingScreen(
-        vm: .init(offer: testCarOfferNoActive),
+        vm: .init(
+            .init(
+                offer: testCarOfferNoActive,
+                preselectedAddonTitle: nil,
+                cost: nil
+            )
+        ),
         navigationVm: .init()
     )
 }

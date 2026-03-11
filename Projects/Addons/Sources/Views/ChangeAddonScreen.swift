@@ -194,8 +194,9 @@ extension ChangeAddonViewModel {
 private func changeAddonPreview(offer: AddonOffer) -> some View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ChangeAddonScreen(vm: .init(offer: offer))
-        .environmentObject(ChangeAddonNavigationViewModel(offer: offer))
+    let offerInput = AddonOfferWithSelectedItems(offer: offer, preselectedAddonTitle: nil, cost: nil)
+    return ChangeAddonScreen(vm: .init(offerInput))
+        .environmentObject(ChangeAddonNavigationViewModel(offerInput))
 }
 
 #Preview("Travel") { changeAddonPreview(offer: testTravelOfferNoActive) }

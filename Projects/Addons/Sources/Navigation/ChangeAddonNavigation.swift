@@ -55,9 +55,15 @@ class ChangeAddonNavigationViewModel: ObservableObject {
         self.input = input
     }
 
-    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
-        self.input = .init(addonSource: offer.source)
-        changeAddonVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
+    init(_ offerInput: AddonOfferWithSelectedItems) {
+        input = .init(addonSource: offerInput.offer.source)
+        changeAddonVm = .init(
+            .init(
+                offer: offerInput.offer,
+                preselectedAddonTitle: offerInput.preselectedAddonTitle,
+                cost: offerInput.cost
+            )
+        )
     }
 }
 
@@ -72,8 +78,8 @@ struct ChangeAddonNavigation: View {
     init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
     }
-    init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {
-        changeAddonNavigationVm = .init(offer: offer, preselectedAddonTitle: preselectedAddonTitle)
+    init(_ offerInput: AddonOfferWithSelectedItems) {
+        changeAddonNavigationVm = .init(offerInput)
     }
 
     var body: some View {
@@ -87,7 +93,11 @@ struct ChangeAddonNavigation: View {
                 if multipleContracts {
                     AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))
                 } else {
-                    ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
+                    if changeAddonNavigationVm.changeAddonVm?.addonOfferCost != nil {
+                        ChangeAddonSummaryScreen(changeAddonNavigationVm)
+                    } else {
+                        ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
+                    }
                 }
             }
             .withAlertDismiss()

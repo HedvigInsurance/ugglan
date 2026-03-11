@@ -9,15 +9,15 @@ private struct ChangeAddonCoordinator: ViewModifier {
     @Binding fileprivate var input: ChangeAddonInput?
     @Binding fileprivate var options: DetentPresentationOption
 
-    @State private var offerInput: OfferInput?
+    @State private var offerInput: AddonOfferWithSelectedItems?
     @State private var deflect: AddonDeflect?
     @State private var multipleContractsInput: ChangeAddonInput?
 
     public func body(content: Content) -> some View {
         content
             .modally(item: $multipleContractsInput, options: $options) { ChangeAddonNavigation(input: $0) }
-            .modally(item: $offerInput, options: $options) {
-                ChangeAddonNavigation(offer: $0.offer, preselectedAddonTitle: $0.preselectedAddonTitle)
+            .modally(item: $offerInput, options: $options) { offerInput in
+                ChangeAddonNavigation(offerInput)
             }
             .detent(item: $deflect) { DeflectView(deflect: $0) }
             .onChange(of: input) { input in
@@ -36,13 +36,30 @@ private struct ChangeAddonCoordinator: ViewModifier {
                                 contractInfo: contractInfo,
                                 source: input.addonSource
                             )
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                self.input = nil
-                                switch data {
-                                case .deflect(let deflect): self.deflect = deflect
-                                case .offer(let offer): self.offerInput = .init(offer, input.preselectedAddonTitle)
-                                }
+
+                            switch data {
+                            case .deflect(let deflect): self.deflect = deflect
+                            case .offer(let offer):
+                                let cost: ItemCost? = try await {
+                                    if (offer.offeredAddons.count == 1) {
+                                        let cost = try await service.getAddonOfferCost(
+                                            quoteId: offer.quote.quoteId,
+                                            addonIds: Set(offer.offeredAddons.map(\.id))
+                                        )
+                                        return cost
+                                    }
+                                    return nil
+                                }()
+                                print(
+                                    "OFFER \(offer.offeredAddons), preselected is \(input.preselectedAddonTitle ?? "") and cost is \(cost)"
+                                )
+                                self.offerInput = .init(
+                                    offer: offer,
+                                    preselectedAddonTitle: input.preselectedAddonTitle,
+                                    cost: cost
+                                )
                             }
+                            self.input = nil
                         }
                     } catch {
                         self.input = nil
@@ -50,6 +67,15 @@ private struct ChangeAddonCoordinator: ViewModifier {
                     }
                 }
             }
+    }
+}
+
+extension AddonOffer {
+    var offeredAddons: [AddonOfferQuote] {
+        switch self.quote.addonOfferContent {
+        case .selectable(let s): s.quotes
+        case .toggleable(let t): t.quotes
+        }
     }
 }
 

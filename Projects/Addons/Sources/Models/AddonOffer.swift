@@ -311,3 +311,16 @@ struct OfferInput: Equatable, Identifiable {
         self.preselectedAddonTitle = preselectedAddonTitle
     }
 }
+
+public struct AddonOfferWithSelectedItems: Equatable, Identifiable {
+    public let id = UUID().uuidString
+    let offer: AddonOffer
+    let preselectedAddonTitle: String?
+    let cost: ItemCost?
+
+    public init(offer: AddonOffer, preselectedAddonTitle: String?, cost: ItemCost?) {
+        self.offer = offer
+        self.preselectedAddonTitle = preselectedAddonTitle
+        self.cost = cost
+    }
+}
