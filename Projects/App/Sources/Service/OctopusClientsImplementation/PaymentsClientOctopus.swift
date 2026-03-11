@@ -181,30 +181,13 @@ extension PaymentData {
 
 extension OctopusGraphQL.MemberChargeFragment {
     var chargeMethod: PaymentChargeData.PaymentChargeMethod {
-        guard let paymentProvider = self.paymentProvider else {
-            return .unknown
-        }
-        let provider = paymentProvider.lowercased()
-        if provider == "kivra" {
-            return .kivra
-        } else if provider.hasPrefix("trustly") {
-            return .trustly
-        } else {
-            return .unknown
-        }
+        .from(provider: paymentProvider)
     }
 }
 
 extension OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod {
     var paymentChargeMethod: PaymentChargeData.PaymentChargeMethod {
-        let provider = paymentProvider.lowercased()
-        if provider == "kivra" {
-            return .kivra
-        } else if provider.hasPrefix("trustly") {
-            return .trustly
-        } else {
-            return .unknown
-        }
+        .from(provider: paymentProvider)
     }
 }
 

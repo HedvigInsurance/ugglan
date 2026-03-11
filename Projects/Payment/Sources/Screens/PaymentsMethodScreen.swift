@@ -92,32 +92,26 @@ struct PaymentMethodView: View {
 
     @ViewBuilder
     private func infoRow(for title: String, and value: String, infoText: String?) -> some View {
-        if let infoText {
-            hRow {
-                hText(title)
-                Spacer()
-            }
-            .withCustomAccessory {
-                HStack {
-                    hText(value)
+        let row = hRow {
+            hText(title)
+            Spacer()
+        }
+        .withCustomAccessory {
+            HStack {
+                hText(value)
+                if infoText != nil {
                     hCoreUIAssets.infoFilled.view
                 }
-                .foregroundColor(hTextColor.Translucent.secondary)
             }
-            .onTap {
+            .foregroundColor(hTextColor.Translucent.secondary)
+        }
+
+        if let infoText {
+            row.onTap {
                 self.infoText = infoText
             }
         } else {
-            hRow {
-                hText(title)
-                Spacer()
-            }
-            .withCustomAccessory {
-                HStack {
-                    hText(value)
-                }
-                .foregroundColor(hTextColor.Translucent.secondary)
-            }
+            row
         }
     }
 }

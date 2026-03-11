@@ -43,6 +43,17 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
         case kivra
         case unknown
 
+        public static func from(provider: String?) -> PaymentChargeMethod {
+            guard let provider = provider?.lowercased() else { return .unknown }
+            if provider == "kivra" {
+                return .kivra
+            } else if provider.hasPrefix("trustly") {
+                return .trustly
+            } else {
+                return .unknown
+            }
+        }
+
         func infoText(for dueDate: String) -> String? {
             switch self {
             case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
