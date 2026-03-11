@@ -235,6 +235,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
+        case .removeAddons: break  // TODO:
         }
     }
 

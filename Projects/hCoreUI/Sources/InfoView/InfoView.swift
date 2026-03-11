@@ -144,7 +144,7 @@ public struct InfoView: View {
                 }
                 hButton(
                     .large,
-                    .ghost,
+                    .secondary,
                     content: .init(title: closeButtonTitle),
                     {
                         vm.vc?.dismiss(animated: true)

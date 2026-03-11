@@ -221,6 +221,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
 "CLAIM_CHAT_EDIT_TITLE" = "Previous answers will be reset";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Make sure you fill in all the required fields";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE" = "Start searching for the item relevant to your claim";
+"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE" = "Fill in more details about your item";
+"CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND" = "No results";
+"CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER" = "Search for your item...";
+"CLAIM_CHAT_FIELD_SEARCH_SUGGESTION" = "Did you mean ";
+"CLAIM_CHAT_FIELD_SEARCH_TITLE" = "Search for your item";
 "CLAIM_CHAT_FILE_TITLE" = "Uploaded files";
 "CLAIM_CHAT_FILE_UPLOAD_HINT" = "You can upload images, PDFs or other files. Only include files that are relevant to your claim.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Send files";
@@ -269,7 +275,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRM_CHANGES_TITLE" = "Confirm changes";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
-"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add additional co-owner";
+"CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add co-owner";
 "CONTRACT_ADD_COINSURED" = "Add co-insured";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Activates %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Active until %1$@";
@@ -281,9 +287,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Your insurance will be updated starting from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Co-insured updated";
 "CONTRACT_ADD_CONISURED_INFO" = "Add info of co-insured";
-"CONTRACT_ADD_COOWNER_INFO" = "Add info of co-owner";
 "CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add information for all co-owners in order to proceed.";
-"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Co-owners updated";
+"CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Co-owner information updated";
 "CONTRACT_BIRTH_DATE" = "Date of birth";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "What do you want to edit?";
 "CONTRACT_COINSURED" = "Co-insured";
@@ -294,10 +299,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COINSURED_MISSING_LATER" = "Do it later";
 "CONTRACT_COINSURED_UPDATE_IN_FUTURE" = "Your insurance will be updated and cover you +%1$d people starting from %2$@";
 "CONTRACT_COOWNER" = "Co-owner";
-"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add personal information to the co-owners";
-"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add more information about your co-owners for better help";
+"CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add information about your co-owners";
+"CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add co-owner information for your vacation home";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
+"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Change information about co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
 "CONTRACT_EDIT_INFO_LABEL" = "Edit your insurance";
 "CONTRACT_FIRST_NAME" = "First name";
@@ -367,7 +373,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Duration";
 "Direct_Debit_Connected" = "%1$@/month - Paying with direct debit";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Payment not connected";
-"EDIT_COOWNER_SUBTITLE" = "Edit information for vacation home co-owners";
+"EDIT_COOWNER_SUBTITLE" = "Add or update co-owner information";
 "EDIT_COOWNER_TITLE" = "Edit co-owners";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "Email";
@@ -489,6 +495,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "You can't change the payment method at the moment. Please contact us to get help.";
+"KIVRA_PAYMENT_INFO" = "The invoice is sent out 14 days before due date each month to your Kivra inbox.";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
