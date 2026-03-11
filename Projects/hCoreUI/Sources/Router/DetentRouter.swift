@@ -31,16 +31,16 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        transitionType: TransitionType? = .detent(style: [.height]),
-        options: Binding<DetentPresentationOption>? = .constant([]),
+        transitionType: TransitionType = .detent(style: [.height]),
+        options: Binding<DetentPresentationOption> = .constant([]),
         onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         modifier(
             DetentSizeModifierModal(
                 item: item,
-                transitionType: transitionType ?? .detent(style: [.height]),
-                options: options ?? .constant([]),
+                transitionType: transitionType,
+                options: options,
                 onUserDismiss: onUserDismiss,
                 content: content
             )

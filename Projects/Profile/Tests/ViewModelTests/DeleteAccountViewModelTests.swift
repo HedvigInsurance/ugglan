@@ -89,6 +89,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                         addonVariant: []
                     ),
                     exposureDisplayName: "display name",
+                    exposureDisplayNameShort: "exposure display name short",
                     masterInceptionDate: "2024-04-17",
                     terminationDate: nil,
                     supportsAddressChange: true,

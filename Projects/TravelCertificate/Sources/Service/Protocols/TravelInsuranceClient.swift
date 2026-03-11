@@ -9,7 +9,7 @@ public protocol TravelInsuranceClient {
     func getList(
         source: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     )
 }
 

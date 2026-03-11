@@ -10,13 +10,14 @@ where MainContent: View, BottomContent: View {
     let bottomComponent: (() -> BottomContent)?
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
     @Environment(\.hCardWithDivider) var withDivider
-    @Environment(\.hAccessibilityWithoutCombinedElements) var accessibilityWithoutCombinedElements
+    let accessibilityWithoutCombinedElements: Bool
 
     public init(
         onSelected: (() -> Void)? = nil,
         mainContent: MainContent? = nil,
         title: String? = nil,
         subTitle: String? = nil,
+        accessibilityWithoutCombinedElements: Bool = false,
         bottomComponent: (() -> BottomContent)?
     ) {
         self.onSelected = onSelected
@@ -24,6 +25,7 @@ where MainContent: View, BottomContent: View {
         self.title = title
         self.subTitle = subTitle
         self.bottomComponent = bottomComponent
+        self.accessibilityWithoutCombinedElements = accessibilityWithoutCombinedElements
     }
 
     public var body: some View {
@@ -74,7 +76,7 @@ where MainContent: View, BottomContent: View {
                 onSelected()
             }
         }
-        .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(onSelected != nil ? .isButton : [])
         .modifier(StatusCardBackgroundModifier())
     }
 }

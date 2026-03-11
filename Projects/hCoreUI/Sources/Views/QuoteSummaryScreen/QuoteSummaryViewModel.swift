@@ -5,42 +5,39 @@ import hCore
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published public var contracts: [ContractInfo]
     @Published public var activationDate: Date?
-    @Published var premium: Premium
     @Published var isConfirmChangesPresented: Bool = false
     @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
 
     public var onConfirmClick: () -> Void
-    let isAddon: Bool
-    let showNoticeCard: Bool
+    let noticeInfo: String?
+    let totalPrice: TotalPrice
 
     public struct ContractInfo: Identifiable, Equatable {
         public var id: String
-        let displayName: String
-        let exposureName: String
+        let title: String
+        let subtitle: String
         public let premium: Premium?
         let displayItems: [QuoteDisplayItem]
         let documentSection: DocumentSection
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
-        let isAddon: Bool
         let priceBreakdownItems: [QuoteDisplayItem]
 
         public init(
             id: String,
-            displayName: String,
-            exposureName: String,
+            title: String,
+            subtitle: String,
             premium: Premium?,
             documentSection: DocumentSection,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
-            isAddon: Bool? = false,
             priceBreakdownItems: [QuoteDisplayItem]
         ) {
             self.id = id
-            self.displayName = displayName
-            self.exposureName = exposureName
+            self.title = title
+            self.subtitle = subtitle
             self.premium = premium
             self.documentSection = documentSection
             self.displayItems = displayItems
@@ -49,7 +46,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.shouldShowDetails =
                 !(documentSection.documents.isEmpty && displayItems.isEmpty
                 && insuranceLimits.isEmpty)
-            self.isAddon = isAddon ?? false
             self.priceBreakdownItems = priceBreakdownItems
         }
 
@@ -72,16 +68,21 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         activationDate: Date?,
-        premium: Premium,
-        isAddon: Bool? = false,
+        noticeInfo: String? = nil,
+        totalPrice: TotalPrice,
         onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
-        self.isAddon = isAddon ?? false
         self.activationDate = activationDate
         self.onConfirmClick = onConfirmClick ?? {}
-        self.premium = premium
-        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
+        self.noticeInfo = noticeInfo
+        self.totalPrice = totalPrice
+    }
+
+    public enum TotalPrice {
+        case comparison(old: MonetaryAmount, new: MonetaryAmount)
+        case change(amount: MonetaryAmount)
+        case none
     }
 }
 

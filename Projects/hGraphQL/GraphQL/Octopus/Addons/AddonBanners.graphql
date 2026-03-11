@@ -1,0 +1,11 @@
+query AddonBanners($flows: [AddonFlow!]!) {
+  currentMember {
+    addonBanners(flows: $flows) {
+      contractIds
+      displayTitleName
+      descriptionDisplayName
+      badges
+      flow
+    }
+  }
+}

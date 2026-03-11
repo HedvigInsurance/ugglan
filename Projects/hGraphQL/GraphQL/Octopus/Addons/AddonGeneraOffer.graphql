@@ -1,0 +1,74 @@
+fragment AddonOfferQuoteFragment on AddonOfferQuote {
+  id
+  displayTitle
+  displayDescription
+  subtype
+  displayItems {
+    displayTitle
+    displayValue
+  }
+  cost {
+    ...ItemCostFragment
+  }
+  addonVariant {
+    ...AddonVariantFragment
+  }
+}
+
+mutation AddonGenerateOffer($contractId: ID!) {
+  addonGenerateOffer(contractId: $contractId) {
+    ... on UserError {
+      message
+    }
+    ... on AddonOffer {
+      pageTitle
+      pageDescription
+      infoMessage
+      quote {
+        quoteId
+        displayTitle
+        displayDescription
+        activationDate
+        addonOffer {
+          ... on AddonOfferSelectable {
+            fieldTitle
+            selectionTitle
+            selectionDescription
+            quotes {
+              ...AddonOfferQuoteFragment
+            }
+          }
+          ... on AddonOfferToggleable {
+            quotes {
+              ...AddonOfferQuoteFragment
+            }
+          }
+        }
+        activeAddons {
+          id
+          cost {
+            ...ItemCostFragment
+          }
+          displayTitle
+          displayDescription
+        }
+        baseQuoteCost {
+          ...ItemCostFragment
+        }
+        productVariant {
+          ...ProductVariantFragment
+        }
+      }
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      whatsIncludedPageTitle
+      whatsIncludedPageDescription
+    }
+    ... on AddonOfferDeflect {
+      pageTitle
+      pageDescription
+      type
+    }
+  }
+}
