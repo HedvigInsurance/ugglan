@@ -89,18 +89,19 @@ public struct TravelCertificatesListScreen: View {
 
     @ViewBuilder
     private var addonView: some View {
-        if let banner = vm.addonBannerModel {
+        if let banner = vm.addonBanner {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let addonConfigs = contractStore.getAddonConfigsFor(contractIds: banner.contractIds)
+                    let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
                         addonSource: .travelCertificates,
-                        contractConfigs: addonConfigs
+                        contractInfos: contractInfos
                     )
                 },
                 addon: banner
             )
+            .hButtonIsLoading(travelCertificateNavigationVm.isAddonPresented != nil)
         }
     }
 
@@ -168,11 +169,11 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
-    @Published var addonBannerModel: AddonBannerModel?
+    @Published var addonBanner: AddonBanner?
     private var addonAddedObserver: NSObjectProtocol?
 
     init() {
-        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonsChanged, object: nil, queue: nil) {
             [weak self] _ in
             Task {
                 await self?.fetchTravelCertificateList()
@@ -198,7 +199,7 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance
-                self.addonBannerModel = banner
+                self.addonBanner = banner
             }
         } catch _ {
             self.error = L10n.General.errorBody

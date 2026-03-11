@@ -139,8 +139,9 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
                     addons: quote.addons.compactMap { .init(with: $0) },
                     costBreakdown: quote.costBreakdown.map({ item in
-                        .init(title: item.displayName, value: item.displayValue)
-                    })
+                        .init(title: item.displayName, value: item.displayValue, isCrossed: item.isCrossed)
+                    }),
+                    info: quote.info
                 )
                 allDeductiblesForX.append(deductible)
             }
@@ -243,7 +244,8 @@ class ChangeTierClientOctopus: ChangeTierClient {
                     displayItems: firstQuote.displayItems,
                     productVariant: firstQuote.productVariant,
                     addons: [],
-                    costBreakdown: []
+                    costBreakdown: [],
+                    info: firstQuote.info
                 )
             }
 

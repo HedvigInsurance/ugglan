@@ -15,15 +15,13 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
             } catch {
                 setError(error.localizedDescription, for: .fetchCrossSell)
             }
-        case .fetchAddonBanner:
+        case .fetchAddonBanners:
             do {
-                let addonBanner = try await crossSellService.getAddonBannerModel(source: .crossSell)
-                if let addonBanner {
-                    send(.setAddonBannerData(addonBanner: addonBanner))
-                }
+                let addonBanners = try await crossSellService.getAddonBanners(source: .crossSell)
+                send(.setAddonBanners(addonBanners: addonBanners))
             } catch {
-                send(.setAddonBannerData(addonBanner: nil))
-                setError(error.localizedDescription, for: .fetchAddonBanner)
+                send(.setAddonBanners(addonBanners: []))
+                setError(error.localizedDescription, for: .fetchAddonBanners)
             }
         case .fetchRecommendedCrossSellId:
             do {
@@ -48,8 +46,8 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         switch action {
         case let .setCrossSells(crossSells):
             newState.crossSells = crossSells
-        case let .setAddonBannerData(addonBanner):
-            newState.addonBanner = addonBanner
+        case let .setAddonBanners(addonBanners):
+            newState.addonBanners = addonBanners
         case let .setHasNewRecommendedCrossSell(hasNew):
             newState.hasNewOffer = hasNew
         case let .setHasSeenRecommendedWith(id):

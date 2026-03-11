@@ -37,7 +37,6 @@ public struct StateView: View {
             .hFormContentPosition(formPosition)
             .hFormAttachToBottom {
                 bottomButtonsView
-                    .padding(.vertical, .padding16)
             }
         } else {
             if buttonConfig != nil, bottomAttachedView == nil {
