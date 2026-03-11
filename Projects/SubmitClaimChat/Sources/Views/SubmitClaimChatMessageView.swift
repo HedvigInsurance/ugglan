@@ -4,17 +4,20 @@ import hCoreUI
 
 struct SubmitClaimChatMessageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    @State private var isRiveAnimating = true
 
     var body: some View {
         VStack(spacing: .padding8) {
             if let text = viewModel.getText() {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
+                        HedvigRiveAnimationView(isAnimating: $isRiveAnimating)
                         RevealTextView(
                             text: text,
                             delay: 1,
                             animate: viewModel.state.animateText,
                             onTextAnimationDone: {
+                                isRiveAnimating = false
                                 viewModel.state.showInput = true
                             }
                         )
