@@ -25,6 +25,7 @@ fragment ContractFragment on Contract {
         ...CoInsuredFragment
         }
       exposureDisplayName
+      exposureDisplayNameShort
       id
       masterInceptionDate
       supportsMoving

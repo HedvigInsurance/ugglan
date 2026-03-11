@@ -164,6 +164,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     public let productVariant: ProductVariant?
     let addons: [Addon]
     let costBreakdown: [DisplayItem]
+    public let info: String?
     public init(
         id: String,
         quoteAmount: MonetaryAmount?,
@@ -174,7 +175,8 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         displayItems: [DisplayItem],
         productVariant: ProductVariant?,
         addons: [Addon],
-        costBreakdown: [DisplayItem]
+        costBreakdown: [DisplayItem],
+        info: String? = nil
     ) {
         self.id = id
         deductableAmount = quoteAmount
@@ -186,6 +188,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         self.productVariant = productVariant
         self.addons = addons
         self.costBreakdown = costBreakdown
+        self.info = info
     }
 
     public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
@@ -193,14 +196,17 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
 
         public init(
             title: String,
-            value: String
+            value: String,
+            isCrossed: Bool = false
         ) {
             self.title = title
             self.value = value
+            self.isCrossed = isCrossed
         }
 
         let title: String
         let value: String
+        let isCrossed: Bool
     }
 
     public struct Addon: Codable, Equatable, Hashable, Sendable {
