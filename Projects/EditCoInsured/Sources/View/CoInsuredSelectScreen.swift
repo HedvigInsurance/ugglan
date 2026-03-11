@@ -48,7 +48,8 @@ struct CoInsuredSelectScreen: View {
                         await intentViewModel.getIntent(
                             contractId: contractId,
                             origin: .coinsuredSelectList,
-                            coInsured: vm.completeList()
+                            coInsured: vm.completeList(),
+                            stakeHolderType: vm.config.stakeHolderType
                         )
                         withAnimation {
                             vm.isLoading = false

@@ -7,6 +7,8 @@ public struct CoInsuredInputButton: View {
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
 
+    private let stakeHolderType: StakeHolderType
+
     init(
         vm: CoInusuredInputViewModel,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -14,6 +16,7 @@ public struct CoInsuredInputButton: View {
         self.vm = vm
         self.editCoInsuredNavigation = editCoInsuredNavigation
         intentViewModel = editCoInsuredNavigation.intentViewModel
+        stakeHolderType = editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType
     }
 
     public var body: some View {
@@ -34,9 +37,7 @@ public struct CoInsuredInputButton: View {
                 } else {
                     CoInsuredActionButton(
                         style: .primary,
-                        title: vm.buttonDisplayText(
-                            for: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType
-                        ),
+                        title: vm.buttonDisplayText(for: stakeHolderType),
                         vm: vm,
                         intentViewModel: intentViewModel,
                         onTap: {
@@ -103,7 +104,8 @@ public struct CoInsuredInputButton: View {
         await editCoInsuredNavigation.intentViewModel.getIntent(
             contractId: vm.contractId,
             origin: .coinsuredInput,
-            coInsured: coInsuredModel
+            coInsured: coInsuredModel,
+            stakeHolderType: stakeHolderType,
         )
 
         if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {

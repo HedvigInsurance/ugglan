@@ -12,7 +12,7 @@ struct MockData {
         fetchPersonalInformation: @escaping FetchPersonalInformation = { _ in
             .init(firstName: "first name", lastName: "last name")
         },
-        submitIntent: @escaping SendIntent = { _, _ in
+        submitIntent: @escaping SendIntent = { _, _, _ in
             .init(
                 activationDate: Date().localDateString,
                 currentTotalCost: .init(gross: .sek(300), net: .sek(200)),
@@ -38,7 +38,7 @@ struct MockData {
 
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = @Sendable (String, [StakeHolder]) async throws -> Intent
+typealias SendIntent = @Sendable (String, [StakeHolder], StakeHolderType) async throws -> Intent
 typealias FetchContracts = () async throws -> [Contract]
 
 class MockEditCoInsuredService: EditCoInsuredClient {
@@ -84,9 +84,13 @@ class MockEditCoInsuredService: EditCoInsuredClient {
         return data
     }
 
-    func sendIntent(contractId: String, coInsured: [StakeHolder]) async throws -> Intent {
+    func sendIntent(
+        contractId: String,
+        coInsured: [StakeHolder],
+        stakeHolderType: StakeHolderType
+    ) async throws -> Intent {
         events.append(.sendIntent)
-        let data = try await submitIntent(contractId, coInsured)
+        let data = try await submitIntent(contractId, coInsured, stakeHolderType)
         return data
     }
 }

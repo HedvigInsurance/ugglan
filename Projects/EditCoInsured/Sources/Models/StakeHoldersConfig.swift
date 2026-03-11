@@ -3,7 +3,7 @@ import hCore
 
 public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, Sendable {
     public let id: String
-    public var stakeHolders: [StakeHolder]
+    public let stakeHolders: [StakeHolder]
     public let contractId: String
     public let activeFrom: String?
     public let numberOfMissingStakeHolders: Int

@@ -138,9 +138,7 @@ extension Contract {
             terminationDate: contract.terminationDate,
             supportsAddressChange: contract.supportsMoving,
             supportsCoInsured: contract.supportsCoInsured,
-            supportsCoOwners:
-                TypeOfContract
-                .resolve(for: contract.currentAgreement.productVariant.typeOfContract) == .seVacationHome,  // TODO: Testing
+            supportsCoOwners: contract.supportsCoOwners,
             supportsTravelCertificate: contract.supportsTravelCertificate,
             supportsChangeTier: contract.supportsChangeTier,
             upcomingChangedAgreement: upcomoingAgreement,
@@ -150,7 +148,7 @@ extension Contract {
             ssn: ssn,
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
-            coOwners: [],  // TODO: fix
+            coOwners: contract.coOwners?.map { .init(data: $0.fragments.coOwnerFragment) } ?? [],
             addonsInfo: addonsInfo,
         )
     }

@@ -10,11 +10,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testUpcomingZeroCurrentOneSuccess() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.testMemberWithSSN5
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(with: .init(stakeHolders: [StakeHolder.testMemberWithSSN5]))
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = []
@@ -23,12 +19,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.testMemberWithSSN5,
-            StakeHolder.testMemberWithSSN4,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.testMemberWithSSN5,
+                StakeHolder.testMemberWithSSN4,
+            ])
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [
@@ -41,14 +37,14 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.mockMissingData(),
+                StakeHolder.mockMissingData(),
+                StakeHolder.mockMissingData(),
+                StakeHolder.mockMissingData(),
+            ])
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = []
@@ -57,33 +53,34 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(
+                stakeHolders: [
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                ],
+                numberOfMissingStakeHoldersWithoutTermination: 4
+            )
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [
             StakeHolder.mockMissingData()
         ]
 
-        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 4
-
         let list = viewModel.completeList()
         XCTAssert(list.count == 3)
     }
 
     func testCurrentTwoWithValuesAddingThreeWithValues() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.testMemberWithSSN4,
-            StakeHolder.testMemberWithSSN5,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.testMemberWithSSN4,
+                StakeHolder.testMemberWithSSN5,
+            ])
+        )
 
         viewModel.stakeHoldersAdded = [
             StakeHolder.testMemberWithSSN1,
@@ -96,16 +93,18 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialWithTwoAdded() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(
+                stakeHolders: [
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                ],
+                numberOfMissingStakeHoldersWithoutTermination: 2
+            )
+        )
 
         viewModel.stakeHoldersAdded = [StakeHolder.testMemberWithSSN1, StakeHolder.testMemberWithSSN2]
         viewModel.stakeHoldersDeleted = []
-        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 2)
@@ -114,17 +113,18 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialWithOneDeleted() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(
+                stakeHolders: [
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                ],
+                numberOfMissingStakeHoldersWithoutTermination: 2
+            )
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [StakeHolder.mockMissingData()]
-
-        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 1)
@@ -132,12 +132,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialAllDeleted() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.mockMissingData(),
+                StakeHolder.mockMissingData(),
+            ])
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [StakeHolder.mockMissingData(), StakeHolder.mockMissingData()]
@@ -147,13 +147,13 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testRemoveOne() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.testMemberWithSSN1,
-            StakeHolder.testMemberWithSSN2,
-            StakeHolder.testMemberWithBirthdate2,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.testMemberWithSSN1,
+                StakeHolder.testMemberWithSSN2,
+                StakeHolder.testMemberWithBirthdate2,
+            ])
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [StakeHolder.testMemberWithBirthdate2]
@@ -163,17 +163,19 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndMissingData() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.testMemberEmptyTerminated,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(
+                stakeHolders: [
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.testMemberEmptyTerminated,
+                ],
+                numberOfMissingStakeHoldersWithoutTermination: 2
+            )
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = [StakeHolder.mockMissingData()]
-        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 1)
@@ -181,13 +183,13 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddedData() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.testMemberWithSSN1,
-            StakeHolder.testMemberWithBirthdate1,
-            StakeHolder.testMemberEmptyTerminated,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(stakeHolders: [
+                StakeHolder.testMemberWithSSN1,
+                StakeHolder.testMemberWithBirthdate1,
+                StakeHolder.testMemberEmptyTerminated,
+            ])
+        )
 
         viewModel.stakeHoldersAdded = []
         viewModel.stakeHoldersDeleted = []
@@ -197,20 +199,22 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddingData() {
-        let viewModel = InsuredPeopleScreenViewModel(stakeHolderType: .coInsured)
-
-        viewModel.config.stakeHolders = [
-            StakeHolder.mockMissingData(),
-            StakeHolder.mockMissingData(),
-            StakeHolder.testMemberEmptyTerminated,
-        ]
+        let viewModel = InsuredPeopleScreenViewModel(
+            with: .init(
+                stakeHolders: [
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.mockMissingData(),
+                    StakeHolder.testMemberEmptyTerminated,
+                ],
+                numberOfMissingStakeHoldersWithoutTermination: 2
+            )
+        )
 
         viewModel.stakeHoldersAdded = [
             StakeHolder.testMemberWithSSN1,
             StakeHolder.testMemberWithBirthdate1,
         ]
         viewModel.stakeHoldersDeleted = []
-        viewModel.config.numberOfMissingStakeHoldersWithoutTermination = 2
 
         let list = viewModel.completeList()
         XCTAssert(list.count == 2)
@@ -299,5 +303,32 @@ extension StakeHolder {
 
     static func mockMissingData() -> StakeHolder {
         StakeHolder()
+    }
+}
+
+@MainActor
+extension StakeHoldersConfig {
+    init(
+        stakeHolders: [StakeHolder],
+        numberOfMissingStakeHoldersWithoutTermination: Int = 0,
+        stakeHolderType: StakeHolderType = .coInsured,
+    ) {
+        self.init(
+            id: "",
+            stakeHolders: stakeHolders,
+            contractId: "",
+            activeFrom: "",
+            numberOfMissingStakeHolders: 0,
+            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
+            displayName: "",
+            exposureDisplayName: "",
+            preSelectedStakeHolders: [],
+            contractDisplayName: "",
+            holderFirstName: "",
+            holderLastName: "",
+            holderSSN: "",
+            fromInfoCard: false,
+            stakeHolderType: stakeHolderType
+        )
     }
 }
