@@ -303,6 +303,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Lägg till information om delägare för ditt fritidshus";
 "CONTRACT_COVERAGE_MORE_INFO" = "Mer information";
 "CONTRACT_EDIT_COINSURED" = "Ändra medförsäkrade";
+"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Ändra information om medförsäkrade";
 "CONTRACT_EDIT_INFO" = "Ändra";
 "CONTRACT_EDIT_INFO_LABEL" = "Ändra din försäkring";
 "CONTRACT_FIRST_NAME" = "Förnamn";
@@ -494,6 +495,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Din försäkring täcker inte";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Vi försöker reparera i första hand, men om din %1$@ skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$li%%** av inköpspriset **%3$@**, alltså **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Värdering";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "";
+"KIVRA_PAYMENT_INFO" = "";
 "LETTER_TO_EIR_SUBJECT" = "Fråga angående skadeanmälan - Fordon reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
