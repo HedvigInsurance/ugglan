@@ -18,7 +18,7 @@ final class AddonsViewModelTests: XCTestCase {
     // MARK: - Selectable (travel) tests
 
     func testSelectableAddonSelection() async throws {
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testTravelOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
@@ -39,7 +39,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testTravelOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
@@ -55,7 +55,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testTravelOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
@@ -73,7 +73,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testTravelOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
@@ -91,7 +91,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         sut = mockService
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testTravelOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
@@ -105,7 +105,7 @@ final class AddonsViewModelTests: XCTestCase {
     // MARK: - Toggleable (car) tests
 
     func testToggleableAddonSelection() async throws {
-        let model = ChangeAddonViewModel(offer: testCarOfferNoActive)
+        let model = ChangeAddonViewModel(.init(offer: testCarOfferNoActive, preselectedAddonTitle: nil, cost: nil))
 
         vm = model
 
