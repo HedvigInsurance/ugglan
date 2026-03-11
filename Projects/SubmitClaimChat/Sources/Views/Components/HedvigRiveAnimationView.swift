@@ -9,48 +9,59 @@ struct HedvigRiveAnimationView: View {
         static let size: CGFloat = 100
     }
 
-    @Binding var isAnimating: Bool
-    @StateObject private var riveViewModel: RiveViewModel
-
-    init(isAnimating: Binding<Bool>) {
-        self._isAnimating = isAnimating
-
-        let model = RiveViewModel(
-            fileName: Constants.lightFileName,
-            animationName: "Idle",
-            autoPlay: false
-        )
-        self._riveViewModel = StateObject(wrappedValue: model)
+    private enum Animation: String {
+        case idle = "Idle"
+        case loading = "Loading"
+        case loadingIntro = "Loading intro"
+        case loadingOutro = "Loading outro"
     }
+
+    @Binding var isAnimating: Bool
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var riveViewModel: RiveViewModel?
+    @State private var animationTask: Task<Void, Error>?
 
     var body: some View {
         Group {
-            riveViewModel.view()
+            if let riveViewModel {
+                riveViewModel.view()
+            } else {
+                Color.clear
+            }
         }
         .frame(width: Constants.size, height: Constants.size)
         .task {
-            print("ANIMATION PLAYED TASK")
-            playAnimations(animating: isAnimating)
+            if riveViewModel == nil {
+                riveViewModel = makeViewModel()
+                playAnimations(animating: isAnimating)
+            }
         }
         .onChange(of: isAnimating) { newValue in
-            print("ANIMATION PLAYED CHANGE")
             playAnimations(animating: newValue)
         }
     }
-    @State var task: Task<(), Error>? = nil
+
     private func playAnimations(animating: Bool) {
-        task?.cancel()
-        task = Task { [weak riveViewModel] in
+        animationTask?.cancel()
+        animationTask = Task { [weak riveViewModel] in
             if animating {
                 await delay(0.1)
-                riveViewModel?.play(animationName: "Loading intro")
+                riveViewModel?.play(animationName: Animation.loadingIntro.rawValue)
                 await delay(1)
                 try Task.checkCancellation()
-                riveViewModel?.play(animationName: "Loading")
+                riveViewModel?.play(animationName: Animation.loading.rawValue)
             } else {
                 riveViewModel?.stop()
-                riveViewModel?.play(animationName: "Loading outro")
+                riveViewModel?.play(animationName: Animation.loadingOutro.rawValue)
             }
         }
+    }
+
+    private func makeViewModel() -> RiveViewModel {
+        RiveViewModel(
+            fileName: colorScheme == .dark ? Constants.darkFileName : Constants.lightFileName,
+            animationName: Animation.idle.rawValue,
+            autoPlay: false
+        )
     }
 }
