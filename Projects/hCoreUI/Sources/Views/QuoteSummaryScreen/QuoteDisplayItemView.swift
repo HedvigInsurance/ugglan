@@ -22,6 +22,7 @@ public struct QuoteDisplayItemView: View {
         .foregroundColor(hTextColor.Opaque.secondary)
         .hWithoutDivider
         .accessibilityElement(children: .combine)
+        .accessibilityHidden(displayItem.crossDisplayTitle)
     }
 
     @ViewBuilder
@@ -29,7 +30,7 @@ public struct QuoteDisplayItemView: View {
         if displayItem.crossDisplayTitle {
             hText(displayItem.displayTitle, style: .label)
                 .strikethrough()
-                .accessibilityLabel(L10n.voiceoverCurrentValue + displayItem.displayTitle)
+                .accessibilityHidden(true)
         } else {
             hText(displayItem.displayTitle, style: .label)
         }
@@ -41,6 +42,7 @@ public struct QuoteDisplayItemView: View {
         if displayItem.crossDisplayTitle {
             hText(displayValue, style: .label)
                 .strikethrough()
+                .accessibilityHidden(true)
         } else {
             hText(displayValue, style: .label)
         }

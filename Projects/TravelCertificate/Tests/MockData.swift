@@ -32,7 +32,7 @@ struct MockData {
 
 typealias FetchSpecifications = () async throws -> [TravelInsuranceContractSpecification]
 typealias Submit = (TravelInsuranceFormDTO) async throws -> URL
-typealias FetchList = () async throws -> ([TravelCertificateModel], Bool, banner: AddonBannerModel?)
+typealias FetchList = () async throws -> ([TravelCertificateModel], Bool, banner: AddonBanner?)
 
 class MockTravelInsuranceService: TravelInsuranceClient {
     var events = [Event]()
@@ -72,7 +72,7 @@ class MockTravelInsuranceService: TravelInsuranceClient {
     func getList(
         source _: AddonSource
     ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
         events.append(.getList)
         let data = try await fetchList()

@@ -22,6 +22,10 @@ extension Premium {
             net: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
         )
     }
+
+    public static var zeroSek: Premium {
+        .init(gross: .sek(0), net: .sek(0))
+    }
 }
 
 extension Premium {
