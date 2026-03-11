@@ -126,9 +126,11 @@ struct ContractInformationView: View {
         let nbOfMissingStakeHolders = contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners
         VStack(spacing: 0) {
             hSection {
-                HStack {
-                    hRow {
-                        insuredField(contract: contract)
+                if contract.supportsCoInsured {
+                    HStack {
+                        hRow {
+                            insuredField(contract: contract)
+                        }
                     }
                 }
 
@@ -142,7 +144,7 @@ struct ContractInformationView: View {
                 )
                 .padding(.top, .padding16)
             }
-
+            let _ = print("SUPPORTS??? \(contract.supportsCoOwners), coowners \(contract.coOwners)")
             hSection(vm.getListToDisplay(contract: contract)) { item in
                 hRow {
                     if item.stakeHolder.hasMissingInfo {
