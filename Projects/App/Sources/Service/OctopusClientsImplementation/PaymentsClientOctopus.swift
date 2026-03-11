@@ -171,7 +171,7 @@ extension PaymentData {
                 bankName: nil,
                 account: nil,
                 mandate: nil,
-                chargingDayInTheMonth: nil,
+                dueDate: nil,
                 chargeMethod: data.chargeMethod
             ),
             addedToThePayment: []
@@ -184,6 +184,19 @@ extension OctopusGraphQL.MemberChargeFragment {
         guard let paymentProvider = self.paymentProvider else {
             return .unknown
         }
+        let provider = paymentProvider.lowercased()
+        if provider == "kivra" {
+            return .kivra
+        } else if provider.hasPrefix("trustly") {
+            return .trustly
+        } else {
+            return .unknown
+        }
+    }
+}
+
+extension OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod {
+    var paymentChargeMethod: PaymentChargeData.PaymentChargeMethod {
         let provider = paymentProvider.lowercased()
         if provider == "kivra" {
             return .kivra
@@ -209,7 +222,7 @@ extension PaymentChargeData {
                 bankName: nil,
                 account: nil,
                 mandate: nil,
-                chargingDayInTheMonth: nil,
+                dueDate: nil,
                 chargeMethod: paymentsChargeMethod
             )
             return
@@ -220,7 +233,7 @@ extension PaymentChargeData {
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth,
+            dueDate: chargeMethod.dueDate,
             chargeMethod: paymentsChargeMethod
         )
     }
@@ -234,8 +247,8 @@ extension PaymentChargeData {
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth,
-            chargeMethod: .kivra
+            dueDate: chargeMethod.dueDate,
+            chargeMethod: chargeMethod.paymentChargeMethod
         )
     }
 }

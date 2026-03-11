@@ -250,7 +250,7 @@ struct PaymentDetailsView: View {
             bankName: "bank",
             account: "account",
             mandate: "mandate",
-            chargingDayInTheMonth: 20,
+            dueDate: 20,
             chargeMethod: .trustly
         ),
         addedToThePayment: nil

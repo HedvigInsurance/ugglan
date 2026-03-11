@@ -19,7 +19,7 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
     let bankName: String?
     let account: String?
     let mandate: String?
-    let chargingDayInTheMonth: Int?
+    let dueDate: Int?
     let chargeMethod: PaymentChargeMethod
 
     public init(
@@ -27,14 +27,14 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
         bankName: String?,
         account: String?,
         mandate: String?,
-        chargingDayInTheMonth: Int?,
+        dueDate: Int?,
         chargeMethod: PaymentChargeMethod
     ) {
         self.paymentMethod = paymentMethod
         self.bankName = bankName
         self.account = account
         self.mandate = mandate
-        self.chargingDayInTheMonth = chargingDayInTheMonth
+        self.dueDate = dueDate
         self.chargeMethod = chargeMethod
     }
 

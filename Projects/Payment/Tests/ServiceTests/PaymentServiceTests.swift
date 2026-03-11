@@ -74,7 +74,7 @@ final class PaymentServiceTests: XCTestCase {
                 bankName: "displayName",
                 account: "descriptor",
                 mandate: "mandate",
-                chargingDayInTheMonth: 27,
+                dueDate: 27,
                 chargeMethod: .trustly
             )
         )
