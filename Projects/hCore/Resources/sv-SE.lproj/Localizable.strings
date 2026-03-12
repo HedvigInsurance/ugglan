@@ -217,6 +217,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Beskriv i text";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
+"CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Ändra svar";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
@@ -255,9 +256,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Bearbetar information, vänligen vänta.";
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
 "CLAIM_CHAT_UNKNOWN_STEP" = "";
-"CLAIM_CHAT_USE_AUDIO" = "Starta röstinspelning";
+"CLAIM_CHAT_USE_AUDIO" = "Spela in med röst";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv med text";
-"CLAIM_DATE_AND_LOCATION_HINT" = "Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Händelsedatum";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Skicka in din skadeanmälan";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "Vilken försäkring gäller det?";
@@ -767,6 +767,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_NOT_SUCCESSFUL_TITLE" = "Uppsägningen misslyckades";
 /* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "Du har redan det bästa skyddet och priset för den här försäkringen";
+"TERMINATION_OFFER_BUTTON_CHANGE_TIER" = "Ändra skyddsnivå";
+"TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS" = "Uppdatera min adress";
+"TERMINATION_OFFER_DESCRIPTION_CHANGE_TIER" = "Du kan ändra din skyddsnivå så att den passar dig bättre istället för att säga upp.";
+"TERMINATION_OFFER_DESCRIPTION_UPDATE_ADDRESS" = "Flyttar du? Du kan uppdatera din adress och behålla din försäkring istället för att säga upp.";
+"TERMINATION_OFFER_SKIP" = "Nej tack, fortsätt uppsägningen";
+"TERMINATION_OFFER_TITLE" = "Innan du säger upp";
 "TERMINATION_Q_01" = "När dras min sista betalning?";
 "TERMINATION_Q_02" = "Kan jag göra en skadeanmälan efter att jag avslutat min försäkring?";
 "TERMINATION_Q_03" = "Hur tecknar jag en Hedvig-försäkring i framtiden?";
