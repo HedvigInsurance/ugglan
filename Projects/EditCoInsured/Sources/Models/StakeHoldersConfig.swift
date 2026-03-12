@@ -81,80 +81,80 @@ public enum StakeHolderType: String, Codable, Equatable, Hashable, Sendable {
 extension StakeHolderType {
     var editTitle: String {
         switch self {
-        case .coInsured, .coOwner: return L10n.coinsuredEditTitle  // TODO: rename in Localize?
+        case .coInsured, .coOwner: L10n.coinsuredEditTitle  // TODO: rename in Localize?
         }
     }
 
     var addButtonTitle: String {
         switch self {
-        case .coInsured: return L10n.contractAddCoinsured
-        case .coOwner: return "Add additional co-owner"  // TODO: Localize
+        case .coInsured: L10n.contractAddCoinsured
+        case .coOwner: L10n.contractAddAdditionalCoowner
         }
     }
 
     var defaultFieldLabel: String {
         switch self {
-        case .coInsured: return L10n.contractCoinsured
-        case .coOwner: return "Co-owner"  // TODO: Localize
+        case .coInsured: L10n.contractCoinsured
+        case .coOwner: L10n.contractCoowner
         }
     }
 
     var addInfoTitle: String {
         switch self {
-        case .coInsured: return L10n.contractAddConisuredInfo
-        case .coOwner: return "Add co-owner information"  // TODO: Localize
+        case .coInsured: L10n.contractAddConisuredInfo
+        case .coOwner: L10n.contractAddCoownerInfo
         }
     }
 
     var removeConfirmationTitle: String {
         switch self {
-        case .coInsured: return L10n.contractRemoveCoinsuredConfirmation
-        case .coOwner: return "Remove co-owner"  // TODO: Localize
+        case .coInsured: L10n.contractRemoveCoinsuredConfirmation
+        case .coOwner: L10n.contractRemoveCoownerConfirmation
         }
     }
 
     var withoutSsnInfo: String {
         switch self {
-        case .coInsured, .coOwner: return L10n.coinsuredWithoutSsnInfo  // TODO: Separate?
+        case .coInsured, .coOwner: L10n.coinsuredWithoutSsnInfo  // TODO: Separate?
         }
     }
 
     var reviewInfo: String {
         switch self {
-        case .coInsured: return L10n.contractAddCoinsuredReviewInfo
-        case .coOwner: return "Please add information for all co-owners in order to proceed."  // TODO: Localize
+        case .coInsured: L10n.contractAddCoinsuredReviewInfo
+        case .coOwner: L10n.contractAddCoownerReviewInfo
         }
     }
 
     var processingText: String {
         switch self {
-        case .coInsured, .coOwner: return L10n.contractAddCoinsuredProcessing  // TODO: separate?
+        case .coInsured, .coOwner: L10n.contractAddCoinsuredProcessing  // TODO: separate?
         }
     }
 
     var updatedTitle: String {
         switch self {
-        case .coInsured: return L10n.contractAddCoinsuredUpdatedTitle
-        case .coOwner: return "Co-owners updated"  // TODO: Localize
+        case .coInsured: L10n.contractAddCoinsuredUpdatedTitle
+        case .coOwner: L10n.contractAddCoownerUpdatedTitle
         }
     }
 
     func updatedLabel(_ date: String) -> String {
         switch self {
-        case .coInsured, .coOwner: return L10n.contractAddCoinsuredUpdatedLabel(date)  // TODO: separate?
+        case .coInsured, .coOwner: L10n.contractAddCoinsuredUpdatedLabel(date)  // TODO: separate?
         }
     }
 
     var missingInformationLabel: String {
         switch self {
-        case .coInsured: return L10n.contractCoinsuredMissingInformationLabel
-        case .coOwner: return "Missing co-owner information"  // TODO: Localize
+        case .coInsured: L10n.contractCoinsuredMissingInformationLabel
+        case .coOwner: L10n.contractCoownersMissingInfoText
         }
     }
 
     var missingAddInfo: String {
         switch self {
-        case .coInsured, .coOwner: return L10n.contractCoinsuredMissingAddInfo  // TODO: separate?
+        case .coInsured, .coOwner: L10n.contractCoinsuredMissingAddInfo  // TODO: separate?
         }
     }
 }

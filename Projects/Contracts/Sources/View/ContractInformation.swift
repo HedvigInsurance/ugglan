@@ -350,7 +350,7 @@ private class ContractsInformationViewModel: ObservableObject {
     func getButtonText(_ contract: Contract) -> String {
         switch true {
         case contract.onlyCoInsured(): L10n.contractEditCoinsured
-        case contract.onlyCoOwners(): "Edit co-owners"  // TODO: Localize
+        case contract.onlyCoOwners(): L10n.editCoownerTitle
         default: L10n.contractEditInfoLabel
         }
     }
