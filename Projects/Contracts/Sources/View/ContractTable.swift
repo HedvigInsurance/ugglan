@@ -12,6 +12,8 @@ struct ContractTable: View {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
+    @State var bottomContentHeights: [String: CGFloat] = [:]
+    @State var cardHeights: [String: CGFloat] = [:]
     @StateObject var vm = ContractTableViewModel()
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
@@ -53,22 +55,7 @@ struct ContractTable: View {
                     CrossSellingView(withHeader: true)
                         .padding(.top, .padding8)
 
-                    if let banner = vm.addonBannerModel {
-                        hSection {
-                            let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
-                            AddonCardView(
-                                openAddon: {
-                                    contractsNavigationVm.isAddonPresented = .init(
-                                        addonSource: .insurances,
-                                        contractConfigs: addonConfigs
-                                    )
-                                },
-                                addon: banner
-                            )
-                        }
-                        .withHeader(title: L10n.insuranceAddonsSubheading)
-                        .sectionContainerStyle(.transparent)
-                    }
+                    addonBannersView
 
                     movingToANewHomeView
                     PresentableStoreLens(
@@ -118,7 +105,7 @@ struct ContractTable: View {
         }
         .onAppear {
             Task {
-                await vm.getAddonBanner()
+                await vm.getAddonBanners()
             }
         }
     }
@@ -131,9 +118,16 @@ struct ContractTable: View {
                     getContractsToShow(for: state)
                 }
             ) { contracts in
-                VStack(spacing: .padding8) {
-                    ForEach(contracts, id: \.id) { contract in
+                VStack(spacing: 0) {
+                    ForEach(Array(contracts.enumerated()), id: \.element.id) { index, contract in
+                        let cumulativeOffset: CGFloat = contracts.prefix(index + 1).dropFirst()
+                            .reduce(0) { sum, c in
+                                let height = cardHeights[c.id] ?? 200
+                                let peek = (bottomContentHeights[c.id] ?? 0)
+                                return sum - (height - peek)
+                            }
                         ContractRow(
+                            cardId: contract.id,
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName
@@ -147,14 +141,60 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
+                        .contractCardTruncate(to: true)
                         .fixedSize(horizontal: false, vertical: true)
+                        .zIndex(Double(-index))
+                        .offset(y: cumulativeOffset)
                         .transition(.slide)
                     }
+                }
+                .padding(
+                    .bottom,
+                    contracts.dropFirst()
+                        .reduce(0) { sum, c in
+                            let height = cardHeights[c.id] ?? 200
+                            let peek = (bottomContentHeights[c.id] ?? 0)
+                            return sum - (height - peek)
+                        }
+                )
+                .onPreferenceChange(ContractRowBottomHeightKey.self) { heights in
+                    bottomContentHeights = heights
+                }
+                .onPreferenceChange(ContractRowCardHeightKey.self) { heights in
+                    cardHeights = heights
                 }
             }
         }
         .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private var addonBannersView: some View {
+        if !vm.addonBanners.isEmpty {
+            hSection {
+                VStack(spacing: .padding8) {
+                    ForEach(vm.addonBanners, id: \.self) { banner in
+                        let contractInfo = store.getAddonContractInfosFor(contractIds: banner.contractIds)
+                        let input = ChangeAddonInput(addonSource: .insurances, contractInfos: contractInfo)
+
+                        AddonCardView(
+                            openAddon: {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    contractsNavigationVm.isAddonPresented = input
+                                }
+                            },
+                            addon: banner
+                        )
+                        .hButtonIsLoading(
+                            contractsNavigationVm.isAddonPresented?.contractInfos == input.contractInfos
+                        )
+                    }
+                }
+            }
+            .withHeader(title: L10n.insuranceAddonsSubheading)
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     @ViewBuilder
@@ -179,6 +219,8 @@ struct ContractTable: View {
                             )
                         ])
                 }
+                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
             }
         }
     }
@@ -190,8 +232,7 @@ public class ContractTableViewModel: ObservableObject {
     @PresentableStore var store: ContractStore
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
-    @Published var addonBannerModel: AddonBannerModel?
-    private var addonAddedObserver: NSObjectProtocol?
+    @Published var addonBanners: [AddonBanner] = []
 
     init() {
         loadingCancellable = store.loadingSignal
@@ -208,36 +249,17 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
-
-        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
-            [weak self] _ in
-            Task {
-                await self?.getAddonBanner()
-            }
-            Task {
-                let store: ContractStore = await globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
-        }
     }
 
-    deinit {
-        Task { @MainActor [weak self] in
-            if let addonAddedObserver = self?.addonAddedObserver {
-                NotificationCenter.default.removeObserver(addonAddedObserver)
-            }
-        }
-    }
-
-    func getAddonBanner() async {
+    func getAddonBanners() async {
         do {
-            let data = try await service.getAddonBannerModel(source: .insurances)
+            let addonBanners = try await service.getAddonBanners(source: .insurances)
             withAnimation {
-                self.addonBannerModel = data
+                self.addonBanners = addonBanners
             }
         } catch {
             withAnimation {
-                self.addonBannerModel = nil
+                self.addonBanners = []
             }
         }
     }

@@ -1,19 +1,19 @@
 import SwiftUI
 
 public struct ContractInformation: View {
-    let displayName: String?
-    let exposureName: String?
+    let title: String?
+    let subtitle: String?
     let pillowImage: Image?
     let status: String?
 
     public init(
-        displayName: String?,
-        exposureName: String?,
+        title: String?,
+        subtitle: String?,
         pillowImage: Image?,
         status: String? = nil
     ) {
-        self.displayName = displayName
-        self.exposureName = exposureName
+        self.title = title
+        self.subtitle = subtitle
         self.pillowImage = pillowImage
         self.status = status
     }
@@ -27,7 +27,7 @@ public struct ContractInformation: View {
             }
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
-                    hText(displayName ?? "", style: .heading1)
+                    hText(title ?? "", style: .heading1)
                     Spacer()
                     if let status {
                         hPill(text: status, color: .grey)
@@ -35,8 +35,8 @@ public struct ContractInformation: View {
                             .transition(.opacity)
                     }
                 }
-                if let exposureName {
-                    hText(exposureName, style: .body1)
+                if let subtitle {
+                    hText(subtitle, style: .body1)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .transition(.opacity)
                 }
@@ -50,15 +50,15 @@ public struct ContractInformation: View {
 #Preview(body: {
     VStack {
         ContractInformation(
-            displayName: "displayName",
-            exposureName: "name",
+            title: "displayName",
+            subtitle: "name",
             pillowImage: nil,
             status: "status"
         )
         .background(Color.red)
         ContractInformation(
-            displayName: "displayName",
-            exposureName: "name",
+            title: "displayName",
+            subtitle: "name",
             pillowImage: nil
         )
         .background(Color.blue)

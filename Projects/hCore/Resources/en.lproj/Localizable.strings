@@ -217,6 +217,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Describe using text";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
+"CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
 "CLAIM_CHAT_EDIT_TITLE" = "Previous answers will be reset";
@@ -255,9 +256,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";
 "CLAIM_CHAT_UNKNOWN_STEP" = "Unknown step";
-"CLAIM_CHAT_USE_AUDIO" = "Start voice recording";
+"CLAIM_CHAT_USE_AUDIO" = "Record with voice";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe with text";
-"CLAIM_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Date of occurrence";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Submit your claim";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "What insurance is it about?";
@@ -303,6 +303,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add co-owner information for your vacation home";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
+"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Change information about co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
 "CONTRACT_EDIT_INFO_LABEL" = "Edit your insurance";
 "CONTRACT_FIRST_NAME" = "First name";
@@ -494,6 +495,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "You can't change the payment method at the moment. Please contact us to get help.";
+"KIVRA_PAYMENT_INFO" = "The invoice is sent out 14 days before due date each month to your Kivra inbox.";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
@@ -764,6 +767,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_NOT_SUCCESSFUL_TITLE" = "Cancellation unsuccessful";
 /* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "You already have the best coverage and price for this insurance";
+"TERMINATION_OFFER_BUTTON_CHANGE_TIER" = "Change coverage level";
+"TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS" = "Update my address";
+"TERMINATION_OFFER_DESCRIPTION_CHANGE_TIER" = "You can adjust your coverage level to better fit your needs instead of cancelling.";
+"TERMINATION_OFFER_DESCRIPTION_UPDATE_ADDRESS" = "Moving? You can update your address and keep your insurance instead of cancelling.";
+"TERMINATION_OFFER_SKIP" = "No thanks, continue cancellation";
+"TERMINATION_OFFER_TITLE" = "Before you cancel";
 "TERMINATION_Q_01" = "When will the last payment be charged?";
 "TERMINATION_Q_02" = "Can I still file a claim after I cancel my insurance?";
 "TERMINATION_Q_03" = "How do I join Hedvig in the future?";

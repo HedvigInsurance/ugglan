@@ -1,3 +1,4 @@
+import Addons
 @preconcurrency import XCTest
 import hCore
 
@@ -14,7 +15,7 @@ final class ContractsTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testGetContractsSuccess() async {
+    func testGetContractsSuccess() async throws {
         let contractsStack: ContractsStack = .init(
             activeContracts: [
                 .init(
@@ -37,6 +38,7 @@ final class ContractsTests: XCTestCase {
                         addonVariant: []
                     ),
                     exposureDisplayName: "exposure display name",
+                    exposureDisplayNameShort: "exposure display name short",
                     masterInceptionDate: "2024-04-05",
                     terminationDate: nil,
                     supportsAddressChange: true,
@@ -61,9 +63,27 @@ final class ContractsTests: XCTestCase {
         )
         sut = mockService
 
-        let respondedContracts = try! await mockService.fetchContracts()
+        let respondedContracts = try await mockService.fetchContracts()
         assert(respondedContracts.activeContracts == contractsStack.activeContracts)
         assert(respondedContracts.pendingContracts == contractsStack.pendingContracts)
         assert(respondedContracts.terminatedContracts == contractsStack.terminatedContracts)
+    }
+
+    func testGetAddonBannersSuccess() async throws {
+        let testBanner = AddonBanner(
+            contractIds: ["contractId"],
+            displayTitle: "Travel Plus",
+            displayDescription: "Extended travel insurance with extra coverage",
+            badges: ["Popular"],
+            addonType: .travelPlus
+        )
+
+        let mockService = MockData.createMockContractsService(
+            fetchAddonBanners: { [testBanner] }
+        )
+        sut = mockService
+
+        let respondedBanners = try await mockService.getAddonBanners(source: .insurances)
+        assert(respondedBanners == [testBanner])
     }
 }
