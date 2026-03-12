@@ -214,7 +214,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .border(hBorderColor.primary, width: 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
         .background(
             GeometryReader { geo in
                 Color.clear.preference(
