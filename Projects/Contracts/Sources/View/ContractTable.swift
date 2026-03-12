@@ -110,18 +110,18 @@ struct ContractTable: View {
                 await vm.getAddonBanners()
             }
         }
-        .animation(.spring(), value: isExpanded)
+        .animation(.easeInOut(duration: 0.3), value: isExpanded)
         .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
             if !isActive {
                 isExpanded = false
             }
         }
         .onChange(of: isExpanded) { _ in
-            withAnimation(.easeIn(duration: 0.25)) {
+            withAnimation(.easeIn(duration: 0.2)) {
                 cardDrawRotation = true
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                withAnimation(.easeOut(duration: 0.35)) {
+                withAnimation(.easeOut(duration: 0.1)) {
                     cardDrawRotation = false
                 }
             }
