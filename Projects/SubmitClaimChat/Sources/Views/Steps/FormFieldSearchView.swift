@@ -162,7 +162,7 @@ struct FormFieldSearchView: View {
                     .withChevronAccessory
                     .hRowContentAlignment(.center)
                     .overlay {
-                        RoundedRectangle(cornerRadius: .cornerRadiusL)
+                        RoundedRectangle(cornerRadius: .cornerRadiusXL)
                             .stroke(hBorderColor.primary, lineWidth: 1)
                     }
                 }
@@ -184,7 +184,7 @@ struct FormFieldSearchView: View {
         return false
     }
 }
-
+@available(iOS 17.0, *)
 #Preview {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in ClaimIntentClientDemo() })
     return FormFieldSearchView(
