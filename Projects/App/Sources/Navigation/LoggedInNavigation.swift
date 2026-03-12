@@ -460,6 +460,9 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.Opaque.primary)
+        .onChange(of: vm.selectedTab) { newTab in
+            vm.contractsNavigationVm.isActiveTab = (newTab == 1)
+        }
         .handleLoggedInPresentations(with: vm)
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
