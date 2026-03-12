@@ -20,7 +20,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
-    @Published var isSearchPresented: SearchFieldModel? {
+    @Published var searchFieldPresentation: FormFieldSearchModel? {
         willSet {
             UIApplication.dismissKeyboard()
         }
@@ -106,8 +106,8 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                     return .init(key: field.title, value: valueToDisplay, skipped: false)
                 }
                 var valueToDisplay = userEnteredValues.joined(separator: ", ")
-                if let sufix = field.suffix {
-                    valueToDisplay += " \(sufix)"
+                if let suffix = field.suffix {
+                    valueToDisplay += " \(suffix)"
                 }
                 let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
                 return .init(
@@ -151,11 +151,11 @@ final class FormStepValue: ObservableObject {
     /// Display title for search-selected values (since the value is an opaque ID)
     @Published var selectedDisplayTitle: String?
 
-    var suggestedValue: String?
+    var lastSearchQuery: String?
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
         self.value = field.defaultValues.first ?? ""
         self.values = field.defaultValues
-        self.suggestedValue = field.searchData?.suggestedQuery
+        self.lastSearchQuery = field.searchData?.suggestedQuery
     }
 }
 

@@ -210,7 +210,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         stepId: String,
         fieldId: String,
         query: String
-    ) async throws -> ClaimIntentFormFieldSearchResult {
+    ) async throws -> FormFieldSearchResult {
         let input = OctopusGraphQL.ClaimIntentFormFieldSearchInput(
             stepId: stepId,
             fieldId: fieldId,
@@ -228,7 +228,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     imageUrl: $0.imageUrl
                 )
             }
-            return ClaimIntentFormFieldSearchResult(
+            return FormFieldSearchResult(
                 options: options,
                 suggestedQuery: data.claimIntentFormFieldSearch.suggestedQuery
             )

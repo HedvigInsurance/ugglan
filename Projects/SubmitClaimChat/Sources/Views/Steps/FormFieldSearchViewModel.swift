@@ -9,8 +9,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     @Published var searchResults: [SingleSelectValue] = []
     @Published var processingState: ProcessingState = .success
     @Published var noResults: Bool = false
-    @Published var searchSuggestedQuery: String?
-    @Published var selectedValue: SingleSelectValue?
+    @Published var suggestedQuery: String?
     @Published var searchText = ""
     private let stepId: String
     private let fieldId: String
@@ -30,7 +29,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         return searchController
     }()
 
-    let suggestedQuery: String?
+    let initialSuggestedQuery: String?
     let modalTitle: String
     let modalSubtitle: String
 
@@ -43,7 +42,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     ) {
         self.stepId = stepId
         self.fieldId = fieldId
-        self.suggestedQuery = suggestedQuery
+        self.initialSuggestedQuery = suggestedQuery
         self.modalTitle = modalTitle
         self.modalSubtitle = modalSubtitle
         self.service = ClaimIntentService()
@@ -60,8 +59,8 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         if !didActivateSearchInitially {
             // Activate without animation
             Task { [weak searchController] in
-                if let suggestedQuery, !suggestedQuery.isEmpty {
-                    searchController?.searchBar.text = suggestedQuery
+                if let initialSuggestedQuery, !initialSuggestedQuery.isEmpty {
+                    searchController?.searchBar.text = initialSuggestedQuery
                 }
                 await delay(0.1)
                 UIView.performWithoutAnimation {
@@ -84,7 +83,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
                     self?.searchText = value
                     if value.count > 1 {
                         self?.noResults = false
-                        self?.searchSuggestedQuery = nil
+                        self?.suggestedQuery = nil
                     } else {
                         self?.searchResults = []
                     }
@@ -103,12 +102,6 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     }
 
     private func performSearch(query: String) async {
-        guard !query.isEmpty else {
-            processingState = .success
-            searchResults = []
-            return
-        }
-
         processingState = .loading
         do {
             let result = try await service.claimIntentFormFieldSearch(
@@ -119,9 +112,9 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
             searchResults = result.options.map {
                 SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl)
             }
-            searchSuggestedQuery = result.suggestedQuery
+            suggestedQuery = result.suggestedQuery
             processingState = .success
-            if searchResults.isEmpty && !query.isEmpty {
+            if searchResults.isEmpty {
                 noResults = true
             }
         } catch {

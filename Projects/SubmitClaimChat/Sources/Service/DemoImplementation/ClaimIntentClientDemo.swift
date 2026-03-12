@@ -268,7 +268,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         stepId: String,
         fieldId: String,
         query: String
-    ) async throws -> ClaimIntentFormFieldSearchResult {
+    ) async throws -> FormFieldSearchResult {
         try await Task.sleep(nanoseconds: 500_000_000)
         let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
             .init(
@@ -293,7 +293,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         ]
         let filtered =
             query.isEmpty ? allOptions : allOptions.filter { $0.title.localizedCaseInsensitiveContains(query) }
-        return ClaimIntentFormFieldSearchResult(options: filtered, suggestedQuery: "suggested")
+        return FormFieldSearchResult(options: filtered, suggestedQuery: "suggested")
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {

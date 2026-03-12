@@ -75,7 +75,7 @@ struct SubmitClaimFormView: View {
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
         }
         .detent(
-            item: $viewModel.isSearchPresented,
+            item: $viewModel.searchFieldPresentation,
             transitionType: .detent(style: [.large]),
             options: .constant(.withoutGrabber)
         ) { [weak viewModel] model in
@@ -85,8 +85,8 @@ struct SubmitClaimFormView: View {
                     let formValue = viewModel?.getFormStepValue(for: model.id)
                     formValue?.value = selected.value
                     formValue?.selectedDisplayTitle = selected.title
-                    formValue?.suggestedValue = searchText
-                    viewModel?.isSearchPresented = nil
+                    formValue?.lastSearchQuery = searchText
+                    viewModel?.searchFieldPresentation = nil
                 }
             )
             .navigationTitle(model.title)
@@ -262,11 +262,11 @@ struct FormFieldView: View {
             placeHolder: field.title,
             error: $fieldViewModel.error
         ) { [weak viewModel] in
-            viewModel?.isSearchPresented = .init(
+            viewModel?.searchFieldPresentation = .init(
                 id: field.id,
                 stepId: viewModel?.claimIntent.currentStep.id ?? "",
                 title: field.title,
-                suggestedQuery: fieldViewModel.suggestedValue,
+                suggestedQuery: fieldViewModel.lastSearchQuery,
                 modalTitle: field.searchData?.modalTitle ?? "",
                 modalSubtitle: field.searchData?.modalSubtitle ?? ""
             )

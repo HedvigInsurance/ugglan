@@ -6,10 +6,10 @@ import hCoreUI
 
 struct FormFieldSearchView: View {
     @StateObject private var vm: FormFieldSearchViewModel
-    private let onSelected: ((SingleSelectValue, _ searchInput: String) -> Void)?
+    private let onSelected: (SingleSelectValue, _ searchInput: String) -> Void
     @EnvironmentObject var router: Router
 
-    init(model: SearchFieldModel, onSelected: @escaping (SingleSelectValue, _ searchInput: String) -> Void) {
+    init(model: FormFieldSearchModel, onSelected: @escaping (SingleSelectValue, _ searchInput: String) -> Void) {
         self._vm = StateObject(
             wrappedValue: .init(
                 stepId: model.stepId,
@@ -33,7 +33,7 @@ struct FormFieldSearchView: View {
             if case .error(let errorMessage) = vm.processingState {
                 errorView(message: errorMessage)
             } else if vm.searchText.count < 2 {
-                notSearchState
+                placeholderView
             } else if vm.noResults {
                 emptyResults
             } else {
@@ -55,9 +55,8 @@ struct FormFieldSearchView: View {
         )
         .animation(.default, value: vm.searchResults)
         .animation(.default, value: vm.processingState)
-        .animation(.default, value: vm.selectedValue)
         .animation(.default, value: vm.noResults)
-        .animation(.default, value: vm.searchSuggestedQuery)
+        .animation(.default, value: vm.suggestedQuery)
         .animation(.default, value: vm.searchController.searchBar.text)
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             guard let vm else { return }
@@ -75,7 +74,7 @@ struct FormFieldSearchView: View {
         )
     }
 
-    private var notSearchState: some View {
+    private var placeholderView: some View {
         hSection {
             VStack(spacing: 0) {
                 hText(vm.modalTitle)
@@ -101,7 +100,7 @@ struct FormFieldSearchView: View {
 
     @ViewBuilder
     private var suggestionView: some View {
-        if let suggestedQuery = vm.searchSuggestedQuery, !isProcessingLoading {
+        if let suggestedQuery = vm.suggestedQuery, !isProcessingLoading {
             Button {
                 vm.searchController.searchBar.text = suggestedQuery
             } label: {
@@ -121,7 +120,7 @@ struct FormFieldSearchView: View {
 
     private var resultsView: some View {
         VStack(spacing: .padding6) {
-            ForEach(vm.searchResults, id: \.title) { [unowned vm] result in
+            ForEach(vm.searchResults, id: \.value) { [unowned vm] result in
                 hSection {
                     hRow {
                         HStack(spacing: .padding16) {
@@ -157,7 +156,7 @@ struct FormFieldSearchView: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            onSelected?(result, vm.searchController.searchBar.text ?? "")
+                            onSelected(result, vm.searchController.searchBar.text ?? "")
                         }
                     }
                     .withChevronAccessory

@@ -39,7 +39,7 @@ struct SingleSelectValue: Hashable {
     }
 }
 
-struct SearchFieldModel: Equatable, Identifiable {
+struct FormFieldSearchModel: Equatable, Identifiable {
     let id: String
     let stepId: String
     let title: String
@@ -48,7 +48,7 @@ struct SearchFieldModel: Equatable, Identifiable {
     let modalSubtitle: String
 }
 
-public struct ClaimIntentFormFieldSearchResult {
+public struct FormFieldSearchResult {
     let options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
     let suggestedQuery: String?
 
