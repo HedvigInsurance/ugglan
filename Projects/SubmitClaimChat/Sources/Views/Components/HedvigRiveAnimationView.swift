@@ -6,7 +6,6 @@ struct HedvigRiveAnimationView: View {
     private enum Constants {
         static let darkFileName = "White"
         static let lightFileName = "Black"
-        static let size: CGFloat = 100
     }
 
     private enum Animation: String {
@@ -20,7 +19,7 @@ struct HedvigRiveAnimationView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var riveViewModel: RiveViewModel?
     @State private var animationTask: Task<Void, Error>?
-
+    @State private var initialAnimationDone = false
     var body: some View {
         Group {
             if let riveViewModel {
@@ -29,7 +28,6 @@ struct HedvigRiveAnimationView: View {
                 Color.clear
             }
         }
-        .frame(width: Constants.size, height: Constants.size)
         .task {
             if riveViewModel == nil {
                 riveViewModel = makeViewModel()
@@ -44,13 +42,14 @@ struct HedvigRiveAnimationView: View {
     private func playAnimations(animating: Bool) {
         animationTask?.cancel()
         animationTask = Task { [weak riveViewModel] in
-            if animating {
+            if animating && !initialAnimationDone {
                 await delay(0.1)
                 riveViewModel?.play(animationName: Animation.loadingIntro.rawValue)
                 await delay(1)
                 try Task.checkCancellation()
                 riveViewModel?.play(animationName: Animation.loading.rawValue)
-            } else {
+                initialAnimationDone = true
+            } else if initialAnimationDone {
                 riveViewModel?.stop()
                 riveViewModel?.play(animationName: Animation.loadingOutro.rawValue)
             }

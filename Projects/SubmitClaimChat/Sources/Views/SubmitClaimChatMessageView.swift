@@ -12,6 +12,8 @@ struct SubmitClaimChatMessageView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
                         HedvigRiveAnimationView(isAnimating: $isRiveAnimating)
+                            .frame(width: 36, height: 36)
+                            .padding(.horizontal, -.padding2)
                         RevealTextView(
                             text: text,
                             delay: 1,
