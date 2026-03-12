@@ -1,4 +1,5 @@
 import SwiftUI
+import hCoreUI
 
 @MainActor
 class InsuredPeopleScreenViewModel: ObservableObject {
@@ -33,8 +34,29 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         config.numberOfMissingStakeHoldersWithoutTermination - stakeHoldersDeleted.count
     }
 
+    var hasLocallyMissingStakeHolders: Bool {
+        stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted
+    }
+
     func showInfoCard(type: CoInsuredFieldType?) -> Bool {
-        stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted && type != .delete
+        switch config.stakeHolderType {
+        case .coInsured: stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted && type != .delete
+        case .coOwner: stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted && type != .delete
+        }
+    }
+
+    func getInfoCardType(type: CoInsuredFieldType?) -> NotificationType? {
+        switch config.stakeHolderType {
+        case .coInsured: if hasLocallyMissingStakeHolders && type != .delete { .attention } else { nil }
+        case .coOwner:
+            if hasLocallyMissingStakeHolders {
+                .attention
+            } else if stakeHoldersAdded.isEmpty && stakeHoldersDeleted.isEmpty && existingCoInsured.isEmpty {
+                .info
+            } else {
+                nil
+            }
+        }
     }
 
     func completeList(

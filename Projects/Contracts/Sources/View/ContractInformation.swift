@@ -195,8 +195,8 @@ struct ContractInformationView: View {
                 stakeHolderType: .coInsured,
             )
             stakeHolderSection(
-                shouldShow: contract.showEditCoInsuredInfo,
-                missingCount: contract.nbOfMissingCoInsuredWithoutTermination,
+                shouldShow: contract.showEditCoOwnersInfo,
+                missingCount: contract.nbOfMissingCoOwnersWithoutTermination,
                 contract: contract,
                 stakeHolderType: .coOwner,
             )

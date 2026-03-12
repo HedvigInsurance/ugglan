@@ -44,7 +44,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                 let contractsSupportingStakeHolders =
                     activeContracts
                     .filter {
-                        $0.showEditStakeHoldersInfo
+                        $0.showEditStakeHoldersInfo(for: stakeHolderType)
                             && ($0.nbOfMissingCoInsuredWithoutTermination > 0
                                 || $0.nbOfMissingCoOwnersWithoutTermination > 0
                                 || !forMissingStakeHolders)

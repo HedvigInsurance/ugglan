@@ -60,8 +60,11 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
-    public var showEditStakeHoldersInfo: Bool {
-        (supportsCoInsured || supportsCoOwners) && terminationDate == nil
+    public func showEditStakeHoldersInfo(for stakeHoldersType: StakeHolderType) -> Bool {
+        switch stakeHoldersType {
+        case .coInsured: supportsCoInsured && terminationDate == nil
+        case .coOwner: supportsCoOwners && terminationDate == nil
+        }
     }
 }
 

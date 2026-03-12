@@ -21,6 +21,7 @@ struct InsuredPeopleScreen: View {
             }
             .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, .padding6)
 
             infoCardSection
         }
@@ -100,9 +101,14 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private var infoCardSection: some View {
-        if vm.showInfoCard(type: type) {
+        if let infoCardType = vm.getInfoCardType(type: type) {
             hSection {
-                InfoCard(text: vm.config.stakeHolderType.reviewInfo, type: .attention)
+                InfoCard(
+                    text: vm.config.stakeHolderType.reviewInfo(
+                        hasMissingStakeHolders: vm.hasLocallyMissingStakeHolders
+                    ),
+                    type: infoCardType
+                )
             }
         }
     }

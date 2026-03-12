@@ -459,6 +459,7 @@ extension StakeHoldersConfig {
             case .coInsured: (contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
             case .coOwner: (contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
             }
+
         self.init(
             id: contract.id,
             stakeHolders: contract.coInsured + contract.coOwners,
@@ -498,20 +499,19 @@ extension Contract {
 
 extension Sequence where Iterator.Element == Contract {
     public var hasMissingCoInsured: Bool {
-        let contractsWithMissingCoInsured =
-            filter { contract in
-                if !contract.supportsCoInsured {
-                    return false
-                } else if contract.coInsured.isEmpty {
-                    return false
-                } else if contract.terminationDate != nil {
-                    return false
-                } else {
-                    return contract.coInsured.first(where: { $0.hasMissingData }) != nil
-                }
-            }
-        let show = !contractsWithMissingCoInsured.isEmpty
-        return show
+        contains { contract in
+            contract.supportsCoInsured
+                && contract.terminationDate == nil
+                && contract.coInsured.contains { $0.hasMissingData }
+        }
+    }
+
+    public var hasMissingCoOwners: Bool {
+        contains { contract in
+            contract.supportsCoOwners
+                && contract.terminationDate == nil
+                && contract.coOwners.contains { $0.hasMissingData }
+        }
     }
 }
 

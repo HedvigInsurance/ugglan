@@ -74,7 +74,11 @@ public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, 
     }
 }
 
-public enum StakeHolderType: String, Codable, Equatable, Hashable, Sendable {
+public enum StakeHolderType: String, Codable, Equatable, Hashable, Sendable, Comparable {
+    public static func < (lhs: StakeHolderType, rhs: StakeHolderType) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
+
     case coInsured, coOwner
 }
 
@@ -119,10 +123,15 @@ extension StakeHolderType {
         }
     }
 
-    var reviewInfo: String {
+    func reviewInfo(hasMissingStakeHolders: Bool) -> String {
         switch self {
         case .coInsured: L10n.contractAddCoinsuredReviewInfo
-        case .coOwner: L10n.contractAddCoownerReviewInfo
+        case .coOwner:
+            if (hasMissingStakeHolders) {
+                L10n.contractAddCoownerReviewInfo
+            } else {
+                "You can add additional co-owners for your vacation home"
+            }
         }
     }
 
@@ -155,6 +164,13 @@ extension StakeHolderType {
     var missingAddInfo: String {
         switch self {
         case .coInsured, .coOwner: L10n.contractCoinsuredMissingAddInfo  // TODO: separate?
+        }
+    }
+
+    public var missingAddInfoText: String {
+        switch self {
+        case .coInsured: L10n.contractCoinsuredMissingInfoText
+        case .coOwner: L10n.contractCoownersMissingInfoText
         }
     }
 
