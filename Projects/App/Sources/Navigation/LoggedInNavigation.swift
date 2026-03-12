@@ -273,6 +273,8 @@ class DeepLinkHandler {
 
         case .editCoInsured:
             handleEditCoInsured(url: url)
+        case .editCoOwners:
+            handleEditCoInsured(url: url)
         case .claimDetails:
             Task { [weak viewModel] in
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
@@ -408,6 +410,14 @@ class DeepLinkHandler {
     }
 
     private func handleEditCoInsured(url: URL) {
+        handleEditStakeHolder(url: url, type: .coInsured)
+    }
+
+    private func handleEditCoOwner(url: URL) {
+        handleEditStakeHolder(url: url, type: .coOwner)
+    }
+
+    private func handleEditStakeHolder(url: URL, type: StakeHolderType) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
@@ -416,14 +426,14 @@ class DeepLinkHandler {
             {
                 let contractConfig: StakeHoldersConfig = .init(
                     contract: contract,
-                    stakeHolderType: .coInsured,
+                    stakeHolderType: type,
                     fromInfoCard: false
                 )
 
                 viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
             } else {
                 // select insurance
-                viewModel.homeNavigationVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
+                viewModel.homeNavigationVm.editCoInsuredVm.start(stakeHolderType: type)
             }
         }
     }
