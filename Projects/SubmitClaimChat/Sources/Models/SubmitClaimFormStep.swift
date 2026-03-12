@@ -105,7 +105,10 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                     let valueToDisplay = valuesToDisplay.joined(separator: ", ")
                     return .init(key: field.title, value: valueToDisplay, skipped: false)
                 }
-                let valueToDisplay = userEnteredValues.joined(separator: ", ")
+                var valueToDisplay = userEnteredValues.joined(separator: ", ")
+                if let sufix = field.suffix {
+                    valueToDisplay += " \(sufix)"
+                }
                 let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
                 return .init(
                     key: field.title,

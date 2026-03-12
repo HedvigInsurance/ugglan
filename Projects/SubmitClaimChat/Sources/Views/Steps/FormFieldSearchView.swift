@@ -23,11 +23,13 @@ struct FormFieldSearchView: View {
     }
     var body: some View {
         hForm {
+            suggestionView
             if isProcessingLoading && vm.searchResults.isEmpty {
                 DotsActivityIndicator(.standard)
                     .useDarkColor
                     .padding(.vertical, .padding16)
             }
+
             if case .error(let errorMessage) = vm.processingState {
                 errorView(message: errorMessage)
             } else if vm.searchText.count < 2 {
@@ -37,7 +39,6 @@ struct FormFieldSearchView: View {
             } else {
                 resultsView
             }
-            suggestionView
         }
         .hFormAlwaysAttachToBottom {
             hSection {
@@ -114,12 +115,12 @@ struct FormFieldSearchView: View {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
-            .padding(.top, !vm.searchResults.isEmpty ? .padding8 : 0)
+            .padding(.bottom, .padding32)
         }
     }
 
     private var resultsView: some View {
-        VStack(spacing: .padding4) {
+        VStack(spacing: .padding6) {
             ForEach(vm.searchResults, id: \.title) { [unowned vm] result in
                 hSection {
                     hRow {
@@ -171,6 +172,7 @@ struct FormFieldSearchView: View {
             }
             .sectionContainerStyle(.negative)
         }
+        .padding(.bottom, .padding6)
     }
 
     // Computed helpers for pattern-matching ProcessingState
