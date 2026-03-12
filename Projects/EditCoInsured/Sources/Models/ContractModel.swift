@@ -99,14 +99,18 @@ extension StakeHoldersConfig {
         fromInfoCard: Bool,
         stakeHolderType: StakeHolderType
     ) {
+        let (numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
+            switch stakeHolderType {
+            case .coInsured: (contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
+            case .coOwner: (contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
+            }
         self.init(
             id: contract.id,
             stakeHolders: contract.coInsured + contract.coOwners,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-            numberOfMissingStakeHolders: contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners,
-            numberOfMissingStakeHoldersWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination
-                + contract.nbOfMissingCoOwnersWithoutTermination,
+            numberOfMissingStakeHolders: numberOfMissingStakeHolders,
+            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
             preSelectedStakeHolders: preSelectedStakeHolders,

@@ -45,9 +45,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                     activeContracts
                     .filter {
                         $0.showEditStakeHoldersInfo(for: stakeHolderType)
-                            && ($0.nbOfMissingCoInsuredWithoutTermination > 0
-                                || $0.nbOfMissingCoOwnersWithoutTermination > 0
-                                || !forMissingStakeHolders)
+                            && (missingCount(for: stakeHolderType, in: $0) > 0 || !forMissingStakeHolders)
                     }
                     .compactMap { contract in
                         StakeHoldersConfig(
@@ -74,6 +72,13 @@ public class EditCoInsuredViewModel: ObservableObject {
             } catch {
                 editCoInsuredModelError = .init(errorMessage: error.localizedDescription)
             }
+        }
+    }
+
+    private func missingCount(for stakeHolderType: StakeHolderType, in contract: Contract) -> Int {
+        switch stakeHolderType {
+        case .coInsured: contract.nbOfMissingCoInsuredWithoutTermination
+        case .coOwner: contract.nbOfMissingCoOwnersWithoutTermination
         }
     }
 
