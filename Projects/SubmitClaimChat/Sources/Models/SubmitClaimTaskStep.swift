@@ -38,7 +38,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         else {
             throw ClaimIntentError.invalidResponse
         }
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
         mainHandler(.removeStep(id: id))
         return result
     }

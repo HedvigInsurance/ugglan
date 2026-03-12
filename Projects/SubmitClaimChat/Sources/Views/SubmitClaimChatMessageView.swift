@@ -4,22 +4,25 @@ import hCoreUI
 
 struct SubmitClaimChatMessageView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
-    @State private var isRiveAnimating = true
+    @State private var isLoading = true
 
     var body: some View {
         VStack(spacing: .padding8) {
             if let text = viewModel.getText() {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
-                        HedvigRiveAnimationView(isAnimating: $isRiveAnimating)
-                            .frame(width: 36, height: 36)
+                        ClaimChatLoadingAnimationView(isLoading: $isLoading)
+                            .frame(
+                                width: ClaimChatLoadingAnimationView.Constants.animationSize,
+                                height: ClaimChatLoadingAnimationView.Constants.animationSize
+                            )
                             .padding(.horizontal, -.padding2)
                         RevealTextView(
                             text: text,
                             delay: 1,
                             animate: viewModel.state.animateText,
                             onTextAnimationDone: {
-                                isRiveAnimating = false
+                                isLoading = false
                                 viewModel.state.showInput = true
                             }
                         )
