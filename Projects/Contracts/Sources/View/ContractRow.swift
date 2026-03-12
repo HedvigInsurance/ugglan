@@ -238,10 +238,6 @@ extension EnvironmentValues {
 }
 
 extension View {
-    /// Used to determine if we should bounce effect on the scroll view
-    /// nil: default behaviour depending on the content position and content size
-    /// true: always on
-    /// false : always off
     public func contractCardTruncate(to value: Bool) -> some View {
         environment(\.contractRowContentTruncate, value)
     }
