@@ -20,11 +20,10 @@ struct EditCoInsured: ViewModifier {
                 transitionType: .detent(style: [.height])
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
-                if contractsSupportingCoInsured.count > 1 {
+                if contractsSupportingCoInsured.count > 1, let stakeHolderType = vm.stakeHolderType {
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: contractsSupportingCoInsured,
-                        stakeHolderType: coInsuredModel.contractsSupportingCoInsured.first!.stakeHolderType
-
+                        stakeHolderType: stakeHolderType,
                     )
                     .environmentObject(vm)
                 } else {

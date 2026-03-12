@@ -274,7 +274,7 @@ class DeepLinkHandler {
         case .editCoInsured:
             handleEditCoInsured(url: url)
         case .editCoOwners:
-            handleEditCoInsured(url: url)
+            handleEditCoOwner(url: url)
         case .claimDetails:
             Task { [weak viewModel] in
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))

@@ -38,13 +38,6 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted
     }
 
-    func showInfoCard(type: CoInsuredFieldType?) -> Bool {
-        switch config.stakeHolderType {
-        case .coInsured: stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted && type != .delete
-        case .coOwner: stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted && type != .delete
-        }
-    }
-
     func getInfoCardType(type: CoInsuredFieldType?) -> NotificationType? {
         switch config.stakeHolderType {
         case .coInsured: if hasLocallyMissingStakeHolders && type != .delete { .attention } else { nil }

@@ -186,15 +186,13 @@ class HomeBottomScrollViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal
             .map(\.activeContracts.hasMissingCoInsured)
+            .prepend(contractStore.state.activeContracts.hasMissingCoInsured)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.missingCoInsured(type: .coInsured), with: show)
             })
             .store(in: &cancellables)
-
-        let show = contractStore.state.activeContracts.hasMissingCoInsured
-        handleItem(.missingCoInsured(type: .coInsured), with: show)
     }
 
     private func handleMissingCoOwners() {
@@ -208,9 +206,6 @@ class HomeBottomScrollViewModel: ObservableObject {
                 self?.handleItem(.missingCoInsured(type: .coOwner), with: show)
             })
             .store(in: &cancellables)
-
-        //        let show = contractStore.state.activeContracts.hasMissingCoOwners
-        //        handleItem(.missingCoInsured(type: .coOwner), with: show)
     }
 
     func handleTerminatedMessage() {

@@ -85,20 +85,6 @@ public struct EditCoInsuredNavigation: View {
         editCoInsuredNavigationVm = .init(config: config)
     }
 
-    //    switch config.stakeHolderType {
-    //    case .coInsured:
-    //        if config.numberOfMissingStakeHoldersWithoutTermination > 0 {
-    //            if config.fromInfoCard {
-    //                openNewInsuredPeopleScreen()
-    //            } else {
-    //                openRemoveCoInsuredScreen()
-    //            }
-    //        } else {
-    //            openNewInsuredPeopleScreen()
-    //        }
-    //    case .coOwner: openNewInsuredPeopleScreen()
-    //    }
-
     public var body: some View {
         RouterHost(
             router: router,

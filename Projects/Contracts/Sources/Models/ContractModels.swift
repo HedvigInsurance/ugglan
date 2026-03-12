@@ -67,8 +67,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
-    public var coInsured: [StakeHolder]
-    public var coOwners: [StakeHolder]
+    public let coInsured: [StakeHolder]
+    public let coOwners: [StakeHolder]
     public let addonsInfo: AddonsInfo?
     public var fullName: String {
         firstName + " " + lastName
@@ -454,15 +454,17 @@ extension StakeHoldersConfig {
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
 
-        let (numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
+        let (stakeHolders, numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
             switch stakeHolderType {
-            case .coInsured: (contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
-            case .coOwner: (contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
+            case .coInsured:
+                (contract.coInsured, contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
+            case .coOwner:
+                (contract.coOwners, contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
             }
 
         self.init(
             id: contract.id,
-            stakeHolders: contract.coInsured + contract.coOwners,
+            stakeHolders: stakeHolders,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
             numberOfMissingStakeHolders: numberOfMissingStakeHolders,

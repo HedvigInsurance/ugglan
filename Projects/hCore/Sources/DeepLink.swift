@@ -88,7 +88,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .editCoInsured:
             return L10n.hcQuickActionsEditCoinsured
         case .editCoOwners:
-            return L10n.hcQuickActionsEditCoinsured  //TODO: coinsured?
+            return L10n.editCoownerTitle  //TODO: fix lokalise?
         case .claimDetails:
             return L10n.ClaimStatus.ClaimDetails.title
         case .insuranceEvidence:
