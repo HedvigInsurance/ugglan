@@ -12,6 +12,8 @@ struct ContractTable: View {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
+    @State var bottomContentHeights: [String: CGFloat] = [:]
+    @State var cardHeights: [String: CGFloat] = [:]
     @StateObject var vm = ContractTableViewModel()
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
@@ -116,9 +118,16 @@ struct ContractTable: View {
                     getContractsToShow(for: state)
                 }
             ) { contracts in
-                VStack(spacing: .padding8) {
-                    ForEach(contracts, id: \.id) { contract in
+                VStack(spacing: 0) {
+                    ForEach(Array(contracts.enumerated()), id: \.element.id) { index, contract in
+                        let cumulativeOffset: CGFloat = contracts.prefix(index + 1).dropFirst()
+                            .reduce(0) { sum, c in
+                                let height = cardHeights[c.id] ?? 200
+                                let peek = (bottomContentHeights[c.id] ?? 0)
+                                return sum - (height - peek)
+                            }
                         ContractRow(
+                            cardId: contract.id,
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName
@@ -132,9 +141,27 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
+                        .contractCardTruncate(to: true)
                         .fixedSize(horizontal: false, vertical: true)
+                        .zIndex(Double(-index))
+                        .offset(y: cumulativeOffset)
                         .transition(.slide)
                     }
+                }
+                .padding(
+                    .bottom,
+                    contracts.dropFirst()
+                        .reduce(0) { sum, c in
+                            let height = cardHeights[c.id] ?? 200
+                            let peek = (bottomContentHeights[c.id] ?? 0)
+                            return sum - (height - peek)
+                        }
+                )
+                .onPreferenceChange(ContractRowBottomHeightKey.self) { heights in
+                    bottomContentHeights = heights
+                }
+                .onPreferenceChange(ContractRowCardHeightKey.self) { heights in
+                    cardHeights = heights
                 }
             }
         }
