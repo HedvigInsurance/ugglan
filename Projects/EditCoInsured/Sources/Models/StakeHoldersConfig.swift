@@ -127,11 +127,7 @@ extension StakeHolderType {
         switch self {
         case .coInsured: L10n.contractAddCoinsuredReviewInfo
         case .coOwner:
-            if (hasMissingStakeHolders) {
-                L10n.contractAddCoownerReviewInfo
-            } else {
-                "You can add additional co-owners for your vacation home"
-            }
+            hasMissingStakeHolders ? L10n.contractAddCoownerReviewInfo : L10n.contractAddAdditionalCoownerInfo
         }
     }
 
