@@ -21,7 +21,7 @@ struct CrossSellStackComponent: View {
     }
     var body: some View {
         let content = hSection {
-            VStack(spacing: .padding16) {
+            VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
                     CrossSellingItem(crossSell: crossSell, discountAvailable: discountAvailable)
                         .transition(.slide)
