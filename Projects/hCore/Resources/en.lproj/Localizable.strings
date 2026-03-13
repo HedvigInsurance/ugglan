@@ -276,7 +276,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add co-owner";
-"CONTRACT_ADD_ADDITIONAL_COOWNER_INFO" = "You can add additional co-owners for your vacation home";
+"CONTRACT_ADD_ADDITIONAL_COOWNER_INFO" = "You can add more co-owners for your vacation home";
 "CONTRACT_ADD_COINSURED" = "Add co-insured";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Activates %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Active until %1$@";
@@ -288,7 +288,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Your insurance will be updated starting from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Co-insured updated";
 "CONTRACT_ADD_CONISURED_INFO" = "Add info of co-insured";
-"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add information for all co-owners in order to proceed.";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add co-owner information to proceed";
 "CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Co-owner information updated";
 "CONTRACT_BIRTH_DATE" = "Date of birth";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "What do you want to edit?";
@@ -374,7 +374,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Duration";
 "Direct_Debit_Connected" = "%1$@/month - Paying with direct debit";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Payment not connected";
-"EDIT_COOWNER_SUBTITLE" = "Add or update co-owner information";
+"EDIT_COOWNER_SUBTITLE" = "Edit co-owners for your vacation home";
 "EDIT_COOWNER_TITLE" = "Edit co-owners";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "Email";
@@ -496,8 +496,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "You can't change the payment method at the moment. Please contact us to get help.";
-"KIVRA_PAYMENT_INFO" = "The invoice is sent out 14 days before due date each month to your Kivra inbox.";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "You can’t change the payment method right now. Contact us for help.";
+"KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
@@ -553,7 +553,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_EXPIRED_DATE" = "Expired %1$@";
 "PAYMENTS_HISTORY_INFO" = "For information about payments older than 12 months, please send us a message here in the app.";
 "PAYMENTS_INVITE_FRIENDS" = "Share your code";
+"PAYMENTS_INVOICE" = "Invoice";
 "PAYMENTS_IN_PROGRESS" = "The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account";
+"PAYMENTS_IN_PROGRESS_KIVRA" = "Your invoice is visible in Kivra. If you can't see it there or have problems with paying it, please contact us in the chat.";
 "PAYMENTS_MANDATE" = "Mandate";
 "PAYMENTS_MISSED_PAYMENT" = "Your payment for the period %1$@ – %2$@ didn't process as expected. The amount has been added to this payment.";
 "PAYMENTS_NO_HISTORY_DATA" = "There is no record of your payment history";
