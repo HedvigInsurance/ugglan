@@ -257,7 +257,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
 "CLAIM_CHAT_UNKNOWN_STEP" = "";
 "CLAIM_CHAT_USE_AUDIO" = "Spela in med röst";
-"CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv med text";
+"CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv i text";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Händelsedatum";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Skicka in din skadeanmälan";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "Vilken försäkring gäller det?";
@@ -276,6 +276,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till delägare";
+"CONTRACT_ADD_ADDITIONAL_COOWNER_INFO" = "Du kan lägga till ytterligare delägare för ditt fritidshus";
 "CONTRACT_ADD_COINSURED" = "Lägg till medförsäkrad";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiveras %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv till %1$@";
