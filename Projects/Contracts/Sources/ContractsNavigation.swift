@@ -169,6 +169,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isRemoveAddonPresented: RemoveAddonInput?
     @Published public var addonActionPresented: AddonAction?
+    @Published public var isActiveTab = false
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
