@@ -15,6 +15,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         terminationDate: String?,
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
+        supportsCoOwners: Bool,
         supportsTravelCertificate: Bool,
         supportsChangeTier: Bool,
         upcomingChangedAgreement: Agreement?,
@@ -23,8 +24,9 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         lastName: String,
         ssn: String?,
         typeOfContract: TypeOfContract,
-        coInsured: [CoInsuredModel],
-        addonsInfo: AddonsInfo? = nil
+        coInsured: [StakeHolder],
+        coOwners: [StakeHolder],
+        addonsInfo: AddonsInfo? = nil,
     ) {
         self.id = id
         self.currentAgreement = currentAgreement
@@ -33,6 +35,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
         self.supportsCoInsured = supportsCoInsured
+        self.supportsCoOwners = supportsCoOwners
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
         self.supportsChangeTier = supportsChangeTier
@@ -43,6 +46,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.ssn = ssn
         self.typeOfContract = typeOfContract
         self.coInsured = coInsured
+        self.coOwners = coOwners
         self.addonsInfo = addonsInfo
     }
 
@@ -55,6 +59,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let supportsAddressChange: Bool
     public let supportsChangeTier: Bool
     public let supportsCoInsured: Bool
+    public let supportsCoOwners: Bool
     public let supportsTravelCertificate: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
@@ -62,7 +67,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
-    public var coInsured: [CoInsuredModel]
+    public let coInsured: [StakeHolder]
+    public let coOwners: [StakeHolder]
     public let addonsInfo: AddonsInfo?
     public var fullName: String {
         firstName + " " + lastName
@@ -72,12 +78,24 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         coInsured.filter(\.hasMissingInfo).count
     }
 
+    public var nbOfMissingCoOwners: Int {
+        coOwners.filter(\.hasMissingInfo).count
+    }
+
     public var nbOfMissingCoInsuredWithoutTermination: Int {
         coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
+    public var nbOfMissingCoOwnersWithoutTermination: Int {
+        coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
+    }
+
     public var showEditCoInsuredInfo: Bool {
         supportsCoInsured && terminationDate == nil
+    }
+
+    public var showEditCoOwnersInfo: Bool {
+        supportsCoOwners && terminationDate == nil
     }
 
     @MainActor
@@ -89,6 +107,11 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     func onlyCoInsured() -> Bool {
         let editTypes: [EditType] = EditType.getTypes(for: self)
         return editTypes.count == 1 && editTypes.first == .coInsured
+    }
+
+    @MainActor func onlyCoOwners() -> Bool {
+        let editTypes: [EditType] = EditType.getTypes(for: self)
+        return editTypes.count == 1 && editTypes.first == .coOwners
     }
 
     public var canTerminate: Bool {
@@ -423,27 +446,41 @@ public struct AvailableAddon: Codable, Hashable, Identifiable, Sendable {
 }
 
 @MainActor
-extension InsuredPeopleConfig {
+extension StakeHoldersConfig {
     public init(
         contract: Contract,
+        stakeHolderType: StakeHolderType,
         fromInfoCard: Bool
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
+
+        let (stakeHolders, numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
+            switch stakeHolderType {
+            case .coInsured:
+                (contract.coInsured, contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
+            case .coOwner:
+                (contract.coOwners, contract.nbOfMissingCoOwners, contract.nbOfMissingCoOwnersWithoutTermination)
+            }
+
         self.init(
             id: contract.id,
-            contractCoInsured: contract.coInsured,
+            stakeHolders: stakeHolders,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-            numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
-            numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
+            numberOfMissingStakeHolders: numberOfMissingStakeHolders,
+            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
+            preSelectedStakeHolders: store.state.fetchAllStakeHoldersNotInContract(
+                contractId: contract.id,
+                stakeHolderType: stakeHolderType
+            ),
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
-            fromInfoCard: fromInfoCard
+            fromInfoCard: fromInfoCard,
+            stakeHolderType: stakeHolderType
         )
     }
 }
@@ -464,20 +501,19 @@ extension Contract {
 
 extension Sequence where Iterator.Element == Contract {
     public var hasMissingCoInsured: Bool {
-        let contractsWithMissingCoInsured =
-            filter { contract in
-                if !contract.supportsCoInsured {
-                    return false
-                } else if contract.coInsured.isEmpty {
-                    return false
-                } else if contract.terminationDate != nil {
-                    return false
-                } else {
-                    return contract.coInsured.first(where: { $0.hasMissingData }) != nil
-                }
-            }
-        let show = !contractsWithMissingCoInsured.isEmpty
-        return show
+        contains { contract in
+            contract.supportsCoInsured
+                && contract.terminationDate == nil
+                && contract.coInsured.contains { $0.hasMissingData }
+        }
+    }
+
+    public var hasMissingCoOwners: Bool {
+        contains { contract in
+            contract.supportsCoOwners
+                && contract.terminationDate == nil
+                && contract.coOwners.contains { $0.hasMissingData }
+        }
     }
 }
 

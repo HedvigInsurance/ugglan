@@ -273,6 +273,8 @@ class DeepLinkHandler {
 
         case .editCoInsured:
             handleEditCoInsured(url: url)
+        case .editCoOwners:
+            handleEditCoOwner(url: url)
         case .claimDetails:
             Task { [weak viewModel] in
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
@@ -408,26 +410,30 @@ class DeepLinkHandler {
     }
 
     private func handleEditCoInsured(url: URL) {
+        handleEditStakeHolder(url: url, type: .coInsured)
+    }
+
+    private func handleEditCoOwner(url: URL) {
+        handleEditStakeHolder(url: url, type: .coOwner)
+    }
+
+    private func handleEditStakeHolder(url: URL, type: StakeHolderType) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
-                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+                let contractConfig: StakeHoldersConfig = .init(
+                    contract: contract,
+                    stakeHolderType: type,
+                    fromInfoCard: false
+                )
 
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    viewModel.homeNavigationVm.editCoInsuredVm
-                        .start(
-                            fromContract: contractConfig,
-                            forMissingCoInsured: true
-                        )
-                } else {
-                    viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
-                }
+                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
             } else {
                 // select insurance
-                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                viewModel.homeNavigationVm.editCoInsuredVm.start(stakeHolderType: type)
             }
         }
     }

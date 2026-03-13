@@ -17,11 +17,12 @@ struct CoInsuredProcessingScreen: View {
     }
 
     var body: some View {
+        let stakeHolderType = editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType
         ProcessingStateView(
             showSuccessScreen: showSuccessScreen,
-            loadingViewText: L10n.contractAddCoinsuredProcessing,
-            successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-            successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+            loadingViewText: stakeHolderType.processingText,
+            successViewTitle: stakeHolderType.updatedTitle,
+            successViewBody: stakeHolderType.updatedLabel(
                 intentViewModel.intent.activationDate.localDateToDate?
                     .displayDateDDMMMYYYYFormat ?? ""
             ),
@@ -85,12 +86,14 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let existingCoInsured = (any ExistingCoInsured).self
+    Dependencies.shared.add(module: Module { DateService() })
+    struct MockExistingStakeHolders: ExistingStakeHolders {
+        func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder] { [] }
+    }
     return CoInsuredProcessingScreen(
         showSuccessScreen: true,
         intentVM: .init()
     )
-    .environmentObject(EditCoInsuredNavigationViewModel(config: .init()))
-    .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
+    .environmentObject(EditCoInsuredNavigationViewModel(config: .init(stakeHolderType: .coInsured)))
+    .environmentObject(EditCoInsuredViewModel(existingStakeHolders: MockExistingStakeHolders()))
 }
