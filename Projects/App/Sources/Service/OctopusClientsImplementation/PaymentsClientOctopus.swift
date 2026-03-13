@@ -402,10 +402,19 @@ extension PaymentData {
             id: data.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment),
-            contracts: chargeFragment.chargeBreakdown.compactMap { .init(with: $0) },
+            contracts: chargeFragment.chargeBreakdown.compactMap {
+                .init(with: $0)
+            },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: nil,
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                dueDate: nil,
+                chargeMethod: data.chargeMethod
+            ),
             addedToThePayment: {
                 if let nextPayment {
                     [nextPayment]

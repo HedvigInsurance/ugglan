@@ -18,6 +18,7 @@ struct PaymentDetailsView: View {
                 contractsSection
                 referralSection
                 paymentDetailsSection
+                paymentStatusView
             }
             .padding(.vertical, .padding8)
         }
@@ -73,7 +74,6 @@ struct PaymentDetailsView: View {
         list.append(("carriedAdjustment", AnyView(carriedAdjustmentView)))
         list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
         list.append(("total", AnyView(total)))
-        list.append(("paymentDue", AnyView(paymentDue)))
         if let paymentDetails = data.paymentChargeData {
             list.append(("bankDetails", AnyView(bankDetails(data: paymentDetails))))
         }
@@ -112,7 +112,6 @@ struct PaymentDetailsView: View {
         }
     }
 
-    @ViewBuilder
     private var total: some View {
         hRow {
             hText(L10n.PaymentDetails.ReceiptCard.total)
@@ -134,7 +133,7 @@ struct PaymentDetailsView: View {
         .accessibilityElement(children: .combine)
     }
 
-    @ViewBuilder var paymentDue: some View {
+    var paymentDue: some View {
         hRow {
             VStack(spacing: .padding16) {
                 HStack {
@@ -143,22 +142,29 @@ struct PaymentDetailsView: View {
                     hText(data.payment.date.displayDate)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                if data.status != .upcoming {
-                    PaymentStatusView(status: data.status) { action in
-                        switch action {
-                        case .viewAddedToPayment:
-                            if let nextPayment = data.addedToThePayment?.first {
-                                router.push(nextPayment)
-                            }
-                        }
-                    }
-                }
             }
         }
         .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
+    var paymentStatusView: some View {
+        if data.status != .upcoming {
+            hSection {
+                PaymentStatusView(status: data.status, chargeMethod: data.paymentChargeData?.chargeMethod ?? .unknown) {
+                    action in
+                    switch action {
+                    case .viewAddedToPayment:
+                        if let nextPayment = data.addedToThePayment?.first {
+                            router.push(nextPayment)
+                        }
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
     private func bankDetails(data: PaymentChargeData) -> some View {
         PaymentMethodView(data: data, withDate: false)
             .hWithoutHorizontalPadding([.section, .row, .divider])

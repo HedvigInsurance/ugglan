@@ -30,7 +30,7 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
         dueDate: Int?,
         chargeMethod: PaymentChargeMethod
     ) {
-        self.paymentMethod = paymentMethod
+        self.paymentMethod = paymentMethod ?? chargeMethod.paymentMethod
         self.bankName = bankName
         self.account = account
         self.mandate = mandate
@@ -66,6 +66,28 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
             case .trustly: L10n.paymentsPaymentDetailsInfoDescription
             case .kivra: L10n.kivraPaymentInfo
             default: nil
+            }
+        }
+
+        fileprivate var paymentMethod: String? {
+            switch self {
+            case .trustly:
+                L10n.paymentsAutogiroLabel
+            case .kivra:
+                L10n.paymentsInvoice
+            case .unknown:
+                nil
+            }
+        }
+
+        var infoTextForPendingStatus: String? {
+            switch self {
+            case .trustly:
+                L10n.paymentsInProgress
+            case .kivra:
+                L10n.paymentsInProgressKivra
+            case .unknown:
+                nil
             }
         }
     }
