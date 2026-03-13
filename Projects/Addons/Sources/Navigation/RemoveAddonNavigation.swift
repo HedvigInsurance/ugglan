@@ -5,7 +5,7 @@ import hCoreUI
 
 @MainActor
 class RemoveAddonNavigationViewModel: ObservableObject {
-    let router = Router()
+    let router = NavigationRouter()
     let removeAddonVm: RemoveAddonViewModel
     @Published var isProcessingPresented = false
     @Published var document: hPDFDocument?
@@ -29,7 +29,7 @@ public struct RemoveAddonNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: removeAddonNavigationVm.router,
             options: [.extendedNavigationWidth],
             tracking: RemoveAddonTrackingType.removeAddonScreen
@@ -41,13 +41,13 @@ public struct RemoveAddonNavigation: View {
                         switch action {
                         case .summary:
                             RemoveAddonSummaryScreen(removeAddonNavigationVm)
-                                .configureTitle(L10n.offerUpdateSummaryTitle)
+                                .navigationTitle(L10n.offerUpdateSummaryTitle)
                                 .withAlertDismiss()
                         }
                     }
             } else {
                 RemoveAddonSummaryScreen(removeAddonNavigationVm)
-                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .navigationTitle(L10n.offerUpdateSummaryTitle)
                     .withAlertDismiss()
             }
         }

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct MissingCoInsuredAlert: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     private var onButtonAction: () -> Void
     let config: InsuredPeopleConfig
     public init(

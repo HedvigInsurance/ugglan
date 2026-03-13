@@ -31,7 +31,7 @@ public class SubmitClaimNavigationViewModel: ObservableObject {
     @Published var submitClaimCheckoutVm = SubmitClaimCheckoutViewModel()
     @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
     @Published var startClaimState = ProcessingState.success
-    var router = Router()
+    var router = NavigationRouter()
     private let submitClaimService = SubmitClaimService()
 
     @Published var currentClaimId: String? {
@@ -237,7 +237,7 @@ public struct SubmitClaimNavigation: View {
     public init() {}
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: claimsNavigationVm.router,
             options: [.navigationType(type: .withProgress), .extendedNavigationWidth],
             tracking: ClaimsDetentType.entryPoints
@@ -265,7 +265,7 @@ public struct SubmitClaimNavigation: View {
                             SubmitClaimSingleItemScreen()
                         case .summary:
                             SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
-                                .configureTitle(L10n.Claims.Summary.Screen.title)
+                                .navigationTitle(L10n.Claims.Summary.Screen.title)
                         case .deflect:
                             openDeflectStepScreen()
                         case .emergencySelect:
@@ -276,7 +276,7 @@ public struct SubmitClaimNavigation: View {
                             SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
                         case .checkOutNoRepair:
                             SubmitClaimCheckoutScreen(vm: claimsNavigationVm.submitClaimCheckoutVm)
-                                .configureTitle(L10n.Claims.Payout.Summary.title)
+                                .navigationTitle(L10n.Claims.Payout.Summary.title)
                         }
                     }
                     .addDismissClaimsFlow()
@@ -340,7 +340,7 @@ public struct SubmitClaimNavigation: View {
             transitionType: .detent(style: [.height])
         ) {
             PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
-                .configureTitle(L10n.submitClaimPurchasePriceTitle)
+                .navigationTitle(L10n.submitClaimPurchasePriceTitle)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.priceInput)
         }
         .detent(
@@ -388,7 +388,7 @@ public struct SubmitClaimNavigation: View {
                 )
             }
         }
-        .configureTitle(model?.id.title ?? "")
+        .navigationTitle(model?.id.title ?? "")
     }
 
     private func showClaimFailureScreen() -> some View {
@@ -422,7 +422,7 @@ public struct SubmitClaimNavigation: View {
         ClaimFilesView(endPoint: model.endpoint, files: model.files) { _ in
             claimsNavigationVm.router.dismiss()
         }
-        .configureTitle(L10n.ClaimStatusDetail.addedFiles)
+        .navigationTitle(L10n.ClaimStatusDetail.addedFiles)
     }
 }
 

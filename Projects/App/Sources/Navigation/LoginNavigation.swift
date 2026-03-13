@@ -9,11 +9,11 @@ import hCoreUI
 
 struct LoginNavigation: View {
     @ObservedObject var vm: NotLoggedViewModel
-    @StateObject private var router = Router()
+    @StateObject private var router = NavigationRouter()
     @StateObject private var otpState = OTPState()
 
     var body: some View {
-        RouterHost(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
+        hNavigationStack(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, transitionType: .detent(style: [.height])) {

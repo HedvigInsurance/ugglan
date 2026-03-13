@@ -25,7 +25,7 @@ private struct DismissButton: ViewModifier {
     let reducedTopSpacing: Int
     let withAlert: Bool
     let message: String?
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @State var isAlertPresented = false
 
     init(
@@ -75,7 +75,7 @@ private struct DismissAlertPopup: ViewModifier {
     let cancelButton: String
 
     @Binding var isPresented: Bool
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     init(
         title: String = L10n.General.areYouSure,

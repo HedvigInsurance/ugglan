@@ -8,7 +8,7 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
@@ -186,7 +186,7 @@ struct ScrollToBottomButton: View {
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     var body: some View {
         VStack {
             if step.state.showInput {
@@ -353,7 +353,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
     let openChat: () -> Void
-    let router = Router()
+    let router = NavigationRouter()
     private let input: StartClaimInput
     // MARK: - Initialization
     init(

@@ -6,7 +6,7 @@ import hCoreUI
 struct PaymentDetailsView: View {
     private let data: PaymentData
     @State var expandedContracts: [String] = []
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     init(data: PaymentData) {
         self.data = data

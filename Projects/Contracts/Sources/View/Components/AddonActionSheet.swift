@@ -6,7 +6,7 @@ import hCoreUI
 struct AddonActionSheet: View {
     let addonAction: AddonAction
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
-    private let router = Router()
+    private let router = NavigationRouter()
     @State private var selectedOption: AddonAction.AddonActionType?
     var body: some View {
         hForm {

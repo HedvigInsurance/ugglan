@@ -4,7 +4,7 @@ import hCoreUI
 
 struct MovingFlowAddressScreen: View {
     @ObservedObject var vm: AddressInputModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(

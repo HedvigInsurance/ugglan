@@ -38,8 +38,18 @@ public class hNavigationController: hNavigationBaseController {
 }
 
 class NavBar: UINavigationBar {
-    var additionalHeight: CGFloat?
-    var extendedNavigationWidth: Bool = false
+    private static var additionalHeightKey: UInt8 = 0
+    private static var extendedWidthKey: UInt8 = 0
+    var additionalHeight: CGFloat? {
+        get { objc_getAssociatedObject(self, &NavBar.additionalHeightKey) as? CGFloat }
+        set {
+            objc_setAssociatedObject(self, &NavBar.additionalHeightKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    var extendedNavigationWidth: Bool {
+        get { objc_getAssociatedObject(self, &NavBar.extendedWidthKey) as? Bool ?? false }
+        set { objc_setAssociatedObject(self, &NavBar.extendedWidthKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         if let additionalHeight {
             return CGSize(width: size.width, height: size.height + additionalHeight)
@@ -111,7 +121,13 @@ public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
 }
 
 class LargeNavBar: UINavigationBar {
-    var extendedNavigationWidth: Bool = false
+    private static var extendedWidthKey: UInt8 = 0
+    var extendedNavigationWidth: Bool {
+        get { objc_getAssociatedObject(self, &LargeNavBar.extendedWidthKey) as? Bool ?? false }
+        set {
+            objc_setAssociatedObject(self, &LargeNavBar.extendedWidthKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
     override func sizeThatFits(_: CGSize) -> CGSize {
         CGSize(
             width: UIScreen.main.bounds.size.width,

@@ -11,7 +11,7 @@ import hCoreUI
 
 private struct ClaimErrorTrackerModifier: ViewModifier {
     @Binding var processingState: ProcessingState
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     func body(content: Content) -> some View {
         content.trackErrorState(for: $processingState)
             .hStateViewButtonConfig(

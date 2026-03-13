@@ -100,7 +100,7 @@ struct SelectClaimEntrypointType: View {
     @State var buttonIsLoading: Bool = false
 
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     init() {}
 

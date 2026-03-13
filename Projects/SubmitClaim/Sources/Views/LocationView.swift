@@ -4,10 +4,10 @@ import hCoreUI
 
 struct LocationView: View {
     @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-    @ObservedObject var router: Router
+    @ObservedObject var router: NavigationRouter
     let itemPickerConfig: ItemConfig<ClaimFlowLocationOptionModel>
 
-    init(claimsNavigationVm: SubmitClaimNavigationViewModel, router: Router) {
+    init(claimsNavigationVm: SubmitClaimNavigationViewModel, router: NavigationRouter) {
         self.claimsNavigationVm = claimsNavigationVm
         self.router = router
         itemPickerConfig = .init(

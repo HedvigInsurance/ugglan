@@ -437,9 +437,9 @@ class DeepLinkHandler {
 
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
-    @StateObject private var router = Router()
-    @StateObject private var foreverRouter = Router()
-    @StateObject private var paymentsRouter = Router()
+    @StateObject private var router = NavigationRouter()
+    @StateObject private var foreverRouter = NavigationRouter()
+    @StateObject private var paymentsRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
@@ -644,7 +644,7 @@ struct HomeTab: View {
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
     @State var showOldSubmitClaimFlow = false
     var body: some View {
-        RouterHost(router: homeNavigationVm.router, tracking: self) {
+        hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(claim: claim, type: .claim(id: claim.id))
@@ -727,7 +727,7 @@ struct HomeTab: View {
                             )
                         }
                     )
-                    .configureTitle(model.id.title)
+                    .navigationTitle(model.id.title)
                     .withDismissButton()
                     .embededInNavigation(
                         options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -746,7 +746,7 @@ struct HomeTab: View {
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: LoggedInNavigationDetentType.firstVet
@@ -800,7 +800,7 @@ struct HomeTab: View {
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
-            .configureTitle(L10n.claimsYourClaim)
+            .navigationTitle(L10n.claimsYourClaim)
             .onDeinit {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -862,7 +862,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isAddonPresented: ChangeAddonInput?
     @Published var isInsuranceEvidencePresented = false
     @Published var isAddonErrorPresented: String?
-    let addonErrorRouter = Router()
+    let addonErrorRouter = NavigationRouter()
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?

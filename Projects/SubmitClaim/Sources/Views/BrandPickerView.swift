@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 struct BrandPickerView: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     var body: some View {
