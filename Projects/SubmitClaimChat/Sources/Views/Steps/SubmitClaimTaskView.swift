@@ -4,29 +4,30 @@ import hCoreUI
 
 struct SubmitClaimTaskResultView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
+    @State private var isLoading = true
+
     var body: some View {
-        HStack {
-            hCoreUIAssets.checkmark.view
-                .resizable()
-                .frame(width: 20, height: 20)
-                .foregroundColor(hSignalColor.Green.element)
-                .opacity(viewModel.taskModel.isCompleted ? 1 : 0)
-                .overlay {
-                    if !viewModel.taskModel.isCompleted {
-                        CircularProgressView()
-                            .accessibilityHidden(true)
-                    }
-                }
+        HStack(spacing: .padding4) {
+            ClaimChatLoadingAnimationView(isLoading: $isLoading)
+                .frame(
+                    width: ClaimChatLoadingAnimationView.Constants.animationSize,
+                    height: ClaimChatLoadingAnimationView.Constants.animationSize
+                )
+                .padding(.horizontal, -.padding2)
             hText(viewModel.taskModel.description, style: .body1)
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
         .clipped()
-        .hPillStyle(color: .grey, colorLevel: .two)
-        .hFieldSize(.capsuleShape)
+        .padding(.top, -.padding16)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(L10n.claimChatTaskContentDescription)
+        .onChange(of: viewModel.taskModel.isCompleted) { completed in
+            if completed {
+                isLoading = false
+            }
+        }
     }
 }
 
