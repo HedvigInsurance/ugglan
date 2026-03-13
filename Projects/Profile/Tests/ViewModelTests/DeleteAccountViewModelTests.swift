@@ -94,6 +94,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     terminationDate: nil,
                     supportsAddressChange: true,
                     supportsCoInsured: true,
+                    supportsCoOwners: false,
                     supportsTravelCertificate: true,
                     supportsChangeTier: true,
                     upcomingChangedAgreement: nil,
@@ -102,7 +103,8 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     lastName: "last name",
                     ssn: nil,
                     typeOfContract: .seApartmentBrf,
-                    coInsured: []
+                    coInsured: [],
+                    coOwners: [],
                 )
             ])
         )

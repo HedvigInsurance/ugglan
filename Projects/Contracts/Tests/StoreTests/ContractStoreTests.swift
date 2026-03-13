@@ -102,6 +102,7 @@ extension ContractsStack {
                 terminationDate: nil,
                 supportsAddressChange: true,
                 supportsCoInsured: true,
+                supportsCoOwners: false,
                 supportsTravelCertificate: true,
                 supportsChangeTier: true,
                 upcomingChangedAgreement: nil,
@@ -110,7 +111,8 @@ extension ContractsStack {
                 lastName: "last",
                 ssn: nil,
                 typeOfContract: .seHouse,
-                coInsured: []
+                coInsured: [],
+                coOwners: [],
             )
         ],
         pendingContracts: [],
