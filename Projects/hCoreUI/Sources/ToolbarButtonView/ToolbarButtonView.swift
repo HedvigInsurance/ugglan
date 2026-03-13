@@ -1,11 +1,12 @@
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 public struct ToolbarButtonView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
-    @Binding var types: [ToolbarOptionType]
+    let type: ToolbarOptionType
     let placement: ListToolBarPlacement
     private var spacing: CGFloat {
         if #available(iOS 18.0, *) {
@@ -16,56 +17,51 @@ public struct ToolbarButtonView: View {
     }
 
     public init(
-        types: Binding<[ToolbarOptionType]>,
+        type: ToolbarOptionType,
         placement: ListToolBarPlacement,
         action: @escaping (_: ToolbarOptionType) -> Void,
     ) {
-        _types = types
+        self.type = type
         self.placement = placement
         self.action = action
     }
 
     public var body: some View {
-        HStack(spacing: spacing) {
-            ForEach(Array(types.enumerated()), id: \.element.identifiableId) { _, type in
-                VStack(alignment: .trailing) {
-                    SwiftUI.Button(action: {
-                        withAnimation(.spring()) {
-                            displayTooltip = false
-                        }
-                        action(type)
-                    }) {
-                        ZStack(alignment: .topTrailing) {
-                            if type.shouldAnimate {
-                                imageFor(type: type)
-                                    .rotate()
-                            } else {
-                                imageFor(type: type)
-                            }
-                            if type.showBadge {
-                                Circle()
-                                    .fill(hSignalColor.Red.element)
-                                    .frame(width: 10, height: 10)
-                                    .offset(x: -.padding4, y: .padding4)
-                                    .accessibilityHidden(true)
-                            }
-                        }
-                    }
-                    .accessibilityLabel(type.displayName)
+        VStack(alignment: .trailing) {
+            SwiftUI.Button(action: {
+                withAnimation(.spring()) {
+                    displayTooltip = false
                 }
-                .showTooltip(type: type, placement: placement)
+                action(type)
+            }) {
+                ZStack(alignment: .topTrailing) {
+                    if type.shouldAnimate {
+                        imageFor(type: type)
+                            .rotate()
+                    } else {
+                        imageFor(type: type)
+                    }
+                    if type.showBadge && !isLiquidGlassEnabled {
+                        Circle()
+                            .fill(hSignalColor.Red.element)
+                            .frame(width: 10, height: 10)
+                            .offset(x: -.padding4, y: .padding4)
+                    }
+                }
             }
         }
+        .showTooltip(type: type, placement: placement)
     }
 
     private func imageFor(type: ToolbarOptionType) -> some View {
-        Image(uiImage: type.image)
+        type.image
             .resizable()
             .scaledToFill()
             .accessibilityHidden(true)
             .frame(width: type.imageSize, height: type.imageSize)
-            .foregroundColor(hFillColor.Opaque.primary)
+            .foregroundColor(type.imageTintColor)
             .shadow(color: type.shadowColor, radius: 1, x: 0, y: 1)
+            .accessibilityValue(type.accessibilityDisplayName)
     }
 }
 
@@ -135,31 +131,68 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                             leading
                     )
             } else {
-                let toolbarView = ToolbarButtonView(types: $types, placement: placement, action: action)
+                let view = HStack {
+                    ForEach(types, id: \.self) { type in
+                        ToolbarButtonView(type: type, placement: placement, action: action)
+                    }
+                }
                 content
-                    .navigationBarItems(
-                        trailing:
-                            trailing != nil && showTrailing ? trailing?.asAnyView : toolbarView.asAnyView
-                    )
+                    .toolbar {
+                        ToolbarItem(
+                            placement: .topBarTrailing
+                        ) {
+                            trailing != nil && showTrailing ? trailing?.asAnyView : view.asAnyView
+                        }
+                    }
             }
         }
     }
 
     private func setNavigation(_ vc: UIViewController? = nil) {
         if let leading, let vc = vc, showLeading {
-            setView(for: leading, vc: vc, placement: .leading)
+            setNavigationBarItem(for: leading, vc: vc, placement: .leading)
         }
         if let trailing, let vc = vc, showTrailing {
-            setView(for: trailing, vc: vc, placement: .trailing)
+            setNavigationBarItem(for: trailing, vc: vc, placement: .trailing)
         } else {
             if let vc = navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-                let viewToInject = ToolbarButtonView(types: $types, placement: placement, action: action)
-                setView(for: viewToInject, vc: vc, placement: placement)
+                setNavigationBarItemsUsingTypes(for: vc)
             }
         }
     }
 
-    private func setView(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
+    private func setNavigationBarItemsUsingTypes(for vc: UIViewController) {
+        var buttonItems = [UIBarButtonItem]()
+        for (index, type) in types.reversed().enumerated() {
+            let viewToInject = ToolbarButtonView(type: type, placement: placement, action: action)
+            let hostingVc = UIHostingController(rootView: viewToInject.asAnyView)
+            let viewToPlace = hostingVc.view!
+            viewToPlace.backgroundColor = .clear
+            let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+            buttonItems.append(uiBarButtonItem)
+            if #available(iOS 26.0, *) {
+                if type.showBadge {
+                    var badge: UIBarButtonItem.Badge = .string("'")
+                    badge.foregroundColor = UIColor.red
+                    badge.backgroundColor = UIColor.red
+                    badge.font = .systemFont(ofSize: 5)
+                    uiBarButtonItem.badge = badge
+                }
+            }
+            if index < types.count {
+                if #available(iOS 26.0, *) {
+                    buttonItems.append(.fixedSpace())
+                }
+            }
+        }
+        if placement == .leading {
+            vc.navigationItem.setLeftBarButtonItems(buttonItems, animated: false)
+        } else {
+            vc.navigationItem.setRightBarButtonItems(buttonItems, animated: false)
+        }
+    }
+
+    private func setNavigationBarItem(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
         let hostingVc = UIHostingController(rootView: view.asAnyView)
         let viewToPlace = hostingVc.view!
         viewToPlace.backgroundColor = .clear
