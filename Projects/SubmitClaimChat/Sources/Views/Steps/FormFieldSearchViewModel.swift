@@ -21,6 +21,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = L10n.searchPlaceholder
+
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.hidesNavigationBarDuringPresentation = false
 
@@ -129,6 +130,10 @@ extension FormFieldSearchViewModel: UISearchResultsUpdating {
         MainActor.assumeIsolated {
             let text = searchController.searchBar.text ?? ""
             searchSubject.send(text)
+
+            if let cancelButton = searchController.searchBar.value(forKey: "cancelButton") as? UIButton {
+                cancelButton.setTitle(L10n.generalCancelButton, for: .normal)
+            }
         }
     }
 }
