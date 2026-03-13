@@ -19,21 +19,18 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
     let intentViewModel = IntentViewModel()
 }
 
-// TODO: fix
 extension EditCoInsuredScreenType {
     func getTrackingType(for config: StakeHoldersConfig) -> EditCoInsuredScreenTrackingType {
         switch self {
-        case .newInsurance:
-            return .newInsurance
+        case .newInsurance: .newInsurance
         case .none:
             if config.numberOfMissingStakeHoldersWithoutTermination > 0 {
-                if config.fromInfoCard {
-                    return .newInsurance
-                } else {
-                    return .removeCoInsured
-                }
+                config.fromInfoCard
+                    ? .newInsurance
+                    : .removeCoInsured
+            } else {
+                .insuredPeople
             }
-            return .insuredPeople
         }
     }
 }
@@ -91,9 +88,9 @@ public struct EditCoInsuredNavigation: View {
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: openSpecificScreen.getTrackingType(for: config)
         ) {
-            if openSpecificScreen == .newInsurance {
-                openNewInsuredPeopleScreen()
-            } else if openSpecificScreen == .none {
+            switch openSpecificScreen {
+            case .newInsurance: openNewInsuredPeopleScreen()
+            case .none:
                 if config.numberOfMissingStakeHoldersWithoutTermination > 0 {
                     if config.fromInfoCard {
                         openNewInsuredPeopleScreen()
@@ -101,7 +98,7 @@ public struct EditCoInsuredNavigation: View {
                         openRemoveCoInsuredScreen()
                     }
                 } else {
-                    openNewInsuredPeopleScreen()
+                    openInsuredPeopleScreen()
                 }
             }
         }

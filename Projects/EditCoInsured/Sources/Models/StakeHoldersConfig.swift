@@ -173,7 +173,7 @@ extension StakeHolderType {
     public var addPersonalInfo: String {
         switch self {
         case .coInsured: L10n.contractCoinsuredAddPersonalInfo
-        case .coOwner: "You need to add personal information to your co-owners"
+        case .coOwner: L10n.contractCoownersAddPersonalInfo
         }
     }
 }

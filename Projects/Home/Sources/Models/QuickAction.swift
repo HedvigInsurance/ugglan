@@ -23,7 +23,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .connectPayments: L10n.hcQuickActionsPaymentsTitle
         case .changeAddress: L10n.hcQuickActionsChangeAddressTitle
         case .editCoInsured: L10n.hcQuickActionsCoInsuredTitle
-        case .editCoOwners: "Edit Co-Owners"  // TODO: lokalise
+        case .editCoOwners: L10n.editCoownerSubtitle  // TODO: use lokalise hcQuickAction?
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation: L10n.hcQuickActionsTerminationTitle
         case .removeAddons: L10n.removeAddonButtonTitle
@@ -39,7 +39,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .connectPayments: L10n.hcQuickActionsPaymentsSubtitle
         case .changeAddress: L10n.hcQuickActionsChangeAddressSubtitle
         case .editCoInsured: L10n.hcQuickActionsCoInsuredSubtitle
-        case .editCoOwners: "Edit your co-owners"  // TODO: lokalise
+        case .editCoOwners: L10n.editCoownerSubtitle  // TODO: use lokalise hcQuickAction?
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation: L10n.hcQuickActionsTerminationSubtitle
         case .removeAddons: L10n.hcQuickActionsRemoveAddonSubtitle
