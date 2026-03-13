@@ -21,6 +21,11 @@ public protocol ClaimIntentClient {
     func claimIntentSkipStep(stepId: String) async throws -> ClaimIntentType?
     func claimIntentRegretStep(stepId: String) async throws -> ClaimIntentType?
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentType?
+    func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> FormFieldSearchResult
 }
 
 public struct StartClaimInput: Equatable, Identifiable {
@@ -98,5 +103,13 @@ class ClaimIntentService {
     func claimIntentRegretStep(stepId: String) async throws -> ClaimIntentType? {
         let data = try await client.claimIntentRegretStep(stepId: stepId)
         return data
+    }
+
+    func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> FormFieldSearchResult {
+        try await client.claimIntentFormFieldSearch(stepId: stepId, fieldId: fieldId, query: query)
     }
 }

@@ -24,12 +24,16 @@ fragment ContractFragment on Contract {
       coInsured {
         ...CoInsuredFragment
         }
+      coOwners {
+        ...CoOwnerFragment
+        }
       exposureDisplayName
       exposureDisplayNameShort
       id
       masterInceptionDate
       supportsMoving
       supportsCoInsured
+      supportsCoOwners
       supportsTravelCertificate
       supportsChangeTier
       terminationDate
@@ -39,6 +43,17 @@ fragment ContractFragment on Contract {
 }
 
 fragment CoInsuredFragment on ContractCoInsured {
+    id
+    birthdate
+    firstName
+    lastName
+    hasMissingInfo
+    ssn
+    activatesOn
+    terminatesOn
+}
+
+fragment CoOwnerFragment on ContractCoOwner {
     id
     birthdate
     firstName

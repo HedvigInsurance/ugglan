@@ -29,6 +29,10 @@ extension EditType {
             editTypes.append(.coInsured)
         }
 
+        if contract.supportsCoOwners {
+            editTypes.append(.coOwners)
+        }
+
         if contract.supportsAddonRemoval {
             editTypes.append(.removeAddons)
         }

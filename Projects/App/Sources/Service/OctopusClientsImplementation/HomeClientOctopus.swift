@@ -51,19 +51,24 @@ class HomeClientOctopus: HomeClient {
                 query: OctopusGraphQL.MemberActionsQuery()
             )
 
+        guard let actions = data.currentMember.memberActions else { return [] }
+
         var quickActions = [QuickAction]()
-        let actions = data.currentMember.memberActions
         var contractAction = [QuickAction]()
 
-        if actions?.isEditCoInsuredEnabled == true {
+        if actions.isEditCoInsuredEnabled {
             contractAction.append(.editCoInsured)
         }
 
-        if actions?.isChangeTierEnabled == true {
+        if actions.isEditCoOwnersEnabled {
+            contractAction.append(.editCoOwners)
+        }
+
+        if actions.isChangeTierEnabled {
             contractAction.append(.upgradeCoverage)
         }
 
-        if actions?.isCancelInsuranceEnabled == true, featureFlags.isTerminationFlowEnabled {
+        if actions.isCancelInsuranceEnabled, featureFlags.isTerminationFlowEnabled {
             contractAction.append(.cancellation)
         }
 
@@ -71,17 +76,17 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
 
-        if actions?.isMovingEnabled == true, featureFlags.isMovingFlowEnabled {
+        if actions.isMovingEnabled, featureFlags.isMovingFlowEnabled {
             quickActions.append(.changeAddress)
         }
 
-        if actions?.isConnectPaymentEnabled == true {
+        if actions.isConnectPaymentEnabled {
             quickActions.append(.connectPayments)
         }
-        if actions?.isTravelCertificateEnabled == true {
+        if actions.isTravelCertificateEnabled == true {
             quickActions.append(.travelInsurance)
         }
-        if let firstVetSections = actions?.firstVetAction?.sections {
+        if let firstVetSections = actions.firstVetAction?.sections {
             let firstVetPartners = firstVetSections.compactMap {
                 FirstVetPartner(
                     id: $0.title ?? "",
@@ -93,7 +98,7 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.firstVet(partners: firstVetPartners))
         }
 
-        if let sickAbroadPartners = actions?.sickAbroadAction?.deflectPartners {
+        if let sickAbroadPartners = actions.sickAbroadAction?.deflectPartners {
             let firstVetPartners = sickAbroadPartners.compactMap {
                 SickAbroadPartner(
                     id: $0.id,

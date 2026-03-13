@@ -65,7 +65,10 @@ struct CoInusuredInputScreen: View {
                 if vm.actionType == .delete {
                     DeleteCoInsuredFields(vm: vm)
                 } else {
-                    AddCoInsuredFieldsView(vm: vm, intentViewModel: intentViewModel)
+                    AddCoInsuredFieldsView(
+                        vm: vm,
+                        intentViewModel: intentViewModel
+                    )
                 }
                 infoCardView
                 CoInsuredInputButton(
@@ -83,7 +86,10 @@ struct CoInusuredInputScreen: View {
     private var infoCardView: some View {
         if vm.showInfoForMissingSSN {
             hSection {
-                InfoCard(text: L10n.coinsuredWithoutSsnInfo, type: .attention)
+                InfoCard(
+                    text: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType.withoutSsnInfo,
+                    type: .attention
+                )
             }
             .sectionContainerStyle(.transparent)
         }
@@ -254,9 +260,9 @@ struct DeleteCoInsuredFields: View {
 
 #Preview {
     CoInusuredInputScreen(
-        vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
+        vm: .init(coInsuredModel: StakeHolder(), actionType: .add, contractId: ""),
         title: "title",
-        editCoInsuredNavigation: .init(config: .init())
+        editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured))
     )
 }
 

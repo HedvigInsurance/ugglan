@@ -9,6 +9,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
     case connectPayments
     case changeAddress
     case editCoInsured
+    case editCoOwners
     case upgradeCoverage
     case cancellation
     case removeAddons
@@ -22,6 +23,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .connectPayments: L10n.hcQuickActionsPaymentsTitle
         case .changeAddress: L10n.hcQuickActionsChangeAddressTitle
         case .editCoInsured: L10n.hcQuickActionsCoInsuredTitle
+        case .editCoOwners: L10n.editCoownerSubtitle  // TODO: use lokalise hcQuickAction?
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation: L10n.hcQuickActionsTerminationTitle
         case .removeAddons: L10n.removeAddonButtonTitle
@@ -37,6 +39,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .connectPayments: L10n.hcQuickActionsPaymentsSubtitle
         case .changeAddress: L10n.hcQuickActionsChangeAddressSubtitle
         case .editCoInsured: L10n.hcQuickActionsCoInsuredSubtitle
+        case .editCoOwners: L10n.editCoownerSubtitle  // TODO: use lokalise hcQuickAction?
         case .upgradeCoverage: L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation: L10n.hcQuickActionsTerminationSubtitle
         case .removeAddons: L10n.hcQuickActionsRemoveAddonSubtitle
@@ -58,6 +61,7 @@ extension QuickAction {
         case .connectPayments: nil
         case .changeAddress: .changeAddress
         case .editCoInsured: .coInsured
+        case .editCoOwners: .coOwners
         case .upgradeCoverage: .changeTier
         case .cancellation: .cancellation
         case .removeAddons: .removeAddons
@@ -70,6 +74,7 @@ extension EditType {
         switch self {
         case .changeAddress: .changeAddress
         case .coInsured: .editCoInsured
+        case .coOwners: .editCoOwners
         case .changeTier: .upgradeCoverage
         case .cancellation: .cancellation
         case .removeAddons: .removeAddons

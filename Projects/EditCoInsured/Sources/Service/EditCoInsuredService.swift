@@ -15,9 +15,17 @@ public class EditCoInsuredService {
         return try await service.getPersonalInformation(SSN: SSN)
     }
 
-    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
+    func sendIntent(
+        contractId: String,
+        coInsured: [StakeHolder],
+        stakeHolderType: StakeHolderType
+    ) async throws -> Intent {
         log.info("EditCoInsuredService: sendIntent", error: nil, attributes: nil)
-        return try await service.sendIntent(contractId: contractId, coInsured: coInsured)
+        return try await service.sendIntent(
+            contractId: contractId,
+            coInsured: coInsured,
+            stakeHolderType: stakeHolderType
+        )
     }
 
     public func fetchContracts() async throws -> [Contract] {
