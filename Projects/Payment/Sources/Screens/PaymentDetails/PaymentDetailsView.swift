@@ -74,6 +74,7 @@ struct PaymentDetailsView: View {
         list.append(("carriedAdjustment", AnyView(carriedAdjustmentView)))
         list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
         list.append(("total", AnyView(total)))
+        list.append(("paymentDue", AnyView(paymentDue)))
         if let paymentDetails = data.paymentChargeData {
             list.append(("bankDetails", AnyView(bankDetails(data: paymentDetails))))
         }
