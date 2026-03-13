@@ -12,7 +12,28 @@ struct PaymentMethodScreen: View {
                 .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
-            ConnectPaymentBottomView(alwaysShowButton: true)
+            if data.chargeMethod == .trustly {
+                ConnectPaymentBottomView(alwaysShowButton: true)
+            } else if data.chargeMethod == .kivra {
+                hSection {
+                    InfoCard(
+                        text:
+                            L10n.kivraPaymentInfo,
+                        type: .info
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: L10n.openChat,
+                                buttonAction: {
+                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                                }
+                            )
+                        ]
+                    )
+                }
+                .sectionContainerStyle(.transparent)
+            }
         }
     }
 }
@@ -25,7 +46,8 @@ struct PaymentMethodScreen: View {
             bankName: "bank name",
             account: "account",
             mandate: "mandate",
-            chargingDayInTheMonth: 26
+            dueDate: 26,
+            chargeMethod: .trustly
         )
     )
 }
@@ -38,11 +60,11 @@ struct PaymentMethodView: View {
     var body: some View {
         hSection {
             regularRow(for: L10n.paymentsPaymentMethod, and: data.paymentMethod)
-            if withDate, let dueDate = data.chargingDayInTheMonth?.ordinalDate() {
+            if withDate, let dueDate = data.dueDate?.ordinalDate() {
                 infoRow(
                     for: L10n.paymentsPaymentDue,
                     and: L10n.paymentsDueDescription(dueDate),
-                    infoText: L10n.paymentsPaymentDueInfo(dueDate)
+                    infoText: data.chargeMethod.infoText(for: dueDate)
                 )
             }
             regularRow(for: L10n.paymentsAccount, and: data.account)
@@ -68,20 +90,28 @@ struct PaymentMethodView: View {
         }
     }
 
-    private func infoRow(for title: String, and value: String, infoText: String) -> some View {
-        hRow {
+    @ViewBuilder
+    private func infoRow(for title: String, and value: String, infoText: String?) -> some View {
+        let row = hRow {
             hText(title)
             Spacer()
         }
         .withCustomAccessory {
             HStack {
                 hText(value)
-                hCoreUIAssets.infoFilled.view
+                if infoText != nil {
+                    hCoreUIAssets.infoFilled.view
+                }
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
-        .onTap {
-            self.infoText = infoText
+
+        if let infoText {
+            row.onTap {
+                self.infoText = infoText
+            }
+        } else {
+            row
         }
     }
 }

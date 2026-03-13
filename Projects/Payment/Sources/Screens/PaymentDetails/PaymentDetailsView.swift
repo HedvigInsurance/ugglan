@@ -18,6 +18,7 @@ struct PaymentDetailsView: View {
                 contractsSection
                 referralSection
                 paymentDetailsSection
+                paymentStatusView
             }
             .padding(.vertical, .padding8)
         }
@@ -59,7 +60,7 @@ struct PaymentDetailsView: View {
         }
         .withHeader(
             title: L10n.PaymentDetails.NavigationBar.title,
-            infoButtonDescription: L10n.paymentsPaymentDetailsInfoDescription,
+            infoButtonDescription: data.paymentChargeData?.chargeMethod.infoText,
             withoutBottomPadding: false
         )
         .sectionContainerStyle(.transparent)
@@ -112,7 +113,6 @@ struct PaymentDetailsView: View {
         }
     }
 
-    @ViewBuilder
     private var total: some View {
         hRow {
             hText(L10n.PaymentDetails.ReceiptCard.total)
@@ -134,7 +134,7 @@ struct PaymentDetailsView: View {
         .accessibilityElement(children: .combine)
     }
 
-    @ViewBuilder var paymentDue: some View {
+    var paymentDue: some View {
         hRow {
             VStack(spacing: .padding16) {
                 HStack {
@@ -143,22 +143,29 @@ struct PaymentDetailsView: View {
                     hText(data.payment.date.displayDate)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                if data.status != .upcoming {
-                    PaymentStatusView(status: data.status) { action in
-                        switch action {
-                        case .viewAddedToPayment:
-                            if let nextPayment = data.addedToThePayment?.first {
-                                router.push(nextPayment)
-                            }
-                        }
-                    }
-                }
             }
         }
         .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
+    var paymentStatusView: some View {
+        if data.status != .upcoming {
+            hSection {
+                PaymentStatusView(status: data.status, chargeMethod: data.paymentChargeData?.chargeMethod ?? .unknown) {
+                    action in
+                    switch action {
+                    case .viewAddedToPayment:
+                        if let nextPayment = data.addedToThePayment?.first {
+                            router.push(nextPayment)
+                        }
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
     private func bankDetails(data: PaymentChargeData) -> some View {
         PaymentMethodView(data: data, withDate: false)
             .hWithoutHorizontalPadding([.section, .row, .divider])
@@ -250,7 +257,8 @@ struct PaymentDetailsView: View {
             bankName: "bank",
             account: "account",
             mandate: "mandate",
-            chargingDayInTheMonth: 20
+            dueDate: 20,
+            chargeMethod: .trustly
         ),
         addedToThePayment: nil
     )
