@@ -555,7 +555,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_INVITE_FRIENDS" = "Dela din kod";
 "PAYMENTS_INVOICE" = "Faktura";
 "PAYMENTS_IN_PROGRESS" = "Betalningen behandlas. Notera att det kan ta 1 till 3 bankdagar innan beloppet dras från ditt konto";
-"PAYMENTS_IN_PROGRESS_KIVRA" = "Du hittar din faktura i Kivra-appen.";
+"PAYMENTS_IN_PROGRESS_KIVRA" = "Du hittar din faktura i Kivra-appen";
 "PAYMENTS_MANDATE" = "Autogiromandat";
 "PAYMENTS_MISSED_PAYMENT" = "Din betalning för perioden %1$@ – %2$@ gick inte igenom. Beloppet har lagts till i denna betalning.";
 "PAYMENTS_NO_HISTORY_DATA" = "Du har ingen betalningshistorik";
