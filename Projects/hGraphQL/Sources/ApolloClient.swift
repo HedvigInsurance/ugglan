@@ -23,6 +23,10 @@ extension ApolloClient {
         bundle?.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
+    internal static var bundleVersion: String {
+        bundle?.infoDictionary?["CFBundleIdentifier"] as? String ?? "0.0.0"
+    }
+
     public static var userAgent: String {
         "\(bundle?.bundleIdentifier ?? "") \(appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
@@ -88,7 +92,14 @@ extension ApolloClient {
             endpointURL: environment.octopusEndpointURL
         )
 
-        let client = ApolloClient(networkTransport: requestChainTransport, store: store)
+        let client = ApolloClient(
+            networkTransport: requestChainTransport,
+            store: store,
+            clientAwarenessMetadata: .init(
+                clientApplicationName: "iOS:\(bundleVersion)",
+                clientApplicationVersion: appVersion
+            )
+        )
 
         return hOctopus(client: client, store: store)
     }
