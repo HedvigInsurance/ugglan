@@ -12,11 +12,14 @@ class AnalyticsService {
     func fetchAndSetUserId() async throws {
         log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
         try await client.fetchAndSetUserId()
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let pushNotificationEnabled = settings.authorizationStatus == .authorized
         setDeviceInfoTask = Task { [weak self] in
             let memberLogDeviceModel = MemberLogDeviceModel(
                 os: UIDevice.current.systemName,
                 brand: "Apple",
-                model: UIDevice.modelName
+                model: UIDevice.modelName,
+                pushNotificationEnabled: pushNotificationEnabled,
             )
             log.info("AnalyticsService: setDeviceInfo \(memberLogDeviceModel.asString)", error: nil, attributes: nil)
             await self?.client.setDeviceInfo(model: memberLogDeviceModel)
@@ -78,7 +81,8 @@ extension MemberLogDeviceModel {
         OctopusGraphQL.MemberLogDeviceInput.init(
             os: self.os,
             brand: self.brand,
-            model: self.model
+            model: self.model,
+            pushNotificationEnabled: GraphQLNullable.some(self.pushNotificationEnabled)
         )
     }
 }
