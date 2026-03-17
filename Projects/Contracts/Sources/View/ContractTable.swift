@@ -183,7 +183,7 @@ struct ContractTable: View {
                         .overlay(
                             Group {
                                 if !isExpanded && index > 0 {
-                                    Color.red.opacity(Double(index) * 0.1)
+                                    Color.clear
                                         .contentShape(Rectangle())
                                         .onTapGesture {
                                             scrollToCardId = contract.id
