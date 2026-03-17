@@ -64,20 +64,22 @@ extension AppDelegate {
         )
 
         Trace.enable(
-            with: .init(
+            with: Trace.Configuration(
                 service: "ios",
                 urlSessionTracking: .init(
-                    firstPartyHostsTracing: .trace(
-                        hosts: [
-                            Environment.current.octopusEndpointURL.host ?? "",
-                            Environment.current.claimsApiURL.host ?? "",
-                            Environment.current.odysseyApiURL.host ?? "",
-                        ]
+                    firstPartyHostsTracing: .traceWithHeaders(
+                        hostsWithHeaders: [
+                            Environment.current.octopusEndpointURL.host ?? "": [TracingHeaderType.datadog],
+                            Environment.current.claimsApiURL.host ?? "": [TracingHeaderType.datadog],
+                            Environment.current.odysseyApiURL.host ?? "": [TracingHeaderType.datadog],
+                        ],
+                        traceControlInjection: .all
                     )
                 ),
                 networkInfoEnabled: true
             )
         )
+
         CrashReporting.enable()
         if Environment.current == .staging || Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
