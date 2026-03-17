@@ -128,9 +128,9 @@ struct ContractTable: View {
                     }
                 }
                 if expanded, let cardId = scrollToCardId {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         withAnimation {
-                            scrollProxy.scrollTo(cardId, anchor: .center)
+                            scrollProxy.scrollTo(cardId, anchor: .bottom)
                         }
                         scrollToCardId = nil
                     }
