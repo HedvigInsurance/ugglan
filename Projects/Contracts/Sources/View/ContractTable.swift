@@ -17,6 +17,7 @@ struct ContractTable: View {
     @StateObject var vm = ContractTableViewModel()
     @State private var cardDrawRotation = false
     @State private var isExpanded = false
+    @State private var scrollToCardId: String?
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
     @InjectObservableObject private var featureFlags: FeatureFlags
@@ -41,88 +42,98 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack(spacing: .padding8) {
-            successView
-                .loadingWithButtonLoading($vm.viewState)
-                .hStateViewButtonConfig(
-                    .init(
-                        actionButton: .init(buttonAction: { [weak store] in
-                            store?.send(.fetchContracts)
-                        }),
-                        dismissButton: nil
+        ScrollViewReader { scrollProxy in
+            VStack(spacing: .padding8) {
+                successView
+                    .loadingWithButtonLoading($vm.viewState)
+                    .hStateViewButtonConfig(
+                        .init(
+                            actionButton: .init(buttonAction: { [weak store] in
+                                store?.send(.fetchContracts)
+                            }),
+                            dismissButton: nil
+                        )
                     )
-                )
-            if !showTerminated {
-                VStack(spacing: .padding8) {
-                    CrossSellingView(withHeader: true)
-                        .padding(.top, .padding8)
+                if !showTerminated {
+                    VStack(spacing: .padding8) {
+                        CrossSellingView(withHeader: true)
+                            .padding(.top, .padding8)
 
-                    addonBannersView
+                        addonBannersView
 
-                    movingToANewHomeView
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.terminatedContracts
-                        }
-                    ) { terminatedContracts in
-                        if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
-                            hSection {
-                                hButton(
-                                    .large,
-                                    .secondary,
-                                    content: .init(
-                                        title: L10n.InsurancesTab.cancelledInsurancesLabel(
-                                            "\(terminatedContracts.count)"
-                                        )
-                                    ),
-                                    {
-                                        router.push(ContractsRouterType.terminatedContracts)
-                                    }
-                                )
-                                .hCustomButtonView {
-                                    hRow {
-                                        HStack {
-                                            hText(
-                                                L10n.InsurancesTab.cancelledInsurancesLabel(
-                                                    "\(terminatedContracts.count)"
-                                                )
-                                            )
-                                            .foregroundColor(hTextColor.Opaque.primary)
-                                            Spacer()
-                                        }
-                                    }
-                                    .withChevronAccessory
-                                    .verticalPadding(0)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                                }
+                        movingToANewHomeView
+                        PresentableStoreLens(
+                            ContractStore.self,
+                            getter: { state in
+                                state.terminatedContracts
                             }
-                            .transition(.slide)
+                        ) { terminatedContracts in
+                            if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
+                                hSection {
+                                    hButton(
+                                        .large,
+                                        .secondary,
+                                        content: .init(
+                                            title: L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                "\(terminatedContracts.count)"
+                                            )
+                                        ),
+                                        {
+                                            router.push(ContractsRouterType.terminatedContracts)
+                                        }
+                                    )
+                                    .hCustomButtonView {
+                                        hRow {
+                                            HStack {
+                                                hText(
+                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                        "\(terminatedContracts.count)"
+                                                    )
+                                                )
+                                                .foregroundColor(hTextColor.Opaque.primary)
+                                                Spacer()
+                                            }
+                                        }
+                                        .withChevronAccessory
+                                        .verticalPadding(0)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    }
+                                }
+                                .transition(.slide)
+                            }
                         }
+                        .presentableStoreLensAnimation(.spring())
+                        .sectionContainerStyle(.transparent)
                     }
-                    .presentableStoreLensAnimation(.spring())
-                    .sectionContainerStyle(.transparent)
                 }
             }
-        }
-        .onAppear {
-            Task {
-                await vm.getAddonBanners()
+            .onAppear {
+                Task {
+                    await vm.getAddonBanners()
+                }
             }
-        }
-        .animation(.easeInOut(duration: 0.3), value: isExpanded)
-        .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
-            if !isActive {
-                isExpanded = false
+            .animation(.easeInOut(duration: 0.3), value: isExpanded)
+            .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
+                if !isActive {
+                    isExpanded = false
+                }
             }
-        }
-        .onChange(of: isExpanded) { _ in
-            withAnimation(.easeIn(duration: 0.2)) {
-                cardDrawRotation = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                withAnimation(.easeOut(duration: 0.1)) {
-                    cardDrawRotation = false
+            .onChange(of: isExpanded) { expanded in
+                withAnimation(.easeIn(duration: 0.2)) {
+                    cardDrawRotation = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        cardDrawRotation = false
+                    }
+                }
+                if expanded, let cardId = scrollToCardId {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation {
+                            scrollProxy.scrollTo(cardId, anchor: .center)
+                        }
+                        scrollToCardId = nil
+                    }
                 }
             }
         }
@@ -168,14 +179,17 @@ struct ContractTable: View {
                         .zIndex(Double(-index))
                         .offset(y: cumulativeOffset)
                         .transition(.slide)
+                        .id(contract.id)
                         .overlay(
                             Group {
                                 if !isExpanded && index > 0 {
-                                    Color.clear
+                                    Color.red.opacity(Double(index) * 0.1)
                                         .contentShape(Rectangle())
                                         .onTapGesture {
+                                            scrollToCardId = contract.id
                                             isExpanded = true
                                         }
+                                        .offset(y: cumulativeOffset)
                                 }
                             }
                         )
