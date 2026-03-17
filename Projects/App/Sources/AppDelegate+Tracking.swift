@@ -64,7 +64,7 @@ extension AppDelegate {
         )
 
         Trace.enable(
-            with: Trace.Configuration(
+            with: .init(
                 service: "ios",
                 urlSessionTracking: .init(
                     firstPartyHostsTracing: .traceWithHeaders(
@@ -79,7 +79,6 @@ extension AppDelegate {
                 networkInfoEnabled: true
             )
         )
-
         CrashReporting.enable()
         if Environment.current == .staging || Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
