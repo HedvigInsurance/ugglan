@@ -555,7 +555,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_INVITE_FRIENDS" = "Share your code";
 "PAYMENTS_INVOICE" = "Invoice";
 "PAYMENTS_IN_PROGRESS" = "The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account";
-"PAYMENTS_IN_PROGRESS_KIVRA" = "Your invoice is visible in Kivra. If you can't see it there or have problems with paying it, please contact us in the chat.";
+"PAYMENTS_IN_PROGRESS_KIVRA" = "You can find your invoice in the Kivra app";
 "PAYMENTS_MANDATE" = "Mandate";
 "PAYMENTS_MISSED_PAYMENT" = "Your payment for the period %1$@ – %2$@ didn't process as expected. The amount has been added to this payment.";
 "PAYMENTS_NO_HISTORY_DATA" = "There is no record of your payment history";
