@@ -134,10 +134,6 @@ struct VoiceRecordButton: View {
 
     private final class ObserverRef: @unchecked Sendable {
         var value: NSObjectProtocol?
-
-        deinit {
-            let ss = ""
-        }
     }
 
     var buttonImage: some View {
