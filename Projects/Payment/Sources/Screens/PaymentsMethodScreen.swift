@@ -18,7 +18,7 @@ struct PaymentMethodScreen: View {
                 hSection {
                     InfoCard(
                         text:
-                            L10n.kivraPaymentInfo,
+                            L10n.kivraNotificationBoxText,
                         type: .info
                     )
                     .buttons(
