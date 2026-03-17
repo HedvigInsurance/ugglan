@@ -40,12 +40,14 @@ struct PaymentMethodScreen: View {
 
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PaymentMethodScreen(
         data: .init(
             paymentMethod: "method",
             bankName: "bank name",
             account: "account",
-            mandate: "mandate",
+            mandate: nil,
             dueDate: 26,
             chargeMethod: .trustly
         )
@@ -53,23 +55,51 @@ struct PaymentMethodScreen: View {
 }
 
 struct PaymentMethodView: View {
-    let data: PaymentChargeData
-    let withDate: Bool
+    private let items: [PaymentInfoItem]
 
-    @State var infoText: String?
-    var body: some View {
-        hSection {
-            regularRow(for: L10n.paymentsPaymentMethod, and: data.paymentMethod)
+    private struct PaymentInfoItem: Identifiable {
+        var id: String { title }
+        let title: String
+        let value: String
+        let info: String?
+    }
+
+    init(data: PaymentChargeData, withDate: Bool) {
+        self.items = {
+            var rows: [PaymentInfoItem] = []
+            if let paymentMethod = data.paymentMethod {
+                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethod, info: nil))
+            }
             if withDate, let dueDate = data.dueDate?.ordinalDate() {
-                infoRow(
-                    for: L10n.paymentsPaymentDue,
-                    and: L10n.paymentsDueDescription(dueDate),
-                    infoText: data.chargeMethod.infoText(for: dueDate)
+                rows.append(
+                    .init(
+                        title: L10n.paymentsPaymentDue,
+                        value: L10n.paymentsDueDescription(dueDate),
+                        info: data.chargeMethod.infoText(for: dueDate)
+                    )
                 )
             }
-            regularRow(for: L10n.paymentsAccount, and: data.account)
-            regularRow(for: L10n.myPaymentBankRowLabel, and: data.bankName)
-            regularRow(for: L10n.paymentsMandate, and: data.mandate)
+
+            if let account = data.account {
+                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
+            }
+            if let bankName = data.bankName {
+                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bankName, info: nil))
+            }
+            if let mandate = data.mandate {
+                rows.append(PaymentInfoItem(title: L10n.paymentsMandate, value: mandate, info: nil))
+            }
+            return rows
+        }()
+    }
+    @State var infoText: String?
+    var body: some View {
+        hSection(items) { item in
+            if let info = item.info {
+                infoRow(title: item.title, value: item.value, infoText: info)
+            } else {
+                regularRow(title: item.title, value: item.value)
+            }
         }
         .sectionContainerStyle(.transparent)
         .detent(item: $infoText) { text in
@@ -77,41 +107,30 @@ struct PaymentMethodView: View {
         }
     }
 
-    @ViewBuilder
-    private func regularRow(for title: String, and value: String?) -> some View {
-        if let value {
-            hRow {
-                hText(title)
-                Spacer()
-            }
-            .withCustomAccessory {
-                hText(value).foregroundColor(hTextColor.Translucent.secondary)
-            }
+    private func regularRow(title: String, value: String) -> some View {
+        hRow {
+            hText(title)
+            Spacer()
+        }
+        .withCustomAccessory {
+            hText(value).foregroundColor(hTextColor.Translucent.secondary)
         }
     }
 
-    @ViewBuilder
-    private func infoRow(for title: String, and value: String, infoText: String?) -> some View {
-        let row = hRow {
+    private func infoRow(title: String, value: String, infoText: String) -> some View {
+        hRow {
             hText(title)
             Spacer()
         }
         .withCustomAccessory {
             HStack {
                 hText(value)
-                if infoText != nil {
-                    hCoreUIAssets.infoFilled.view
-                }
+                hCoreUIAssets.infoFilled.view
             }
             .foregroundColor(hTextColor.Translucent.secondary)
         }
-
-        if let infoText {
-            row.onTap {
-                self.infoText = infoText
-            }
-        } else {
-            row
+        .onTap {
+            self.infoText = infoText
         }
     }
 }

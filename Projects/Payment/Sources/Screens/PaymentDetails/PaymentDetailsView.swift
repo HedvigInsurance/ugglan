@@ -185,7 +185,7 @@ struct PaymentDetailsView: View {
             settlementAdjustment: .sek(20),
             date: "2022-10-30"
         ),
-        status: .upcoming,
+        status: .pending,
         contracts: [
             .init(
                 id: "id1",
@@ -253,12 +253,12 @@ struct PaymentDetailsView: View {
             ),
         amountPerReferral: .sek(10),
         paymentChargeData: .init(
-            paymentMethod: "bank",
-            bankName: "bank",
-            account: "account",
-            mandate: "mandate",
+            paymentMethod: nil,
+            bankName: nil,
+            account: nil,
+            mandate: nil,
             dueDate: 20,
-            chargeMethod: .trustly
+            chargeMethod: .kivra
         ),
         addedToThePayment: nil
     )
