@@ -92,6 +92,15 @@ struct VoiceRecordButton: View {
                 ImpactGenerator.light()
             }
             try Task.checkCancellation()
+
+            UIAccessibility.post(
+                notification: .announcement,
+                argument: L10n.voiceoverDoubleClickTo + " " + L10n.audioRecorderStop
+            )
+            if voiceOverEnabled {
+                await delay(1)  // 1 second to let VoiceOver finish speaking
+            }
+            try Task.checkCancellation()
             if voiceRecorder.isCountingDown == true {
                 voiceRecorder.isCountingDown = false
                 await voiceRecorder.toggleRecording()
