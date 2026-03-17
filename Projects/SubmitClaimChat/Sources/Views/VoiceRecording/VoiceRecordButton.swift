@@ -69,43 +69,74 @@ struct VoiceRecordButton: View {
         startCountdownTask = Task {
             // Small delay to let SwiftUI update accessibility tree before announcements
             if voiceOverEnabled {
-                try? await Task.sleep(nanoseconds: 200_000_000)  // 0.2 seconds
+                await delay(0.2)
             }
 
             try Task.checkCancellation()
-            UIAccessibility.post(
-                notification: .announcement,
-                argument: L10n.voiceoverAudioCountdown
-            )
             if voiceOverEnabled {
-                try? await Task.sleep(nanoseconds: 1_200_000_000)  // 1.2 seconds to let VoiceOver finish speaking
+                await postAccessibilityAnnouncementAndWait(L10n.voiceoverAudioCountdown)
             }
             try Task.checkCancellation()
             for number in (1...3).reversed() {
                 countdownNumber = number
-                UIAccessibility.post(
-                    notification: .announcement,
-                    argument: "\(number)"
-                )
-                try? await Task.sleep(nanoseconds: 1_000_000_000)  // 1 second
+                if voiceOverEnabled {
+                    await withMinimumDuration(seconds: 1) {
+                        await postAccessibilityAnnouncementAndWait("\(number)")
+                    }
+                } else {
+                    await delay(1)
+                }
                 try Task.checkCancellation()
                 ImpactGenerator.light()
             }
             try Task.checkCancellation()
 
-            UIAccessibility.post(
-                notification: .announcement,
-                argument: L10n.voiceoverDoubleClickTo + " " + L10n.audioRecorderStop
-            )
             if voiceOverEnabled {
-                await delay(1)  // 1 second to let VoiceOver finish speaking
+                await postAccessibilityAnnouncementAndWait(
+                    L10n.voiceoverDoubleClickTo + " " + L10n.audioRecorderStop
+                )
             }
+
             try Task.checkCancellation()
             if voiceRecorder.isCountingDown == true {
                 voiceRecorder.isCountingDown = false
                 await voiceRecorder.toggleRecording()
             }
             countdownNumber = nil
+        }
+    }
+
+    /// Runs an async operation but ensures at least `seconds` have elapsed before returning.
+    private func withMinimumDuration(seconds: TimeInterval, operation: @escaping @Sendable () async -> Void) async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await operation() }
+            group.addTask { await delay(seconds) }
+            for await _ in group {}
+        }
+    }
+
+    /// Posts a VoiceOver announcement and suspends until VoiceOver finishes speaking it.
+    private func postAccessibilityAnnouncementAndWait(_ message: String) async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            let observerRef = ObserverRef()
+            observerRef.value = NotificationCenter.default.addObserver(
+                forName: UIAccessibility.announcementDidFinishNotification,
+                object: nil,
+                queue: .main
+            ) { _ in
+                if let obs = observerRef.value { NotificationCenter.default.removeObserver(obs) }
+                continuation.resume()
+            }
+            UIAccessibility.post(notification: .announcement, argument: message)
+        }
+        await delay(0.2)  // buffer after announcement
+    }
+
+    private final class ObserverRef: @unchecked Sendable {
+        var value: NSObjectProtocol?
+
+        deinit {
+            let ss = ""
         }
     }
 
