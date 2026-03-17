@@ -23,7 +23,7 @@ extension ApolloClient {
         bundle?.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
-    internal static var bundleVersion: String {
+    internal static var bundleIdentifier: String {
         bundle?.infoDictionary?["CFBundleIdentifier"] as? String ?? "0.0.0"
     }
 
@@ -96,7 +96,7 @@ extension ApolloClient {
             networkTransport: requestChainTransport,
             store: store,
             clientAwarenessMetadata: .init(
-                clientApplicationName: "iOS:\(bundleVersion)",
+                clientApplicationName: "iOS:\(bundleIdentifier)",
                 clientApplicationVersion: appVersion
             )
         )
