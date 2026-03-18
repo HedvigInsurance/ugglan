@@ -44,7 +44,8 @@ struct SubmitClaimSingleSelectView: View {
                     text: option.title,
                     color: viewModel.selectedOptionId == optionId ? .green : .grey,
                     colorLevel: .two,
-                    withBorder: false
+                    withBorder: false,
+                    minWidth: .padding60
                 )
                 .hFieldSize(.capsuleShape)
                 .transition(.submitClaimOptionAppear)
@@ -145,8 +146,8 @@ struct SubmitClaimSingleSelectResultView: View {
                     model: .init(
                         defaultSelectedId: nil,
                         options: [
-                            .init(id: "1", title: "Option 1"),
-                            .init(id: "2", title: "Option 2"),
+                            .init(id: "1", title: "1"),
+                            .init(id: "2", title: "Two"),
                             .init(id: "3", title: "Option 3"),
                             .init(id: "4", title: "Longer Option "),
                             .init(id: "5", title: "Short"),
