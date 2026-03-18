@@ -310,6 +310,18 @@ public struct DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brand(.primaryText())
 
+        let searchBarButtonItem = UIBarButtonItem.appearance(
+            whenContainedInInstancesOf: [UISearchBar.self, hNavigationController.self]
+        )
+        searchBarButtonItem.setTitleTextAttributes(
+            [.foregroundColor: UIColor.brand(.primaryText())],
+            for: .normal
+        )
+        searchBarButtonItem.setTitleTextAttributes(
+            [.foregroundColor: UIColor.brand(.primaryText())],
+            for: .highlighted
+        )
+
         // selection color
         // selected date is this color, system adds bold to it automaticly
         // this color is used as background and system adds some alpha to it

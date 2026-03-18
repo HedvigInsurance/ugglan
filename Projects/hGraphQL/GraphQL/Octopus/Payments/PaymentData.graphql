@@ -66,6 +66,8 @@ fragment MemberChargeFragment on MemberCharge{
       settlementAdjustment {
         ...MoneyFragment
       }
+      paymentInvoiceUrl
+      paymentProvider
 }
 
 fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {

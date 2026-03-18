@@ -29,7 +29,7 @@ struct SubmitClaimFormView: View {
             transitionType: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+                .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.datePicker)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
@@ -48,7 +48,14 @@ struct SubmitClaimFormView: View {
                             let selectedValues = fieldModel.values
 
                             return fieldOptions.filter({ selectedValues.contains($0.value) })
-                                .map({ SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value) })
+                                .map({
+                                    SingleSelectValue(
+                                        title: $0.title,
+                                        subtitle: $0.subtitle,
+                                        value: $0.value,
+                                        imageUrl: $0.imageUrl
+                                    )
+                                })
                         }
                         return []
                     },
@@ -64,15 +71,44 @@ struct SubmitClaimFormView: View {
             )
             .hItemPickerAttributes(model.attributes)
             .navigationTitle(model.title)
-            .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.itemPicker)
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
+        }
+        .detent(
+            item: $viewModel.searchFieldPresentation,
+            transitionType: .detent(style: [.large]),
+            options: .constant(.withoutGrabber)
+        ) { [weak viewModel] model in
+            FormFieldSearchView(
+                model: model,
+                onSelected: { [weak viewModel] selected, searchText in
+                    let formValue = viewModel?.getFormStepValue(for: model.id)
+                    formValue?.value = selected.value
+                    formValue?.selectedDisplayTitle = selected.title
+                    formValue?.lastSearchQuery = searchText
+                    viewModel?.searchFieldPresentation = nil
+                }
+            )
+            .navigationTitle(model.title)
+            .embededInNavigation(tracking: SubmitClaimModalType.search)
         }
     }
 }
 
-extension SubmitClaimFormView: TrackingViewNameProtocol {
+private enum SubmitClaimModalType: TrackingViewNameProtocol {
+    case itemPicker
+    case datePicker
+    case search
+
     var nameForTracking: String {
-        .init(describing: SubmitClaimFormView.self)
+        switch self {
+        case .itemPicker:
+            return String(describing: ItemPickerScreen<SingleSelectValue>.self)
+        case .datePicker:
+            return String(describing: DatePickerView.self)
+        case .search:
+            return String(describing: FormFieldSearchView.self)
+        }
     }
 }
 
@@ -107,6 +143,8 @@ struct FormFieldView: View {
             singleSelectField
         case .multiSelect:
             multiSelectField
+        case .search:
+            searchField
         }
     }
     var numberView: some View {
@@ -218,6 +256,23 @@ struct FormFieldView: View {
         }
     }
 
+    private var searchField: some View {
+        DropdownView(
+            value: fieldViewModel.selectedDisplayTitle ?? "",
+            placeHolder: field.title,
+            error: $fieldViewModel.error
+        ) { [weak viewModel] in
+            viewModel?.searchFieldPresentation = .init(
+                id: field.id,
+                stepId: viewModel?.claimIntent.currentStep.id ?? "",
+                title: field.title,
+                suggestedQuery: fieldViewModel.lastSearchQuery,
+                modalTitle: field.searchData?.modalTitle ?? "",
+                modalSubtitle: field.searchData?.modalSubtitle ?? ""
+            )
+        }
+    }
+
     private var binaryField: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(field.title)
@@ -241,6 +296,8 @@ struct FormFieldView: View {
                 .accessibilityValue(isSelected ? L10n.voiceoverOptionSelected : "")
                 .accessibilityHint(L10n.voiceoverDoubleClickTo)
             }
+            .tagFlow(.horizontal)
+            .padding(.vertical, .padding4)
             if let error = fieldViewModel.error {
                 HStack {
                     hText(error, style: .label)

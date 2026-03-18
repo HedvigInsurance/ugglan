@@ -206,6 +206,37 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
     }
 
+    func claimIntentFormFieldSearch(
+        stepId: String,
+        fieldId: String,
+        query: String
+    ) async throws -> FormFieldSearchResult {
+        let input = OctopusGraphQL.ClaimIntentFormFieldSearchInput(
+            stepId: stepId,
+            fieldId: fieldId,
+            query: query
+        )
+        let searchQuery = OctopusGraphQL.ClaimIntentFormFieldSearchQuery(input: input)
+
+        do {
+            let data = try await octopus.client.fetch(query: searchQuery)
+            let options = data.claimIntentFormFieldSearch.options.map {
+                ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption(
+                    title: $0.title,
+                    subtitle: $0.subtitle,
+                    value: $0.value,
+                    imageUrl: $0.imageUrl
+                )
+            }
+            return FormFieldSearchResult(
+                options: options,
+                suggestedQuery: data.claimIntentFormFieldSearch.suggestedQuery
+            )
+        } catch {
+            throw try logClaimIntentError(error)
+        }
+    }
+
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         let input = OctopusGraphQL.ClaimIntentSubmitSelectInput(stepId: stepId, selectedId: selectedValue)
         let mutation = OctopusGraphQL.ClaimIntentSubmitSelectMutation(input: input)
@@ -334,14 +365,19 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
         guard let type = fragment.type.value?.asType else {
             throw ClaimIntentError.unknownField
         }
+        let searchData: ClaimIntentStepContentForm.SearchData? = fragment.searchData.map {
+            .init(suggestedQuery: $0.suggestedQuery, modalTitle: $0.modalTitle, modalSubtitle: $0.modalSubtitle)
+        }
         self.init(
             defaultValues: fragment.defaultValues,
             id: fragment.id,
             isRequired: fragment.isRequired,
             maxValue: fragment.maxValue,
             minValue: fragment.minValue,
-            options: fragment.options?.map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value) } ?? [],
+            options: fragment.options?
+                .map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl) } ?? [],
             suffix: fragment.suffix,
+            searchData: searchData,
             title: fragment.title,
             type: type
         )
@@ -349,7 +385,7 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
 }
 
 extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
-    public var asType: ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldType? {
+    public var asType: ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldType {
         switch self {
         case .text:
             return .text
@@ -366,7 +402,7 @@ extension OctopusGraphQL.ClaimIntentStepContentFormFieldType {
         case .multiSelect:
             return .multiSelect
         case .search:
-            return nil
+            return .search
         }
     }
 }

@@ -94,6 +94,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let contractExposureName: String
     let tagsToShow: [(text: String, type: PillType)]
     @Environment(\.contractRowContentTruncate) var contractRowContentTruncate
+    @State private var contractRowContentTruncateInternal: Bool = false
+
     public init(
         cardId: String? = nil,
         image: Image?,
@@ -170,14 +172,22 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 TagList(
-                    tags: tagsToShow.map(\.text),
-                    horizontalSpacing: .padding6 / 2,
-                    verticalSpacing: .padding6 / 2
+                    tags: tagsToShow.map(\.text)
                 ) { tag in
                     StatusPill(text: tag, type: tagsToShow.first(where: { $0.text == tag })?.type ?? .text)
                 }
-                .padding(.vertical, -.padding6 / 2)
-                .padding(.horizontal, -.padding6 / 2)
+                .tagFlow(
+                    .horizontal(
+                        .init(
+                            horizontalAlignment: .leading,
+                            verticalAlignment: .center,
+                            horizontalSpacing: .padding3,
+                            verticalSpacing: .padding3
+                        )
+                    )
+                )
+                .padding(.vertical, -.padding3)
+                .padding(.horizontal, -.padding3)
                 Spacer()
                 logo
             }
@@ -186,13 +196,13 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 HStack {
                     hText(contractDisplayName)
                         .foregroundColor(hTextColor.Opaque.white)
-                        .lineLimit(contractRowContentTruncate ? 1 : nil)
+                        .lineLimit(contractRowContentTruncateInternal ? 1 : nil)
                     Spacer()
                 }
                 hText(contractExposureName)
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .colorScheme(.dark)
-                    .lineLimit(contractRowContentTruncate ? 1 : nil)
+                    .lineLimit(contractRowContentTruncateInternal ? 1 : nil)
             }
             .padding(.top, .padding10)
             .padding(.bottom, .padding16)
@@ -212,7 +222,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .border(hBorderColor.primary, width: 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
         .background(
             GeometryReader { geo in
                 Color.clear.preference(
@@ -223,6 +233,15 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         )
         .hShadow()
         .contentShape(Rectangle())
+        .onAppear {
+            contractRowContentTruncateInternal = contractRowContentTruncate
+        }
+        .onChange(of: contractRowContentTruncate) { contractRowContentTruncate in
+            Task {
+                await delay(1)
+                contractRowContentTruncateInternal = contractRowContentTruncate
+            }
+        }
     }
 }
 

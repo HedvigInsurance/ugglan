@@ -62,7 +62,7 @@ struct ContractInformationView: View {
                                 ItemCostView(itemCost: currentAgreementCost)
                             }
 
-                            if contract.supportsCoInsured {
+                            if contract.supportsCoInsured || contract.supportsCoOwners {
                                 hRowDivider()
                                     .padding(.horizontal, .padding16)
                                 addCoInsuredView(contract: contract)
@@ -70,6 +70,8 @@ struct ContractInformationView: View {
                         }
                         .sectionContainerStyle(.opaque)
                         .hWithoutHorizontalPadding([.section])
+
+                        missingStakeHolderInfoCards(for: contract)
 
                         addonsView(contract: contract)
 
@@ -81,10 +83,12 @@ struct ContractInformationView: View {
                                     content: .init(title: vm.getButtonText(contract)),
                                     {
                                         if contract.onlyCoInsured() {
-                                            let contract: InsuredPeopleConfig = .init(
+                                            let contract: StakeHoldersConfig = .init(
                                                 contract: contract,
+                                                stakeHolderType: .coInsured,
                                                 fromInfoCard: false
                                             )
+
                                             contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
                                         } else {
                                             contractsNavigationVm.changeYourInformationContract = contract
@@ -120,17 +124,19 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func addCoInsuredView(contract: Contract) -> some View {
-        let nbOfMissingCoInsured = contract.nbOfMissingCoInsured
+        let nbOfMissingStakeHolders = contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners
         VStack(spacing: 0) {
             hSection {
-                HStack {
-                    hRow {
-                        insuredField(contract: contract)
+                if contract.supportsCoInsured {
+                    HStack {
+                        hRow {
+                            insuredField(contract: contract)
+                        }
                     }
                 }
 
                 let hasContentBelow =
-                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingCoInsured > 0
+                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingStakeHolders > 0
                 ContractOwnerField(
                     enabled: true,
                     hasContentBelow: hasContentBelow,
@@ -140,18 +146,22 @@ struct ContractInformationView: View {
                 .padding(.top, .padding16)
             }
 
-            hSection(vm.getListToDisplay(contract: contract)) { coInsured in
+            hSection(vm.getListToDisplay(contract: contract)) { item in
                 hRow {
-                    if coInsured.coInsured.hasMissingInfo {
-                        CoInsuredField(
-                            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured.coInsured)
+                    if item.stakeHolder.hasMissingInfo {
+                        StakeHolderField(
+                            accessoryView: getAccessoryView(contract: contract, stakeHolder: item.stakeHolder)
                                 .foregroundColor(hSignalColor.Amber.element),
-                            date: coInsured.coInsured.terminatesOn ?? coInsured.coInsured.activatesOn
+                            date: item.stakeHolder.terminatesOn ?? item.stakeHolder.activatesOn,
+                            stakeHolderType: item.stakeHolderType,
                         )
                         .onTapGesture {
-                            if contract.showEditCoInsuredInfo, coInsured.coInsured.terminatesOn == nil {
-                                let contract: InsuredPeopleConfig = .init(
+                            if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo),
+                                item.stakeHolder.terminatesOn == nil
+                            {
+                                let contract: StakeHoldersConfig = .init(
                                     contract: contract,
+                                    stakeHolderType: item.stakeHolderType,
                                     fromInfoCard: false
                                 )
                                 contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
@@ -160,33 +170,35 @@ struct ContractInformationView: View {
                         .accessibilityAddTraits(.isButton)
                         .accessibilityAddTraits(
                             {
-                                if contract.showEditCoInsuredInfo && coInsured.coInsured.terminatesOn == nil {
+                                if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo)
+                                    && item.stakeHolder.terminatesOn == nil
+                                {
                                     return .isButton
                                 }
                                 return AccessibilityTraits()
                             }()
                         )
                     } else {
-                        CoInsuredField(
-                            coInsured: coInsured.coInsured,
+                        StakeHolderField(
+                            stakeHolder: item.stakeHolder,
                             accessoryView: EmptyView(),
-                            date: coInsured.date
+                            date: item.date,
+                            stakeHolderType: item.stakeHolderType,
                         )
                     }
                 }
             }
+        }
+    }
 
-            if contract.nbOfMissingCoInsuredWithoutTermination != 0, contract.showEditCoInsuredInfo {
-                hSection {
-                    CoInsuredInfoView(
-                        text: L10n.contractCoinsuredAddPersonalInfo,
-                        config: .init(contract: contract, fromInfoCard: true)
-                    )
-                    .padding(.bottom, .padding16)
-                    .accessibilityElement(children: .combine)
-                }
-                .accessibilityElement(children: .combine)
-            }
+    @ViewBuilder
+    private func missingStakeHolderInfoCards(for contract: Contract) -> some View {
+        if contract.showEditCoInsuredInfo && contract.nbOfMissingCoInsuredWithoutTermination > 0 {
+            MissingStakeHolderInfoCard(contract: contract, type: .coInsured)
+        }
+
+        if contract.showEditCoOwnersInfo && contract.nbOfMissingCoOwnersWithoutTermination > 0 {
+            MissingStakeHolderInfoCard(contract: contract, type: .coOwner)
         }
     }
 
@@ -254,8 +266,8 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
-        if contract.showEditCoInsuredInfo, coInsured.terminatesOn == nil {
+    private func getAccessoryView(contract: Contract, stakeHolder: StakeHolder) -> some View {
+        if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo), stakeHolder.terminatesOn == nil {
             hCoreUIAssets.warningTriangleFilledSmall.view
         } else {
             EmptyView()
@@ -337,50 +349,55 @@ struct ContractInformationView: View {
 
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
-    func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
-        contract.coInsured
-            .map {
-                CoInsuredListType(
-                    coInsured: $0,
-                    date: $0.activatesOn ?? $0.terminatesOn,
-                    locallyAdded: false
-                )
-            }
+    func getListToDisplay(contract: Contract) -> [StakeHolderListType] {
+        contract.coInsured.map { $0.asCoInsuredListType(stakeHolderType: .coInsured) }
+            + contract.coOwners.map { $0.asCoInsuredListType(stakeHolderType: .coOwner) }
     }
 
     @MainActor
     func getButtonText(_ contract: Contract) -> String {
-        if contract.onlyCoInsured() {
-            return L10n.contractEditCoinsured
-        } else {
-            return L10n.contractEditInfoLabel
+        switch true {
+        case contract.onlyCoInsured(): L10n.contractEditCoinsured
+        case contract.onlyCoOwners(): L10n.editCoownerTitle
+        default: L10n.contractEditInfoLabel
         }
     }
 }
 
-public struct CoInsuredInfoView: View {
+extension StakeHolder {
+    func asCoInsuredListType(stakeHolderType: StakeHolderType) -> StakeHolderListType {
+        .init(
+            stakeHolder: self,
+            stakeHolderType: stakeHolderType,
+            date: activatesOn ?? terminatesOn,
+            locallyAdded: false
+        )
+    }
+}
+
+public struct MissingStakeHolderInfoCard: View {
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
-    let text: String
-    let config: InsuredPeopleConfig
-    public init(
-        text: String,
-        config: InsuredPeopleConfig
-    ) {
-        self.text = text
-        self.config = config
+    let config: StakeHoldersConfig
+    public init(contract: Contract, type: StakeHolderType) {
+        config = .init(contract: contract, stakeHolderType: type, fromInfoCard: true)
     }
 
     public var body: some View {
-        InfoCard(text: text, type: .attention)
-            .buttons([
-                .init(
-                    buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                    buttonAction: { [weak contractsNavigationVm] in
-                        contractsNavigationVm?.editCoInsuredVm.start(fromContract: config)
-                    }
-                )
-            ])
+        hSection {
+            InfoCard(text: config.stakeHolderType.addPersonalInfo, type: .attention)
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                        buttonAction: { [weak contractsNavigationVm] in
+                            contractsNavigationVm?.editCoInsuredVm.start(fromContract: config)
+                        }
+                    )
+                ])
+                .accessibilityElement(children: .combine)
+        }
+        .accessibilityElement(children: .combine)
+        .hWithoutHorizontalPadding([.section])
     }
 }
 

@@ -88,7 +88,14 @@ extension ApolloClient {
             endpointURL: environment.octopusEndpointURL
         )
 
-        let client = ApolloClient(networkTransport: requestChainTransport, store: store)
+        let client = ApolloClient(
+            networkTransport: requestChainTransport,
+            store: store,
+            clientAwarenessMetadata: .init(
+                clientApplicationName: "iOS:\(bundle?.bundleIdentifier ?? "")",
+                clientApplicationVersion: appVersion
+            )
+        )
 
         return hOctopus(client: client, store: store)
     }

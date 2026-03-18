@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
+public struct StakeHolder: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?
@@ -54,7 +54,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
         fullName == nil
     }
 
-    public static func == (lhs: CoInsuredModel, rhs: CoInsuredModel) -> Bool {
+    public static func == (lhs: StakeHolder, rhs: StakeHolder) -> Bool {
         lhs.fullName == rhs.fullName
             && (lhs.formattedSSN == rhs.formattedSSN
                 || lhs.birthDate == rhs.birthDate)
@@ -75,23 +75,26 @@ public enum StatusPillType {
     }
 }
 
-public struct CoInsuredListType: Hashable, Identifiable {
+public struct StakeHolderListType: Hashable, Identifiable {
     public let id = UUID().uuidString
     public init(
-        coInsured: CoInsuredModel,
+        stakeHolder: StakeHolder,
+        stakeHolderType: StakeHolderType,
         type: StatusPillType? = nil,
         date: String? = nil,
         locallyAdded: Bool,
-        isEmpty: Bool? = false
+        isEmpty: Bool? = false,
     ) {
-        self.coInsured = coInsured
+        self.stakeHolder = stakeHolder
+        self.stakeHolderType = stakeHolderType
         self.type = type
         self.date = date
         self.locallyAdded = locallyAdded
         self.isEmpty = isEmpty
     }
 
-    public var coInsured: CoInsuredModel
+    public var stakeHolder: StakeHolder
+    public let stakeHolderType: StakeHolderType
     public var type: StatusPillType?
     public var date: String?
     public var locallyAdded: Bool
@@ -100,11 +103,11 @@ public struct CoInsuredListType: Hashable, Identifiable {
 
 public struct CoInsuredConfigModel: Identifiable, Equatable {
     public init(
-        configs: [InsuredPeopleConfig]
+        configs: [StakeHoldersConfig]
     ) {
         self.configs = configs
     }
 
     public var id: String?
-    public var configs: [InsuredPeopleConfig]
+    public var configs: [StakeHoldersConfig]
 }

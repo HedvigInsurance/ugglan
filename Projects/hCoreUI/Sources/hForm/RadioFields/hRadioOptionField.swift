@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     @Binding var selectedValue: T?
@@ -20,7 +21,9 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
             }
         }
         .frame(width: 24, height: 24)
+        .accessibilitySortPriority(2)
         .accessibilityAddTraits(selectedValue == value ? .isSelected : [])
+        .accessibilityLabel(selectedValue != value ? L10n.a11YOptionNotSelected : "")
     }
 
     var squareComponent: some View {

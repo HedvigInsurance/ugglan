@@ -4,6 +4,7 @@ import hCoreUI
 
 struct PaymentStatusView: View {
     let status: PaymentData.PaymentStatus
+    let chargeMethod: PaymentChargeData.PaymentChargeMethod
     let onAction: (PaymentData.PaymentStatus.PaymentStatusAction) -> Void
     var body: some View {
         switch status {
@@ -30,7 +31,9 @@ struct PaymentStatusView: View {
                     .stroke(hBorderColor.primary, lineWidth: 0.5)
             )
         case .pending:
-            InfoCard(text: L10n.paymentsInProgress, type: .info)
+            if let infoTextForPendingStatus = chargeMethod.infoTextForPendingStatus {
+                InfoCard(text: infoTextForPendingStatus, type: .info)
+            }
         case let .failedForPrevious(from, to):
             InfoCard(
                 text:
@@ -62,10 +65,12 @@ struct PaymentStatusView: View {
     Localization.Locale.currentLocale.send(.sv_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return VStack {
-        PaymentStatusView(status: .pending) { _ in }
-        PaymentStatusView(status: .success) { _ in }
-        PaymentStatusView(status: .addedtoFuture(date: "2023-10-11")) { _ in }
-        PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11")) { _ in }
+        PaymentStatusView(status: .pending, chargeMethod: .trustly) { _ in }
+        PaymentStatusView(status: .success, chargeMethod: .trustly) { _ in }
+        PaymentStatusView(status: .addedtoFuture(date: "2023-10-11"), chargeMethod: .trustly) { _ in }
+        PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11"), chargeMethod: .trustly) {
+            _ in
+        }
 
         let dateFrom: Date? = "2024-05-06".localDateToDate
         let dateTo: Date? = "2024-06-06".localDateToDate
@@ -75,7 +80,10 @@ struct PaymentStatusView: View {
 
             let serverDateTo: ServerBasedDate = dateTo.localDateString
 
-            PaymentStatusView(status: .failedForPrevious(from: serverDateFrom, to: serverDateTo)) { _ in }
+            PaymentStatusView(
+                status: .failedForPrevious(from: serverDateFrom, to: serverDateTo),
+                chargeMethod: .trustly
+            ) { _ in }
         }
         Spacer()
     }

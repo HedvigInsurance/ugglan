@@ -8,7 +8,7 @@ struct InsuredPeopleScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: CoInsuredFieldType?
 
-    private var listToDisplay: [CoInsuredListType] {
+    private var listToDisplay: [StakeHolderListType] {
         vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
     }
 
@@ -21,6 +21,7 @@ struct InsuredPeopleScreen: View {
             }
             .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, .padding6)
 
             infoCardSection
         }
@@ -57,34 +58,35 @@ struct InsuredPeopleScreen: View {
         }
     }
 
-    private func coInsuredSection(list: [CoInsuredListType]) -> some View {
-        hSection(list) { coInsured in
+    private func coInsuredSection(list: [StakeHolderListType]) -> some View {
+        hSection(list) { stakeHolder in
             hRow {
-                CoInsuredField(
-                    coInsured: coInsured.coInsured,
-                    accessoryView: getAccesoryView(coInsured: coInsured),
-                    statusPill: coInsured.type == .added ? .added : nil,
-                    date: coInsured.date
+                StakeHolderField(
+                    stakeHolder: stakeHolder.stakeHolder,
+                    accessoryView: getAccesoryView(coInsured: stakeHolder),
+                    statusPill: stakeHolder.type == .added ? .added : nil,
+                    date: stakeHolder.date,
+                    stakeHolderType: stakeHolder.stakeHolderType
                 )
             }
-            .accessibilityValue(accessoryType(for: coInsured).accessibilityValue)
+            .accessibilityValue(accessoryType(for: stakeHolder).accessibilityValue)
         }
     }
 
     @ViewBuilder
     private var buttonSection: (some View)? {
-        if vm.config.numberOfMissingCoInsuredWithoutTermination == 0 {
+        if vm.config.numberOfMissingStakeHoldersWithoutTermination == 0 {
             hSection {
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: L10n.contractAddCoinsured),
+                    content: .init(title: vm.config.stakeHolderType.addButtonTitle),
                     {
-                        if !vm.hasExistingCoInsured {
+                        if !vm.hasExistingStakeHolders {
                             editCoInsuredNavigation.coInsuredInputModel = .init(
                                 actionType: .add,
-                                coInsuredModel: CoInsuredModel(),
-                                title: L10n.contractAddCoinsured,
+                                coInsuredModel: StakeHolder(),
+                                title: vm.config.stakeHolderType.addButtonTitle,
                                 contractId: vm.config.contractId
                             )
                         } else {
@@ -99,15 +101,20 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private var infoCardSection: some View {
-        if vm.showInfoCard(type: type) {
+        if let infoCardType = vm.getInfoCardType(type: type) {
             hSection {
-                InfoCard(text: L10n.contractAddCoinsuredReviewInfo, type: .attention)
+                InfoCard(
+                    text: vm.config.stakeHolderType.reviewInfo(
+                        hasMissingStakeHolders: vm.hasLocallyMissingStakeHolders
+                    ),
+                    type: infoCardType
+                )
             }
         }
     }
 
-    func accessoryType(for coInsured: CoInsuredListType) -> CoInsuredFieldType {
-        if coInsured.coInsured.hasMissingData, type != .delete {
+    func accessoryType(for coInsured: StakeHolderListType) -> CoInsuredFieldType {
+        if coInsured.stakeHolder.hasMissingData, type != .delete {
             .empty
         } else if coInsured.locallyAdded {
             .localEdit
@@ -117,11 +124,11 @@ struct InsuredPeopleScreen: View {
     }
 
     @ViewBuilder
-    private func getAccesoryView(coInsured: CoInsuredListType) -> some View {
-        getAccesoryView(for: accessoryType(for: coInsured), coInsured: coInsured.coInsured)
+    private func getAccesoryView(coInsured: StakeHolderListType) -> some View {
+        getAccesoryView(for: accessoryType(for: coInsured), coInsured: coInsured.stakeHolder)
     }
 
-    private func getAccesoryView(for type: CoInsuredFieldType, coInsured: CoInsuredModel) -> some View {
+    private func getAccesoryView(for type: CoInsuredFieldType, coInsured: StakeHolder) -> some View {
         HStack {
             if let text = type.text {
                 hText(text)
@@ -138,14 +145,14 @@ struct InsuredPeopleScreen: View {
         .accessibilityAddTraits(.isButton)
     }
 
-    private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: CoInsuredModel) {
-        if type == .empty, vm.hasExistingCoInsured {
+    private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: StakeHolder) {
+        if type == .empty, vm.hasExistingStakeHolders {
             editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
         } else {
             editCoInsuredNavigation.coInsuredInputModel = .init(
                 actionType: type.action,
-                coInsuredModel: type == .empty ? CoInsuredModel() : coInsured,
-                title: type.title,
+                coInsuredModel: type == .empty ? StakeHolder() : coInsured,
+                title: type.title(for: vm.config.stakeHolderType),
                 contractId: vm.config.contractId
             )
         }
@@ -154,10 +161,9 @@ struct InsuredPeopleScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let vm = InsuredPeopleScreenViewModel()
-    let config = InsuredPeopleConfig(
+    let config = StakeHoldersConfig(
         id: UUID().uuidString,
-        contractCoInsured: [
+        stakeHolders: [
             .init(
                 firstName: "first name",
                 lastName: "last name",
@@ -170,17 +176,18 @@ struct InsuredPeopleScreen: View {
         ],
         contractId: "",
         activeFrom: nil,
-        numberOfMissingCoInsured: 0,
-        numberOfMissingCoInsuredWithoutTermination: 0,
+        numberOfMissingStakeHolders: 0,
+        numberOfMissingStakeHoldersWithoutTermination: 0,
         displayName: "",
         exposureDisplayName: nil,
-        preSelectedCoInsuredList: [],
+        preSelectedStakeHolders: [],
         contractDisplayName: "",
         holderFirstName: "First Name",
         holderLastName: "Last Name",
         holderSSN: "00000000-0000",
-        fromInfoCard: false
+        fromInfoCard: false,
+        stakeHolderType: .coInsured
     )
-    vm.initializeCoInsured(with: config)
+    let vm = InsuredPeopleScreenViewModel(with: config)
     return InsuredPeopleScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
 }

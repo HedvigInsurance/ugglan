@@ -38,7 +38,12 @@ public class IntentViewModel: ObservableObject {
     var contractId: String?
 
     @MainActor
-    func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [CoInsuredModel]) async {
+    func getIntent(
+        contractId: String,
+        origin: GetIntentOrigin,
+        coInsured: [StakeHolder],
+        stakeHolderType: StakeHolderType
+    ) async {
         self.contractId = contractId
         withAnimation {
             self.isLoading = true
@@ -47,7 +52,11 @@ public class IntentViewModel: ObservableObject {
             self.viewState = .loading
         }
         do {
-            let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
+            let data = try await service.sendIntent(
+                contractId: contractId,
+                coInsured: coInsured,
+                stakeHolderType: stakeHolderType
+            )
             withAnimation {
                 self.intent = data
                 self.viewState = .success
