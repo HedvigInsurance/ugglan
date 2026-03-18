@@ -22,7 +22,8 @@ struct ClaimFlowLauncher: ViewModifier {
                 item: $startInput,
                 transitionType: .detent(style: [.height]),
                 content: { input in
-                    SubmitClaimChatHonestyPledgeScreen {
+                    SubmitClaimChatHonestyPledgeScreen { withAnimations in
+                        disableSubmitChatClaimAnimations = !withAnimations
                         submitClaimInput = startInput
                         startInput = nil
                     } onConfirmOldFlow: {
