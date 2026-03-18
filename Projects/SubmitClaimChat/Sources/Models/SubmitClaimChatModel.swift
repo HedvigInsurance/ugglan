@@ -213,7 +213,7 @@ public struct ClaimIntentStepContentForm: Sendable {
 
 public struct ClaimIntentStepContentTask: Sendable, Equatable {
     let description: String
-    var isCompleted: Bool
+    let isCompleted: Bool
 
     public init(description: String, isCompleted: Bool) {
         self.description = description
