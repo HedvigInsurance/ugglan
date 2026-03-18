@@ -4,9 +4,23 @@ import TagKit
 import hCore
 import hCoreUI
 
+struct ContractRowBottomHeightKey: PreferenceKey {
+    static let defaultValue: [String: CGFloat] = [:]
+    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
+    }
+}
+
+struct ContractRowCardHeightKey: PreferenceKey {
+    static let defaultValue: [String: CGFloat] = [:]
+    static func reduce(value: inout [String: CGFloat], nextValue: () -> [String: CGFloat]) {
+        value.merge(nextValue()) { _, new in new }
+    }
+}
+
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
-
+    let cardId: String?
     let image: Image?
     let terminationMessage: String?
     let contractDisplayName: String
@@ -19,6 +33,7 @@ public struct ContractRow: View {
     let onClick: (() -> Void)?
 
     public init(
+        cardId: String? = nil,
         image: Image?,
         terminationMessage: String?,
         contractDisplayName: String,
@@ -29,6 +44,7 @@ public struct ContractRow: View {
         tierDisplayName: String?,
         onClick: (() -> Void)? = nil
     ) {
+        self.cardId = cardId
         self.image = image
         self.terminationMessage = terminationMessage
         self.contractDisplayName = contractDisplayName
@@ -49,6 +65,7 @@ public struct ContractRow: View {
         }
         .buttonStyle(
             ContractRowButtonStyle(
+                cardId: cardId,
                 image: image,
                 contractDisplayName: contractDisplayName,
                 contractExposureName: contractExposureName,
@@ -71,12 +88,16 @@ public struct ContractRow: View {
 }
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
+    let cardId: String?
     let image: Image?
     let contractDisplayName: String
     let contractExposureName: String
     let tagsToShow: [(text: String, type: PillType)]
+    @Environment(\.contractRowContentTruncate) var contractRowContentTruncate
+    @State private var contractRowContentTruncateInternal: Bool = false
 
     public init(
+        cardId: String? = nil,
         image: Image?,
         contractDisplayName: String,
         contractExposureName: String,
@@ -86,6 +107,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         masterInceptionDate: String? = nil,
         tierDisplayName: String?
     ) {
+        self.cardId = cardId
         self.image = image
         self.contractDisplayName = contractDisplayName
         self.contractExposureName = contractExposureName
@@ -170,24 +192,73 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 logo
             }
             Spacer()
-            HStack {
-                hText(contractDisplayName)
-                    .foregroundColor(hTextColor.Opaque.white)
-                Spacer()
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    hText(contractDisplayName)
+                        .foregroundColor(hTextColor.Opaque.white)
+                        .lineLimit(contractRowContentTruncateInternal ? 1 : nil)
+                    Spacer()
+                }
+                hText(contractExposureName)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .colorScheme(.dark)
+                    .lineLimit(contractRowContentTruncateInternal ? 1 : nil)
             }
-            hText(contractExposureName)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .colorScheme(.dark)
+            .padding(.top, .padding10)
+            .padding(.bottom, .padding16)
+            .background(
+                GeometryReader { geo in
+                    Color.clear.preference(
+                        key: ContractRowBottomHeightKey.self,
+                        value: cardId.map { [$0: geo.size.height] } ?? [:]
+                    )
+                }
+            )
         }
-        .padding(.padding16)
+        .padding(.horizontal, .padding16)
+        .padding(.top, .padding16)
         .frame(minHeight: 200)
         .background(
             background
         )
         .border(hBorderColor.primary, width: 0.5)
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+        .background(
+            GeometryReader { geo in
+                Color.clear.preference(
+                    key: ContractRowCardHeightKey.self,
+                    value: cardId.map { [$0: geo.size.height] } ?? [:]
+                )
+            }
+        )
         .hShadow()
         .contentShape(Rectangle())
+        .onAppear {
+            contractRowContentTruncateInternal = contractRowContentTruncate
+        }
+        .onChange(of: contractRowContentTruncate) { contractRowContentTruncate in
+            Task {
+                await delay(1)
+                contractRowContentTruncateInternal = contractRowContentTruncate
+            }
+        }
+    }
+}
+
+private struct EnvironmentContractRowContentTruncate: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var contractRowContentTruncate: Bool {
+        get { self[EnvironmentContractRowContentTruncate.self] }
+        set { self[EnvironmentContractRowContentTruncate.self] = newValue }
+    }
+}
+
+extension View {
+    public func contractCardTruncate(to value: Bool) -> some View {
+        environment(\.contractRowContentTruncate, value)
     }
 }
 

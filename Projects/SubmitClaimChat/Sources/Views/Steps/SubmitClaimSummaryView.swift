@@ -39,10 +39,12 @@ struct SubmitClaimSummaryView: View {
                     .accessibilityAddTraits(.isHeader)
                 VStack {
                     ForEach(viewModel.summaryModel.items, id: \.title) { item in
-                        HStack {
+                        HStack(alignment: .top) {
                             hText(item.title)
+                                .multilineTextAlignment(.leading)
                             Spacer()
                             hText(item.value)
+                                .multilineTextAlignment(.trailing)
                         }
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .accessibilityElement(children: .combine)

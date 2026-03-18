@@ -67,5 +67,5 @@ struct ConfirmChangesView: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init()))
+    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)))
 }

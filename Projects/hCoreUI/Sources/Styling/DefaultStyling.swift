@@ -303,6 +303,18 @@ public struct DefaultStyling {
         )
         barButtonItemAppearance.tintColor = .brand(.primaryText())
 
+        let searchBarButtonItem = UIBarButtonItem.appearance(
+            whenContainedInInstancesOf: [UISearchBar.self, hNavigationController.self]
+        )
+        searchBarButtonItem.setTitleTextAttributes(
+            [.foregroundColor: UIColor.brand(.primaryText())],
+            for: .normal
+        )
+        searchBarButtonItem.setTitleTextAttributes(
+            [.foregroundColor: UIColor.brand(.primaryText())],
+            for: .highlighted
+        )
+
         // selection color
         // selected date is this color, system adds bold to it automaticly
         // this color is used as background and system adds some alpha to it
@@ -430,7 +442,7 @@ extension CGFloat {
 
 extension CGFloat {
     public static let padding2: CGFloat = 2
-    public static let padding3: CGFloat = 2
+    public static let padding3: CGFloat = 3
     public static let padding4: CGFloat = 4
     public static let padding6: CGFloat = 6
     public static let padding8: CGFloat = 8

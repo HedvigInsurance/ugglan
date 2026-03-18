@@ -11,25 +11,28 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
 
-    public var fetchAllCoInsured: [CoInsuredModel] {
-        let coInsuredList = activeContracts.flatMap { coInsured in
-            coInsured.coInsured.filter { !$0.hasMissingData }
+    public var allStakeHolders: [StakeHolder] {
+        let stakeHolders = activeContracts.flatMap { contract in
+            (contract.coInsured + contract.coOwners).filter { !$0.hasMissingData }
         }
-        let unique = Set(coInsuredList)
+        let unique = Set(stakeHolders)
         return unique.sorted(by: { $0.id > $1.id })
     }
 
-    public func fetchAllCoInsuredNotInContract(contractId: String) -> [CoInsuredModel] {
-        let contractCoInsured = contractForId(contractId)?.coInsured
-        let coInsuredNotAdded = fetchAllCoInsured.compactMap {
-            if !(contractCoInsured?.contains($0) ?? false) {
-                return $0
-            } else {
-                return nil
+    public func fetchAllStakeHoldersNotInContract(
+        contractId: String,
+        stakeHolderType: StakeHolderType,
+    ) -> [StakeHolder] {
+        guard let contract = contractForId(contractId) else { return [] }
+        let contractStakeHolders =
+            switch stakeHolderType {
+            case .coInsured: Set(contract.coInsured)
+            case .coOwner: Set(contract.coOwners)
             }
-        }
 
-        return coInsuredNotAdded
+        let stakeHoldersNotAdded = allStakeHolders.filter { !contractStakeHolders.contains($0) }
+
+        return stakeHoldersNotAdded
     }
 
     public func contractForId(_ id: String) -> Contract? {
@@ -58,9 +61,9 @@ extension ContractState {
 }
 
 @MainActor
-extension ContractStore: ExistingCoInsured {
-    public func get(contractId: String) -> [CoInsuredModel] {
-        state.fetchAllCoInsuredNotInContract(contractId: contractId)
+extension ContractStore: ExistingStakeHolders {
+    public func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder] {
+        state.fetchAllStakeHoldersNotInContract(contractId: contractId, stakeHolderType: stakeHolderType)
     }
 }
 

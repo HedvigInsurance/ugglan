@@ -1,24 +1,26 @@
+import EditCoInsured
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct CoInsuredInfoHomeView: View {
-    var onTapAction: () -> Void
+    let infoText: String
+    let onTapAction: () -> Void
 
     public init(
-        onTapAction: @escaping () -> Void
+        infoText: String,
+        onTapAction: @escaping () -> Void,
     ) {
+        self.infoText = infoText
         self.onTapAction = onTapAction
     }
 
     public var body: some View {
-        InfoCard(text: L10n.contractCoinsuredMissingInfoText, type: .attention)
+        InfoCard(text: infoText, type: .attention)
             .buttons([
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                    buttonAction: {
-                        onTapAction()
-                    }
+                    buttonAction: { onTapAction() }
                 )
             ])
     }
