@@ -172,14 +172,22 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 TagList(
-                    tags: tagsToShow.map(\.text),
-                    horizontalSpacing: .padding6 / 2,
-                    verticalSpacing: .padding6 / 2
+                    tags: tagsToShow.map(\.text)
                 ) { tag in
                     StatusPill(text: tag, type: tagsToShow.first(where: { $0.text == tag })?.type ?? .text)
                 }
-                .padding(.vertical, -.padding6 / 2)
-                .padding(.horizontal, -.padding6 / 2)
+                .tagFlow(
+                    .horizontal(
+                        .init(
+                            horizontalAlignment: .leading,
+                            verticalAlignment: .center,
+                            horizontalSpacing: .padding3,
+                            verticalSpacing: .padding3
+                        )
+                    )
+                )
+                .padding(.vertical, -.padding3)
+                .padding(.horizontal, -.padding3)
                 Spacer()
                 logo
             }
