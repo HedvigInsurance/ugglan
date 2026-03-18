@@ -33,9 +33,9 @@ struct HomeBottomScrollView: View {
                     if let importantMessage = store.state.getImportantMessage(with: id) {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
-                case .missingCoInsured:
-                    CoInsuredInfoHomeView {
-                        navigationVm.editCoInsuredVm.start(forMissingCoInsured: true)
+                case .missingCoInsured(let type):
+                    CoInsuredInfoHomeView(infoText: type.missingAddInfoText) {
+                        navigationVm.editCoInsuredVm.start(stakeHolderType: type, forMissingStakeHolders: true)
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
@@ -63,6 +63,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     init() {
         handlePayments()
         handleMissingCoInsured()
+        handleMissingCoOwners()
         handleImportantMessages()
         handleRenewalCardView()
         handleTerminatedMessage()
@@ -185,15 +186,26 @@ class HomeBottomScrollViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal
             .map(\.activeContracts.hasMissingCoInsured)
+            .prepend(contractStore.state.activeContracts.hasMissingCoInsured)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingCoInsured, with: show)
+                self?.handleItem(.missingCoInsured(type: .coInsured), with: show)
             })
             .store(in: &cancellables)
+    }
 
-        let show = contractStore.state.activeContracts.hasMissingCoInsured
-        handleItem(.missingCoInsured, with: show)
+    private func handleMissingCoOwners() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.stateSignal
+            .map(\.activeContracts.hasMissingCoOwners)
+            .prepend(contractStore.state.activeContracts.hasMissingCoOwners)
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleItem(.missingCoInsured(type: .coOwner), with: show)
+            })
+            .store(in: &cancellables)
     }
 
     func handleTerminatedMessage() {
@@ -244,9 +256,9 @@ struct InfoCardView: Identifiable, Hashable {
     }
 }
 
-enum InfoCardType: Hashable, Comparable {
+public enum InfoCardType: Hashable, Comparable {
     case payment
-    case missingCoInsured
+    case missingCoInsured(type: StakeHolderType)
     case importantMessage(message: String)
     case renewal
     case terminated

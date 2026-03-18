@@ -67,11 +67,11 @@ struct CoInsuredInputErrorView: View {
 #Preview {
     CoInsuredInputErrorView(
         vm: CoInusuredInputViewModel(
-            coInsuredModel: CoInsuredModel(),
+            coInsuredModel: StakeHolder(),
             actionType: .add,
             contractId: ""
         ),
-        editCoInsuredNavigation: .init(config: .init()),
+        editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)),
         showEnterManuallyButton: false
     )
 }

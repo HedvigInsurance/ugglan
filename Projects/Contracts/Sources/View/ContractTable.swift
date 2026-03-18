@@ -15,6 +15,9 @@ struct ContractTable: View {
     @State var bottomContentHeights: [String: CGFloat] = [:]
     @State var cardHeights: [String: CGFloat] = [:]
     @StateObject var vm = ContractTableViewModel()
+    @State private var cardDrawRotation = false
+    @State private var isExpanded = false
+    @State private var scrollToCardId: String?
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
     @InjectObservableObject private var featureFlags: FeatureFlags
@@ -39,73 +42,99 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack(spacing: .padding8) {
-            successView
-                .loadingWithButtonLoading($vm.viewState)
-                .hStateViewButtonConfig(
-                    .init(
-                        actionButton: .init(buttonAction: { [weak store] in
-                            store?.send(.fetchContracts)
-                        }),
-                        dismissButton: nil
+        ScrollViewReader { scrollProxy in
+            VStack(spacing: .padding8) {
+                successView
+                    .loadingWithButtonLoading($vm.viewState)
+                    .hStateViewButtonConfig(
+                        .init(
+                            actionButton: .init(buttonAction: { [weak store] in
+                                store?.send(.fetchContracts)
+                            }),
+                            dismissButton: nil
+                        )
                     )
-                )
-            if !showTerminated {
-                VStack(spacing: .padding8) {
-                    CrossSellingView(withHeader: true)
-                        .padding(.top, .padding8)
+                if !showTerminated {
+                    VStack(spacing: .padding8) {
+                        CrossSellingView(withHeader: true)
+                            .padding(.top, .padding8)
 
-                    addonBannersView
+                        addonBannersView
 
-                    movingToANewHomeView
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            state.terminatedContracts
-                        }
-                    ) { terminatedContracts in
-                        if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
-                            hSection {
-                                hButton(
-                                    .large,
-                                    .secondary,
-                                    content: .init(
-                                        title: L10n.InsurancesTab.cancelledInsurancesLabel(
-                                            "\(terminatedContracts.count)"
-                                        )
-                                    ),
-                                    {
-                                        router.push(ContractsRouterType.terminatedContracts)
-                                    }
-                                )
-                                .hCustomButtonView {
-                                    hRow {
-                                        HStack {
-                                            hText(
-                                                L10n.InsurancesTab.cancelledInsurancesLabel(
-                                                    "\(terminatedContracts.count)"
-                                                )
-                                            )
-                                            .foregroundColor(hTextColor.Opaque.primary)
-                                            Spacer()
-                                        }
-                                    }
-                                    .withChevronAccessory
-                                    .verticalPadding(0)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                                }
+                        movingToANewHomeView
+                        PresentableStoreLens(
+                            ContractStore.self,
+                            getter: { state in
+                                state.terminatedContracts
                             }
-                            .transition(.slide)
+                        ) { terminatedContracts in
+                            if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
+                                hSection {
+                                    hButton(
+                                        .large,
+                                        .secondary,
+                                        content: .init(
+                                            title: L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                "\(terminatedContracts.count)"
+                                            )
+                                        ),
+                                        {
+                                            router.push(ContractsRouterType.terminatedContracts)
+                                        }
+                                    )
+                                    .hCustomButtonView {
+                                        hRow {
+                                            HStack {
+                                                hText(
+                                                    L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                        "\(terminatedContracts.count)"
+                                                    )
+                                                )
+                                                .foregroundColor(hTextColor.Opaque.primary)
+                                                Spacer()
+                                            }
+                                        }
+                                        .withChevronAccessory
+                                        .verticalPadding(0)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    }
+                                }
+                                .transition(.slide)
+                            }
                         }
+                        .presentableStoreLensAnimation(.spring())
+                        .sectionContainerStyle(.transparent)
                     }
-                    .presentableStoreLensAnimation(.spring())
-                    .sectionContainerStyle(.transparent)
                 }
             }
-        }
-        .onAppear {
-            Task {
-                await vm.getAddonBanners()
+            .onAppear {
+                Task {
+                    await vm.getAddonBanners()
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: isExpanded)
+            .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
+                if !isActive {
+                    isExpanded = false
+                }
+            }
+            .onChange(of: isExpanded) { expanded in
+                withAnimation(.easeIn(duration: 0.2)) {
+                    cardDrawRotation = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    withAnimation(.easeOut(duration: 0.1)) {
+                        cardDrawRotation = false
+                    }
+                }
+                if expanded, let cardId = scrollToCardId {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        withAnimation {
+                            scrollProxy.scrollTo(cardId, anchor: .bottom)
+                        }
+                        scrollToCardId = nil
+                    }
+                }
             }
         }
     }
@@ -118,14 +147,17 @@ struct ContractTable: View {
                     getContractsToShow(for: state)
                 }
             ) { contracts in
-                VStack(spacing: 0) {
+                VStack(spacing: isExpanded ? .padding8 : 0) {
                     ForEach(Array(contracts.enumerated()), id: \.element.id) { index, contract in
-                        let cumulativeOffset: CGFloat = contracts.prefix(index + 1).dropFirst()
-                            .reduce(0) { sum, c in
-                                let height = cardHeights[c.id] ?? 200
-                                let peek = (bottomContentHeights[c.id] ?? 0)
-                                return sum - (height - peek)
-                            }
+                        let cumulativeOffset: CGFloat =
+                            isExpanded
+                            ? 0
+                            : contracts.prefix(index + 1).dropFirst()
+                                .reduce(0) { sum, c in
+                                    let height = cardHeights[c.id] ?? 200
+                                    let peek = (bottomContentHeights[c.id] ?? 0)
+                                    return sum - (height - peek)
+                                }
                         ContractRow(
                             cardId: contract.id,
                             image: contract.pillowType?.bgImage,
@@ -141,21 +173,38 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .contractCardTruncate(to: true)
+                        .contractCardTruncate(to: !isExpanded)
                         .fixedSize(horizontal: false, vertical: true)
+                        .scaleEffect(cardDrawRotation && index > 0 ? (isExpanded ? 0.99 : 1.01) : 1)
                         .zIndex(Double(-index))
                         .offset(y: cumulativeOffset)
                         .transition(.slide)
+                        .id(contract.id)
+                        .overlay(
+                            Group {
+                                if !isExpanded && index > 0 {
+                                    Color.clear
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            scrollToCardId = contract.id
+                                            isExpanded = true
+                                        }
+                                        .offset(y: cumulativeOffset)
+                                }
+                            }
+                        )
                     }
                 }
                 .padding(
                     .bottom,
-                    contracts.dropFirst()
-                        .reduce(0) { sum, c in
-                            let height = cardHeights[c.id] ?? 200
-                            let peek = (bottomContentHeights[c.id] ?? 0)
-                            return sum - (height - peek)
-                        }
+                    isExpanded
+                        ? 0
+                        : contracts.dropFirst()
+                            .reduce(0) { sum, c in
+                                let height = cardHeights[c.id] ?? 200
+                                let peek = (bottomContentHeights[c.id] ?? 0)
+                                return sum - (height - peek)
+                            }
                 )
                 .onPreferenceChange(ContractRowBottomHeightKey.self) { heights in
                     bottomContentHeights = heights
@@ -233,7 +282,6 @@ public class ContractTableViewModel: ObservableObject {
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
     @Published var addonBanners: [AddonBanner] = []
-
     init() {
         loadingCancellable = store.loadingSignal
             .receive(on: RunLoop.main)

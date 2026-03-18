@@ -24,6 +24,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case inbox
     case contactInfo = "contact-info"
     case editCoInsured = "edit-coinsured"
+    case editCoOwners = "edit-coowners"
     case claimDetails = "claim-details"
     case insuranceEvidence = "insurance-evidence"
     case submitClaim = "submit-claim"
@@ -86,6 +87,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.addonTravelDisplayName
         case .editCoInsured:
             return L10n.hcQuickActionsEditCoinsured
+        case .editCoOwners:
+            return L10n.editCoownerTitle  //TODO: fix lokalise?
         case .claimDetails:
             return L10n.ClaimStatus.ClaimDetails.title
         case .insuranceEvidence:

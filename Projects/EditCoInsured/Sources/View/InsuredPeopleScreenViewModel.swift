@@ -1,55 +1,78 @@
 import SwiftUI
+import hCoreUI
 
 @MainActor
 class InsuredPeopleScreenViewModel: ObservableObject {
-    @Published var previousValue = CoInsuredModel()
-    @Published var coInsuredAdded: [CoInsuredModel] = []
-    @Published var coInsuredDeleted: [CoInsuredModel] = []
-    var config: InsuredPeopleConfig = .init()
+    @Published var previousValue = StakeHolder()
+    @Published var stakeHoldersAdded: [StakeHolder] = []
+    @Published var stakeHoldersDeleted: [StakeHolder] = []
+    var config: StakeHoldersConfig
     @Published var isLoading = false
 
-    var hasContentBelow: Bool {
-        nbOfMissingCoInsuredExcludingDeleted > 0
+    init(stakeHolderType: StakeHolderType) {
+        config = .init(stakeHolderType: stakeHolderType)
     }
 
-    var hasExistingCoInsured: Bool {
-        !config.preSelectedCoInsuredList.filter { !coInsuredAdded.contains($0) }.isEmpty
+    init(with config: StakeHoldersConfig) {
+        self.config = config
+    }
+
+    var hasContentBelow: Bool {
+        nbOfMissingStakeHoldersExcludingDeleted > 0
+    }
+
+    var hasExistingStakeHolders: Bool {
+        !config.preSelectedStakeHolders.filter { !stakeHoldersAdded.contains($0) }.isEmpty
     }
 
     var showConfirmChangesButton: Bool {
-        (coInsuredAdded.count >= nbOfMissingCoInsuredExcludingDeleted && coInsuredAdded.count > 0)
-            || coInsuredDeleted.count > 0
+        (stakeHoldersAdded.count >= nbOfMissingStakeHoldersExcludingDeleted && stakeHoldersAdded.count > 0)
+            || stakeHoldersDeleted.count > 0
     }
 
-    var nbOfMissingCoInsuredExcludingDeleted: Int {
-        config.numberOfMissingCoInsuredWithoutTermination - coInsuredDeleted.count
+    var nbOfMissingStakeHoldersExcludingDeleted: Int {
+        config.numberOfMissingStakeHoldersWithoutTermination - stakeHoldersDeleted.count
     }
 
-    func showInfoCard(type: CoInsuredFieldType?) -> Bool {
-        coInsuredAdded.count < nbOfMissingCoInsuredExcludingDeleted && type != .delete
+    var hasLocallyMissingStakeHolders: Bool {
+        stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted
+    }
+
+    func getInfoCardType(type: CoInsuredFieldType?) -> NotificationType? {
+        switch config.stakeHolderType {
+        case .coInsured: if hasLocallyMissingStakeHolders && type != .delete { .attention } else { nil }
+        case .coOwner:
+            if hasLocallyMissingStakeHolders {
+                .attention
+            } else if stakeHoldersAdded.isEmpty && stakeHoldersDeleted.isEmpty && existingCoInsured.isEmpty {
+                .info
+            } else {
+                nil
+            }
+        }
     }
 
     func completeList(
-        coInsuredAdded: [CoInsuredModel]? = nil,
-        coInsuredDeleted: [CoInsuredModel]? = nil
-    ) -> [CoInsuredModel] {
-        let added = coInsuredAdded ?? self.coInsuredAdded
-        let deleted = coInsuredDeleted ?? self.coInsuredDeleted
-        let existingList = config.contractCoInsured
-        let missingCount = config.numberOfMissingCoInsuredWithoutTermination
+        stakeHoldersAdded: [StakeHolder]? = nil,
+        stakeHoldersDeleted: [StakeHolder]? = nil
+    ) -> [StakeHolder] {
+        let added = stakeHoldersAdded ?? self.stakeHoldersAdded
+        let deleted = stakeHoldersDeleted ?? self.stakeHoldersDeleted
+        let existingList = config.stakeHolders
+        let missingCount = config.numberOfMissingStakeHoldersWithoutTermination
         let allHasMissingInfo = existingList.allSatisfy(\.hasMissingInfo)
         let shouldShowMissingCoInsuredPlaceholder: Bool =
-            missingCount > 0 && existingList.contains(CoInsuredModel()) && allHasMissingInfo
+            missingCount > 0 && existingList.contains(StakeHolder()) && allHasMissingInfo
 
-        var filterList: [CoInsuredModel] = []
+        var filterList: [StakeHolder] = []
 
         if shouldShowMissingCoInsuredPlaceholder {
             if deleted.count > 0 {
                 let count = max(missingCount - deleted.count, 0)
-                return Array(repeating: CoInsuredModel(), count: count)
+                return Array(repeating: StakeHolder(), count: count)
             } else if added.count > 0 {
                 let count = max(missingCount - added.count, 0)
-                filterList = Array(repeating: CoInsuredModel(), count: count)
+                filterList = Array(repeating: StakeHolder(), count: count)
             } else {
                 filterList = existingList
             }
@@ -65,43 +88,43 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         return merged.filter { $0.terminatesOn == nil }
     }
 
-    func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+    func listForGettingIntentFor(addCoInsured: StakeHolder) -> [StakeHolder] {
         self.addCoInsured(addCoInsured)
-        return completeList(coInsuredAdded: coInsuredAdded)
+        return completeList(stakeHoldersAdded: stakeHoldersAdded)
     }
 
-    func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+    func listForGettingIntentFor(removedCoInsured: StakeHolder) -> [StakeHolder] {
         removeCoInsured(removedCoInsured)
-        return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
+        return completeList(stakeHoldersAdded: stakeHoldersAdded, stakeHoldersDeleted: stakeHoldersDeleted)
     }
 
-    func listForGettingIntentFor(editCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+    func listForGettingIntentFor(editCoInsured: StakeHolder) -> [StakeHolder] {
         self.editCoInsured(editCoInsured)
         return completeList()
     }
 
-    func initializeCoInsured(with config: InsuredPeopleConfig) {
-        coInsuredAdded = []
-        coInsuredDeleted = []
+    func initializeCoInsured(with config: StakeHoldersConfig) {
+        stakeHoldersAdded = []
+        stakeHoldersDeleted = []
         self.config = config
     }
 
-    func addCoInsured(_ coInsuredModel: CoInsuredModel) {
-        coInsuredAdded.append(coInsuredModel)
+    func addCoInsured(_ coInsuredModel: StakeHolder) {
+        stakeHoldersAdded.append(coInsuredModel)
     }
 
-    func removeCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if let index = coInsuredAdded.firstIndex(where: { coInsured in
+    func removeCoInsured(_ coInsuredModel: StakeHolder) {
+        if let index = stakeHoldersAdded.firstIndex(where: { coInsured in
             coInsured == coInsuredModel
         }) {
-            coInsuredAdded.remove(at: index)
+            stakeHoldersAdded.remove(at: index)
         } else {
-            coInsuredDeleted.append(coInsuredModel)
+            stakeHoldersDeleted.append(coInsuredModel)
         }
     }
 
-    func undoDeleted(_ coInsuredModel: CoInsuredModel) {
-        var removedCoInsured: CoInsuredModel {
+    func undoDeleted(_ coInsuredModel: StakeHolder) {
+        var removedCoInsured: StakeHolder {
             .init(
                 firstName: coInsuredModel.firstName,
                 lastName: coInsuredModel.lastName,
@@ -110,24 +133,24 @@ class InsuredPeopleScreenViewModel: ObservableObject {
             )
         }
 
-        if let index = coInsuredDeleted.firstIndex(where: {
+        if let index = stakeHoldersDeleted.firstIndex(where: {
             $0 == removedCoInsured
         }) {
-            coInsuredDeleted.remove(at: index)
+            stakeHoldersDeleted.remove(at: index)
         }
     }
 
-    func editCoInsured(_ coInsuredModel: CoInsuredModel) {
-        if let index = coInsuredAdded.firstIndex(where: {
+    func editCoInsured(_ coInsuredModel: StakeHolder) {
+        if let index = stakeHoldersAdded.firstIndex(where: {
             $0 == previousValue
         }) {
-            coInsuredAdded.remove(at: index)
+            stakeHoldersAdded.remove(at: index)
         }
         addCoInsured(coInsuredModel)
     }
 
-    func listToDisplay(type: CoInsuredFieldType?, activationDate: String?) -> [CoInsuredListType] {
-        if type == .delete, nbOfMissingCoInsuredExcludingDeleted > 0 {
+    func listToDisplay(type: CoInsuredFieldType?, activationDate: String?) -> [StakeHolderListType] {
+        if type == .delete, nbOfMissingStakeHoldersExcludingDeleted > 0 {
             return coInsuredToDelete
         } else if type != .delete {
             return existingCoInsured + locallyAddedCoInsured(activationDate: activationDate) + missingCoInsured
@@ -135,25 +158,32 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         return []
     }
 
-    private var existingCoInsured: [CoInsuredListType] {
-        config.contractCoInsured
+    private var existingCoInsured: [StakeHolderListType] {
+        config.stakeHolders
             .filter {
-                !coInsuredDeleted.contains($0) && $0.terminatesOn == nil && !$0.hasMissingInfo
+                !stakeHoldersDeleted.contains($0) && $0.terminatesOn == nil && !$0.hasMissingInfo
             }
-            .map { CoInsuredListType(coInsured: $0, locallyAdded: false) }
+            .map {
+                StakeHolderListType(
+                    stakeHolder: $0,
+                    stakeHolderType: config.stakeHolderType,
+                    locallyAdded: false
+                )
+            }
     }
 
-    private var missingCoInsured: [CoInsuredListType] {
-        let nbOfFields = nbOfMissingCoInsuredExcludingDeleted - coInsuredAdded.count
+    private var missingCoInsured: [StakeHolderListType] {
+        let nbOfFields = nbOfMissingStakeHoldersExcludingDeleted - stakeHoldersAdded.count
 
-        let stillHasMissingCoInsured = coInsuredAdded.count < nbOfMissingCoInsuredExcludingDeleted
-        var missingCoInsuredToDisplay: [CoInsuredListType] = []
+        let stillHasMissingCoInsured = stakeHoldersAdded.count < nbOfMissingStakeHoldersExcludingDeleted
+        var missingCoInsuredToDisplay: [StakeHolderListType] = []
 
         if stillHasMissingCoInsured {
             for _ in 1...nbOfFields {
                 missingCoInsuredToDisplay.append(
-                    CoInsuredListType(
-                        coInsured: CoInsuredModel(),
+                    StakeHolderListType(
+                        stakeHolder: StakeHolder(),
+                        stakeHolderType: config.stakeHolderType,
                         type: nil,
                         locallyAdded: false
                     )
@@ -163,10 +193,11 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         return missingCoInsuredToDisplay
     }
 
-    private func locallyAddedCoInsured(activationDate: String?) -> [CoInsuredListType] {
-        coInsuredAdded.map {
-            CoInsuredListType(
-                coInsured: $0,
+    private func locallyAddedCoInsured(activationDate: String?) -> [StakeHolderListType] {
+        stakeHoldersAdded.map {
+            StakeHolderListType(
+                stakeHolder: $0,
+                stakeHolderType: config.stakeHolderType,
                 type: .added,
                 date: (activationDate != "")
                     ? activationDate : config.activeFrom,
@@ -175,13 +206,14 @@ class InsuredPeopleScreenViewModel: ObservableObject {
         }
     }
 
-    private var coInsuredToDelete: [CoInsuredListType] {
-        var coInsuredToDisplay: [CoInsuredListType] = []
+    private var coInsuredToDelete: [StakeHolderListType] {
+        var coInsuredToDisplay: [StakeHolderListType] = []
 
-        for _ in 1...nbOfMissingCoInsuredExcludingDeleted {
+        for _ in 1...nbOfMissingStakeHoldersExcludingDeleted {
             coInsuredToDisplay.append(
-                CoInsuredListType(
-                    coInsured: CoInsuredModel(),
+                StakeHolderListType(
+                    stakeHolder: StakeHolder(),
+                    stakeHolderType: config.stakeHolderType,
                     type: nil,
                     locallyAdded: false
                 )
