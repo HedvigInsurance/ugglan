@@ -43,7 +43,7 @@ struct FormFieldSearchView: View {
         .hFormAlwaysAttachToBottom {
             hSection {
                 hCancelButton(type: .secondary) {
-                    router.dismiss()
+                    vm.searchController.dismiss(animated: false)
                     router.dismiss()
                 }
             }
@@ -158,6 +158,8 @@ struct FormFieldSearchView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             onSelected(result, vm.searchController.searchBar.text ?? "")
+                            vm.searchController.dismiss(animated: false)
+                            router.dismiss()
                         }
                     }
                     .withChevronAccessory
