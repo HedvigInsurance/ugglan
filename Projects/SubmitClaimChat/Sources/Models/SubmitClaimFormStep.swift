@@ -53,7 +53,6 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
 
     /// Handles field presentation dismissal and focuses the field for accessibility after a short delay
     private func handleFieldPresentation(dismissed fieldId: String?) {
-        guard let fieldId else { return }
         Task {
             try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
             currentFieldId = fieldId
