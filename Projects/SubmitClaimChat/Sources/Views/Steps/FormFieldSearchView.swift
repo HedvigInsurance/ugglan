@@ -144,6 +144,7 @@ struct FormFieldSearchView: View {
                                         }
                                 }
                                 .frame(width: 46)
+                                .accessibilityHidden(true)
                             }
                             VStack(alignment: .leading, spacing: 4) {
                                 hText(result.title, style: .heading1)
@@ -168,6 +169,8 @@ struct FormFieldSearchView: View {
                 }
                 .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
                 .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.generalSelectButton)
             }
             .sectionContainerStyle(.negative)
         }
