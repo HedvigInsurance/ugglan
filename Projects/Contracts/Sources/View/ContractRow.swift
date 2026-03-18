@@ -181,13 +181,13 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         .init(
                             horizontalAlignment: .leading,
                             verticalAlignment: .center,
-                            horizontalSpacing: .padding6 / 2,
-                            verticalSpacing: .padding6 / 2
+                            horizontalSpacing: .padding3,
+                            verticalSpacing: .padding3
                         )
                     )
                 )
-                .padding(.vertical, -.padding6 / 2)
-                .padding(.horizontal, -.padding6 / 2)
+                .padding(.vertical, -.padding3)
+                .padding(.horizontal, -.padding3)
                 Spacer()
                 logo
             }
