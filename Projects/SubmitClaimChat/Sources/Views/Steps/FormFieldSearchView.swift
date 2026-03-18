@@ -142,9 +142,9 @@ struct FormFieldSearchView: View {
                                             RoundedRectangle(cornerRadius: .cornerRadiusXS)
                                                 .stroke(hBorderColor.primary, lineWidth: 1)
                                         }
+                                        .accessibilityHidden(true)
                                 }
                                 .frame(width: 46)
-                                .accessibilityHidden(true)
                             }
                             VStack(alignment: .leading, spacing: 4) {
                                 hText(result.title, style: .heading1)
@@ -161,6 +161,7 @@ struct FormFieldSearchView: View {
                             vm.searchController.dismiss(animated: false)
                             router.dismiss()
                         }
+                        .accessibilityAddTraits(.isButton)
                     }
                     .withChevronAccessory
                     .hRowContentAlignment(.center)
