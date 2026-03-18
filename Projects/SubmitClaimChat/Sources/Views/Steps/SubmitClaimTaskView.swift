@@ -13,11 +13,13 @@ struct SubmitClaimTaskResultView: View {
                     width: ClaimChatLoadingAnimationView.Constants.animationSize,
                     height: ClaimChatLoadingAnimationView.Constants.animationSize
                 )
+                // Compensate for Rive asset internal padding
                 .padding(.horizontal, -.padding2)
             hText(viewModel.taskModel.description, style: .body1)
                 .animation(.easeInOut, value: viewModel.taskModel)
         }
         .clipped()
+        // Offset to align with chat message content above
         .padding(.top, -.padding16)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)

@@ -42,9 +42,15 @@ struct ClaimChatLoadingAnimationView: View {
             playAnimations(loading: newValue)
         }
         .onChange(of: colorScheme) { _ in
+            animationTask?.cancel()
+            animationTask = nil
             initialAnimationDone = false
             riveViewModel = makeViewModel()
             playAnimations(loading: isLoading)
+        }
+        .onDisappear {
+            animationTask?.cancel()
+            animationTask = nil
         }
     }
 
@@ -55,7 +61,6 @@ struct ClaimChatLoadingAnimationView: View {
                 await delay(Constants.introDelay)
                 riveViewModel?.play(animationName: RiveAnimationName.loadingIntro.rawValue)
                 await delay(Constants.loopDelay)
-                try Task.checkCancellation()
                 riveViewModel?.play(animationName: RiveAnimationName.loading.rawValue)
                 initialAnimationDone = true
             } else if initialAnimationDone {
