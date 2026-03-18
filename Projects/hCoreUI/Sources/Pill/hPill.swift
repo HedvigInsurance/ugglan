@@ -5,18 +5,22 @@ public struct hPill: View {
         text: String,
         color: PillColor,
         colorLevel: PillColor.PillColorLevel? = .one,
-        withBorder: Bool = true
+        withBorder: Bool = true,
+        minWidth: CGFloat? = nil
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
         self.withBorder = withBorder
+        self.minWidth = minWidth
     }
 
     public let text: String
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
     let withBorder: Bool
+    let minWidth: CGFloat?
+
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.hPillAttributes) var attributes
@@ -32,7 +36,7 @@ public struct hPill: View {
                     .foregroundColor(hFillColor.Translucent.tertiary)
             }
         }
-        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
+        .modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder, minWidth: minWidth))
         .accessibilityElement(children: .combine)
     }
 
@@ -50,9 +54,10 @@ extension View {
     public func hPillStyle(
         color: PillColor,
         colorLevel: PillColor.PillColorLevel = .one,
-        withBorder: Bool = false
+        withBorder: Bool = false,
+        minWidth: CGFloat? = nil
     ) -> some View {
-        self.modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder))
+        self.modifier(PillModifier(color: color, colorLevel: colorLevel, withBorder: withBorder, minWidth: minWidth))
     }
 }
 
@@ -60,10 +65,12 @@ fileprivate struct PillModifier: ViewModifier {
     let color: PillColor
     let colorLevel: PillColor.PillColorLevel
     let withBorder: Bool
+    let minWidth: CGFloat?
     @Environment(\.hFieldSize) var fieldSize
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, getHorizontalPadding)
+            .frame(minWidth: minWidth)
             .padding(.top, getTopPadding)
             .padding(.bottom, getBottomPadding)
             .background(

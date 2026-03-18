@@ -6,7 +6,8 @@ query PaymentInformation {
 			  descriptor
 			  paymentMethod
 			  mandate
-			  chargingDayInTheMonth
+              dueDate
+              paymentProvider
 			}
             status
         }
