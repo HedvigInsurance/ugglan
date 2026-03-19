@@ -8,7 +8,7 @@ struct SubmitClaimTaskResultView: View {
     var body: some View {
         HStack(spacing: .padding4) {
             ClaimChatLoadingAnimationView(
-                isLoading: $viewModel.state.isHeaderLogoLoading
+                isLoading: $viewModel.state.isLoaderAnimating
             )
             .frame(
                 width: ClaimChatLoadingAnimationView.Constants.animationSize,
@@ -25,7 +25,7 @@ struct SubmitClaimTaskResultView: View {
         }
         // Offset to align with chat message content above
         .padding(.top, -.padding16)
-        // Offset to align with chat message content bellow
+        // Offset to align with chat message content below
         .padding(.bottom, -.padding8)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)

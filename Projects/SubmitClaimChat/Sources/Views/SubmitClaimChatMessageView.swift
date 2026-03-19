@@ -10,8 +10,8 @@ struct SubmitClaimChatMessageView: View {
             if let text = viewModel.getText() {
                 HStack {
                     VStack(alignment: .leading, spacing: .padding8) {
-                        if viewModel.state.showHeaderLoader {
-                            ClaimChatLoadingAnimationView(isLoading: $viewModel.state.isHeaderLogoLoading)
+                        if viewModel.state.showLoadingAnimation {
+                            ClaimChatLoadingAnimationView(isLoading: $viewModel.state.isLoaderAnimating)
                                 .frame(
                                     width: ClaimChatLoadingAnimationView.Constants.animationSize,
                                     height: ClaimChatLoadingAnimationView.Constants.animationSize
@@ -23,7 +23,7 @@ struct SubmitClaimChatMessageView: View {
                             delay: 1,
                             animate: viewModel.state.animateText,
                             onTextAnimationDone: {
-                                viewModel.state.isHeaderLogoLoading = false
+                                viewModel.state.isLoaderAnimating = false
                                 viewModel.state.showInput = true
                             }
                         )

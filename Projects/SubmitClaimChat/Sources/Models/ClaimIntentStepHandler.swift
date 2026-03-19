@@ -20,8 +20,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var disableSkip = false
         var showInput = false
         var animateText = true
-        var isHeaderLogoLoading = true
-        var showHeaderLoader = true
+        var isLoaderAnimating = true
+        var showLoadingAnimation = true
     }
 
     @Published var state = StepUIState()

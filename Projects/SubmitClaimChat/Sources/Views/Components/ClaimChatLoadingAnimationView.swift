@@ -8,7 +8,7 @@ struct ClaimChatLoadingAnimationView: View {
         fileprivate static let darkModeFile = "HedvigLoaderDark"
         fileprivate static let lightModeFile = "HedvigLoaderLight"
         fileprivate static let introDelay: TimeInterval = 0.1
-        fileprivate static let loopDelay: TimeInterval = 1
+        fileprivate static let introToLoopTransitionDelay: TimeInterval = 1
     }
 
     private enum RiveAnimationName: String {
@@ -22,7 +22,7 @@ struct ClaimChatLoadingAnimationView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var riveViewModel: RiveViewModel?
     @State private var animationTask: Task<Void, Error>?
-    @State private var initialAnimationDone = false
+    @State private var introAnimationPlayed = false
 
     var body: some View {
         Group {
@@ -35,18 +35,18 @@ struct ClaimChatLoadingAnimationView: View {
         .task {
             if riveViewModel == nil {
                 riveViewModel = makeViewModel()
-                playAnimations(loading: isLoading)
+                updateAnimation(isLoading: isLoading)
             }
         }
         .onChange(of: isLoading) { newValue in
-            playAnimations(loading: newValue)
+            updateAnimation(isLoading: newValue)
         }
         .onChange(of: colorScheme) { _ in
             animationTask?.cancel()
             animationTask = nil
-            initialAnimationDone = false
+            introAnimationPlayed = false
             riveViewModel = makeViewModel()
-            playAnimations(loading: isLoading)
+            updateAnimation(isLoading: isLoading)
         }
         .onDisappear {
             animationTask?.cancel()
@@ -54,16 +54,16 @@ struct ClaimChatLoadingAnimationView: View {
         }
     }
 
-    private func playAnimations(loading: Bool) {
+    private func updateAnimation(isLoading loading: Bool) {
         animationTask?.cancel()
         animationTask = Task {
-            if loading && !initialAnimationDone {
+            if loading && !introAnimationPlayed {
                 await delay(Constants.introDelay)
                 riveViewModel?.play(animationName: RiveAnimationName.loadingIntro.rawValue)
-                await delay(Constants.loopDelay)
+                await delay(Constants.introToLoopTransitionDelay)
                 riveViewModel?.play(animationName: RiveAnimationName.loading.rawValue)
-                initialAnimationDone = true
-            } else if initialAnimationDone {
+                introAnimationPlayed = true
+            } else if introAnimationPlayed {
                 riveViewModel?.stop()
                 riveViewModel?.play(animationName: RiveAnimationName.loadingOutro.rawValue)
             }

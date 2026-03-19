@@ -43,7 +43,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             taskModel = .init(description: "", isCompleted: true)
             return result
         } catch {
-            state.isHeaderLogoLoading = false
+            state.isLoaderAnimating = false
             throw error
         }
     }

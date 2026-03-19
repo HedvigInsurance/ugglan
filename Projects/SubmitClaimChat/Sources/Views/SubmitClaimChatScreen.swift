@@ -243,11 +243,11 @@ struct StepView: View {
                         }
                 }
             }
-            .onChange(of: step.state.isHeaderLogoLoading) { isLoading in
+            .onChange(of: step.state.isLoaderAnimating) { isLoading in
                 if let indexOfCurrentStep = viewModel.allSteps.firstIndex(where: { $0.id == step.id }),
                     indexOfCurrentStep > 0
                 {
-                    viewModel.allSteps[indexOfCurrentStep - 1].state.isHeaderLogoLoading = false
+                    viewModel.allSteps[indexOfCurrentStep - 1].state.isLoaderAnimating = false
                 }
             }
             .id(step.id)
@@ -444,7 +444,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         let handler = createStepHandler(for: claimIntent)
         if let currentStep = currentStep {
             if currentStep is SubmitClaimTaskStep {
-                handler.state.showHeaderLoader = false
+                handler.state.showLoadingAnimation = false
             }
         }
 
