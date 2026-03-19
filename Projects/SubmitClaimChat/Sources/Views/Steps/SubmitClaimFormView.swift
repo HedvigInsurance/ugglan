@@ -83,7 +83,7 @@ struct SubmitClaimFormView: View {
                 model: model,
                 onSelected: { [weak viewModel] selected, searchText in
                     let formValue = viewModel?.getFormStepValue(for: model.id)
-                    formValue?.searchSelectedValue = selected
+                    formValue?.selectedSearchItem = selected
                     formValue?.lastSearchQuery = searchText
                     viewModel?.searchFieldPresentation = nil
                 }
@@ -257,33 +257,26 @@ struct FormFieldView: View {
 
     @ViewBuilder
     private var searchField: some View {
-        if let search = fieldViewModel.searchSelectedValue {
-            SingleSelectValueView(item: search) { [weak viewModel] in
-                viewModel?.searchFieldPresentation = .init(
-                    id: field.id,
-                    stepId: viewModel?.claimIntent.currentStep.id ?? "",
-                    title: field.title,
-                    suggestedQuery: fieldViewModel.lastSearchQuery,
-                    modalTitle: field.searchData?.modalTitle ?? "",
-                    modalSubtitle: field.searchData?.modalSubtitle ?? ""
-                )
-            }
-            .sectionContainerStyle(.opaque)
+        let presentSearch: () -> Void = { [weak viewModel] in
+            viewModel?.searchFieldPresentation = .init(
+                id: field.id,
+                stepId: viewModel?.claimIntent.currentStep.id ?? "",
+                title: field.title,
+                suggestedQuery: fieldViewModel.lastSearchQuery,
+                modalTitle: field.searchData?.modalTitle ?? "",
+                modalSubtitle: field.searchData?.modalSubtitle ?? ""
+            )
+        }
+        if let selectedItem = fieldViewModel.selectedSearchItem {
+            SingleSelectValueView(item: selectedItem, onTap: presentSearch)
+                .sectionContainerStyle(.opaque)
         } else {
             DropdownView(
                 value: "",
                 placeHolder: field.title,
-                error: $fieldViewModel.error
-            ) { [weak viewModel] in
-                viewModel?.searchFieldPresentation = .init(
-                    id: field.id,
-                    stepId: viewModel?.claimIntent.currentStep.id ?? "",
-                    title: field.title,
-                    suggestedQuery: fieldViewModel.lastSearchQuery,
-                    modalTitle: field.searchData?.modalTitle ?? "",
-                    modalSubtitle: field.searchData?.modalSubtitle ?? ""
-                )
-            }
+                error: $fieldViewModel.error,
+                onTap: presentSearch
+            )
         }
     }
 
@@ -332,7 +325,8 @@ struct SubmitClaimFormResultView: View {
             if allValuesAreSkipped {
                 let item = SubmitClaimFormStep.ResultDisplayItem(
                     skipped: true,
-                    type: .text(key: L10n.claimChatSkippedStep, value: L10n.claimChatSkippedStep)
+                    key: L10n.claimChatSkippedStep,
+                    type: .text(value: L10n.claimChatSkippedStep)
                 )
                 fieldFor(item)
             } else {
@@ -347,7 +341,7 @@ struct SubmitClaimFormResultView: View {
     @ViewBuilder
     private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
         switch item.type {
-        case let .text(_, value):
+        case let .text(value):
             hText(value)
                 .foregroundColor(fieldTextColor(for: item))
                 .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)

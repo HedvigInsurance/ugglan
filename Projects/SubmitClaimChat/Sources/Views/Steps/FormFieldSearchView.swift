@@ -119,8 +119,9 @@ struct FormFieldSearchView: View {
 
     private var resultsView: some View {
         VStack(spacing: .padding6) {
-            ForEach(vm.searchResults, id: \.value) { [unowned vm] item in
+            ForEach(vm.searchResults, id: \.value) { [weak vm] item in
                 SingleSelectValueView(item: item) {
+                    guard let vm else { return }
                     onSelected(item, vm.searchController.searchBar.text ?? "")
                 }
             }

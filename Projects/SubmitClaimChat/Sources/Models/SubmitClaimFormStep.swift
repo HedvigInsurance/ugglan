@@ -96,13 +96,13 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             .map { field in
                 let userEnteredValues = formValues[field.id]!.values
                 // For search fields, use the stored display title
-                if field.type == .search, let searchSelectedValue = formValues[field.id]?.searchSelectedValue {
-                    return .init(skipped: false, type: .searchResult(value: searchSelectedValue))
+                if field.type == .search, let selectedSearchItem = formValues[field.id]?.selectedSearchItem {
+                    return .init(skipped: false, key: field.title, type: .searchResult(value: selectedSearchItem))
                 }
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
                 if !valuesToDisplay.isEmpty {
                     let valueToDisplay = valuesToDisplay.joined(separator: ", ")
-                    return .init(skipped: false, type: .text(key: field.title, value: valueToDisplay))
+                    return .init(skipped: false, key: field.title, type: .text(value: valueToDisplay))
                 }
                 var valueToDisplay = userEnteredValues.joined(separator: ", ")
                 if let suffix = field.suffix {
@@ -110,30 +110,25 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                 }
                 let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
                 let value = isSkipped ? L10n.claimChatSkippedStep : valueToDisplay
-                return .init(skipped: isSkipped, type: .text(key: field.title, value: value))
+                return .init(skipped: isSkipped, key: field.title, type: .text(value: value))
             }
     }
+
     struct ResultDisplayItem {
         let skipped: Bool
+        let key: String
         let type: ResultDisplayItemType
-
-        var key: String {
-            switch type {
-            case let .text(key, _): return key
-            case let .searchResult(value): return value.title
-            }
-        }
 
         var value: String {
             switch type {
-            case let .text(_, value): return value
-            case let .searchResult(value): return value.title
+            case let .text(value): return value
+            case let .searchResult(item): return item.title
             }
         }
     }
 
     enum ResultDisplayItemType {
-        case text(key: String, value: String)
+        case text(value: String)
         case searchResult(value: SingleSelectValue)
     }
 
@@ -164,10 +159,10 @@ final class FormStepValue: ObservableObject {
     }
     @Published var error: String?
     /// Display title for search-selected values (since the value is an opaque ID)
-    @Published var searchSelectedValue: SingleSelectValue? {
+    @Published var selectedSearchItem: SingleSelectValue? {
         didSet {
-            if let searchSelectedValue {
-                value = searchSelectedValue.value
+            if let selectedSearchItem {
+                value = selectedSearchItem.value
             }
         }
     }
