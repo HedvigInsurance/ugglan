@@ -16,6 +16,7 @@ struct ClaimFlowLauncher: ViewModifier {
     @Binding var showOldSubmitClaimFlow: Bool
     @State private var submitClaimInput: StartClaimInput?
     @State private var router = Router()
+    @State var disableSubmitChatClaimAnimations = false
     func body(content: Content) -> some View {
         content
             .detent(
@@ -50,7 +51,8 @@ struct ClaimFlowLauncher: ViewModifier {
                                 object: ChatType.newConversation
                             )
                         }
-                    )
+                    ),
+                    disableAnimations: disableSubmitChatClaimAnimations
                 )
             }
     }

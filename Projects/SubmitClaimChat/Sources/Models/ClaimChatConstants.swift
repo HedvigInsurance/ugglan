@@ -1,7 +1,6 @@
 import Foundation
 
-@MainActor
-public var disableSubmitChatClaimAnimations = false
+@MainActor var disableSubmitChatClaimAnimations = false
 
 @MainActor
 enum ClaimChatConstants {
