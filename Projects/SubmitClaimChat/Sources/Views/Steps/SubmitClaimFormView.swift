@@ -83,8 +83,7 @@ struct SubmitClaimFormView: View {
                 model: model,
                 onSelected: { [weak viewModel] selected, searchText in
                     let formValue = viewModel?.getFormStepValue(for: model.id)
-                    formValue?.value = selected.value
-                    formValue?.selectedDisplayTitle = selected.title
+                    formValue?.searchSelectedValue = selected
                     formValue?.lastSearchQuery = searchText
                     viewModel?.searchFieldPresentation = nil
                 }
@@ -256,20 +255,35 @@ struct FormFieldView: View {
         }
     }
 
+    @ViewBuilder
     private var searchField: some View {
-        DropdownView(
-            value: fieldViewModel.selectedDisplayTitle ?? "",
-            placeHolder: field.title,
-            error: $fieldViewModel.error
-        ) { [weak viewModel] in
-            viewModel?.searchFieldPresentation = .init(
-                id: field.id,
-                stepId: viewModel?.claimIntent.currentStep.id ?? "",
-                title: field.title,
-                suggestedQuery: fieldViewModel.lastSearchQuery,
-                modalTitle: field.searchData?.modalTitle ?? "",
-                modalSubtitle: field.searchData?.modalSubtitle ?? ""
-            )
+        if let search = fieldViewModel.searchSelectedValue {
+            SingleSelectValueView(item: search) { [weak viewModel] in
+                viewModel?.searchFieldPresentation = .init(
+                    id: field.id,
+                    stepId: viewModel?.claimIntent.currentStep.id ?? "",
+                    title: field.title,
+                    suggestedQuery: fieldViewModel.lastSearchQuery,
+                    modalTitle: field.searchData?.modalTitle ?? "",
+                    modalSubtitle: field.searchData?.modalSubtitle ?? ""
+                )
+            }
+            .sectionContainerStyle(.opaque)
+        } else {
+            DropdownView(
+                value: "",
+                placeHolder: field.title,
+                error: $fieldViewModel.error
+            ) { [weak viewModel] in
+                viewModel?.searchFieldPresentation = .init(
+                    id: field.id,
+                    stepId: viewModel?.claimIntent.currentStep.id ?? "",
+                    title: field.title,
+                    suggestedQuery: fieldViewModel.lastSearchQuery,
+                    modalTitle: field.searchData?.modalTitle ?? "",
+                    modalSubtitle: field.searchData?.modalSubtitle ?? ""
+                )
+            }
         }
     }
 
@@ -317,9 +331,8 @@ struct SubmitClaimFormResultView: View {
             let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)
             if allValuesAreSkipped {
                 let item = SubmitClaimFormStep.ResultDisplayItem(
-                    key: L10n.claimChatSkippedStep,
-                    value: L10n.claimChatSkippedStep,
-                    skipped: true
+                    skipped: true,
+                    type: .text(key: L10n.claimChatSkippedStep, value: L10n.claimChatSkippedStep)
                 )
                 fieldFor(item)
             } else {
@@ -328,14 +341,29 @@ struct SubmitClaimFormResultView: View {
                 }
             }
         }
+        .padding(.leading, .padding48)
     }
 
+    @ViewBuilder
     private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
-        hText(item.value)
-            .foregroundColor(fieldTextColor(for: item))
-            .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-            .hFieldSize(.capsuleShape)
-            .accessibilityLabel(item.value.getAccessibilityLabelDate)
+        switch item.type {
+        case let .text(_, value):
+            hText(value)
+                .foregroundColor(fieldTextColor(for: item))
+                .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
+                .hFieldSize(.capsuleShape)
+                .accessibilityLabel(value.getAccessibilityLabelDate)
+        case let .searchResult(value):
+            SingleSelectValueView(item: value, onTap: nil)
+                .hWithoutHorizontalPadding(.section)
+                .hFieldSize(.small)
+                .sectionContainerStyle(.transparent)
+                .background {
+                    Color.clear
+                        .hPillStyle(color: .grey, colorLevel: .two)
+                        .hFieldSize(.extraLarge)
+                }
+        }
     }
 
     @hColorBuilder

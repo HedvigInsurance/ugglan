@@ -57,7 +57,7 @@ struct SubmitClaimChatMessageView: View {
 extension ClaimIntentStepHandler {
     var maxWidth: CGFloat {
         switch claimIntent.currentStep.content {
-        case .summary, .singleSelect, .deflect, .audioRecording:
+        case .summary, .singleSelect, .deflect, .audioRecording, .form:
             return .infinity
         default:
             return 300

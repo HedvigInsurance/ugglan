@@ -96,31 +96,45 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
             .map { field in
                 let userEnteredValues = formValues[field.id]!.values
                 // For search fields, use the stored display title
-                if field.type == .search, let displayTitle = formValues[field.id]?.selectedDisplayTitle {
-                    return .init(key: field.title, value: displayTitle, skipped: false)
+                if field.type == .search, let searchSelectedValue = formValues[field.id]?.searchSelectedValue {
+                    return .init(skipped: false, type: .searchResult(value: searchSelectedValue))
                 }
                 let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
                 if !valuesToDisplay.isEmpty {
                     let valueToDisplay = valuesToDisplay.joined(separator: ", ")
-                    return .init(key: field.title, value: valueToDisplay, skipped: false)
+                    return .init(skipped: false, type: .text(key: field.title, value: valueToDisplay))
                 }
                 var valueToDisplay = userEnteredValues.joined(separator: ", ")
                 if let suffix = field.suffix {
                     valueToDisplay += " \(suffix)"
                 }
                 let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
-                return .init(
-                    key: field.title,
-                    value: isSkipped ? L10n.claimChatSkippedStep : valueToDisplay,
-                    skipped: isSkipped
-                )
+                let value = isSkipped ? L10n.claimChatSkippedStep : valueToDisplay
+                return .init(skipped: isSkipped, type: .text(key: field.title, value: value))
             }
     }
-
     struct ResultDisplayItem {
-        let key: String
-        let value: String
         let skipped: Bool
+        let type: ResultDisplayItemType
+
+        var key: String {
+            switch type {
+            case let .text(key, _): return key
+            case let .searchResult(value): return value.title
+            }
+        }
+
+        var value: String {
+            switch type {
+            case let .text(_, value): return value
+            case let .searchResult(value): return value.title
+            }
+        }
+    }
+
+    enum ResultDisplayItemType {
+        case text(key: String, value: String)
+        case searchResult(value: SingleSelectValue)
     }
 
     override func accessibilityEditHint() -> String {
@@ -129,7 +143,9 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
         }
         let items = getAllValuesToShow()
             .filter { !$0.skipped }
-        let values = items.map { "\($0.key): \($0.value.localDateToDate?.displayDateDDMMMYYYYFormat ?? $0.value)" }
+        let values = items.map {
+            "\($0.key): \($0.value.localDateToDate?.displayDateDDMMMYYYYFormat ?? $0.value)"
+        }
         return .accessibilitySubmittedValues(count: items.count, values: values)
     }
 }
@@ -148,8 +164,13 @@ final class FormStepValue: ObservableObject {
     }
     @Published var error: String?
     /// Display title for search-selected values (since the value is an opaque ID)
-    @Published var selectedDisplayTitle: String?
-
+    @Published var searchSelectedValue: SingleSelectValue? {
+        didSet {
+            if let searchSelectedValue {
+                value = searchSelectedValue.value
+            }
+        }
+    }
     var lastSearchQuery: String?
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
         self.value = field.defaultValues.first ?? ""
