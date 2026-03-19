@@ -7,7 +7,8 @@ struct RevealTextView: View {
     @State private var showDot = true
     @State private var animationCompleted = false
     let text: String
-    let animate: Bool
+    var animate: Bool { _animate && !disableSubmitChatClaimAnimations }
+    private let _animate: Bool
     let delay: Float
     private var onTextAnimationDone: (() -> Void)
     init(
@@ -18,7 +19,7 @@ struct RevealTextView: View {
     ) {
         self.text = text
         self.delay = delay
-        self.animate = animate
+        self._animate = animate
         self.onTextAnimationDone = onTextAnimationDone
     }
     var body: some View {
