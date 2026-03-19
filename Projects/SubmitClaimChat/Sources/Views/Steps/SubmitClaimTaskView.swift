@@ -4,32 +4,33 @@ import hCoreUI
 
 struct SubmitClaimTaskResultView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
-    @State private var isLoading = true
 
     var body: some View {
         HStack(spacing: .padding4) {
-            ClaimChatLoadingAnimationView(isLoading: $isLoading)
-                .frame(
-                    width: ClaimChatLoadingAnimationView.Constants.animationSize,
-                    height: ClaimChatLoadingAnimationView.Constants.animationSize
-                )
-                // Compensate for Rive asset internal padding
-                .padding(.horizontal, -.padding2)
-            hText(viewModel.taskModel.description, style: .body1)
-                .animation(.easeInOut, value: viewModel.taskModel)
+            ClaimChatLoadingAnimationView(
+                isLoading: $viewModel.state.isHeaderLogoLoading
+            )
+            .frame(
+                width: ClaimChatLoadingAnimationView.Constants.animationSize,
+                height: ClaimChatLoadingAnimationView.Constants.animationSize
+            )
+            //Compensate for Rive asset internal padding
+            .padding(.horizontal, -.padding2)
+            if viewModel.taskModel.description != "" {
+                hText(viewModel.taskModel.description, style: .body1)
+                    .modifier(ShimmerModifier(isActive: true))
+                    .transition(.opacity)
+                    .animation(.easeInOut, value: viewModel.taskModel)
+            }
         }
-        .clipped()
         // Offset to align with chat message content above
         .padding(.top, -.padding16)
+        // Offset to align with chat message content bellow
+        .padding(.bottom, -.padding8)
         .transition(.opacity.animation(.easeOut))
         .animation(.easeInOut, value: viewModel.taskModel)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(L10n.claimChatTaskContentDescription)
-        .onChange(of: viewModel.taskModel.isCompleted) { completed in
-            if completed {
-                isLoading = false
-            }
-        }
     }
 }
 
@@ -38,5 +39,7 @@ struct SubmitClaimTaskResultView: View {
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demo })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let model = ClaimIntentClientDemo().taskDemoStep
-    return SubmitClaimTaskResultView(viewModel: model)
+    return VStack(alignment: .leading) {
+        SubmitClaimTaskResultView(viewModel: model)
+    }
 }
