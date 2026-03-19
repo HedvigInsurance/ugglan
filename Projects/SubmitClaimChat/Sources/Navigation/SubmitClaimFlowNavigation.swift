@@ -24,8 +24,10 @@ struct SubmitClaimFlowNavigation: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
 
     init(
-        startInput: SubmitClaimChatInput
+        startInput: SubmitClaimChatInput,
+        disableAnimations: Bool
     ) {
+        disableSubmitChatClaimAnimations = disableAnimations
         _viewModel = StateObject(
             wrappedValue: .init(startInput: startInput)
         )
