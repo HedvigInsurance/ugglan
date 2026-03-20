@@ -1,6 +1,7 @@
 @_spi(RiveExperimental) import RiveRuntime
 import SwiftUI
 import hCore
+import hCoreUI
 
 struct ClaimChatLoadingAnimationView: View {
     enum Constants {
@@ -73,6 +74,7 @@ struct ClaimChatLoadingAnimationView: View {
     private func makeViewModel() -> RiveViewModel {
         RiveViewModel(
             fileName: colorScheme == .dark ? Constants.darkModeFile : Constants.lightModeFile,
+            in: Bundle(for: Router.self),
             animationName: RiveAnimationName.idle.rawValue,
             autoPlay: false
         )
