@@ -41,6 +41,7 @@ public struct FileView: View {
                                 contentMode: .fill
                             )
                         )
+                        .accessibilityLabel(file.name)
                 }
             } else {
                 GeometryReader { geometry in
@@ -96,6 +97,7 @@ public struct FileView: View {
                 .aspectRatio(
                     contentMode: .fill
                 )
+                .accessibilityLabel(file.name)
             )
     }
 
@@ -124,6 +126,7 @@ public struct FileView: View {
                     .aspectRatio(
                         contentMode: .fill
                     )
+                    .accessibilityLabel(file.name)
                 )
         }
     }
