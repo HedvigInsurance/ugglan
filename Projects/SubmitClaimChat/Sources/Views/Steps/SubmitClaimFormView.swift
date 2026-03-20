@@ -83,8 +83,7 @@ struct SubmitClaimFormView: View {
                 model: model,
                 onSelected: { [weak viewModel] selected, searchText in
                     let formValue = viewModel?.getFormStepValue(for: model.id)
-                    formValue?.value = selected.value
-                    formValue?.selectedDisplayTitle = selected.title
+                    formValue?.selectedSearchItem = selected
                     formValue?.lastSearchQuery = searchText
                 }
             )
@@ -255,12 +254,9 @@ struct FormFieldView: View {
         }
     }
 
+    @ViewBuilder
     private var searchField: some View {
-        DropdownView(
-            value: fieldViewModel.selectedDisplayTitle ?? "",
-            placeHolder: field.title,
-            error: $fieldViewModel.error
-        ) { [weak viewModel] in
+        let presentSearch: () -> Void = { [weak viewModel] in
             viewModel?.searchFieldPresentation = .init(
                 id: field.id,
                 stepId: viewModel?.claimIntent.currentStep.id ?? "",
@@ -268,6 +264,18 @@ struct FormFieldView: View {
                 suggestedQuery: fieldViewModel.lastSearchQuery,
                 modalTitle: field.searchData?.modalTitle ?? "",
                 modalSubtitle: field.searchData?.modalSubtitle ?? ""
+            )
+        }
+        if let selectedItem = fieldViewModel.selectedSearchItem {
+            SingleSelectValueView(item: selectedItem, onTap: presentSearch)
+                .sectionContainerStyle(.opaque)
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverChangeValue)
+        } else {
+            DropdownView(
+                value: "",
+                placeHolder: field.title,
+                error: $fieldViewModel.error,
+                onTap: presentSearch
             )
         }
     }
@@ -316,9 +324,9 @@ struct SubmitClaimFormResultView: View {
             let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)
             if allValuesAreSkipped {
                 let item = SubmitClaimFormStep.ResultDisplayItem(
+                    skipped: true,
                     key: L10n.claimChatSkippedStep,
-                    value: L10n.claimChatSkippedStep,
-                    skipped: true
+                    type: .text(value: L10n.claimChatSkippedStep)
                 )
                 fieldFor(item)
             } else {
@@ -327,14 +335,30 @@ struct SubmitClaimFormResultView: View {
                 }
             }
         }
+        .padding(.leading, .padding48)
     }
 
+    @ViewBuilder
     private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
-        hText(item.value)
-            .foregroundColor(fieldTextColor(for: item))
-            .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-            .hFieldSize(.capsuleShape)
-            .accessibilityLabel(item.value.getAccessibilityLabelDate)
+        switch item.type {
+        case let .text(value):
+            hText(value)
+                .foregroundColor(fieldTextColor(for: item))
+                .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
+                .hFieldSize(.capsuleShape)
+                .accessibilityLabel(value.getAccessibilityLabelDate)
+        case let .searchResult(value):
+            SingleSelectValueView(item: value, onTap: nil)
+                .hWithoutHorizontalPadding(.section)
+                .hFieldSize(.small)
+                .sectionContainerStyle(.transparent)
+                .background {
+                    Color.clear
+                        .hPillStyle(color: .grey, colorLevel: .two)
+                        .hFieldSize(.extraLarge)
+                        .accessibilityHidden(true)
+                }
+        }
     }
 
     @hColorBuilder

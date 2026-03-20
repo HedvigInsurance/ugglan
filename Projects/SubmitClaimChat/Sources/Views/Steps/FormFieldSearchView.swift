@@ -1,4 +1,3 @@
-import Kingfisher
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -120,62 +119,15 @@ struct FormFieldSearchView: View {
 
     private var resultsView: some View {
         VStack(spacing: .padding6) {
-            ForEach(vm.searchResults, id: \.value) { [unowned vm] result in
-                hSection {
-                    hRow {
-                        HStack(spacing: .padding16) {
-                            if let imageUrl = result.imageUrl, let url = URL(string: imageUrl) {
-                                HStack {
-                                    KFImage(url)
-                                        .placeholder {
-                                            WordmarkActivityIndicator(.standard)
-                                        }
-                                        .onFailureImage(hCoreUIAssets.helipadBig.image)
-                                        .resizable()
-                                        .fade(duration: 0.1)
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 38, height: 38)
-                                        .padding(.padding4)
-                                        .background(Color.white)
-                                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: .cornerRadiusXS)
-                                                .stroke(hBorderColor.primary, lineWidth: 1)
-                                        }
-                                        .accessibilityHidden(true)
-                                }
-                                .frame(width: 46)
-                            }
-                            VStack(alignment: .leading, spacing: 4) {
-                                hText(result.title, style: .heading1)
-                                if let subtitle = result.subtitle {
-                                    hText(subtitle, style: .label)
-                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                }
-                            }
-                            Spacer()
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            onSelected(result, vm.searchController.searchBar.text ?? "")
-                            vm.searchController.dismiss(animated: false)
-                            router.dismiss()
-                        }
-                        .accessibilityAddTraits(.isButton)
-                    }
-                    .withChevronAccessory
-                    .hRowContentAlignment(.center)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                            .stroke(hBorderColor.primary, lineWidth: 1)
-                    }
+            ForEach(vm.searchResults, id: \.value) { [weak vm] item in
+                SingleSelectValueView(item: item) {
+                    guard let vm else { return }
+                    vm.searchController.dismiss(animated: false)
+                    router.dismiss()
+                    onSelected(item, vm.searchController.searchBar.text ?? "")
                 }
-                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
-                .accessibilityElement(children: .combine)
                 .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.generalSelectButton)
             }
-            .sectionContainerStyle(.negative)
         }
         .padding(.bottom, .padding6)
     }
