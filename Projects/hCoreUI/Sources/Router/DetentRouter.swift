@@ -56,6 +56,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     let presentationStyle: DetentPresentationStyle
+    let tracking: TrackingViewNameProtocol? = nil
     @Binding var options: DetentPresentationOption
     let onUserDismiss: (() -> Void)?
     var content: (Item) -> SwiftUIContent
@@ -66,6 +67,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
                 presented: $present,
                 presentationStyle: presentationStyle,
                 options: $options,
+                tracking: tracking,
                 onUserDismiss: onUserDismiss
             ) {
                 if let item = itemToRenderFrom {
@@ -96,7 +98,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
 private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
-    let transitionType: DetentPresentationStyle
+    let presentationStyle: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     let onUserDismiss: (() -> Void)?
@@ -112,7 +114,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     ) {
         _presented = presented
         self.content = content
-        self.transitionType = presentationStyle
+        self.presentationStyle = presentationStyle
         _options = options
         self.onUserDismiss = onUserDismiss
         self.tracking = tracking
@@ -149,7 +151,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                if case let .detent(style) = transitionType {
+                if case let .detent(style) = presentationStyle {
                     presentationViewModel.style = style
                 }
 
@@ -164,7 +166,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     vc.view.backgroundColor = .clear
                 }
                 var shouldUseBlur: Bool {
-                    if case let .detent(style) = transitionType {
+                    if case let .detent(style) = presentationStyle {
                         return style.contains(.height)
                     }
                     return false
@@ -206,7 +208,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
     @ViewBuilder
     private func getContent() -> some View {
-        if transitionType == .center {
+        if presentationStyle == .center {
             content()
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
                 .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
@@ -232,7 +234,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         for vc: UIViewController,
         shouldUseBlur: Bool
     ) -> (any UIViewControllerTransitioningDelegate) {
-        switch transitionType {
+        switch presentationStyle {
         case let .detent(style):
             let delegate = DetentTransitioningDelegate(
                 detents: style,
