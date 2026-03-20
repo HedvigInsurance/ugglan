@@ -86,7 +86,6 @@ struct SubmitClaimFormView: View {
                     formValue?.value = selected.value
                     formValue?.selectedDisplayTitle = selected.title
                     formValue?.lastSearchQuery = searchText
-                    viewModel?.searchFieldPresentation = nil
                 }
             )
             .navigationTitle(model.title)

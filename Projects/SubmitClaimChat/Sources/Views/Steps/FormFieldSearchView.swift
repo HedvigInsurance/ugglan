@@ -43,7 +43,7 @@ struct FormFieldSearchView: View {
         .hFormAlwaysAttachToBottom {
             hSection {
                 hCancelButton(type: .secondary) {
-                    router.dismiss()
+                    vm.searchController.dismiss(animated: false)
                     router.dismiss()
                 }
             }
@@ -142,6 +142,7 @@ struct FormFieldSearchView: View {
                                             RoundedRectangle(cornerRadius: .cornerRadiusXS)
                                                 .stroke(hBorderColor.primary, lineWidth: 1)
                                         }
+                                        .accessibilityHidden(true)
                                 }
                                 .frame(width: 46)
                             }
@@ -157,7 +158,10 @@ struct FormFieldSearchView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                             onSelected(result, vm.searchController.searchBar.text ?? "")
+                            vm.searchController.dismiss(animated: false)
+                            router.dismiss()
                         }
+                        .accessibilityAddTraits(.isButton)
                     }
                     .withChevronAccessory
                     .hRowContentAlignment(.center)
@@ -168,6 +172,8 @@ struct FormFieldSearchView: View {
                 }
                 .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
                 .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.generalSelectButton)
             }
             .sectionContainerStyle(.negative)
         }
