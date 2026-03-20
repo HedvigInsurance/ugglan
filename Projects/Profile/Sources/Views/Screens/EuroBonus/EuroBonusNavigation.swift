@@ -50,7 +50,7 @@ public struct EuroBonusNavigation: View {
         .environmentObject(euroBonusNavigationViewModel)
         .detent(
             presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) {
             ChangeEuroBonusView()
                 .configureTitle(L10n.SasIntegration.enterYourNumber)

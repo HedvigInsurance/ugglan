@@ -14,7 +14,7 @@ struct ConnectPayment: ViewModifier {
         content
             .detent(
                 item: $vm.setupTypeNavigationModel,
-                transitionType: .detent(style: [.large]),
+                presentationStyle: .detent(style: [.large]),
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { _ in
                 DirectDebitSetup()

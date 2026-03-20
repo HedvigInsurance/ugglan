@@ -10,6 +10,7 @@ extension Notification.Name {
     public static let addonsChanged = Notification.Name("addonsChanged")
     public static let openCrossSell = Notification.Name("openCrossSell")
     public static let openChangeTier = Notification.Name("openChangeTier")
+    public static let openReviewContactInfo = Notification.Name("openReviewContactInfo")
     public static let claimCreated = Notification.Name("claimCreated")
     public static let tierChanged = Notification.Name("tierChanged")
 }
