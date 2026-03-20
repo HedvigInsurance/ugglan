@@ -117,7 +117,7 @@ public struct ChatNavigation<Content: View>: View {
                 }
             }
             .withDismissButton(
-                reducedTopSpacing: Int(CGFloat.padding8)
+                reducedTopSpacing: Int(.padding8)
             )
             .routerDestination(for: ChatRedirectViewType.self) { value in
                 redirectView(value) {}
@@ -126,13 +126,13 @@ public struct ChatNavigation<Content: View>: View {
         .environmentObject(chatNavigationViewModel)
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { documentType in
             DocumentPreview(vm: .init(type: documentType))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             redirectView(.notification) {
                 Task { @MainActor in
@@ -142,7 +142,7 @@ public struct ChatNavigation<Content: View>: View {
         }
         .detent(
             item: $chatNavigationViewModel.isAutomationMessagePresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { model in
             InfoView(
                 title: model.title,

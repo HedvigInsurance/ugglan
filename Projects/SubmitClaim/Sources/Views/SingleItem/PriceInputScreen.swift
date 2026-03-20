@@ -40,14 +40,11 @@ struct PriceInputScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hSaveButton(
-                        {
-                            UIApplication.dismissKeyboard()
-                            claimsNavigationVm.singleItemModel?.purchasePrice = Double(purchasePrice)
-                            claimsNavigationVm.isPriceInputPresented = false
-                        },
-                        type: .primary
-                    )
+                    hSaveButton(.primary) {
+                        UIApplication.dismissKeyboard()
+                        claimsNavigationVm.singleItemModel?.purchasePrice = Double(purchasePrice)
+                        claimsNavigationVm.isPriceInputPresented = false
+                    }
 
                     hButton(
                         .large,

@@ -112,7 +112,7 @@ public struct TravelCertificateNavigation: View {
         .environmentObject(vm)
         .detent(
             item: $vm.isDocumentPresented,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant(.withoutGrabber)
         ) { model in
             PDFPreview(
@@ -121,7 +121,6 @@ public struct TravelCertificateNavigation: View {
         }
         .detent(
             presented: $vm.isInfoViewPresented,
-
             options: .constant(.withoutGrabber)
         ) {
             InfoView(

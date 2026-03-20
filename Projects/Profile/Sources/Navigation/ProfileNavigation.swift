@@ -17,12 +17,6 @@ public class ProfileNavigationViewModel: ObservableObject {
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = Router()
 
-    public func pushToProfile() {
-        Task {
-            self.profileRouter.push(ProfileRouterType.myInfo)
-        }
-    }
-
     public init() {}
 }
 

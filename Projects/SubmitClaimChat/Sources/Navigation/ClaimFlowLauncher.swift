@@ -21,7 +21,7 @@ struct ClaimFlowLauncher: ViewModifier {
         content
             .detent(
                 item: $startInput,
-                transitionType: .detent(style: [.height]),
+                presentationStyle: .detent(style: [.height]),
                 content: { input in
                     SubmitClaimChatHonestyPledgeScreen { withAnimations in
                         disableSubmitChatClaimAnimations = !withAnimations

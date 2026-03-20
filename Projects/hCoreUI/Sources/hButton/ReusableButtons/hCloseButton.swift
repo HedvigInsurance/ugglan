@@ -3,17 +3,20 @@ import hCore
 
 public struct hCloseButton: View {
     let action: () -> Void
+    let type: hButtonConfigurationType
 
     public init(
-        _ action: @escaping () -> Void
+        _ type: hButtonConfigurationType = .ghost,
+        _ action: @escaping () -> Void,
     ) {
         self.action = action
+        self.type = type
     }
 
     public var body: some View {
         hButton(
             .large,
-            .ghost,
+            type,
             content: .init(title: L10n.generalCloseButton),
             { action() }
         )
