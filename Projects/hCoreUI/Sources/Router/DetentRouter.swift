@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 
 @preconcurrency
-public enum TransitionType: Equatable {
+public enum DetentPresentationStyle: Equatable {
     case detent(style: [Detent])
     case center
 }
@@ -13,16 +13,18 @@ public enum TransitionType: Equatable {
 extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
-        transitionType: TransitionType? = .detent(style: [.height]),
-        options: Binding<DetentPresentationOption>? = .constant([]),
+        presentationStyle: DetentPresentationStyle = .detent(style: [.height]),
+        options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
             DetentSizeModifier(
                 presented: presented,
-                transitionType: transitionType ?? .detent(style: [.height]),
-                options: options ?? .constant([]),
+                presentationStyle: presentationStyle,
+                options: options,
+                tracking: tracking,
                 onUserDismiss: onUserDismiss,
                 content: content
             )
@@ -31,7 +33,7 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        transitionType: TransitionType = .detent(style: [.height]),
+        presentationStyle: DetentPresentationStyle = .detent(style: [.height]),
         options: Binding<DetentPresentationOption> = .constant([]),
         onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
@@ -39,7 +41,7 @@ extension View {
         modifier(
             DetentSizeModifierModal(
                 item: item,
-                transitionType: transitionType,
+                presentationStyle: presentationStyle,
                 options: options,
                 onUserDismiss: onUserDismiss,
                 content: content
@@ -53,7 +55,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
-    let transitionType: TransitionType
+    let presentationStyle: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
     let onUserDismiss: (() -> Void)?
     var content: (Item) -> SwiftUIContent
@@ -62,7 +64,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
         Group {
             content.detent(
                 presented: $present,
-                transitionType: transitionType,
+                presentationStyle: presentationStyle,
                 options: $options,
                 onUserDismiss: onUserDismiss
             ) {
@@ -94,23 +96,26 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
 private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUIContent: View {
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
-    let transitionType: TransitionType
+    let transitionType: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     let onUserDismiss: (() -> Void)?
+    let tracking: TrackingViewNameProtocol?
 
     init(
         presented: Binding<Bool>,
-        transitionType: TransitionType,
+        presentationStyle: DetentPresentationStyle,
         options: Binding<DetentPresentationOption>,
+        tracking: TrackingViewNameProtocol?,
         onUserDismiss: (() -> Void)?,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
-        self.transitionType = transitionType
+        self.transitionType = presentationStyle
         _options = options
         self.onUserDismiss = onUserDismiss
+        self.tracking = tracking
     }
 
     @ViewBuilder
@@ -151,7 +156,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let vcToPresent = getPresentationTarget()
                 let content = getContent()
 
-                let vc = hHostingController(rootView: content)
+                let vc = hHostingController(
+                    rootView: content,
+                    contentName: tracking?.nameForTracking ?? "\(SwiftUIContent.self)"
+                )
                 if isLiquidGlassEnabled {
                     vc.view.backgroundColor = .clear
                 }
