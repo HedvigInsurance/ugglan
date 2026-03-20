@@ -189,6 +189,7 @@ struct ContractTable: View {
                                             scrollToCardId = contract.id
                                             isExpanded = true
                                         }
+                                        .accessibilityAddTraits(.isButton)
                                         .offset(y: cumulativeOffset)
                                 }
                             }
