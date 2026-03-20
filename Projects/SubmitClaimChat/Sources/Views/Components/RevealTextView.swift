@@ -24,9 +24,6 @@ struct RevealTextView: View {
     }
     var body: some View {
         ZStack(alignment: .topLeading) {
-            if showDot && animate, #available(iOS 18.0, *) {
-                AnimatedDotView()
-            }
             if animate, #available(iOS 18.0, *) {
                 hText(text, style: .heading1)
                     .textRenderer(AnimatedTextRenderer(visibleCharacters: visibleCharacters))

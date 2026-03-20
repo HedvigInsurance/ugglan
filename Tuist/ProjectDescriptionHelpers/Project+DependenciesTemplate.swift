@@ -21,6 +21,7 @@ public enum ExternalDependencies: CaseIterable {
     case environment
     case logger
     case automaticLog
+    case rive
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -102,6 +103,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(path: .relativeToRoot("LocalModules/AutomaticLog"))
             ]
+        case .rive:
+            return [
+                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.15.0"))
+            ]
         }
     }
 
@@ -171,6 +176,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "Logger")]
         case .automaticLog:
             return [.package(product: "AutomaticLog")]
+        case .rive:
+            return [.package(product: "RiveRuntime")]
         }
     }
 }
