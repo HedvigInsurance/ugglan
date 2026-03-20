@@ -974,8 +974,8 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(openProfile),
-            name: .openProfile,
+            selector: #selector(openReviewContactInfo),
+            name: .openReviewContactInfo,
             object: nil
         )
     }
@@ -1010,7 +1010,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    @objc func openProfile() {
+    @objc func openReviewContactInfo() {
         isProfilePresented = true
     }
 

@@ -12,7 +12,7 @@ struct ContactInfoView: View {
             [
                 .init(
                     buttonTitle: L10n.missingContactInfoCardButton,
-                    buttonAction: { NotificationCenter.default.post(name: .openProfile, object: nil) }
+                    buttonAction: { NotificationCenter.default.post(name: .openReviewContactInfo, object: nil) }
                 )
             ]
         )
