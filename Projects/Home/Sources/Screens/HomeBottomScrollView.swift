@@ -234,6 +234,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .compactMap { $0.memberInfo?.isContactInfoUpdateNeeded }
+            .removeDuplicates()
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
                 self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
             })
