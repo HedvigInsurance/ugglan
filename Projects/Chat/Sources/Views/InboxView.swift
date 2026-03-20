@@ -56,7 +56,7 @@ public struct InboxView: View {
                 }
                 if let subtitle = conversation.getConversationSubTitle {
                     hText(subtitle, style: .body1)
-                        .foregroundColor(getNewestMessageColor(for: conversation))
+                        .foregroundColor(hTextColor.Translucent.secondary)
                         .lineLimit(3)
                 }
             }
