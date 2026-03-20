@@ -19,8 +19,6 @@ public struct MyInfoView: View {
                     VStack(spacing: .padding16) {
                         if case .sheet = presentationMode {
                             hText(L10n.missingContactInfoCardButton)
-                                .padding(.top, .padding20)
-                                .padding(.bottom, .padding8)
                         }
                         VStack(spacing: .padding4) {
                             infoCardView
@@ -85,7 +83,6 @@ public struct MyInfoView: View {
                 hCloseButton(.secondary) { onDismiss() }
             }
         }
-        .padding(.bottom, .padding8)
     }
 }
 

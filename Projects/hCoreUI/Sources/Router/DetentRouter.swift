@@ -15,7 +15,6 @@ extension View {
         presented: Binding<Bool>,
         presentationStyle: DetentPresentationStyle = .detent(style: [.height]),
         options: Binding<DetentPresentationOption> = .constant([]),
-        tracking: TrackingViewNameProtocol? = nil,
         onUserDismiss: (() -> Void)? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
@@ -24,7 +23,6 @@ extension View {
                 presented: presented,
                 presentationStyle: presentationStyle,
                 options: options,
-                tracking: tracking,
                 onUserDismiss: onUserDismiss,
                 content: content
             )
@@ -56,7 +54,6 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     let presentationStyle: DetentPresentationStyle
-    let tracking: TrackingViewNameProtocol? = nil
     @Binding var options: DetentPresentationOption
     let onUserDismiss: (() -> Void)?
     var content: (Item) -> SwiftUIContent
@@ -67,7 +64,6 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
                 presented: $present,
                 presentationStyle: presentationStyle,
                 options: $options,
-                tracking: tracking,
                 onUserDismiss: onUserDismiss
             ) {
                 if let item = itemToRenderFrom {
@@ -102,13 +98,11 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     let onUserDismiss: (() -> Void)?
-    let tracking: TrackingViewNameProtocol?
 
     init(
         presented: Binding<Bool>,
         presentationStyle: DetentPresentationStyle,
         options: Binding<DetentPresentationOption>,
-        tracking: TrackingViewNameProtocol?,
         onUserDismiss: (() -> Void)?,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
@@ -117,7 +111,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         self.presentationStyle = presentationStyle
         _options = options
         self.onUserDismiss = onUserDismiss
-        self.tracking = tracking
     }
 
     @ViewBuilder
@@ -158,10 +151,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let vcToPresent = getPresentationTarget()
                 let content = getContent()
 
-                let vc = hHostingController(
-                    rootView: content,
-                    contentName: tracking?.nameForTracking ?? "\(SwiftUIContent.self)"
-                )
+                let vc = hHostingController(rootView: content)
                 if isLiquidGlassEnabled {
                     vc.view.backgroundColor = .clear
                 }
