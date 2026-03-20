@@ -198,6 +198,7 @@ struct ContractTable: View {
                                             didMemberExpandCards = true
                                         }
                                         .offset(y: cumulativeOffset)
+                                        .accessibilityAddTraits(.isButton)
                                 }
                             }
                             .accessibilityHidden(true)
