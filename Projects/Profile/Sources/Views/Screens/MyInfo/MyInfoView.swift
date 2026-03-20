@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 
 public struct MyInfoView: View {
+    @EnvironmentObject var router: Router
     @StateObject var vm = MyInfoViewModel()
     let presentationMode: PresentationMode
 
@@ -17,9 +18,6 @@ public struct MyInfoView: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding16) {
-                        if case .sheet = presentationMode {
-                            hText(L10n.missingContactInfoCardButton)
-                        }
                         VStack(spacing: .padding4) {
                             infoCardView
                             emailField
@@ -35,6 +33,7 @@ public struct MyInfoView: View {
                 .sectionContainerStyle(.transparent)
                 .disabled(vm.viewState == .loading)
             }
+            .hFormContentPosition(presentationMode == .sheet ? .compact : .top)
     }
 
     @ViewBuilder
@@ -69,18 +68,18 @@ public struct MyInfoView: View {
     private var buttonView: some View {
         VStack(spacing: .padding8) {
             hSaveButton(.primary) {
-                Task {
-                    let success = await vm.save()
-                    if success, case let .sheet(onDismiss) = presentationMode {
-                        onDismiss()
+                Task { [weak vm, weak router] in
+                    let success = await vm?.save() ?? false
+                    if success && presentationMode == .sheet {
+                        router?.dismiss()
                     }
                 }
             }
             .hButtonIsLoading(vm.viewState == .loading)
             .disabled(vm.disabledSaveButton)
 
-            if case let .sheet(onDismiss) = presentationMode {
-                hCloseButton(.secondary) { onDismiss() }
+            if presentationMode == .sheet {
+                hCloseButton(.secondary) { router.dismiss() }
             }
         }
     }
@@ -89,7 +88,7 @@ public struct MyInfoView: View {
 extension MyInfoView {
     public enum PresentationMode {
         case navigation
-        case sheet(onDismiss: () -> Void)
+        case sheet
     }
 }
 

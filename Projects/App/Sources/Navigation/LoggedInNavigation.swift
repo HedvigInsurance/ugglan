@@ -488,11 +488,13 @@ struct LoggedInNavigation: View {
         .detent(
             presented: $vm.isProfilePresented,
             options: .constant(.alwaysOpenOnTop),
-        ) { [weak vm] in
-            MyInfoView(presentationMode: .sheet(onDismiss: { withAnimation { vm?.isProfilePresented = false } }))
-                .background(hBackgroundColor.primary)
-                .hFormContentPosition(.compact)
-                .embededInNavigation(tracking: ProfileRouterType.myInfo)
+        ) {
+            MyInfoView(presentationMode: .sheet)
+                .configureTitle(L10n.missingContactInfoCardButton)
+                .embededInNavigation(
+                    options: [.largeNavigationBar],
+                    tracking: ProfileRouterType.myInfo
+                )
         }
     }
 
