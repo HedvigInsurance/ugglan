@@ -16,10 +16,18 @@ struct ContractTable: View {
     @State var cardHeights: [String: CGFloat] = [:]
     @StateObject var vm = ContractTableViewModel()
     @State private var cardDrawRotation = false
-    @State private var isExpanded = false
+    @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+
+    private var isExpanded: Bool {
+        if voiceOverEnabled {
+            return true
+        }
+        return didMemberExpandCards
+    }
     @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
@@ -115,7 +123,7 @@ struct ContractTable: View {
             .animation(.easeInOut(duration: 0.3), value: isExpanded)
             .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
                 if !isActive {
-                    isExpanded = false
+                    didMemberExpandCards = false
                 }
             }
             .onChange(of: isExpanded) { expanded in
@@ -187,11 +195,12 @@ struct ContractTable: View {
                                         .contentShape(Rectangle())
                                         .onTapGesture {
                                             scrollToCardId = contract.id
-                                            isExpanded = true
+                                            didMemberExpandCards = true
                                         }
                                         .offset(y: cumulativeOffset)
                                 }
                             }
+                            .accessibilityHidden(true)
                         )
                     }
                 }
