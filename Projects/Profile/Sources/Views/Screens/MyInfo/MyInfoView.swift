@@ -6,23 +6,29 @@ import hCoreUI
 
 public struct MyInfoView: View {
     @StateObject var vm = MyInfoViewModel()
+    let presentationMode: PresentationMode
 
-    public init() {}
+    public init(presentationMode: PresentationMode = .navigation) {
+        self.presentationMode = presentationMode
+    }
 
     public var body: some View {
         hForm {}
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding16) {
+                        if case .sheet = presentationMode {
+                            hText(L10n.missingContactInfoCardButton)
+                                .padding(.top, .padding20)
+                                .padding(.bottom, .padding8)
+                        }
                         VStack(spacing: .padding4) {
                             infoCardView
                             emailField
                             phoneNumberField
 
                             if let error = vm.error {
-                                hText(error, style: .label)
-                                    .foregroundColor(hSignalColor.Amber.text)
-                                    .fixedSize(horizontal: false, vertical: true)
+                                InfoCard(text: error, type: .error)
                             }
                         }
                         buttonView
@@ -35,12 +41,12 @@ public struct MyInfoView: View {
 
     @ViewBuilder
     private var infoCardView: (some View)? {
-        if vm.showInfoCard {
+        if vm.showInfoCard, case .navigation = presentationMode {
             InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
         }
     }
 
-    private var emailField: some View {
+    private var phoneNumberField: some View {
         hFloatingTextField(
             masking: .init(type: .digits),
             value: $vm.currentPhoneInput,
@@ -51,7 +57,7 @@ public struct MyInfoView: View {
         )
     }
 
-    private var phoneNumberField: some View {
+    private var emailField: some View {
         hFloatingTextField(
             masking: .init(type: .email),
             value: $vm.currentEmailInput,
@@ -63,19 +69,30 @@ public struct MyInfoView: View {
     }
 
     private var buttonView: some View {
-        hButton(
-            .large,
-            .primary,
-            content: .init(title: L10n.generalSaveButton),
-            {
+        VStack(spacing: .padding8) {
+            hSaveButton(.primary) {
                 Task {
-                    await vm.save()
+                    let success = await vm.save()
+                    if success, case let .sheet(onDismiss) = presentationMode {
+                        onDismiss()
+                    }
                 }
             }
-        )
-        .hButtonIsLoading(vm.viewState == .loading)
-        .disabled(vm.disabledSaveButton)
+            .hButtonIsLoading(vm.viewState == .loading)
+            .disabled(vm.disabledSaveButton)
+
+            if case let .sheet(onDismiss) = presentationMode {
+                hCloseButton(.secondary) { onDismiss() }
+            }
+        }
         .padding(.bottom, .padding8)
+    }
+}
+
+extension MyInfoView {
+    public enum PresentationMode {
+        case navigation
+        case sheet(onDismiss: () -> Void)
     }
 }
 
@@ -138,14 +155,14 @@ public class MyInfoViewModel: ObservableObject {
     }
 
     @MainActor
-    func save() async {
-        error = nil
+    func save() async -> Bool {
         withAnimation {
+            error = nil
             viewState = .loading
         }
-        async let updateAsync: () = getFuture()
+
         do {
-            _ = try await [updateAsync]
+            try await validateAndUpdateContactInfo()
             withAnimation {
                 viewState = .success
             }
@@ -180,20 +197,21 @@ public class MyInfoViewModel: ObservableObject {
                 self.error = error.localizedDescription
             }
             isValid()
+            return false
         }
+        return true
     }
 
-    private func getFuture() async throws {
+    private func validateAndUpdateContactInfo() async throws {
         if currentPhoneInput.isEmpty {
             throw MyInfoSaveError.phoneNumberEmpty
-        } else if currentEmailInput.isEmpty {
+        }
+        if currentEmailInput.isEmpty {
             throw MyInfoSaveError.emailEmpty
         }
-
         if !Masking(type: .email).isValid(text: currentEmailInput) {
             throw MyInfoSaveError.emailMalformed
         }
-
         let updatedContactData = try await profileService.update(
             email: currentEmailInput,
             phone: currentPhoneInput

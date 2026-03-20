@@ -92,9 +92,7 @@ class PushNotificationHandler {
     }
 
     private func handleContactInfo() {
-        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-        viewModel?.selectedTab = 4
-        viewModel?.profileNavigationVm.pushToProfile()
+        viewModel?.isProfilePresented = true
     }
 
     private func handleChangeTierNotification(_ notification: Notification) {
@@ -405,8 +403,7 @@ class DeepLinkHandler {
     }
 
     private func handleDeeplinkContactInfo(_ url: URL) {
-        dismissAndSelectTab(4)
-        viewModel?.profileNavigationVm.pushToProfile()
+        viewModel?.isProfilePresented = true
     }
 
     private func handleEditCoInsured(url: URL) {
@@ -487,6 +484,15 @@ struct LoggedInNavigation: View {
             .embededInNavigation(
                 tracking: "AskForPushNotifications"
             )
+        }
+        .detent(
+            presented: $vm.isProfilePresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: ProfileRouterType.myInfo
+        ) { [weak vm] in
+            MyInfoView(presentationMode: .sheet(onDismiss: { withAnimation { vm?.isProfilePresented = false } }))
+                .background(hBackgroundColor.primary)
+                .hFormContentPosition(.compact)
         }
     }
 
@@ -751,7 +757,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -763,28 +769,28 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
-            transitionType: .center,
+            presentationStyle: .center,
             options: .constant([.alwaysOpenOnTop])
         ) { crossSell in
             CrossSellingCentered(crossSell: crossSell)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { crossSells in
             CrossSellingModal(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
-            transitionType: .detent(style: [.height]),
+            presentationStyle: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { crossSells in
             CrossSellingDetent(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -876,6 +882,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
+    @Published var isProfilePresented = false
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -890,10 +897,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         pushNotificationHandler.viewModel = self
         deepLinkHandler.viewModel = self
         setupObservers()
-        homeNavigationVm.pushToProfile = { [weak self] in
-            self?.selectedTab = 4
-            self?.profileNavigationVm.pushToProfile()
-        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -968,6 +971,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openChangeTier,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openProfile),
+            name: .openProfile,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -998,6 +1008,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
             )
         }
+    }
+
+    @objc func openProfile() {
+        isProfilePresented = true
     }
 
     @objc func tierChanged() {
