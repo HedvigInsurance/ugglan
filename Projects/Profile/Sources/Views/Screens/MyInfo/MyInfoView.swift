@@ -1,4 +1,5 @@
 import Combine
+import Home
 import PresentableStore
 import SwiftUI
 import hCore
@@ -94,8 +95,9 @@ extension MyInfoView {
 
 @MainActor
 public class MyInfoViewModel: ObservableObject {
-    var profileService = ProfileService()
+    private let profileService = ProfileService()
     @PresentableStore var store: ProfileStore
+    @PresentableStore var homeStore: HomeStore
     @Published var type: MyInfoViewEditType?
     @Published var currentPhoneInput: String = ""
     @Published var phoneError: String?
@@ -169,6 +171,7 @@ public class MyInfoViewModel: ObservableObject {
                     text: L10n.profileMyInfoSaveSuccessToastBody
                 )
             )
+            homeStore.send(.fetchMemberState)
         } catch {
             if let error = error as? MyInfoSaveError {
                 switch error {
