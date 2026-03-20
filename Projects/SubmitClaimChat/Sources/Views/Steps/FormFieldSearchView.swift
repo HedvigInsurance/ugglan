@@ -42,7 +42,7 @@ struct FormFieldSearchView: View {
         .hFormAlwaysAttachToBottom {
             hSection {
                 hCancelButton(type: .secondary) {
-                    router.dismiss()
+                    vm.searchController.dismiss(animated: false)
                     router.dismiss()
                 }
             }
@@ -122,8 +122,11 @@ struct FormFieldSearchView: View {
             ForEach(vm.searchResults, id: \.value) { [weak vm] item in
                 SingleSelectValueView(item: item) {
                     guard let vm else { return }
+                    vm.searchController.dismiss(animated: false)
+                    router.dismiss()
                     onSelected(item, vm.searchController.searchBar.text ?? "")
                 }
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.generalSelectButton)
             }
         }
         .padding(.bottom, .padding6)

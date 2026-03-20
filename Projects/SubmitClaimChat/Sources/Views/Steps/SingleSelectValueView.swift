@@ -23,14 +23,20 @@ struct SingleSelectValueView: View {
             hSection {
                 row.withChevronAccessory
                     .hRowContentAlignment(.top)
-                    .onTapGesture {
-                        onTap()
-                    }
             }
+            .onTapGesture {
+                onTap()
+            }
+            .accessibilityAction {
+                onTap()
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
         } else {
             hSection {
                 row.verticalPadding(12)
             }
+            .accessibilityElement(children: .combine)
         }
     }
     @ViewBuilder
@@ -53,6 +59,7 @@ struct SingleSelectValueView: View {
                         .stroke(hBorderColor.primary, lineWidth: 1)
                 }
                 .frame(width: isSmallSize ? 32 : 46)
+                .accessibilityHidden(true)
         }
     }
 
@@ -64,6 +71,7 @@ struct SingleSelectValueView: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

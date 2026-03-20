@@ -85,7 +85,6 @@ struct SubmitClaimFormView: View {
                     let formValue = viewModel?.getFormStepValue(for: model.id)
                     formValue?.selectedSearchItem = selected
                     formValue?.lastSearchQuery = searchText
-                    viewModel?.searchFieldPresentation = nil
                 }
             )
             .navigationTitle(model.title)
@@ -270,6 +269,7 @@ struct FormFieldView: View {
         if let selectedItem = fieldViewModel.selectedSearchItem {
             SingleSelectValueView(item: selectedItem, onTap: presentSearch)
                 .sectionContainerStyle(.opaque)
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverChangeValue)
         } else {
             DropdownView(
                 value: "",
@@ -356,6 +356,7 @@ struct SubmitClaimFormResultView: View {
                     Color.clear
                         .hPillStyle(color: .grey, colorLevel: .two)
                         .hFieldSize(.extraLarge)
+                        .accessibilityHidden(true)
                 }
         }
     }
