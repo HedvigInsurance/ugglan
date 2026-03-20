@@ -403,7 +403,7 @@ class DeepLinkHandler {
     }
 
     private func handleDeeplinkContactInfo(_ url: URL) {
-        viewModel?.isProfilePresented = true
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleEditCoInsured(url: URL) {
@@ -486,7 +486,7 @@ struct LoggedInNavigation: View {
             )
         }
         .detent(
-            presented: $vm.isProfilePresented,
+            presented: $vm.isReviewContactInfoPresented,
             options: .constant(.alwaysOpenOnTop),
         ) {
             MyInfoView(presentationMode: .sheet)
@@ -884,7 +884,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
-    @Published var isProfilePresented = false
+    @Published var isReviewContactInfoPresented = false
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -1013,7 +1013,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func openReviewContactInfo() {
-        isProfilePresented = true
+        isReviewContactInfoPresented = true
     }
 
     @objc func tierChanged() {
