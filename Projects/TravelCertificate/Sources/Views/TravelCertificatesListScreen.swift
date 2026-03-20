@@ -145,14 +145,14 @@ extension View {
         switch withPlacement {
         case .leading:
             setToolbarLeading {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                ToolbarButtonView(type: ToolbarOptionType.travelCertificate, placement: .leading) { _ in
                     action()
                 }
                 .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
             setToolbarTrailing {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
+                ToolbarButtonView(type: ToolbarOptionType.travelCertificate, placement: .trailing) { _ in
                     action()
                 }
                 .accessibilityValue(L10n.Toast.readMore)
