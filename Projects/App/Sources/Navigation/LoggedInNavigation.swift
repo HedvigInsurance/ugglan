@@ -92,7 +92,7 @@ class PushNotificationHandler {
     }
 
     private func handleContactInfo() {
-        viewModel?.isProfilePresented = true
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleChangeTierNotification(_ notification: Notification) {
