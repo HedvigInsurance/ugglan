@@ -273,6 +273,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Dokument";
 "CONFIRM_CHANGES_SUBTITLE" = "Notera att dina ändringar börjar gälla från och med %@.";
 "CONFIRM_CHANGES_TITLE" = "Godkänn ändringar";
+"CONTACT_INFO_CHANGES_SAVED" = "Ändringar sparade!";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till delägare";
