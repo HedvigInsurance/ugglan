@@ -257,7 +257,7 @@ class DeepLinkHandler {
         case .chat, .inbox:
             NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
         case .contactInfo:
-            handleDeeplinkContactInfo(url)
+            handleDeeplinkContactInfo()
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
@@ -402,7 +402,7 @@ class DeepLinkHandler {
         }
     }
 
-    private func handleDeeplinkContactInfo(_ url: URL) {
+    private func handleDeeplinkContactInfo() {
         viewModel?.isReviewContactInfoPresented = true
     }
 
