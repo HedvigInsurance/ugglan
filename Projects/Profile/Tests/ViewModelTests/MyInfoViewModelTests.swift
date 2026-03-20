@@ -1,3 +1,4 @@
+import Home
 import PresentableStore
 @preconcurrency import XCTest
 import hCore
@@ -15,11 +16,13 @@ final class MyInfoViewModelTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
+        Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
         sut = nil
     }
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ProfileClient.self)
+        Dependencies.shared.remove(for: HomeClient.self)
         try await Task.sleep(seconds: 0.0000001)
         XCTAssertNil(sut)
     }
