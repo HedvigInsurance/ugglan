@@ -55,7 +55,7 @@ public struct FilesGridView: View {
                                                     )
                                             )
                                             .offset(.init(width: 8, height: -8))
-                                            .accessibilityLabel(L10n.General.remove)
+                                            .accessibilityLabel(L10n.General.remove + " " + file.name)
                                     }
                                 )
                                 .zIndex(.infinity)
