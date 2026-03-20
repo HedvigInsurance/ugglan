@@ -96,7 +96,7 @@ extension MyInfoView {
 @MainActor
 public class MyInfoViewModel: ObservableObject {
     private let profileService = ProfileService()
-    @PresentableStore var store: ProfileStore
+    @PresentableStore var profileStore: ProfileStore
     @PresentableStore var homeStore: HomeStore
     @Published var type: MyInfoViewEditType?
     @Published var currentPhoneInput: String = ""
@@ -219,8 +219,8 @@ public class MyInfoViewModel: ObservableObject {
         let newPhone = updatedContactData.phone
         let newEmail = updatedContactData.email
 
-        store.send(.setMemberPhone(phone: newPhone))
-        store.send(.setMemberEmail(email: newEmail))
+        profileStore.send(.setMemberPhone(phone: newPhone))
+        profileStore.send(.setMemberEmail(email: newEmail))
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
