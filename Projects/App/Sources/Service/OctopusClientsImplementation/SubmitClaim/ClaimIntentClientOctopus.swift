@@ -225,7 +225,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     title: $0.title,
                     subtitle: $0.subtitle,
                     value: $0.value,
-                    imageUrl: $0.imageUrl
+                    imageUrl: $0.imageUrl,
+                    isCustomSearchEntry: $0.isCustomSearchEntry
                 )
             }
             return FormFieldSearchResult(
