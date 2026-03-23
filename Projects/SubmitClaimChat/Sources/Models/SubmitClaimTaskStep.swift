@@ -32,15 +32,21 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        try await getNextStep()
-        guard
-            let result = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
-        else {
-            throw ClaimIntentError.invalidResponse
+        state.showResults = true
+        do {
+            try await getNextStep()
+            guard
+                let result = try await service.claimIntentSubmitTask(stepId: claimIntent.currentStep.id)
+            else {
+                throw ClaimIntentError.invalidResponse
+            }
+            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            taskModel = .init(description: "", isCompleted: true)
+            return result
+        } catch {
+            state.isLoaderAnimating = false
+            throw error
         }
-        try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
-        mainHandler(.removeStep(id: id))
-        return result
     }
 
     private func getNextStep() async throws {

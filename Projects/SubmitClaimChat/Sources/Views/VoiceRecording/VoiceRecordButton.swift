@@ -84,7 +84,7 @@ struct VoiceRecordButton: View {
                         await postAccessibilityAnnouncementAndWait("\(number)")
                     }
                 } else {
-                    await delay(1)
+                    await delay(TimeInterval(ClaimChatConstants.Timing.countdownStep))
                 }
                 try Task.checkCancellation()
                 ImpactGenerator.light()

@@ -21,6 +21,7 @@ public enum ExternalDependencies: CaseIterable {
     case environment
     case logger
     case automaticLog
+    case rive
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -57,18 +58,18 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.25.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.7.0"))]
         case .umbrella:
             return [
                 .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.4.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.7.0"))
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("26.0.0"))
             ]
         case .svgkit:
             return [
@@ -84,7 +85,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.6.2")))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.7.0")))
             ]
         case .presentableStore:
             return [
@@ -101,6 +102,10 @@ public enum ExternalDependencies: CaseIterable {
         case .automaticLog:
             return [
                 .package(path: .relativeToRoot("LocalModules/AutomaticLog"))
+            ]
+        case .rive:
+            return [
+                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.15.0"))
             ]
         }
     }
@@ -171,6 +176,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "Logger")]
         case .automaticLog:
             return [.package(product: "AutomaticLog")]
+        case .rive:
+            return [.package(product: "RiveRuntime")]
         }
     }
 }

@@ -243,6 +243,13 @@ struct StepView: View {
                         }
                 }
             }
+            .onChange(of: step.state.isLoaderAnimating) { isLoading in
+                if let indexOfCurrentStep = viewModel.allSteps.firstIndex(where: { $0.id == step.id }),
+                    indexOfCurrentStep > 0
+                {
+                    viewModel.allSteps[indexOfCurrentStep - 1].state.isLoaderAnimating = false
+                }
+            }
             .id(step.id)
             .transition(
                 .asymmetric(
@@ -435,8 +442,14 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     private func handleGoToNextStep(claimIntent: ClaimIntent) {
         let handler = createStepHandler(for: claimIntent)
+        if let currentStep = currentStep {
+            if currentStep is SubmitClaimTaskStep {
+                handler.state.showLoadingAnimation = false
+            }
+        }
+
         stepHeights[handler.id] = 0
-        let previousStepId = allSteps.last?.id ?? ""
+        let previousStepId = allSteps.filter({ !($0 is SubmitClaimTaskStep) }).last?.id ?? ""
 
         if case .deflect = claimIntent.currentStep.content {
             self.progress = nil

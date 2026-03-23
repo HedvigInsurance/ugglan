@@ -26,14 +26,14 @@ struct SubmitClaimFormView: View {
         .sectionContainerStyle(.transparent)
         .detent(
             item: $viewModel.isDatePickerPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
                 .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.datePicker)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
-            transitionType: .detent(
+            presentationStyle: .detent(
                 style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true
                     ? [.large] : [.height]
             )
@@ -76,7 +76,7 @@ struct SubmitClaimFormView: View {
         }
         .detent(
             item: $viewModel.searchFieldPresentation,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant(.withoutGrabber)
         ) { [weak viewModel] model in
             FormFieldSearchView(
@@ -86,7 +86,6 @@ struct SubmitClaimFormView: View {
                     formValue?.value = selected.value
                     formValue?.selectedDisplayTitle = selected.title
                     formValue?.lastSearchQuery = searchText
-                    viewModel?.searchFieldPresentation = nil
                 }
             )
             .navigationTitle(model.title)
@@ -296,6 +295,8 @@ struct FormFieldView: View {
                 .accessibilityValue(isSelected ? L10n.voiceoverOptionSelected : "")
                 .accessibilityHint(L10n.voiceoverDoubleClickTo)
             }
+            .tagFlow(.horizontal)
+            .padding(.vertical, .padding4)
             if let error = fieldViewModel.error {
                 HStack {
                     hText(error, style: .label)

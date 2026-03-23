@@ -306,7 +306,7 @@ public struct SubmitClaimNavigation: View {
         .environmentObject(claimsNavigationVm)
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) {
             LocationView(claimsNavigationVm: claimsNavigationVm, router: claimsNavigationVm.router)
                 .environmentObject(claimsNavigationVm)
@@ -318,7 +318,7 @@ public struct SubmitClaimNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             BrandPickerView()
                 .environmentObject(claimsNavigationVm)
@@ -337,7 +337,7 @@ public struct SubmitClaimNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isPriceInputPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) {
             PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
                 .configureTitle(L10n.submitClaimPurchasePriceTitle)
@@ -345,14 +345,14 @@ public struct SubmitClaimNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isDamagePickerPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) {
             openDamagePickerScreen()
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.damagePicker)
         }
         .detent(
             item: $claimsNavigationVm.isInfoViewPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { infoViewModel in
             InfoView(
                 title: infoViewModel.title ?? "",

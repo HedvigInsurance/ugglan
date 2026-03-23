@@ -12,42 +12,94 @@ struct PaymentMethodScreen: View {
                 .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
-            ConnectPaymentBottomView(alwaysShowButton: true)
+            if data.chargeMethod == .trustly {
+                ConnectPaymentBottomView(alwaysShowButton: true)
+            } else if data.chargeMethod == .kivra {
+                hSection {
+                    InfoCard(
+                        text:
+                            L10n.kivraNotificationBoxText,
+                        type: .info
+                    )
+                    .buttons(
+                        [
+                            .init(
+                                buttonTitle: L10n.openChat,
+                                buttonAction: {
+                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                                }
+                            )
+                        ]
+                    )
+                }
+                .sectionContainerStyle(.transparent)
+            }
         }
     }
 }
 
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PaymentMethodScreen(
         data: .init(
             paymentMethod: "method",
             bankName: "bank name",
             account: "account",
-            mandate: "mandate",
-            chargingDayInTheMonth: 26
+            mandate: nil,
+            dueDate: 26,
+            chargeMethod: .trustly
         )
     )
 }
 
 struct PaymentMethodView: View {
-    let data: PaymentChargeData
-    let withDate: Bool
+    private let items: [PaymentInfoItem]
 
-    @State var infoText: String?
-    var body: some View {
-        hSection {
-            regularRow(for: L10n.paymentsPaymentMethod, and: data.paymentMethod)
-            if withDate, let dueDate = data.chargingDayInTheMonth?.ordinalDate() {
-                infoRow(
-                    for: L10n.paymentsPaymentDue,
-                    and: L10n.paymentsDueDescription(dueDate),
-                    infoText: L10n.paymentsPaymentDueInfo(dueDate)
+    private struct PaymentInfoItem: Identifiable {
+        var id: String { title }
+        let title: String
+        let value: String
+        let info: String?
+    }
+
+    init(data: PaymentChargeData, withDate: Bool) {
+        self.items = {
+            var rows: [PaymentInfoItem] = []
+            if let paymentMethod = data.paymentMethod {
+                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethod, info: nil))
+            }
+            if withDate, let dueDate = data.dueDate?.ordinalDate() {
+                rows.append(
+                    .init(
+                        title: L10n.paymentsPaymentDue,
+                        value: L10n.paymentsDueDescription(dueDate),
+                        info: data.chargeMethod.infoText(for: dueDate)
+                    )
                 )
             }
-            regularRow(for: L10n.paymentsAccount, and: data.account)
-            regularRow(for: L10n.myPaymentBankRowLabel, and: data.bankName)
-            regularRow(for: L10n.paymentsMandate, and: data.mandate)
+
+            if let account = data.account {
+                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
+            }
+            if let bankName = data.bankName {
+                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bankName, info: nil))
+            }
+            if let mandate = data.mandate {
+                rows.append(PaymentInfoItem(title: L10n.paymentsMandate, value: mandate, info: nil))
+            }
+            return rows
+        }()
+    }
+    @State var infoText: String?
+    var body: some View {
+        hSection(items) { item in
+            if let info = item.info {
+                infoRow(title: item.title, value: item.value, infoText: info)
+            } else {
+                regularRow(title: item.title, value: item.value)
+            }
         }
         .sectionContainerStyle(.transparent)
         .detent(item: $infoText) { text in
@@ -55,20 +107,17 @@ struct PaymentMethodView: View {
         }
     }
 
-    @ViewBuilder
-    private func regularRow(for title: String, and value: String?) -> some View {
-        if let value {
-            hRow {
-                hText(title)
-                Spacer()
-            }
-            .withCustomAccessory {
-                hText(value).foregroundColor(hTextColor.Translucent.secondary)
-            }
+    private func regularRow(title: String, value: String) -> some View {
+        hRow {
+            hText(title)
+            Spacer()
+        }
+        .withCustomAccessory {
+            hText(value).foregroundColor(hTextColor.Translucent.secondary)
         }
     }
 
-    private func infoRow(for title: String, and value: String, infoText: String) -> some View {
+    private func infoRow(title: String, value: String, infoText: String) -> some View {
         hRow {
             hText(title)
             Spacer()
