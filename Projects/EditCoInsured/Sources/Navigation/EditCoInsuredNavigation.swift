@@ -110,7 +110,7 @@ public struct EditCoInsuredNavigation: View {
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { coInsuredInputModel in
             coInsuredInput(coInsuredInputModel: coInsuredInputModel)
                 .embededInNavigation(
@@ -120,7 +120,7 @@ public struct EditCoInsuredNavigation: View {
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { selectCoInsured in
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)

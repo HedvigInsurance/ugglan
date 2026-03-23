@@ -136,7 +136,7 @@ struct ChangeAddonNavigation: View {
         }
         .detent(
             item: $changeAddonNavigationVm.document,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }

@@ -224,7 +224,6 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
-
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
@@ -247,13 +246,13 @@ public struct ChangeTierNavigation: View {
         }
         .detent(
             item: $changeTierNavigationVm.document,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }
         .detent(
             item: $changeTierNavigationVm.isInfoViewPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { info in
             InfoView(
                 title: info.title ?? "",

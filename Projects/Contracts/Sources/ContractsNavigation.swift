@@ -44,7 +44,7 @@ public struct ContractsNavigation<Content: View>: View {
         .disabled(contractsNavigationVm.isAddonPresented != nil)
         .detent(
             item: $contractsNavigationVm.insurableLimit,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
@@ -53,14 +53,14 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.document,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { document in
             redirect(.pdf(document: document))
         }
         .detent(
             item: $contractsNavigationVm.changeYourInformationContract,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { contract in
             EditContractScreen(
                 editTypes: EditType.getTypes(for: contract),
@@ -118,7 +118,7 @@ public struct ContractsNavigation<Content: View>: View {
         .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { agreement in
             UpcomingChangesScreen(
                 agreement: agreement
