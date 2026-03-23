@@ -30,12 +30,27 @@ struct SingleSelectValue: Hashable {
     let subtitle: String?
     let value: String
     let imageUrl: String?
+    let isCustomSearchEntry: Bool
 
-    init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
+    init(title: String, subtitle: String?, value: String, imageUrl: String? = nil, isCustomSearchEntry: Bool = false) {
         self.title = title
         self.subtitle = subtitle
         self.value = value
         self.imageUrl = imageUrl
+        self.isCustomSearchEntry = isCustomSearchEntry
+    }
+
+    var displayValue: SingleSelectValue {
+        if isCustomSearchEntry {
+            return SingleSelectValue(
+                title: title,
+                subtitle: L10n.claimChatCustomItemSubtitle,
+                value: value,
+                imageUrl: imageUrl,
+                isCustomSearchEntry: isCustomSearchEntry
+            )
+        }
+        return self
     }
 }
 
@@ -190,12 +205,20 @@ public struct ClaimIntentStepContentForm: Sendable {
         let subtitle: String?
         let value: String
         let imageUrl: String?
+        let isCustomSearchEntry: Bool
 
-        public init(title: String, subtitle: String?, value: String, imageUrl: String? = nil) {
+        public init(
+            title: String,
+            subtitle: String?,
+            value: String,
+            imageUrl: String? = nil,
+            isCustomSearchEntry: Bool = false
+        ) {
             self.title = title
             self.subtitle = subtitle
             self.value = value
             self.imageUrl = imageUrl
+            self.isCustomSearchEntry = isCustomSearchEntry
         }
     }
 

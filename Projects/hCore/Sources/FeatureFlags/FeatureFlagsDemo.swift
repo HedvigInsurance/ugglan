@@ -23,8 +23,7 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isDemoMode: true,
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
-            isClaimHistoryEnabled: false,
-            isNewClaimFlowEnabled: false
+            isClaimHistoryEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -43,8 +42,7 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isDemoMode: true,
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
-            isClaimHistoryEnabled: false,
-            isNewClaimFlowEnabled: false
+            isClaimHistoryEnabled: false
         )
         featureDataPublisher.send(data)
     }

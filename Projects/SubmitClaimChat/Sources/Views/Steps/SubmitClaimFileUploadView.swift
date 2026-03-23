@@ -243,7 +243,7 @@ struct SubmitClaimFileUploadResultView: View {
         .sectionContainerStyle(.transparent)
         .detent(
             item: $fileModel,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { model in
             DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }

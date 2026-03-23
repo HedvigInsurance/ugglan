@@ -10,7 +10,6 @@ import InsuranceEvidence
 import MoveFlow
 import PresentableStore
 import Profile
-import SubmitClaim
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -105,14 +104,14 @@ struct LoggedInPresentations: ViewModifier {
             }
             .detent(
                 item: $vm.isFaqTopicPresented,
-                transitionType: .detent(style: [.large]),
+                presentationStyle: .detent(style: [.large]),
                 options: .constant(.alwaysOpenOnTop)
             ) { topic in
                 HelpCenterTopicNavigation(topic: topic)
             }
             .detent(
                 item: $vm.isFaqPresented,
-                transitionType: .detent(style: [.large]),
+                presentationStyle: .detent(style: [.large]),
                 options: .constant(.alwaysOpenOnTop)
             ) { question in
                 HelpCenterQuestionNavigation(question: question)

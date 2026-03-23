@@ -42,40 +42,6 @@ public struct LinkOnlyPartner: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-public struct FlowClaimDeflectConfig {
-    public let infoText: String
-    public let infoSectionText: String
-    public let infoSectionTitle: String
-    public let cardTitle: String?
-    public let cardText: String
-    public let buttonText: String?
-    public let infoViewTitle: String?
-    public let infoViewText: String?
-    public let questions: [DeflectQuestion]
-
-    public init(
-        infoText: String,
-        infoSectionText: String,
-        infoSectionTitle: String,
-        cardTitle: String?,
-        cardText: String,
-        buttonText: String?,
-        infoViewTitle: String?,
-        infoViewText: String?,
-        questions: [DeflectQuestion]
-    ) {
-        self.infoText = infoText
-        self.infoSectionText = infoSectionText
-        self.infoSectionTitle = infoSectionTitle
-        self.cardTitle = cardTitle
-        self.cardText = cardText
-        self.buttonText = buttonText
-        self.infoViewTitle = infoViewTitle
-        self.infoViewText = infoViewText
-        self.questions = questions
-    }
-}
-
 public struct DeflectQuestion: Sendable, Hashable {
     public let question: String
     public let answer: String
