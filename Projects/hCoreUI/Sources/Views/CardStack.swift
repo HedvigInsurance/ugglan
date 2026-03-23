@@ -27,6 +27,14 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
     }
 
     public var body: some View {
+        if data.isEmpty {
+            EmptyView()
+        } else {
+            cardStackContent
+        }
+    }
+
+    private var cardStackContent: some View {
         ZStack {
             ForEach(Array(data.enumerated()), id: \.element.id) { (index, element) in
                 content(element)
@@ -57,10 +65,11 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
     }
 
     private var currentElementAccessibilityValue: Text {
+        guard !data.isEmpty else { return Text("") }
         let index = Int(round(currentIndex))
         let clampedIndex = max(0, min(index, data.count - 1))
         let dataArray = Array(data)
-        if let labelProvider = elementAccessibilityLabel, !dataArray.isEmpty {
+        if let labelProvider = elementAccessibilityLabel {
             let name = labelProvider(dataArray[clampedIndex])
             return Text("\(name), \(clampedIndex + 1) \(L10n.a11YOf) \(data.count)")
         }
