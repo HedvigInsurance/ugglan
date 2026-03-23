@@ -92,9 +92,7 @@ class PushNotificationHandler {
     }
 
     private func handleContactInfo() {
-        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-        viewModel?.selectedTab = 4
-        viewModel?.profileNavigationVm.pushToProfile()
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleChangeTierNotification(_ notification: Notification) {
@@ -259,7 +257,7 @@ class DeepLinkHandler {
         case .chat, .inbox:
             NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
         case .contactInfo:
-            handleDeeplinkContactInfo(url)
+            handleDeeplinkContactInfo()
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
@@ -404,9 +402,8 @@ class DeepLinkHandler {
         }
     }
 
-    private func handleDeeplinkContactInfo(_ url: URL) {
-        dismissAndSelectTab(4)
-        viewModel?.profileNavigationVm.pushToProfile()
+    private func handleDeeplinkContactInfo() {
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleEditCoInsured(url: URL) {
@@ -487,6 +484,17 @@ struct LoggedInNavigation: View {
             .embededInNavigation(
                 tracking: "AskForPushNotifications"
             )
+        }
+        .detent(
+            presented: $vm.isReviewContactInfoPresented,
+            options: .constant(.alwaysOpenOnTop),
+        ) {
+            MyInfoView(presentationMode: .sheet)
+                .configureTitle(L10n.missingContactInfoCardButton)
+                .embededInNavigation(
+                    options: [.largeNavigationBar],
+                    tracking: ProfileRouterType.myInfo
+                )
         }
     }
 
@@ -751,7 +759,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -763,28 +771,28 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
-            transitionType: .center,
+            presentationStyle: .center,
             options: .constant([.alwaysOpenOnTop])
         ) { crossSell in
             CrossSellingCentered(crossSell: crossSell)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { crossSells in
             CrossSellingModal(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
-            transitionType: .detent(style: [.height]),
+            presentationStyle: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { crossSells in
             CrossSellingDetent(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -876,6 +884,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
+    @Published var isReviewContactInfoPresented = false
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -890,10 +899,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         pushNotificationHandler.viewModel = self
         deepLinkHandler.viewModel = self
         setupObservers()
-        homeNavigationVm.pushToProfile = { [weak self] in
-            self?.selectedTab = 4
-            self?.profileNavigationVm.pushToProfile()
-        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -968,6 +973,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openChangeTier,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openReviewContactInfo),
+            name: .openReviewContactInfo,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -998,6 +1010,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
             )
         }
+    }
+
+    @objc func openReviewContactInfo() {
+        isReviewContactInfoPresented = true
     }
 
     @objc func tierChanged() {

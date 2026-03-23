@@ -16,13 +16,15 @@ struct ClaimFlowLauncher: ViewModifier {
     @Binding var showOldSubmitClaimFlow: Bool
     @State private var submitClaimInput: StartClaimInput?
     @State private var router = Router()
+    @State var disableSubmitChatClaimAnimations = false
     func body(content: Content) -> some View {
         content
             .detent(
                 item: $startInput,
-                transitionType: .detent(style: [.height]),
+                presentationStyle: .detent(style: [.height]),
                 content: { input in
-                    SubmitClaimChatHonestyPledgeScreen {
+                    SubmitClaimChatHonestyPledgeScreen { withAnimations in
+                        disableSubmitChatClaimAnimations = !withAnimations
                         submitClaimInput = startInput
                         startInput = nil
                     } onConfirmOldFlow: {
@@ -49,7 +51,8 @@ struct ClaimFlowLauncher: ViewModifier {
                                 object: ChatType.newConversation
                             )
                         }
-                    )
+                    ),
+                    disableAnimations: disableSubmitChatClaimAnimations
                 )
             }
     }

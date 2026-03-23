@@ -350,7 +350,7 @@ public struct MovingFlowNavigation: View {
         .environmentObject(movingFlowNavigationVm)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { houseInformationInputModel in
             MovingFlowAddExtraBuildingScreen(
                 houseInformationInputVm: houseInformationInputModel
@@ -364,7 +364,7 @@ public struct MovingFlowNavigation: View {
         }
         .detent(
             item: $movingFlowNavigationVm.document,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { document in
             PDFPreview(document: document)
         }

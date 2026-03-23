@@ -94,5 +94,4 @@ public class HomeNavigationViewModel: ObservableObject {
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-    public var pushToProfile: (() -> Void)?
 }
