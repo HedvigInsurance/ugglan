@@ -1,5 +1,0 @@
-query EntrypointSearch($input: EntrypointSearchInput) {
-  entrypointSearch(input: $input) {
-    ...EntrypointFragment
-  }
-}

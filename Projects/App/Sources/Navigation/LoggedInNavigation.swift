@@ -17,7 +17,6 @@ import Payment
 import PresentableStore
 import Profile
 import SafariServices
-import SubmitClaim
 import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -279,11 +278,7 @@ class DeepLinkHandler {
             }
         case .submitClaim:
             viewModel?.selectedTab = 0
-            if featureFlags.isNewClaimFlowEnabled {
-                viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-            } else {
-                viewModel?.homeNavigationVm.isSubmitClaimPresented = true
-            }
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
@@ -659,7 +654,6 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    @State var showOldSubmitClaimFlow = false
     var body: some View {
         RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -674,20 +668,9 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
-        .detent(
-            presented: $homeNavigationVm.isSubmitClaimPresented,
-            options: .constant(.withoutGrabber)
-        ) {
-            ClaimsMainNavigation()
-                .environmentObject(homeNavigationVm)
-        }
         .handleClaimFlow(
-            startInput: $homeNavigationVm.claimsAutomationStartInput,
-            showOldSubmitClaimFlow: $showOldSubmitClaimFlow
+            startInput: $homeNavigationVm.claimsAutomationStartInput
         )
-        .modally(presented: $showOldSubmitClaimFlow) {
-            SubmitClaimNavigation()
-        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {
@@ -707,7 +690,7 @@ struct HomeTab: View {
                         with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
                     )
                 case .deflect:
-                    let model: FlowClaimDeflectStepModel = {
+                    let model: ClaimIntentOutcomeDeflection = {
                         let partners: [Partner] = {
                             let store: HomeStore = globalPresentableStoreContainer.get()
                             let quickActions = store.state.quickActions
@@ -732,7 +715,52 @@ struct HomeTab: View {
                             }
                             return []
                         }()
-                        return FlowClaimDeflectStepModel.emergency(with: partners)
+                        return ClaimIntentOutcomeDeflection(
+                            title: nil,
+                            content: .init(
+                                title: L10n.submitClaimEmergencyInsuranceCoverTitle,
+                                description: L10n.submitClaimEmergencyInsuranceCoverLabel
+                            ),
+                            partners: partners,
+                            infoText: nil,
+                            warningText: L10n.submitClaimEmergencyInfoLabel,
+                            questions: [
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq1Title,
+                                    answer: L10n.submitClaimEmergencyFaq1Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq2Title,
+                                    answer: L10n.submitClaimEmergencyFaq2Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq3Title,
+                                    answer: L10n.submitClaimEmergencyFaq3Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq4Title,
+                                    answer: L10n.submitClaimEmergencyFaq4Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq5Title,
+                                    answer: L10n.submitClaimEmergencyFaq5Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq6Title,
+                                    answer: L10n.submitClaimEmergencyFaq6Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq7Title,
+                                    answer: L10n.submitClaimEmergencyFaq7Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq8Title,
+                                    answer: L10n.submitClaimEmergencyFaq8Label
+                                ),
+                            ],
+                            linkOnlyPartners: [],
+                            buttonTitle: L10n.commonClaimEmergencyTitle
+                        )
                     }()
 
                     SubmitClaimDeflectScreen(
@@ -744,7 +772,7 @@ struct HomeTab: View {
                             )
                         }
                     )
-                    .configureTitle(model.id.title)
+                    .configureTitle(L10n.commonClaimEmergencyTitle)
                     .withDismissButton()
                     .embededInNavigation(
                         options: [.navigationType(type: .large), .extendedNavigationWidth],

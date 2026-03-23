@@ -17,7 +17,6 @@ import MoveFlow
 import Payment
 import PresentableStore
 import Profile
-import SubmitClaim
 import SubmitClaimChat
 import TerminateContracts
 import TravelCertificate
@@ -48,7 +47,6 @@ enum DI {
             let homeServiceDemo = HomeClientDemo()
             let analyticsService = AnalyticsClientDemo()
             let notificationClient = NotificationClientDemo()
-            let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let changeTierClient = ChangeTierClientDemo()
             let addonClient = AddonsClientDemo()
@@ -67,7 +65,6 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> HomeClient in homeServiceDemo })
             Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
             Dependencies.shared.add(module: Module { () -> NotificationClient in notificationClient })
-            Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimDemoService })
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
@@ -97,8 +94,6 @@ enum DI {
             let featureFlagsClientUnleash = FeatureFlagsUnleash(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
             let notificationService = NotificationClientOctopus()
-            let hFetchEntrypointsClient = FetchEntrypointsClientOctopus()
-            let submitClaimService = SubmitClaimClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
             let changeTierClient = ChangeTierClientOctopus()
@@ -112,7 +107,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
                 Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignsService })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in hFetchClaimsService })
@@ -126,8 +120,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
-                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsClient })
-                Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
@@ -141,7 +133,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
                 Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignsService })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in hFetchClaimsService })
@@ -155,8 +146,6 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
-                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsClient })
-                Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })

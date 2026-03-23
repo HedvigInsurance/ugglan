@@ -10,7 +10,6 @@ import InsuranceEvidence
 import MoveFlow
 import PresentableStore
 import Profile
-import SubmitClaim
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
