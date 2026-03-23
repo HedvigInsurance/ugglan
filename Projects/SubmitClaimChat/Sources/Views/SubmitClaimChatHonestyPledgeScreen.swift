@@ -7,7 +7,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: Router
     @State private var hasAgreedToHonestyPledge = false
     let onConfirm: (_ withAnimations: Bool) -> Void
-    let onConfirmOldFlow: (() -> Void)?
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -33,7 +32,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                         continueButtonWithAnimations()
                         if Environment.current == .staging {
                             continueButtonWithAnimations(false)
-                            oldFlowButton
                         }
                         cancelButton
                     }
@@ -82,13 +80,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         .disabled(!hasAgreedToHonestyPledge)
     }
 
-    private var oldFlowButton: some View {
-        hButton(.large, .secondary, content: .init(title: "Start old flow")) {
-            onConfirmOldFlow?()
-        }
-        .disabled(!hasAgreedToHonestyPledge)
-    }
-
     private var cancelButton: some View {
         hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) {
             router.dismiss()
@@ -99,6 +90,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in }, onConfirmOldFlow: nil)
+        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in })
     }
 }

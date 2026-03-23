@@ -101,7 +101,7 @@ public final class VoiceRecorder: ObservableObject {
         }
 
         do {
-            try configureAudioSession()
+            try configureAudioSession(forRecording: true)
             try prepareRecorder()
             recorder?.record()
             recordingState = .recording
@@ -137,17 +137,10 @@ public final class VoiceRecorder: ObservableObject {
         recorder?.stop()
         stopTimers()
 
-        do {
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("Failed to deactivate audio session: \(error)")
-        }
-
+        deactivateAudioSession()
         if FileManager.default.fileExists(atPath: filePath.path) {
             recordedFileURL = filePath
             recordingState = .recorded
-            // Prepare player early to reduce delay when user clicks play
-            preparePlayer()
         } else {
             recordingState = .idle
         }
@@ -183,7 +176,7 @@ public final class VoiceRecorder: ObservableObject {
         }
 
         do {
-            try configureAudioSession()
+            try configureAudioSession(forRecording: false)
             player = try AVAudioPlayer(contentsOf: url)
             player?.isMeteringEnabled = true
             player?.prepareToPlay()
@@ -196,6 +189,7 @@ public final class VoiceRecorder: ObservableObject {
         player?.pause()
         stopTimers()
         recordingState = .recorded
+        deactivateAudioSession()
     }
 
     public func stopPlayback() {
@@ -204,12 +198,13 @@ public final class VoiceRecorder: ObservableObject {
         stopTimers()
         recordingState = .recorded
         currentTime = nil
+        deactivateAudioSession()
     }
 
     public func togglePlayback() {
         error = nil
         if isPlaying {
-            stopPlayback()
+            pausePlayback()
         } else {
             startPlayback()
         }
@@ -322,14 +317,33 @@ public final class VoiceRecorder: ObservableObject {
         case granted
     }
 
-    private func configureAudioSession() throws {
+    private func configureAudioSession(forRecording recording: Bool) throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(
-            .playAndRecord,
-            mode: .spokenAudio,
-            options: [.defaultToSpeaker, .allowBluetoothHFP, .duckOthers]
-        )
+        if recording {
+            try session.setCategory(
+                .record,
+                mode: .default,
+                options: [.allowBluetoothHFP]
+            )
+        } else {
+            try session.setCategory(
+                .playback,
+                mode: .default,
+                options: [.duckOthers]
+            )
+        }
+
         try session.setActive(true)
+    }
+
+    private func deactivateAudioSession() {
+        Task.detached {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Failed to deactivate audio session: \(error)")
+            }
+        }
     }
 
     private func prepareRecorder() throws {
