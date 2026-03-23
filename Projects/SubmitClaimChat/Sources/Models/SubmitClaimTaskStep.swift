@@ -24,6 +24,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
         self.taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        state.showResults = true
         Task { [weak self] in
             try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             self?.submitResponse()
