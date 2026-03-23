@@ -273,6 +273,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Documents";
 "CONFIRM_CHANGES_SUBTITLE" = "Please note that your changes will be effective on %@.";
 "CONFIRM_CHANGES_TITLE" = "Confirm changes";
+"CONTACT_INFO_CHANGES_SAVED" = "Changes saved";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add co-owner";
