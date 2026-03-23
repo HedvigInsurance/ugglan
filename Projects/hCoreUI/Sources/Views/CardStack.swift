@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 public struct CardStack<Data, Content>: View
 where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
@@ -59,11 +60,11 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
         let index = Int(round(currentIndex))
         let clampedIndex = max(0, min(index, data.count - 1))
         let dataArray = Array(data)
-        if let labelProvider = elementAccessibilityLabel {
+        if let labelProvider = elementAccessibilityLabel, !dataArray.isEmpty {
             let name = labelProvider(dataArray[clampedIndex])
-            return Text("\(name), \(clampedIndex + 1) of \(data.count)")
+            return Text("\(name), \(clampedIndex + 1) \(L10n.a11YOf) \(data.count)")
         }
-        return Text("\(clampedIndex + 1) of \(data.count)")
+        return Text("\(clampedIndex + 1) \(L10n.a11YOf) \(data.count)")
     }
 
     private func getPadding() -> CGFloat {

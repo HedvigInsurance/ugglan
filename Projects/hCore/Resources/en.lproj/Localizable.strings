@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Clear field";
 "A11Y_CLOSE" = "Close";
+"A11Y_OF" = "of";
 "A11Y_OPTION_NOT_SELECTED" = "Option not selected";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pause";
