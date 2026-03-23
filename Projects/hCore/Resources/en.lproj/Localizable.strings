@@ -217,6 +217,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Describe using text";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
+"CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Custom item";
 "CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";

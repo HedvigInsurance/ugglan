@@ -111,7 +111,13 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
                 query: query
             )
             searchResults = result.options.map {
-                SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl)
+                SingleSelectValue(
+                    title: $0.title,
+                    subtitle: $0.subtitle,
+                    value: $0.value,
+                    imageUrl: $0.imageUrl,
+                    isCustomSearchEntry: $0.isCustomSearchEntry
+                )
             }
             suggestedQuery = result.suggestedQuery
             processingState = .success

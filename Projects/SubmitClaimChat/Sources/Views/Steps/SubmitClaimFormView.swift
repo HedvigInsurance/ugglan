@@ -267,7 +267,7 @@ struct FormFieldView: View {
             )
         }
         if let selectedItem = fieldViewModel.selectedSearchItem {
-            SingleSelectValueView(item: selectedItem, onTap: presentSearch)
+            SingleSelectValueView(item: selectedItem.displayValue, onTap: presentSearch)
                 .sectionContainerStyle(.opaque)
                 .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverChangeValue)
         } else {
@@ -348,7 +348,7 @@ struct SubmitClaimFormResultView: View {
                 .hFieldSize(.capsuleShape)
                 .accessibilityLabel(value.getAccessibilityLabelDate)
         case let .searchResult(value):
-            SingleSelectValueView(item: value, onTap: nil)
+            SingleSelectValueView(item: value.displayValue, onTap: nil)
                 .hWithoutHorizontalPadding(.section)
                 .hFieldSize(.small)
                 .sectionContainerStyle(.transparent)
