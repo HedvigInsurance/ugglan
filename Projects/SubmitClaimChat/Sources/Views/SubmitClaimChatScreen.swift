@@ -484,6 +484,10 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }
             handler.state.animateText = false
+            handler.state.isLoaderAnimating = false
+            if let lastStep = allSteps.last, lastStep is SubmitClaimTaskStep {
+                handler.state.showLoadingAnimation = false
+            }
             stepHeights[handler.id] = 0
             allSteps.append(handler)
             currentStep = handler
