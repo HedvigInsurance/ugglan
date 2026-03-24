@@ -4,7 +4,7 @@ import hCoreUI
 
 struct StakeholderSelectScreen: View {
     let contractId: String
-    @ObservedObject var vm: StakeholderListViewModel
+    @ObservedObject var vm: StakeholdersViewModel
     @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let itemPickerConfig: ItemConfig<Stakeholder>

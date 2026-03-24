@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hCoreUI
 
 @MainActor
 public protocol EditStakeholdersClient {
@@ -22,12 +21,6 @@ public enum StakeholderAction: Codable, Identifiable {
     case delete
     case edit
     case add
-}
-
-extension StakeholderAction: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        .init(describing: SuccessScreen.self)
-    }
 }
 
 public enum EditStakeholdersError: Error {
