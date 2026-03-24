@@ -4,7 +4,7 @@ import hCoreUI
 
 struct StartDateScreen: View {
     @ObservedObject var vm: StartDateViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
         form

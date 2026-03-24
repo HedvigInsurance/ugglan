@@ -5,13 +5,14 @@ import hCoreUI
 struct CoInsuredSelectInsuranceScreen: View {
     @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
     @ObservedObject private var editCoInsuredViewModel: EditCoInsuredViewModel
-    private let router: Router
+    private let router: NavigationRouter
     private let itemPickerConfig: ItemConfig<StakeHoldersConfig>
+
     init(
         configs: [StakeHoldersConfig],
         editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel,
         editCoInsuredViewModel: EditCoInsuredViewModel,
-        router: Router
+        router: NavigationRouter
     ) {
         self.editCoInsuredNavigationVm = editCoInsuredNavigationVm
         self.editCoInsuredViewModel = editCoInsuredViewModel

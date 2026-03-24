@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 struct ProfileRow: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
 
     let row: ProfileRowType
