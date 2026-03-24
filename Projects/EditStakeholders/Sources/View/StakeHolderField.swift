@@ -12,28 +12,28 @@ public struct StakeholderField<Content: View>: View {
     let stakeholderType: StakeholderType
 
     public init(
-        stakeHolder: Stakeholder? = nil,
+        stakeholder: Stakeholder? = nil,
         accessoryView: Content,
         statusPill: StatusPillType? = nil,
         date: String? = nil,
-        stakeHolderType: StakeholderType
+        stakeholderType: StakeholderType
     ) {
-        self.stakeholder = stakeHolder
+        self.stakeholder = stakeholder
         self.accessoryView = accessoryView
         self.statusPill =
             statusPill
             ?? {
-                guard stakeHolder?.hasMissingData == false else { return nil }
-                if stakeHolder?.activatesOn != nil {
+                guard stakeholder?.hasMissingData == false else { return nil }
+                if stakeholder?.activatesOn != nil {
                     return .added
-                } else if stakeHolder?.terminatesOn != nil {
+                } else if stakeholder?.terminatesOn != nil {
                     return .deleted
                 }
                 return nil
             }()
-        self.date = date ?? stakeHolder?.activatesOn ?? stakeHolder?.terminatesOn ?? ""
-        subTitle = stakeHolder?.hasMissingData ?? true ? L10n.contractNoInformation : nil
-        self.stakeholderType = stakeHolderType
+        self.date = date ?? stakeholder?.activatesOn ?? stakeholder?.terminatesOn ?? ""
+        subTitle = stakeholder?.hasMissingData ?? true ? L10n.contractNoInformation : nil
+        self.stakeholderType = stakeholderType
     }
 
     public var body: some View {

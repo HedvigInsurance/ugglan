@@ -6,13 +6,13 @@ import hCore
 @MainActor
 struct MockData {
     @discardableResult
-    static func createMockEditCoInsuredService(
-        sendMidtermChangeIntent: @escaping SendMidtermChangeIntent = { _ in
+    static func createMockEditStakeholdersService(
+        commitMidtermChange: @escaping CommitMidtermChange = { _ in
         },
         fetchPersonalInformation: @escaping FetchPersonalInformation = { _ in
             .init(firstName: "first name", lastName: "last name")
         },
-        submitIntent: @escaping SendIntent = { _, _, _ in
+        submitIntent: @escaping CreateIntent = { _, _, _ in
             .init(
                 activationDate: Date().localDateString,
                 currentTotalCost: .init(gross: .sek(300), net: .sek(200)),
@@ -24,45 +24,45 @@ struct MockData {
         fetchContracts: @escaping FetchContracts = {
             []
         }
-    ) -> MockEditCoInsuredService {
-        let service = MockEditCoInsuredService(
-            sendMidtermChangeIntent: sendMidtermChangeIntent,
+    ) -> MockEditStakeholdersService {
+        let service = MockEditStakeholdersService(
+            commitMidtermChange: commitMidtermChange,
             fetchPersonalInformation: fetchPersonalInformation,
             submitIntent: submitIntent,
             fetchContracts: fetchContracts
         )
-        Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in service })
+        Dependencies.shared.add(module: Module { () -> EditStakeholdersClient in service })
         return service
     }
 }
 
-typealias SendMidtermChangeIntent = (String) async throws -> Void
+typealias CommitMidtermChange = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = @Sendable (String, [Stakeholder], StakeholderType) async throws -> Intent
+typealias CreateIntent = @Sendable (String, [Stakeholder], StakeholderType) async throws -> Intent
 typealias FetchContracts = () async throws -> [Contract]
 
-class MockEditCoInsuredService: EditCoInsuredClient {
+class MockEditStakeholdersService: EditStakeholdersClient {
     var events = [Event]()
 
-    var sendMidtermChangeIntent: SendMidtermChangeIntent
+    var commitMidtermChange: CommitMidtermChange
     var fetchPersonalInformation: FetchPersonalInformation
-    var submitIntent: SendIntent
+    var submitIntent: CreateIntent
     var fetchContracts: FetchContracts
 
     enum Event {
-        case sendMidtermChangeIntentCommit
-        case getPersonalInformation
-        case sendIntent
+        case commitMidtermChange
+        case fetchPersonalInformation
+        case createIntent
         case fetchContracts
     }
 
     init(
-        sendMidtermChangeIntent: @escaping SendMidtermChangeIntent,
+        commitMidtermChange: @escaping CommitMidtermChange,
         fetchPersonalInformation: @escaping FetchPersonalInformation,
-        submitIntent: @escaping SendIntent,
+        submitIntent: @escaping CreateIntent,
         fetchContracts: @escaping FetchContracts
     ) {
-        self.sendMidtermChangeIntent = sendMidtermChangeIntent
+        self.commitMidtermChange = commitMidtermChange
         self.fetchPersonalInformation = fetchPersonalInformation
         self.submitIntent = submitIntent
         self.fetchContracts = fetchContracts
@@ -73,24 +73,24 @@ class MockEditCoInsuredService: EditCoInsuredClient {
         return try await fetchContracts()
     }
 
-    func sendMidtermChangeIntentCommit(commitId: String) async throws {
-        events.append(.sendMidtermChangeIntentCommit)
-        try await sendMidtermChangeIntent(commitId)
+    func commitMidtermChange(commitId: String) async throws {
+        events.append(.commitMidtermChange)
+        try await commitMidtermChange(commitId)
     }
 
-    func getPersonalInformation(SSN: String) async throws -> PersonalData? {
-        events.append(.getPersonalInformation)
+    func fetchPersonalInformation(SSN: String) async throws -> PersonalData? {
+        events.append(.fetchPersonalInformation)
         let data = try await fetchPersonalInformation(SSN)
         return data
     }
 
-    func sendIntent(
+    func createIntent(
         contractId: String,
-        coInsured: [Stakeholder],
-        stakeHolderType: StakeholderType
+        stakeholders: [Stakeholder],
+        type: StakeholderType
     ) async throws -> Intent {
-        events.append(.sendIntent)
-        let data = try await submitIntent(contractId, coInsured, stakeHolderType)
+        events.append(.createIntent)
+        let data = try await submitIntent(contractId, stakeholders, type)
         return data
     }
 }
