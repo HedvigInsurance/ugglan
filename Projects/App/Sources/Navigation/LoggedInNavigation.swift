@@ -418,9 +418,8 @@ class DeepLinkHandler {
             {
                 let contractConfig: StakeholdersConfig = .init(
                     contract: contract,
-                    preSelectedStakeholders: [],
-                    fromInfoCard: false,
-                    stakeholderType: type
+                    stakeholderType: type,
+                    fromInfoCard: false
                 )
 
                 viewModel.homeNavigationVm.editStakeholdersVm.start(fromContract: contractConfig)
