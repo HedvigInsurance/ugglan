@@ -97,6 +97,7 @@ class SurveyScreenViewModel: ObservableObject {
     let options: [TerminationSurveyOption]
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
+    private var feedbackTextCancellable: AnyCancellable?
 
     @Published var continueEnabled = false
 
@@ -139,6 +140,13 @@ class SurveyScreenViewModel: ObservableObject {
             self.selectedOption = selectedOption
             self.selectedFeedBackViewModel = selectedFeedBackViewModel
         }
+        feedbackTextCancellable = selectedFeedBackViewModel?.$text
+            .dropFirst()
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.checkContinueButtonStatus()
+                }
+            }
         checkContinueButtonStatus()
     }
 
