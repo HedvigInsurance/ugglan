@@ -14,7 +14,7 @@ public class IntentViewModel: ObservableObject {
     )
     @Published var isLoading: Bool = false
     @Published var errorMessageForInput: String?
-    @Published var errorMessageForStakeholderList: String?
+    @Published var errorMessageForStakeholders: String?
     @Published var viewState: ProcessingState = .loading {
         didSet {
             invalidateDetents()
@@ -23,8 +23,8 @@ public class IntentViewModel: ObservableObject {
 
     var service = EditStakeholdersService()
 
-    var showErrorViewForStakeholderList: Bool {
-        errorMessageForStakeholderList != nil
+    var showErrorViewForStakeholders: Bool {
+        errorMessageForStakeholders != nil
     }
 
     var showErrorViewForStakeholderInput: Bool {
@@ -48,7 +48,7 @@ public class IntentViewModel: ObservableObject {
         withAnimation {
             self.isLoading = true
             self.errorMessageForInput = nil
-            self.errorMessageForStakeholderList = nil
+            self.errorMessageForStakeholders = nil
             self.viewState = .loading
         }
         do {
@@ -64,9 +64,9 @@ public class IntentViewModel: ObservableObject {
         } catch let exception {
             withAnimation {
                 switch origin {
-                case .stakeholderSelectList:
-                    self.errorMessageForStakeholderList = exception.localizedDescription
-                    self.viewState = .error(errorMessage: errorMessageForStakeholderList ?? L10n.generalError)
+                case .stakeholderSelect:
+                    self.errorMessageForStakeholders = exception.localizedDescription
+                    self.viewState = .error(errorMessage: errorMessageForStakeholders ?? L10n.generalError)
                 case .stakeholderInput:
                     self.errorMessageForInput = exception.localizedDescription
                     self.viewState = .error(errorMessage: errorMessageForInput ?? L10n.generalError)
@@ -79,7 +79,7 @@ public class IntentViewModel: ObservableObject {
     }
 
     enum GetIntentOrigin {
-        case stakeholderSelectList
+        case stakeholderSelect
         case stakeholderInput
     }
 

@@ -48,14 +48,14 @@ struct StakeholderSelectScreen: View {
                         }
                         await intentViewModel.getIntent(
                             contractId: contractId,
-                            origin: .stakeholderSelectList,
+                            origin: .stakeholderSelect,
                             stakeholders: vm.completeList(),
                             type: vm.config.stakeholderType
                         )
                         withAnimation {
                             vm.isLoading = false
                         }
-                        if !intentViewModel.showErrorViewForStakeholderList {
+                        if !intentViewModel.showErrorViewForStakeholders {
                             editStakeholdersNavigation.selectStakeholder = nil
                         } else {
                             if let object = selectedCoinsured.0 {
@@ -79,12 +79,12 @@ struct StakeholderSelectScreen: View {
         )
         self.intentViewModel = intentViewModel
         self.vm = vm
-        intentViewModel.errorMessageForStakeholderList = nil
+        intentViewModel.errorMessageForStakeholders = nil
         intentViewModel.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentViewModel.showErrorViewForStakeholderList {
+        if intentViewModel.showErrorViewForStakeholders {
             StakeholderInputErrorView(
                 vm: .init(
                     stakeholderModel: Stakeholder(),

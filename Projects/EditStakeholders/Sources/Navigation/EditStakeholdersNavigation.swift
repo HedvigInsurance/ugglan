@@ -15,14 +15,14 @@ class EditStakeholdersNavigationViewModel: ObservableObject {
     @Published var showProgressScreenWithoutSuccess = false
     @Published var isEditStakeholderSelectPresented: StakeholdersConfig?
 
-    let stakeholderViewModel: StakeholderListViewModel
+    let stakeholderViewModel: StakeholdersViewModel
     let intentViewModel = IntentViewModel()
 }
 
 enum StakeholderScreenTrackingType {
     case newInsurance(StakeholderType)
     case removeStakeholder(StakeholderType)
-    case stakeholderList(StakeholderType)
+    case stakeholders(StakeholderType)
     case input(StakeholderType)
     case select(StakeholderType)
 }
@@ -32,7 +32,7 @@ extension StakeholderScreenTrackingType: TrackingViewNameProtocol {
         switch self {
         case .newInsurance(let type): type.trackingName(for: "ListScreen")
         case .removeStakeholder(let type): type.trackingName(for: "ListScreen")
-        case .stakeholderList(let type): type.trackingName(for: "ListScreen")
+        case .stakeholders(let type): type.trackingName(for: "ListScreen")
         case .input(let type): type.trackingName(for: "InputScreen")
         case .select(let type): type.trackingName(for: "SelectScreen")
         }
@@ -49,7 +49,7 @@ extension EditStakeholdersScreenType {
                     ? .newInsurance(config.stakeholderType)
                     : .removeStakeholder(config.stakeholderType)
             } else {
-                .stakeholderList(config.stakeholderType)
+                .stakeholders(config.stakeholderType)
             }
         }
     }
@@ -78,16 +78,16 @@ public struct EditStakeholdersNavigation: View {
             tracking: openSpecificScreen.getTrackingType(for: config)
         ) {
             switch openSpecificScreen {
-            case .newInsurance: openNewInsuredPeopleScreen()
+            case .newInsurance: openNewStakeholdersScreen()
             case .none:
                 if config.numberOfMissingStakeholdersWithoutTermination > 0 {
                     if config.fromInfoCard {
-                        openNewInsuredPeopleScreen()
+                        openNewStakeholdersScreen()
                     } else {
                         openRemoveStakeholderScreen()
                     }
                 } else {
-                    openInsuredPeopleScreen()
+                    openStakeholdersScreen()
                 }
             }
         }
@@ -126,19 +126,19 @@ public struct EditStakeholdersNavigation: View {
         }
         .modally(item: $editStakeholdersNavigationVm.isEditStakeholderSelectPresented) { editConfig in
             let _ = editStakeholdersNavigationVm.stakeholderViewModel.initializeStakeholders(with: editConfig)
-            openNewInsuredPeopleScreen()
+            openNewStakeholdersScreen()
                 .environmentObject(router)
         }
         .environmentObject(editStakeholdersNavigationVm)
     }
 
-    func openNewInsuredPeopleScreen() -> some View {
+    func openNewStakeholdersScreen() -> some View {
         openSpecificScreen = .none
-        return openInsuredPeopleScreen()
+        return openStakeholdersScreen()
     }
 
-    func openInsuredPeopleScreen() -> some View {
-        StakeholderListScreen(
+    func openStakeholdersScreen() -> some View {
+        StakeholdersScreen(
             vm: editStakeholdersNavigationVm.stakeholderViewModel,
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .none
@@ -178,7 +178,7 @@ public struct EditStakeholdersNavigation: View {
     }
 
     func openRemoveStakeholderScreen() -> some View {
-        StakeholderListScreen(
+        StakeholdersScreen(
             vm: editStakeholdersNavigationVm.stakeholderViewModel,
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .delete

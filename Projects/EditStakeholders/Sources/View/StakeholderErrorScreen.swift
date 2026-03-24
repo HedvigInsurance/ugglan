@@ -28,7 +28,7 @@ struct StakeholderInputErrorView: View {
 
         GenericErrorView(
             description: vm.SSNError ?? intentViewModel.errorMessageForInput
-                ?? intentViewModel.errorMessageForStakeholderList,
+                ?? intentViewModel.errorMessageForStakeholders,
             formPosition: .compact
         )
         .hStateViewButtonConfig(
@@ -45,7 +45,7 @@ struct StakeholderInputErrorView: View {
                             }
                             vm.SSNError = nil
                             intentViewModel.errorMessageForInput = nil
-                            intentViewModel.errorMessageForStakeholderList = nil
+                            intentViewModel.errorMessageForStakeholders = nil
                             intentViewModel.viewState = .success
                         }
                     }
@@ -55,7 +55,7 @@ struct StakeholderInputErrorView: View {
                     buttonAction: {
                         vm.SSNError = nil
                         intentViewModel.errorMessageForInput = nil
-                        intentViewModel.errorMessageForStakeholderList = nil
+                        intentViewModel.errorMessageForStakeholders = nil
                         intentViewModel.viewState = .success
                     }
                 )

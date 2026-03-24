@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct StakeholderInputScreen: View {
-    @ObservedObject var insuredPeopleVm: StakeholderListViewModel
+    @ObservedObject var stakeholdersVm: StakeholdersViewModel
     @ObservedObject var vm: StakeholderInputViewModel
     let title: String
     @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
@@ -16,11 +16,11 @@ struct StakeholderInputScreen: View {
         editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     ) {
         self.editStakeholdersNavigation = editStakeholdersNavigation
-        insuredPeopleVm = editStakeholdersNavigation.stakeholderViewModel
+        stakeholdersVm = editStakeholdersNavigation.stakeholderViewModel
         self.vm = vm
         self.title = title
         intentViewModel = editStakeholdersNavigation.intentViewModel
-        insuredPeopleVm.previousValue = vm.stakeholderModel
+        stakeholdersVm.previousValue = vm.stakeholderModel
     }
 
     var body: some View {
@@ -48,14 +48,14 @@ struct StakeholderInputScreen: View {
         .onAppear {
             vm.SSNError = nil
             intentViewModel.errorMessageForInput = nil
-            intentViewModel.errorMessageForStakeholderList = nil
+            intentViewModel.errorMessageForStakeholders = nil
         }
     }
 
     var showErrorView: Bool {
         vm.showErrorView(
             inputError: intentViewModel.errorMessageForInput
-                ?? intentViewModel.errorMessageForStakeholderList
+                ?? intentViewModel.errorMessageForStakeholders
         )
     }
 

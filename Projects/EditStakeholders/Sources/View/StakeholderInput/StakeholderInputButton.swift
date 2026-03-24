@@ -23,7 +23,7 @@ public struct StakeholderInputButton: View {
         hSection {
             HStack {
                 if vm.actionType == .delete {
-                    CoInsuredActionButton(
+                    StakeholderActionButton(
                         style: .alert,
                         title: L10n.removeConfirmationButton,
                         vm: vm,
@@ -35,7 +35,7 @@ public struct StakeholderInputButton: View {
                     )
                     .colorScheme(.dark)
                 } else {
-                    CoInsuredActionButton(
+                    StakeholderActionButton(
                         style: .primary,
                         title: vm.buttonDisplayText(for: stakeholderType),
                         vm: vm,
@@ -124,7 +124,7 @@ public struct StakeholderInputButton: View {
     }
 }
 
-private struct CoInsuredActionButton: View {
+private struct StakeholderActionButton: View {
     let style: hButtonConfigurationType
     let title: String
     @ObservedObject var vm: StakeholderInputViewModel

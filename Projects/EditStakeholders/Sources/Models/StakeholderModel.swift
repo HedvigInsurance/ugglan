@@ -75,7 +75,7 @@ public enum StatusPillType {
     }
 }
 
-public struct StakeholderListType: Hashable, Identifiable {
+public struct StakeholderItem: Hashable, Identifiable {
     public let id = UUID().uuidString
     public init(
         stakeholder: Stakeholder,

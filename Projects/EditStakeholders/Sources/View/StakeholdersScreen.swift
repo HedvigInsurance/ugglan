@@ -2,13 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct StakeholderListScreen: View {
+struct StakeholdersScreen: View {
     @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @ObservedObject var vm: StakeholderListViewModel
+    @ObservedObject var vm: StakeholdersViewModel
     @ObservedObject var intentViewModel: IntentViewModel
     let type: StakeholderFieldType?
 
-    private var listToDisplay: [StakeholderListType] {
+    private var listToDisplay: [StakeholderItem] {
         vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
     }
 
@@ -58,18 +58,18 @@ struct StakeholderListScreen: View {
         }
     }
 
-    private func stakeholderSection(list: [StakeholderListType]) -> some View {
-        hSection(list) { stakeholderListItem in
+    private func stakeholderSection(list: [StakeholderItem]) -> some View {
+        hSection(list) { item in
             hRow {
                 StakeholderField(
-                    stakeholder: stakeholderListItem.stakeholder,
-                    accessoryView: getAccessoryView(stakeholder: stakeholderListItem),
-                    statusPill: stakeholderListItem.type == .added ? .added : nil,
-                    date: stakeholderListItem.date,
-                    stakeholderType: stakeholderListItem.stakeholderType
+                    stakeholder: item.stakeholder,
+                    accessoryView: getAccessoryView(stakeholder: item),
+                    statusPill: item.type == .added ? .added : nil,
+                    date: item.date,
+                    stakeholderType: item.stakeholderType
                 )
             }
-            .accessibilityValue(accessoryType(for: stakeholderListItem).accessibilityValue)
+            .accessibilityValue(accessoryType(for: item).accessibilityValue)
         }
     }
 
@@ -113,7 +113,7 @@ struct StakeholderListScreen: View {
         }
     }
 
-    func accessoryType(for stakeholder: StakeholderListType) -> StakeholderFieldType {
+    func accessoryType(for stakeholder: StakeholderItem) -> StakeholderFieldType {
         if stakeholder.stakeholder.hasMissingData, type != .delete {
             .empty
         } else if stakeholder.locallyAdded {
@@ -124,7 +124,7 @@ struct StakeholderListScreen: View {
     }
 
     @ViewBuilder
-    private func getAccessoryView(stakeholder: StakeholderListType) -> some View {
+    private func getAccessoryView(stakeholder: StakeholderItem) -> some View {
         getAccessoryView(for: accessoryType(for: stakeholder), stakeholder: stakeholder.stakeholder)
     }
 
@@ -188,6 +188,6 @@ struct StakeholderListScreen: View {
         fromInfoCard: false,
         stakeholderType: .coInsured
     )
-    let vm = StakeholderListViewModel(with: config)
-    return StakeholderListScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+    let vm = StakeholdersViewModel(with: config)
+    return StakeholdersScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
 }

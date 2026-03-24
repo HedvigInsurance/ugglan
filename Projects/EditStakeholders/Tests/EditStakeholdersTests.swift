@@ -10,7 +10,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testUpcomingZeroCurrentOneSuccess() {
-        let viewModel = StakeholderListViewModel(with: .init(stakeholders: [Stakeholder.testMemberWithSSN5]))
+        let viewModel = StakeholdersViewModel(with: .init(stakeholders: [Stakeholder.testMemberWithSSN5]))
 
         viewModel.stakeholdersAdded = []
         viewModel.stakeholdersDeleted = []
@@ -19,7 +19,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN5,
                 Stakeholder.testMemberWithSSN4,
@@ -37,7 +37,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.mockMissingData(),
                 Stakeholder.mockMissingData(),
@@ -53,7 +53,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
                     Stakeholder.mockMissingData(),
@@ -75,7 +75,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testCurrentTwoWithValuesAddingThreeWithValues() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN4,
                 Stakeholder.testMemberWithSSN5,
@@ -93,7 +93,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialWithTwoAdded() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
                     Stakeholder.mockMissingData(),
@@ -113,7 +113,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialWithOneDeleted() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
                     Stakeholder.mockMissingData(),
@@ -132,7 +132,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testInitialAllDeleted() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.mockMissingData(),
                 Stakeholder.mockMissingData(),
@@ -147,7 +147,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testRemoveOne() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN1,
                 Stakeholder.testMemberWithSSN2,
@@ -163,7 +163,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndMissingData() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
                     Stakeholder.mockMissingData(),
@@ -183,7 +183,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddedData() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN1,
                 Stakeholder.testMemberWithBirthdate1,
@@ -199,7 +199,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
     }
 
     func testEmptyWithTerminationAndAddingData() {
-        let viewModel = StakeholderListViewModel(
+        let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
                     Stakeholder.mockMissingData(),

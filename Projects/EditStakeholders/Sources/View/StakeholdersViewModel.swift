@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 @MainActor
-class StakeholderListViewModel: ObservableObject {
+class StakeholdersViewModel: ObservableObject {
     @Published var previousValue = Stakeholder()
     @Published var stakeholdersAdded: [Stakeholder] = []
     @Published var stakeholdersDeleted: [Stakeholder] = []
@@ -149,7 +149,7 @@ class StakeholderListViewModel: ObservableObject {
         addStakeholder(stakeholderModel)
     }
 
-    func listToDisplay(type: StakeholderFieldType?, activationDate: String?) -> [StakeholderListType] {
+    func listToDisplay(type: StakeholderFieldType?, activationDate: String?) -> [StakeholderItem] {
         if type == .delete, nbOfMissingStakeholdersExcludingDeleted > 0 {
             return stakeholdersToDelete
         } else if type != .delete {
@@ -158,13 +158,13 @@ class StakeholderListViewModel: ObservableObject {
         return []
     }
 
-    private var existingStakeholders: [StakeholderListType] {
+    private var existingStakeholders: [StakeholderItem] {
         config.stakeholders
             .filter {
                 !stakeholdersDeleted.contains($0) && $0.terminatesOn == nil && !$0.hasMissingInfo
             }
             .map {
-                StakeholderListType(
+                StakeholderItem(
                     stakeholder: $0,
                     stakeholderType: config.stakeholderType,
                     locallyAdded: false
@@ -172,16 +172,16 @@ class StakeholderListViewModel: ObservableObject {
             }
     }
 
-    private var missingStakeholders: [StakeholderListType] {
+    private var missingStakeholders: [StakeholderItem] {
         let nbOfFields = nbOfMissingStakeholdersExcludingDeleted - stakeholdersAdded.count
 
         let stillHasMissingStakeholders = stakeholdersAdded.count < nbOfMissingStakeholdersExcludingDeleted
-        var missingStakeholdersToDisplay: [StakeholderListType] = []
+        var missingStakeholdersToDisplay: [StakeholderItem] = []
 
         if stillHasMissingStakeholders {
             for _ in 1...nbOfFields {
                 missingStakeholdersToDisplay.append(
-                    StakeholderListType(
+                    StakeholderItem(
                         stakeholder: Stakeholder(),
                         stakeholderType: config.stakeholderType,
                         type: nil,
@@ -193,9 +193,9 @@ class StakeholderListViewModel: ObservableObject {
         return missingStakeholdersToDisplay
     }
 
-    private func locallyAddedStakeholders(activationDate: String?) -> [StakeholderListType] {
+    private func locallyAddedStakeholders(activationDate: String?) -> [StakeholderItem] {
         stakeholdersAdded.map {
-            StakeholderListType(
+            StakeholderItem(
                 stakeholder: $0,
                 stakeholderType: config.stakeholderType,
                 type: .added,
@@ -206,12 +206,12 @@ class StakeholderListViewModel: ObservableObject {
         }
     }
 
-    private var stakeholdersToDelete: [StakeholderListType] {
-        var stakeholdersToDisplay: [StakeholderListType] = []
+    private var stakeholdersToDelete: [StakeholderItem] {
+        var stakeholdersToDisplay: [StakeholderItem] = []
 
         for _ in 1...nbOfMissingStakeholdersExcludingDeleted {
             stakeholdersToDisplay.append(
-                StakeholderListType(
+                StakeholderItem(
                     stakeholder: Stakeholder(),
                     stakeholderType: config.stakeholderType,
                     type: nil,

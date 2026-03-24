@@ -349,7 +349,7 @@ struct ContractInformationView: View {
 
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
-    func getListToDisplay(contract: Contract) -> [StakeholderListType] {
+    func getListToDisplay(contract: Contract) -> [StakeholderItem] {
         contract.coInsured.map { $0.asCoInsuredListType(stakeholderType: .coInsured) }
             + contract.coOwners.map { $0.asCoInsuredListType(stakeholderType: .coOwner) }
     }
@@ -365,7 +365,7 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 extension Stakeholder {
-    func asCoInsuredListType(stakeholderType: StakeholderType) -> StakeholderListType {
+    func asCoInsuredListType(stakeholderType: StakeholderType) -> StakeholderItem {
         .init(
             stakeholder: self,
             stakeholderType: stakeholderType,
