@@ -7,8 +7,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         upcomingChangedAgreement: Agreement?,
         currentAgreement: Agreement?,
         terminationDate: String?,
-        coInsured: [StakeHolder],
-        coOwners: [StakeHolder],
+        coInsured: [Stakeholder],
+        coOwners: [Stakeholder],
         firstName: String,
         lastName: String,
         ssn: String?
@@ -37,8 +37,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
-    public let coInsured: [StakeHolder]
-    public let coOwners: [StakeHolder]
+    public let coInsured: [Stakeholder]
+    public let coOwners: [Stakeholder]
 
     public var fullName: String {
         firstName + " " + lastName
@@ -60,8 +60,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
     }
 
-    public func showEditStakeHoldersInfo(for stakeHoldersType: StakeHolderType) -> Bool {
-        switch stakeHoldersType {
+    public func showEditStakeholdersInfo(for stakeholdersType: StakeholderType) -> Bool {
+        switch stakeholdersType {
         case .coInsured: supportsCoInsured && terminationDate == nil
         case .coOwner: supportsCoOwners && terminationDate == nil
         }
@@ -92,15 +92,15 @@ public struct ProductVariant: Codable, Hashable, Sendable {
 }
 
 @MainActor
-extension StakeHoldersConfig {
+extension StakeholdersConfig {
     public init(
         contract: Contract,
-        preSelectedStakeHolders: [StakeHolder],
+        preSelectedStakeholders: [Stakeholder],
         fromInfoCard: Bool,
-        stakeHolderType: StakeHolderType
+        stakeholderType: StakeholderType
     ) {
-        let (stakeHolders, numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
-            switch stakeHolderType {
+        let (stakeholders, numberOfMissingStakeholders, numberOfMissingStakeholdersWithoutTermination) =
+            switch stakeholderType {
             case .coInsured:
                 (contract.coInsured, contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
             case .coOwner:
@@ -108,20 +108,20 @@ extension StakeHoldersConfig {
             }
         self.init(
             id: contract.id,
-            stakeHolders: stakeHolders,
+            stakeholders: stakeholders,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-            numberOfMissingStakeHolders: numberOfMissingStakeHolders,
-            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
+            numberOfMissingStakeholders: numberOfMissingStakeholders,
+            numberOfMissingStakeholdersWithoutTermination: numberOfMissingStakeholdersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedStakeHolders: preSelectedStakeHolders,
+            preSelectedStakeholders: preSelectedStakeholders,
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
             fromInfoCard: fromInfoCard,
-            stakeHolderType: stakeHolderType
+            stakeholderType: stakeholderType
         )
     }
 }

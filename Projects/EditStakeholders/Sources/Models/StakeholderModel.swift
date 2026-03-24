@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct StakeHolder: Codable, Hashable, Equatable, Sendable {
+public struct Stakeholder: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?
@@ -54,7 +54,7 @@ public struct StakeHolder: Codable, Hashable, Equatable, Sendable {
         fullName == nil
     }
 
-    public static func == (lhs: StakeHolder, rhs: StakeHolder) -> Bool {
+    public static func == (lhs: Stakeholder, rhs: Stakeholder) -> Bool {
         lhs.fullName == rhs.fullName
             && (lhs.formattedSSN == rhs.formattedSSN
                 || lhs.birthDate == rhs.birthDate)
@@ -75,39 +75,39 @@ public enum StatusPillType {
     }
 }
 
-public struct StakeHolderListType: Hashable, Identifiable {
+public struct StakeholderListType: Hashable, Identifiable {
     public let id = UUID().uuidString
     public init(
-        stakeHolder: StakeHolder,
-        stakeHolderType: StakeHolderType,
+        stakeholder: Stakeholder,
+        stakeholderType: StakeholderType,
         type: StatusPillType? = nil,
         date: String? = nil,
         locallyAdded: Bool,
         isEmpty: Bool? = false,
     ) {
-        self.stakeHolder = stakeHolder
-        self.stakeHolderType = stakeHolderType
+        self.stakeholder = stakeholder
+        self.stakeholderType = stakeholderType
         self.type = type
         self.date = date
         self.locallyAdded = locallyAdded
         self.isEmpty = isEmpty
     }
 
-    public var stakeHolder: StakeHolder
-    public let stakeHolderType: StakeHolderType
+    public var stakeholder: Stakeholder
+    public let stakeholderType: StakeholderType
     public var type: StatusPillType?
     public var date: String?
     public var locallyAdded: Bool
     public var isEmpty: Bool?
 }
 
-public struct CoInsuredConfigModel: Identifiable, Equatable {
+public struct StakeholderConfigModel: Identifiable, Equatable {
     public init(
-        configs: [StakeHoldersConfig]
+        configs: [StakeholdersConfig]
     ) {
         self.configs = configs
     }
 
     public var id: String?
-    public var configs: [StakeHoldersConfig]
+    public var configs: [StakeholdersConfig]
 }

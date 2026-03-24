@@ -1,7 +1,7 @@
 import hCore
 import hCoreUI
 
-enum CoInsuredFieldType {
+enum StakeholderFieldType {
     case empty
     case localEdit
     case delete
@@ -39,7 +39,7 @@ enum CoInsuredFieldType {
         }
     }
 
-    var action: CoInsuredAction {
+    var action: StakeholderAction {
         switch self {
         case .empty:
             return .add
@@ -50,14 +50,14 @@ enum CoInsuredFieldType {
         }
     }
 
-    func title(for stakeHolderType: StakeHolderType) -> String {
+    func title(for stakeholderType: StakeholderType) -> String {
         switch self {
         case .empty:
-            return stakeHolderType.addInfoTitle
+            return stakeholderType.addInfoTitle
         case .localEdit:
-            return stakeHolderType.addInfoTitle
+            return stakeholderType.addInfoTitle
         case .delete:
-            return stakeHolderType.removeConfirmationTitle
+            return stakeholderType.removeConfirmationTitle
         }
     }
 

@@ -1,16 +1,16 @@
 import Foundation
 import hCore
 
-public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, Sendable {
+public struct StakeholdersConfig: Codable & Equatable & Hashable, Identifiable, Sendable {
     public let id: String
-    public let stakeHolders: [StakeHolder]
+    public let stakeholders: [Stakeholder]
     public let contractId: String
     public let activeFrom: String?
-    public let numberOfMissingStakeHolders: Int
-    public let numberOfMissingStakeHoldersWithoutTermination: Int
+    public let numberOfMissingStakeholders: Int
+    public let numberOfMissingStakeholdersWithoutTermination: Int
     public let displayName: String
     public let exposureDisplayName: String?
-    public let preSelectedStakeHolders: [StakeHolder]
+    public let preSelectedStakeholders: [Stakeholder]
     public let contractDisplayName: String
     public let holderFirstName: String
     public let holderLastName: String
@@ -18,71 +18,71 @@ public struct StakeHoldersConfig: Codable & Equatable & Hashable, Identifiable, 
     public var holderFullName: String {
         holderFirstName + " " + holderLastName
     }
-    public let stakeHolderType: StakeHolderType
+    public let stakeholderType: StakeholderType
     public let fromInfoCard: Bool
 
-    public init(stakeHolderType: StakeHolderType) {
-        stakeHolders = []
+    public init(stakeholderType: StakeholderType) {
+        stakeholders = []
         contractId = ""
         activeFrom = nil
-        numberOfMissingStakeHolders = 0
-        numberOfMissingStakeHoldersWithoutTermination = 0
+        numberOfMissingStakeholders = 0
+        numberOfMissingStakeholdersWithoutTermination = 0
         displayName = ""
         exposureDisplayName = nil
         holderFirstName = ""
         holderLastName = ""
         holderSSN = nil
-        preSelectedStakeHolders = []
+        preSelectedStakeholders = []
         contractDisplayName = ""
         fromInfoCard = false
         id = UUID().uuidString
-        self.stakeHolderType = stakeHolderType
+        self.stakeholderType = stakeholderType
     }
 
     public init(
         id: String,
-        stakeHolders: [StakeHolder],
+        stakeholders: [Stakeholder],
         contractId: String,
         activeFrom: String?,
-        numberOfMissingStakeHolders: Int,
-        numberOfMissingStakeHoldersWithoutTermination: Int,
+        numberOfMissingStakeholders: Int,
+        numberOfMissingStakeholdersWithoutTermination: Int,
         displayName: String,
         exposureDisplayName: String?,
-        preSelectedStakeHolders: [StakeHolder],
+        preSelectedStakeholders: [Stakeholder],
         contractDisplayName: String,
         holderFirstName: String,
         holderLastName: String,
         holderSSN: String?,
         fromInfoCard: Bool,
-        stakeHolderType: StakeHolderType
+        stakeholderType: StakeholderType
     ) {
         self.id = id
-        self.stakeHolders = stakeHolders
+        self.stakeholders = stakeholders
         self.contractId = contractId
         self.activeFrom = activeFrom
-        self.numberOfMissingStakeHolders = numberOfMissingStakeHolders
-        self.numberOfMissingStakeHoldersWithoutTermination = numberOfMissingStakeHoldersWithoutTermination
+        self.numberOfMissingStakeholders = numberOfMissingStakeholders
+        self.numberOfMissingStakeholdersWithoutTermination = numberOfMissingStakeholdersWithoutTermination
         self.displayName = displayName
         self.exposureDisplayName = exposureDisplayName
-        self.preSelectedStakeHolders = preSelectedStakeHolders
+        self.preSelectedStakeholders = preSelectedStakeholders
         self.contractDisplayName = contractDisplayName
         self.holderFirstName = holderFirstName
         self.holderLastName = holderLastName
         self.holderSSN = holderSSN
         self.fromInfoCard = fromInfoCard
-        self.stakeHolderType = stakeHolderType
+        self.stakeholderType = stakeholderType
     }
 }
 
-public enum StakeHolderType: String, Codable, Equatable, Hashable, Sendable, Comparable {
-    public static func < (lhs: StakeHolderType, rhs: StakeHolderType) -> Bool {
+public enum StakeholderType: String, Codable, Equatable, Hashable, Sendable, Comparable {
+    public static func < (lhs: StakeholderType, rhs: StakeholderType) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 
     case coInsured, coOwner
 }
 
-extension StakeHolderType {
+extension StakeholderType {
     var editTitle: String {
         switch self {
         case .coInsured, .coOwner: L10n.coinsuredEditTitle  // TODO: rename in Localize?
@@ -123,11 +123,11 @@ extension StakeHolderType {
         }
     }
 
-    func reviewInfo(hasMissingStakeHolders: Bool) -> String {
+    func reviewInfo(hasMissingStakeholders: Bool) -> String {
         switch self {
         case .coInsured: L10n.contractAddCoinsuredReviewInfo
         case .coOwner:
-            hasMissingStakeHolders ? L10n.contractAddCoownerReviewInfo : L10n.contractAddAdditionalCoownerInfo
+            hasMissingStakeholders ? L10n.contractAddCoownerReviewInfo : L10n.contractAddAdditionalCoownerInfo
         }
     }
 
@@ -175,5 +175,18 @@ extension StakeHolderType {
         case .coInsured: L10n.contractCoinsuredAddPersonalInfo
         case .coOwner: L10n.contractCoownersAddPersonalInfo
         }
+    }
+}
+
+extension StakeholderType {
+    private var trackingPrefix: String {
+        switch self {
+        case .coInsured: "CoInsured"
+        case .coOwner: "CoOwner"
+        }
+    }
+
+    func trackingName(for view: String) -> String {
+        "\(trackingPrefix)\(view)"
     }
 }
