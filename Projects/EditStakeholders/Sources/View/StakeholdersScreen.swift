@@ -2,6 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
 struct StakeholdersScreen: View {
     @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject var vm: StakeholdersViewModel
@@ -10,13 +11,28 @@ struct StakeholdersScreen: View {
 
     private var displayItems: [StakeholderItem] {
         vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
+========
+struct StakeholderListScreen: View {
+    @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    @ObservedObject var vm: StakeholderListViewModel
+    @ObservedObject var intentViewModel: IntentViewModel
+    let type: StakeholderFieldType?
+
+    private var listToDisplay: [StakeholderListType] {
+        vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
     }
 
     var body: some View {
         hForm {
             VStack(spacing: 0) {
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
                 contractOwnerField(hasContentBelow: !displayItems.isEmpty || vm.hasContentBelow)
                 stakeholderSection(list: displayItems)
+========
+                contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || vm.hasContentBelow)
+                stakeholderSection(list: listToDisplay)
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
                 buttonSection
             }
             .hWithoutHorizontalPadding([.section])
@@ -58,6 +74,7 @@ struct StakeholdersScreen: View {
         }
     }
 
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
     private func stakeholderSection(list: [StakeholderItem]) -> some View {
         hSection(list) { item in
             hRow {
@@ -70,6 +87,20 @@ struct StakeholdersScreen: View {
                 )
             }
             .accessibilityValue(accessoryType(for: item).accessibilityValue)
+========
+    private func stakeholderSection(list: [StakeholderListType]) -> some View {
+        hSection(list) { stakeholderListItem in
+            hRow {
+                StakeholderField(
+                    stakeHolder: stakeholderListItem.stakeholder,
+                    accessoryView: getAccessoryView(stakeholder: stakeholderListItem),
+                    statusPill: stakeholderListItem.type == .added ? .added : nil,
+                    date: stakeholderListItem.date,
+                    stakeHolderType: stakeholderListItem.stakeholderType
+                )
+            }
+            .accessibilityValue(accessoryType(for: stakeholderListItem).accessibilityValue)
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
         }
     }
 
@@ -113,7 +144,11 @@ struct StakeholdersScreen: View {
         }
     }
 
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
     func accessoryType(for stakeholder: StakeholderItem) -> StakeholderFieldType {
+========
+    func accessoryType(for stakeholder: StakeholderListType) -> StakeholderFieldType {
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
         if stakeholder.stakeholder.hasMissingData, type != .delete {
             .empty
         } else if stakeholder.locallyAdded {
@@ -124,7 +159,11 @@ struct StakeholdersScreen: View {
     }
 
     @ViewBuilder
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
     private func getAccessoryView(stakeholder: StakeholderItem) -> some View {
+========
+    private func getAccessoryView(stakeholder: StakeholderListType) -> some View {
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
         getAccessoryView(for: accessoryType(for: stakeholder), stakeholder: stakeholder.stakeholder)
     }
 
@@ -188,6 +227,11 @@ struct StakeholdersScreen: View {
         fromInfoCard: false,
         stakeholderType: .coInsured
     )
+<<<<<<<< HEAD:Projects/EditStakeholders/Sources/View/StakeholdersScreen.swift
     let vm = StakeholdersViewModel(with: config)
     return StakeholdersScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+========
+    let vm = StakeholderListViewModel(with: config)
+    return StakeholderListScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+>>>>>>>> a3ed3b0f3 (chore: rename view types from CoInsured to Stakeholder):Projects/EditStakeholders/Sources/View/StakeholderListScreen.swift
 }
