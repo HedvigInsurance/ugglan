@@ -153,7 +153,7 @@ public protocol TerminateContractsClient {
     func deleteContract(
         contractId: String, surveyOptionId: String, comment: String?
     ) async throws -> TerminationContractResult
-    func getNotification(contractId: String, date: String) async throws -> TerminationNotification?
+    func getNotification(contractId: String, date: Date) async throws -> TerminationNotification?
 }
 ```
 
