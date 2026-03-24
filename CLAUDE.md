@@ -11,125 +11,65 @@ tuist generate              # Regenerate Xcode workspace after module changes
 
 - **"Ugglan"** scheme for dev builds, **"Hedvig"** for production.
 
-## Project Structure
+## Documentation
 
-Modules: Addons, App, Authentication, Campaign, ChangeTier, Chat, Claims, Codegen, Contracts, CrossSell, EditCoInsured, ExampleUtil, Forever, hCore, hCoreUI, hGraphQL, Home, InsuranceEvidence, Market, MoveFlow, NotificationService, Payment, Profile, SubmitClaim, SubmitClaimChat, TerminateContracts, Testing, TestingUtil, TravelCertificate
+- **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, legacy PresentableStore, navigation, service layer, DI, GraphQL
+- **[CLAUDE-testing.md](CLAUDE-testing.md)** — XCTest patterns, MockData, memory leak detection, test naming
+- **[CLAUDE-accessibility.md](CLAUDE-accessibility.md)** — VoiceOver, dynamic type, contrast, CI rules, auto-fix
+- Per-module docs at `Projects/<Module>/CLAUDE.md` — architecture, key files, dependencies, gotchas
 
-Standard module layout:
-```
-Projects/<Module>/Sources/
-  Models/                     # Data models
-  Views/                      # SwiftUI views + ViewModels
-  Service/
-    Protocols/                # Service protocol definitions
-    OctopusImplementation/    # GraphQL/API implementations
-    DemoImplementation/       # Mock implementations for previews
-```
+## Module Index
 
-Core modules: **hCore** (shared utilities, state management), **hCoreUI** (design system), **hGraphQL** (API layer).
-
-## ViewModel Pattern (Primary)
-
-ViewModels use `@Inject` to access services directly and expose state via `@Published` properties.
-
-```swift
-@MainActor
-class SomeViewModel: ObservableObject {
-    @Inject var someClient: SomeClientProtocol
-    @Published var items: [Item] = []
-    @Published var isLoading = false
-
-    func fetchItems() async {
-        isLoading = true
-        do {
-            items = try await someClient.getItems()
-        } catch {
-            // handle error
-        }
-        isLoading = false
-    }
-}
-```
-
-Views bind with `@StateObject` or `@ObservedObject`.
-
-## State Management — PresentableStore (Legacy)
-
-> **Do not use PresentableStore for new features.** Use the ViewModel pattern above instead. This section documents the legacy pattern found in existing code.
-
-**State** conforms to `StateProtocol`, **Action** conforms to `ActionProtocol`, **Store** extends `StateStore<State, Action>`.
-
-```swift
-public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var fetchClaimsClient: hFetchClaimsClient
-
-    override public func effects(_ getState: @escaping () -> ClaimsState, _ action: ClaimsAction) async {
-        // Side effects: API calls, async work. Dispatch results via send() / sendAsync().
-    }
-
-    override public func reduce(_ state: ClaimsState, _ action: ClaimsAction) async -> ClaimsState {
-        // Pure state mutations. Return new state.
-    }
-}
-```
-
-Legacy store access: `let store: ClaimsStore = globalPresentableStoreContainer.get()`
-
-## Navigation — Router System
-
-Custom `Router` from hCoreUI. Each navigation enum conforms to `TrackingViewNameProtocol`.
-
-```swift
-RouterHost(router: router, tracking: self) {
-    RootView()
-        .routerDestination(for: SomeRoute.self) { route in ... }
-}
-
-router.push(SomeRoute.detail(id: "123"))              // Push
-.modally(item: $vm.showDetail) { item in ... }        // Modal
-.detent(item: $vm.showSheet, transitionType: ...) { } // Bottom sheet
-```
-
-## Service Layer
-
-Every service follows the **Protocol + OctopusImplementation + DemoImplementation** triple:
-
-```swift
-// Protocol (Service/Protocols/):
-@MainActor
-public protocol hFetchClaimsClient {
-    func getActiveClaims() async throws -> [ClaimModel]
-}
-
-// OctopusImplementation (Service/OctopusImplementation/): real GraphQL calls
-// DemoImplementation (Service/DemoImplementation/): mocks for previews/tests
-```
-
-## Dependency Injection
-
-```swift
-@Inject var client: hFetchClaimsClient                                          // Usage
-Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in Impl() })  // Register
-Dependencies.shared.remove(for: hFetchClaimsClient.self)                        // Teardown
-```
+| Module | Description |
+|--------|-------------|
+| Addons | Insurance addon discovery and purchase |
+| App | Main app entry point, navigation hub, deep linking |
+| Authentication | Login, logout, auth token management |
+| Campaign | Marketing campaign display and redemption |
+| ChangeTier | Insurance plan tier upgrades/downgrades |
+| Chat | Customer support messaging |
+| Claims | Claims list, status tracking, claim details |
+| Codegen | GraphQL code generation tooling |
+| Contracts | Insurance contract management and details |
+| CrossSell | Cross-selling insurance products |
+| EditStakeholders | Co-insured and co-owner management |
+| ExampleUtil | Development utilities and examples |
+| Forever | Referral program |
+| hCore | Core utilities, DI container, state management, extensions |
+| hCoreUI | Design system: components, colors, spacing, typography |
+| hGraphQL | Apollo GraphQL client, queries, mutations, fragments |
+| Home | Home screen dashboard, important messages |
+| InsuranceEvidence | Insurance evidence/certificate display |
+| Market | Market/country selection |
+| MoveFlow | Address change flow |
+| NotificationService | Push notification handling |
+| Payment | Payment methods, payment history, direct debit |
+| Profile | User profile, settings, app info |
+| SubmitClaimChat | Claims submission flow (current, chat-based) |
+| TerminateContracts | Contract cancellation flow |
+| Testing | Shared test utilities |
+| TestingUtil | Additional test helpers |
+| TravelCertificate | Travel insurance certificate generation |
 
 ## UI Components — hCoreUI Design System
 
 Always use the design system instead of raw SwiftUI equivalents:
 
-| Use this         | Instead of              |
-|------------------|-------------------------|
-| `hForm`          | `Form` / `ScrollView`   |
-| `hSection`       | `Section`               |
-| `hRow`           | List row                |
-| `hButton`        | `Button`                |
-| `hText`          | `Text`                  |
-| `hField`         | `TextField` wrapper     |
-| `hPill`          | Tag / badge             |
+| Use this | Instead of |
+|----------|------------|
+| `hForm` | `Form` / `ScrollView` |
+| `hSection` | `Section` |
+| `hRow` | List row |
+| `hButton` | `Button` |
+| `hText` | `Text` |
+| `hField` | `TextField` wrapper |
+| `hPill` | Tag / badge |
 
 - **Colors**: `hTextColor.Opaque.primary`, `hSignalColor.Green.element`, `hFillColor.Opaque.disabled`
 - **Spacing**: `.padding6`, `.padding8`, `.padding16`
 - **Corner radius**: `.cornerRadiusXS`
+
+See `Projects/hCoreUI/CLAUDE.md` for the full component reference.
 
 ## Localization
 
@@ -139,10 +79,6 @@ L10n.ClaimStatus.title
 L10n.General.errorBody
 ```
 
-## GraphQL
-
-Apollo iOS client. `.graphql` files live in the hGraphQL module. Code generation via the Codegen project.
-
 ## Code Style
 
 - **Line length**: 120 characters
@@ -151,11 +87,16 @@ Apollo iOS client. `.graphql` files live in the hGraphQL module. Code generation
 - SwiftLint scans `Projects/`, excludes `Projects/*/Sources/Derived`
 - swift-format configured in `.swift-format`
 
+## Agent Convention
+
+After writing/modifying SwiftUI view files, invoke `@accessibility-agent` for accessibility review.
+After writing/modifying feature code, invoke `@test-agent` for test generation and validation.
+
 ## Don'ts
 
 1. **Do NOT use PresentableStore (State/Action/Store) for new features** — use ViewModels with `@Inject` services
 2. **Do NOT use `@Observable`** — use `@MainActor class VM: ObservableObject` with `@Published`
-3. **Do NOT use `NavigationStack` / `NavigationLink`** — use `Router`, `RouterHost`, `.routerDestination`
+3. **Do NOT use raw SwiftUI `NavigationStack` / `NavigationLink`** — use `hNavigationStack` with `NavigationRouter` (new) or `RouterHost` with `Router` (legacy)
 4. **Do NOT use raw SwiftUI `Form`/`Section`/`Text`/`Button`** — use `hForm`/`hSection`/`hText`/`hButton`
 5. **Do NOT use TCA / ComposableArchitecture**
 6. **Do NOT omit `@MainActor`** on ViewModels, Store subclasses, and service protocols
