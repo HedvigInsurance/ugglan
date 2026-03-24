@@ -3,436 +3,179 @@ import TerminateContracts
 import hCore
 import hGraphQL
 
+// NOTE: The generated type paths below follow Apollo iOS codegen conventions.
+// After running codegen, verify the exact type names in
+// Projects/hGraphQL/Sources/Derived/GraphQL/Octopus/
+
 class TerminateContractsClientOctopus: TerminateContractsClient {
     @Inject private var octopus: hOctopus
 
-    func startTermination(contractId: String) async throws -> TerminateStepResponse {
-        let mutation = OctopusGraphQL.FlowTerminationStartMutation(
-            input: OctopusGraphQL.FlowTerminationStartInput(
-                contractId: contractId,
-                supportedSteps: GraphQLNullable(optionalValue: supportedSteps())
-            ),
-            context: nil
-        )
-        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+    func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
+        let query = OctopusGraphQL.TerminationSurveyQuery(contractId: contractId)
+        let data = try await octopus.client.fetch(query: query)
+        return mapSurveyData(data.terminationSurvey)
     }
 
-    func sendTerminationDate(
-        inputDateToString: String,
-        terminationContext: String
-    ) async throws -> TerminateStepResponse {
-        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-            input: terminationDateInput,
-            context: terminationContext
+    func terminateContract(
+        contractId: String,
+        terminationDate: String,
+        surveyOptionId: String,
+        comment: String?
+    ) async throws -> TerminationContractResult {
+        let input = OctopusGraphQL.TerminationFlowTerminateContractInput(
+            contractId: contractId,
+            terminationComment: GraphQLNullable(optionalValue: comment),
+            terminationDate: terminationDate,
+            terminationSurveyOptionId: surveyOptionId
         )
-        async let dataTask = mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
-        try await Task.sleep(seconds: 3)
-        let data = try await dataTask
-        return data
+        let mutation = OctopusGraphQL.TerminateContractMutation(input: input)
+        let data = try await octopus.client.mutation(mutation: mutation)!
+        if let errorMessage = data.terminateContract.userError?.message {
+            return .userError(message: errorMessage)
+        }
+        return .success
     }
 
-    func sendConfirmDelete(
-        terminationContext: String,
-        model: TerminationFlowDeletionNextModel?
-    ) async throws -> TerminateStepResponse {
-        let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-            context: terminationContext,
-            input: GraphQLNullable(optionalValue: model?.returnDeletionInput())
+    func deleteContract(
+        contractId: String,
+        surveyOptionId: String,
+        comment: String?
+    ) async throws -> TerminationContractResult {
+        let input = OctopusGraphQL.TerminationFlowDeleteContractInput(
+            contractId: contractId,
+            terminationComment: GraphQLNullable(optionalValue: comment),
+            terminationSurveyOptionId: surveyOptionId
         )
-        async let dataTask = mutation.execute(
-            \.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep
-        )
-        try await Task.sleep(seconds: 3)
-        return try await dataTask
+        let mutation = OctopusGraphQL.DeleteContractMutation(input: input)
+        let data = try await octopus.client.mutation(mutation: mutation)!
+        if let errorMessage = data.deleteContract.userError?.message {
+            return .userError(message: errorMessage)
+        }
+        return .success
     }
 
-    func sendSurvey(
-        terminationContext: String,
-        option: String,
-        inputData: String?
-    ) async throws -> TerminateStepResponse {
-        let input = OctopusGraphQL.FlowTerminationSurveyDataInput(
-            optionId: option,
-            text: GraphQLNullable(optionalValue: inputData)
-        )
-        let data = OctopusGraphQL.FlowTerminationSurveyInput(data: input)
-        let mutation = OctopusGraphQL.FlowTerminationSurveyNextMutation(input: data, context: terminationContext)
-        return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
-    }
-
-    func sendContinueAfterDecom(
-        terminationContext: String
-    ) async throws -> TerminateStepResponse {
-        let input = OctopusGraphQL.FlowTerminationCarAutoDecomInput(proceedToCancel: true)
-        let mutation = OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation(input: input, context: terminationContext)
-        return try await mutation.execute(
-            \.flowTerminationCarAutoDecomNext.fragments.flowTerminationFragment.currentStep
-        )
-    }
-
-    public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+    func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         let input = OctopusGraphQL.TerminationFlowNotificationInput(
             contractId: contractId,
             terminationDate: date.localDateString
         )
-
         let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
         let data = try await octopus.client.fetch(query: query)
-
-        guard let terminationFlowNotification = data.currentMember.terminationFlowNotification else { return nil }
-
-        return .init(with: terminationFlowNotification.fragments.flowTerminationNotificationFragment)
-    }
-
-    private func supportedSteps() -> [OctopusGraphQL.ID] {
-        [
-            OctopusGraphQL.Objects.FlowTerminationDateStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationFailedStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationSurveyStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationSuccessStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationDeletionStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationCarAutoDecomStep.typename,
-            OctopusGraphQL.Objects.FlowTerminationCarDeflectAutoCancelStep.typename,
-        ]
-    }
-}
-
-extension TerminationNotification {
-    init(
-        with data: OctopusGraphQL.FlowTerminationNotificationFragment
-    ) {
-        self.init(
-            message: data.message,
-            type: data.type.asNotificationType
+        guard let notification = data.currentMember.terminationFlowNotification else { return nil }
+        return .init(
+            message: notification.message,
+            type: notification.type == .case(.warning) ? .warning : .info
         )
     }
 }
 
-private protocol Into {
-    associatedtype To
-    func into(with progress: Float) -> To
-}
+// MARK: - GraphQL → Domain Mapping
 
-extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
-    func into(with progress: Float) -> (step: TerminationContractStep, progress: Float?) {
-        if let step = asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
-            return (step: .setTerminationDateStep(model: .init(with: step)), progress)
-        } else if let step = asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
-            return (step: .setTerminationDeletion(model: .init(with: step)), progress)
-        } else if let step = asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
-            return (step: .setFailedStep(model: .init(with: step)), nil)
-        } else if let step = asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
-            return (step: .setSuccessStep(model: .init(terminationDate: step.terminationDate)), nil)
-        } else if let step = asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
-            return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
-        } else if let step = asFlowTerminationCarAutoDecomStep?.fragments.flowTerminationCarAutoDecomStepFragment {
-            return (step: .setDeflectAutoDecom(model: .init(with: step)), progress)
-        } else if let step = asFlowTerminationCarDeflectAutoCancelStep?.fragments
-            .flowTerminationCarDeflectAutoCancelStepStep
-        {
-            return (step: .setDeflectAutoCancel(model: .init(with: step)), progress)
-        } else {
-            return (step: .openTerminationUpdateAppScreen, nil)
-        }
-    }
-}
-
-@MainActor
-extension GraphQLMutation {
-    fileprivate func execute<TerminationStep: Into>(
-        _ keyPath: KeyPath<Self.Data, TerminationStep>
-    ) async throws -> TerminateStepResponse
-    where
-        TerminationStep.To == (step: TerminationContractStep, progress: Float?),
-        Self.Data: TerminationStepContext & TerminationStepProgress,
-        Self.ResponseFormat == SingleResponseFormat
-    {
-        let octopus: hOctopus = Dependencies.shared.resolve()
-        let data = try await octopus.client.mutation(mutation: self)!
-        let context = data.getContext()
-        let progress = data.getProgress()
-        let stepWithNewProgress = data[keyPath: keyPath].into(with: progress)
-        return .init(context: context, step: stepWithNewProgress.step, progress: stepWithNewProgress.progress)
-    }
-}
-
-protocol TerminationStepProgress {
-    func getProgress() -> Float
-}
-
-protocol TerminationStepContext {
-    func getContext() -> String
-}
-
-extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepContext {
-    func getContext() -> String {
-        flowTerminationStart.context
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepContext {
-    func getContext() -> String {
-        flowTerminationDateNext.context
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepContext {
-    func getContext() -> String {
-        flowTerminationDeletionNext.context
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepContext {
-    func getContext() -> String {
-        flowTerminationSurveyNext.context
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: TerminationStepContext {
-    func getContext() -> String {
-        flowTerminationCarAutoDecomNext.context
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepProgress {
-    func getProgress() -> Float {
-        Float(flowTerminationStart.progress?.clearedSteps ?? 0)
-            / Float(flowTerminationStart.progress?.totalSteps ?? 0)
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepProgress {
-    func getProgress() -> Float {
-        Float(flowTerminationDateNext.progress?.clearedSteps ?? 0)
-            / Float(flowTerminationDateNext.progress?.totalSteps ?? 0)
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepProgress {
-    func getProgress() -> Float {
-        Float(flowTerminationDeletionNext.progress?.clearedSteps ?? 0)
-            / Float(flowTerminationDeletionNext.progress?.totalSteps ?? 0)
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepProgress {
-    func getProgress() -> Float {
-        Float(flowTerminationSurveyNext.progress?.clearedSteps ?? 0)
-            / Float(flowTerminationSurveyNext.progress?.totalSteps ?? 0)
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationCarAutoDecomNextMutation.Data: TerminationStepProgress {
-    func getProgress() -> Float {
-        Float(flowTerminationCarAutoDecomNext.progress?.clearedSteps ?? 0)
-            / Float(flowTerminationCarAutoDecomNext.progress?.totalSteps ?? 0)
-    }
-}
-
-extension TerminationFlowDeflectAutoDecomModel {
-    init(with data: OctopusGraphQL.FlowTerminationCarAutoDecomStepFragment) {
-        self.init(
-            message: data.message,
-            title: data.title,
-            explanations: data.explanations.map({ .init(title: $0.title, text: $0.text) }),
-            info: data.info
+extension TerminateContractsClientOctopus {
+    private func mapSurveyData(
+        _ survey: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey
+    ) -> TerminationSurveyData {
+        .init(
+            options: survey.options.map { mapOption($0) },
+            action: mapAction(survey.action)
         )
     }
-}
 
-extension TerminationFlowSurveyStepModel {
-    init(with data: OctopusGraphQL.FlowTerminationSurveyStepFragment) {
-        var options = [TerminationFlowSurveyStepModelOption]()
-        for layer1 in data.options {
-            var subOptions = [TerminationFlowSurveyStepModelOption]()
-            layer1.subOptions?
-                .forEach { subOption in
-                    var subSubOptions = [TerminationFlowSurveyStepModelOption]()
-                    subOption.subOptions?
-                        .forEach { subSubOption in
-                            var subSubSubOptions = [TerminationFlowSurveyStepModelOption]()
-                            subSubOption.subOptions?
-                                .forEach { subSubOption in
-                                    subSubSubOptions.append(
-                                        .init(
-                                            with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
-                                            subOptions: []
-                                        )
-                                    )
-                                }
-                            subSubOptions.append(
-                                .init(
-                                    with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
-                                    subOptions: subSubSubOptions
+    private func mapOption(
+        _ option: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey.Option
+    ) -> TerminationSurveyOption {
+        let fragment = option.fragments.terminationSurveyOptionFragment
+        return .init(
+            id: fragment.id,
+            title: fragment.title,
+            feedbackRequired: fragment.feedbackRequired,
+            suggestion: fragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment.asSuggestion,
+            subOptions: option.subOptions.map { subOption in
+                let subFragment = subOption.fragments.terminationSurveyOptionFragment
+                return .init(
+                    id: subFragment.id,
+                    title: subFragment.title,
+                    feedbackRequired: subFragment.feedbackRequired,
+                    suggestion: subFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
+                        .asSuggestion,
+                    subOptions: subOption.subOptions.map { subSubOption in
+                        let subSubFragment = subSubOption.fragments.terminationSurveyOptionFragment
+                        return .init(
+                            id: subSubFragment.id,
+                            title: subSubFragment.title,
+                            feedbackRequired: subSubFragment.feedbackRequired,
+                            suggestion: subSubFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
+                                .asSuggestion,
+                            subOptions: subSubOption.subOptions.map { leaf in
+                                let leafFragment = leaf.fragments.terminationSurveyOptionFragment
+                                return .init(
+                                    id: leafFragment.id,
+                                    title: leafFragment.title,
+                                    feedbackRequired: leafFragment.feedbackRequired,
+                                    suggestion: leafFragment.suggestion?.fragments
+                                        .terminationSurveyOptionSuggestionFragment.asSuggestion,
+                                    subOptions: []
                                 )
-                            )
-                        }
-                    subOptions.append(
-                        .init(
-                            with: subOption.fragments.flowTerminationSurveyStepOptionFragment,
-                            subOptions: subSubOptions
+                            }
                         )
+                    }
+                )
+            }
+        )
+    }
+
+    private func mapAction(
+        _ action: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey.Action
+    ) -> TerminationAction {
+        if let terminateWithDate = action.asTerminationFlowActionTerminateWithDate {
+            return .terminateWithDate(
+                minDate: terminateWithDate.minDate,
+                maxDate: terminateWithDate.maxDate,
+                extraCoverage: terminateWithDate.extraCoverage.map {
+                    .init(
+                        displayName: $0.fragments.terminationExtraCoverageItemFragment.displayName,
+                        displayValue: $0.fragments.terminationExtraCoverageItemFragment.displayValue
                     )
                 }
-            let stepOptionFragment = layer1.fragments.flowTerminationSurveyStepOptionFragment
-            options.append(.init(with: stepOptionFragment, subOptions: subOptions))
-        }
-        self.init(
-            options: options,
-            subTitleType: .default
-        )
-    }
-}
-
-extension TerminationFlowDeflectAutoCancelModel {
-    init(with data: OctopusGraphQL.FlowTerminationCarDeflectAutoCancelStepStep) {
-        self.init(title: data.title, message: data.message, extraMessage: data.extraMessage)
-    }
-}
-
-extension TerminationFlowSurveyStepModelOption {
-    init(
-        with data: OctopusGraphQL.FlowTerminationSurveyStepOptionFragment,
-        subOptions: [TerminationFlowSurveyStepModelOption]
-    ) {
-        self.init(
-            id: data.id,
-            title: data.title,
-            suggestion: data.suggestion?.fragments.flowTerminationSurveyOptionSuggestionFragment.asSuggestion,
-            feedBack: data.feedBack?.fragments.flowTerminationSurveyOptionFeedbackFragment.asFeedback,
-            subOptions: subOptions
-        )
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
-    var asSuggestion: TerminationFlowSurveyStepSuggestion? {
-        if let optionActionSuggestion = asFlowTerminationSurveyOptionSuggestionAction,
-            let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
-        {
-            let buttonTitle = optionActionSuggestion.buttonTitle
-            let description = optionActionSuggestion.description
-            return .action(
-                action: .init(
-                    action: action,
-                    description: description,
-                    buttonTitle: buttonTitle,
-                    type: optionActionSuggestion.infoType.value?.asInfoType ?? .offer
-                )
             )
-        } else if let optionRedirectSuggestion = asFlowTerminationSurveyOptionSuggestionRedirect {
-            return .redirect(
-                redirect: .init(
-                    url: optionRedirectSuggestion.url,
-                    description: optionRedirectSuggestion.description,
-                    buttonTitle: optionRedirectSuggestion.buttonTitle,
-                    type: optionRedirectSuggestion.infoType.value?.asInfoType ?? .offer
-                )
-            )
-        } else if let optionSuggestionInfo = asFlowTerminationSurveyOptionSuggestionInfo {
-            return .suggestionInfo(
-                info: .init(
-                    description: optionSuggestionInfo.description,
-                    type: optionSuggestionInfo.infoType.value?.asInfoType ?? .offer
-                )
+        } else if let deleteInsurance = action.asTerminationFlowActionDeleteInsurance {
+            return .deleteInsurance(
+                extraCoverage: deleteInsurance.extraCoverage.map {
+                    .init(
+                        displayName: $0.fragments.terminationExtraCoverageItemFragment.displayName,
+                        displayValue: $0.fragments.terminationExtraCoverageItemFragment.displayValue
+                    )
+                }
             )
         }
-        return nil
+        return .deleteInsurance(extraCoverage: [])
     }
 }
 
-extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
-    var asFlowTerminationSurveyRedirectAction: FlowTerminationSurveyRedirectAction? {
-        switch self {
-        case let .case(t):
-            switch t {
-            case .updateAddress:
-                return .updateAddress
-            case .changeTierFoundBetterPrice:
-                return .changeTierFoundBetterPrice
-            case .changeTierMissingCoverageAndTerms:
-                return .changeTierMissingCoverageAndTerms
-            }
-        case .unknown:
-            return nil
-        }
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
-    var asFeedback: TerminationFlowSurveyStepFeedback? {
-        .init(isRequired: isRequired)
-    }
-}
-
-extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionInfoType {
-    var asInfoType: SurveySuggestionInfoType {
-        switch self {
-        case .info: return .info
-        case .offer: return .offer
-        }
-    }
-}
-
-extension TerminationFlowDateNextStepModel {
-    fileprivate init(
-        with data: OctopusGraphQL.FlowTerminationDateStepFragment
-    ) {
-        self.init(
-            maxDate: data.maxDate,
-            minDate: data.minDate,
-            date: nil,
-            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
+extension OctopusGraphQL.TerminationSurveyOptionSuggestionFragment {
+    var asSuggestion: TerminationSuggestion {
+        .init(
+            type: type.asTerminationSuggestionType,
+            description: description,
+            url: url
         )
     }
 }
 
-extension GraphQLEnum<OctopusGraphQL.FlowTerminationNotificationType> {
-    var asNotificationType: TerminationNotificationType {
+extension GraphQLEnum<OctopusGraphQL.TerminationFlowSurveyOptionSuggestionType> {
+    var asTerminationSuggestionType: TerminationSuggestionType {
         switch self {
-        case let .case(t):
-            switch t {
-            case .info:
-                return .info
-            case .warning:
-                return .warning
-            }
-        default:
-            return .info
+        case .case(.updateAddress): return .updateAddress
+        case .case(.upgradeCoverage): return .upgradeCoverage
+        case .case(.downgradePrice): return .downgradePrice
+        case .case(.redirect): return .redirect
+        case .case(.info): return .info
+        case .case(.autoCancelSold): return .autoCancelSold
+        case .case(.autoCancelScrapped): return .autoCancelScrapped
+        case .case(.autoDecommission): return .autoDecommission
+        case .case(.carDecommissionInfo): return .carDecommissionInfo
+        case .case(.carAlreadyDecommission): return .carAlreadyDecommission
+        default: return .unknown
         }
-    }
-}
-
-extension ExtraCoverageItem {
-    init(
-        fragment: OctopusGraphQL.ExtraCoverageItemFragment
-    ) {
-        self.init(
-            displayName: fragment.displayName,
-            displayValue: fragment.displayValue
-        )
-    }
-}
-
-extension TerminationFlowFailedNextModel {
-    fileprivate init(
-        with data: OctopusGraphQL.FlowTerminationFailedFragment
-    ) {
-        self.init()
-    }
-}
-
-extension TerminationFlowDeletionNextModel {
-    init(
-        with data: OctopusGraphQL.FlowTerminationDeletionFragment
-    ) {
-        self.init(
-            extraCoverageItem: data.extraCoverage.map { .init(fragment: $0.fragments.extraCoverageItemFragment) }
-        )
-    }
-
-    public func returnDeletionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
-        OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
     }
 }
