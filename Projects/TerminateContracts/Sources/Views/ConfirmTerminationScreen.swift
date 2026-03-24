@@ -20,7 +20,7 @@ struct ConfirmTerminationScreen: View {
                     .init(
                         buttonTitle: L10n.terminationFlowConfirmButton,
                         buttonAction: {
-                            terminationNavigationVm.sendConfirmTermination()
+                            terminationNavigationVm.submitTermination()
                         }
                     ),
                 dismissButton: .init(
@@ -39,12 +39,12 @@ struct ConfirmTerminationScreen: View {
             return L10n.terminationFlowConfirmation
         }
         return L10n.terminationFlowConfirmationSubtitleTermination(
-            terminationNavigationVm.terminationDateStepModel?.date?.displayDateDDMMMYYYYFormat ?? ""
+            terminationNavigationVm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
         )
     }
 }
 
-#Preview {
+#Preview{
     ConfirmTerminationScreen()
         .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: nil))
 }

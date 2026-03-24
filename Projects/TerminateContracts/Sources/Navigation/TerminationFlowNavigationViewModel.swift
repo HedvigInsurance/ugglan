@@ -196,6 +196,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             updateProgress(for: .datePicker)
             router.push(TerminationFlowRouterActions.datePicker)
         case .deleteInsurance:
+            fetchNotification(for: Date())
             updateProgress(for: .confirmation)
             router.push(TerminationFlowRouterActions.confirmation)
         }
