@@ -314,7 +314,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         case .confirmation:
             progress = hasSelectInsuranceStep ? 0.8125 : 0.75
         case .success:
-            progress = 1.0
+            progress = nil
         }
     }
 }
