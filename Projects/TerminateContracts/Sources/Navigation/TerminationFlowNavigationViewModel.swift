@@ -11,14 +11,18 @@ import hCoreUI
 class TerminationRedirectHandler {
     weak var viewModel: TerminationFlowNavigationViewModel?
 
-    func handle(_ action: FlowTerminationSurveyRedirectAction?) async {
-        guard let action = action else { return }
-
-        switch action {
+    func handle(_ suggestion: TerminationSuggestion) async {
+        switch suggestion.type {
         case .updateAddress:
             handleUpdateAddress()
-        case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-            await handleChangeTier(action: action)
+        case .upgradeCoverage:
+            await handleChangeTier(source: .betterCoverage)
+        case .downgradePrice:
+            await handleChangeTier(source: .betterPrice)
+        case .redirect:
+            handleRedirect(suggestion)
+        default:
+            break
         }
     }
 
@@ -31,10 +35,17 @@ class TerminationRedirectHandler {
         }
     }
 
-    private func handleChangeTier(action: FlowTerminationSurveyRedirectAction) async {
+    private func handleRedirect(_ suggestion: TerminationSuggestion) {
+        guard let urlString = suggestion.url, let url = URL(string: urlString) else { return }
+        viewModel?.router.dismiss()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NotificationCenter.default.post(name: .openDeepLink, object: url)
+        }
+    }
+
+    private func handleChangeTier(source: ChangeTierSource) async {
         guard let viewModel = viewModel,
-            let contractId = viewModel.config?.contractId,
-            let source = getChangeTierSource(for: action)
+            let contractId = viewModel.config?.contractId
         else { return }
 
         let input = ChangeTierInputData(source: source, contractId: contractId)
@@ -62,74 +73,13 @@ class TerminationRedirectHandler {
             case let .deflection(deflection):
                 viewModel.infoText = deflection.message
             }
-        } catch let exception {
+        } catch {
             withAnimation {
                 viewModel.redirectActionLoadingState = .success
             }
             Toasts.shared.displayToastBar(
-                toast: .init(type: .error, text: exception.localizedDescription)
+                toast: .init(type: .error, text: error.localizedDescription)
             )
-        }
-    }
-
-    private func getChangeTierSource(for action: FlowTerminationSurveyRedirectAction) -> ChangeTierSource? {
-        switch action {
-        case .changeTierFoundBetterPrice:
-            return .betterPrice
-        case .changeTierMissingCoverageAndTerms:
-            return .betterCoverage
-        default:
-            return nil
-        }
-    }
-}
-
-class TerminationStepHandler {
-    @MainActor func route(step: TerminationContractStep, to router: Router) -> (model: Any?, progress: Float?) {
-        switch step {
-        case let .setTerminationDateStep(model):
-            router.push(TerminationFlowRouterActions.terminationDate(model: model))
-            return (model, nil)
-        case let .setTerminationDeletion(model):
-            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
-            return (model, nil)
-        case let .setSuccessStep(model):
-            router.push(TerminationFlowFinalRouterActions.success(model: model))
-            return (model, nil)
-        case let .setFailedStep(model):
-            router.push(TerminationFlowFinalRouterActions.fail(model: model))
-            return (model, nil)
-        case let .setTerminationSurveyStep(model):
-            router.push(TerminationFlowRouterActions.surveyStep(model: model))
-            return (model, nil)
-        case .openTerminationUpdateAppScreen:
-            router.push(TerminationFlowFinalRouterActions.updateApp)
-            return (nil, nil)
-        case let .setDeflectAutoDecom(model):
-            router.push(TerminationFlowRouterActions.deflectAutoDecom(model: model))
-            return (model, nil)
-        case let .setDeflectAutoCancel(model):
-            router.push(TerminationFlowRouterActions.deflectAutoCancel(model: model))
-            return (model, nil)
-        }
-    }
-
-    func getInitialAction(from step: TerminationContractStep) -> TerminationFlowActions {
-        switch step {
-        case let .setTerminationDateStep(model):
-            return .router(action: .terminationDate(model: model))
-        case .setTerminationDeletion:
-            return .router(action: .terminationDate(model: nil))
-        case let .setSuccessStep(model):
-            return .final(action: .success(model: model))
-        case let .setFailedStep(model):
-            return .final(action: .fail(model: model))
-        case let .setTerminationSurveyStep(model):
-            return .router(action: .surveyStep(model: model))
-        case .openTerminationUpdateAppScreen:
-            return .final(action: .updateApp)
-        default:
-            return .final(action: .fail(model: nil))
         }
     }
 }
@@ -144,9 +94,9 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     public let id = UUID().uuidString
 
-    // MARK: - Helper Properties
-    private let stepHandler = TerminationStepHandler()
+    // MARK: - Helpers
     private let redirectHandler = TerminationRedirectHandler()
+    private let terminateContractsService = TerminateContractsService()
 
     // MARK: - UI State
     @Published var isDatePickerPresented = false
@@ -155,257 +105,219 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var infoText: String?
     @Published var redirectActionLoadingState: ProcessingState = .success
     @Published var notification: TerminationNotification?
+    @Published var confirmTerminationState: ProcessingState = .loading
 
-    // MARK: - Properties
+    // MARK: - Navigation
+    let router = Router()
     let initialStep: TerminationFlowActions
+
+    // MARK: - Configuration
     var configs: [TerminationConfirmConfig] = []
+    @Published var config: TerminationConfirmConfig?
+    @Published var hasSelectInsuranceStep: Bool = false
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
 
-    var redirectAction: FlowTerminationSurveyRedirectAction? {
-        didSet {
-            Task {
-                await redirectHandler.handle(redirectAction)
-            }
-        }
-    }
+    // MARK: - Survey State
+    @Published var surveyData: TerminationSurveyData?
+    @Published var selectedOptionId: String?
+    @Published var selectedComment: String?
+    @Published var selectedDate: Date?
 
-    var redirectUrl: URL? {
-        didSet {
-            if let redirectUrl {
-                router.dismiss()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    NotificationCenter.default.post(name: .openDeepLink, object: redirectUrl)
-                }
-            }
-        }
-    }
-
-    let router = Router()
-
-    private let terminateContractsService = TerminateContractsService()
-
-    @Published private(set) var currentContext: String?
+    // MARK: - Progress
     @Published var progress: Float? = 0
     var previousProgress: Float?
-    @Published var hasSelectInsuranceStep: Bool = false
-    @Published var successStepModel: TerminationFlowSuccessNextModel?
-    @Published var failedStepModel: TerminationFlowFailedNextModel?
-    @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
-    @Published var config: TerminationConfirmConfig?
 
-    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel? {
-        didSet {
-            extraCoverage = terminationDateStepModel?.extraCoverageItem ?? []
+    var extraCoverage: [ExtraCoverageItem] {
+        guard let action = surveyData?.action else { return [] }
+        switch action {
+        case let .terminateWithDate(_, _, extraCoverage):
+            return extraCoverage
+        case let .deleteInsurance(extraCoverage):
+            return extraCoverage
         }
     }
-
-    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel? {
-        didSet {
-            extraCoverage = terminationDeleteStepModel?.extraCoverageItem ?? []
-        }
-    }
-
-    @Published var extraCoverage: [ExtraCoverageItem] = []
 
     var isDeletion: Bool {
-        terminationDeleteStepModel != nil
+        guard let action = surveyData?.action else { return false }
+        if case .deleteInsurance = action { return true }
+        return false
     }
 
     // MARK: - Initialization
 
     public init(
-        stepResponse: TerminateStepResponse,
-        config: TerminationConfirmConfig,
-        terminateInsuranceViewModel: TerminateInsuranceViewModel?
-    ) {
-        self.config = config
-        self.hasSelectInsuranceStep = false
-        self.progress = stepResponse.progress
-        self.currentContext = stepResponse.context
-        self.initialStep = stepHandler.getInitialAction(from: stepResponse.step)
-        self.terminateInsuranceViewModel = terminateInsuranceViewModel
-        self.redirectHandler.viewModel = self
-        setInitialModel(from: stepResponse.step)
-    }
-
-    public init(
         configs: [TerminationConfirmConfig],
         terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
-        self.configs = configs
         self.terminateInsuranceViewModel = terminateInsuranceViewModel
-        self.initialStep = .router(action: .selectInsurance(configs: configs))
-        self.redirectHandler.viewModel = self
-    }
+        self.configs = configs
 
-    private func setInitialModel(from step: TerminationContractStep) {
-        reset()
-        switch step {
-        case let .setTerminationDateStep(model):
-            terminationDateStepModel = model
-        case let .setSuccessStep(model):
-            successStepModel = model
-        case let .setFailedStep(model):
-            failedStepModel = model
-        case let .setTerminationSurveyStep(model):
-            terminationSurveyStepModel = model
-        case let .setTerminationDeletion(model):
-            terminationDeleteStepModel = model
-        default:
-            break
-        }
-    }
-
-    @MainActor
-    func startTermination(config: TerminationConfirmConfig, fromSelectInsurance: Bool) async {
-        reset()
-        do {
-            let data = try await terminateContractsService.startTermination(contractId: config.contractId)
-            self.config = config
-            navigate(data: data, fromSelectInsurance: fromSelectInsurance)
-        } catch {}
-    }
-
-    func navigate(data: TerminateStepResponse, fromSelectInsurance: Bool) {
-        currentContext = data.context
-
-        if !fromSelectInsurance {
-            previousProgress = progress
-            progress = data.progress
-        }
-
-        updateStepModel(for: data.step)
-        _ = stepHandler.route(step: data.step, to: router)
-    }
-
-    private func updateStepModel(for step: TerminationContractStep) {
-        switch step {
-        case let .setTerminationDateStep(model):
-            terminationDateStepModel = model
-        case let .setTerminationDeletion(model):
-            terminationDeleteStepModel = model
-        case let .setSuccessStep(model):
-            successStepModel = model
-        case let .setFailedStep(model):
-            failedStepModel = model
-        case let .setTerminationSurveyStep(model):
-            terminationSurveyStepModel = model
-        default:
-            break
-        }
-    }
-
-    func reset() {
-        terminationDateStepModel = nil
-        terminationDeleteStepModel = nil
-        successStepModel = nil
-        failedStepModel = nil
-        terminationSurveyStepModel = nil
-        notification = nil
-    }
-
-    @Published var confirmTerminationState: ProcessingState = .loading
-
-    public func sendConfirmTermination() {
-        if isDeletion {
-            sendConfirmDelete()
+        if configs.count == 1, let singleConfig = configs.first {
+            self.config = singleConfig
+            self.hasSelectInsuranceStep = false
+            self.initialStep = .router(action: .survey)
+            self.redirectHandler.viewModel = self
+            fetchSurvey(for: singleConfig)
         } else {
-            sendTerminationDate()
+            self.hasSelectInsuranceStep = true
+            self.initialStep = .router(action: .selectInsurance(configs: configs))
+            self.redirectHandler.viewModel = self
         }
     }
 
-    @MainActor
-    public func sendConfirmDelete() {
-        Task {
-            isProcessingPresented = true
-            withAnimation {
-                confirmTerminationState = .loading
-            }
+    // MARK: - Survey
+
+    func fetchSurvey(for config: TerminationConfirmConfig) {
+        self.config = config
+        Task { [weak self] in
+            guard let self else { return }
             do {
-                guard let currentContext else {
-                    throw TerminationError.missingContext
+                let data = try await terminateContractsService.getTerminationSurvey(contractId: config.contractId)
+                self.surveyData = data
+                self.updateProgress(for: .survey)
+                if hasSelectInsuranceStep {
+                    router.push(TerminationFlowRouterActions.survey)
                 }
-                let data = try await terminateContractsService.sendConfirmDelete(
-                    terminationContext: currentContext,
-                    model: terminationDeleteStepModel
-                )
-                withAnimation {
-                    confirmTerminationState = .success
-                }
-                isProcessingPresented = false
-                navigate(data: data, fromSelectInsurance: false)
             } catch {
-                withAnimation {
-                    confirmTerminationState = .error(
-                        errorMessage: error.localizedDescription
-                    )
-                }
+                router.push(TerminationFlowFinalRouterActions.failure(message: error.localizedDescription))
             }
         }
     }
 
-    @MainActor
-    public func sendTerminationDate() {
-        Task {
+    // MARK: - Survey Completion
+
+    func proceedAfterSurvey(optionId: String, comment: String?) {
+        selectedOptionId = optionId
+        selectedComment = comment
+        guard let action = surveyData?.action else { return }
+
+        switch action {
+        case .terminateWithDate:
+            updateProgress(for: .datePicker)
+            router.push(TerminationFlowRouterActions.datePicker)
+        case .deleteInsurance:
+            updateProgress(for: .confirmation)
+            router.push(TerminationFlowRouterActions.confirmation)
+        }
+    }
+
+    func handleSuggestion(_ suggestion: TerminationSuggestion) {
+        if suggestion.isDeflect {
+            router.push(TerminationFlowRouterActions.deflect(suggestion: suggestion))
+        } else {
+            Task {
+                await redirectHandler.handle(suggestion)
+            }
+        }
+    }
+
+    // MARK: - Termination Submission
+
+    func submitTermination() {
+        guard let contractId = config?.contractId,
+            let optionId = selectedOptionId
+        else { return }
+
+        Task { [weak self] in
+            guard let self else { return }
             isProcessingPresented = true
             withAnimation {
                 confirmTerminationState = .loading
             }
+
             do {
-                guard let currentContext else {
-                    throw TerminationError.missingContext
+                let result: TerminationContractResult
+                if isDeletion {
+                    result = try await terminateContractsService.deleteContract(
+                        contractId: contractId,
+                        surveyOptionId: optionId,
+                        comment: selectedComment
+                    )
+                } else {
+                    let dateString = selectedDate?.localDateString ?? ""
+                    result = try await terminateContractsService.terminateContract(
+                        contractId: contractId,
+                        terminationDate: dateString,
+                        surveyOptionId: optionId,
+                        comment: selectedComment
+                    )
                 }
-                let data = try await terminateContractsService.sendTerminationDate(
-                    inputDateToString: terminationDateStepModel?.date?.localDateString ?? "",
-                    terminationContext: currentContext
-                )
+
                 withAnimation {
                     confirmTerminationState = .success
                 }
-                navigate(data: data, fromSelectInsurance: false)
                 isProcessingPresented = false
+
+                switch result {
+                case .success:
+                    updateProgress(for: .success)
+                    router.push(TerminationFlowFinalRouterActions.success)
+                case let .userError(message):
+                    updateProgress(for: .success)
+                    router.push(TerminationFlowFinalRouterActions.failure(message: message))
+                }
             } catch {
                 withAnimation {
-                    confirmTerminationState = .error(
-                        errorMessage: error.localizedDescription
-                    )
+                    confirmTerminationState = .error(errorMessage: error.localizedDescription)
                 }
             }
         }
     }
+
+    // MARK: - Notification
+
     var fetchNotificationTask: Task<Void, Never>?
-    func fetchNotification(isDeletion deletion: Bool) {
+
+    func fetchNotification(for date: Date?) {
         fetchNotificationTask?.cancel()
         fetchNotificationTask = Task { [weak self] in
-            let date: Date? = {
-                if deletion {
-                    return Date()
-                }
-                return self?.terminationDateStepModel?.date
-            }()
-            if let contractId = self?.config?.contractId, let date = date {
+            guard let self, let contractId = config?.contractId, let date else { return }
+            do {
+                try Task.checkCancellation()
+                let data = try await terminateContractsService.getNotification(
+                    contractId: contractId,
+                    date: date
+                )
+                try Task.checkCancellation()
+                notification = data
+            } catch {
                 do {
-                    //check for cancellation before fetching and after fetching
+                    try await Task.sleep(seconds: 1)
                     try Task.checkCancellation()
-                    let data = try await self?.terminateContractsService
-                        .getNotification(contractId: contractId, date: date)
-                    try Task.checkCancellation()
-                    self?.notification = data
-                } catch _ {
-                    // if it fails check again after 1 second
-                    // if the task is cancelled, it will throw cancellation error
-                    do {
-                        try await Task.sleep(seconds: 1)
-                        try Task.checkCancellation()
-                        self?.fetchNotification(isDeletion: deletion)
-                    } catch {
-                        //ignore since it only be cancellation error
-                    }
-                }
+                    fetchNotification(for: date)
+                } catch {}
             }
+        }
+    }
+
+    // MARK: - Progress Calculation
+
+    private enum FlowStep {
+        case selectInsurance
+        case survey
+        case datePicker
+        case confirmation
+        case success
+    }
+
+    private func updateProgress(for step: FlowStep) {
+        previousProgress = progress
+        switch step {
+        case .selectInsurance:
+            progress = hasSelectInsuranceStep ? 0.0 : nil
+        case .survey:
+            progress = hasSelectInsuranceStep ? 0.25 : 0.0
+        case .datePicker:
+            progress = hasSelectInsuranceStep ? 0.625 : 0.5
+        case .confirmation:
+            progress = hasSelectInsuranceStep ? 0.8125 : 0.75
+        case .success:
+            progress = 1.0
         }
     }
 }
+
+// MARK: - Navigation View
 
 struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
@@ -434,24 +346,22 @@ struct TerminationFlowNavigation: View {
                     description: L10n.terminationFlowCancelInfoText
                 )
                 .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
-                .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
+                .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     Group {
                         switch action {
-                        case .terminationDate:
-                            openSetTerminationDateLandingScreen(fromSelectInsurance: false)
-                        case let .surveyStep(model):
-                            openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
+                        case .survey:
+                            openSurveyScreen()
+                        case .datePicker:
+                            openSetTerminationDateLandingScreen()
                         case .selectInsurance:
                             openSelectInsuranceScreen()
-                        case .summary:
+                        case .confirmation:
                             openTerminationSummaryScreen()
-                        case let .deflectAutoDecom(model):
-                            openDeflectAutoDecom(model: model)
-                        case let .deflectAutoCancel(model):
-                            openDeflectAutoCancel(model: model)
+                        case let .deflect(suggestion):
+                            openDeflectScreen(suggestion: suggestion)
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -463,22 +373,18 @@ struct TerminationFlowNavigation: View {
                     Group {
                         switch action {
                         case .success:
-                            let terminationDate =
-                                vm?.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             openTerminationSuccessScreen(
                                 isDeletion: vm?.isDeletion ?? false,
-                                terminationDate: terminationDate
+                                terminationDate: vm?.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                             .onAppear {
                                 vm?.isProcessingPresented = false
                             }
-                        case .fail:
-                            openTerminationFailScreen()
+                        case let .failure(message):
+                            openTerminationFailScreen(message: message)
                                 .onAppear {
                                     vm?.isProcessingPresented = false
                                 }
-                        case .updateApp:
-                            openUpdateAppTerminationScreen()
                         }
                     }
                     .resetProgressOnDismiss(to: vm?.previousProgress, for: $vm.progress)
@@ -510,69 +416,62 @@ struct TerminationFlowNavigation: View {
         switch action {
         case let .router(action):
             switch action {
-            case .terminationDate:
-                openSetTerminationDateLandingScreen(fromSelectInsurance: false)
-            case let .surveyStep(model):
-                openSurveyScreen(model: model ?? .init(options: [], subTitleType: .default))
+            case .survey:
+                openSurveyScreen()
+            case .datePicker:
+                openSetTerminationDateLandingScreen()
             case .selectInsurance:
                 openSelectInsuranceScreen()
-            case .summary:
+            case .confirmation:
                 openTerminationSummaryScreen()
-            case .deflectAutoDecom(model: let model):
-                openDeflectAutoDecom(model: model)
-            case let .deflectAutoCancel(model):
-                openDeflectAutoCancel(model: model)
+            case let .deflect(suggestion):
+                openDeflectScreen(suggestion: suggestion)
             }
         case let .final(action):
             switch action {
             case .success:
-                let terminationDate =
-                    vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 openTerminationSuccessScreen(
                     isDeletion: vm.isDeletion,
-                    terminationDate: terminationDate
+                    terminationDate: vm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
                 )
                 .onAppear {
                     vm.isProcessingPresented = false
                 }
-            case .fail:
-                openTerminationFailScreen()
+            case let .failure(message):
+                openTerminationFailScreen(message: message)
                     .onAppear {
                         vm.isProcessingPresented = false
                     }
-            case .updateApp:
-                openUpdateAppTerminationScreen()
             }
         }
     }
 
-    private func openSetTerminationDateLandingScreen(
-        fromSelectInsurance _: Bool
-    ) -> some View {
-        SetTerminationDateLandingScreen(
-            terminationNavigationVm: vm
+    private func openSurveyScreen() -> some View {
+        TerminationSurveyScreen(
+            vm: .init(
+                options: vm.surveyData?.options ?? [],
+                subtitleType: .default
+            )
         )
         .withDismissButton()
+    }
+
+    private func openSetTerminationDateLandingScreen() -> some View {
+        SetTerminationDateLandingScreen(terminationNavigationVm: vm)
+            .withDismissButton()
     }
 
     private func openSelectInsuranceScreen() -> some View {
         TerminationSelectInsuranceScreen(vm: vm)
     }
 
-    private func openUpdateAppTerminationScreen() -> some View {
-        UpdateAppScreen(
-            onSelected: {
-                vm.router.dismiss()
-            }
-        )
-        .withDismissButton()
+    private func openTerminationSummaryScreen() -> some View {
+        TerminationSummaryScreen()
+            .withDismissButton()
     }
 
-    private func openSurveyScreen(
-        model: TerminationFlowSurveyStepModel
-    ) -> some View {
-        let vm = SurveyScreenViewModel(options: model.options, subtitleType: model.subTitleType)
-        return TerminationSurveyScreen(vm: vm)
+    private func openDeflectScreen(suggestion: TerminationSuggestion) -> some View {
+        TerminationDeflectScreen(suggestion: suggestion)
             .withDismissButton()
     }
 
@@ -581,26 +480,8 @@ struct TerminationFlowNavigation: View {
             .withDismissButton()
     }
 
-    private func openTerminationSummaryScreen() -> some View {
-        TerminationSummaryScreen()
-            .withDismissButton()
-    }
-
-    private func openDeflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel) -> some View {
-        TerminationDeflectAutoDecomScreen(model: model, navigation: vm)
-            .withDismissButton()
-    }
-    private func openDeflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel) -> some View {
-        TerminationDeflectAutoCancelScreen(model: model)
-            .withDismissButton()
-    }
-
     private func openSetTerminationDatePickerScreen() -> some View {
         SetTerminationDate(
-            terminationDate: {
-                let preSelectedTerminationDate = vm.terminationDateStepModel?.minDate.localDateToDate
-                return preSelectedTerminationDate ?? Date()
-            },
             terminationNavigationVm: vm
         )
         .navigationTitle(L10n.setTerminationDateText)
@@ -636,10 +517,10 @@ struct TerminationFlowNavigation: View {
         )
     }
 
-    private func openTerminationFailScreen() -> some View {
+    private func openTerminationFailScreen(message: String = "") -> some View {
         GenericErrorView(
             title: L10n.terminationNotSuccessfulTitle,
-            description: L10n.somethingWentWrong,
+            description: message.isEmpty ? L10n.somethingWentWrong : message,
             formPosition: .center
         )
         .hStateViewButtonConfig(
@@ -661,20 +542,52 @@ struct TerminationFlowNavigation: View {
     }
 }
 
+// MARK: - Router Action Enums
+
+public enum TerminationFlowRouterActions: Hashable {
+    case selectInsurance(configs: [TerminationConfirmConfig])
+    case survey
+    case datePicker
+    case confirmation
+    case deflect(suggestion: TerminationSuggestion)
+}
+
+extension TerminationFlowRouterActions: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .selectInsurance:
+            return "Select Insurance"
+        case .survey:
+            return .init(describing: TerminationSurveyScreen.self)
+        case .datePicker:
+            return .init(describing: SetTerminationDateLandingScreen.self)
+        case .confirmation:
+            return .init(describing: TerminationSummaryScreen.self)
+        case .deflect:
+            return "TerminationDeflectScreen"
+        }
+    }
+}
+
+public enum TerminationFlowFinalRouterActions: Hashable {
+    case success
+    case failure(message: String)
+}
+
+extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .success:
+            return "TerminationSuccessScreen"
+        case .failure:
+            return "TerminationFailScreen"
+        }
+    }
+}
+
 public enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
-}
-
-enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
-    var nameForTracking: String {
-        switch self {
-        case .terminationDate:
-            return .init(describing: SetTerminationDate.self)
-        }
-    }
-
-    case terminationDate
 }
 
 extension TerminationFlowActions: TrackingViewNameProtocol {
@@ -688,51 +601,15 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
     }
 }
 
-public enum TerminationFlowRouterActions: Hashable {
-    case selectInsurance(configs: [TerminationConfirmConfig])
-    case terminationDate(model: TerminationFlowDateNextStepModel?)
-    case surveyStep(model: TerminationFlowSurveyStepModel?)
-    case deflectAutoDecom(model: TerminationFlowDeflectAutoDecomModel)
-    case deflectAutoCancel(model: TerminationFlowDeflectAutoCancelModel)
-    case summary
-}
-
-extension TerminationFlowRouterActions: TrackingViewNameProtocol {
-    public var nameForTracking: String {
+enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
+    var nameForTracking: String {
         switch self {
-        case .selectInsurance:
-            return "Select Insurance"
         case .terminationDate:
-            return .init(describing: SetTerminationDateLandingScreen.self)
-        case .surveyStep:
-            return .init(describing: TerminationSurveyScreen.self)
-        case .summary:
-            return .init(describing: TerminationSummaryScreen.self)
-        case .deflectAutoDecom:
-            return .init(describing: TerminationDeflectAutoDecomScreen.self)
-        case .deflectAutoCancel:
-            return .init(describing: TerminationDeflectAutoCancelScreen.self)
+            return .init(describing: SetTerminationDate.self)
         }
     }
-}
 
-public enum TerminationFlowFinalRouterActions: Hashable {
-    case success(model: TerminationFlowSuccessNextModel?)
-    case fail(model: TerminationFlowFailedNextModel?)
-    case updateApp
-}
-
-extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .success:
-            return "TerminationSuccessScreen"
-        case .fail:
-            return "TerminationFailScreen"
-        case .updateApp:
-            return .init(describing: UpdateAppScreen.self)
-        }
-    }
+    case terminationDate
 }
 
 public enum DismissTerminationAction {
