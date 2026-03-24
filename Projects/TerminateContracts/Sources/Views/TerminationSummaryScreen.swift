@@ -141,7 +141,7 @@ struct TerminationSummaryScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
@@ -170,7 +170,7 @@ struct TerminationSummaryScreen: View {
         )
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 

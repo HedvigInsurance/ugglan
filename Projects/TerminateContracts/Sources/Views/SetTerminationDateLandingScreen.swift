@@ -95,7 +95,7 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     SetTerminationDateLandingScreen(
         terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )

@@ -44,7 +44,7 @@ struct ConfirmTerminationScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     ConfirmTerminationScreen()
         .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: nil))
 }
