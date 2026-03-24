@@ -189,6 +189,8 @@ enum TerminationFlowRouterActions: Hashable {
 enum TerminationFlowFinalRouterActions: Hashable {
     case success(isDeletion: Bool, terminationDate: String?)
     case failure(message: String)
+    // Note: `fail` renamed to `failure`, `updateApp` removed.
+    // Update pattern-match sites in TerminationFlowNavigation (getView and routerDestination).
 }
 ```
 
@@ -278,6 +280,8 @@ navVM.proceedAfterSurvey(optionId, comment):
 
 The `TerminationRedirectHandler` class is kept but simplified — it no longer needs `FlowContext`. Its `handle()` method is refactored to accept a `TerminationSuggestion` instead of `FlowTerminationSurveyRedirectAction`.
 
+**Feedback validation:** The existing 10-character minimum for required feedback text is retained. When `feedbackRequired` is true and the user's comment is fewer than 10 characters, the continue button remains disabled.
+
 ## Deflect Screen Routing
 
 The `TerminationDeflectScreen` "Continue anyway" must know whether to push date picker or confirmation. The router action carries the action type:
@@ -301,7 +305,7 @@ Client-side progress based on step count:
 | Confirmation | 0.75 | 0.8125 |
 | Success/Failure | 1.0 | 1.0 |
 
-This replaces the server-driven `clearedSteps / totalSteps` calculation.
+This replaces the server-driven `clearedSteps / totalSteps` calculation. The existing `+0.2` hardcoded increment and scaling formula in `TerminationSurveyScreen.continueClicked()` are removed entirely — progress values come directly from this table.
 
 ## Notification Query
 
