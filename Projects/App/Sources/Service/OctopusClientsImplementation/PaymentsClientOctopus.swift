@@ -54,22 +54,21 @@ class hPaymentClientOctopus: hPaymentClient {
     @Inject private var octopus: hOctopus
 
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        let query = OctopusGraphQL.PaymentDataQuery()
-        let data = try await octopus.client.fetch(query: query)
+        // Capture client on MainActor to avoid crossing actor boundary with non-Sendable `hOctopus`
+        let client = octopus.client
 
-        let paymentDetailsQuery = OctopusGraphQL.PaymentInformationQuery()
-        let paymentDetailsData = try await octopus.client.fetch(
-            query: paymentDetailsQuery
-        )
+        async let dataResult = client.fetch(query: OctopusGraphQL.PaymentDataQuery())
+        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentInformationQuery())
+
+        let (data, paymentDetailsData) = try await (dataResult, paymentDetailsResult)
 
         let amountPerReferral = MonetaryAmount(
             fragment: data.currentMember.referralInformation.monthlyDiscountPerReferral.fragments
                 .moneyFragment
         )
-        let paymentChargeData = PaymentChargeData(with: paymentDetailsData)
         let upcomingPayment = PaymentData(
             with: data,
-            paymentChargeData: paymentChargeData,
+            paymentChargeData: paymentDetailsData,
             amountPerReferral: amountPerReferral
         )
         let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
@@ -109,7 +108,7 @@ extension PaymentData {
     // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
-        paymentChargeData: PaymentChargeData?,
+        paymentChargeData: OctopusGraphQL.PaymentInformationQuery.Data,
         amountPerReferral: MonetaryAmount
     ) {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
@@ -126,6 +125,8 @@ extension PaymentData {
             }
             return nil
         }()
+
+        let paymentChargeData = PaymentChargeData(with: paymentChargeData, and: chargeFragment.chargeMethod)
 
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
@@ -165,25 +166,61 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: nil,
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                dueDate: nil,
+                chargeMethod: data.chargeMethod
+            ),
             addedToThePayment: []
         )
     }
 }
 
+extension OctopusGraphQL.MemberChargeFragment {
+    var chargeMethod: PaymentChargeData.PaymentChargeMethod {
+        .from(provider: paymentProvider)
+    }
+}
+
+extension OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod {
+    var paymentChargeMethod: PaymentChargeData.PaymentChargeMethod {
+        .from(provider: paymentProvider)
+    }
+}
+
 extension PaymentChargeData {
-    init?(with model: OctopusGraphQL.PaymentInformationQuery.Data) {
-        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
+    init?(
+        with model: OctopusGraphQL.PaymentInformationQuery.Data,
+        and paymentsChargeMethod: PaymentChargeData.PaymentChargeMethod?
+    ) {
+        guard let paymentsChargeMethod else {
             return nil
         }
+        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
+            self.init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                dueDate: nil,
+                chargeMethod: paymentsChargeMethod
+            )
+            return
+        }
+
         self.init(
             paymentMethod: chargeMethod.paymentMethod,
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
+            dueDate: chargeMethod.dueDate,
+            chargeMethod: paymentsChargeMethod
         )
     }
+
     init?(with model: OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod?) {
         guard let chargeMethod = model else {
             return nil
@@ -193,7 +230,8 @@ extension PaymentChargeData {
             bankName: chargeMethod.displayName,
             account: chargeMethod.descriptor,
             mandate: chargeMethod.mandate,
-            chargingDayInTheMonth: chargeMethod.chargingDayInTheMonth
+            dueDate: chargeMethod.dueDate,
+            chargeMethod: chargeMethod.paymentChargeMethod
         )
     }
 }
@@ -364,10 +402,19 @@ extension PaymentData {
             id: data.id ?? "",
             payment: .init(with: chargeFragment),
             status: PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment),
-            contracts: chargeFragment.chargeBreakdown.compactMap { .init(with: $0) },
+            contracts: chargeFragment.chargeBreakdown.compactMap {
+                .init(with: $0)
+            },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: nil,
+            paymentChargeData: .init(
+                paymentMethod: nil,
+                bankName: nil,
+                account: nil,
+                mandate: nil,
+                dueDate: nil,
+                chargeMethod: data.chargeMethod
+            ),
             addedToThePayment: {
                 if let nextPayment {
                     [nextPayment]

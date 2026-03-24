@@ -15,7 +15,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     public let router = NavigationRouter()
@@ -98,7 +98,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .ignoresSafeArea()
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
@@ -115,7 +115,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             getSubmitClaimDeflectScreen()
         }
@@ -214,8 +214,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                     Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
                 }
             }
-        case .editCoInsured:
-            helpCenterVm.editCoInsuredVm.start()
+        case .editCoInsured: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
+        case .editCoOwners: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coOwner)
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts

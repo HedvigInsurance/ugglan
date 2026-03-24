@@ -100,11 +100,7 @@ extension HomeScreen {
                 .primary,
                 content: .init(title: L10n.HomeTab.claimButtonText),
                 {
-                    if featureFlags.isNewClaimFlowEnabled {
-                        navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-                    } else {
-                        navigationVm.isSubmitClaimPresented = true
-                    }
+                    navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
                 }
             )
         }

@@ -59,16 +59,16 @@ extension ApolloClient {
                 case .refreshTokenExpired:
                     break
                 case .refreshFailed:
-                    graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
+                    graphQlLogger.info("graphQL auth refresh failed \(operation)", error: error, attributes: [:])
                 case .networkIssue:
-                    graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
+                    graphQlLogger.info("graphQL network issue \(operation)", error: error, attributes: [:])
                 }
             } else if let error = error as? Error {
                 graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
             } else if let error = error as? Apollo.GraphQLError {
-                graphQlLogger.error("graphQL error \(error)", error: error, attributes: [:])
+                graphQlLogger.info("graphQL error \(error)", error: error, attributes: [:])
             } else {
-                graphQlLogger.error("graphQL error \(operation)", error: error, attributes: [:])
+                graphQlLogger.info("graphQL error \(operation)", error: error, attributes: [:])
             }
         }
     }

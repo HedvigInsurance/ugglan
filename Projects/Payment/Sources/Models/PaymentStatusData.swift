@@ -19,20 +19,77 @@ public struct PaymentChargeData: Codable, Equatable, Sendable, Hashable {
     let bankName: String?
     let account: String?
     let mandate: String?
-    let chargingDayInTheMonth: Int?
+    let dueDate: Int?
+    let chargeMethod: PaymentChargeMethod
 
     public init(
         paymentMethod: String?,
         bankName: String?,
         account: String?,
         mandate: String?,
-        chargingDayInTheMonth: Int?
+        dueDate: Int?,
+        chargeMethod: PaymentChargeMethod
     ) {
-        self.paymentMethod = paymentMethod
+        self.paymentMethod = paymentMethod ?? chargeMethod.paymentMethod
         self.bankName = bankName
         self.account = account
         self.mandate = mandate
-        self.chargingDayInTheMonth = chargingDayInTheMonth
+        self.dueDate = dueDate
+        self.chargeMethod = chargeMethod
+    }
+
+    public enum PaymentChargeMethod: Codable, Sendable {
+        case trustly
+        case kivra
+        case unknown
+
+        public static func from(provider: String?) -> PaymentChargeMethod {
+            guard let provider = provider?.lowercased() else { return .unknown }
+            if provider == "kivra" {
+                return .kivra
+            } else if provider.hasPrefix("trustly") {
+                return .trustly
+            } else {
+                return .unknown
+            }
+        }
+
+        func infoText(for dueDate: String) -> String? {
+            switch self {
+            case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
+            case .kivra: L10n.kivraPaymentInfo
+            default: nil
+            }
+        }
+        var infoText: String? {
+            switch self {
+            case .trustly: L10n.paymentsPaymentDetailsInfoDescription
+            case .kivra: L10n.kivraPaymentInfo
+            default: nil
+            }
+        }
+
+        fileprivate var paymentMethod: String? {
+            switch self {
+            case .trustly:
+                L10n.paymentsAutogiroLabel
+            case .kivra:
+                L10n.paymentsInvoice
+            case .unknown:
+                nil
+            }
+        }
+
+        var infoTextForPendingStatus: String? {
+            switch self {
+            case .trustly:
+                L10n.paymentsInProgress
+            case .kivra:
+                L10n.paymentsInProgressKivra
+            case .unknown:
+                nil
+            }
+        }
     }
 }
 

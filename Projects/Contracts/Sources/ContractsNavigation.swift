@@ -44,7 +44,7 @@ public struct ContractsNavigation<Content: View>: View {
         .disabled(contractsNavigationVm.isAddonPresented != nil)
         .detent(
             item: $contractsNavigationVm.insurableLimit,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
@@ -53,14 +53,14 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.document,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant(.alwaysOpenOnTop)
         ) { document in
             redirect(.pdf(document: document))
         }
         .detent(
             item: $contractsNavigationVm.changeYourInformationContract,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { contract in
             EditContractScreen(
                 editTypes: EditType.getTypes(for: contract),
@@ -68,8 +68,16 @@ public struct ContractsNavigation<Content: View>: View {
                     contractsNavigationVm.changeYourInformationContract = nil
                     switch selectedType {
                     case .coInsured:
-                        let configContract: InsuredPeopleConfig = .init(
+                        let configContract: StakeHoldersConfig = .init(
                             contract: contract,
+                            stakeHolderType: .coInsured,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                    case .coOwners:
+                        let configContract: StakeHoldersConfig = .init(
+                            contract: contract,
+                            stakeHolderType: .coOwner,
                             fromInfoCard: false
                         )
                         contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
@@ -110,7 +118,7 @@ public struct ContractsNavigation<Content: View>: View {
         .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { agreement in
             UpcomingChangesScreen(
                 agreement: agreement
@@ -152,8 +160,8 @@ public class ContractsNavigationViewModel: ObservableObject {
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?
-    @Published public var editCoInsuredConfig: InsuredPeopleConfig?
-    @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
+    @Published public var editCoInsuredConfig: StakeHoldersConfig?
+    @Published public var editCoInsuredMissingAlert: StakeHoldersConfig?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Agreement?
     @Published public var isChangeAddressPresented = false
@@ -161,9 +169,10 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isRemoveAddonPresented: RemoveAddonInput?
     @Published public var addonActionPresented: AddonAction?
+    @Published public var isActiveTab = false
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 
     public init() {}

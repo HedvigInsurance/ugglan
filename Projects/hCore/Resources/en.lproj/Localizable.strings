@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Clear field";
 "A11Y_CLOSE" = "Close";
+"A11Y_OF" = "of";
 "A11Y_OPTION_NOT_SELECTED" = "Option not selected";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pause";
@@ -217,6 +218,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Describe using text";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
+"CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Custom item";
 "CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
@@ -257,7 +259,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TITLE" = "Claim";
 "CLAIM_CHAT_UNKNOWN_STEP" = "Unknown step";
 "CLAIM_CHAT_USE_AUDIO" = "Record with voice";
-"CLAIM_CHAT_USE_TEXT_INPUT" = "Describe with text";
+"CLAIM_CHAT_USE_TEXT_INPUT" = "Describe using text";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Date of occurrence";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Submit your claim";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "What insurance is it about?";
@@ -273,9 +275,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Documents";
 "CONFIRM_CHANGES_SUBTITLE" = "Please note that your changes will be effective on %@.";
 "CONFIRM_CHANGES_TITLE" = "Confirm changes";
+"CONTACT_INFO_CHANGES_SAVED" = "Changes saved";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add co-owner";
+"CONTRACT_ADD_ADDITIONAL_COOWNER_INFO" = "You can add more co-owners for your vacation home";
 "CONTRACT_ADD_COINSURED" = "Add co-insured";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Activates %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Active until %1$@";
@@ -287,7 +291,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Your insurance will be updated starting from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Co-insured updated";
 "CONTRACT_ADD_CONISURED_INFO" = "Add info of co-insured";
-"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add information for all co-owners in order to proceed.";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Please add co-owner information to proceed";
 "CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Co-owner information updated";
 "CONTRACT_BIRTH_DATE" = "Date of birth";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "What do you want to edit?";
@@ -373,7 +377,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Duration";
 "Direct_Debit_Connected" = "%1$@/month - Paying with direct debit";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Payment not connected";
-"EDIT_COOWNER_SUBTITLE" = "Add or update co-owner information";
+"EDIT_COOWNER_SUBTITLE" = "Edit co-owners for your vacation home";
 "EDIT_COOWNER_TITLE" = "Edit co-owners";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "Email";
@@ -495,8 +499,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "You can't change the payment method at the moment. Please contact us to get help.";
-"KIVRA_PAYMENT_INFO" = "The invoice is sent out 14 days before due date each month to your Kivra inbox.";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "You can’t change the payment method right now. Contact us for help.";
+"KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
@@ -552,7 +556,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_EXPIRED_DATE" = "Expired %1$@";
 "PAYMENTS_HISTORY_INFO" = "For information about payments older than 12 months, please send us a message here in the app.";
 "PAYMENTS_INVITE_FRIENDS" = "Share your code";
+"PAYMENTS_INVOICE" = "Invoice";
 "PAYMENTS_IN_PROGRESS" = "The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account";
+"PAYMENTS_IN_PROGRESS_KIVRA" = "You can find your invoice in the Kivra app";
 "PAYMENTS_MANDATE" = "Mandate";
 "PAYMENTS_MISSED_PAYMENT" = "Your payment for the period %1$@ – %2$@ didn't process as expected. The amount has been added to this payment.";
 "PAYMENTS_NO_HISTORY_DATA" = "There is no record of your payment history";

@@ -26,14 +26,14 @@ struct SubmitClaimFormView: View {
         .sectionContainerStyle(.transparent)
         .detent(
             item: $viewModel.isDatePickerPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar, tracking: self)
+                .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.datePicker)
         }
         .detent(
             item: $viewModel.isSelectItemPresented,
-            transitionType: .detent(
+            presentationStyle: .detent(
                 style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true
                     ? [.large] : [.height]
             )
@@ -48,7 +48,14 @@ struct SubmitClaimFormView: View {
                             let selectedValues = fieldModel.values
 
                             return fieldOptions.filter({ selectedValues.contains($0.value) })
-                                .map({ SingleSelectValue(title: $0.title, subtitle: $0.subtitle, value: $0.value) })
+                                .map({
+                                    SingleSelectValue(
+                                        title: $0.title,
+                                        subtitle: $0.subtitle,
+                                        value: $0.value,
+                                        imageUrl: $0.imageUrl
+                                    )
+                                })
                         }
                         return []
                     },
@@ -64,15 +71,42 @@ struct SubmitClaimFormView: View {
             )
             .hItemPickerAttributes(model.attributes)
             .navigationTitle(model.title)
-            .embededInNavigation(options: .largeNavigationBar, tracking: self)
+            .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.itemPicker)
             .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
+        }
+        .detent(
+            item: $viewModel.searchFieldPresentation,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant(.withoutGrabber)
+        ) { [weak viewModel] model in
+            FormFieldSearchView(
+                model: model,
+                onSelected: { [weak viewModel] selected, searchText in
+                    let formValue = viewModel?.getFormStepValue(for: model.id)
+                    formValue?.selectedSearchItem = selected
+                    formValue?.lastSearchQuery = searchText
+                }
+            )
+            .navigationTitle(model.title)
+            .embededInNavigation(tracking: SubmitClaimModalType.search)
         }
     }
 }
 
-extension SubmitClaimFormView: TrackingViewNameProtocol {
+private enum SubmitClaimModalType: TrackingViewNameProtocol {
+    case itemPicker
+    case datePicker
+    case search
+
     var nameForTracking: String {
-        .init(describing: SubmitClaimFormView.self)
+        switch self {
+        case .itemPicker:
+            return String(describing: ItemPickerScreen<SingleSelectValue>.self)
+        case .datePicker:
+            return String(describing: DatePickerView.self)
+        case .search:
+            return String(describing: FormFieldSearchView.self)
+        }
     }
 }
 
@@ -107,6 +141,8 @@ struct FormFieldView: View {
             singleSelectField
         case .multiSelect:
             multiSelectField
+        case .search:
+            searchField
         }
     }
     var numberView: some View {
@@ -218,6 +254,32 @@ struct FormFieldView: View {
         }
     }
 
+    @ViewBuilder
+    private var searchField: some View {
+        let presentSearch: () -> Void = { [weak viewModel] in
+            viewModel?.searchFieldPresentation = .init(
+                id: field.id,
+                stepId: viewModel?.claimIntent.currentStep.id ?? "",
+                title: field.title,
+                suggestedQuery: fieldViewModel.lastSearchQuery,
+                modalTitle: field.searchData?.modalTitle ?? "",
+                modalSubtitle: field.searchData?.modalSubtitle ?? ""
+            )
+        }
+        if let selectedItem = fieldViewModel.selectedSearchItem {
+            SingleSelectValueView(item: selectedItem.displayValue, onTap: presentSearch)
+                .sectionContainerStyle(.opaque)
+                .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverChangeValue)
+        } else {
+            DropdownView(
+                value: "",
+                placeHolder: field.title,
+                error: $fieldViewModel.error,
+                onTap: presentSearch
+            )
+        }
+    }
+
     private var binaryField: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(field.title)
@@ -241,6 +303,8 @@ struct FormFieldView: View {
                 .accessibilityValue(isSelected ? L10n.voiceoverOptionSelected : "")
                 .accessibilityHint(L10n.voiceoverDoubleClickTo)
             }
+            .tagFlow(.horizontal)
+            .padding(.vertical, .padding4)
             if let error = fieldViewModel.error {
                 HStack {
                     hText(error, style: .label)
@@ -260,9 +324,9 @@ struct SubmitClaimFormResultView: View {
             let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)
             if allValuesAreSkipped {
                 let item = SubmitClaimFormStep.ResultDisplayItem(
+                    skipped: true,
                     key: L10n.claimChatSkippedStep,
-                    value: L10n.claimChatSkippedStep,
-                    skipped: true
+                    type: .text(value: L10n.claimChatSkippedStep)
                 )
                 fieldFor(item)
             } else {
@@ -271,14 +335,30 @@ struct SubmitClaimFormResultView: View {
                 }
             }
         }
+        .padding(.leading, .padding48)
     }
 
+    @ViewBuilder
     private func fieldFor(_ item: SubmitClaimFormStep.ResultDisplayItem) -> some View {
-        hText(item.value)
-            .foregroundColor(fieldTextColor(for: item))
-            .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-            .hFieldSize(.capsuleShape)
-            .accessibilityLabel(item.value.getAccessibilityLabelDate)
+        switch item.type {
+        case let .text(value):
+            hText(value)
+                .foregroundColor(fieldTextColor(for: item))
+                .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
+                .hFieldSize(.capsuleShape)
+                .accessibilityLabel(value.getAccessibilityLabelDate)
+        case let .searchResult(value):
+            SingleSelectValueView(item: value.displayValue, onTap: nil)
+                .hWithoutHorizontalPadding(.section)
+                .hFieldSize(.small)
+                .sectionContainerStyle(.transparent)
+                .background {
+                    Color.clear
+                        .hPillStyle(color: .grey, colorLevel: .two)
+                        .hFieldSize(.extraLarge)
+                        .accessibilityHidden(true)
+                }
+        }
     }
 
     @hColorBuilder

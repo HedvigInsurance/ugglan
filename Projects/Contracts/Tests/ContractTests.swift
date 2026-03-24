@@ -43,6 +43,7 @@ final class ContractsTests: XCTestCase {
                     terminationDate: nil,
                     supportsAddressChange: true,
                     supportsCoInsured: true,
+                    supportsCoOwners: false,
                     supportsTravelCertificate: true,
                     supportsChangeTier: true,
                     upcomingChangedAgreement: nil,
@@ -51,7 +52,8 @@ final class ContractsTests: XCTestCase {
                     lastName: "last",
                     ssn: nil,
                     typeOfContract: .seHouse,
-                    coInsured: []
+                    coInsured: [],
+                    coOwners: [],
                 )
             ],
             pendingContracts: [],

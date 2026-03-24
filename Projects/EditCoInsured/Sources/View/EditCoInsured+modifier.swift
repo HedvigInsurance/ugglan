@@ -17,12 +17,13 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                transitionType: .detent(style: [.height])
+                presentationStyle: .detent(style: [.height])
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
-                if contractsSupportingCoInsured.count > 1 {
+                if contractsSupportingCoInsured.count > 1, let stakeHolderType = vm.stakeHolderType {
                     EditCoInsuredSelectInsuranceNavigation(
-                        configs: contractsSupportingCoInsured
+                        configs: contractsSupportingCoInsured,
+                        stakeHolderType: stakeHolderType,
                     )
                     .environmentObject(vm)
                 } else {
@@ -36,7 +37,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelMissingAlert,
-                transitionType: .detent(style: [.height])
+                presentationStyle: .detent(style: [.height])
             ) { config in
                 getMissingCoInsuredAlertView(
                     missingContractConfig: config
@@ -73,7 +74,7 @@ struct EditCoInsured: ViewModifier {
     }
 
     func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
+        missingContractConfig: StakeHoldersConfig
     ) -> some View {
         EditCoInsuredAlertNavigation(
             config: missingContractConfig

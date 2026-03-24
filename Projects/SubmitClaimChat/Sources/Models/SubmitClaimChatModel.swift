@@ -29,6 +29,48 @@ struct SingleSelectValue: Hashable {
     let title: String
     let subtitle: String?
     let value: String
+    let imageUrl: String?
+    let isCustomSearchEntry: Bool
+
+    init(title: String, subtitle: String?, value: String, imageUrl: String? = nil, isCustomSearchEntry: Bool = false) {
+        self.title = title
+        self.subtitle = subtitle
+        self.value = value
+        self.imageUrl = imageUrl
+        self.isCustomSearchEntry = isCustomSearchEntry
+    }
+
+    var displayValue: SingleSelectValue {
+        if isCustomSearchEntry {
+            return SingleSelectValue(
+                title: title,
+                subtitle: L10n.claimChatCustomItemSubtitle,
+                value: value,
+                imageUrl: imageUrl,
+                isCustomSearchEntry: isCustomSearchEntry
+            )
+        }
+        return self
+    }
+}
+
+struct FormFieldSearchModel: Equatable, Identifiable {
+    let id: String
+    let stepId: String
+    let title: String
+    let suggestedQuery: String?
+    let modalTitle: String
+    let modalSubtitle: String
+}
+
+public struct FormFieldSearchResult {
+    let options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption]
+    let suggestedQuery: String?
+
+    public init(options: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption], suggestedQuery: String?) {
+        self.options = options
+        self.suggestedQuery = suggestedQuery
+    }
 }
 
 enum SubmitClaimChatMessageSender {
@@ -117,6 +159,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         let minValue: String?
         let options: [ClaimIntentStepContentFormFieldOption]
         let suffix: String?
+        let searchData: SearchData?
         let title: String
         let type: ClaimIntentStepContentFormFieldType
 
@@ -128,6 +171,7 @@ public struct ClaimIntentStepContentForm: Sendable {
             minValue: String?,
             options: [ClaimIntentStepContentFormFieldOption],
             suffix: String?,
+            searchData: SearchData?,
             title: String,
             type: ClaimIntentStepContentFormFieldType
         ) {
@@ -138,8 +182,21 @@ public struct ClaimIntentStepContentForm: Sendable {
             self.minValue = minValue
             self.options = options
             self.suffix = suffix
+            self.searchData = searchData
             self.title = title
             self.type = type
+        }
+    }
+
+    public struct SearchData: Sendable {
+        let suggestedQuery: String?
+        let modalTitle: String
+        let modalSubtitle: String
+
+        public init(suggestedQuery: String?, modalTitle: String, modalSubtitle: String) {
+            self.suggestedQuery = suggestedQuery
+            self.modalTitle = modalTitle
+            self.modalSubtitle = modalSubtitle
         }
     }
 
@@ -147,11 +204,21 @@ public struct ClaimIntentStepContentForm: Sendable {
         let title: String
         let subtitle: String?
         let value: String
+        let imageUrl: String?
+        let isCustomSearchEntry: Bool
 
-        public init(title: String, subtitle: String?, value: String) {
+        public init(
+            title: String,
+            subtitle: String?,
+            value: String,
+            imageUrl: String? = nil,
+            isCustomSearchEntry: Bool = false
+        ) {
             self.title = title
             self.subtitle = subtitle
             self.value = value
+            self.imageUrl = imageUrl
+            self.isCustomSearchEntry = isCustomSearchEntry
         }
     }
 
@@ -163,6 +230,7 @@ public struct ClaimIntentStepContentForm: Sendable {
         case singleSelect
         case multiSelect
         case binary
+        case search
     }
 }
 

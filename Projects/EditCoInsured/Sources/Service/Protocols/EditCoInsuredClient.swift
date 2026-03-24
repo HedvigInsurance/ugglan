@@ -6,7 +6,11 @@ import hCoreUI
 public protocol EditCoInsuredClient {
     func sendMidtermChangeIntentCommit(commitId: String) async throws
     func getPersonalInformation(SSN: String) async throws -> PersonalData?
-    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent
+    func sendIntent(
+        contractId: String,
+        coInsured: [StakeHolder],
+        stakeHolderType: StakeHolderType
+    ) async throws -> Intent
     func fetchContracts() async throws -> [Contract]
 }
 

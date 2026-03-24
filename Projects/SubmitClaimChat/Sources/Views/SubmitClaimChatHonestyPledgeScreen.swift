@@ -6,8 +6,7 @@ import hCoreUI
 struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: NavigationRouter
     @State private var hasAgreedToHonestyPledge = false
-    let onConfirm: () -> Void
-    let onConfirmOldFlow: (() -> Void)?
+    let onConfirm: (_ withAnimations: Bool) -> Void
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -30,9 +29,9 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 .sectionContainerStyle(.transparent)
                 hSection {
                     VStack(spacing: .padding8) {
-                        continueButton
+                        continueButtonWithAnimations()
                         if Environment.current == .staging {
-                            oldFlowButton
+                            continueButtonWithAnimations(false)
                         }
                         cancelButton
                     }
@@ -66,16 +65,17 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         .accessibilityElement(children: .combine)
     }
 
-    private var continueButton: some View {
-        hContinueButton {
-            onConfirm()
-        }
-        .disabled(!hasAgreedToHonestyPledge)
-    }
-
-    private var oldFlowButton: some View {
-        hButton(.large, .secondary, content: .init(title: "Start old flow")) {
-            onConfirmOldFlow?()
+    private func continueButtonWithAnimations(_ enabled: Bool = true) -> some View {
+        Group {
+            if enabled {
+                hContinueButton {
+                    onConfirm(enabled)
+                }
+            } else {
+                hButton(.large, .secondary, content: .init(title: "Without animations")) {
+                    onConfirm(enabled)
+                }
+            }
         }
         .disabled(!hasAgreedToHonestyPledge)
     }
@@ -90,6 +90,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen(onConfirm: {}, onConfirmOldFlow: nil)
+        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in })
     }
 }

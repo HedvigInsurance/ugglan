@@ -17,7 +17,6 @@ import Payment
 import PresentableStore
 import Profile
 import SafariServices
-import SubmitClaim
 import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -92,9 +91,7 @@ class PushNotificationHandler {
     }
 
     private func handleContactInfo() {
-        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-        viewModel?.selectedTab = 4
-        viewModel?.profileNavigationVm.pushToProfile()
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleChangeTierNotification(_ notification: Notification) {
@@ -259,7 +256,7 @@ class DeepLinkHandler {
         case .chat, .inbox:
             NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
         case .contactInfo:
-            handleDeeplinkContactInfo(url)
+            handleDeeplinkContactInfo()
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
@@ -273,17 +270,15 @@ class DeepLinkHandler {
 
         case .editCoInsured:
             handleEditCoInsured(url: url)
+        case .editCoOwners:
+            handleEditCoOwner(url: url)
         case .claimDetails:
             Task { [weak viewModel] in
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
             viewModel?.selectedTab = 0
-            if featureFlags.isNewClaimFlowEnabled {
-                viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-            } else {
-                viewModel?.homeNavigationVm.isSubmitClaimPresented = true
-            }
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
         }
@@ -402,32 +397,35 @@ class DeepLinkHandler {
         }
     }
 
-    private func handleDeeplinkContactInfo(_ url: URL) {
-        dismissAndSelectTab(4)
-        viewModel?.profileNavigationVm.pushToProfile()
+    private func handleDeeplinkContactInfo() {
+        viewModel?.isReviewContactInfoPresented = true
     }
 
     private func handleEditCoInsured(url: URL) {
+        handleEditStakeHolder(url: url, type: .coInsured)
+    }
+
+    private func handleEditCoOwner(url: URL) {
+        handleEditStakeHolder(url: url, type: .coOwner)
+    }
+
+    private func handleEditStakeHolder(url: URL, type: StakeHolderType) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
-                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+                let contractConfig: StakeHoldersConfig = .init(
+                    contract: contract,
+                    stakeHolderType: type,
+                    fromInfoCard: false
+                )
 
-                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                    viewModel.homeNavigationVm.editCoInsuredVm
-                        .start(
-                            fromContract: contractConfig,
-                            forMissingCoInsured: true
-                        )
-                } else {
-                    viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
-                }
+                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
             } else {
                 // select insurance
-                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                viewModel.homeNavigationVm.editCoInsuredVm.start(stakeHolderType: type)
             }
         }
     }
@@ -460,6 +458,9 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.Opaque.primary)
+        .onChange(of: vm.selectedTab) { newTab in
+            vm.contractsNavigationVm.isActiveTab = (newTab == 1)
+        }
         .handleLoggedInPresentations(with: vm)
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
@@ -478,6 +479,17 @@ struct LoggedInNavigation: View {
             .embededInNavigation(
                 tracking: "AskForPushNotifications"
             )
+        }
+        .detent(
+            presented: $vm.isReviewContactInfoPresented,
+            options: .constant(.alwaysOpenOnTop),
+        ) {
+            MyInfoView(presentationMode: .sheet)
+                .navigationTitle(L10n.missingContactInfoCardButton)
+                .embededInNavigation(
+                    options: [.largeNavigationBar],
+                    tracking: ProfileRouterType.myInfo
+                )
         }
     }
 
@@ -642,7 +654,6 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    @State var showOldSubmitClaimFlow = false
     var body: some View {
         hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
@@ -657,20 +668,9 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
-        .detent(
-            presented: $homeNavigationVm.isSubmitClaimPresented,
-            options: .constant(.withoutGrabber)
-        ) {
-            ClaimsMainNavigation()
-                .environmentObject(homeNavigationVm)
-        }
         .handleClaimFlow(
-            startInput: $homeNavigationVm.claimsAutomationStartInput,
-            showOldSubmitClaimFlow: $showOldSubmitClaimFlow
+            startInput: $homeNavigationVm.claimsAutomationStartInput
         )
-        .modally(presented: $showOldSubmitClaimFlow) {
-            SubmitClaimNavigation()
-        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {
@@ -690,7 +690,7 @@ struct HomeTab: View {
                         with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
                     )
                 case .deflect:
-                    let model: FlowClaimDeflectStepModel = {
+                    let model: ClaimIntentOutcomeDeflection = {
                         let partners: [Partner] = {
                             let store: HomeStore = globalPresentableStoreContainer.get()
                             let quickActions = store.state.quickActions
@@ -715,7 +715,52 @@ struct HomeTab: View {
                             }
                             return []
                         }()
-                        return FlowClaimDeflectStepModel.emergency(with: partners)
+                        return ClaimIntentOutcomeDeflection(
+                            title: nil,
+                            content: .init(
+                                title: L10n.submitClaimEmergencyInsuranceCoverTitle,
+                                description: L10n.submitClaimEmergencyInsuranceCoverLabel
+                            ),
+                            partners: partners,
+                            infoText: nil,
+                            warningText: L10n.submitClaimEmergencyInfoLabel,
+                            questions: [
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq1Title,
+                                    answer: L10n.submitClaimEmergencyFaq1Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq2Title,
+                                    answer: L10n.submitClaimEmergencyFaq2Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq3Title,
+                                    answer: L10n.submitClaimEmergencyFaq3Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq4Title,
+                                    answer: L10n.submitClaimEmergencyFaq4Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq5Title,
+                                    answer: L10n.submitClaimEmergencyFaq5Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq6Title,
+                                    answer: L10n.submitClaimEmergencyFaq6Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq7Title,
+                                    answer: L10n.submitClaimEmergencyFaq7Label
+                                ),
+                                .init(
+                                    question: L10n.submitClaimEmergencyFaq8Title,
+                                    answer: L10n.submitClaimEmergencyFaq8Label
+                                ),
+                            ],
+                            linkOnlyPartners: [],
+                            buttonTitle: L10n.commonClaimEmergencyTitle
+                        )
                     }()
 
                     SubmitClaimDeflectScreen(
@@ -727,7 +772,7 @@ struct HomeTab: View {
                             )
                         }
                     )
-                    .navigationTitle(model.id.title)
+                    .navigationTitle(L10n.commonClaimEmergencyTitle)
                     .withDismissButton()
                     .embededInNavigation(
                         options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -742,7 +787,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -754,28 +799,28 @@ struct HomeTab: View {
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
-            transitionType: .center,
+            presentationStyle: .center,
             options: .constant([.alwaysOpenOnTop])
         ) { crossSell in
             CrossSellingCentered(crossSell: crossSell)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { crossSells in
             CrossSellingModal(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
-            transitionType: .detent(style: [.height]),
+            presentationStyle: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { crossSells in
             CrossSellingDetent(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            transitionType: .detent(style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -867,6 +912,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
+    @Published var isReviewContactInfoPresented = false
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -881,10 +927,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         pushNotificationHandler.viewModel = self
         deepLinkHandler.viewModel = self
         setupObservers()
-        homeNavigationVm.pushToProfile = { [weak self] in
-            self?.selectedTab = 4
-            self?.profileNavigationVm.pushToProfile()
-        }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -959,6 +1001,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openChangeTier,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openReviewContactInfo),
+            name: .openReviewContactInfo,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -989,6 +1038,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
             )
         }
+    }
+
+    @objc func openReviewContactInfo() {
+        isReviewContactInfoPresented = true
     }
 
     @objc func tierChanged() {

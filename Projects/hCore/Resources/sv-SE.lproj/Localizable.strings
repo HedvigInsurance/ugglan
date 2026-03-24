@@ -4,6 +4,7 @@
 /* Used as content description for the "X" button which appears in the text fields which allows the member to clear the textfield's input */
 "A11Y_CLEAR_FIELD" = "Rensa fält";
 "A11Y_CLOSE" = "Stäng";
+"A11Y_OF" = "av";
 "A11Y_OPTION_NOT_SELECTED" = "Alternativet är inte valt";
 /* Pause action for a video, an audio recording etc. */
 "A11Y_PAUSE" = "Pausa";
@@ -217,6 +218,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Beskriv i text";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
+"CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Anpassat objekt";
 "CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Ändra svar";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
@@ -257,7 +259,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
 "CLAIM_CHAT_UNKNOWN_STEP" = "";
 "CLAIM_CHAT_USE_AUDIO" = "Spela in med röst";
-"CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv med text";
+"CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv i text";
 "CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Händelsedatum";
 "CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Skicka in din skadeanmälan";
 "CLAIM_TRIAGING_ABOUT_TITILE" = "Vilken försäkring gäller det?";
@@ -273,9 +275,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Dokument";
 "CONFIRM_CHANGES_SUBTITLE" = "Notera att dina ändringar börjar gälla från och med %@.";
 "CONFIRM_CHANGES_TITLE" = "Godkänn ändringar";
+"CONTACT_INFO_CHANGES_SAVED" = "Ändringar sparade";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Giltigt till %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Giltigt till imorgon";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Lägg till delägare";
+"CONTRACT_ADD_ADDITIONAL_COOWNER_INFO" = "Du kan lägga till fler delägare för ditt fritidshus";
 "CONTRACT_ADD_COINSURED" = "Lägg till medförsäkrad";
 "CONTRACT_ADD_COINSURED_ACTIVE_FROM" = "Aktiveras %1$@";
 "CONTRACT_ADD_COINSURED_ACTIVE_UNTIL" = "Aktiv till %1$@";
@@ -287,7 +291,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Din försäkring kommer att uppdateras den %1$@.";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Medförsäkrade uppdaterade";
 "CONTRACT_ADD_CONISURED_INFO" = "Lägg till info om medförsäkrad";
-"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Du behöver lägga till information för alla delägare för att gå vidare.";
+"CONTRACT_ADD_COOWNER_REVIEW_INFO" = "Du behöver lägga till information om delägare för att gå vidare";
 "CONTRACT_ADD_COOWNER_UPDATED_TITLE" = "Delägarinformation uppdaterad";
 "CONTRACT_BIRTH_DATE" = "Födelsedatum";
 "CONTRACT_CHANGE_INFORMATION_TITLE" = "Vad vill du ändra?";
@@ -373,7 +377,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DURATION_TITLE" = "Giltighetstid";
 "Direct_Debit_Connected" = "%1$@/månad - Betalas via autogiro";
 "Direct_Debit_Not_Connected" = "%1$@/mnd - Betalsätt saknas";
-"EDIT_COOWNER_SUBTITLE" = "Ändra information om delägare";
+"EDIT_COOWNER_SUBTITLE" = "Ändra delägare för fritidshus";
 "EDIT_COOWNER_TITLE" = "Ändra delägare";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "E-post";
@@ -495,8 +499,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Din försäkring täcker inte";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Vi försöker reparera i första hand, men om din %1$@ skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$li%%** av inköpspriset **%3$@**, alltså **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Värdering";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "";
-"KIVRA_PAYMENT_INFO" = "";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.";
+"KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
 "LETTER_TO_EIR_SUBJECT" = "Fråga angående skadeanmälan - Fordon reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
@@ -552,7 +556,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_EXPIRED_DATE" = "Utgått %1$@";
 "PAYMENTS_HISTORY_INFO" = "Skicka ett meddelande till oss här i appen om du behöver mer info om betalningar äldre än 12 månader.";
 "PAYMENTS_INVITE_FRIENDS" = "Dela din kod";
+"PAYMENTS_INVOICE" = "Faktura";
 "PAYMENTS_IN_PROGRESS" = "Betalningen behandlas. Notera att det kan ta 1 till 3 bankdagar innan beloppet dras från ditt konto";
+"PAYMENTS_IN_PROGRESS_KIVRA" = "Du hittar din faktura i Kivra-appen";
 "PAYMENTS_MANDATE" = "Autogiromandat";
 "PAYMENTS_MISSED_PAYMENT" = "Din betalning för perioden %1$@ – %2$@ gick inte igenom. Beloppet har lagts till i denna betalning.";
 "PAYMENTS_NO_HISTORY_DATA" = "Du har ingen betalningshistorik";

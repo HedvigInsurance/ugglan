@@ -70,7 +70,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var router = NavigationRouter()
 
-    @Published public var isSubmitClaimPresented = false
     @Published public var claimsAutomationStartInput: StartClaimInput?
     @Published public var isHelpCenterPresented = false
 
@@ -92,7 +91,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-    public var pushToProfile: (() -> Void)?
 }

@@ -210,7 +210,11 @@ struct SubmitClaimFileUploadResultView: View {
     @State private var fileModel: FileUrlModel?
     var body: some View {
         VStack(alignment: .trailing) {
-            CardStack(viewModel.files) { file in
+            CardStack(
+                viewModel.files,
+                accessibilityLabel: "\(viewModel.files.count) \(L10n.voiceoverChatFiles)",
+                elementAccessibilityLabel: { $0.name }
+            ) { file in
                 FileView(file: file) {
                     switch file.source {
                     case let .localFile(results):
@@ -239,7 +243,7 @@ struct SubmitClaimFileUploadResultView: View {
         .sectionContainerStyle(.transparent)
         .detent(
             item: $fileModel,
-            transitionType: .detent(style: [.large])
+            presentationStyle: .detent(style: [.large])
         ) { model in
             DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }

@@ -53,21 +53,27 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
     }
 
-    func sendIntent(contractId: String, coInsured: [CoInsuredModel]) async throws -> Intent {
-        let coInsuredList = coInsured.map { coIn in
-            OctopusGraphQL.CoInsuredInput(
-                firstName: GraphQLNullable(optionalValue: coIn.firstName),
-                lastName: GraphQLNullable(optionalValue: coIn.lastName),
-                ssn: GraphQLNullable(optionalValue: coIn.formattedSSN),
-                birthdate: GraphQLNullable(optionalValue: coIn.birthDate?.calculate10DigitBirthDate)
-            )
+    func sendIntent(
+        contractId: String,
+        coInsured: [StakeHolder],
+        stakeHolderType: StakeHolderType
+    ) async throws -> Intent {
+        let coInsuredInputs: GraphQLNullable<[OctopusGraphQL.CoInsuredInput]>
+        let coOwnersInputs: GraphQLNullable<[OctopusGraphQL.CoOwnersInput]>
+
+        switch stakeHolderType {
+        case .coInsured:
+            coInsuredInputs = .init(optionalValue: coInsured.map(\.asGqlCoInsured))
+            coOwnersInputs = nil
+
+        case .coOwner:
+            coInsuredInputs = nil
+            coOwnersInputs = .init(optionalValue: coInsured.map(\.asGqlCoOwner))
         }
-        let coinsuredInput = OctopusGraphQL.MidtermChangeIntentCreateInput(
-            coInsuredInputs: GraphQLNullable(optionalValue: coInsuredList)
-        )
+
         let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
             contractId: contractId,
-            input: coinsuredInput
+            input: .init(coInsuredInputs: coInsuredInputs, coOwnersInputs: coOwnersInputs)
         )
         let data = try await octopus.client.mutation(mutation: mutation)?.midtermChangeIntentCreate
         if let userError = data?.userError {
@@ -104,6 +110,26 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
 }
 
 @MainActor
+extension StakeHolder {
+    var asGqlCoInsured: OctopusGraphQL.CoInsuredInput {
+        .init(
+            firstName: GraphQLNullable(optionalValue: firstName),
+            lastName: GraphQLNullable(optionalValue: lastName),
+            ssn: GraphQLNullable(optionalValue: formattedSSN),
+            birthdate: GraphQLNullable(optionalValue: birthDate?.calculate10DigitBirthDate)
+        )
+    }
+    var asGqlCoOwner: OctopusGraphQL.CoOwnersInput {
+        .init(
+            firstName: GraphQLNullable(optionalValue: firstName),
+            lastName: GraphQLNullable(optionalValue: lastName),
+            ssn: GraphQLNullable(optionalValue: formattedSSN),
+            birthdate: GraphQLNullable(optionalValue: birthDate?.calculate10DigitBirthDate)
+        )
+    }
+}
+
+@MainActor
 extension Contract {
     public init(
         contract: OctopusGraphQL.ContractFragment,
@@ -115,10 +141,12 @@ extension Contract {
             id: contract.id,
             exposureDisplayName: contract.exposureDisplayName,
             supportsCoInsured: contract.supportsCoInsured,
+            supportsCoOwners: contract.supportsCoOwners,
             upcomingChangedAgreement: .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             currentAgreement: .init(agreement: contract.currentAgreement.fragments.agreementFragment),
             terminationDate: contract.terminationDate,
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
+            coOwners: contract.coOwners?.map { .init(data: $0.fragments.coOwnerFragment) } ?? [],
             firstName: firstName,
             lastName: lastName,
             ssn: ssn
@@ -149,10 +177,20 @@ extension EditCoInsured.ProductVariant {
 }
 
 @MainActor
-extension CoInsuredModel {
-    public init(
-        data: OctopusGraphQL.CoInsuredFragment
-    ) {
+extension StakeHolder {
+    public init(data: OctopusGraphQL.CoInsuredFragment) {
+        self.init(
+            firstName: data.firstName,
+            lastName: data.lastName,
+            SSN: data.ssn,
+            birthDate: data.birthdate,
+            needsMissingInfo: data.hasMissingInfo,
+            activatesOn: data.activatesOn,
+            terminatesOn: data.terminatesOn
+        )
+    }
+
+    public init(data: OctopusGraphQL.CoOwnerFragment) {
         self.init(
             firstName: data.firstName,
             lastName: data.lastName,

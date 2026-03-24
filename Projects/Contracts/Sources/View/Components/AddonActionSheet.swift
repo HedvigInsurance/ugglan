@@ -146,6 +146,7 @@ extension Contract {
         terminationDate: nil,
         supportsAddressChange: false,
         supportsCoInsured: false,
+        supportsCoOwners: false,
         supportsTravelCertificate: false,
         supportsChangeTier: false,
         upcomingChangedAgreement: nil,
@@ -154,7 +155,8 @@ extension Contract {
         lastName: "User",
         ssn: nil,
         typeOfContract: .seHouse,
-        coInsured: []
+        coInsured: [],
+        coOwners: [],
     )
 }
 

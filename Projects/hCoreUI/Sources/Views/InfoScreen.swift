@@ -2,7 +2,7 @@ import SwiftUI
 
 extension View {
     public func showInfoScreen(text: Binding<String?>, dismissButtonTitle: String) -> some View {
-        detent(item: text, transitionType: .detent(style: [.height])) { text in
+        detent(item: text, presentationStyle: .detent(style: [.height])) { text in
             InfoScreenWrapper(text: text, dismissButtonTitle: dismissButtonTitle)
         }
     }

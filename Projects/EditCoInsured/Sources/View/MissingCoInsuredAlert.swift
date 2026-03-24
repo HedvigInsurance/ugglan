@@ -5,9 +5,9 @@ import hCoreUI
 public struct MissingCoInsuredAlert: View {
     @EnvironmentObject var router: NavigationRouter
     private var onButtonAction: () -> Void
-    let config: InsuredPeopleConfig
+    let config: StakeHoldersConfig
     public init(
-        config: InsuredPeopleConfig,
+        config: StakeHoldersConfig,
         onButtonAction: @escaping () -> Void
     ) {
         self.config = config
@@ -17,14 +17,14 @@ public struct MissingCoInsuredAlert: View {
     public var body: some View {
         GenericErrorView(
             title: config.contractDisplayName,
-            description: L10n.contractCoinsuredMissingInformationLabel,
+            description: config.stakeHolderType.missingInformationLabel,
             formPosition: .compact
         )
         .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom:
                     .init(
-                        buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                        buttonTitle: config.stakeHolderType.missingAddInfo,
                         buttonAction: {
                             onButtonAction()
                         }
@@ -45,19 +45,20 @@ public struct MissingCoInsuredAlert: View {
     MissingCoInsuredAlert(
         config: .init(
             id: UUID().uuidString,
-            contractCoInsured: [],
+            stakeHolders: [],
             contractId: "id",
             activeFrom: nil,
-            numberOfMissingCoInsured: 1,
-            numberOfMissingCoInsuredWithoutTermination: 1,
+            numberOfMissingStakeHolders: 1,
+            numberOfMissingStakeHoldersWithoutTermination: 1,
             displayName: "Display name",
             exposureDisplayName: nil,
-            preSelectedCoInsuredList: [],
+            preSelectedStakeHolders: [],
             contractDisplayName: "Contract display name",
             holderFirstName: "Fist name",
             holderLastName: "Last name",
             holderSSN: nil,
-            fromInfoCard: false
+            fromInfoCard: false,
+            stakeHolderType: .coInsured
         ),
         onButtonAction: {}
     )

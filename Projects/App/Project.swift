@@ -98,7 +98,6 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Contracts", path: .relativeToRoot("Projects/Contracts")),
         .project(target: "Home", path: .relativeToRoot("Projects/Home")),
         .project(target: "Claims", path: .relativeToRoot("Projects/Claims")),
-        .project(target: "SubmitClaim", path: .relativeToRoot("Projects/SubmitClaim")),
         .project(target: "SubmitClaimChat", path: .relativeToRoot("Projects/SubmitClaimChat")),
         .project(target: "Chat", path: .relativeToRoot("Projects/Chat")),
         .project(target: "Market", path: .relativeToRoot("Projects/Market")),

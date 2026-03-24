@@ -91,7 +91,7 @@ public struct hDatePickerField: View {
         .disabled(!isEnabled)
         .detent(
             item: $datePickerNavigationModel.isDatePickerPresented,
-            transitionType: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height])
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
                 .embededInNavigation(options: .largeNavigationBar, tracking: self)

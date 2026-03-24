@@ -6,11 +6,11 @@ public struct hSaveButton: View {
     let type: hButtonConfigurationType
 
     public init(
+        _ type: hButtonConfigurationType = .ghost,
         _ action: @escaping () -> Void,
-        type: hButtonConfigurationType? = .ghost
     ) {
         self.action = action
-        self.type = type ?? .ghost
+        self.type = type
     }
 
     public var body: some View {
