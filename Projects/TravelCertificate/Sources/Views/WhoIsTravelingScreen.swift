@@ -1,5 +1,5 @@
 import Contracts
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -9,7 +9,7 @@ import hCoreUI
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
-    let itemPickerConfig: ItemConfig<StakeHolder>
+    let itemPickerConfig: ItemConfig<Stakeholder>
     init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
         self.vm = vm
         self.travelCertificateNavigationVm = travelCertificateNavigationVm
@@ -44,7 +44,7 @@ struct WhoIsTravelingScreen: View {
                             buttonAction: {
                                 vm.router.dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    travelCertificateNavigationVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
+                                    travelCertificateNavigationVm.editStakeholdersVm.start(stakeholderType: .coInsured)
                                 }
                             }
                         )
@@ -55,7 +55,7 @@ struct WhoIsTravelingScreen: View {
     }
 
     var body: some View {
-        ItemPickerScreen<StakeHolder>(
+        ItemPickerScreen<Stakeholder>(
             config: itemPickerConfig
         )
         .hFormContentPosition(.bottom)
@@ -67,7 +67,7 @@ struct WhoIsTravelingScreen: View {
 @MainActor
 class WhoIsTravelingViewModel: ObservableObject {
     let specification: TravelInsuranceContractSpecification
-    let coInsuredModelData: [StakeHolder]
+    let coInsuredModelData: [Stakeholder]
     @Published var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
     @Published var hasMissingCoInsuredData = false
     var isPolicyHolderIncluded = true
@@ -79,13 +79,13 @@ class WhoIsTravelingViewModel: ObservableObject {
         self.router = router
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contract = contractStore.state.contractForId(specification.contractId)
-        let insuranceHolder = StakeHolder(
+        let insuranceHolder = Stakeholder(
             firstName: contract?.firstName,
             lastName: contract?.lastName,
             SSN: contract?.ssn,
             needsMissingInfo: false
         )
-        var coInsured: [StakeHolder] = []
+        var coInsured: [Stakeholder] = []
         coInsured.append(insuranceHolder)
         coInsured.append(contentsOf: contract?.coInsured.filter { !$0.hasMissingInfo } ?? [])
         coInsuredModelData = coInsured

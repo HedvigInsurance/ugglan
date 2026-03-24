@@ -1,9 +1,9 @@
-import EditCoInsured
+import EditStakeholders
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CoInsuredInfoHomeView: View {
+public struct StakeholderInfoHomeView: View {
     let infoText: String
     let onTapAction: () -> Void
 
