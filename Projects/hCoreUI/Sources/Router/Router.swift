@@ -23,7 +23,9 @@ extension String: TrackingViewNameProtocol {
 
 @MainActor
 public class Router: ObservableObject {
-    var routes = [AnyHashable]()
+    var routes = [AnyHashable]() {
+        didSet { count = routes.count }
+    }
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
     fileprivate var onPush:
         (
@@ -34,6 +36,8 @@ public class Router: ObservableObject {
     fileprivate var onPopToRoot: (() -> Void)?
     fileprivate var onPopAtIndex: ((Int) -> Void)?
     fileprivate var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
+
+    @Published public private(set) var count: Int = 0
 
     public init() {}
 
@@ -149,7 +153,33 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         self.options = options
     }
 
-    public func makeUIViewController(context _: Context) -> UINavigationController {
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(router: router)
+    }
+
+    public class Coordinator: NSObject, UINavigationControllerDelegate {
+        let router: Router
+
+        init(router: Router) {
+            self.router = router
+        }
+
+        public func navigationController(
+            _ navigationController: UINavigationController,
+            didShow viewController: UIViewController,
+            animated: Bool
+        ) {
+            let vcCount = navigationController.viewControllers.count
+            let routeCount = router.routes.count
+            // viewControllers includes the root (not in routes), so routes should be vcCount - 1
+            let expectedRoutes = vcCount - 1
+            if routeCount > expectedRoutes {
+                router.routes.removeLast(routeCount - expectedRoutes)
+            }
+        }
+    }
+
+    public func makeUIViewController(context: Context) -> UINavigationController {
         let navigation: hNavigationBaseController = {
             let extendedNavigationWidth = options.contains(.extendedNavigationWidth)
             if options.contains(.largeNavigationBar) {
@@ -166,6 +196,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         if isLiquidGlassEnabled {
             controller.view.backgroundColor = .clear
         }
+        navigation.delegate = context.coordinator
         navigation.setViewControllers(
             [controller],
             animated: false
@@ -280,7 +311,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         return navigation
     }
 
-    public func updateUIViewController(_: UINavigationController, context _: Context) {}
+    public func updateUIViewController(_ uiViewController: UINavigationController, context _: Context) {}
     public typealias UIViewControllerType = UINavigationController
 }
 

@@ -125,7 +125,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     // MARK: - Progress
     @Published var progress: Float? = 0
-    var previousProgress: Float?
+    private var routeCountCancellable: AnyCancellable?
+    private var hideProgress = false
 
     var extraCoverage: [ExtraCoverageItem] {
         guard let action = surveyData?.action else { return [] }
@@ -163,6 +164,12 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             self.initialStep = .router(action: .selectInsurance(configs: configs))
             self.redirectHandler.viewModel = self
         }
+
+        routeCountCancellable = router.$count
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateProgress()
+            }
     }
 
     // MARK: - Survey
@@ -174,7 +181,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             do {
                 let data = try await terminateContractsService.getTerminationSurvey(contractId: config.contractId)
                 self.surveyData = data
-                self.updateProgress(for: .survey)
                 if hasSelectInsuranceStep {
                     router.push(TerminationFlowRouterActions.survey)
                 }
@@ -193,11 +199,9 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
         switch action {
         case .terminateWithDate:
-            updateProgress(for: .datePicker)
             router.push(TerminationFlowRouterActions.datePicker)
         case .deleteInsurance:
             fetchNotification(for: Date())
-            updateProgress(for: .confirmation)
             router.push(TerminationFlowRouterActions.confirmation)
         }
     }
@@ -251,10 +255,10 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
                 switch result {
                 case .success:
-                    updateProgress(for: .success)
+                    hideProgress = true
                     router.push(TerminationFlowFinalRouterActions.success)
                 case let .userError(message):
-                    updateProgress(for: .success)
+                    hideProgress = true
                     router.push(TerminationFlowFinalRouterActions.failure(message: message))
                 }
             } catch {
@@ -294,27 +298,15 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     // MARK: - Progress Calculation
 
-    private enum FlowStep {
-        case selectInsurance
-        case survey
-        case datePicker
-        case confirmation
-        case success
+    private var totalSteps: Int {
+        hasSelectInsuranceStep ? 4 : 3
     }
 
-    private func updateProgress(for step: FlowStep) {
-        previousProgress = progress
-        switch step {
-        case .selectInsurance:
-            progress = hasSelectInsuranceStep ? 0.0 : nil
-        case .survey:
-            progress = hasSelectInsuranceStep ? 0.25 : 0.0
-        case .datePicker:
-            progress = hasSelectInsuranceStep ? 0.625 : 0.5
-        case .confirmation:
-            progress = hasSelectInsuranceStep ? 0.8125 : 0.75
-        case .success:
+    private func updateProgress() {
+        if hideProgress {
             progress = nil
+        } else {
+            progress = min(Float(router.count) / Float(totalSteps), 1.0)
         }
     }
 }
@@ -347,7 +339,6 @@ struct TerminationFlowNavigation: View {
                     title: L10n.terminationFlowCancelInfoTitle,
                     description: L10n.terminationFlowCancelInfoText
                 )
-                .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                 }
@@ -366,7 +357,6 @@ struct TerminationFlowNavigation: View {
                             openDeflectScreen(suggestion: suggestion)
                         }
                     }
-                    .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 }
                 .routerDestination(
                     for: TerminationFlowFinalRouterActions.self,
@@ -383,7 +373,6 @@ struct TerminationFlowNavigation: View {
                             openTerminationFailScreen(message: message)
                         }
                     }
-                    .resetProgressOnDismiss(to: vm?.previousProgress, for: $vm.progress)
                 }
         }
         .modifier(ProgressBarView(progress: $vm.progress))

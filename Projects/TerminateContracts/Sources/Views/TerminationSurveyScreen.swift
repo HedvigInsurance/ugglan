@@ -74,12 +74,6 @@ struct TerminationSurveyScreen: View {
         guard let selectedOption = vm.selectedOption else { return }
 
         if !selectedOption.subOptions.isEmpty {
-            let currentProgress = terminationFlowNavigationViewModel.progress ?? 0
-            terminationFlowNavigationViewModel.previousProgress = terminationFlowNavigationViewModel.progress
-
-            let increment: Float = terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.075 : 0.1
-            terminationFlowNavigationViewModel.progress = currentProgress + increment
-
             terminationFlowNavigationViewModel.router.push(selectedOption.subOptions)
         } else if let suggestion = selectedOption.suggestion, suggestion.isDeflect || suggestion.isBlocking {
             terminationFlowNavigationViewModel.handleSuggestion(suggestion)
