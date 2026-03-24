@@ -8,15 +8,15 @@ struct StakeholdersScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: StakeholderFieldType?
 
-    private var listToDisplay: [StakeholderItem] {
-        vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+    private var displayItems: [StakeholderItem] {
+        vm.items(for: type, activationDate: intentViewModel.intent.activationDate)
     }
 
     var body: some View {
         hForm {
             VStack(spacing: 0) {
-                contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || vm.hasContentBelow)
-                stakeholderSection(list: listToDisplay)
+                contractOwnerField(hasContentBelow: !displayItems.isEmpty || vm.hasContentBelow)
+                stakeholderSection(list: displayItems)
                 buttonSection
             }
             .hWithoutHorizontalPadding([.section])

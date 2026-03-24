@@ -149,7 +149,7 @@ class StakeholdersViewModel: ObservableObject {
         addStakeholder(stakeholderModel)
     }
 
-    func listToDisplay(type: StakeholderFieldType?, activationDate: String?) -> [StakeholderItem] {
+    func items(for type: StakeholderFieldType?, activationDate: String?) -> [StakeholderItem] {
         if type == .delete, nbOfMissingStakeholdersExcludingDeleted > 0 {
             return stakeholdersToDelete
         } else if type != .delete {

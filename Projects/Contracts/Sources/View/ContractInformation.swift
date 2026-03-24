@@ -136,7 +136,7 @@ struct ContractInformationView: View {
                 }
 
                 let hasContentBelow =
-                    !vm.getListToDisplay(contract: contract).isEmpty || nbOfMissingStakeholders > 0
+                    !vm.stakeholderItems(for: contract).isEmpty || nbOfMissingStakeholders > 0
                 ContractOwnerField(
                     enabled: true,
                     hasContentBelow: hasContentBelow,
@@ -146,7 +146,7 @@ struct ContractInformationView: View {
                 .padding(.top, .padding16)
             }
 
-            hSection(vm.getListToDisplay(contract: contract)) { item in
+            hSection(vm.stakeholderItems(for: contract)) { item in
                 hRow {
                     if item.stakeholder.hasMissingInfo {
                         StakeholderField(
@@ -349,9 +349,9 @@ struct ContractInformationView: View {
 
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
-    func getListToDisplay(contract: Contract) -> [StakeholderItem] {
-        contract.coInsured.map { $0.asCoInsuredListType(stakeholderType: .coInsured) }
-            + contract.coOwners.map { $0.asCoInsuredListType(stakeholderType: .coOwner) }
+    func stakeholderItems(for contract: Contract) -> [StakeholderItem] {
+        contract.coInsured.map { $0.asStakeholderItem(type: .coInsured) }
+            + contract.coOwners.map { $0.asStakeholderItem(type: .coOwner) }
     }
 
     @MainActor
@@ -365,10 +365,10 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 extension Stakeholder {
-    func asCoInsuredListType(stakeholderType: StakeholderType) -> StakeholderItem {
+    func asStakeholderItem(type: StakeholderType) -> StakeholderItem {
         .init(
             stakeholder: self,
-            stakeholderType: stakeholderType,
+            stakeholderType: type,
             date: activatesOn ?? terminatesOn,
             locallyAdded: false
         )
