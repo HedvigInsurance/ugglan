@@ -1,123 +1,90 @@
-import Foundation
-@preconcurrency import XCTest
+import XCTest
 import hCore
 
 @testable import TerminateContracts
 
-@MainActor
 final class TerminateContractsTests: XCTestCase {
-    weak var sut: MockTerminateContractsService?
-    let context = "context"
+    private var mockClient: MockTerminateContractsClient!
 
-    override func setUp() async throws {
-        try await super.setUp()
+    @MainActor
+    override func setUp() {
+        super.setUp()
+        mockClient = MockTerminateContractsClient()
+        Dependencies.shared.add(module: Module { () -> TerminateContractsClient in self.mockClient })
     }
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: TerminateContractsClient.self)
-        try await Task.sleep(seconds: 0.0000001)
-
-        XCTAssertNil(sut)
+    override func tearDown() {
+        super.tearDown()
     }
 
-    func testSendTerminationDateSuccess() async {
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
-        let date = "2025-01-17"
-        let model: TerminationFlowDateNextStepModel = .init(
-            maxDate: "2025-11-11",
-            minDate: Date().localDateString,
-            date: nil,
-            extraCoverageItem: [
-                .init(displayName: "Travel plus", displayValue: "45 days")
-            ]
-        )
-
-        let terminationDateResponse: TerminateStepResponse = .init(
-            context: context,
-            step: .setTerminationDateStep(model: model),
-            progress: nil
-        )
-
-        let mockService = MockData.createMockTerminateContractsService(sendDate: { _, _ in
-            terminationDateResponse
-        })
-        sut = mockService
-
-        let respons = try! await mockService.sendTerminationDate(inputDateToString: date, terminationContext: context)
-
-        assert(respons.step == terminationDateResponse.step)
-        assert(respons.context == terminationDateResponse.context)
-        assert(respons.progress == terminationDateResponse.progress)
+    @MainActor
+    func testGetTerminationSurvey_success() async throws {
+        mockClient.surveyDataToReturn = MockTerminationData.terminateSurveyData
+        let service = TerminateContractsService()
+        let result = try await service.getTerminationSurvey(contractId: "contract-123")
+        XCTAssertEqual(result.options.count, 2)
+        XCTAssertEqual(result.options.first?.title, "Better price")
     }
 
-    func testConfirmDeleteSuccess() async {
-        let model: TerminationFlowDeletionNextModel = .init(
-            extraCoverageItem: [
-                .init(displayName: "Travel plus", displayValue: "45 days")
-            ]
-        )
-
-        let terminationConfirmDeleteResponse: TerminateStepResponse = .init(
-            context: context,
-            step: .setTerminationDeletion(model: model),
-            progress: nil
-        )
-
-        let mockService = MockData.createMockTerminateContractsService(confirmDelete: { _, _ in
-            terminationConfirmDeleteResponse
-        })
-        sut = mockService
-
-        let respons = try! await mockService.sendConfirmDelete(terminationContext: context, model: model)
-
-        assert(respons.step == terminationConfirmDeleteResponse.step)
-        assert(respons.context == terminationConfirmDeleteResponse.context)
-        assert(respons.progress == terminationConfirmDeleteResponse.progress)
+    @MainActor
+    func testGetTerminationSurvey_error() async {
+        mockClient.errorToThrow = NSError(domain: "test", code: 1)
+        let service = TerminateContractsService()
+        do {
+            _ = try await service.getTerminationSurvey(contractId: "contract-123")
+            XCTFail("Expected error")
+        } catch {
+            XCTAssertNotNil(error)
+        }
     }
 
-    func testSubmitSurveySuccess() async {
-        let model: TerminationFlowSurveyStepModel = .init(
-            options: [
-                .init(
-                    id: "idOption1",
-                    title: "option 1",
-                    suggestion: nil,
-                    feedBack: .init(isRequired: true),
-                    subOptions: [
-                        .init(
-                            id: "subOptionId1",
-                            title: "sub option 1",
-                            suggestion: nil,
-                            feedBack: .init(isRequired: false),
-                            subOptions: nil
-                        )
-                    ]
-                ),
-                .init(id: "idOption2", title: "option 2", suggestion: nil, feedBack: nil, subOptions: nil),
-            ],
-            subTitleType: .generic
+    @MainActor
+    func testTerminateContract_success() async throws {
+        mockClient.terminateResultToReturn = .success
+        let service = TerminateContractsService()
+        let result = try await service.terminateContract(
+            contractId: "contract-123",
+            terminationDate: "2026-04-01",
+            surveyOptionId: "opt1",
+            comment: nil
         )
+        XCTAssertEqual(result, .success)
+    }
 
-        let terminationSurveyResponse: TerminateStepResponse = .init(
-            context: context,
-            step: .setTerminationSurveyStep(model: model),
-            progress: nil
+    @MainActor
+    func testTerminateContract_userError() async throws {
+        mockClient.terminateResultToReturn = .userError(message: "Cannot terminate")
+        let service = TerminateContractsService()
+        let result = try await service.terminateContract(
+            contractId: "contract-123",
+            terminationDate: "2026-04-01",
+            surveyOptionId: "opt1",
+            comment: nil
         )
+        XCTAssertEqual(result, .userError(message: "Cannot terminate"))
+    }
 
-        let mockService = MockData.createMockTerminateContractsService(surveySend: { _, _, _ in
-            terminationSurveyResponse
-        })
-        sut = mockService
-
-        let respons = try! await mockService.sendSurvey(
-            terminationContext: context,
-            option: "option",
-            inputData: "input data"
+    @MainActor
+    func testDeleteContract_success() async throws {
+        mockClient.deleteResultToReturn = .success
+        let service = TerminateContractsService()
+        let result = try await service.deleteContract(
+            contractId: "contract-123",
+            surveyOptionId: "opt1",
+            comment: "Goodbye"
         )
+        XCTAssertEqual(result, .success)
+    }
 
-        assert(respons.step == terminationSurveyResponse.step)
-        assert(respons.context == terminationSurveyResponse.context)
-        assert(respons.progress == terminationSurveyResponse.progress)
+    @MainActor
+    func testDeleteContract_userError() async throws {
+        mockClient.deleteResultToReturn = .userError(message: "Cannot delete")
+        let service = TerminateContractsService()
+        let result = try await service.deleteContract(
+            contractId: "contract-123",
+            surveyOptionId: "opt1",
+            comment: nil
+        )
+        XCTAssertEqual(result, .userError(message: "Cannot delete"))
     }
 }
