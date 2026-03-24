@@ -144,7 +144,7 @@ The unified `TerminationDeflectScreen` replaces both `TerminationDeflectAutoDeco
 
 ```swift
 @MainActor
-public protocol TerminateContractsClient: Sendable {
+public protocol TerminateContractsClient {
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData
     func terminateContract(
         contractId: String, terminationDate: String,
@@ -187,7 +187,7 @@ enum TerminationFlowRouterActions: Hashable {
 }
 
 enum TerminationFlowFinalRouterActions: Hashable {
-    case success(terminationDate: String?)
+    case success(isDeletion: Bool, terminationDate: String?)
     case failure(message: String)
 }
 ```
@@ -227,8 +227,99 @@ enum TerminationFlowFinalRouterActions: Hashable {
 - `TerminationDeflectAutoCancelScreen.swift` — replaced by unified deflect screen
 - `FlowTerminationOfferStep`-related code — no equivalent in new schema
 
-## Entry Points (unchanged)
+## Entry Point Changes
 
-- `ContractsNavigation` → `TerminationConfirmConfig` → modal presentation
-- `LoggedInNavigation+Presentations` → `handleTerminateInsurance()` modifier
-- `TerminateInsuranceViewModel` as entry point
+The external entry points (`ContractsNavigation`, `LoggedInNavigation+Presentations`, `handleTerminateInsurance()` modifier) remain unchanged — they still create a `TerminateInsuranceViewModel` and pass `[TerminationConfirmConfig]`.
+
+**`TerminateInsuranceViewModel.start()` rewrite:**
+
+The current implementation has two paths: multi-contract (creates nav VM with configs) and single-contract (calls `startTermination` to get a `TerminateStepResponse`, then creates nav VM from that response). The `TerminateStepResponse`-based init is deleted entirely.
+
+New behavior:
+- **Multi-contract (>1 config):** Create nav VM with configs → show select insurance screen → on selection, fetch survey for that contract
+- **Single contract (1 config):** Create nav VM with the single config's contractId → nav VM fetches survey on init → show survey screen directly
+
+The `TerminationFlowNavigationViewModel` now has a single simplified init:
+```swift
+init(configs: [TerminationConfirmConfig], terminateInsuranceViewModel: TerminateInsuranceViewModel?)
+```
+For single-contract, the nav VM detects `configs.count == 1`, sets `contractId` from the first config, and triggers `fetchSurvey()` automatically. The initial step is `.survey` (loading state until data arrives) instead of the old pattern of calling `startTermination` before creating the nav VM.
+
+## Survey Screen Continue Logic
+
+The current `continueClicked()` calls `submitSurvey` (a server round-trip). This is replaced with purely client-side navigation:
+
+```
+continueClicked():
+  if selectedOption has subOptions:
+    → push new survey screen with subOptions (same as today)
+  else if selectedOption has suggestion:
+    → handle suggestion (see below)
+  else:
+    → call navVM.proceedAfterSurvey(optionId, comment)
+
+navVM.proceedAfterSurvey(optionId, comment):
+  store selectedOptionId + comment
+  switch action:
+    case .terminateWithDate: → push datePicker screen
+    case .deleteInsurance: → push confirmation screen
+```
+
+**Suggestion handling in survey continue:**
+
+| Suggestion Type | On continue |
+|----------------|------------|
+| `UPDATE_ADDRESS` | Dismiss flow, deep-link to address change (same as current `TerminationRedirectHandler.handleUpdateAddress`) |
+| `UPGRADE_COVERAGE` | Fetch ChangeTier intent, dismiss flow, present ChangeTier (same as current `handleChangeTier` with `.betterCoverage`) |
+| `DOWNGRADE_PRICE` | Fetch ChangeTier intent, dismiss flow, present ChangeTier (same as current `handleChangeTier` with `.betterPrice`) |
+| `REDIRECT` | Dismiss flow, open suggestion URL via deep link |
+| `INFO` | Show description inline, allow continue (non-blocking) |
+| `AUTO_*` / `CAR_*` | Push unified deflect screen |
+
+The `TerminationRedirectHandler` class is kept but simplified — it no longer needs `FlowContext`. Its `handle()` method is refactored to accept a `TerminationSuggestion` instead of `FlowTerminationSurveyRedirectAction`.
+
+## Deflect Screen Routing
+
+The `TerminationDeflectScreen` "Continue anyway" must know whether to push date picker or confirmation. The router action carries the action type:
+
+```swift
+case deflect(suggestion: TerminationSuggestion, action: TerminationAction)
+```
+
+On "Continue anyway", the deflect screen calls `navVM.proceedAfterSurvey()` which reads the stored `action` to route to either `.datePicker` or `.confirmation`.
+
+## Progress Tracking
+
+Client-side progress based on step count:
+
+| Step | Progress (no select insurance) | Progress (with select insurance) |
+|------|:---:|:---:|
+| Select Insurance | — | 0.0 |
+| Survey (root) | 0.0 | 0.25 |
+| Survey (sub-options, each level) | +0.1 per level | +0.075 per level |
+| Date Picker | 0.5 | 0.625 |
+| Confirmation | 0.75 | 0.8125 |
+| Success/Failure | 1.0 | 1.0 |
+
+This replaces the server-driven `clearedSteps / totalSteps` calculation.
+
+## Notification Query
+
+The existing `FlowTerminationNotification.graphql` and its client implementation already use `TerminationFlowNotificationInput(contractId:, terminationDate:)` — this file and the `getNotification` client method need only minor cleanup (rename file to match convention), no functional changes.
+
+## `updateApp` Case
+
+The `TerminationFlowFinalRouterActions.updateApp` case is removed. The new schema does not return an "update app" step — the server always returns a known action type (`TerminateWithDate` or `DeleteInsurance`). If the server adds new action union members in the future, the client handles unknown types with a generic error screen.
+
+## Tests
+
+### Tests to delete:
+- All tests referencing `startTermination`, `sendTerminationDate`, `sendConfirmDelete`, `sendSurvey`, `sendContinueAfterDecom`
+- `TerminationDeflectAutoDecomViewModelTests` — method under test is deleted
+- Current `MockData.swift` mock responses tied to `TerminateStepResponse`
+
+### New tests required:
+- **Service layer:** `getTerminationSurvey` success/error, `terminateContract` success/userError, `deleteContract` success/userError
+- **Survey VM:** option selection, sub-option navigation, feedback validation, suggestion blocking
+- **Nav VM:** routing from survey action type (terminateWithDate → date picker, deleteInsurance → confirmation), `proceedAfterSurvey` branching
+- **Mock data:** New `MockData` with `TerminationSurveyData` fixtures (options with suggestions, subOptions, both action types)
