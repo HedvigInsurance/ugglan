@@ -55,10 +55,11 @@ struct TerminationDeflectScreen: View {
                         content: .init(title: L10n.terminationButton)
                     ) { [weak terminationFlowNavigationViewModel] in
                         guard let optionId = terminationFlowNavigationViewModel?.selectedOptionId else { return }
-                        terminationFlowNavigationViewModel?.proceedAfterSurvey(
-                            optionId: optionId,
-                            comment: terminationFlowNavigationViewModel?.selectedComment
-                        )
+                        terminationFlowNavigationViewModel?
+                            .proceedAfterSurvey(
+                                optionId: optionId,
+                                comment: terminationFlowNavigationViewModel?.selectedComment
+                            )
                     }
                 }
             }
@@ -67,8 +68,7 @@ struct TerminationDeflectScreen: View {
     }
 }
 
-@available(iOS 17.0, *)
-#Preview {
+#Preview{
     TerminationDeflectScreen(
         suggestion: .init(
             type: .autoDecommission,
