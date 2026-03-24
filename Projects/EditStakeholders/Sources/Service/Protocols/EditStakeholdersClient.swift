@@ -3,18 +3,18 @@ import hCore
 import hCoreUI
 
 @MainActor
-public protocol EditCoInsuredClient {
-    func sendMidtermChangeIntentCommit(commitId: String) async throws
-    func getPersonalInformation(SSN: String) async throws -> PersonalData?
-    func sendIntent(
+public protocol EditStakeholdersClient {
+    func commitMidtermChange(commitId: String) async throws
+    func fetchPersonalInformation(SSN: String) async throws -> PersonalData?
+    func createIntent(
         contractId: String,
-        coInsured: [StakeHolder],
-        stakeHolderType: StakeHolderType
+        stakeholders: [Stakeholder],
+        type: StakeholderType
     ) async throws -> Intent
     func fetchContracts() async throws -> [Contract]
 }
 
-public enum CoInsuredAction: Codable, Identifiable {
+public enum StakeholderAction: Codable, Identifiable {
     public var id: Self {
         self
     }
@@ -24,19 +24,19 @@ public enum CoInsuredAction: Codable, Identifiable {
     case add
 }
 
-extension CoInsuredAction: TrackingViewNameProtocol {
+extension StakeholderAction: TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: SuccessScreen.self)
     }
 }
 
-public enum EditCoInsuredError: Error {
+public enum EditStakeholdersError: Error {
     case serviceError(message: String)
     case missingSSN
     case otherError
 }
 
-extension EditCoInsuredError: LocalizedError {
+extension EditStakeholdersError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case let .serviceError(message): return message
