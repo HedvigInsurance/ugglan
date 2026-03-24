@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-@testable import EditCoInsured
+@testable import EditStakeholders
 
 @MainActor
 struct MockData {
@@ -38,7 +38,7 @@ struct MockData {
 
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = @Sendable (String, [StakeHolder], StakeHolderType) async throws -> Intent
+typealias SendIntent = @Sendable (String, [Stakeholder], StakeholderType) async throws -> Intent
 typealias FetchContracts = () async throws -> [Contract]
 
 class MockEditCoInsuredService: EditCoInsuredClient {
@@ -86,8 +86,8 @@ class MockEditCoInsuredService: EditCoInsuredClient {
 
     func sendIntent(
         contractId: String,
-        coInsured: [StakeHolder],
-        stakeHolderType: StakeHolderType
+        coInsured: [Stakeholder],
+        stakeHolderType: StakeholderType
     ) async throws -> Intent {
         events.append(.sendIntent)
         let data = try await submitIntent(contractId, coInsured, stakeHolderType)

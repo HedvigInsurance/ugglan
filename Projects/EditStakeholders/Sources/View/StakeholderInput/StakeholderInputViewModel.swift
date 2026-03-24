@@ -56,7 +56,7 @@ public class StakeholderInputViewModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try await editStakeholdersService.getPersonalInformation(SSN: SSN)
+            let data = try await editStakeholdersService.fetchPersonalInformation(SSN: SSN)
             withAnimation {
                 if let data = data {
                     self.personalData = data
