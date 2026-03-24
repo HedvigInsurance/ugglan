@@ -2,7 +2,7 @@ import Addons
 import ChangeTier
 import Contracts
 import CrossSell
-import EditCoInsured
+import EditStakeholders
 import Forever
 import Foundation
 import Home
@@ -36,8 +36,8 @@ struct LoggedInPresentations: ViewModifier {
                     infoButtonPlacement: .leading,
                     useOwnNavigation: true
                 )
-                .handleEditCoInsured(
-                    with: vm.travelCertificateNavigationVm.editCoInsuredVm
+                .handleEditStakeholders(
+                    with: vm.travelCertificateNavigationVm.editStakeholdersVm
                 )
             }
             .modally(

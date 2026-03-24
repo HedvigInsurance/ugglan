@@ -1,12 +1,12 @@
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import hCore
 import hGraphQL
 
-class EditCoInsuredClientOctopus: EditCoInsuredClient {
+class EditStakeholdersClientOctopus: EditStakeholdersClient {
     @Inject var octopus: hOctopus
 
-    func sendMidtermChangeIntentCommit(commitId: String) async throws {
+    func commitMidtermChange(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
         let delayTask = Task {
             try await Task.sleep(seconds: 3)
@@ -20,11 +20,11 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         }
         try await delayTask.value
         if let error = try await clientTask.value {
-            throw EditCoInsuredError.serviceError(message: error)
+            throw EditStakeholdersError.serviceError(message: error)
         }
     }
 
-    func getPersonalInformation(SSN: String) async throws -> PersonalData? {
+    func fetchPersonalInformation(SSN: String) async throws -> PersonalData? {
         let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
         let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
         do {
@@ -32,7 +32,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
                 query: query
             )
             guard let data = data.personalInformation else {
-                throw EditCoInsuredError.missingSSN
+                throw EditStakeholdersError.missingSSN
             }
 
             let personalData = PersonalData(firstName: data.firstName, lastName: data.lastName)
@@ -41,34 +41,34 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
             if let exception = exception as? GraphQLError {
                 switch exception {
                 case .graphQLError:
-                    throw EditCoInsuredError.serviceError(message: exception.localizedDescription)
+                    throw EditStakeholdersError.serviceError(message: exception.localizedDescription)
                 case .otherError:
-                    throw EditCoInsuredError.otherError
+                    throw EditStakeholdersError.otherError
                 }
-            } else if let exception = exception as? EditCoInsuredError {
+            } else if let exception = exception as? EditStakeholdersError {
                 throw exception
             } else {
-                throw EditCoInsuredError.otherError
+                throw EditStakeholdersError.otherError
             }
         }
     }
 
-    func sendIntent(
+    func createIntent(
         contractId: String,
-        coInsured: [StakeHolder],
-        stakeHolderType: StakeHolderType
+        stakeholders: [Stakeholder],
+        type: StakeholderType
     ) async throws -> Intent {
         let coInsuredInputs: GraphQLNullable<[OctopusGraphQL.CoInsuredInput]>
         let coOwnersInputs: GraphQLNullable<[OctopusGraphQL.CoOwnersInput]>
 
-        switch stakeHolderType {
+        switch type {
         case .coInsured:
-            coInsuredInputs = .init(optionalValue: coInsured.map(\.asGqlCoInsured))
+            coInsuredInputs = .init(optionalValue: stakeholders.map(\.asGqlCoInsured))
             coOwnersInputs = nil
 
         case .coOwner:
             coInsuredInputs = nil
-            coOwnersInputs = .init(optionalValue: coInsured.map(\.asGqlCoOwner))
+            coOwnersInputs = .init(optionalValue: stakeholders.map(\.asGqlCoOwner))
         }
 
         let mutation = OctopusGraphQL.MidtermChangeIntentCreateMutation(
@@ -77,10 +77,10 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
         )
         let data = try await octopus.client.mutation(mutation: mutation)?.midtermChangeIntentCreate
         if let userError = data?.userError {
-            throw EditCoInsuredError.serviceError(message: userError.message ?? L10n.General.errorBody)
+            throw EditStakeholdersError.serviceError(message: userError.message ?? L10n.General.errorBody)
         }
         guard let intent = data?.intent else {
-            throw EditCoInsuredError.serviceError(message: L10n.General.errorBody)
+            throw EditStakeholdersError.serviceError(message: L10n.General.errorBody)
         }
         return Intent(
             activationDate: intent.activationDate,
@@ -110,7 +110,7 @@ class EditCoInsuredClientOctopus: EditCoInsuredClient {
 }
 
 @MainActor
-extension StakeHolder {
+extension Stakeholder {
     var asGqlCoInsured: OctopusGraphQL.CoInsuredInput {
         .init(
             firstName: GraphQLNullable(optionalValue: firstName),
@@ -168,7 +168,7 @@ extension Agreement {
     }
 }
 
-extension EditCoInsured.ProductVariant {
+extension EditStakeholders.ProductVariant {
     public init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {
@@ -177,7 +177,7 @@ extension EditCoInsured.ProductVariant {
 }
 
 @MainActor
-extension StakeHolder {
+extension Stakeholder {
     public init(data: OctopusGraphQL.CoInsuredFragment) {
         self.init(
             firstName: data.firstName,

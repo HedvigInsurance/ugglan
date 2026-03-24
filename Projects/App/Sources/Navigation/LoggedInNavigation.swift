@@ -5,7 +5,7 @@ import Claims
 import Combine
 import Contracts
 import CrossSell
-import EditCoInsured
+import EditStakeholders
 import Environment
 import Forever
 import Foundation
@@ -269,7 +269,7 @@ class DeepLinkHandler {
             }
 
         case .editCoInsured:
-            handleEditCoInsured(url: url)
+            handleEditStakeholders(url: url)
         case .editCoOwners:
             handleEditCoOwner(url: url)
         case .claimDetails:
@@ -401,31 +401,32 @@ class DeepLinkHandler {
         viewModel?.isReviewContactInfoPresented = true
     }
 
-    private func handleEditCoInsured(url: URL) {
-        handleEditStakeHolder(url: url, type: .coInsured)
+    private func handleEditStakeholders(url: URL) {
+        handleEditStakeholder(url: url, type: .coInsured)
     }
 
     private func handleEditCoOwner(url: URL) {
-        handleEditStakeHolder(url: url, type: .coOwner)
+        handleEditStakeholder(url: url, type: .coOwner)
     }
 
-    private func handleEditStakeHolder(url: URL, type: StakeHolderType) {
+    private func handleEditStakeholder(url: URL, type: StakeholderType) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
-                let contractConfig: StakeHoldersConfig = .init(
+                let contractConfig: StakeholdersConfig = .init(
                     contract: contract,
-                    stakeHolderType: type,
-                    fromInfoCard: false
+                    preSelectedStakeholders: [],
+                    fromInfoCard: false,
+                    stakeholderType: type
                 )
 
-                viewModel.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
+                viewModel.homeNavigationVm.editStakeholdersVm.start(fromContract: contractConfig)
             } else {
                 // select insurance
-                viewModel.homeNavigationVm.editCoInsuredVm.start(stakeHolderType: type)
+                viewModel.homeNavigationVm.editStakeholdersVm.start(stakeholderType: type)
             }
         }
     }
@@ -537,7 +538,7 @@ struct LoggedInNavigation: View {
                 }
             }
         }
-        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
+        .handleEditStakeholders(with: vm.contractsNavigationVm.editStakeholdersVm)
         .tabItem {
             vm.selectedTab == 1
                 ? hCoreUIAssets.contractTabActive.view : hCoreUIAssets.contractTab.view
@@ -584,8 +585,8 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false
                 )
-                .handleEditCoInsured(
-                    with: vm.travelCertificateNavigationVm.editCoInsuredVm
+                .handleEditStakeholders(
+                    with: vm.travelCertificateNavigationVm.editStakeholdersVm
                 )
             case .deleteAccount:
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -667,7 +668,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
-        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
+        .handleEditStakeholders(with: homeNavigationVm.editStakeholdersVm)
         .handleClaimFlow(
             startInput: $homeNavigationVm.claimsAutomationStartInput
         )
@@ -686,8 +687,8 @@ struct HomeTab: View {
                         infoButtonPlacement: .leading,
                         useOwnNavigation: true
                     )
-                    .handleEditCoInsured(
-                        with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
+                    .handleEditStakeholders(
+                        with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm
                     )
                 case .deflect:
                     let model: ClaimIntentOutcomeDeflection = {
@@ -780,8 +781,8 @@ struct HomeTab: View {
                     )
                 }
             }
-            .handleEditCoInsured(
-                with: loggedInVm.helpCenterVm.editCoInsuredVm
+            .handleEditStakeholders(
+                with: loggedInVm.helpCenterVm.editStakeholdersVm
             )
             .environmentObject(homeNavigationVm)
         }
@@ -928,7 +929,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         deepLinkHandler.viewModel = self
         setupObservers()
 
-        EditCoInsuredViewModel.updatedCoInsuredForContractId
+        EditStakeholdersViewModel.updatedStakeholderForContractId
             .receive(on: RunLoop.main)
             .delay(for: 1.5, scheduler: RunLoop.main)
             .sink { _ in
