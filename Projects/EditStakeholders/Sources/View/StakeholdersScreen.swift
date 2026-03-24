@@ -92,11 +92,11 @@ struct StakeholderListScreen: View {
         hSection(list) { stakeholderListItem in
             hRow {
                 StakeholderField(
-                    stakeHolder: stakeholderListItem.stakeholder,
+                    stakeholder: stakeholderListItem.stakeholder,
                     accessoryView: getAccessoryView(stakeholder: stakeholderListItem),
                     statusPill: stakeholderListItem.type == .added ? .added : nil,
                     date: stakeholderListItem.date,
-                    stakeHolderType: stakeholderListItem.stakeholderType
+                    stakeholderType: stakeholderListItem.stakeholderType
                 )
             }
             .accessibilityValue(accessoryType(for: stakeholderListItem).accessibilityValue)
