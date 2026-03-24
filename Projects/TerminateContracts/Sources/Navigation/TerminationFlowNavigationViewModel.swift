@@ -258,6 +258,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                     router.push(TerminationFlowFinalRouterActions.failure(message: message))
                 }
             } catch {
+                isProcessingPresented = false
                 withAnimation {
                     confirmTerminationState = .error(errorMessage: error.localizedDescription)
                 }
@@ -378,14 +379,8 @@ struct TerminationFlowNavigation: View {
                                 isDeletion: vm?.isDeletion ?? false,
                                 terminationDate: vm?.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
-                            .onAppear {
-                                vm?.isProcessingPresented = false
-                            }
                         case let .failure(message):
                             openTerminationFailScreen(message: message)
-                                .onAppear {
-                                    vm?.isProcessingPresented = false
-                                }
                         }
                     }
                     .resetProgressOnDismiss(to: vm?.previousProgress, for: $vm.progress)
@@ -435,14 +430,8 @@ struct TerminationFlowNavigation: View {
                     isDeletion: vm.isDeletion,
                     terminationDate: vm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
                 )
-                .onAppear {
-                    vm.isProcessingPresented = false
-                }
             case let .failure(message):
                 openTerminationFailScreen(message: message)
-                    .onAppear {
-                        vm.isProcessingPresented = false
-                    }
             }
         }
     }
@@ -479,6 +468,10 @@ struct TerminationFlowNavigation: View {
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen()
             .withDismissButton()
+            .embededInNavigation(
+                options: .navigationBarHidden,
+                tracking: TerminationFlowDetentActions.confirmTermination
+            )
     }
 
     private func openSetTerminationDatePickerScreen() -> some View {
@@ -614,10 +607,13 @@ enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
         switch self {
         case .terminationDate:
             return .init(describing: SetTerminationDate.self)
+        case .confirmTermination:
+            return .init(describing: ConfirmTerminationScreen.self)
         }
     }
 
     case terminationDate
+    case confirmTermination
 }
 
 public enum DismissTerminationAction {

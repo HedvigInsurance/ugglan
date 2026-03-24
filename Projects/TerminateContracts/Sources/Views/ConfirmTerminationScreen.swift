@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-
+    @EnvironmentObject var router: Router
     init() {}
 
     var body: some View {
@@ -21,12 +21,13 @@ struct ConfirmTerminationScreen: View {
                         buttonTitle: L10n.terminationFlowConfirmButton,
                         buttonAction: {
                             terminationNavigationVm.submitTermination()
+                            router.dismiss()
                         }
                     ),
                 dismissButton: .init(
                     buttonTitle: L10n.alertCancel,
                     buttonAction: {
-                        terminationNavigationVm.isConfirmTerminationPresented = false
+                        router.dismiss()
                     }
                 )
             )
