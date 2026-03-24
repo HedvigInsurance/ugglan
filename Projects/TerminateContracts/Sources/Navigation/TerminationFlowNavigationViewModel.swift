@@ -504,7 +504,8 @@ struct TerminationFlowNavigation: View {
             successViewTitle: L10n.terminationFlowSuccessTitle,
             successViewBody: isDeletion
                 ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate(terminationDate)
+                : L10n.terminationFlowSuccessSubtitleWithDate(terminationDate),
+
         )
         .hStateViewButtonConfig(
             .init(
@@ -599,6 +600,12 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
         case let .final(action):
             return action.nameForTracking
         }
+    }
+}
+
+extension [TerminationSurveyOption]: @retroactive TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        "TerminationSurveySubOptions"
     }
 }
 

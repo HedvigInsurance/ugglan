@@ -24,9 +24,9 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
     ) async throws -> TerminationContractResult {
         let input = OctopusGraphQL.TerminationFlowTerminateContractInput(
             contractId: contractId,
-            terminationComment: GraphQLNullable(optionalValue: comment),
             terminationDate: terminationDate,
-            terminationSurveyOptionId: surveyOptionId
+            terminationSurveyOptionId: surveyOptionId,
+            terminationComment: GraphQLNullable(optionalValue: comment)
         )
         let mutation = OctopusGraphQL.TerminateContractMutation(input: input)
         let data = try await octopus.client.mutation(mutation: mutation)!
@@ -43,8 +43,8 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
     ) async throws -> TerminationContractResult {
         let input = OctopusGraphQL.TerminationFlowDeleteContractInput(
             contractId: contractId,
-            terminationComment: GraphQLNullable(optionalValue: comment),
-            terminationSurveyOptionId: surveyOptionId
+            terminationSurveyOptionId: surveyOptionId,
+            terminationComment: GraphQLNullable(optionalValue: comment)
         )
         let mutation = OctopusGraphQL.DeleteContractMutation(input: input)
         let data = try await octopus.client.mutation(mutation: mutation)!
