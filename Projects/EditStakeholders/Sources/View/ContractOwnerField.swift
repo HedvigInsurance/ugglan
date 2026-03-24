@@ -22,7 +22,7 @@ public struct ContractOwnerField: View {
     public init(
         enabled: Bool? = false,
         hasContentBelow: Bool,
-        config: StakeHoldersConfig
+        config: StakeholdersConfig
     ) {
         self.enabled = enabled
         self.hasContentBelow = hasContentBelow

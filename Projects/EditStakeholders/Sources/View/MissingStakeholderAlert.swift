@@ -2,12 +2,12 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct MissingCoInsuredAlert: View {
+public struct MissingStakeholderAlert: View {
     @EnvironmentObject var router: Router
     private var onButtonAction: () -> Void
-    let config: StakeHoldersConfig
+    let config: StakeholdersConfig
     public init(
-        config: StakeHoldersConfig,
+        config: StakeholdersConfig,
         onButtonAction: @escaping () -> Void
     ) {
         self.config = config
@@ -17,14 +17,14 @@ public struct MissingCoInsuredAlert: View {
     public var body: some View {
         GenericErrorView(
             title: config.contractDisplayName,
-            description: config.stakeHolderType.missingInformationLabel,
+            description: config.stakeholderType.missingInformationLabel,
             formPosition: .compact
         )
         .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom:
                     .init(
-                        buttonTitle: config.stakeHolderType.missingAddInfo,
+                        buttonTitle: config.stakeholderType.missingAddInfo,
                         buttonAction: {
                             onButtonAction()
                         }
@@ -42,23 +42,23 @@ public struct MissingCoInsuredAlert: View {
 }
 
 #Preview {
-    MissingCoInsuredAlert(
+    MissingStakeholderAlert(
         config: .init(
             id: UUID().uuidString,
-            stakeHolders: [],
+            stakeholders: [],
             contractId: "id",
             activeFrom: nil,
-            numberOfMissingStakeHolders: 1,
-            numberOfMissingStakeHoldersWithoutTermination: 1,
+            numberOfMissingStakeholders: 1,
+            numberOfMissingStakeholdersWithoutTermination: 1,
             displayName: "Display name",
             exposureDisplayName: nil,
-            preSelectedStakeHolders: [],
+            preSelectedStakeholders: [],
             contractDisplayName: "Contract display name",
             holderFirstName: "Fist name",
             holderLastName: "Last name",
             holderSSN: nil,
             fromInfoCard: false,
-            stakeHolderType: .coInsured
+            stakeholderType: .coInsured
         ),
         onButtonAction: {}
     )

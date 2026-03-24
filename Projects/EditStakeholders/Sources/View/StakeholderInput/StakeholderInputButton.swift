@@ -2,21 +2,21 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CoInsuredInputButton: View {
-    @ObservedObject var vm: CoInusuredInputViewModel
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+public struct StakeholderInputButton: View {
+    @ObservedObject var vm: StakeholderInputViewModel
+    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
 
-    private let stakeHolderType: StakeHolderType
+    private let stakeholderType: StakeholderType
 
     init(
-        vm: CoInusuredInputViewModel,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        vm: StakeholderInputViewModel,
+        editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     ) {
         self.vm = vm
-        self.editCoInsuredNavigation = editCoInsuredNavigation
-        intentViewModel = editCoInsuredNavigation.intentViewModel
-        stakeHolderType = editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType
+        self.editStakeholdersNavigation = editStakeholdersNavigation
+        intentViewModel = editStakeholdersNavigation.intentViewModel
+        stakeholderType = editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType
     }
 
     public var body: some View {
@@ -37,7 +37,7 @@ public struct CoInsuredInputButton: View {
                 } else {
                     CoInsuredActionButton(
                         style: .primary,
-                        title: vm.buttonDisplayText(for: stakeHolderType),
+                        title: vm.buttonDisplayText(for: stakeholderType),
                         vm: vm,
                         intentViewModel: intentViewModel,
                         onTap: {
@@ -53,7 +53,7 @@ public struct CoInsuredInputButton: View {
         .disabled(vm.buttonIsDisabled && !(vm.actionType == .delete))
     }
 
-    var coInsuredToDelete: StakeHolder {
+    var stakeholderToDelete: Stakeholder {
         (vm.personalData.firstName == "" && vm.SSN == "")
             ? .init()
             : .init(
@@ -65,7 +65,7 @@ public struct CoInsuredInputButton: View {
             )
     }
 
-    var coInsuredPerformModel: StakeHolder {
+    var stakeholderPerformModel: Stakeholder {
         .init(
             firstName: vm.personalData.firstName,
             lastName: vm.personalData.lastName,
@@ -75,66 +75,66 @@ public struct CoInsuredInputButton: View {
         )
     }
 
-    private func performErrorAction(for action: CoInsuredAction) {
+    private func performErrorAction(for action: StakeholderAction) {
         if action == .delete {
-            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(coInsuredPerformModel)
+            editStakeholdersNavigation.stakeholderViewModel.undoDeleted(stakeholderPerformModel)
         } else {
-            editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredPerformModel)
+            editStakeholdersNavigation.stakeholderViewModel.removeStakeholder(stakeholderPerformModel)
         }
     }
 
-    private func performIntent(for action: CoInsuredAction) async {
-        let coInsuredModel: [StakeHolder] = {
+    private func performIntent(for action: StakeholderAction) async {
+        let stakeholderModel: [Stakeholder] = {
             switch action {
             case .add:
-                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
-                    addCoInsured: coInsuredPerformModel
+                return editStakeholdersNavigation.stakeholderViewModel.listForGettingIntentFor(
+                    addStakeholder: stakeholderPerformModel
                 )
             case .edit:
-                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
-                    editCoInsured: coInsuredPerformModel
+                return editStakeholdersNavigation.stakeholderViewModel.listForGettingIntentFor(
+                    editStakeholder: stakeholderPerformModel
                 )
             case .delete:
-                return editCoInsuredNavigation.coInsuredViewModel.listForGettingIntentFor(
-                    removedCoInsured: coInsuredToDelete
+                return editStakeholdersNavigation.stakeholderViewModel.listForGettingIntentFor(
+                    removedStakeholder: stakeholderToDelete
                 )
             }
         }()
 
-        await editCoInsuredNavigation.intentViewModel.getIntent(
+        await editStakeholdersNavigation.intentViewModel.getIntent(
             contractId: vm.contractId,
-            origin: .coinsuredInput,
-            coInsured: coInsuredModel,
-            stakeHolderType: stakeHolderType,
+            origin: .stakeholderInput,
+            stakeholders: stakeholderModel,
+            type: stakeholderType,
         )
 
-        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
+        if !editStakeholdersNavigation.intentViewModel.showErrorViewForStakeholderInput {
             switch action {
             case .delete:
-                editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+                editStakeholdersNavigation.stakeholderViewModel.removeStakeholder(stakeholderToDelete)
             case .edit, .add:
                 break
             }
-            editCoInsuredNavigation.coInsuredInputModel = nil
+            editStakeholdersNavigation.stakeholderInputModel = nil
         } else {
             performErrorAction(for: action)
         }
 
-        editCoInsuredNavigation.selectCoInsured = nil
+        editStakeholdersNavigation.selectStakeholder = nil
     }
 }
 
 private struct CoInsuredActionButton: View {
     let style: hButtonConfigurationType
     let title: String
-    @ObservedObject var vm: CoInusuredInputViewModel
+    @ObservedObject var vm: StakeholderInputViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let onTap: () async -> Void
 
     init(
         style: hButtonConfigurationType,
         title: String,
-        vm: CoInusuredInputViewModel,
+        vm: StakeholderInputViewModel,
         intentViewModel: IntentViewModel,
         onTap: @escaping () async -> Void
     ) {
@@ -161,12 +161,12 @@ private struct CoInsuredActionButton: View {
     }
 }
 
-extension CoInusuredInputViewModel {
-    func buttonDisplayText(for stakeHolderType: StakeHolderType) -> String {
+extension StakeholderInputViewModel {
+    func buttonDisplayText(for stakeholderType: StakeholderType) -> String {
         if !noSSN, !nameFetchedFromSSN {
             return L10n.contractSsnFetchInfo
         } else {
-            return stakeHolderType.addButtonTitle
+            return stakeholderType.addButtonTitle
         }
     }
 

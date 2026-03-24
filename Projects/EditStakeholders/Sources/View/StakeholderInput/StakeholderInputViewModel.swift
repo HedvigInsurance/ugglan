@@ -4,7 +4,7 @@ import SwiftUI
 import hCoreUI
 
 @MainActor
-public class CoInusuredInputViewModel: ObservableObject {
+public class StakeholderInputViewModel: ObservableObject {
     @Published var personalData: PersonalData
     @Published var noSSN = false
     @Published var SSNError: String?
@@ -15,36 +15,36 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var showInfoForMissingSSN = false
     @Published var SSN: String
     @Published var birthday: String
-    @Published var type: CoInsuredInputType?
-    @Published var actionType: CoInsuredAction
+    @Published var type: StakeholderInputType?
+    @Published var actionType: StakeholderAction
     let contractId: String
-    let coInsuredModel: StakeHolder
-    var editCoInsuredService = EditCoInsuredService()
+    let stakeholderModel: Stakeholder
+    var editStakeholdersService = EditStakeholdersService()
 
     func showErrorView(inputError: String?) -> Bool {
         SSNError ?? inputError != nil
     }
 
     init(
-        coInsuredModel: StakeHolder,
-        actionType: CoInsuredAction,
+        stakeholderModel: Stakeholder,
+        actionType: StakeholderAction,
         contractId: String
     ) {
-        self.coInsuredModel = coInsuredModel
+        self.stakeholderModel = stakeholderModel
         personalData = PersonalData(
-            firstName: coInsuredModel.firstName ?? "",
-            lastName: coInsuredModel.lastName ?? ""
+            firstName: stakeholderModel.firstName ?? "",
+            lastName: stakeholderModel.lastName ?? ""
         )
-        SSN = coInsuredModel.SSN ?? ""
-        birthday = coInsuredModel.birthDate ?? ""
+        SSN = stakeholderModel.SSN ?? ""
+        birthday = stakeholderModel.birthDate ?? ""
         self.actionType = actionType
         self.contractId = contractId
-        if !(coInsuredModel.birthDate ?? "").isEmpty {
+        if !(stakeholderModel.birthDate ?? "").isEmpty {
             noSSN = true
             enterManually = true
         }
 
-        if !(coInsuredModel.SSN ?? "").isEmpty {
+        if !(stakeholderModel.SSN ?? "").isEmpty {
             nameFetchedFromSSN = true
         }
     }
@@ -56,7 +56,7 @@ public class CoInusuredInputViewModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try await editCoInsuredService.getPersonalInformation(SSN: SSN)
+            let data = try await editStakeholdersService.getPersonalInformation(SSN: SSN)
             withAnimation {
                 if let data = data {
                     self.personalData = data
@@ -64,7 +64,7 @@ public class CoInusuredInputViewModel: ObservableObject {
                 }
             }
         } catch let exception {
-            if let exception = exception as? EditCoInsuredError {
+            if let exception = exception as? EditStakeholdersError {
                 switch exception {
                 case .missingSSN:
                     withAnimation {

@@ -2,13 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct InsuredPeopleScreen: View {
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-    @ObservedObject var vm: InsuredPeopleScreenViewModel
+struct StakeholderListScreen: View {
+    @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    @ObservedObject var vm: StakeholderListViewModel
     @ObservedObject var intentViewModel: IntentViewModel
-    let type: CoInsuredFieldType?
+    let type: StakeholderFieldType?
 
-    private var listToDisplay: [StakeHolderListType] {
+    private var listToDisplay: [StakeholderListType] {
         vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
     }
 
@@ -16,7 +16,7 @@ struct InsuredPeopleScreen: View {
         hForm {
             VStack(spacing: 0) {
                 contractOwnerField(hasContentBelow: !listToDisplay.isEmpty || vm.hasContentBelow)
-                coInsuredSection(list: listToDisplay)
+                stakeholderSection(list: listToDisplay)
                 buttonSection
             }
             .hWithoutHorizontalPadding([.section])
@@ -44,7 +44,7 @@ struct InsuredPeopleScreen: View {
     @ViewBuilder
     private var buttonView: some View {
         if vm.showConfirmChangesButton {
-            ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
+            ConfirmChangesView(editStakeholdersNavigation: editStakeholdersNavigation)
         }
     }
 
@@ -58,39 +58,39 @@ struct InsuredPeopleScreen: View {
         }
     }
 
-    private func coInsuredSection(list: [StakeHolderListType]) -> some View {
-        hSection(list) { stakeHolder in
+    private func stakeholderSection(list: [StakeholderListType]) -> some View {
+        hSection(list) { stakeholderListItem in
             hRow {
-                StakeHolderField(
-                    stakeHolder: stakeHolder.stakeHolder,
-                    accessoryView: getAccesoryView(coInsured: stakeHolder),
-                    statusPill: stakeHolder.type == .added ? .added : nil,
-                    date: stakeHolder.date,
-                    stakeHolderType: stakeHolder.stakeHolderType
+                StakeholderField(
+                    stakeHolder: stakeholderListItem.stakeholder,
+                    accessoryView: getAccessoryView(stakeholder: stakeholderListItem),
+                    statusPill: stakeholderListItem.type == .added ? .added : nil,
+                    date: stakeholderListItem.date,
+                    stakeHolderType: stakeholderListItem.stakeholderType
                 )
             }
-            .accessibilityValue(accessoryType(for: stakeHolder).accessibilityValue)
+            .accessibilityValue(accessoryType(for: stakeholderListItem).accessibilityValue)
         }
     }
 
     @ViewBuilder
     private var buttonSection: (some View)? {
-        if vm.config.numberOfMissingStakeHoldersWithoutTermination == 0 {
+        if vm.config.numberOfMissingStakeholdersWithoutTermination == 0 {
             hSection {
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: vm.config.stakeHolderType.addButtonTitle),
+                    content: .init(title: vm.config.stakeholderType.addButtonTitle),
                     {
-                        if !vm.hasExistingStakeHolders {
-                            editCoInsuredNavigation.coInsuredInputModel = .init(
+                        if !vm.hasExistingStakeholders {
+                            editStakeholdersNavigation.stakeholderInputModel = .init(
                                 actionType: .add,
-                                coInsuredModel: StakeHolder(),
-                                title: vm.config.stakeHolderType.addButtonTitle,
+                                stakeholderModel: Stakeholder(),
+                                title: vm.config.stakeholderType.addButtonTitle,
                                 contractId: vm.config.contractId
                             )
                         } else {
-                            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+                            editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
                         }
                     }
                 )
@@ -104,8 +104,8 @@ struct InsuredPeopleScreen: View {
         if let infoCardType = vm.getInfoCardType(type: type) {
             hSection {
                 InfoCard(
-                    text: vm.config.stakeHolderType.reviewInfo(
-                        hasMissingStakeHolders: vm.hasLocallyMissingStakeHolders
+                    text: vm.config.stakeholderType.reviewInfo(
+                        hasMissingStakeholders: vm.hasLocallyMissingStakeholders
                     ),
                     type: infoCardType
                 )
@@ -113,10 +113,10 @@ struct InsuredPeopleScreen: View {
         }
     }
 
-    func accessoryType(for coInsured: StakeHolderListType) -> CoInsuredFieldType {
-        if coInsured.stakeHolder.hasMissingData, type != .delete {
+    func accessoryType(for stakeholder: StakeholderListType) -> StakeholderFieldType {
+        if stakeholder.stakeholder.hasMissingData, type != .delete {
             .empty
-        } else if coInsured.locallyAdded {
+        } else if stakeholder.locallyAdded {
             .localEdit
         } else {
             .delete
@@ -124,11 +124,11 @@ struct InsuredPeopleScreen: View {
     }
 
     @ViewBuilder
-    private func getAccesoryView(coInsured: StakeHolderListType) -> some View {
-        getAccesoryView(for: accessoryType(for: coInsured), coInsured: coInsured.stakeHolder)
+    private func getAccessoryView(stakeholder: StakeholderListType) -> some View {
+        getAccessoryView(for: accessoryType(for: stakeholder), stakeholder: stakeholder.stakeholder)
     }
 
-    private func getAccesoryView(for type: CoInsuredFieldType, coInsured: StakeHolder) -> some View {
+    private func getAccessoryView(for type: StakeholderFieldType, stakeholder: Stakeholder) -> some View {
         HStack {
             if let text = type.text {
                 hText(text)
@@ -140,19 +140,19 @@ struct InsuredPeopleScreen: View {
             }
         }
         .onTapGesture {
-            onAccessoryViewTap(type: type, coInsured: coInsured)
+            onAccessoryViewTap(type: type, stakeholder: stakeholder)
         }
         .accessibilityAddTraits(.isButton)
     }
 
-    private func onAccessoryViewTap(type: CoInsuredFieldType, coInsured: StakeHolder) {
-        if type == .empty, vm.hasExistingStakeHolders {
-            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+    private func onAccessoryViewTap(type: StakeholderFieldType, stakeholder: Stakeholder) {
+        if type == .empty, vm.hasExistingStakeholders {
+            editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
         } else {
-            editCoInsuredNavigation.coInsuredInputModel = .init(
+            editStakeholdersNavigation.stakeholderInputModel = .init(
                 actionType: type.action,
-                coInsuredModel: type == .empty ? StakeHolder() : coInsured,
-                title: type.title(for: vm.config.stakeHolderType),
+                stakeholderModel: type == .empty ? Stakeholder() : stakeholder,
+                title: type.title(for: vm.config.stakeholderType),
                 contractId: vm.config.contractId
             )
         }
@@ -161,9 +161,9 @@ struct InsuredPeopleScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let config = StakeHoldersConfig(
+    let config = StakeholdersConfig(
         id: UUID().uuidString,
-        stakeHolders: [
+        stakeholders: [
             .init(
                 firstName: "first name",
                 lastName: "last name",
@@ -176,18 +176,18 @@ struct InsuredPeopleScreen: View {
         ],
         contractId: "",
         activeFrom: nil,
-        numberOfMissingStakeHolders: 0,
-        numberOfMissingStakeHoldersWithoutTermination: 0,
+        numberOfMissingStakeholders: 0,
+        numberOfMissingStakeholdersWithoutTermination: 0,
         displayName: "",
         exposureDisplayName: nil,
-        preSelectedStakeHolders: [],
+        preSelectedStakeholders: [],
         contractDisplayName: "",
         holderFirstName: "First Name",
         holderLastName: "Last Name",
         holderSSN: "00000000-0000",
         fromInfoCard: false,
-        stakeHolderType: .coInsured
+        stakeholderType: .coInsured
     )
-    let vm = InsuredPeopleScreenViewModel(with: config)
-    return InsuredPeopleScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+    let vm = StakeholderListViewModel(with: config)
+    return StakeholderListScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
 }

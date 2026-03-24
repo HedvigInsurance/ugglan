@@ -3,22 +3,22 @@ import hCore
 import hCoreUI
 
 @MainActor
-public struct StakeHolderField<Content: View>: View {
-    let stakeHolder: StakeHolder?
+public struct StakeholderField<Content: View>: View {
+    let stakeholder: Stakeholder?
     let accessoryView: Content
     let statusPill: StatusPillType?
     let date: String
     let subTitle: String?
-    let stakeHolderType: StakeHolderType
+    let stakeholderType: StakeholderType
 
     public init(
-        stakeHolder: StakeHolder? = nil,
+        stakeHolder: Stakeholder? = nil,
         accessoryView: Content,
         statusPill: StatusPillType? = nil,
         date: String? = nil,
-        stakeHolderType: StakeHolderType
+        stakeHolderType: StakeholderType
     ) {
-        self.stakeHolder = stakeHolder
+        self.stakeholder = stakeHolder
         self.accessoryView = accessoryView
         self.statusPill =
             statusPill
@@ -33,13 +33,13 @@ public struct StakeHolderField<Content: View>: View {
             }()
         self.date = date ?? stakeHolder?.activatesOn ?? stakeHolder?.terminatesOn ?? ""
         subTitle = stakeHolder?.hasMissingData ?? true ? L10n.contractNoInformation : nil
-        self.stakeHolderType = stakeHolderType
+        self.stakeholderType = stakeHolderType
     }
 
     public var body: some View {
-        let displayTitle = stakeHolder?.fullName ?? stakeHolderType.defaultFieldLabel
+        let displayTitle = stakeholder?.fullName ?? stakeholderType.defaultFieldLabel
         let displaySubTitle =
-            stakeHolder?.formattedSSN?.displayFormatSSN ?? stakeHolder?.birthDate?.birtDateDisplayFormat ?? subTitle
+            stakeholder?.formattedSSN?.displayFormatSSN ?? stakeholder?.birthDate?.birtDateDisplayFormat ?? subTitle
             ?? ""
 
         VStack(spacing: .padding4) {

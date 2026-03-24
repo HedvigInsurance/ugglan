@@ -3,32 +3,32 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CoInusuredInputScreen: View {
-    @ObservedObject var insuredPeopleVm: InsuredPeopleScreenViewModel
-    @ObservedObject var vm: CoInusuredInputViewModel
+struct StakeholderInputScreen: View {
+    @ObservedObject var insuredPeopleVm: StakeholderListViewModel
+    @ObservedObject var vm: StakeholderInputViewModel
     let title: String
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject var intentViewModel: IntentViewModel
 
     init(
-        vm: CoInusuredInputViewModel,
+        vm: StakeholderInputViewModel,
         title: String,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     ) {
-        self.editCoInsuredNavigation = editCoInsuredNavigation
-        insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
+        self.editStakeholdersNavigation = editStakeholdersNavigation
+        insuredPeopleVm = editStakeholdersNavigation.stakeholderViewModel
         self.vm = vm
         self.title = title
-        intentViewModel = editCoInsuredNavigation.intentViewModel
-        insuredPeopleVm.previousValue = vm.coInsuredModel
+        intentViewModel = editStakeholdersNavigation.intentViewModel
+        insuredPeopleVm.previousValue = vm.stakeholderModel
     }
 
     var body: some View {
         Group {
             if showErrorView {
-                CoInsuredInputErrorView(
+                StakeholderInputErrorView(
                     vm: vm,
-                    editCoInsuredNavigation: editCoInsuredNavigation,
+                    editStakeholdersNavigation: editStakeholdersNavigation,
                     showEnterManuallyButton: vm.actionType == .add && !vm.noSSN
                 )
             } else {
@@ -48,14 +48,14 @@ struct CoInusuredInputScreen: View {
         .onAppear {
             vm.SSNError = nil
             intentViewModel.errorMessageForInput = nil
-            intentViewModel.errorMessageForCoinsuredList = nil
+            intentViewModel.errorMessageForStakeholderList = nil
         }
     }
 
     var showErrorView: Bool {
         vm.showErrorView(
             inputError: intentViewModel.errorMessageForInput
-                ?? intentViewModel.errorMessageForCoinsuredList
+                ?? intentViewModel.errorMessageForStakeholderList
         )
     }
 
@@ -63,17 +63,17 @@ struct CoInusuredInputScreen: View {
         hForm {
             VStack(spacing: .padding4) {
                 if vm.actionType == .delete {
-                    DeleteCoInsuredFields(vm: vm)
+                    DeleteStakeholderFields(vm: vm)
                 } else {
-                    AddCoInsuredFieldsView(
+                    AddStakeholderFieldsView(
                         vm: vm,
                         intentViewModel: intentViewModel
                     )
                 }
                 infoCardView
-                CoInsuredInputButton(
+                StakeholderInputButton(
                     vm: vm,
-                    editCoInsuredNavigation: editCoInsuredNavigation
+                    editStakeholdersNavigation: editStakeholdersNavigation
                 )
                 cancelButtonView
             }
@@ -87,7 +87,7 @@ struct CoInusuredInputScreen: View {
         if vm.showInfoForMissingSSN {
             hSection {
                 InfoCard(
-                    text: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType.withoutSsnInfo,
+                    text: editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType.withoutSsnInfo,
                     type: .attention
                 )
             }
@@ -98,7 +98,7 @@ struct CoInusuredInputScreen: View {
     private var cancelButtonView: some View {
         hSection {
             hCancelButton {
-                editCoInsuredNavigation.coInsuredInputModel = nil
+                editStakeholdersNavigation.stakeholderInputModel = nil
             }
             .padding(.top, .padding4)
             .padding(.bottom, .padding16)
@@ -117,8 +117,8 @@ extension View {
     }
 }
 
-struct AddCoInsuredFieldsView: View {
-    @ObservedObject var vm: CoInusuredInputViewModel
+struct AddStakeholderFieldsView: View {
+    @ObservedObject var vm: StakeholderInputViewModel
     @ObservedObject var intentViewModel: IntentViewModel
 
     var body: some View {
@@ -220,8 +220,8 @@ struct AddCoInsuredFieldsView: View {
     }
 }
 
-struct DeleteCoInsuredFields: View {
-    @ObservedObject var vm: CoInusuredInputViewModel
+struct DeleteStakeholderFields: View {
+    @ObservedObject var vm: StakeholderInputViewModel
 
     var body: some View {
         if vm.personalData.firstName != "", vm.personalData.lastName != "", vm.SSN != "" || vm.birthday != "" {
@@ -259,19 +259,19 @@ struct DeleteCoInsuredFields: View {
 }
 
 #Preview {
-    CoInusuredInputScreen(
-        vm: .init(coInsuredModel: StakeHolder(), actionType: .add, contractId: ""),
+    StakeholderInputScreen(
+        vm: .init(stakeholderModel: Stakeholder(), actionType: .add, contractId: ""),
         title: "title",
-        editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured))
+        editStakeholdersNavigation: .init(config: .init(stakeholderType: .coInsured))
     )
 }
 
-enum CoInsuredInputType: hTextFieldFocusStateCompliant {
-    static var last: CoInsuredInputType {
-        CoInsuredInputType.lastName
+enum StakeholderInputType: hTextFieldFocusStateCompliant {
+    static var last: StakeholderInputType {
+        StakeholderInputType.lastName
     }
 
-    var next: CoInsuredInputType? {
+    var next: StakeholderInputType? {
         switch self {
         case .SSN:
             return nil

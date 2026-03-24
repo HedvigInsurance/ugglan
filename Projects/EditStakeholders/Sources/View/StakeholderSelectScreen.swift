@@ -2,24 +2,25 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CoInsuredSelectScreen: View {
+struct StakeholderSelectScreen: View {
     let contractId: String
-    @ObservedObject var vm: InsuredPeopleScreenViewModel
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject var vm: StakeholderListViewModel
+    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    let itemPickerConfig: ItemConfig<StakeHolder>
+    let itemPickerConfig: ItemConfig<Stakeholder>
     init(
         contractId: String,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     ) {
         self.contractId = contractId
-        self.editCoInsuredNavigation = editCoInsuredNavigation
-        let vm = editCoInsuredNavigation.coInsuredViewModel
-        let alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedStakeHolders
+        self.editStakeholdersNavigation = editStakeholdersNavigation
+        let vm = editStakeholdersNavigation.stakeholderViewModel
+        let alreadyAddedCoinsuredMembers = editStakeholdersNavigation.stakeholderViewModel.config
+            .preSelectedStakeholders
             .filter {
-                !editCoInsuredNavigation.coInsuredViewModel.stakeHoldersAdded.contains($0)
+                !editStakeholdersNavigation.stakeholderViewModel.stakeholdersAdded.contains($0)
             }
-        let intentViewModel = editCoInsuredNavigation.intentViewModel
+        let intentViewModel = editStakeholdersNavigation.intentViewModel
 
         itemPickerConfig = .init(
             items:
@@ -31,7 +32,7 @@ struct CoInsuredSelectScreen: View {
             onSelected: { selectedCoinsured in
                 if let selectedCoinsured = selectedCoinsured.first {
                     if let object = selectedCoinsured.0 {
-                        vm.addCoInsured(
+                        vm.addStakeholder(
                             .init(
                                 firstName: object.firstName,
                                 lastName: object.lastName,
@@ -47,18 +48,18 @@ struct CoInsuredSelectScreen: View {
                         }
                         await intentViewModel.getIntent(
                             contractId: contractId,
-                            origin: .coinsuredSelectList,
-                            coInsured: vm.completeList(),
-                            stakeHolderType: vm.config.stakeHolderType
+                            origin: .stakeholderSelectList,
+                            stakeholders: vm.completeList(),
+                            type: vm.config.stakeholderType
                         )
                         withAnimation {
                             vm.isLoading = false
                         }
-                        if !intentViewModel.showErrorViewForCoInsuredList {
-                            editCoInsuredNavigation.selectCoInsured = nil
+                        if !intentViewModel.showErrorViewForStakeholderList {
+                            editStakeholdersNavigation.selectStakeholder = nil
                         } else {
                             if let object = selectedCoinsured.0 {
-                                vm.removeCoInsured(
+                                vm.removeStakeholder(
                                     .init(
                                         firstName: object.firstName,
                                         lastName: object.lastName,
@@ -73,24 +74,24 @@ struct CoInsuredSelectScreen: View {
                 }
             },
             onCancel: {
-                editCoInsuredNavigation.selectCoInsured = nil
+                editStakeholdersNavigation.selectStakeholder = nil
             }
         )
         self.intentViewModel = intentViewModel
         self.vm = vm
-        intentViewModel.errorMessageForCoinsuredList = nil
+        intentViewModel.errorMessageForStakeholderList = nil
         intentViewModel.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentViewModel.showErrorViewForCoInsuredList {
-            CoInsuredInputErrorView(
+        if intentViewModel.showErrorViewForStakeholderList {
+            StakeholderInputErrorView(
                 vm: .init(
-                    coInsuredModel: StakeHolder(),
+                    stakeholderModel: Stakeholder(),
                     actionType: .add,
                     contractId: contractId
                 ),
-                editCoInsuredNavigation: editCoInsuredNavigation,
+                editStakeholdersNavigation: editStakeholdersNavigation,
                 showEnterManuallyButton: false
             )
         } else {
@@ -99,7 +100,7 @@ struct CoInsuredSelectScreen: View {
     }
 
     var picker: some View {
-        ItemPickerScreen<StakeHolder>(
+        ItemPickerScreen<Stakeholder>(
             config: itemPickerConfig
         )
         .hItemPickerBottomAttachedView {
@@ -110,10 +111,10 @@ struct CoInsuredSelectScreen: View {
                     title: L10n.generalAddNew
                 ),
                 {
-                    editCoInsuredNavigation.coInsuredInputModel = .init(
+                    editStakeholdersNavigation.stakeholderInputModel = .init(
                         actionType: .add,
-                        coInsuredModel: .init(),
-                        title: editCoInsuredNavigation.coInsuredViewModel.config.stakeHolderType.addButtonTitle,
+                        stakeholderModel: .init(),
+                        title: editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType.addButtonTitle,
                         contractId: contractId
                     )
                 }
@@ -130,5 +131,8 @@ struct CoInsuredSelectScreen: View {
 }
 
 #Preview {
-    CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)))
+    StakeholderSelectScreen(
+        contractId: "",
+        editStakeholdersNavigation: .init(config: .init(stakeholderType: .coInsured))
+    )
 }

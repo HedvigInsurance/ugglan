@@ -2,18 +2,18 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CoInsuredInputErrorView: View {
-    @ObservedObject var vm: CoInusuredInputViewModel
+struct StakeholderInputErrorView: View {
+    @ObservedObject var vm: StakeholderInputViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     let showEnterManuallyButton: Bool
 
     init(
-        vm: CoInusuredInputViewModel,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel,
+        vm: StakeholderInputViewModel,
+        editStakeholdersNavigation: EditStakeholdersNavigationViewModel,
         showEnterManuallyButton: Bool
     ) {
         self.vm = vm
-        intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel = editStakeholdersNavigation.intentViewModel
         self.showEnterManuallyButton = showEnterManuallyButton
     }
 
@@ -28,7 +28,7 @@ struct CoInsuredInputErrorView: View {
 
         GenericErrorView(
             description: vm.SSNError ?? intentViewModel.errorMessageForInput
-                ?? intentViewModel.errorMessageForCoinsuredList,
+                ?? intentViewModel.errorMessageForStakeholderList,
             formPosition: .compact
         )
         .hStateViewButtonConfig(
@@ -45,7 +45,7 @@ struct CoInsuredInputErrorView: View {
                             }
                             vm.SSNError = nil
                             intentViewModel.errorMessageForInput = nil
-                            intentViewModel.errorMessageForCoinsuredList = nil
+                            intentViewModel.errorMessageForStakeholderList = nil
                             intentViewModel.viewState = .success
                         }
                     }
@@ -55,7 +55,7 @@ struct CoInsuredInputErrorView: View {
                     buttonAction: {
                         vm.SSNError = nil
                         intentViewModel.errorMessageForInput = nil
-                        intentViewModel.errorMessageForCoinsuredList = nil
+                        intentViewModel.errorMessageForStakeholderList = nil
                         intentViewModel.viewState = .success
                     }
                 )
@@ -65,13 +65,13 @@ struct CoInsuredInputErrorView: View {
 }
 
 #Preview {
-    CoInsuredInputErrorView(
-        vm: CoInusuredInputViewModel(
-            coInsuredModel: StakeHolder(),
+    StakeholderInputErrorView(
+        vm: StakeholderInputViewModel(
+            stakeholderModel: Stakeholder(),
             actionType: .add,
             contractId: ""
         ),
-        editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)),
+        editStakeholdersNavigation: .init(config: .init(stakeholderType: .coInsured)),
         showEnterManuallyButton: false
     )
 }

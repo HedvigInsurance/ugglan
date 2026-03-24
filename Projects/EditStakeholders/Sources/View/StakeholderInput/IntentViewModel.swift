@@ -14,20 +14,20 @@ public class IntentViewModel: ObservableObject {
     )
     @Published var isLoading: Bool = false
     @Published var errorMessageForInput: String?
-    @Published var errorMessageForCoinsuredList: String?
+    @Published var errorMessageForStakeholderList: String?
     @Published var viewState: ProcessingState = .loading {
         didSet {
             invalidateDetents()
         }
     }
 
-    var service = EditCoInsuredService()
+    var service = EditStakeholdersService()
 
-    var showErrorViewForCoInsuredList: Bool {
-        errorMessageForCoinsuredList != nil
+    var showErrorViewForStakeholderList: Bool {
+        errorMessageForStakeholderList != nil
     }
 
-    var showErrorViewForCoInsuredInput: Bool {
+    var showErrorViewForStakeholderInput: Bool {
         errorMessageForInput != nil
     }
 
@@ -41,21 +41,21 @@ public class IntentViewModel: ObservableObject {
     func getIntent(
         contractId: String,
         origin: GetIntentOrigin,
-        coInsured: [StakeHolder],
-        stakeHolderType: StakeHolderType
+        stakeholders: [Stakeholder],
+        type: StakeholderType
     ) async {
         self.contractId = contractId
         withAnimation {
             self.isLoading = true
             self.errorMessageForInput = nil
-            self.errorMessageForCoinsuredList = nil
+            self.errorMessageForStakeholderList = nil
             self.viewState = .loading
         }
         do {
-            let data = try await service.sendIntent(
+            let data = try await service.createIntent(
                 contractId: contractId,
-                coInsured: coInsured,
-                stakeHolderType: stakeHolderType
+                stakeholders: stakeholders,
+                type: type
             )
             withAnimation {
                 self.intent = data
@@ -64,10 +64,10 @@ public class IntentViewModel: ObservableObject {
         } catch let exception {
             withAnimation {
                 switch origin {
-                case .coinsuredSelectList:
-                    self.errorMessageForCoinsuredList = exception.localizedDescription
-                    self.viewState = .error(errorMessage: errorMessageForCoinsuredList ?? L10n.generalError)
-                case .coinsuredInput:
+                case .stakeholderSelectList:
+                    self.errorMessageForStakeholderList = exception.localizedDescription
+                    self.viewState = .error(errorMessage: errorMessageForStakeholderList ?? L10n.generalError)
+                case .stakeholderInput:
                     self.errorMessageForInput = exception.localizedDescription
                     self.viewState = .error(errorMessage: errorMessageForInput ?? L10n.generalError)
                 }
@@ -79,18 +79,18 @@ public class IntentViewModel: ObservableObject {
     }
 
     enum GetIntentOrigin {
-        case coinsuredSelectList
-        case coinsuredInput
+        case stakeholderSelectList
+        case stakeholderInput
     }
 
     @MainActor
-    func performCoInsuredChanges(commitId: String) async {
+    func performStakeholderChanges(commitId: String) async {
         withAnimation {
             viewState = .loading
             self.isLoading = true
         }
         do {
-            try await service.sendMidtermChangeIntentCommit(commitId: commitId)
+            try await service.commitMidtermChange(commitId: commitId)
             withAnimation {
                 self.viewState = .success
             }

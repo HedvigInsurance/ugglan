@@ -3,14 +3,14 @@ import hCore
 import hCoreUI
 
 struct ConfirmChangesView: View {
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @ObservedObject var intentViewModel: IntentViewModel
 
     init(
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     ) {
-        self.editCoInsuredNavigation = editCoInsuredNavigation
-        intentViewModel = editCoInsuredNavigation.intentViewModel
+        self.editStakeholdersNavigation = editStakeholdersNavigation
+        intentViewModel = editStakeholdersNavigation.intentViewModel
     }
 
     var body: some View {
@@ -24,9 +24,9 @@ struct ConfirmChangesView: View {
                 .primary,
                 content: .init(title: L10n.contractAddCoinsuredConfirmChanges),
                 {
-                    editCoInsuredNavigation.showProgressScreenWithSuccess = true
+                    editStakeholdersNavigation.showProgressScreenWithSuccess = true
                     Task {
-                        await intentViewModel.performCoInsuredChanges(
+                        await intentViewModel.performStakeholderChanges(
                             commitId: intentViewModel.intent.id
                         )
                     }
@@ -67,5 +67,5 @@ struct ConfirmChangesView: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ConfirmChangesView(editCoInsuredNavigation: .init(config: .init(stakeHolderType: .coInsured)))
+    return ConfirmChangesView(editStakeholdersNavigation: .init(config: .init(stakeholderType: .coInsured)))
 }
