@@ -1,5 +1,70 @@
 # Accessibility Guidelines
 
+## VoiceOver & Screen Reader Support
+
+All interactive elements must be reachable and announced by VoiceOver.
+
+- `.accessibilityLabel` — primary spoken description
+- `.accessibilityHint` — additional context spoken after a pause
+- `.accessibilityValue` — conveys dynamic/changing state (progress, selection)
+- `.accessibilityElement(children: .combine)` — merges child elements into one VoiceOver element
+- `UIAccessibility.post(notification: .layoutChanged, argument: view)` — shifts focus after layout changes
+- `UIAccessibility.post(notification: .screenChanged, argument: view)` — shifts focus after screen transitions
+- `UIAccessibility.post(notification: .announcement, argument: message)` — announces state changes
+- Avoid relying on visuals alone to communicate meaning
+
+## Dynamic Type & Font Scaling
+
+Text must scale with the system font setting.
+
+- Use `.font(.body)` or `hText("...", style: .body)` — never `.font(.system(size: N))` without scaling
+- `.minimumScaleFactor()` prevents text from being clipped in tight layouts while still scaling
+- Support the largest accessibility text size without truncation or layout breakage
+- Never use fixed font sizes
+- Use `.dynamicTypeSize(...)` to constrain scaling range when needed
+
+## Color & Contrast
+
+- **4.5:1** minimum contrast ratio for body text
+- **3:1** minimum for large/bold text
+- Don't rely on color alone to communicate status or information
+- Use semantic colors (`.label`, `.secondaryLabel`) when possible
+- Test in both Light and Dark Mode
+- Test with Color Filters enabled
+- Use Accessibility Inspector's contrast checker
+
+## Touch Target Size
+
+- **44pt × 44pt** minimum for all interactive elements
+- Use `.contentShape(Rectangle())` to extend the tappable area beyond visual bounds
+- Use padding or invisible hit areas around small visual elements
+
+## Labels & Semantics
+
+- Every actionable item must have a descriptive `.accessibilityLabel`
+- `.accessibilityHint` where actions aren't obvious from the label alone
+- `.accessibilityTraits` correctly applied (`.isButton`, `.isHeader`, etc.)
+- `.accessibilityHidden(true)` on purely decorative elements (icons alongside text, backgrounds, dividers)
+- All labels MUST use `L10n` localized strings, never hardcoded strings
+
+## Navigation Order
+
+- VoiceOver swipe order should match the visual hierarchy
+- `.accessibilitySortPriority()` to tweak reading order where needed
+- `UIAccessibility.post(...)` to manage focus after transitions
+- Info cards should be read first even if visually positioned last (they contain context for the rest of the screen)
+- Test swipe order using VoiceOver
+
+## Testing Checklist
+
+- Test all user flows with VoiceOver enabled
+- Test with the largest accessibility text sizes
+- Test in high contrast / dark mode
+- Use Accessibility Inspector for missing labels, low contrast, and incorrect focus order
+- Run `scripts/check-accessibility.sh` locally before PR
+
+---
+
 ## CI Enforcement
 
 Two GitHub Actions workflows enforce accessibility:

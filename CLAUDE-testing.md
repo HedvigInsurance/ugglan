@@ -172,3 +172,30 @@ final class MyViewModelTests: XCTestCase {
 - **Services**: Mock the client protocol, verify returned data and event tracking
 - **Stores (legacy)**: Test actions and resulting state changes via `sendAsync` + `waitUntil`
 - **Not views directly**: UI is not unit tested
+
+## When to Write Tests
+
+- New ViewModels: every public method that changes state
+- New service implementations: verify data flow and error handling
+- Bug fixes: write a test that reproduces the bug before fixing
+- Modified behavior: update existing tests to match new expectations
+
+## Test Naming Conventions
+
+Test methods use `func test<Subject><Scenario>` — describe what is being tested and what outcome is expected.
+
+**Naming rules:**
+- Start with `test` (required by XCTest)
+- Include the action or method name: `FetchActiveClaims`, `SubmitAddons`, `ConfirmRemoval`
+- End with the outcome: `Success`, `Failure`, `Error`
+- For state/selection tests, describe the behaviour: `SelectableAddonSelection`, `ToggleableAddonSelection`
+- No underscores — use camel case throughout
+
+## ViewModel Tests vs Store Tests
+
+| | ViewModel (Primary) | Store (Legacy) |
+|---|---|---|
+| Setup | Register mock via DI, create VM | Register mock via DI, reset persistence, get store |
+| Trigger | `await vm.method()` | `await store.sendAsync(.action)` |
+| Assert | `XCTAssertEqual(vm.property, expected)` | `waitUntil { store.state.property == expected }` |
+| Use for | All new code | Only when modifying existing Store code |
