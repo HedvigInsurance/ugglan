@@ -47,7 +47,7 @@ struct SetTerminationDate: View {
     }
 }
 
-#Preview{
+#Preview {
     SetTerminationDate(
         terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )

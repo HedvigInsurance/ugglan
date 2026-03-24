@@ -68,7 +68,7 @@ struct TerminationDeflectScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     TerminationDeflectScreen(
         suggestion: .init(
             type: .autoDecommission,
