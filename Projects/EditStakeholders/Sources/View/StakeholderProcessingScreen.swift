@@ -81,7 +81,7 @@ struct StakeholderProcessingScreen: View {
 
 extension StakeholderProcessingScreen: TrackingViewNameProtocol {
     var nameForTracking: String {
-        .init(describing: StakeholderProcessingScreen.self)
+        editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType.trackingName(for: "ProcessingScreen")
     }
 }
 

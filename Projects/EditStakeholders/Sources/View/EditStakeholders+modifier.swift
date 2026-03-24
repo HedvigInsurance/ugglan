@@ -58,7 +58,10 @@ struct EditStakeholders: ViewModifier {
                             )
                         )
                     )
-                    .embededInNavigation(router: errorRouter, tracking: StakeholderConfigType.error)
+                    .embededInNavigation(
+                        router: errorRouter,
+                        tracking: StakeholderConfigType.error(vm.stakeholderType!)
+                    )
             }
     }
 
@@ -84,20 +87,17 @@ struct EditStakeholders: ViewModifier {
 }
 
 enum StakeholderConfigType {
-    case oneItem
-    case list
-    case error
+    case oneItem(StakeholderType)
+    case list(StakeholderType)
+    case error(StakeholderType)
 }
 
 extension StakeholderConfigType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
-        case .oneItem:
-            return .init(describing: StakeholderListScreen.self)
-        case .list:
-            return .init(describing: StakeholderSelectInsuranceScreen.self)
-        case .error:
-            return .init(describing: GenericErrorView.self)
+        case .oneItem(let type): type.trackingName(for: "ListScreen")
+        case .list(let type): type.trackingName(for: "SelectInsuranceScreen")
+        case .error(let type): type.trackingName(for: "GenericError")
         }
     }
 }
