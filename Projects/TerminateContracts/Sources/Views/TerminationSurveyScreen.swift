@@ -58,6 +58,9 @@ struct TerminationSurveyScreen: View {
                         }
                     }
                 }
+                if let suggestion = vm.selectedOption?.suggestion {
+                    suggestionView(for: suggestion)
+                }
                 if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
                     optionId == vm.selectedOption?.id
                 {
@@ -68,6 +71,24 @@ struct TerminationSurveyScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    func suggestionView(for suggestion: TerminationSuggestion) -> some View {
+        if suggestion.isBlocking {
+            InfoCard(text: suggestion.description, type: .campaign)
+                .buttons([
+                    .init(
+                        buttonTitle: suggestion.buttonTitle,
+                        buttonAction: { [weak terminationFlowNavigationViewModel] in
+                            terminationFlowNavigationViewModel?.handleSuggestion(suggestion)
+                        }
+                    )
+                ])
+                .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
+        } else if suggestion.type == .info {
+            InfoCard(text: suggestion.description, type: .info)
+        }
     }
 
     func continueClicked() {
@@ -146,7 +167,10 @@ class SurveyScreenViewModel: ObservableObject {
 
     func checkContinueButtonStatus() {
         let status: Bool = {
-            guard selectedOption != nil else { return false }
+            guard let selectedOption else { return false }
+            if let suggestion = selectedOption.suggestion, suggestion.isBlocking {
+                return false
+            }
             guard let feedBack = selectedFeedBackViewModel else { return true }
             if feedBack.required, feedBack.text.count < 10 {
                 return false

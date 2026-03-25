@@ -790,6 +790,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_SURVEY_GENERIC_SUBTITLE" = "Innan vi fortsätter";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-4382&mode=design&t=L2ZbV2ozR8FTfDu4-0 */
 "TERMINATION_SURVEY_SUBTITLE" = "Varför vill du säga upp försäkringen?";
+"TERMINATION_FLOW_SUGGESTION_UPDATE_ADDRESS" = "Uppdatera din adress";
+"TERMINATION_FLOW_SUGGESTION_CHANGE_COVERAGE" = "Ändra skyddsnivå";
+"TERMINATION_FLOW_SUGGESTION_LEARN_MORE" = "Läs mer";
 "TIER_COMPARISON_SUBTITLE" = "Hitta den nivå som passar dina behov";
 "TIER_COMPARISON_TITLE" = "Jämför skyddsnivåer";
 "TIER_FLOW_ADDON_LABEL" = "Utökat reseskydd";

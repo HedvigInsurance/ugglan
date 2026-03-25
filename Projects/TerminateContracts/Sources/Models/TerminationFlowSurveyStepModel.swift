@@ -54,6 +54,21 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    public var buttonTitle: String {
+        switch type {
+        case .updateAddress:
+            return L10n.terminationFlowSuggestionUpdateAddress
+        case .upgradeCoverage:
+            return L10n.terminationFlowSuggestionChangeCoverage
+        case .downgradePrice:
+            return L10n.terminationFlowSuggestionChangeCoverage
+        case .redirect:
+            return L10n.terminationFlowSuggestionLearnMore
+        default:
+            return ""
+        }
+    }
+
     public var isDeflect: Bool {
         switch type {
         case .autoCancelSold, .autoCancelScrapped, .autoDecommission,
