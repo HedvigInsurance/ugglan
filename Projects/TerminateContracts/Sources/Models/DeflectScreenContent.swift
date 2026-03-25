@@ -93,7 +93,7 @@ extension DeflectScreenContent {
                 "We'll send a cancellation confirmation within a few days. If you don't get it after 5 days, feel free to contact us.",
             explanations: [],
             info: nil,
-            canContinueTermination: false
+            canContinueTermination: true
         )
     }
 }

@@ -7,7 +7,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelSold_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelSold)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
+        XCTAssertEqual(content?.canContinueTermination, true)
         XCTAssertNotNil(content?.extraMessage)
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
         XCTAssertNil(content?.info)
@@ -16,7 +16,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelScrapped_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
+        XCTAssertEqual(content?.canContinueTermination, true)
         XCTAssertNotNil(content?.extraMessage)
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
     }
@@ -24,7 +24,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoDecommission_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoDecommission)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
+        XCTAssertEqual(content?.canContinueTermination, true)
         XCTAssertNotNil(content?.extraMessage)
     }
 

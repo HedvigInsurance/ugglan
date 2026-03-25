@@ -66,27 +66,17 @@ struct TerminationDeflectScreen: View {
                 router?.dismiss()
             }
 
-            if content.canContinueTermination {
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.terminationButton)
-                ) { [weak terminationFlowNavigationViewModel] in
-                    guard let optionId = terminationFlowNavigationViewModel?.selectedOptionId else { return }
-                    terminationFlowNavigationViewModel?
-                        .proceedAfterSurvey(
-                            optionId: optionId,
-                            comment: terminationFlowNavigationViewModel?.selectedComment
-                        )
-                }
-            } else {
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.CrossSell.Info.faqChatButton)
-                ) {
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.terminationButton)
+            ) { [weak terminationFlowNavigationViewModel] in
+                guard let optionId = terminationFlowNavigationViewModel?.selectedOptionId else { return }
+                terminationFlowNavigationViewModel?
+                    .proceedAfterSurvey(
+                        optionId: optionId,
+                        comment: terminationFlowNavigationViewModel?.selectedComment
+                    )
             }
         }
     }
