@@ -107,7 +107,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "MoveFlow", path: .relativeToRoot("Projects/MoveFlow")),
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
         .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
-        .project(target: "EditCoInsured", path: .relativeToRoot("Projects/EditCoInsured")),
+        .project(target: "EditStakeholders", path: .relativeToRoot("Projects/EditStakeholders")),
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
         .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),

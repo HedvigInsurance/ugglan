@@ -1,7 +1,7 @@
 import ChangeTier
 import Chat
 import Contracts
-import EditCoInsured
+import EditStakeholders
 import Payment
 import PresentableStore
 import SafariServices
@@ -14,8 +14,8 @@ import hCoreUI
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    public let editCoInsuredVm = EditCoInsuredViewModel(
-        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
+    public let editStakeholdersVm = EditStakeholdersViewModel(
+        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     public let router = Router()
@@ -214,8 +214,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                     Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
                 }
             }
-        case .editCoInsured: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coInsured)
-        case .editCoOwners: helpCenterVm.editCoInsuredVm.start(stakeHolderType: .coOwner)
+        case .editCoInsured: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coInsured)
+        case .editCoOwners: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coOwner)
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
