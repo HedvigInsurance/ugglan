@@ -9,7 +9,7 @@ struct StakeholdersScreen: View {
     let type: StakeholderFieldType?
 
     private var displayItems: [StakeholderItem] {
-        vm.items(for: type, activationDate: intentViewModel.intent.activationDate)
+        vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
     }
 
     var body: some View {

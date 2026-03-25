@@ -23,7 +23,7 @@ struct StakeholderProcessingScreen: View {
             loadingViewText: stakeholderType.processingText,
             successViewTitle: stakeholderType.updatedTitle,
             successViewBody: stakeholderType.updatedLabel(
-                intentViewModel.intent.activationDate.localDateToDate?
+                intentViewModel.intent?.activationDate.localDateToDate?
                     .displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: nil,
