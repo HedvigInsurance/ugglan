@@ -1,4 +1,4 @@
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import PresentableStore
 import TerminateContracts
@@ -24,8 +24,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         lastName: String,
         ssn: String?,
         typeOfContract: TypeOfContract,
-        coInsured: [StakeHolder],
-        coOwners: [StakeHolder],
+        coInsured: [Stakeholder],
+        coOwners: [Stakeholder],
         addonsInfo: AddonsInfo? = nil,
     ) {
         self.id = id
@@ -67,8 +67,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let firstName: String
     public let lastName: String
     public let ssn: String?
-    public let coInsured: [StakeHolder]
-    public let coOwners: [StakeHolder]
+    public let coInsured: [Stakeholder]
+    public let coOwners: [Stakeholder]
     public let addonsInfo: AddonsInfo?
     public var fullName: String {
         firstName + " " + lastName
@@ -446,16 +446,16 @@ public struct AvailableAddon: Codable, Hashable, Identifiable, Sendable {
 }
 
 @MainActor
-extension StakeHoldersConfig {
+extension StakeholdersConfig {
     public init(
         contract: Contract,
-        stakeHolderType: StakeHolderType,
+        stakeholderType: StakeholderType,
         fromInfoCard: Bool
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
 
-        let (stakeHolders, numberOfMissingStakeHolders, numberOfMissingStakeHoldersWithoutTermination) =
-            switch stakeHolderType {
+        let (stakeholders, numberOfMissingStakeholders, numberOfMissingStakeholdersWithoutTermination) =
+            switch stakeholderType {
             case .coInsured:
                 (contract.coInsured, contract.nbOfMissingCoInsured, contract.nbOfMissingCoInsuredWithoutTermination)
             case .coOwner:
@@ -464,23 +464,23 @@ extension StakeHoldersConfig {
 
         self.init(
             id: contract.id,
-            stakeHolders: stakeHolders,
+            stakeholders: stakeholders,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-            numberOfMissingStakeHolders: numberOfMissingStakeHolders,
-            numberOfMissingStakeHoldersWithoutTermination: numberOfMissingStakeHoldersWithoutTermination,
+            numberOfMissingStakeholders: numberOfMissingStakeholders,
+            numberOfMissingStakeholdersWithoutTermination: numberOfMissingStakeholdersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedStakeHolders: store.state.fetchAllStakeHoldersNotInContract(
+            preSelectedStakeholders: store.state.fetchAllStakeholdersNotInContract(
                 contractId: contract.id,
-                stakeHolderType: stakeHolderType
+                stakeholderType: stakeholderType
             ),
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
             holderSSN: contract.ssn,
             fromInfoCard: fromInfoCard,
-            stakeHolderType: stakeHolderType
+            stakeholderType: stakeholderType
         )
     }
 }
