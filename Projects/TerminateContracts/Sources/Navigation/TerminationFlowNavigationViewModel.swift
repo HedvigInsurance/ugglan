@@ -207,9 +207,11 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
-        if suggestion.isDeflect {
-            router.push(TerminationFlowRouterActions.deflect(suggestion: suggestion))
-        } else {
+        if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestionType: suggestion.type) {
+            hideProgress = true
+            updateProgress()
+            router.push(TerminationFlowRouterActions.deflect(content: content))
+        } else if !suggestion.isDeflect {
             Task {
                 await redirectHandler.handle(suggestion)
             }
@@ -353,8 +355,8 @@ struct TerminationFlowNavigation: View {
                             openSelectInsuranceScreen()
                         case .confirmation:
                             openTerminationSummaryScreen()
-                        case let .deflect(suggestion):
-                            openDeflectScreen(suggestion: suggestion)
+                        case let .deflect(content):
+                            openDeflectScreen(content: content)
                         }
                     }
                 }
@@ -409,8 +411,8 @@ struct TerminationFlowNavigation: View {
                 openSelectInsuranceScreen()
             case .confirmation:
                 openTerminationSummaryScreen()
-            case let .deflect(suggestion):
-                openDeflectScreen(suggestion: suggestion)
+            case let .deflect(content):
+                openDeflectScreen(content: content)
             }
         case let .final(action):
             switch action {
@@ -449,8 +451,8 @@ struct TerminationFlowNavigation: View {
             .withDismissButton()
     }
 
-    private func openDeflectScreen(suggestion: TerminationSuggestion) -> some View {
-        TerminationDeflectScreen(suggestion: suggestion)
+    private func openDeflectScreen(content: DeflectScreenContent) -> some View {
+        TerminationDeflectScreen(content: content)
             .withDismissButton()
     }
 
@@ -533,7 +535,7 @@ public enum TerminationFlowRouterActions: Hashable {
     case survey
     case datePicker
     case confirmation
-    case deflect(suggestion: TerminationSuggestion)
+    case deflect(content: DeflectScreenContent)
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
