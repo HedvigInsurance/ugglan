@@ -5,13 +5,7 @@ import hCoreUI
 
 @MainActor
 public class IntentViewModel: ObservableObject {
-    @Published var intent = Intent(
-        activationDate: "",
-        currentTotalCost: .init(gross: .sek(0), net: .sek(0)),
-        newTotalCost: .init(gross: .sek(0), net: .sek(0)),
-        id: "",
-        newCostBreakdown: []
-    )
+    @Published var intent: Intent?
     @Published var isLoading: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForStakeholders: String?
@@ -32,7 +26,8 @@ public class IntentViewModel: ObservableObject {
     }
 
     public var showPriceBreakdown: Bool {
-        intent.newTotalCost.net != intent.currentTotalCost.net
+        guard let intent else { return false }
+        return intent.newTotalCost.net != intent.currentTotalCost.net
     }
 
     var contractId: String?
