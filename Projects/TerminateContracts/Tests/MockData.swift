@@ -100,4 +100,8 @@ enum MockTerminationData {
         activeFrom: "2025-01-01",
         typeOfContract: .seApartmentBrf
     )
+
+    static let autoCancelContent = DeflectScreenContent.from(suggestionType: .autoCancelSold)!
+    static let autoDecomContent = DeflectScreenContent.from(suggestionType: .carDecommissionInfo)!
+    static let recommissionContent = DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
 }
