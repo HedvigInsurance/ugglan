@@ -98,7 +98,7 @@ struct TerminationDeflectScreen: View {
     }
 }
 
-#Preview("Auto Cancel"){
+#Preview("Auto Cancel") {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoCancelSold)!
     )
@@ -111,7 +111,7 @@ struct TerminationDeflectScreen: View {
     )
 }
 
-#Preview("Auto Decom"){
+#Preview("Auto Decom") {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .carDecommissionInfo)!
     )
@@ -124,7 +124,7 @@ struct TerminationDeflectScreen: View {
     )
 }
 
-#Preview("Recommission"){
+#Preview("Recommission") {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
     )

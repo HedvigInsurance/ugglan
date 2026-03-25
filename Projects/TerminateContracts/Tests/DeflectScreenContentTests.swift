@@ -4,7 +4,6 @@ import hCore
 @testable import TerminateContracts
 
 final class DeflectScreenContentTests: XCTestCase {
-
     func testAutoCancelSold_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelSold)
         XCTAssertNotNil(content)
