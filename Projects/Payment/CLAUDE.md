@@ -19,7 +19,7 @@ Key services: `hPaymentClient` protocol defines payment data fetching; `hPayment
 
 ## Dependencies
 
-- Imports: hCore, hCoreUI, Campaign (for referral discounts), PresentableStore, Apollo, WebKit (for Trustly setup)
+- Imports: hCore, hCoreUI, Campaign (for referral discounts), Contracts, Forever, PresentableStore, Apollo, WebKit (for Trustly setup)
 - Imported by: App (main), Home (payment status badge)
 
 ## Navigation

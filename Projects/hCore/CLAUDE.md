@@ -39,7 +39,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `Models/IntentCost.swift` -- `IntentCost` and `QuoteCost` for quote-level pricing
 - `Models/UploadFile.swift` -- Simple data/name/mimeType struct for file uploads
 - `Models/ServerBasedDate.swift` -- Typealias `ServerBasedDate = String` with display formatting extensions
-- `Models/MimeType.swift` -- Shared MimeType enum (also listed under Models)
+
 
 ### Localization
 - `Localization.swift` -- `Localization.Locale` enum (sv_SE, en_SE) with `currentLocale` subject, web paths, accept-language headers

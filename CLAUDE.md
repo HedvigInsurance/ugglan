@@ -62,7 +62,7 @@ Always use the design system instead of raw SwiftUI equivalents:
 | `hRow` | List row |
 | `hButton` | `Button` |
 | `hText` | `Text` |
-| `hField` | `TextField` wrapper |
+| `hFloatingTextField` | `TextField` wrapper |
 | `hPill` | Tag / badge |
 
 - **Colors**: `hTextColor.Opaque.primary`, `hSignalColor.Green.element`, `hFillColor.Opaque.disabled`

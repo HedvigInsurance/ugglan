@@ -65,7 +65,7 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **RouterHost** -- SwiftUI view that creates and manages a Router-driven navigation stack
 - **DetentRouter** -- Sheet presentation system via `.detent()` modifier; supports height-based detents and centered modal style
 - **DetentPresentationOption** -- Options: `.alwaysOpenOnTop`, `.withoutGrabber`, `.disableDismissOnScroll`
-- **ModallyRouter** -- Additional modal presentation support
+- **`.modally()` modifier** -- Full-screen modal presentation via View extension
 - **hHostingController** -- Custom UIHostingController with lifecycle hooks (onDeinit, onDismiss, onViewWillAppear, etc.)
 - **View+dismissButton** -- Adds a dismiss button to views presented modally
 

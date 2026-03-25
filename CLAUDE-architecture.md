@@ -51,7 +51,7 @@ Legacy store access: `let store: SomeStore = globalPresentableStoreContainer.get
 
 ## Navigation
 
-Both navigation systems are currently in use. Code is migrating from Router to hNavigationStack.
+Two navigation systems exist. Code is migrating from Router to hNavigationStack.
 
 ### hNavigationStack + NavigationRouter (New)
 

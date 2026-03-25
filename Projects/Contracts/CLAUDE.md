@@ -15,7 +15,7 @@ Displays active, pending, and terminated insurance contracts with details on cov
 - **ViewModels**: `ContractsNavigationViewModel` (router + published modals), `ContractDetailsViewModel` (observes store for contract deletion), `ContractTableViewModel` (loading state + addon banners)
 - **Service**: `Service/Protocols/ContractsClient.swift`, `Service/DemoImplementation/ContractsClientDemo.swift`
 - **Models**: `Models/ContractModels.swift` — `Contract`, `Agreement`, `ContractRenewal`, `AddonsInfo`, `ExistingAddon`, `AvailableAddon`
-- **Views**: `ContractDetail.swift` (tabbed: Overview/Coverage/Details), `ContractTable.swift` (list with stacked card UI), `ContractRow.swift`, `ContractInformation.swift`, `ContractCoverage.swift`, `ContractDocuments.swift`
+- **View**: `ContractDetail.swift` (tabbed: Overview/Coverage/Details), `ContractTable.swift` (list with stacked card UI), `ContractRow.swift`, `ContractInformation.swift`, `ContractCoverage.swift`, `ContractDocuments.swift`
 - **Store**: `ContractsStore.swift`, `ContractState.swift`, `ContractAction.swift`
 
 ## Dependencies

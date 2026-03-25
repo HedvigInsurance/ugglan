@@ -4,7 +4,7 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 
 ## Architecture
 - **Mixed pattern**: Uses the legacy `PresentableStore` (`HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType>`) for state management and data fetching, but the main screen uses a local `HomeVM: ObservableObject` ViewModel that subscribes to the store's state signal via Combine. The `HomeBottomScrollView` also has its own `HomeBottomScrollViewModel`.
-- **Key services**: `HomeClient` protocol (in `Service/Protocols/HomeClient.swift`) defines all data-fetching methods. `HomeClientDemo` provides the demo implementation. The Octopus (real) implementation lives in `Projects/hGraphQL/`, not in this module.
+- **Key services**: `HomeClient` protocol (in `Service/Protocols/HomeClient.swift`) defines all data-fetching methods. `HomeClientDemo` provides the demo implementation. The Octopus (real) implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/HomeClientOctopus.swift`.
 - **Data flow**: `HomeScreen` creates `HomeVM`, which reads from `HomeStore`. On appear, `HomeVM.fetchHomeState()` dispatches multiple actions to `HomeStore` (and to `CrossSellStore`, `ContractStore`, `PaymentStore`). The store's `effects()` calls `HomeClient` methods, then dispatches setter actions that are handled in `reduce()`.
 - **Navigation**: `HomeNavigationViewModel` is the central navigation coordinator, managing chat presentation, claim submission flow, cross-sell modals, and Help Center. `HelpCenterNavigationViewModel` manages the Help Center sub-navigation with its own `Router`.
 

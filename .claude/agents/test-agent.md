@@ -37,7 +37,7 @@ Follow these patterns exactly:
 
 **Imports and class declaration:**
 ```swift
-@precondurrency import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import ModuleName
