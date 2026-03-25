@@ -169,7 +169,7 @@ class PushNotificationHandler {
                 )
             }
         } catch {
-            viewModel?.isAddonErrorPresented = error.localizedDescription
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
 
@@ -885,8 +885,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    let hasLaunchFinished = CurrentValueSubject<Bool, Never>(false)
-    var hasLaunchFinishedCancellable: AnyCancellable?
     var previousTab: Int = 0
 
     // MARK: - Helper Properties
@@ -906,8 +904,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
     @Published var isInsuranceEvidencePresented = false
-    @Published var isAddonErrorPresented: String?
-    let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
     @Published var isFaqPresented: FAQModel?
@@ -964,12 +960,6 @@ class LoggedInNavigationViewModel: ObservableObject {
             self,
             selector: #selector(registerForPushNotification),
             name: .registerForPushNotifications,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handlePushNotification),
-            name: .handlePushNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
@@ -1082,24 +1072,12 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    @objc func handlePushNotification(notification: Notification) {
-        if hasLaunchFinished.value {
-            handle(notification: notification)
-        } else {
-            hasLaunchFinishedCancellable = hasLaunchFinished.filter { $0 }
-                .sink { [weak self] _ in
-                    self?.handle(notification: notification)
-                    self?.hasLaunchFinishedCancellable = nil
-                }
-        }
-    }
-
     @objc func chatClosed() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.send(.fetchChatNotifications)
     }
 
-    private func handle(notification: Notification) {
+    func handle(notification: Notification) {
         pushNotificationHandler.handle(notification)
     }
 
