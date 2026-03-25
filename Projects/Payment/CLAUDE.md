@@ -4,14 +4,14 @@ Manages payment information display, payment method setup, and connects payment 
 
 ## Architecture
 
-Legacy Store pattern with `PaymentStore` (extends `LoadingStateStore`) managing centralized state. No ViewModels for most views; uses `PresentableStoreLens` for reactive data binding. `PaymentsView` uses a minimal `PaymentsViewModel` to track loading states. Navigation managed through `PaymentsNavigation` which coordinates tab routing and detail views. Payment method setup uses `DirectDebitSetup` view with WebView integration for Trustly flows.
+Legacy mixed pattern: `PaymentStore` (extends `LoadingStateStore`) manages centralized state alongside several ViewModels (`PaymentsViewModel`, `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `PaymentsHistoryViewModel`). Some views still use `PresentableStoreLens` for reactive data binding. Navigation managed through `PaymentsNavigation` which coordinates tab routing and detail views. Payment method setup uses `DirectDebitSetup` view with WebView integration for Trustly flows.
 
 Key services: `hPaymentClient` protocol defines payment data fetching; `hPaymentService` is a wrapper. `PaymentStore` manages states: upcoming/ongoing payments, payment status, and payment history. Data flows: UI -> PresentableStoreLens -> PaymentStore state updates via service calls.
 
 ## Key Files
 
 - Entry point: `Sources/Navigation/PaymentNavigation.swift` (tab routing)
-- Views: `PaymentsView.swift` (main), `PaymentDetailsView.swift` (payment detail), `PaymentHistoryView.swift` (history list), `PaymentMethodScreen.swift` (payment method display)
+- Screens: `Screens/PaymentsView.swift` (main), `Screens/PaymentDetails/PaymentDetailsView.swift` (payment detail), `Screens/PaymentsHistoryView.swift` (history list), `Screens/PaymentsMethodScreen.swift` (payment method display)
 - Store: `PaymentStore.swift` (state management)
 - Service: `PaymentService.swift` + `PaymentClient.swift` protocol + `PaymentClientDemo.swift`
 - Models: `PaymentData.swift`, `PaymentStatusData.swift`, `PaymentHistoryData.swift`

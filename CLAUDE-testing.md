@@ -61,7 +61,7 @@ final class SomeTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: SomeClientProtocol.self)
-        try await Task.sleep(seconds: 0.0000001)
+        try await Task.sleep(seconds: 0.0000001)  // duration varies across tests
         XCTAssertNil(sut)
     }
 

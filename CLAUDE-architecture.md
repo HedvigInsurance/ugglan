@@ -92,7 +92,7 @@ Navigation enums must conform to `TrackingViewNameProtocol`.
 Every service follows the **Protocol + OctopusImplementation + DemoImplementation** triple.
 
 - **Protocol** — lives in the feature module at `Service/Protocols/`
-- **OctopusImplementation** — lives in `Projects/hGraphQL/GraphQL/Octopus/` (NOT per-module)
+- **OctopusImplementation** — lives in `Projects/App/Sources/Service/OctopusClientsImplementation/`
 - **DemoImplementation** — lives in the feature module at `Service/DemoImplementation/`
 
 ```swift
@@ -102,7 +102,7 @@ public protocol SomeClientProtocol {
     func getItems() async throws -> [Item]
 }
 
-// OctopusImplementation (hGraphQL):
+// OctopusImplementation (App module):
 class SomeClientOctopus: SomeClientProtocol {
     @Inject var octopus: hOctopus
     func getItems() async throws -> [Item] {
@@ -117,7 +117,7 @@ public class SomeClientDemo: SomeClientProtocol {
 }
 ```
 
-> **Note:** Some modules (Claims, Addons, Profile, App) still have local `OctopusImplementation/` directories — these are wrongly placed and should be migrated to hGraphQL.
+> **Note:** Some modules (Claims, Addons, Profile) have local `OctopusImplementation/` directories containing service wrappers/logging facades — these are not the actual GraphQL client implementations (those live in the App module).
 
 ## Dependency Injection
 

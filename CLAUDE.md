@@ -53,18 +53,18 @@ tuist generate              # Regenerate Xcode workspace after module changes
 
 ## Project Structure
 
-Standard module layout:
+Typical feature module layout (varies by module — some use `Screens/` instead of `Views/`, not all directories are present):
 ```
 Projects/<Module>/Sources/
   Models/
-  Views/                      # SwiftUI views + ViewModels
+  Views/ or Screens/          # SwiftUI views + ViewModels
   Service/
     Protocols/                # Service protocol definitions
     DemoImplementation/       # Mock implementations for previews
   Navigation/                 # Route definitions
 ```
 
-OctopusImplementation (GraphQL API implementations) lives in `Projects/hGraphQL/GraphQL/Octopus/`, not per-module.
+OctopusImplementation (GraphQL API client implementations) lives in `Projects/App/Sources/Service/OctopusClientsImplementation/`. GraphQL `.graphql` query/mutation files live in `Projects/hGraphQL/GraphQL/Octopus/<Feature>/`.
 
 Core modules: hCore (shared utilities), hCoreUI (design system), hGraphQL (API layer).
 
@@ -118,6 +118,6 @@ After writing/modifying feature code, invoke `@test-agent` for test generation a
 5. **Do NOT use TCA / ComposableArchitecture**
 6. **Do NOT omit `@MainActor`** on ViewModels, Store subclasses, and service protocols
 7. **Do NOT hardcode user-facing strings** — use `L10n.X.Y.z`
-8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple** (OctopusImplementation goes in hGraphQL)
+8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple** (OctopusImplementation goes in `Projects/App/Sources/Service/OctopusClientsImplementation/`)
 9. **Do NOT skip `TrackingViewNameProtocol`** on navigation enums
 10. **When requirements are unclear, ask** — do not assume

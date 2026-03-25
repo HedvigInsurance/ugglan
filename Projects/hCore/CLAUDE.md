@@ -65,7 +65,7 @@ Foundational module providing dependency injection, shared models, localization,
 ### UIKit Extensions
 - `UIApplication+GetTopViewController.swift` -- Methods to traverse the view controller hierarchy (`getTopViewController`, `getTopVisibleVc`, `getRootViewController`)
 - `UIApplication+safearea.swift` -- `safeArea` convenience on UIApplication
-- `UIApplication+dismissKeyboard.swift` -- Static `dismissKeyboard()` helper (note: calling convention is `UIApplication.dismissKeyboard()`)
+- `AppDelegate+dismissKeyboard.swift` -- Static `dismissKeyboard()` helper (note: calling convention is `UIApplication.dismissKeyboard()`)
 - `UIDevice+modelName.swift` -- Hardware identifier to human-readable device name mapping
 - `UIColor+DynamicPolyfill.swift` -- Convenience inits for light/dark dynamic colors
 - `UIColor+UIImage.swift` -- `asImage()` to create a 1px UIImage from a UIColor
