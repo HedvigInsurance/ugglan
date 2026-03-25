@@ -3,21 +3,20 @@ import hCore
 
 @testable import TerminateContracts
 
+@MainActor
 final class TerminateContractsTests: XCTestCase {
     private var mockClient: MockTerminateContractsClient!
 
-    @MainActor
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         mockClient = MockTerminateContractsClient()
         Dependencies.shared.add(module: Module { () -> TerminateContractsClient in self.mockClient })
     }
 
-    override func tearDown() {
-        super.tearDown()
+    override func tearDown() async throws {
+        try await super.tearDown()
     }
 
-    @MainActor
     func testGetTerminationSurvey_success() async throws {
         mockClient.surveyDataToReturn = MockTerminationData.terminateSurveyData
         let service = TerminateContractsService()
@@ -26,7 +25,6 @@ final class TerminateContractsTests: XCTestCase {
         XCTAssertEqual(result.options.first?.title, "Better price")
     }
 
-    @MainActor
     func testGetTerminationSurvey_error() async {
         mockClient.errorToThrow = NSError(domain: "test", code: 1)
         let service = TerminateContractsService()
@@ -38,7 +36,6 @@ final class TerminateContractsTests: XCTestCase {
         }
     }
 
-    @MainActor
     func testTerminateContract_success() async throws {
         mockClient.terminateResultToReturn = .success
         let service = TerminateContractsService()
@@ -51,7 +48,6 @@ final class TerminateContractsTests: XCTestCase {
         XCTAssertEqual(result, .success)
     }
 
-    @MainActor
     func testTerminateContract_userError() async throws {
         mockClient.terminateResultToReturn = .userError(message: "Cannot terminate")
         let service = TerminateContractsService()
@@ -64,7 +60,6 @@ final class TerminateContractsTests: XCTestCase {
         XCTAssertEqual(result, .userError(message: "Cannot terminate"))
     }
 
-    @MainActor
     func testDeleteContract_success() async throws {
         mockClient.deleteResultToReturn = .success
         let service = TerminateContractsService()
@@ -76,7 +71,6 @@ final class TerminateContractsTests: XCTestCase {
         XCTAssertEqual(result, .success)
     }
 
-    @MainActor
     func testDeleteContract_userError() async throws {
         mockClient.deleteResultToReturn = .userError(message: "Cannot delete")
         let service = TerminateContractsService()

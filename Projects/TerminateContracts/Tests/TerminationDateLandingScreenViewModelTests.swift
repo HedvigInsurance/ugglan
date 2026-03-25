@@ -5,8 +5,8 @@ import hCore
 
 final class TerminationDateLandingScreenViewModelTests: XCTestCase {
     @MainActor
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         let mockClient = MockTerminateContractsClient()
         mockClient.notificationToReturn = .init(message: "Test notification", type: .info)
         Dependencies.shared.add(module: Module { () -> TerminateContractsClient in mockClient })
