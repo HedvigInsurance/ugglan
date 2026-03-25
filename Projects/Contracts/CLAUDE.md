@@ -35,5 +35,5 @@ Displays active, pending, and terminated insurance contracts with details on cov
 - **Card Stack Animation**: ContractTable uses complex cumulative offset calculations for stacked card peek effect; VoiceOver forces expanded state
 - **Store Polling**: Main Contracts view polls every 60 seconds — ensure service latency doesn't cause janky UI
 - **EditType Logic**: `EditType.getTypes()` dynamically determines available actions; some require feature flags (e.g., termination flow)
-- **Missing Data Handling**: Contract state tracks missing co-insured/co-owner stakeholders separately with and without termination dates
+- **Missing Data Handling**: Contract state tracks missing stakeholders (co-insured/co-owners) separately with and without termination dates
 - **Termination Message Logic**: Different contract types show "Valid Until" vs "Terminated At" with handling for past, today, and future dates

@@ -34,7 +34,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `Models/hPDFDocument.swift` -- PDF document model with `TypeOfDocument` enum
 - `Models/InsurableLimits.swift` -- Label/limit/description triplet for insurance coverage limits
 - `Models/Deflect.swift` -- `Partner`, `LinkOnlyPartner`, `DeflectQuestion` models for claim deflection flows
-- `Models/EditType.swift` -- Enum of insurance-editing operations (change address, co-insured, tier, cancellation, etc.)
+- `Models/EditType.swift` -- Enum of insurance-editing operations (change address, stakeholders, tier, cancellation, etc.)
 - `Models/ItemCost.swift` -- `ItemCost` and `ItemDiscount` for line-item pricing from GraphQL
 - `Models/IntentCost.swift` -- `IntentCost` and `QuoteCost` for quote-level pricing
 - `Models/UploadFile.swift` -- Simple data/name/mimeType struct for file uploads

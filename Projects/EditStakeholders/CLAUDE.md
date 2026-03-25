@@ -1,6 +1,6 @@
 # EditStakeholders
 
-Manages co-insured and co-owner editing for insurance contracts. Supports adding, editing, and removing stakeholders with midterm change intent workflows and SSN-based personal data lookup.
+Manages stakeholder editing for insurance contracts (co-insured and co-owners). Supports adding, editing, and removing stakeholders with midterm change intent workflows and SSN-based personal data lookup.
 
 ## Architecture
 - Pattern: ViewModel (`@MainActor class: ObservableObject`) -- no `@Inject` on the top-level ViewModels; instead, `EditStakeholdersService` uses `@Inject var service: EditStakeholdersClient`

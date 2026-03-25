@@ -35,5 +35,5 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 ## Gotchas
 - `HomeVM` is a bridge between the old `PresentableStore` pattern and SwiftUI. It subscribes to `HomeStore.stateSignal` via Combine rather than using `@Inject` services directly. Data fetching is initiated by dispatching actions to multiple stores (`HomeStore`, `CrossSellStore`, `ContractStore`, `PaymentStore`) in `fetchHomeState()`.
 - Chat notification polling uses a 10-second `Timer.publish` that checks the top-visible ViewController description string to decide whether to poll -- a fragile heuristic.
-- The Help Center navigation handler (`HelpCenterNavigation`) is complex, managing quick actions that can launch termination flows, change-tier flows, travel certificates, address changes, edit co-insured, and more -- all via detents and modals from a single view.
+- The Help Center navigation handler (`HelpCenterNavigation`) is complex, managing quick actions that can launch termination flows, change-tier flows, travel certificates, address changes, edit stakeholders, and more -- all via detents and modals from a single view.
 - `openHelpCenter` in `HomeScreen` accesses `ContractStore` directly via `globalPresentableStoreContainer.get()` to check contract state -- mixing global store access into the view layer.
