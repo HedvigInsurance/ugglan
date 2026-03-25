@@ -9,7 +9,7 @@ struct InsuredPeopleScreen: View {
     let type: CoInsuredFieldType?
 
     private var listToDisplay: [StakeHolderListType] {
-        vm.listToDisplay(type: type, activationDate: intentViewModel.intent.activationDate)
+        vm.listToDisplay(type: type, activationDate: intentViewModel.intent?.activationDate)
     }
 
     var body: some View {
@@ -43,7 +43,7 @@ struct InsuredPeopleScreen: View {
 
     @ViewBuilder
     private var buttonView: some View {
-        if vm.showConfirmChangesButton {
+        if vm.showConfirmChangesButton && intentViewModel.intent != nil {
             ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
         }
     }

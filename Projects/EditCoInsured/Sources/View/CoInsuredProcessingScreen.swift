@@ -23,7 +23,7 @@ struct CoInsuredProcessingScreen: View {
             loadingViewText: stakeHolderType.processingText,
             successViewTitle: stakeHolderType.updatedTitle,
             successViewBody: stakeHolderType.updatedLabel(
-                intentViewModel.intent.activationDate.localDateToDate?
+                intentViewModel.intent?.activationDate.localDateToDate?
                     .displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: nil,
