@@ -61,23 +61,6 @@ struct LoggedInPresentations: ViewModifier {
                 ChangeTierNavigation(input: changeTierInput)
             }
             .handleAddons(input: $vm.isAddonPresented)
-            .detent(
-                item: $vm.isAddonErrorPresented,
-
-                options: .constant([.alwaysOpenOnTop])
-            ) { error in
-                GenericErrorView(description: error, formPosition: .compact)
-                    .hStateViewButtonConfig(
-                        .init(
-                            actionButton: .init(
-                                buttonAction: { [weak vm] in
-                                    vm?.addonErrorRouter.dismiss()
-                                }
-                            )
-                        )
-                    )
-                    .embededInNavigation(router: vm.addonErrorRouter, tracking: LoggedInNavigationDetentType.error)
-            }
             .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
                 dismissType in
                 switch dismissType {
