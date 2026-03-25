@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 public struct CardStack<Data, Content>: View
 where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
@@ -8,18 +9,32 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
     private let data: Data
     @ViewBuilder private let content: (Data.Element) -> Content
     @Binding var finalCurrentIndex: Int
+    private let accessibilityLabel: String?
+    private let elementAccessibilityLabel: ((Data.Element) -> String)?
 
     public init(
         _ data: Data,
         currentIndex: Binding<Int> = .constant(0),
+        accessibilityLabel: String? = nil,
+        elementAccessibilityLabel: ((Data.Element) -> String)? = nil,
         @ViewBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
         self.content = content
         _finalCurrentIndex = currentIndex
+        self.accessibilityLabel = accessibilityLabel
+        self.elementAccessibilityLabel = elementAccessibilityLabel
     }
 
     public var body: some View {
+        if data.isEmpty {
+            EmptyView()
+        } else {
+            cardStackContent
+        }
+    }
+
+    private var cardStackContent: some View {
         ZStack {
             ForEach(Array(data.enumerated()), id: \.element.id) { (index, element) in
                 content(element)
@@ -31,17 +46,34 @@ where Data: RandomAccessCollection, Data.Element: Identifiable, Content: View {
         }
         .highPriorityGesture(dragGesture)
         .padding(.horizontal, getPadding())
-        .accessibilityElement(children: .contain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel ?? "")
+        .accessibilityValue(currentElementAccessibilityValue)
         .accessibilityAdjustableAction { direction in
-            switch direction {
-            case .increment:
-                goTo(round(currentIndex) + 1)
-            case .decrement:
-                goTo(round(currentIndex) - 1)
-            @unknown default:
-                break
+            withAnimation(.interpolatingSpring(stiffness: 300, damping: 40)) {
+                switch direction {
+                case .increment:
+                    goTo(round(currentIndex) + 1)
+                case .decrement:
+                    goTo(round(currentIndex) - 1)
+                @unknown default:
+                    break
+                }
+                previousIndex = currentIndex
             }
         }
+    }
+
+    private var currentElementAccessibilityValue: Text {
+        guard !data.isEmpty else { return Text("") }
+        let index = Int(round(currentIndex))
+        let clampedIndex = max(0, min(index, data.count - 1))
+        let dataArray = Array(data)
+        if let labelProvider = elementAccessibilityLabel {
+            let name = labelProvider(dataArray[clampedIndex])
+            return Text("\(name), \(clampedIndex + 1) \(L10n.a11YOf) \(data.count)")
+        }
+        return Text("\(clampedIndex + 1) \(L10n.a11YOf) \(data.count)")
     }
 
     private func getPadding() -> CGFloat {

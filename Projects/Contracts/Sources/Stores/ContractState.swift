@@ -1,6 +1,6 @@
 import Addons
 import Apollo
-import EditCoInsured
+import EditStakeholders
 import PresentableStore
 import SwiftUI
 
@@ -11,28 +11,28 @@ public struct ContractState: StateProtocol {
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
 
-    public var allStakeHolders: [StakeHolder] {
-        let stakeHolders = activeContracts.flatMap { contract in
+    public var allStakeholders: [Stakeholder] {
+        let stakeholders = activeContracts.flatMap { contract in
             (contract.coInsured + contract.coOwners).filter { !$0.hasMissingData }
         }
-        let unique = Set(stakeHolders)
+        let unique = Set(stakeholders)
         return unique.sorted(by: { $0.id > $1.id })
     }
 
-    public func fetchAllStakeHoldersNotInContract(
+    public func fetchAllStakeholdersNotInContract(
         contractId: String,
-        stakeHolderType: StakeHolderType,
-    ) -> [StakeHolder] {
+        stakeholderType: StakeholderType,
+    ) -> [Stakeholder] {
         guard let contract = contractForId(contractId) else { return [] }
-        let contractStakeHolders =
-            switch stakeHolderType {
+        let contractStakeholders =
+            switch stakeholderType {
             case .coInsured: Set(contract.coInsured)
             case .coOwner: Set(contract.coOwners)
             }
 
-        let stakeHoldersNotAdded = allStakeHolders.filter { !contractStakeHolders.contains($0) }
+        let stakeholdersNotAdded = allStakeholders.filter { !contractStakeholders.contains($0) }
 
-        return stakeHoldersNotAdded
+        return stakeholdersNotAdded
     }
 
     public func contractForId(_ id: String) -> Contract? {
@@ -61,9 +61,9 @@ extension ContractState {
 }
 
 @MainActor
-extension ContractStore: ExistingStakeHolders {
-    public func get(contractId: String, stakeHolderType: StakeHolderType) -> [StakeHolder] {
-        state.fetchAllStakeHoldersNotInContract(contractId: contractId, stakeHolderType: stakeHolderType)
+extension ContractStore: ExistingStakeholders {
+    public func get(contractId: String, stakeholderType: StakeholderType) -> [Stakeholder] {
+        state.fetchAllStakeholdersNotInContract(contractId: contractId, stakeholderType: stakeholderType)
     }
 }
 

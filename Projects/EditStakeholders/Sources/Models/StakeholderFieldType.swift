@@ -1,0 +1,74 @@
+import hCore
+import hCoreUI
+
+enum StakeholderFieldType {
+    case empty
+    case localEdit
+    case delete
+
+    @MainActor
+    var icon: ImageAsset? {
+        switch self {
+        case .empty:
+            return hCoreUIAssets.plus
+        case .delete:
+            return hCoreUIAssets.closeSmall
+        case .localEdit:
+            return nil
+        }
+    }
+
+    @hColorBuilder @MainActor
+    var iconColor: some hColor {
+        switch self {
+        case .delete:
+            hTextColor.Opaque.secondary
+        default:
+            hTextColor.Opaque.primary
+        }
+    }
+
+    var text: String? {
+        switch self {
+        case .empty:
+            return L10n.generalAddInfoButton
+        case .delete:
+            return nil
+        case .localEdit:
+            return L10n.General.edit
+        }
+    }
+
+    var action: StakeholderAction {
+        switch self {
+        case .empty:
+            return .add
+        case .localEdit:
+            return .edit
+        case .delete:
+            return .delete
+        }
+    }
+
+    func title(for stakeholderType: StakeholderType) -> String {
+        switch self {
+        case .empty:
+            return stakeholderType.addInfoTitle
+        case .localEdit:
+            return stakeholderType.addInfoTitle
+        case .delete:
+            return stakeholderType.removeConfirmationTitle
+        }
+    }
+
+    var accessibilityValue: String {
+        switch self {
+        case .empty:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverAddInformation
+        case .localEdit:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverEdit
+        case .delete:
+            return L10n.voiceoverDoubleClickTo + L10n.voiceoverRemove
+        }
+    }
+}

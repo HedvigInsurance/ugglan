@@ -1,6 +1,6 @@
 import Addons
 import Contracts
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -18,8 +18,8 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
-    public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
+    public var editStakeholdersVm = EditStakeholdersViewModel(
+        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 

@@ -25,6 +25,7 @@ import hGraphQL
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
+    let applicationLaunchTimestamp: Date = Date()
 
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)

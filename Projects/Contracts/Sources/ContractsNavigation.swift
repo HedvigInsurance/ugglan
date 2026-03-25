@@ -1,6 +1,6 @@
 import Addons
 import ChangeTier
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import PresentableStore
 import SafariServices
@@ -68,19 +68,19 @@ public struct ContractsNavigation<Content: View>: View {
                     contractsNavigationVm.changeYourInformationContract = nil
                     switch selectedType {
                     case .coInsured:
-                        let configContract: StakeHoldersConfig = .init(
+                        let configContract: StakeholdersConfig = .init(
                             contract: contract,
-                            stakeHolderType: .coInsured,
+                            stakeholderType: .coInsured,
                             fromInfoCard: false
                         )
-                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                        contractsNavigationVm.editStakeholdersVm.start(fromContract: configContract)
                     case .coOwners:
-                        let configContract: StakeHoldersConfig = .init(
+                        let configContract: StakeholdersConfig = .init(
                             contract: contract,
-                            stakeHolderType: .coOwner,
+                            stakeholderType: .coOwner,
                             fromInfoCard: false
                         )
-                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                        contractsNavigationVm.editStakeholdersVm.start(fromContract: configContract)
                     case .changeTier:
                         contractsNavigationVm.changeTierInput = .contractWithSource(
                             data: .init(source: .changeTier, contractId: contract.id)
@@ -160,8 +160,8 @@ public class ContractsNavigationViewModel: ObservableObject {
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?
-    @Published public var editCoInsuredConfig: StakeHoldersConfig?
-    @Published public var editCoInsuredMissingAlert: StakeHoldersConfig?
+    @Published public var editStakeholderConfig: StakeholdersConfig?
+    @Published public var editStakeholderMissingAlert: StakeholdersConfig?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Agreement?
     @Published public var isChangeAddressPresented = false
@@ -171,8 +171,8 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var addonActionPresented: AddonAction?
     @Published public var isActiveTab = false
 
-    public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
+    public var editStakeholdersVm = EditStakeholdersViewModel(
+        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 
     public init() {}

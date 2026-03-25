@@ -95,15 +95,13 @@ struct MainNavigation: App {
 
 @MainActor
 class MainNavigationViewModel: ObservableObject {
-    @Published var hasLaunchFinished = false {
-        didSet {
-            loggedInVm.hasLaunchFinished.send(hasLaunchFinished)
-        }
-    }
+    @Published var hasLaunchFinished = false
     private var analyticsService = AnalyticsService()
     @Published var showLaunchScreen = true
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
+    private var pushNotificationCancellable: AnyCancellable?
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
@@ -170,6 +168,38 @@ class MainNavigationViewModel: ObservableObject {
         // we want to show it initially when app launches if there is any
         ToolbarOptionType.crossSell(hasNewOffer: false).resetTooltipDisplayState()
         ToolbarOptionType.chat(hasUnread: false).resetTooltipDisplayState()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePushNotification),
+            name: .handlePushNotification,
+            object: nil
+        )
+    }
+
+    @objc func handlePushNotification(notification: Notification) {
+        let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
+        /// If the app was launched less than 1 second ago, it's a cold start (e.g. opened via push or deeplink)
+        let isColdStart = abs(timeSinceLaunch) < 1
+        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(1)
+
+        pushNotificationCancellable =
+            $stateToShow
+            .map { state -> AnyPublisher<ApplicationState.Screen, Never> in
+                if state == .loggedIn {
+                    return Just(state)
+                        .delay(for: delay, scheduler: RunLoop.main)
+                        .eraseToAnyPublisher()
+                } else {
+                    return Empty().eraseToAnyPublisher()
+                }
+            }
+            .switchToLatest()
+            .first()
+            .sink { [weak self] _ in
+                self?.loggedInVm.handle(notification: notification)
+                self?.pushNotificationCancellable = nil
+            }
     }
 
     private func hideLaunchScreen() {

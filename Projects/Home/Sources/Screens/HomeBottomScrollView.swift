@@ -1,7 +1,7 @@
 import Apollo
 import Combine
 import Contracts
-import EditCoInsured
+import EditStakeholders
 import Payment
 import PresentableStore
 import SwiftUI
@@ -34,8 +34,8 @@ struct HomeBottomScrollView: View {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
                 case .missingCoInsured(let type):
-                    CoInsuredInfoHomeView(infoText: type.missingAddInfoText) {
-                        navigationVm.editCoInsuredVm.start(stakeHolderType: type, forMissingStakeHolders: true)
+                    StakeholderInfoHomeView(infoText: type.missingAddInfoText) {
+                        navigationVm.editStakeholdersVm.start(stakeholderType: type, forMissingStakeholders: true)
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
@@ -259,7 +259,7 @@ struct InfoCardView: Identifiable, Hashable {
 
 public enum InfoCardType: Hashable, Comparable {
     case payment
-    case missingCoInsured(type: StakeHolderType)
+    case missingCoInsured(type: StakeholderType)
     case importantMessage(message: String)
     case renewal
     case terminated

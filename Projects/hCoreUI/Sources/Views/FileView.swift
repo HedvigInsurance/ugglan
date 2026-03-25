@@ -40,8 +40,8 @@ public struct FileView: View {
                             .aspectRatio(
                                 contentMode: .fill
                             )
-                            .accessibilityHidden(true)
                         )
+                        .accessibilityLabel(file.name)
                 }
             } else {
                 GeometryReader { geometry in
@@ -97,7 +97,7 @@ public struct FileView: View {
                 .aspectRatio(
                     contentMode: .fill
                 )
-                .accessibilityHidden(true)
+                .accessibilityLabel(file.name)
             )
     }
 
@@ -109,7 +109,6 @@ public struct FileView: View {
                 .background(
                     KFAnimatedImage(url)
                         .scaledToFit()
-                        .accessibilityHidden(true)
                 )
         } else {
             Rectangle().fill(.clear)
@@ -124,10 +123,10 @@ public struct FileView: View {
                     .targetCache(ImageCache.default)
                     .setProcessor(processor)
                     .resizable()
-                    .accessibilityHidden(true)
                     .aspectRatio(
                         contentMode: .fill
                     )
+                    .accessibilityLabel(file.name)
                 )
         }
     }
