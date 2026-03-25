@@ -46,11 +46,11 @@ extension DeflectScreenContent {
             return .autoCancel(
                 message: "Since your car has been scrapped, your insurance will be automatically cancelled."
             )
-        case .autoDecommission:
+        case .autoCancelDecommission:
             return .autoCancel(
                 message: "Since your car has been decommissioned, your insurance will be automatically cancelled."
             )
-        case .carDecommissionInfo:
+        case .autoDecommission:
             return DeflectScreenContent(
                 title: "Your insurance will switch to decommission insurance",
                 message:

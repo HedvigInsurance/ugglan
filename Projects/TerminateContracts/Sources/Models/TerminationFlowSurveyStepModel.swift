@@ -49,7 +49,7 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
         case .updateAddress, .upgradeCoverage, .downgradePrice, .redirect:
             return true
         case .info, .autoCancelSold, .autoCancelScrapped, .autoDecommission,
-            .carDecommissionInfo, .carAlreadyDecommission, .unknown:
+            .autoCancelDecommission, .carAlreadyDecommission, .unknown:
             return false
         }
     }
@@ -72,7 +72,7 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
     public var isDeflect: Bool {
         switch type {
         case .autoCancelSold, .autoCancelScrapped, .autoDecommission,
-            .carDecommissionInfo, .carAlreadyDecommission:
+            .autoCancelDecommission, .carAlreadyDecommission:
             return true
         default:
             return false
@@ -89,7 +89,7 @@ public enum TerminationSuggestionType: String, Codable, Sendable {
     case autoCancelSold
     case autoCancelScrapped
     case autoDecommission
-    case carDecommissionInfo
+    case autoCancelDecommission
     case carAlreadyDecommission
     case unknown
 }

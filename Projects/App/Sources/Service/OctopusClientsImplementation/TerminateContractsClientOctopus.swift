@@ -173,7 +173,7 @@ extension GraphQLEnum<OctopusGraphQL.TerminationFlowSurveyOptionSuggestionType> 
         case .case(.autoCancelSold): return .autoCancelSold
         case .case(.autoCancelScrapped): return .autoCancelScrapped
         case .case(.autoDecommission): return .autoDecommission
-        case .case(.carDecommissionInfo): return .carDecommissionInfo
+        case .case(.autoCancelDecommission): return .autoCancelDecommission
         case .case(.carAlreadyDecommission): return .carAlreadyDecommission
         default: return .unknown
         }

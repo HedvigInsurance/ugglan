@@ -21,15 +21,15 @@ final class DeflectScreenContentTests: XCTestCase {
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
     }
 
-    func testAutoDecommission_returnsAutoCancelContent() {
-        let content = DeflectScreenContent.from(suggestionType: .autoDecommission)
+    func testAutoCancelDecommission_returnsAutoCancelContent() {
+        let content = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
         XCTAssertNotNil(content)
         XCTAssertEqual(content?.canContinueTermination, true)
         XCTAssertNotNil(content?.extraMessage)
     }
 
-    func testCarDecommissionInfo_returnsDecomContent() {
-        let content = DeflectScreenContent.from(suggestionType: .carDecommissionInfo)
+    func testAutoDecommission_returnsDecomContent() {
+        let content = DeflectScreenContent.from(suggestionType: .autoDecommission)
         XCTAssertNotNil(content)
         XCTAssertEqual(content?.canContinueTermination, true)
         XCTAssertNil(content?.extraMessage)
@@ -58,7 +58,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelTypes_shareSameTitle() {
         let sold = DeflectScreenContent.from(suggestionType: .autoCancelSold)
         let scrapped = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
-        let decom = DeflectScreenContent.from(suggestionType: .autoDecommission)
+        let decom = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
         XCTAssertEqual(sold?.title, scrapped?.title)
         XCTAssertEqual(sold?.title, decom?.title)
     }
@@ -66,7 +66,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelTypes_haveDifferentMessages() {
         let sold = DeflectScreenContent.from(suggestionType: .autoCancelSold)
         let scrapped = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
-        let decom = DeflectScreenContent.from(suggestionType: .autoDecommission)
+        let decom = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
         XCTAssertNotEqual(sold?.message, scrapped?.message)
         XCTAssertNotEqual(sold?.message, decom?.message)
         XCTAssertNotEqual(scrapped?.message, decom?.message)

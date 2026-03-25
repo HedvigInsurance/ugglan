@@ -102,6 +102,6 @@ enum MockTerminationData {
     )
 
     static let autoCancelContent = DeflectScreenContent.from(suggestionType: .autoCancelSold)!
-    static let autoDecomContent = DeflectScreenContent.from(suggestionType: .carDecommissionInfo)!
+    static let autoDecomContent = DeflectScreenContent.from(suggestionType: .autoDecommission)!
     static let recommissionContent = DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
 }
