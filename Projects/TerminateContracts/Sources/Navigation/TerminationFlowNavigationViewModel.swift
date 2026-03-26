@@ -126,7 +126,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     // MARK: - Progress
     @Published var progress: Float? = 0
     private var routeCountCancellable: AnyCancellable?
-    private var hideProgress = false
 
     var extraCoverage: [ExtraCoverageItem] {
         guard let action = surveyData?.action else { return [] }
@@ -191,12 +190,10 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     // MARK: - Survey Completion
-
     func proceedAfterSurvey(optionId: String, comment: String?) {
         selectedOptionId = optionId
         selectedComment = comment
         guard let action = surveyData?.action else { return }
-
         switch action {
         case .terminateWithDate:
             router.push(TerminationFlowRouterActions.datePicker)
@@ -208,9 +205,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
         if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestionType: suggestion.type) {
-            hideProgress = true
             updateProgress()
-            router.push(TerminationFlowRouterActions.deflect(content: content))
+            router.push(content)
         } else if !suggestion.isDeflect {
             Task {
                 await redirectHandler.handle(suggestion)
@@ -256,10 +252,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
                 switch result {
                 case .success:
-                    hideProgress = true
                     router.push(TerminationFlowFinalRouterActions.success)
                 case let .userError(message):
-                    hideProgress = true
                     router.push(TerminationFlowFinalRouterActions.failure(message: message))
                 }
             } catch {
@@ -272,7 +266,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     // MARK: - Notification
-
     var fetchNotificationTask: Task<Void, Never>?
 
     func fetchNotification(for date: Date?) {
@@ -298,16 +291,20 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     // MARK: - Progress Calculation
-
-    private var totalSteps: Int {
-        hasSelectInsuranceStep ? 4 : 3
+    private var remainingSteps: Int {
+        var steps = 1  // confirmation
+        if !isDeletion { steps += 1 }
+        return steps
     }
 
     private func updateProgress() {
-        if hideProgress {
+        let finalActionsKey: AnyHashable = "\(TerminationFlowFinalRouterActions.self)"
+        let deflectActionkey: AnyHashable = "\(DeflectScreenContent.self)"
+        if router.routes.last == finalActionsKey || router.routes.last == deflectActionkey {
             progress = nil
         } else {
-            progress = min(Float(router.count) / Float(totalSteps), 1.0)
+            let count = router.count
+            progress = Float(count) / Float(count + remainingSteps)
         }
     }
 }
@@ -354,11 +351,15 @@ struct TerminationFlowNavigation: View {
                             openSelectInsuranceScreen()
                         case .confirmation:
                             openTerminationSummaryScreen()
-                        case let .deflect(content):
-                            openDeflectScreen(content: content)
                         }
                     }
                 }
+                .routerDestination(
+                    for: DeflectScreenContent.self,
+                    destination: { content in
+                        openDeflectScreen(content: content)
+                    }
+                )
                 .routerDestination(
                     for: TerminationFlowFinalRouterActions.self,
                     options: .hidesBackButton
@@ -410,8 +411,6 @@ struct TerminationFlowNavigation: View {
                 openSelectInsuranceScreen()
             case .confirmation:
                 openTerminationSummaryScreen()
-            case let .deflect(content):
-                openDeflectScreen(content: content)
             }
         case let .final(action):
             switch action {
@@ -423,6 +422,8 @@ struct TerminationFlowNavigation: View {
             case let .failure(message):
                 openTerminationFailScreen(message: message)
             }
+        case let .deflect(deflect):
+            openDeflectScreen(content: deflect)
         }
     }
 
@@ -534,22 +535,19 @@ public enum TerminationFlowRouterActions: Hashable {
     case survey
     case datePicker
     case confirmation
-    case deflect(content: DeflectScreenContent)
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .selectInsurance:
-            return "Select Insurance"
+            return .init(describing: TerminationSelectInsuranceScreen.self)
         case .survey:
             return .init(describing: TerminationSurveyScreen.self)
         case .datePicker:
             return .init(describing: SetTerminationDateLandingScreen.self)
         case .confirmation:
             return .init(describing: TerminationSummaryScreen.self)
-        case .deflect:
-            return "TerminationDeflectScreen"
         }
     }
 }
@@ -557,6 +555,7 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
 public enum TerminationFlowFinalRouterActions: Hashable {
     case success
     case failure(message: String)
+    //    case deflect(content: DeflectScreenContent)
 }
 
 extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
@@ -570,9 +569,16 @@ extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
     }
 }
 
+extension DeflectScreenContent: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        .init(describing: TerminationDeflectScreen.self)
+    }
+}
+
 public enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
+    case deflect(deflect: DeflectScreenContent)
 }
 
 extension TerminationFlowActions: TrackingViewNameProtocol {
@@ -582,6 +588,8 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
             return action.nameForTracking
         case let .final(action):
             return action.nameForTracking
+        case let .deflect(deflect):
+            return deflect.nameForTracking
         }
     }
 }

@@ -23,7 +23,7 @@ extension String: TrackingViewNameProtocol {
 
 @MainActor
 public class Router: ObservableObject {
-    var routes = [AnyHashable]() {
+    public internal(set) var routes = [AnyHashable]() {
         didSet { count = routes.count }
     }
     var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
