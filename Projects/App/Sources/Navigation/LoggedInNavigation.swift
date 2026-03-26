@@ -212,7 +212,6 @@ class DeepLinkHandler {
     @InjectObservableObject private var featureFlags: FeatureFlags
 
     func handle(_ deepLinkUrl: URL?) {
-        log.info("DEEPLINK INFO HANDLING \(deepLinkUrl)")
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
             if !Environment.current.isDeeplink(url) {
