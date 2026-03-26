@@ -79,6 +79,7 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
+        log.info("DEEPLINK INFO HANDLING \(userInfo)")
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             if let notificationType = getNotificationType(from: userInfo) {
