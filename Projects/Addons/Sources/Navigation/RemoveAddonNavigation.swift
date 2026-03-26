@@ -42,13 +42,11 @@ public struct RemoveAddonNavigation: View {
                         case .summary:
                             RemoveAddonSummaryScreen(removeAddonNavigationVm)
                                 .configureTitle(L10n.offerUpdateSummaryTitle)
-                                .withAlertDismiss()
                         }
                     }
             } else {
                 RemoveAddonSummaryScreen(removeAddonNavigationVm)
                     .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withAlertDismiss()
             }
         }
         .environmentObject(removeAddonNavigationVm)
