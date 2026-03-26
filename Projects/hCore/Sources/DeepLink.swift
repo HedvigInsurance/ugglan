@@ -114,8 +114,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let paths = Environment.current.deepLinkUrls.compactMap { $0.absoluteString + "/" + deeplink.rawValue }
-        let url = paths.compactMap { URL(string: $0) }.last
+        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.rawValue
+        let url = URL(string: path)
         guard let url else {
             return nil
         }

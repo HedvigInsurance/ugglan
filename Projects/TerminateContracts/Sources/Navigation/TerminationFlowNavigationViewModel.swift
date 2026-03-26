@@ -24,7 +24,7 @@ class TerminationRedirectHandler {
 
     private func handleUpdateAddress() {
         viewModel?.router.dismiss()
-        var url = Environment.current.deepLinkUrls.last!
+        var url = Environment.current.deepLinkUrl
         url.appendPathComponent(DeepLink.moveContract.rawValue)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             NotificationCenter.default.post(name: .openDeepLink, object: url)
