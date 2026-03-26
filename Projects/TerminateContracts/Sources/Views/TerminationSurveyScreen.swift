@@ -184,7 +184,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationSurveyOption(
