@@ -104,10 +104,13 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     }
 
     private func getDeepLink(from userInfo: [AnyHashable: Any]) -> URL? {
-        if let link = (userInfo["LINK"] as? String) ?? (userInfo["link"] as? String) {
-            return Environment.current.deepLinkUrl.appending(component: link)
+        guard let cio = userInfo["CIO"] as? [String: Any],
+            let push = cio["push"] as? [String: Any],
+            let link = push["link"] as? String
+        else {
+            return nil
         }
-        return nil
+        return Environment.current.deepLinkUrl.appending(path: link)
     }
 
     func userNotificationCenter(
