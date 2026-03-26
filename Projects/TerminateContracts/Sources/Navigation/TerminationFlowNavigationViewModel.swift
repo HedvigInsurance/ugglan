@@ -285,7 +285,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                     try await Task.sleep(seconds: 1)
                     try Task.checkCancellation()
                     fetchNotification(for: date)
-                } catch {}
+                } catch { /* cancellation expected */  }
             }
         }
     }
@@ -298,9 +298,9 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     private func updateProgress() {
-        let finalActionsKey: AnyHashable = "\(TerminationFlowFinalRouterActions.self)"
-        let deflectActionkey: AnyHashable = "\(DeflectScreenContent.self)"
-        if router.routes.last == finalActionsKey || router.routes.last == deflectActionkey {
+        if router.lastRouteIs(TerminationFlowFinalRouterActions.self)
+            || router.lastRouteIs(DeflectScreenContent.self)
+        {
             progress = nil
         } else {
             let count = router.count
@@ -422,8 +422,8 @@ struct TerminationFlowNavigation: View {
             case let .failure(message):
                 openTerminationFailScreen(message: message)
             }
-        case let .deflect(deflect):
-            openDeflectScreen(content: deflect)
+        case let .deflect(content):
+            openDeflectScreen(content: content)
         }
     }
 
@@ -555,7 +555,6 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
 public enum TerminationFlowFinalRouterActions: Hashable {
     case success
     case failure(message: String)
-    //    case deflect(content: DeflectScreenContent)
 }
 
 extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
@@ -578,7 +577,7 @@ extension DeflectScreenContent: TrackingViewNameProtocol {
 public enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
-    case deflect(deflect: DeflectScreenContent)
+    case deflect(content: DeflectScreenContent)
 }
 
 extension TerminationFlowActions: TrackingViewNameProtocol {
@@ -588,8 +587,8 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
             return action.nameForTracking
         case let .final(action):
             return action.nameForTracking
-        case let .deflect(deflect):
-            return deflect.nameForTracking
+        case let .deflect(content):
+            return content.nameForTracking
         }
     }
 }

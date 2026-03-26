@@ -41,6 +41,10 @@ public class Router: ObservableObject {
 
     public init() {}
 
+    public func lastRouteIs<T>(_ type: T.Type) -> Bool {
+        routes.last == "\(type)" as AnyHashable
+    }
+
     var builders: [String: ContentBuilder<AnyView>] = [:]
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
