@@ -96,7 +96,6 @@ struct ChangeAddonNavigation: View {
                 case .summary:
                     ChangeAddonSummaryScreen(changeAddonNavigationVm)
                         .configureTitle(L10n.offerUpdateSummaryTitle)
-                        .withAlertDismiss()
                 case .addonLandingScreen:
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                         .withDismissButton()
