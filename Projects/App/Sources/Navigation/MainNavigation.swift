@@ -178,8 +178,10 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     @objc func handlePushNotification(notification: Notification) {
-        let delay: RunLoop.SchedulerTimeType.Stride =
-            abs(appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow) < 1 ? .seconds(2) : .seconds(1)
+        let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
+        /// If the app was launched less than 1 second ago, it's a cold start (e.g. opened via push or deeplink)
+        let isColdStart = abs(timeSinceLaunch) < 1
+        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(1)
 
         pushNotificationCancellable =
             $stateToShow
