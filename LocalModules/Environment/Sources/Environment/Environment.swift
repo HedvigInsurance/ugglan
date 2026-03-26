@@ -141,24 +141,18 @@ public enum Environment: Hashable {
         }
     }
 
-    public var deepLinkUrls: [URL] {
+    public var deepLinkUrl: URL {
         switch self {
         case .staging:
-            return [
-                URL(string: "https://link.dev.hedvigit.com")!
-            ]
+            return URL(string: "https://link.dev.hedvigit.com")!
+
         case .production, .custom:
-            return [
-                URL(string: "https://link.hedvig.com")!
-            ]
+            return URL(string: "https://link.hedvig.com")!
         }
     }
 
     public func isDeeplink(_ url: URL) -> Bool {
-        let deeplink = deepLinkUrls.first { deeplinkUrl in
-            url.host == deeplinkUrl.host
-        }
-        return deeplink != nil
+        url.host == deepLinkUrl.host
     }
 
     public var appStoreURL: URL {

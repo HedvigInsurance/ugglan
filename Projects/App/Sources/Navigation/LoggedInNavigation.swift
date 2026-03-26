@@ -212,6 +212,7 @@ class DeepLinkHandler {
     @InjectObservableObject private var featureFlags: FeatureFlags
 
     func handle(_ deepLinkUrl: URL?) {
+        log.info("DEEPLINK INFO HANDLING \(deepLinkUrl)")
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
             if !Environment.current.isDeeplink(url) {
@@ -1078,7 +1079,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func handle(notification: Notification) {
-        pushNotificationHandler.handle(notification)
+        if let url = notification.object as? URL {
+            deepLinkHandler.handle(url)
+        } else {
+            pushNotificationHandler.handle(notification)
+        }
     }
 
     func actionAfterLogin() {

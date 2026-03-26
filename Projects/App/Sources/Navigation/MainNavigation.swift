@@ -197,6 +197,7 @@ class MainNavigationViewModel: ObservableObject {
             .switchToLatest()
             .first()
             .sink { [weak self] _ in
+                log.info("DEEPLINK INFO \(notification.object ?? "") \(notification.userInfo ?? [:])")
                 self?.loggedInVm.handle(notification: notification)
                 self?.pushNotificationCancellable = nil
             }

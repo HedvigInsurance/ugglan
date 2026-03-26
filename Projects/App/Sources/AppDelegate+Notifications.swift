@@ -3,6 +3,7 @@ import Chat
 import Claims
 import Contracts
 import CoreDependencies
+import Environment
 import Foundation
 import Home
 import Payment
@@ -63,17 +64,31 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         )
     }
 
+    @MainActor
+    fileprivate func performPushAction(deepLinkURL: URL, userInfo: [AnyHashable: Any]) {
+        NotificationCenter.default.post(
+            name: .handlePushNotification,
+            object: deepLinkURL,
+            userInfo: userInfo
+        )
+    }
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = getNotificationType(from: userInfo) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            Task {
-                performPushAction(notificationType: notificationType, userInfo: userInfo)
+            if let notificationType = getNotificationType(from: userInfo) {
+                Task {
+                    performPushAction(notificationType: notificationType, userInfo: userInfo)
+                }
+            } else if let deepLink = getDeepLink(from: userInfo) {
+                Task {
+                    performPushAction(deepLinkURL: deepLink, userInfo: userInfo)
+                }
             }
         }
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
@@ -83,6 +98,13 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
     private func getNotificationType(from userInfo: [AnyHashable: Any]) -> PushNotificationType? {
         if let type = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) {
             return PushNotificationType(rawValue: type.uppercased())
+        }
+        return nil
+    }
+
+    private func getDeepLink(from userInfo: [AnyHashable: Any]) -> URL? {
+        if let link = (userInfo["LINK"] as? String) ?? (userInfo["link"] as? String) {
+            return Environment.current.deepLinkUrl.appending(component: link)
         }
         return nil
     }
