@@ -82,13 +82,13 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         log.info("DEEPLINK INFO HANDLING \(userInfo)")
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            if let notificationType = getNotificationType(from: userInfo) {
-                Task {
-                    performPushAction(notificationType: notificationType, userInfo: userInfo)
-                }
-            } else if let deepLink = getDeepLink(from: userInfo) {
+            if let deepLink = getDeepLink(from: userInfo) {
                 Task {
                     performPushAction(deepLinkURL: deepLink, userInfo: userInfo)
+                }
+            } else if let notificationType = getNotificationType(from: userInfo) {
+                Task {
+                    performPushAction(notificationType: notificationType, userInfo: userInfo)
                 }
             }
         }
