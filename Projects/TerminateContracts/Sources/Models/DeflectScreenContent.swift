@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 public struct DeflectScreenContent: Equatable, Hashable, Sendable {
     let title: String
@@ -39,42 +40,33 @@ extension DeflectScreenContent {
     static func from(suggestionType: TerminationSuggestionType) -> DeflectScreenContent? {
         switch suggestionType {
         case .autoCancelSold:
-            return .autoCancel(
-                message: "Since you've sold your car, your insurance will be automatically cancelled."
-            )
+            return .autoCancel(message: L10n.terminationFlowAutoCancelSoldMessage)
         case .autoCancelScrapped:
-            return .autoCancel(
-                message: "Since your car has been scrapped, your insurance will be automatically cancelled."
-            )
+            return .autoCancel(message: L10n.terminationFlowAutoCancelScrappedMessage)
         case .autoCancelDecommission:
-            return .autoCancel(
-                message: "Since your car has been decommissioned, your insurance will be automatically cancelled."
-            )
+            return .autoCancel(message: L10n.terminationFlowAutoCancelDecommissionMessage)
         case .autoDecommission:
             return DeflectScreenContent(
-                title: "Your insurance will switch to decommission insurance",
-                message:
-                    "If you've decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.",
+                title: L10n.terminationFlowAutoDecomTitle,
+                message: L10n.terminationFlowAutoDecomInfo,
                 extraMessage: nil,
                 explanations: [
                     ExplanationItem(
-                        title: "What's covered",
-                        text:
-                            "The insurance covers damage such as theft, fire, vandalism, and body damage while the car is decommissioned. Legal protection is also included. The insurance is only valid as long as the car remains in Sweden."
+                        title: L10n.terminationFlowAutoDecomCoveredTitle,
+                        text: L10n.terminationFlowAutoDecomCoveredInfo
                     ),
                     ExplanationItem(
-                        title: "What it costs",
-                        text: "You'll receive a confirmation email within a few days, where you can see your new price."
+                        title: L10n.terminationFlowAutoDecomCostsTitle,
+                        text: L10n.terminationFlowAutoDecomCostsInfo
                     ),
                 ],
-                info: "If you don't want to keep your decommission insurance, you can cancel it below.",
+                info: L10n.terminationFlowAutoDecomNotification,
                 canContinueTermination: true
             )
         case .carAlreadyDecommission:
             return DeflectScreenContent(
-                title: "Your car is back on the road",
-                message:
-                    "Since your car is registered again, your insurance will automatically switch back to your regular coverage.",
+                title: L10n.terminationFlowCarBackTitle,
+                message: L10n.terminationFlowCarBackMessage,
                 extraMessage: nil,
                 explanations: [],
                 info: nil,
@@ -87,10 +79,9 @@ extension DeflectScreenContent {
 
     private static func autoCancel(message: String) -> DeflectScreenContent {
         DeflectScreenContent(
-            title: "We'll cancel your insurance automatically",
+            title: L10n.terminationFlowAutoCancelTitle,
             message: message,
-            extraMessage:
-                "We'll send a cancellation confirmation within a few days. If you don't get it after 5 days, feel free to contact us.",
+            extraMessage: L10n.terminationFlowAutoCancelAbout,
             explanations: [],
             info: nil,
             canContinueTermination: true

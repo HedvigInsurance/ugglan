@@ -97,6 +97,8 @@ struct TerminationSurveyScreen: View {
         if !selectedOption.subOptions.isEmpty {
             terminationFlowNavigationViewModel.router.push(selectedOption.subOptions)
         } else if let suggestion = selectedOption.suggestion, suggestion.isDeflect || suggestion.isBlocking {
+            terminationFlowNavigationViewModel.selectedOptionId = selectedOption.id
+            terminationFlowNavigationViewModel.selectedComment = vm.selectedFeedBackViewModel?.text
             terminationFlowNavigationViewModel.handleSuggestion(suggestion)
         } else {
             terminationFlowNavigationViewModel.proceedAfterSurvey(
@@ -182,7 +184,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 }
 
-#Preview {
+#Preview{
     Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationSurveyOption(

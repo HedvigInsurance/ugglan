@@ -7,13 +7,24 @@ import hGraphQL
 // After running codegen, verify the exact type names in
 // Projects/hGraphQL/Sources/Derived/GraphQL/Octopus/
 
+private enum TerminationError: LocalizedError {
+    case unsupportedActionType
+
+    var errorDescription: String? {
+        switch self {
+        case .unsupportedActionType:
+            return L10n.General.errorBody
+        }
+    }
+}
+
 class TerminateContractsClientOctopus: TerminateContractsClient {
     @Inject private var octopus: hOctopus
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
         let query = OctopusGraphQL.TerminationSurveyQuery(contractId: contractId)
         let data = try await octopus.client.fetch(query: query)
-        return mapSurveyData(data.terminationSurvey)
+        return try mapSurveyData(data.terminationSurvey)
     }
 
     func terminateContract(
@@ -74,10 +85,10 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
 extension TerminateContractsClientOctopus {
     private func mapSurveyData(
         _ survey: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey
-    ) -> TerminationSurveyData {
+    ) throws -> TerminationSurveyData {
         .init(
             options: survey.options.map { mapOption($0) },
-            action: mapAction(survey.action)
+            action: try mapAction(survey.action)
         )
     }
 
@@ -126,7 +137,7 @@ extension TerminateContractsClientOctopus {
 
     private func mapAction(
         _ action: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey.Action
-    ) -> TerminationAction {
+    ) throws -> TerminationAction {
         if let terminateWithDate = action.asTerminationFlowActionTerminateWithDate {
             return .terminateWithDate(
                 minDate: terminateWithDate.minDate,
@@ -148,7 +159,7 @@ extension TerminateContractsClientOctopus {
                 }
             )
         }
-        return .deleteInsurance(extraCoverage: [])
+        throw TerminationError.unsupportedActionType
     }
 }
 

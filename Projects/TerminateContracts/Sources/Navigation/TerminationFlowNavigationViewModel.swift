@@ -241,10 +241,9 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                         comment: selectedComment
                     )
                 } else {
-                    let dateString = selectedDate?.localDateString ?? ""
                     result = try await terminateContractsService.terminateContract(
                         contractId: contractId,
-                        terminationDate: dateString,
+                        terminationDate: selectedDate?.localDateString ?? "",
                         surveyOptionId: optionId,
                         comment: selectedComment
                     )
