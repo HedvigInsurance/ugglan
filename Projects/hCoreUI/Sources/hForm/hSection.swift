@@ -413,8 +413,9 @@ public struct hForEach<Element: Identifiable, RowContent: View>: View {
 
     public var body: some View {
         ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
+            let isLast = index == data.count - 1
             content(element)
-                .environment(\.hasContentBelow, index < data.count - 1)
+                .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
         }
     }
 }
