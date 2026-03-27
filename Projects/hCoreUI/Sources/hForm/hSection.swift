@@ -3,140 +3,21 @@ import SwiftUI
 
 @resultBuilder
 public struct RowViewBuilder {
-    public static func buildBlock<V: View>(_ view: V) -> some View {
+    public static func buildPartialBlock<V: View>(first: V) -> V {
+        first
+    }
+
+    @ViewBuilder
+    public static func buildPartialBlock<Accumulated: View, Next: View>(
+        accumulated: Accumulated,
+        next: Next?
+    ) -> some View {
+        accumulated.transformEnvironment(\.hasContentBelow) { $0 = $0 || next.hasConcreteValue }
+        next
+    }
+
+    public static func buildOptional<V: View>(_ view: V?) -> V? {
         view
-    }
-
-    public static func buildOptional<V: View>(_ view: V?) -> some View {
-        TupleView(view)
-    }
-
-    public static func buildBlock<A: View, B: View>(
-        _ viewA: A,
-        _ viewB: B
-    ) -> some View {
-        TupleView((viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .bottom)))
-    }
-
-    public static func buildBlock<A: View, B: View, C: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G,
-        _ viewH: H
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .bottom)
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View, I: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G,
-        _ viewH: H,
-        _ viewI: I
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .middle),
-                viewI.environment(\.hRowPosition, .bottom)
-            )
-        )
     }
 
     public static func buildEither<TrueContent: View, FalseContent: View>(
@@ -150,6 +31,32 @@ public struct RowViewBuilder {
     ) -> _ConditionalContent<TrueContent, FalseContent> {
         ViewBuilder.buildEither(second: second)
     }
+}
+
+private protocol _OptionalProtocol {
+    var deeplyUnwrapped: Any? { get }
+}
+extension _OptionalProtocol {
+    fileprivate var hasConcreteValue: Bool { deeplyUnwrapped != nil }
+}
+
+private protocol _MaybeEmpty {
+    var isEmpty: Bool { get }
+}
+
+extension Optional: _OptionalProtocol {
+    fileprivate var deeplyUnwrapped: Any? {
+        switch self {
+        case .none: nil
+        case .some(let wrapped as _OptionalProtocol): wrapped.deeplyUnwrapped
+        case .some(let wrapped as _MaybeEmpty) where wrapped.isEmpty: nil
+        case .some(let wrapped): wrapped
+        }
+    }
+}
+
+extension hForEach: @MainActor _MaybeEmpty {
+    fileprivate var isEmpty: Bool { data.isEmpty }
 }
 
 private struct hShadowModifier: ViewModifier {
@@ -522,10 +429,29 @@ extension hSection where Header == EmptyView {
     }
 }
 
+public struct hForEach<Element: Identifiable, RowContent: View>: View {
+    @Environment(\.hasContentBelow) var parentHasContentBelow
+    let data: [Element]
+    let content: (Element) -> RowContent
+
+    public init(_ data: [Element], @ViewBuilder content: @escaping (Element) -> RowContent) {
+        self.data = data
+        self.content = content
+    }
+
+    public var body: some View {
+        ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
+            let isLast = index == data.count - 1
+            content(element)
+                .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
+        }
+    }
+}
+
 extension hSection where Content == AnyView, Header == EmptyView {
     internal struct IdentifiableContent: Identifiable {
-        var id: Int
-        var position: hRowPosition
+        var id: AnyHashable
+        var hasContentBelow: Bool
         var content: Content
     }
 
@@ -533,30 +459,11 @@ extension hSection where Content == AnyView, Header == EmptyView {
         _ list: [Element],
         @ViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) where Element: Identifiable {
-        let count = list.count
-        let unique = count == 1
-        let lastOffset = count - 1
-
         let list: [IdentifiableContent] = list.enumerated()
-            .map { offset, element in
-                var position: hRowPosition {
-                    if unique {
-                        return .unique
-                    }
-
-                    switch offset {
-                    case lastOffset:
-                        return .bottom
-                    case 0:
-                        return .top
-                    default:
-                        return .middle
-                    }
-                }
-
-                return IdentifiableContent(
-                    id: element.id.hashValue,
-                    position: position,
+            .map { index, element in
+                .init(
+                    id: element.id,
+                    hasContentBelow: index < list.count - 1,
                     content: AnyView(builder(element))
                 )
             }
@@ -566,7 +473,7 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 VStack(spacing: 0) {
                     element.content
                 }
-                .environment(\.hRowPosition, element.position)
+                .environment(\.hasContentBelow, element.hasContentBelow)
             }
         )
     }
@@ -576,30 +483,11 @@ extension hSection where Content == AnyView, Header == EmptyView {
         id: KeyPath<Element, Hash>,
         @RowViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) {
-        let count = list.count
-        let unique = count == 1
-        let lastOffset = count - 1
-
         let list: [IdentifiableContent] = list.enumerated()
-            .map { offset, element in
-                var position: hRowPosition {
-                    if unique {
-                        return .unique
-                    }
-
-                    switch offset {
-                    case lastOffset:
-                        return .bottom
-                    case 0:
-                        return .top
-                    default:
-                        return .middle
-                    }
-                }
-
-                return IdentifiableContent(
-                    id: element[keyPath: id].hashValue,
-                    position: position,
+            .map { index, element in
+                .init(
+                    id: element[keyPath: id],
+                    hasContentBelow: index < list.count - 1,
                     content: AnyView(builder(element))
                 )
             }
@@ -609,8 +497,107 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 VStack(spacing: 0) {
                     element.content
                 }
-                .environment(\.hRowPosition, element.position)
+                .environment(\.hasContentBelow, element.hasContentBelow)
             }
         )
+    }
+}
+
+// MARK: - Previews
+
+private struct PreviewItem: Identifiable {
+    let id: String
+    let title: String
+}
+
+#Preview("Static rows") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Single row — no divider") }
+        }
+        hSection {
+            hRow { hText("Row 1") }
+            hRow { hText("Row 2") }
+            hRow { hText("Row 3 — no trailing divider") }
+        }
+    }
+}
+
+#Preview("Conditional rows") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Trailing if false — no divider") }
+            if false { hRow { hText("Hidden") } }
+        }
+        hSection {
+            hRow { hText("Row 1 — divider despite hidden middle") }
+            if false { hRow { hText("Hidden") } }
+            hRow { hText("Row 2") }
+        }
+        hSection {
+            hRow { hText("Nested if false — no divider") }
+            if true {
+                if false { hRow { hText("Hidden") } }
+            }
+        }
+    }
+}
+
+#Preview("hForEach") {
+    let items = (1...3).map { PreviewItem(id: "\($0)", title: "Item \($0)") }
+
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Before empty hForEach — no divider") }
+            hForEach([PreviewItem]()) { item in
+                hRow { hText(item.title) }
+            }
+        }
+        hSection {
+            hForEach(items) { item in
+                hRow { hText(item.title) }
+            }
+            hRow { hText("Trailing row — divider above") }
+        }
+    }
+}
+
+#Preview("hWithoutDivider") {
+    hSection {
+        hRow { hText("Row 1") }
+        hRow { hText("Row 2") }
+        hRow { hText("Row 3 — no dividers anywhere") }
+    }
+    .hWithoutDivider
+}
+
+#Preview("Header & container styles") {
+    ScrollView {
+        VStack(spacing: 32) {
+            hSection {
+                hRow { hText("Row") }
+                hRow { hText("Row") }
+            }
+            .withHeader(title: "Section Header")
+
+            hSection {
+                hRow { hText("Transparent") }
+                hRow { hText("Transparent") }
+            }
+            .sectionContainerStyle(.transparent)
+
+            hSection {
+                hRow { hText("Black") }
+                hRow { hText("Black") }
+            }
+            .foregroundColor(hTextColor.Opaque.white)
+            .sectionContainerStyle(.black)
+
+            hSection {
+                hRow { hText("Negative") }
+                hRow { hText("Negative") }
+            }
+            .sectionContainerStyle(.negative)
+        }
     }
 }
