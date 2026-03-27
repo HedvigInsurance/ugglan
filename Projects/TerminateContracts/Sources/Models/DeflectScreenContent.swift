@@ -7,6 +7,8 @@ public struct DeflectScreenContent: Equatable, Hashable, Sendable {
     let extraMessage: String?
     let explanations: [ExplanationItem]
     let info: String?
+    let primaryButtonTitle: String
+    let primaryAction: DeflectScreenPrimaryAction
     let canContinueTermination: Bool
 
     public init(
@@ -15,6 +17,8 @@ public struct DeflectScreenContent: Equatable, Hashable, Sendable {
         extraMessage: String?,
         explanations: [ExplanationItem],
         info: String?,
+        primaryButtonTitle: String,
+        primaryAction: DeflectScreenPrimaryAction,
         canContinueTermination: Bool
     ) {
         self.title = title
@@ -22,8 +26,15 @@ public struct DeflectScreenContent: Equatable, Hashable, Sendable {
         self.extraMessage = extraMessage
         self.explanations = explanations
         self.info = info
+        self.primaryButtonTitle = primaryButtonTitle
+        self.primaryAction = primaryAction
         self.canContinueTermination = canContinueTermination
     }
+}
+
+public enum DeflectScreenPrimaryAction: Equatable, Hashable, Sendable {
+    case dismiss
+    case openMoveFlow
 }
 
 public struct ExplanationItem: Equatable, Hashable, Sendable {
@@ -37,8 +48,29 @@ public struct ExplanationItem: Equatable, Hashable, Sendable {
 }
 
 extension DeflectScreenContent {
-    static func from(suggestionType: TerminationSuggestionType) -> DeflectScreenContent? {
-        switch suggestionType {
+    static func from(suggestion: TerminationSuggestion) -> DeflectScreenContent? {
+        switch suggestion.type {
+        case .updateAddress:
+            return DeflectScreenContent(
+                title: L10nDerivation(
+                    table: "Localizable",
+                    key: "termination_flow.move_deflect.title",
+                    args: []
+                )
+                .render(),
+                message: suggestion.description,
+                extraMessage: L10nDerivation(
+                    table: "Localizable",
+                    key: "termination_flow.move_deflect.description",
+                    args: []
+                )
+                .render(),
+                explanations: [],
+                info: nil,
+                primaryButtonTitle: L10n.terminationFlowSuggestionUpdateAddress,
+                primaryAction: .openMoveFlow,
+                canContinueTermination: true
+            )
         case .autoCancelSold:
             return .autoCancel(message: L10n.terminationFlowAutoCancelSoldMessage)
         case .autoCancelScrapped:
@@ -61,6 +93,8 @@ extension DeflectScreenContent {
                     ),
                 ],
                 info: L10n.terminationFlowAutoDecomNotification,
+                primaryButtonTitle: L10n.terminationFlowIUnderstandText,
+                primaryAction: .dismiss,
                 canContinueTermination: true
             )
         case .carAlreadyDecommission:
@@ -70,11 +104,17 @@ extension DeflectScreenContent {
                 extraMessage: nil,
                 explanations: [],
                 info: nil,
+                primaryButtonTitle: L10n.terminationFlowIUnderstandText,
+                primaryAction: .dismiss,
                 canContinueTermination: true
             )
-        case .updateAddress, .upgradeCoverage, .downgradePrice, .redirect, .info, .unknown:
+        case .upgradeCoverage, .downgradePrice, .redirect, .info, .unknown:
             return nil
         }
+    }
+
+    static func from(suggestionType: TerminationSuggestionType) -> DeflectScreenContent? {
+        from(suggestion: .init(type: suggestionType, description: "", url: nil))
     }
 
     private static func autoCancel(message: String) -> DeflectScreenContent {
@@ -84,7 +124,9 @@ extension DeflectScreenContent {
             extraMessage: L10n.terminationFlowAutoCancelAbout,
             explanations: [],
             info: nil,
-            canContinueTermination: true
+            primaryButtonTitle: L10n.terminationFlowIUnderstandText,
+            primaryAction: .dismiss,
+            canContinueTermination: false
         )
     }
 }

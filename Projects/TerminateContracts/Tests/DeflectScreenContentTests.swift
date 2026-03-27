@@ -7,16 +7,17 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelSold_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelSold)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
+        XCTAssertEqual(content?.canContinueTermination, false)
         XCTAssertNotNil(content?.extraMessage)
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
         XCTAssertNil(content?.info)
+        XCTAssertEqual(content?.primaryAction, .dismiss)
     }
 
     func testAutoCancelScrapped_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
+        XCTAssertEqual(content?.canContinueTermination, false)
         XCTAssertNotNil(content?.extraMessage)
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
     }
@@ -24,7 +25,7 @@ final class DeflectScreenContentTests: XCTestCase {
     func testAutoCancelDecommission_returnsAutoCancelContent() {
         let content = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
         XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
+        XCTAssertEqual(content?.canContinueTermination, false)
         XCTAssertNotNil(content?.extraMessage)
     }
 
@@ -35,6 +36,7 @@ final class DeflectScreenContentTests: XCTestCase {
         XCTAssertNil(content?.extraMessage)
         XCTAssertEqual(content?.explanations.count, 2)
         XCTAssertNotNil(content?.info)
+        XCTAssertEqual(content?.primaryAction, .dismiss)
     }
 
     func testCarAlreadyDecommission_returnsRecommissionContent() {
@@ -44,10 +46,24 @@ final class DeflectScreenContentTests: XCTestCase {
         XCTAssertNil(content?.extraMessage)
         XCTAssertTrue(content?.explanations.isEmpty ?? false)
         XCTAssertNil(content?.info)
+        XCTAssertEqual(content?.primaryAction, .dismiss)
+    }
+
+    func testUpdateAddress_returnsMoveDeflectContent() {
+        let content = DeflectScreenContent.from(
+            suggestion: .init(
+                type: .updateAddress,
+                description: "Move your insurance",
+                url: nil
+            )
+        )
+        XCTAssertNotNil(content)
+        XCTAssertEqual(content?.canContinueTermination, true)
+        XCTAssertEqual(content?.message, "Move your insurance")
+        XCTAssertEqual(content?.primaryAction, .openMoveFlow)
     }
 
     func testNonDeflectTypes_returnNil() {
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .updateAddress))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .upgradeCoverage))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .downgradePrice))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .redirect))

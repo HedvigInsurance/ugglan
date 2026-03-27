@@ -204,13 +204,20 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
-        if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestionType: suggestion.type) {
+        if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestion: suggestion) {
+            hideProgress = true
             updateProgress()
             router.push(content)
         } else if !suggestion.isDeflect {
             Task {
                 await redirectHandler.handle(suggestion)
             }
+        }
+    }
+
+    func openMoveFlow() {
+        Task {
+            await redirectHandler.handle(.init(type: .updateAddress, description: "", url: nil))
         }
     }
 
@@ -339,6 +346,7 @@ struct TerminationFlowNavigation: View {
                 )
                 .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
+                        .withDismissButton()
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     Group {

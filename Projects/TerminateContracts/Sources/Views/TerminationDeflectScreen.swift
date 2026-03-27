@@ -61,23 +61,43 @@ struct TerminationDeflectScreen: View {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: L10n.terminationFlowIUnderstandText)
-            ) { [weak router] in
-                router?.dismiss()
+                content: .init(title: content.primaryButtonTitle)
+            ) {
+                handlePrimaryAction()
             }
 
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.terminationButton)
-            ) { [weak terminationFlowNavigationViewModel] in
-                guard let optionId = terminationFlowNavigationViewModel?.selectedOptionId else { return }
-                terminationFlowNavigationViewModel?
-                    .proceedAfterSurvey(
-                        optionId: optionId,
-                        comment: terminationFlowNavigationViewModel?.selectedComment
-                    )
+            if content.canContinueTermination {
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.terminationButton)
+                ) { [weak terminationFlowNavigationViewModel] in
+                    guard let optionId = terminationFlowNavigationViewModel?.selectedOptionId else { return }
+                    terminationFlowNavigationViewModel?
+                        .proceedAfterSurvey(
+                            optionId: optionId,
+                            comment: terminationFlowNavigationViewModel?.selectedComment
+                        )
+                }
+            } else {
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(title: L10n.CrossSell.Info.faqChatButton)
+                ) {
+                    router.dismiss()
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
             }
+        }
+    }
+
+    private func handlePrimaryAction() {
+        switch content.primaryAction {
+        case .dismiss:
+            router.dismiss()
+        case .openMoveFlow:
+            terminationFlowNavigationViewModel.openMoveFlow()
         }
     }
 
@@ -88,7 +108,7 @@ struct TerminationDeflectScreen: View {
     }
 }
 
-#Preview("Auto Cancel") {
+#Preview("Auto Cancel"){
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoCancelSold)!
     )
@@ -101,7 +121,7 @@ struct TerminationDeflectScreen: View {
     )
 }
 
-#Preview("Auto Decom") {
+#Preview("Auto Decom"){
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoDecommission)!
     )
@@ -114,9 +134,28 @@ struct TerminationDeflectScreen: View {
     )
 }
 
-#Preview("Recommission") {
+#Preview("Recommission"){
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
+    )
+    .environmentObject(Router())
+    .environmentObject(
+        TerminationFlowNavigationViewModel(
+            configs: [],
+            terminateInsuranceViewModel: nil
+        )
+    )
+}
+
+#Preview("Move"){
+    TerminationDeflectScreen(
+        content: DeflectScreenContent.from(
+            suggestion: .init(
+                type: .updateAddress,
+                description: "Vi hjälper dig att flytta med din försäkring till ditt nya boende.",
+                url: nil
+            )
+        )!
     )
     .environmentObject(Router())
     .environmentObject(
