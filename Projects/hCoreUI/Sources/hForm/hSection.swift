@@ -45,7 +45,7 @@ private protocol _MaybeEmpty {
 }
 
 extension Optional: _OptionalProtocol {
-    var deeplyUnwrapped: Any? {
+    fileprivate var deeplyUnwrapped: Any? {
         switch self {
         case .none: nil
         case .some(let wrapped as _OptionalProtocol): wrapped.deeplyUnwrapped
@@ -56,7 +56,7 @@ extension Optional: _OptionalProtocol {
 }
 
 extension hForEach: @MainActor _MaybeEmpty {
-    var isEmpty: Bool { data.isEmpty }
+    fileprivate var isEmpty: Bool { data.isEmpty }
 }
 
 private struct hShadowModifier: ViewModifier {
@@ -440,12 +440,10 @@ public struct hForEach<Element: Identifiable, RowContent: View>: View {
     }
 
     public var body: some View {
-        if !data.isEmpty {
-            ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
-                let isLast = index == data.count - 1
-                content(element)
-                    .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
-            }
+        ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
+            let isLast = index == data.count - 1
+            content(element)
+                .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
         }
     }
 }
