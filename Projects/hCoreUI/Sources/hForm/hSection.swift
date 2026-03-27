@@ -474,3 +474,137 @@ extension hSection where Content == AnyView, Header == EmptyView {
         )
     }
 }
+
+// MARK: - Previews
+
+private struct PreviewItem: Identifiable {
+    let id: String
+    let title: String
+}
+
+#Preview("Single row — no divider") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Only row — no divider") }
+        }
+    }
+}
+
+#Preview("Multiple static rows — dividers between") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Row 1") }
+            hRow { hText("Row 2") }
+            hRow { hText("Row 3 — no divider after last") }
+        }
+    }
+}
+
+#Preview("hForEach — dividers between items") {
+    let items = (1...4).map { PreviewItem(id: "\($0)", title: "Item \($0)") }
+
+    VStack(spacing: 32) {
+        hSection {
+            hForEach(items) { item in
+                hRow { hText(item.title) }
+            }
+        }
+    }
+}
+
+#Preview("hForEach + trailing row — last forEach gets divider") {
+    let items = (1...3).map { PreviewItem(id: "\($0)", title: "Dynamic \($0)") }
+
+    VStack(spacing: 32) {
+        hSection {
+            hForEach(items) { item in
+                hRow { hText(item.title) }
+            }
+
+            hRow { hText("Static row after hForEach") }
+        }
+    }
+}
+
+#Preview("Conditional rows — if/else") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Always visible") }
+            if true {
+                hRow { hText("Condition true") }
+            }
+            hRow { hText("Last row") }
+        }
+    }
+}
+
+#Preview("Many rows — buildPartialBlock scales") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Row 1") }
+            hRow { hText("Row 2") }
+            hRow { hText("Row 3") }
+            hRow { hText("Row 4") }
+            hRow { hText("Row 5") }
+            hRow { hText("Row 6") }
+            hRow { hText("Row 7") }
+            hRow { hText("Row 8") }
+            hRow { hText("Row 9") }
+            hRow { hText("Row 10") }
+            hRow { hText("Row 11") }
+            hRow { hText("Row 12 — no divider") }
+        }
+    }
+}
+
+#Preview("hWithoutDivider — suppresses all dividers") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Row 1") }
+            hRow { hText("Row 2") }
+            hRow { hText("Row 3") }
+            hRow { hText("Row 4") }
+        }
+        .hWithoutDivider
+    }
+}
+
+#Preview("Section with header") {
+    VStack(spacing: 32) {
+        hSection {
+            hRow { hText("Row 1") }
+            hRow { hText("Row 2") }
+        }
+        .withHeader(title: "Section Header")
+    }
+}
+
+#Preview("Container styles") {
+    ScrollView {
+        VStack(spacing: 48) {
+            hSection {
+                hRow { hText("Opaque (default)") }
+                hRow { hText("Row 2") }
+            }
+
+            hSection {
+                hRow { hText("Transparent") }
+                hRow { hText("Row 2") }
+            }
+            .sectionContainerStyle(.transparent)
+
+            hSection {
+                hRow { hText("Black") }
+                hRow { hText("Row 2") }
+            }
+            .foregroundColor(hTextColor.Opaque.white)
+            .sectionContainerStyle(.black)
+
+            hSection {
+                hRow { hText("Negative") }
+                hRow { hText("Row 2") }
+            }
+            .sectionContainerStyle(.negative)
+        }
+    }
+}
