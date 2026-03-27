@@ -173,6 +173,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHAT_TITLE" = "Meddelanden";
 "CHAT_TOAST_PUSH_NOTIFICATIONS_TITLE" = "Pushnotiser";
 "CHAT_UPLOAD_PRESEND" = "Skicka";
+"CHIP_ID_LABEL" = "Chip-ID";
+"CHIP_ID_MISSING_BUTTON" = "Lägg till Chip-ID";
+"CHIP_ID_MISSING_MESSAGE" = "Chip-ID för ditt husdjur saknas";
+"CHIP_ID_TOP_TITLE" = "Uppdatera husdjurets chip-ID";
+"CHIP_ID_WRONG_INPUT" = "Måste vara 15 siffror";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så vi kan hålla dig uppdaterad om ditt ärende.";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Aktivera";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Hoppa över";
@@ -739,6 +744,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_BUTTON" = "Säg upp försäkring";
 "TERMINATION_DATE_TEXT" = "Välj slutdatum";
 "TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.";
+"TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE" = "Eftersom din bil har avställts kommer din försäkring att sägas upp automatiskt.";
+"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.";
+"TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE" = "Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.";
 "TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "Vi avslutar din försäkring automatiskt";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE" = "Vad kostar det";
@@ -751,6 +759,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CANCELLATION_TITLE" = "Säg upp försäkring";
 "TERMINATION_FLOW_CANCEL_INFO_TEXT" = "Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.";
 "TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Avsluta din försäkring";
+"TERMINATION_FLOW_CAR_BACK_MESSAGE" = "Eftersom din bil är påställd igen kommer din försäkring automatiskt att ändras tillbaka till ditt ordinarie skydd.";
+"TERMINATION_FLOW_CAR_BACK_TITLE" = "Din bil är tillbaka på vägen";
 "TERMINATION_FLOW_CONFIRMATION" = "Din försäkring kommer avlutas direkt";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Din försäkring kommer att avslutas den %@";
