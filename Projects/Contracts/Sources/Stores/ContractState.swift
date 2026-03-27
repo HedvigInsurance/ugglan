@@ -15,8 +15,7 @@ public struct ContractState: StateProtocol {
         let stakeholders = activeContracts.flatMap { contract in
             (contract.coInsured + contract.coOwners).filter { !$0.hasMissingData }
         }
-        let unique = Set(stakeholders)
-        return unique.sorted(by: { $0.id > $1.id })
+        return Set(stakeholders).sorted(by: { $0.id > $1.id })
     }
 
     public func fetchAllStakeholdersNotInContract(
@@ -30,9 +29,7 @@ public struct ContractState: StateProtocol {
             case .coOwner: Set(contract.coOwners)
             }
 
-        let stakeholdersNotAdded = allStakeholders.filter { !contractStakeholders.contains($0) }
-
-        return stakeholdersNotAdded
+        return allStakeholders.filter { !contractStakeholders.contains($0) }
     }
 
     public func contractForId(_ id: String) -> Contract? {

@@ -8,21 +8,20 @@ struct SetTerminationDate: View {
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
-        terminationDate _: () -> Date,
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
         self.terminationNavigationVm = terminationNavigationVm
-        _terminationDate = State(wrappedValue: terminationNavigationVm.terminationDateStepModel?.date ?? Date())
+        _terminationDate = State(wrappedValue: terminationNavigationVm.selectedDate ?? Date())
     }
 
     var body: some View {
-        if let termination = terminationNavigationVm.terminationDateStepModel {
+        if case let .terminateWithDate(minDate, maxDate, _) = terminationNavigationVm.surveyData?.action {
             DatePickerView(
                 vm: .init(
                     continueAction: {
-                        terminationNavigationVm.terminationDateStepModel?.date = terminationDate
+                        terminationNavigationVm.selectedDate = terminationDate
                         terminationNavigationVm.isDatePickerPresented = false
-                        terminationNavigationVm.fetchNotification(isDeletion: false)
+                        terminationNavigationVm.fetchNotification(for: terminationDate)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             isHidden = true
                         }
@@ -32,8 +31,8 @@ struct SetTerminationDate: View {
                     },
                     date: $terminationDate,
                     config: .init(
-                        minDate: termination.minDate.localDateToDate,
-                        maxDate: termination.maxDate.localDateToDate,
+                        minDate: minDate.localDateToDate,
+                        maxDate: maxDate.localDateToDate,
                         initialySelectedValue: Date(),
                         placeholder: "",
                         title: L10n.terminationDateText,
@@ -50,7 +49,6 @@ struct SetTerminationDate: View {
 
 #Preview {
     SetTerminationDate(
-        terminationDate: { Date() },
         terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )
 }

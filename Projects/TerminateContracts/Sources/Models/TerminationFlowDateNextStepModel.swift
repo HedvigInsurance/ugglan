@@ -1,42 +1,18 @@
 import Foundation
 
-public protocol FlowStepModel: Codable, Equatable, Hashable, Sendable {}
-
-public struct TerminationFlowDateNextStepModel: FlowStepModel {
-    let maxDate: String
-    let minDate: String
-    let extraCoverageItem: [ExtraCoverageItem]
-    var date: Date?
-
-    public init(
-        maxDate: String,
-        minDate: String,
-        date: Date? = nil,
-        extraCoverageItem: [ExtraCoverageItem],
-    ) {
-        self.maxDate = maxDate
-        self.minDate = minDate
-        self.date = date
-        self.extraCoverageItem = extraCoverageItem
-    }
-}
-
 public struct ExtraCoverageItem: Codable, Equatable, Hashable, Sendable {
-    let displayName: String
-    let displayValue: String?
+    public let displayName: String
+    public let displayValue: String?
 
-    public init(
-        displayName: String,
-        displayValue: String?
-    ) {
+    public init(displayName: String, displayValue: String?) {
         self.displayName = displayName
         self.displayValue = displayValue
     }
 }
 
 public struct TerminationNotification: Codable, Equatable, Hashable, Sendable {
-    let message: String
-    let type: TerminationNotificationType
+    public let message: String
+    public let type: TerminationNotificationType
 
     public init(message: String, type: TerminationNotificationType) {
         self.message = message

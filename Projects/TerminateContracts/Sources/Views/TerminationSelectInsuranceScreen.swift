@@ -35,14 +35,7 @@ struct TerminationSelectInsuranceScreen: View {
                     )
                     Task {
                         vm.hasSelectInsuranceStep = true
-                        vm.previousProgress = vm.progress
-                        if let progress = vm.progress {
-                            vm.previousProgress = progress
-                            vm.progress = progress * 0.75 + 0.25
-                        } else {
-                            vm.progress = nil
-                        }
-                        await vm.startTermination(config: config, fromSelectInsurance: true)
+                        await vm.fetchSurvey(for: config)
                     }
                 }
             },

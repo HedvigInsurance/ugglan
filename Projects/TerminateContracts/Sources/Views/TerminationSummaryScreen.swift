@@ -130,7 +130,7 @@ struct TerminationSummaryScreen: View {
 
     @ViewBuilder
     private var terminationDateView: some View {
-        if let date = terminationNavigationVm.terminationDateStepModel?.date {
+        if let date = terminationNavigationVm.selectedDate {
             hSection {
                 hFloatingField(
                     value: date.displayDateDDMMMYYYYFormat,
@@ -158,21 +158,12 @@ struct TerminationSummaryScreen: View {
         terminateInsuranceViewModel: .init()
     )
     navigationModel.config = navigationModel.configs.first!
-    navigationModel.terminationDateStepModel = .init(
-        maxDate: "",
-        minDate: "",
-        extraCoverageItem: []
-    )
-    navigationModel.terminationDateStepModel?.date = Date()
+    navigationModel.selectedDate = Date()
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
     )
 
-    navigationModel.extraCoverage = [
-        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel
@@ -196,21 +187,11 @@ struct TerminationSummaryScreen: View {
         terminateInsuranceViewModel: .init()
     )
     navigationModel.config = navigationModel.configs.first!
-    navigationModel.terminationDeleteStepModel = .init(
-        extraCoverageItem: [
-            .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-            .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-        ]
-    )
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
     )
 
-    navigationModel.extraCoverage = [
-        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel

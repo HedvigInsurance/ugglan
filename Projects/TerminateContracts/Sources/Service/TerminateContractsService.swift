@@ -1,77 +1,53 @@
+import AutomaticLog
 import Foundation
 import hCore
 
 @MainActor
 class TerminateContractsService {
     @Inject private var client: TerminateContractsClient
-    func startTermination(contractId: String) async throws -> TerminateStepResponse {
-        try await client.startTermination(contractId: contractId)
+
+    @Log([.error])
+    func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
+        try await client.getTerminationSurvey(contractId: contractId)
     }
 
-    func sendTerminationDate(
-        inputDateToString: String,
-        terminationContext: String
-    ) async throws -> TerminateStepResponse {
-        log.info(
-            "TerminateContractsService: sendTerminationDate date: \(inputDateToString) with context: \(terminationContext)"
-        )
-        let response = try await client.sendTerminationDate(
-            inputDateToString: inputDateToString,
-            terminationContext: terminationContext
-        )
-        log.info("TerminateContractsService: success with context: \(response.context)")
-        return response
-    }
-
-    func sendConfirmDelete(
-        terminationContext: String,
-        model: TerminationFlowDeletionNextModel?
-    ) async throws -> TerminateStepResponse {
-        log.info("TerminateContractsService: sendConfirmDelete with context: \(terminationContext)")
-        let response = try await client.sendConfirmDelete(terminationContext: terminationContext, model: model)
-        log.info("TerminateContractsService: sendConfirmDelete success with context: \(response.context)")
-        return response
-    }
-
-    func sendSurvey(
-        terminationContext: String,
-        option: String,
-        inputData: String?
-    ) async throws -> TerminateStepResponse {
-        log.info(
-            "TerminateContractsService: sendConfirmDelete with context: \(terminationContext) and option: \(option) and inputData: \(inputData ?? "")"
-        )
-        let response = try await client.sendSurvey(
-            terminationContext: terminationContext,
-            option: option,
-            inputData: inputData
-        )
-        log.info("TerminateContractsService: sendConfirmDelete success context: \(response.context)")
-        return response
-    }
-
-    func sendContinueAfterDecom(
-        terminationContext: String
-    ) async throws -> TerminateStepResponse {
-        log.info(
-            "TerminateContractsService: sendContinueAfterDecom with context: \(terminationContext)"
-        )
-        let response = try await client.sendContinueAfterDecom(terminationContext: terminationContext)
-        log.info("TerminateContractsService: sendContinueAfterDecom success context: \(response.context)")
-        return response
-    }
-
-    func getNotification(
+    @Log([.error])
+    func terminateContract(
         contractId: String,
-        date: Date
-    ) async throws -> TerminationNotification? {
-        log.info(
-            "TerminateContractsService: getNotification for contractId: \(contractId) on date: \(date)"
+        terminationDate: String,
+        surveyOptionId: String,
+        comment: String?
+    ) async throws -> TerminationContractResult {
+        nonisolated(unsafe) let client = client
+        async let result = try await client.terminateContract(
+            contractId: contractId,
+            terminationDate: terminationDate,
+            surveyOptionId: surveyOptionId,
+            comment: comment
         )
-        let data = try await client.getNotification(contractId: contractId, date: date)
-        log.info(
-            "TerminateContractsService: getNotification success for contractId: \(contractId) with \(data?.asString ?? "nil")"
-        )
+        async let delayTask: () = delay(3)
+        let (data, _) = try await (result, delayTask)
         return data
+    }
+
+    @Log([.error])
+    func deleteContract(
+        contractId: String,
+        surveyOptionId: String,
+        comment: String?
+    ) async throws -> TerminationContractResult {
+        nonisolated(unsafe) let client = client
+        async let result = try await client.deleteContract(
+            contractId: contractId,
+            surveyOptionId: surveyOptionId,
+            comment: comment
+        )
+        async let delayTask: () = delay(3)
+        let (data, _) = try await (result, delayTask)
+        return data
+    }
+
+    func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        try await client.getNotification(contractId: contractId, date: date)
     }
 }

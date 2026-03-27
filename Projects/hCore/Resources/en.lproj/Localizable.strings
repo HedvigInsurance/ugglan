@@ -790,6 +790,23 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_SURVEY_GENERIC_SUBTITLE" = "Before we continue";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-4382&mode=design&t=L2ZbV2ozR8FTfDu4-0 */
 "TERMINATION_SURVEY_SUBTITLE" = "Why do you want to cancel your insurance?";
+"TERMINATION_FLOW_SUGGESTION_UPDATE_ADDRESS" = "Update your address";
+"TERMINATION_FLOW_SUGGESTION_CHANGE_COVERAGE" = "Change coverage level";
+"TERMINATION_FLOW_SUGGESTION_LEARN_MORE" = "Learn more";
+"TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "We'll cancel your insurance automatically";
+"TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "We'll send a cancellation confirmation within a few days. If you don't get it after 5 days, feel free to contact us.";
+"TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE" = "Since you've sold your car, your insurance will be automatically cancelled.";
+"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Since your car has been scrapped, your insurance will be automatically cancelled.";
+"TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE" = "Since your car has been decommissioned, your insurance will be automatically cancelled.";
+"TERMINATION_FLOW_AUTO_DECOM_TITLE" = "Your insurance will switch to decommission insurance";
+"TERMINATION_FLOW_AUTO_DECOM_INFO" = "If you've decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.";
+"TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE" = "What's covered";
+"TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO" = "The insurance covers damage such as theft, fire, vandalism, and body damage while the car is decommissioned. Legal protection is also included. The insurance is only valid as long as the car remains in Sweden.";
+"TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE" = "What it costs";
+"TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "You'll receive a confirmation email within a few days, where you can see your new price.";
+"TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION" = "If you don't want to keep your decommission insurance, you can cancel it below.";
+"TERMINATION_FLOW_CAR_BACK_TITLE" = "Your car is back on the road";
+"TERMINATION_FLOW_CAR_BACK_MESSAGE" = "Since your car is registered again, your insurance will automatically switch back to your regular coverage.";
 "TIER_COMPARISON_SUBTITLE" = "Find the best plan available for you";
 "TIER_COMPARISON_TITLE" = "Compare coverage levels";
 "TIER_FLOW_ADDON_LABEL" = "Extended travel coverage";
