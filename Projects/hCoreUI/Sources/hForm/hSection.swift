@@ -3,140 +3,19 @@ import SwiftUI
 
 @resultBuilder
 public struct RowViewBuilder {
-    public static func buildBlock<V: View>(_ view: V) -> V {
-        view
+    public static func buildPartialBlock<V: View>(first: V) -> V {
+        first
+    }
+
+    public static func buildPartialBlock<Accumulated: View, Next: View>(
+        accumulated: Accumulated,
+        next: Next
+    ) -> some View {
+        TupleView((accumulated.environment(\.hasContentBelow, true), next))
     }
 
     public static func buildOptional<V: View>(_ view: V?) -> some View {
         TupleView(view)
-    }
-
-    public static func buildBlock<A: View, B: View>(
-        _ viewA: A,
-        _ viewB: B
-    ) -> some View {
-        TupleView((viewA.environment(\.hasContentBelow, true), viewB))
-    }
-
-    public static func buildBlock<A: View, B: View, C: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
-                viewE
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
-                viewE.environment(\.hasContentBelow, true), viewF
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
-                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
-                viewG
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G,
-        _ viewH: H
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
-                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
-                viewG.environment(\.hasContentBelow, true), viewH
-            )
-        )
-    }
-
-    public static func buildBlock<A: View, B: View, C: View, D: View, E: View, F: View, G: View, H: View, I: View>(
-        _ viewA: A,
-        _ viewB: B,
-        _ viewC: C,
-        _ viewD: D,
-        _ viewE: E,
-        _ viewF: F,
-        _ viewG: G,
-        _ viewH: H,
-        _ viewI: I
-    ) -> some View {
-        TupleView(
-            (
-                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
-                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
-                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
-                viewG.environment(\.hasContentBelow, true), viewH.environment(\.hasContentBelow, true),
-                viewI
-            )
-        )
     }
 
     public static func buildEither<TrueContent: View, FalseContent: View>(
@@ -523,6 +402,7 @@ extension hSection where Header == EmptyView {
 }
 
 public struct hForEach<Element: Identifiable, RowContent: View>: View {
+    @Environment(\.hasContentBelow) var parentHasContentBelow
     let data: [Element]
     let content: (Element) -> RowContent
 
