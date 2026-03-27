@@ -1,25 +1,18 @@
 import Foundation
 import SwiftUI
 
-enum hRowPosition {
-    case top
-    case middle
-    case bottom
-    case unique
-}
-
-private struct EnvironmentHRowPosition: EnvironmentKey {
-    static let defaultValue = hRowPosition.unique
+private struct EnvironmentHasContentBelow: EnvironmentKey {
+    static let defaultValue = false
 }
 
 extension EnvironmentValues {
-    var hRowPosition: hRowPosition {
-        get { self[EnvironmentHRowPosition.self] }
-        set { self[EnvironmentHRowPosition.self] = newValue }
+    var hasContentBelow: Bool {
+        get { self[EnvironmentHasContentBelow.self] }
+        set { self[EnvironmentHasContentBelow.self] = newValue }
     }
 }
 
-struct RowButtonStyle: SwiftUI.ButtonStyle {
+struct RowButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
@@ -37,7 +30,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 }
 
 public struct hRow<Content: View, Accessory: View>: View {
-    @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
+    @Environment(\.hasContentBelow) var hasContentBelow
     @Environment(\.hWithoutDivider) var hWithoutDivider
     @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     @Environment(\.hRowContentAlignment) var contentAlignment
@@ -95,7 +88,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             .padding(.vertical, verticalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)
-            if position == .middle || position == .top, !hWithoutDivider {
+            if hasContentBelow, !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -197,7 +190,7 @@ extension View {
 
 extension hRow {
     internal func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
-        SwiftUI.Button(
+        Button(
             action: {
                 onTap()
                 let generator = UIImpactFeedbackGenerator(style: .light)

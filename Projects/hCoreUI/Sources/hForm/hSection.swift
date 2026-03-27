@@ -3,7 +3,7 @@ import SwiftUI
 
 @resultBuilder
 public struct RowViewBuilder {
-    public static func buildBlock<V: View>(_ view: V) -> some View {
+    public static func buildBlock<V: View>(_ view: V) -> V {
         view
     }
 
@@ -15,7 +15,7 @@ public struct RowViewBuilder {
         _ viewA: A,
         _ viewB: B
     ) -> some View {
-        TupleView((viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .bottom)))
+        TupleView((viewA.environment(\.hasContentBelow, true), viewB))
     }
 
     public static func buildBlock<A: View, B: View, C: View>(
@@ -25,8 +25,8 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC
             )
         )
     }
@@ -39,8 +39,8 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD
             )
         )
     }
@@ -54,9 +54,9 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
+                viewE
             )
         )
     }
@@ -71,9 +71,9 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
+                viewE.environment(\.hasContentBelow, true), viewF
             )
         )
     }
@@ -89,10 +89,10 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
+                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
+                viewG
             )
         )
     }
@@ -109,10 +109,10 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
+                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
+                viewG.environment(\.hasContentBelow, true), viewH
             )
         )
     }
@@ -130,11 +130,11 @@ public struct RowViewBuilder {
     ) -> some View {
         TupleView(
             (
-                viewA.environment(\.hRowPosition, .top), viewB.environment(\.hRowPosition, .middle),
-                viewC.environment(\.hRowPosition, .middle), viewD.environment(\.hRowPosition, .middle),
-                viewE.environment(\.hRowPosition, .middle), viewF.environment(\.hRowPosition, .middle),
-                viewG.environment(\.hRowPosition, .middle), viewH.environment(\.hRowPosition, .middle),
-                viewI.environment(\.hRowPosition, .bottom)
+                viewA.environment(\.hasContentBelow, true), viewB.environment(\.hasContentBelow, true),
+                viewC.environment(\.hasContentBelow, true), viewD.environment(\.hasContentBelow, true),
+                viewE.environment(\.hasContentBelow, true), viewF.environment(\.hasContentBelow, true),
+                viewG.environment(\.hasContentBelow, true), viewH.environment(\.hasContentBelow, true),
+                viewI
             )
         )
     }
@@ -522,10 +522,27 @@ extension hSection where Header == EmptyView {
     }
 }
 
+public struct hForEach<Element: Identifiable, RowContent: View>: View {
+    let data: [Element]
+    let content: (Element) -> RowContent
+
+    public init(_ data: [Element], @ViewBuilder content: @escaping (Element) -> RowContent) {
+        self.data = data
+        self.content = content
+    }
+
+    public var body: some View {
+        ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
+            content(element)
+                .environment(\.hasContentBelow, index < data.count - 1)
+        }
+    }
+}
+
 extension hSection where Content == AnyView, Header == EmptyView {
     internal struct IdentifiableContent: Identifiable {
-        var id: Int
-        var position: hRowPosition
+        var id: AnyHashable
+        var hasContentBelow: Bool
         var content: Content
     }
 
@@ -533,30 +550,11 @@ extension hSection where Content == AnyView, Header == EmptyView {
         _ list: [Element],
         @ViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) where Element: Identifiable {
-        let count = list.count
-        let unique = count == 1
-        let lastOffset = count - 1
-
         let list: [IdentifiableContent] = list.enumerated()
-            .map { offset, element in
-                var position: hRowPosition {
-                    if unique {
-                        return .unique
-                    }
-
-                    switch offset {
-                    case lastOffset:
-                        return .bottom
-                    case 0:
-                        return .top
-                    default:
-                        return .middle
-                    }
-                }
-
-                return IdentifiableContent(
-                    id: element.id.hashValue,
-                    position: position,
+            .map { index, element in
+                .init(
+                    id: element.id,
+                    hasContentBelow: index < list.count - 1,
                     content: AnyView(builder(element))
                 )
             }
@@ -566,7 +564,7 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 VStack(spacing: 0) {
                     element.content
                 }
-                .environment(\.hRowPosition, element.position)
+                .environment(\.hasContentBelow, element.hasContentBelow)
             }
         )
     }
@@ -576,30 +574,11 @@ extension hSection where Content == AnyView, Header == EmptyView {
         id: KeyPath<Element, Hash>,
         @RowViewBuilder _ builder: @escaping (_ element: Element) -> BuilderContent
     ) {
-        let count = list.count
-        let unique = count == 1
-        let lastOffset = count - 1
-
         let list: [IdentifiableContent] = list.enumerated()
-            .map { offset, element in
-                var position: hRowPosition {
-                    if unique {
-                        return .unique
-                    }
-
-                    switch offset {
-                    case lastOffset:
-                        return .bottom
-                    case 0:
-                        return .top
-                    default:
-                        return .middle
-                    }
-                }
-
-                return IdentifiableContent(
-                    id: element[keyPath: id].hashValue,
-                    position: position,
+            .map { index, element in
+                .init(
+                    id: element[keyPath: id],
+                    hasContentBelow: index < list.count - 1,
                     content: AnyView(builder(element))
                 )
             }
@@ -609,7 +588,7 @@ extension hSection where Content == AnyView, Header == EmptyView {
                 VStack(spacing: 0) {
                     element.content
                 }
-                .environment(\.hRowPosition, element.position)
+                .environment(\.hasContentBelow, element.hasContentBelow)
             }
         )
     }
