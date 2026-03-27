@@ -7,15 +7,17 @@ public struct RowViewBuilder {
         first
     }
 
+    @ViewBuilder
     public static func buildPartialBlock<Accumulated: View, Next: View>(
         accumulated: Accumulated,
-        next: Next
+        next: Next?
     ) -> some View {
-        TupleView((accumulated.environment(\.hasContentBelow, true), next))
+        accumulated.transformEnvironment(\.hasContentBelow) { $0 = $0 || next.hasConcreteValue }
+        next
     }
 
-    public static func buildOptional<V: View>(_ view: V?) -> some View {
-        TupleView(view)
+    public static func buildOptional<V: View>(_ view: V?) -> V? {
+        view
     }
 
     public static func buildEither<TrueContent: View, FalseContent: View>(
@@ -29,6 +31,32 @@ public struct RowViewBuilder {
     ) -> _ConditionalContent<TrueContent, FalseContent> {
         ViewBuilder.buildEither(second: second)
     }
+}
+
+private protocol _OptionalProtocol {
+    var deeplyUnwrapped: Any? { get }
+}
+extension _OptionalProtocol {
+    fileprivate var hasConcreteValue: Bool { deeplyUnwrapped != nil }
+}
+
+private protocol _MaybeEmpty {
+    var isEmpty: Bool { get }
+}
+
+extension Optional: _OptionalProtocol {
+    var deeplyUnwrapped: Any? {
+        switch self {
+        case .none: nil
+        case .some(let wrapped as _OptionalProtocol): wrapped.deeplyUnwrapped
+        case .some(let wrapped as _MaybeEmpty) where wrapped.isEmpty: nil
+        case .some(let wrapped): wrapped
+        }
+    }
+}
+
+extension hForEach: @MainActor _MaybeEmpty {
+    var isEmpty: Bool { data.isEmpty }
 }
 
 private struct hShadowModifier: ViewModifier {
@@ -412,10 +440,12 @@ public struct hForEach<Element: Identifiable, RowContent: View>: View {
     }
 
     public var body: some View {
-        ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
-            let isLast = index == data.count - 1
-            content(element)
-                .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
+        if !data.isEmpty {
+            ForEach(Array(data.enumerated()), id: \.element.id) { index, element in
+                let isLast = index == data.count - 1
+                content(element)
+                    .environment(\.hasContentBelow, !isLast || parentHasContentBelow)
+            }
         }
     }
 }
@@ -482,127 +512,92 @@ private struct PreviewItem: Identifiable {
     let title: String
 }
 
-#Preview("Single row — no divider") {
+#Preview("Static rows") {
     VStack(spacing: 32) {
         hSection {
-            hRow { hText("Only row — no divider") }
+            hRow { hText("Single row — no divider") }
         }
-    }
-}
-
-#Preview("Multiple static rows — dividers between") {
-    VStack(spacing: 32) {
         hSection {
             hRow { hText("Row 1") }
             hRow { hText("Row 2") }
-            hRow { hText("Row 3 — no divider after last") }
+            hRow { hText("Row 3 — no trailing divider") }
         }
     }
 }
 
-#Preview("hForEach — dividers between items") {
-    let items = (1...4).map { PreviewItem(id: "\($0)", title: "Item \($0)") }
-
+#Preview("Conditional rows") {
     VStack(spacing: 32) {
         hSection {
-            hForEach(items) { item in
-                hRow { hText(item.title) }
-            }
+            hRow { hText("Trailing if false — no divider") }
+            if false { hRow { hText("Hidden") } }
         }
-    }
-}
-
-#Preview("hForEach + trailing row — last forEach gets divider") {
-    let items = (1...3).map { PreviewItem(id: "\($0)", title: "Dynamic \($0)") }
-
-    VStack(spacing: 32) {
         hSection {
-            hForEach(items) { item in
-                hRow { hText(item.title) }
-            }
-
-            hRow { hText("Static row after hForEach") }
+            hRow { hText("Row 1 — divider despite hidden middle") }
+            if false { hRow { hText("Hidden") } }
+            hRow { hText("Row 2") }
         }
-    }
-}
-
-#Preview("Conditional rows — if/else") {
-    VStack(spacing: 32) {
         hSection {
-            hRow { hText("Always visible") }
+            hRow { hText("Nested if false — no divider") }
             if true {
-                hRow { hText("Condition true") }
+                if false { hRow { hText("Hidden") } }
             }
-            hRow { hText("Last row") }
         }
     }
 }
 
-#Preview("Many rows — buildPartialBlock scales") {
+#Preview("hForEach") {
+    let items = (1...3).map { PreviewItem(id: "\($0)", title: "Item \($0)") }
+
     VStack(spacing: 32) {
         hSection {
-            hRow { hText("Row 1") }
-            hRow { hText("Row 2") }
-            hRow { hText("Row 3") }
-            hRow { hText("Row 4") }
-            hRow { hText("Row 5") }
-            hRow { hText("Row 6") }
-            hRow { hText("Row 7") }
-            hRow { hText("Row 8") }
-            hRow { hText("Row 9") }
-            hRow { hText("Row 10") }
-            hRow { hText("Row 11") }
-            hRow { hText("Row 12 — no divider") }
+            hRow { hText("Before empty hForEach — no divider") }
+            hForEach([PreviewItem]()) { item in
+                hRow { hText(item.title) }
+            }
         }
-    }
-}
-
-#Preview("hWithoutDivider — suppresses all dividers") {
-    VStack(spacing: 32) {
         hSection {
-            hRow { hText("Row 1") }
-            hRow { hText("Row 2") }
-            hRow { hText("Row 3") }
-            hRow { hText("Row 4") }
+            hForEach(items) { item in
+                hRow { hText(item.title) }
+            }
+            hRow { hText("Trailing row — divider above") }
         }
-        .hWithoutDivider
     }
 }
 
-#Preview("Section with header") {
-    VStack(spacing: 32) {
-        hSection {
-            hRow { hText("Row 1") }
-            hRow { hText("Row 2") }
-        }
-        .withHeader(title: "Section Header")
+#Preview("hWithoutDivider") {
+    hSection {
+        hRow { hText("Row 1") }
+        hRow { hText("Row 2") }
+        hRow { hText("Row 3 — no dividers anywhere") }
     }
+    .hWithoutDivider
 }
 
-#Preview("Container styles") {
+#Preview("Header & container styles") {
     ScrollView {
-        VStack(spacing: 48) {
+        VStack(spacing: 32) {
             hSection {
-                hRow { hText("Opaque (default)") }
-                hRow { hText("Row 2") }
+                hRow { hText("Row") }
+                hRow { hText("Row") }
             }
+            .withHeader(title: "Section Header")
 
             hSection {
                 hRow { hText("Transparent") }
-                hRow { hText("Row 2") }
+                hRow { hText("Transparent") }
             }
             .sectionContainerStyle(.transparent)
 
             hSection {
                 hRow { hText("Black") }
-                hRow { hText("Row 2") }
+                hRow { hText("Black") }
             }
             .foregroundColor(hTextColor.Opaque.white)
             .sectionContainerStyle(.black)
 
             hSection {
                 hRow { hText("Negative") }
-                hRow { hText("Row 2") }
+                hRow { hText("Negative") }
             }
             .sectionContainerStyle(.negative)
         }
