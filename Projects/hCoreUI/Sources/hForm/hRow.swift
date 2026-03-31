@@ -220,3 +220,21 @@ extension hRow {
         }
     }
 }
+
+private struct AsRowModifier: ViewModifier {
+    let noSpacing: Bool
+    func body(content: Content) -> some View {
+        if noSpacing {
+            hRow { content }.noSpacing()
+        } else {
+            hRow { content }
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    public func wrapInRow(noSpacing: Bool = true) -> some View {
+        modifier(AsRowModifier(noSpacing: noSpacing))
+    }
+}
