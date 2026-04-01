@@ -87,8 +87,6 @@ struct SetTerminationDateLandingScreen: View {
 class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var hasAgreedToTerms: Bool = false
 
-    init(terminationNavigationVm: TerminationFlowNavigationViewModel) {}
-
     func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
         let hasSetTerminationDate = terminationDate != nil
         return !hasSetTerminationDate || !hasAgreedToTerms

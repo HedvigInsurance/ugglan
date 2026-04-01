@@ -173,10 +173,6 @@ class SurveyScreenViewModel: ObservableObject {
             if let suggestion = selectedOption.suggestion, suggestion.isBlocking {
                 return false
             }
-            guard let feedBack = selectedFeedBackViewModel else { return true }
-            if feedBack.required, feedBack.text.count < 10 {
-                return false
-            }
             return true
         }()
 
