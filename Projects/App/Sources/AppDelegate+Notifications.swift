@@ -3,6 +3,7 @@ import Chat
 import Claims
 import Contracts
 import CoreDependencies
+import Environment
 import Foundation
 import Home
 import Payment
@@ -63,17 +64,31 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         )
     }
 
+    @MainActor
+    fileprivate func performPushAction(deepLinkURL: URL, userInfo: [AnyHashable: Any]) {
+        NotificationCenter.default.post(
+            name: .handlePushNotification,
+            object: deepLinkURL,
+            userInfo: userInfo
+        )
+    }
+
     func userNotificationCenter(
         _: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = getNotificationType(from: userInfo) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            Task {
-                performPushAction(notificationType: notificationType, userInfo: userInfo)
+            if let deepLink = getDeepLink(from: userInfo) {
+                Task {
+                    performPushAction(deepLinkURL: deepLink, userInfo: userInfo)
+                }
+            } else if let notificationType = getNotificationType(from: userInfo) {
+                Task {
+                    performPushAction(notificationType: notificationType, userInfo: userInfo)
+                }
             }
         }
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
@@ -85,6 +100,16 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
             return PushNotificationType(rawValue: type.uppercased())
         }
         return nil
+    }
+
+    private func getDeepLink(from userInfo: [AnyHashable: Any]) -> URL? {
+        guard let cio = userInfo["CIO"] as? [String: Any],
+            let push = cio["push"] as? [String: Any],
+            let link = push["link"] as? String
+        else {
+            return nil
+        }
+        return Environment.current.deepLinkUrl.appending(path: link)
     }
 
     func userNotificationCenter(
