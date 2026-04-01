@@ -58,16 +58,17 @@ struct AddMissingPetChipIdBottomSheet: View {
                         equals: .constant(MissingPetChipIdType.single),
                         focusValue: .single,
                         placeholder: L10n.chipIdLabel,
-                        //                        error: $vm.petError?.message,
-                        textFieldPlaceholder: "XXX XXX XXX XXX XXX",
+                        error: $vm.fieldError,
+                        textFieldPlaceholder: "XXX XXX XXX XXX XXX"
                     )
 
                     VStack(spacing: .padding8) {
-                        hSaveButton(.primary) {
-                            [weak vm] in vm?.addMissingPetChipId()
+                        hSaveButton(.primary) { [weak vm] in
+                            vm?.addMissingPetChipId()
                         }
                         .disabled(!vm.canProceed)
-                        .hButtonIsLoading(vm.processingState == .loading)
+                        .hButtonIsLoading(vm.isLoading)
+
                         hCancelButton { [weak vm] in vm?.dismiss() }
                     }
                 }
@@ -76,6 +77,7 @@ struct AddMissingPetChipIdBottomSheet: View {
         }
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.chipIdTopTitle)
+        .disabled(vm.isLoading)
         .embededInNavigation(router: vm.router, tracking: self)
     }
 }
@@ -109,8 +111,8 @@ class AddMissingPetChipIdViewModel: ObservableObject {
     let contract: Contract
     let petChipIdMasking = Masking(type: .petChipId)
     @Published var petChipId: String = ""
-    @Published var processingState = ProcessingState.success
-    @Published var petError: PetError? = nil
+    @Published var isLoading = false
+    @Published var fieldError: String?
     var canProceed: Bool { petChipIdMasking.isValid(text: petChipId) }
 
     init(contract: Contract) {
@@ -118,8 +120,8 @@ class AddMissingPetChipIdViewModel: ObservableObject {
     }
 
     public func addMissingPetChipId() {
-        processingState = .loading
-        petError = nil
+        isLoading = true
+        fieldError = nil
 
         Task {
             do {
@@ -127,13 +129,14 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                     petChipId: petChipIdMasking.unmaskedValue(text: petChipId),
                     for: contract.id
                 ) {
-                    self.petError = petError
-                    processingState = .success
+                    fieldError = petError.message
+                    isLoading = false
                 } else {
                     dismiss()
                 }
-            } catch let error {
-                processingState = .error(errorMessage: error.localizedDescription)
+            } catch {
+                isLoading = false
+                fieldError = L10n.somethingWentWrong
             }
         }
     }
