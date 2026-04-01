@@ -148,17 +148,30 @@ struct TerminationSummaryScreen: View {
     let navigationModel = TerminationFlowNavigationViewModel(
         configs: [
             .init(
-                contractId: "",
+                contractId: "1",
                 contractDisplayName: "Homeowner",
                 contractExposureName: "Bellmansgsatan 19A",
                 activeFrom: "2024-12-15",
                 typeOfContract: .seApartmentBrf
-            )
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
         ],
         terminateInsuranceViewModel: .init()
     )
-    navigationModel.config = navigationModel.configs.first!
     navigationModel.selectedDate = Date()
+    navigationModel.config = .init(
+        contractId: "2",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
+    )
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
@@ -177,16 +190,29 @@ struct TerminationSummaryScreen: View {
     let navigationModel = TerminationFlowNavigationViewModel(
         configs: [
             .init(
-                contractId: "",
+                contractId: "1",
                 contractDisplayName: "Homeowner",
                 contractExposureName: "Bellmansgsatan 19A",
                 activeFrom: "2024-12-15",
                 typeOfContract: .seApartmentBrf
-            )
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
         ],
         terminateInsuranceViewModel: .init()
     )
-    navigationModel.config = navigationModel.configs.first!
+    navigationModel.config = .init(
+        contractId: "",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
+    )
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info

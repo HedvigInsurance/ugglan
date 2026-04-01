@@ -5,14 +5,14 @@ import hCoreUI
 struct TerminationSelectInsuranceScreen: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
     let itemPickerConfig: ItemConfig<TerminationConfirmConfig>
-
     init(
-        vm: TerminationFlowNavigationViewModel
+        vm: TerminationFlowNavigationViewModel,
+        configs: [TerminationConfirmConfig]
     ) {
         self.vm = vm
         itemPickerConfig = .init(
             items: {
-                let items = vm.configs.map {
+                let items = configs.map {
                     (
                         object: $0,
                         displayName: ItemModel(
@@ -24,7 +24,7 @@ struct TerminationSelectInsuranceScreen: View {
                 return items
             }(),
             preSelectedItems: { [] },
-            onSelected: { selected in
+            onSelected: {[weak vm] selected in
                 if let selectedContract = selected.first?.0 {
                     let config = TerminationConfirmConfig(
                         contractId: selectedContract.contractId,
@@ -34,8 +34,8 @@ struct TerminationSelectInsuranceScreen: View {
                         typeOfContract: selectedContract.typeOfContract
                     )
                     Task {
-                        vm.hasSelectInsuranceStep = true
-                        await vm.fetchSurvey(for: config)
+                        vm?.hasSelectInsuranceStep = true
+                        await vm?.fetchSurvey(for: config)
                     }
                 }
             },
@@ -49,5 +49,7 @@ struct TerminationSelectInsuranceScreen: View {
             title: L10n.terminationFlowTitle,
             subtitle: L10n.terminationFlowBody
         )
+        .hButtonIsLoading(vm.fetchingSurvey)
+        .disabled(vm.fetchingSurvey)
     }
 }

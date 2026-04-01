@@ -87,12 +87,12 @@ class TerminationRedirectHandler {
 // MARK: - View Model
 
 @MainActor
-public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
-    public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
+class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
+    static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         lhs.id == rhs.id
     }
 
-    public let id = UUID().uuidString
+    let id = UUID().uuidString
 
     // MARK: - Helpers
     private let redirectHandler = TerminationRedirectHandler()
@@ -106,13 +106,13 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var redirectActionLoadingState: ProcessingState = .success
     @Published var notification: TerminationNotification?
     @Published var confirmTerminationState: ProcessingState = .loading
+    @Published var fetchingSurvey: Bool = false
 
     // MARK: - Navigation
     let router = Router()
     let initialStep: TerminationFlowActions
 
     // MARK: - Configuration
-    var configs: [TerminationConfirmConfig] = []
     @Published var config: TerminationConfirmConfig?
     @Published var hasSelectInsuranceStep: Bool = false
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
@@ -145,25 +145,33 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     // MARK: - Initialization
 
-    public init(
+    init(
         configs: [TerminationConfirmConfig],
         terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
         self.terminateInsuranceViewModel = terminateInsuranceViewModel
-        self.configs = configs
+        self.hasSelectInsuranceStep = true
+        self.initialStep = .router(action: .selectInsurance(configs: configs))
+        self.redirectHandler.viewModel = self
 
-        if configs.count == 1, let singleConfig = configs.first {
-            self.config = singleConfig
-            self.hasSelectInsuranceStep = false
-            self.initialStep = .router(action: .survey)
-            self.redirectHandler.viewModel = self
-            fetchSurvey(for: singleConfig)
-        } else {
-            self.hasSelectInsuranceStep = true
-            self.initialStep = .router(action: .selectInsurance(configs: configs))
-            self.redirectHandler.viewModel = self
-        }
+        routeCountCancellable = router.$count
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateProgress()
+            }
+    }
 
+    init(
+        config: TerminationConfirmConfig,
+        surveyData: TerminationSurveyData,
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        self.config = config
+        self.surveyData = surveyData
+        self.hasSelectInsuranceStep = false
+        self.initialStep = .router(action: .survey)
+        self.redirectHandler.viewModel = self
         routeCountCancellable = router.$count
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -173,19 +181,20 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     // MARK: - Survey
 
-    func fetchSurvey(for config: TerminationConfirmConfig) {
+    func fetchSurvey(for config: TerminationConfirmConfig) async {
         self.config = config
-        Task { [weak self] in
-            guard let self else { return }
-            do {
-                let data = try await terminateContractsService.getTerminationSurvey(contractId: config.contractId)
-                self.surveyData = data
-                if hasSelectInsuranceStep {
-                    router.push(TerminationFlowRouterActions.survey)
-                }
-            } catch {
-                router.push(TerminationFlowFinalRouterActions.failure(message: error.localizedDescription))
-            }
+        withAnimation {
+            fetchingSurvey = true
+        }
+        do {
+            let data = try await terminateContractsService.getTerminationSurvey(contractId: config.contractId)
+            self.surveyData = data
+            router.push(TerminationFlowRouterActions.survey)
+        } catch {
+            router.push(TerminationFlowFinalRouterActions.failure(message: error.localizedDescription))
+        }
+        withAnimation {
+            fetchingSurvey = false
         }
     }
 
@@ -354,8 +363,8 @@ struct TerminationFlowNavigation: View {
                             openSurveyScreen()
                         case .datePicker:
                             openSetTerminationDateLandingScreen()
-                        case .selectInsurance:
-                            openSelectInsuranceScreen()
+                        case let .selectInsurance(configs):
+                            openSelectInsuranceScreen(configs: configs)
                         case .confirmation:
                             openTerminationSummaryScreen()
                         }
@@ -414,8 +423,8 @@ struct TerminationFlowNavigation: View {
                 openSurveyScreen()
             case .datePicker:
                 openSetTerminationDateLandingScreen()
-            case .selectInsurance:
-                openSelectInsuranceScreen()
+            case let .selectInsurance(configs):
+                openSelectInsuranceScreen(configs: configs)
             case .confirmation:
                 openTerminationSummaryScreen()
             }
@@ -449,8 +458,8 @@ struct TerminationFlowNavigation: View {
             .withDismissButton()
     }
 
-    private func openSelectInsuranceScreen() -> some View {
-        TerminationSelectInsuranceScreen(vm: vm)
+    private func openSelectInsuranceScreen(configs: [TerminationConfirmConfig]) -> some View {
+        TerminationSelectInsuranceScreen(vm: vm, configs: configs)
     }
 
     private func openTerminationSummaryScreen() -> some View {

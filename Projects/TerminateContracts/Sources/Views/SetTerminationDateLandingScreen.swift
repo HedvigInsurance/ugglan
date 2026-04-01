@@ -3,13 +3,12 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @ObservedObject var vm: SetTerminationDateLandingScreenViewModel
+    @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
-        self.vm = .init(terminationNavigationVm: terminationNavigationVm)
         self.terminationNavigationVm = terminationNavigationVm
     }
 
