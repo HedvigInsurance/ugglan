@@ -49,21 +49,8 @@ final class DeflectScreenContentTests: XCTestCase {
         XCTAssertEqual(content?.primaryAction, .dismiss)
     }
 
-    func testUpdateAddress_returnsMoveDeflectContent() {
-        let content = DeflectScreenContent.from(
-            suggestion: .init(
-                type: .updateAddress,
-                description: "Move your insurance",
-                url: nil
-            )
-        )
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
-        XCTAssertEqual(content?.message, "Move your insurance")
-        XCTAssertEqual(content?.primaryAction, .openMoveFlow)
-    }
-
     func testNonDeflectTypes_returnNil() {
+        XCTAssertNil(DeflectScreenContent.from(suggestionType: .updateAddress))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .upgradeCoverage))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .downgradePrice))
         XCTAssertNil(DeflectScreenContent.from(suggestionType: .redirect))
