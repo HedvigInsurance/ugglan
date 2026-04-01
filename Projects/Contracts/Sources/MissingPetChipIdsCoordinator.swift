@@ -13,7 +13,7 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .detent(item: $addMissingPetChipIdInput) { addMissingPetChipIdInput in
-                AddMissingPetChipIdBottomSheet(addMissingPetChipIdInput.contract)
+                AddMissingPetChipIdBottomSheet(.init(contract: addMissingPetChipIdInput.contract))
             }
             .modally(item: $selectContractInput) { selectContractInput in
                 // TODO: contract selections
@@ -42,18 +42,10 @@ extension View {
 }
 
 struct AddMissingPetChipIdBottomSheet: View {
-    let contract: Contract
-    let petChipIdMaksing = Masking(type: .petChipId)
-    @State var petChipId: String = ""
+    @StateObject private var vm: AddMissingPetChipIdViewModel
 
-    @State private var isLoading: Bool = false
-    @State private var error: String? = nil
-
-    let router = Router()
-    let service = PetService()
-
-    init(_ contract: Contract) {
-        self.contract = contract
+    init(_ vm: AddMissingPetChipIdViewModel) {
+        self._vm = StateObject(wrappedValue: vm)
     }
 
     var body: some View {
@@ -61,28 +53,22 @@ struct AddMissingPetChipIdBottomSheet: View {
             hSection {
                 VStack(spacing: .padding16) {
                     hFloatingTextField(
-                        masking: petChipIdMaksing,
-                        value: $petChipId,
+                        masking: vm.petChipIdMasking,
+                        value: $vm.petChipId,
                         equals: .constant(MissingPetChipIdType.single),
                         focusValue: .single,
                         placeholder: L10n.chipIdLabel,
-                        error: $error,
+                        //                        error: $vm.petError?.message,
                         textFieldPlaceholder: "XXX XXX XXX XXX XXX",
                     )
 
                     VStack(spacing: .padding8) {
                         hSaveButton(.primary) {
-                            Task { [weak service, weak router] in
-                                guard let service else { return }
-                                let error = try? await service.addMissing(
-                                    petChipId: petChipIdMaksing.unmaskedValue(text: petChipId),
-                                    for: contract.id
-                                )
-                                if error == nil { router?.dismiss() }
-                            }
+                            [weak vm] in vm?.addMissingPetChipId()
                         }
-                        .disabled(!petChipIdMaksing.isValid(text: petChipId))
-                        hCancelButton { [weak router] in router?.dismiss() }
+                        .disabled(!vm.canProceed)
+                        .hButtonIsLoading(vm.processingState == .loading)
+                        hCancelButton { [weak vm] in vm?.dismiss() }
                     }
                 }
             }
@@ -90,7 +76,7 @@ struct AddMissingPetChipIdBottomSheet: View {
         }
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.chipIdTopTitle)
-        .embededInNavigation(router: router, tracking: self)
+        .embededInNavigation(router: vm.router, tracking: self)
     }
 }
 
@@ -114,4 +100,45 @@ private struct AddMissingPetChipIdInput: Identifiable & Equatable {
 private struct SelectContractInput: Identifiable & Equatable {
     var id: String { contracts.map(\.id).joined(separator: "-") }
     let contracts: [Contract]
+}
+
+@MainActor
+class AddMissingPetChipIdViewModel: ObservableObject {
+    private let service = PetService()
+    let router = Router()
+    let contract: Contract
+    let petChipIdMasking = Masking(type: .petChipId)
+    @Published var petChipId: String = ""
+    @Published var processingState = ProcessingState.success
+    @Published var petError: PetError? = nil
+    var canProceed: Bool { petChipIdMasking.isValid(text: petChipId) }
+
+    init(contract: Contract) {
+        self.contract = contract
+    }
+
+    public func addMissingPetChipId() {
+        processingState = .loading
+        petError = nil
+
+        Task {
+            do {
+                if let petError = try await service.addMissing(
+                    petChipId: petChipIdMasking.unmaskedValue(text: petChipId),
+                    for: contract.id
+                ) {
+                    self.petError = petError
+                    processingState = .success
+                } else {
+                    dismiss()
+                }
+            } catch let error {
+                processingState = .error(errorMessage: error.localizedDescription)
+            }
+        }
+    }
+
+    func dismiss() {
+        router.dismiss()
+    }
 }
