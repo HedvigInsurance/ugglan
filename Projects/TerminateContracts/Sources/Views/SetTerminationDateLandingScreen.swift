@@ -12,6 +12,10 @@ struct SetTerminationDateLandingScreen: View {
         self.terminationNavigationVm = terminationNavigationVm
     }
 
+    private var isDeletion: Bool {
+        terminationNavigationVm.isDeletion
+    }
+
     var body: some View {
         hForm {}
             .hFormTitle(
@@ -29,9 +33,13 @@ struct SetTerminationDateLandingScreen: View {
             )
             .hFormAttachToBottom {
                 VStack(spacing: .padding16) {
-                    VStack(spacing: .padding4) {
-                        displayTerminationDateField
-                        displayImportantInformation
+                    if isDeletion {
+                        displayDeletionDateField
+                    } else {
+                        VStack(spacing: .padding4) {
+                            displayTerminationDateField
+                            displayImportantInformation
+                        }
                     }
 
                     hSection {
@@ -41,9 +49,11 @@ struct SetTerminationDateLandingScreen: View {
                                 terminationNavigationVm?.router.push(TerminationFlowRouterActions.confirmation)
                             }
                             .disabled(
-                                vm.isCancelButtonDisabled(
-                                    terminationDate: terminationNavigationVm.selectedDate
-                                )
+                                isDeletion
+                                    ? false
+                                    : vm.isCancelButtonDisabled(
+                                        terminationDate: terminationNavigationVm.selectedDate
+                                    )
                             )
                         }
                     }
@@ -51,6 +61,31 @@ struct SetTerminationDateLandingScreen: View {
                 }
                 .padding(.vertical, .padding16)
             }
+    }
+
+    @ViewBuilder
+    private var displayDeletionDateField: some View {
+        hSection {
+            VStack(spacing: 4) {
+                hFloatingField(
+                    value: L10n.terminationFlowToday,
+                    placeholder: L10n.terminationFlowDateFieldText,
+                    onTap: {}
+                )
+                .hFieldTrailingView {
+                    hCoreUIAssets.lock.view
+                        .frame(width: 24, height: 24)
+                }
+                .hBackgroundOption(option: [.locked, .withoutDisabled])
+                .disabled(true)
+
+                InfoCard(
+                    text: L10n.terminationFlowDeletionInfoCard,
+                    type: .info
+                )
+            }
+        }
+        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder

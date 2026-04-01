@@ -202,14 +202,11 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     func proceedAfterSurvey(optionId: String, comment: String?) {
         selectedOptionId = optionId
         selectedComment = comment
-        guard let action = surveyData?.action else { return }
-        switch action {
-        case .terminateWithDate:
-            router.push(TerminationFlowRouterActions.datePicker)
-        case .deleteInsurance:
+        guard surveyData?.action != nil else { return }
+        if isDeletion {
             fetchNotification(for: Date())
-            router.push(TerminationFlowRouterActions.confirmation)
         }
+        router.push(TerminationFlowRouterActions.datePicker)
     }
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
@@ -307,9 +304,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
 
     // MARK: - Progress Calculation
     private var remainingSteps: Int {
-        var steps = 1  // confirmation
-        if !isDeletion { steps += 1 }
-        return steps
+        2  // datePicker + confirmation// datePicker + confirmation
     }
 
     private func updateProgress() {
