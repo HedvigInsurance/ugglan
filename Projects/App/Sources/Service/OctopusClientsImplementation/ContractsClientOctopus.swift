@@ -116,6 +116,7 @@ extension Contract {
             typeOfContract: TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract),
             coInsured: [],
             coOwners: [],
+            missingPetChipId: false,
             addonsInfo: addonsInfo,
         )
     }
@@ -149,6 +150,7 @@ extension Contract {
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
             coOwners: contract.coOwners?.map { .init(data: $0.fragments.coOwnerFragment) } ?? [],
+            missingPetChipId: contract.missingPetId,
             addonsInfo: addonsInfo,
         )
     }
