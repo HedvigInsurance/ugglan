@@ -25,15 +25,11 @@ struct DiscountsView: View {
 
     private var discountsView: some View {
         ForEach(data.discountsData, id: \.id) { discountData in
-            hSection(discountData.discounts) { discount in
-                DiscountDetailView(
-                    discount: discount
-                )
-                if discount == discountData.discounts.last {
-                    Group {
-                        if let info = discountData.info {
-                            InfoCard(text: info, type: .info)
-                        }
+            hSection(discountData.discounts.filter { !$0.displayValue.contains("bundle") }) { discount in
+                Group {
+                    DiscountDetailView(discount: discount)
+                    if discount == discountData.discounts.last, let info = discountData.info {
+                        InfoCard(text: info, type: .info)
                     }
                 }
             }
