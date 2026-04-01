@@ -205,7 +205,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
         if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestion: suggestion) {
-            hideProgress = true
             updateProgress()
             router.push(content)
         } else if !suggestion.isDeflect {
