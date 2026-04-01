@@ -57,13 +57,13 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
     public var buttonTitle: String {
         switch type {
         case .updateAddress:
-            return L10n.terminationFlowSuggestionUpdateAddress
+            return L10n.terminationOfferButtonUpdateAddress
         case .upgradeCoverage:
-            return L10n.terminationFlowSuggestionChangeCoverage
+            return L10n.terminationOfferButtonChangeTier
         case .downgradePrice:
-            return L10n.terminationFlowSuggestionChangeCoverage
+            return L10n.terminationOfferButtonChangeTier
         case .redirect:
-            return L10n.terminationFlowSuggestionLearnMore
+            return L10n.terminationFlowLearnMore
         default:
             return ""
         }

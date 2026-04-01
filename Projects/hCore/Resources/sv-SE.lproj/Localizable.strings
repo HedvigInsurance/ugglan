@@ -744,9 +744,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_BUTTON" = "Säg upp försäkring";
 "TERMINATION_DATE_TEXT" = "Välj slutdatum";
 "TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.";
-"TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE" = "Eftersom din bil har avställts kommer din försäkring att sägas upp automatiskt.";
+"TERMINATION_FLOW_AUTO_CANCEL_DECOM" = "Om du har ställt av din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.";
+"TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION" = "När du har ställt på bilen hos Transportstyrelsen uppdateras din försäkring automatiskt till ditt tidigare skydd.";
+"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED" = "Om du har skrotat din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.";
 "TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.";
-"TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE" = "Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.";
+"TERMINATION_FLOW_AUTO_CANCEL_SOLD" = "Om du har sålt din bil säger vi upp din försäkring automatiskt. Vi får informationen direkt från Transportstyrelsen.";
 "TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "Vi avslutar din försäkring automatiskt";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE" = "Vad kostar det";
@@ -755,11 +757,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_AUTO_DECOM_INFO" = "Om du har ställt av din bil via Transportstyrelsen kommer din försäkring automatiskt övergå till en avställningsförsäkring.";
 "TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION" = "Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.";
 "TERMINATION_FLOW_AUTO_DECOM_TITLE" = "Din försäkring kommer övergå till en avställningsförsäkring";
+"TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE" = "Vi uppdaterar din försäkring automatiskt";
 "TERMINATION_FLOW_BODY" = "Välj den försäkring du vill avsluta";
 "TERMINATION_FLOW_CANCELLATION_TITLE" = "Säg upp försäkring";
 "TERMINATION_FLOW_CANCEL_INFO_TEXT" = "Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.";
 "TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Avsluta din försäkring";
-"TERMINATION_FLOW_CAR_BACK_MESSAGE" = "Eftersom din bil är påställd igen kommer din försäkring automatiskt att ändras tillbaka till ditt ordinarie skydd.";
 "TERMINATION_FLOW_CAR_BACK_TITLE" = "Din bil är tillbaka på vägen";
 "TERMINATION_FLOW_CONFIRMATION" = "Din försäkring kommer avlutas direkt";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
@@ -773,6 +775,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT" = "Om det blir ett uppehåll i din försäkring, kan det innebära att du inte får den hjälp eller ersättning du behöver i framtiden. Se därför till att alltid ha en aktiv försäkring.";
 "TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE" = "Viktig information";
 "TERMINATION_FLOW_I_UNDERSTAND_TEXT" = "Jag förstår";
+"TERMINATION_FLOW_LEARN_MORE" = "Läs mer";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23367&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE" = "Din försäkring kommer att avslutas %@. En bekräftelse kommer att skickas till din e-post.";
 "TERMINATION_FLOW_SUCCESS_TITLE" = "Försäkring avslutad";
@@ -800,23 +803,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_SURVEY_GENERIC_SUBTITLE" = "Innan vi fortsätter";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-4382&mode=design&t=L2ZbV2ozR8FTfDu4-0 */
 "TERMINATION_SURVEY_SUBTITLE" = "Varför vill du säga upp försäkringen?";
-"TERMINATION_FLOW_SUGGESTION_UPDATE_ADDRESS" = "Uppdatera din adress";
-"TERMINATION_FLOW_SUGGESTION_CHANGE_COVERAGE" = "Ändra skyddsnivå";
-"TERMINATION_FLOW_SUGGESTION_LEARN_MORE" = "Läs mer";
-"TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "Vi avslutar din försäkring automatiskt";
-"TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "Vi skickar en bekräftelse på uppsägningen inom några dagar. Hör gärna av dig om du inte fått den efter 5 dagar.";
-"TERMINATION_FLOW_AUTO_CANCEL_SOLD_MESSAGE" = "Eftersom du har sålt din bil kommer din försäkring att sägas upp automatiskt.";
-"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Eftersom din bil har skrotats kommer din försäkring att sägas upp automatiskt.";
-"TERMINATION_FLOW_AUTO_CANCEL_DECOMMISSION_MESSAGE" = "Eftersom din bil har avställts kommer din försäkring att sägas upp automatiskt.";
-"TERMINATION_FLOW_AUTO_DECOM_TITLE" = "Din försäkring kommer övergå till en avställningsförsäkring";
-"TERMINATION_FLOW_AUTO_DECOM_INFO" = "Om du har ställt av din bil via Transportstyrelsen kommer din försäkring automatiskt övergå till en avställningsförsäkring.";
-"TERMINATION_FLOW_AUTO_DECOM_COVERED_TITLE" = "Vad som ingår";
-"TERMINATION_FLOW_AUTO_DECOM_COVERED_INFO" = "Försäkringen ersätter skador såsom stöld, brand, skadegörelse och vagnskada medan bilen är avställd. Rättsskydd ingår också. Försäkringen gäller endast så länge bilen är kvar i Sverige.";
-"TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE" = "Vad kostar det";
-"TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "Du kommer att få ett bekräftelsemail på din avställningsförsäkring inom några dagar, där du kommer att se ditt nya pris.";
-"TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION" = "Vill du inte behålla din avställningsförsäkring kan du enkelt säga upp den nedan.";
-"TERMINATION_FLOW_CAR_BACK_TITLE" = "Din bil är tillbaka på vägen";
-"TERMINATION_FLOW_CAR_BACK_MESSAGE" = "Eftersom din bil är påställd igen kommer din försäkring automatiskt att ändras tillbaka till ditt ordinarie skydd.";
 "TIER_COMPARISON_SUBTITLE" = "Hitta den nivå som passar dina behov";
 "TIER_COMPARISON_TITLE" = "Jämför skyddsnivåer";
 "TIER_FLOW_ADDON_LABEL" = "Utökat reseskydd";

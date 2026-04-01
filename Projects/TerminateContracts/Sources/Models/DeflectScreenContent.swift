@@ -50,33 +50,12 @@ public struct ExplanationItem: Equatable, Hashable, Sendable {
 extension DeflectScreenContent {
     static func from(suggestion: TerminationSuggestion) -> DeflectScreenContent? {
         switch suggestion.type {
-        case .updateAddress:
-            return DeflectScreenContent(
-                title: L10nDerivation(
-                    table: "Localizable",
-                    key: "termination_flow.move_deflect.title",
-                    args: []
-                )
-                .render(),
-                message: suggestion.description,
-                extraMessage: L10nDerivation(
-                    table: "Localizable",
-                    key: "termination_flow.move_deflect.description",
-                    args: []
-                )
-                .render(),
-                explanations: [],
-                info: nil,
-                primaryButtonTitle: L10n.terminationFlowSuggestionUpdateAddress,
-                primaryAction: .openMoveFlow,
-                canContinueTermination: true
-            )
         case .autoCancelSold:
-            return .autoCancel(message: L10n.terminationFlowAutoCancelSoldMessage)
+            return .autoCancel(message: L10n.terminationFlowAutoCancelSold)
         case .autoCancelScrapped:
-            return .autoCancel(message: L10n.terminationFlowAutoCancelScrappedMessage)
+            return .autoCancel(message: L10n.terminationFlowAutoCancelScrapped)
         case .autoCancelDecommission:
-            return .autoCancel(message: L10n.terminationFlowAutoCancelDecommissionMessage)
+            return .autoCancel(message: L10n.terminationFlowAutoCancelDecom)
         case .autoDecommission:
             return DeflectScreenContent(
                 title: L10n.terminationFlowAutoDecomTitle,
@@ -99,8 +78,8 @@ extension DeflectScreenContent {
             )
         case .carAlreadyDecommission:
             return DeflectScreenContent(
-                title: L10n.terminationFlowCarBackTitle,
-                message: L10n.terminationFlowCarBackMessage,
+                title: L10n.terminationFlowAutoRecommissionTitle,
+                message: L10n.terminationFlowAutoCancelRecommission,
                 extraMessage: nil,
                 explanations: [],
                 info: nil,
@@ -108,7 +87,7 @@ extension DeflectScreenContent {
                 primaryAction: .dismiss,
                 canContinueTermination: true
             )
-        case .upgradeCoverage, .downgradePrice, .redirect, .info, .unknown:
+        case .upgradeCoverage, .downgradePrice, .redirect, .info, .updateAddress, .unknown:
             return nil
         }
     }
