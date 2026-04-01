@@ -1078,7 +1078,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func handle(notification: Notification) {
-        pushNotificationHandler.handle(notification)
+        if let url = notification.object as? URL {
+            deepLinkHandler.handle(url)
+        } else {
+            pushNotificationHandler.handle(notification)
+        }
     }
 
     func actionAfterLogin() {
