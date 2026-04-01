@@ -303,7 +303,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
         terminationSurveyStepModel = nil
         notification = nil
     }
-
     @Published var confirmTerminationState: ProcessingState = .loading
 
     public func sendConfirmTermination() {

@@ -113,15 +113,6 @@ public enum DeepLink: String, Codable, CaseIterable {
         return type
     }
 
-    public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.rawValue
-        let url = URL(string: path)
-        guard let url else {
-            return nil
-        }
-        return url
-    }
-
     public var tabURL: Bool {
         switch self {
         case .forever, .insurances, .home, .helpCenter:
