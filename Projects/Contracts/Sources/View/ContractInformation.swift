@@ -76,6 +76,7 @@ struct ContractInformationView: View {
                         .hWithoutHorizontalPadding([.section])
 
                         missingStakeholderInfoCards(for: contract)
+                        missingPetIdInfoCard(for: contract)
 
                         addonsView(contract: contract)
 
@@ -203,6 +204,22 @@ struct ContractInformationView: View {
 
         if contract.showEditCoOwnersInfo && contract.nbOfMissingCoOwnersWithoutTermination > 0 {
             MissingStakeholderInfoCard(contract: contract, type: .coOwner)
+        }
+    }
+
+    @ViewBuilder
+    private func missingPetIdInfoCard(for contract: Contract) -> some View {
+        if true {
+            InfoCard(text: L10n.chipIdMissingMessage, type: .attention)
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.chipIdMissingButton,
+                        buttonAction: { [weak contractsNavigationVm] in
+                            contractsNavigationVm?.missingPetChipIdInput = .init(contracts: [contract])
+                        }
+                    )
+                ])
+                .accessibilityElement(children: .combine)
         }
     }
 
@@ -388,20 +405,16 @@ public struct MissingStakeholderInfoCard: View {
     }
 
     public var body: some View {
-        hSection {
-            InfoCard(text: config.stakeholderType.addPersonalInfo, type: .attention)
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.contractCoinsuredMissingAddInfo,
-                        buttonAction: { [weak contractsNavigationVm] in
-                            contractsNavigationVm?.editStakeholdersVm.start(fromContract: config)
-                        }
-                    )
-                ])
-                .accessibilityElement(children: .combine)
-        }
-        .accessibilityElement(children: .combine)
-        .hWithoutHorizontalPadding([.section])
+        InfoCard(text: config.stakeholderType.addPersonalInfo, type: .attention)
+            .buttons([
+                .init(
+                    buttonTitle: L10n.contractCoinsuredMissingAddInfo,
+                    buttonAction: { [weak contractsNavigationVm] in
+                        contractsNavigationVm?.editStakeholdersVm.start(fromContract: config)
+                    }
+                )
+            ])
+            .accessibilityElement(children: .combine)
     }
 }
 
