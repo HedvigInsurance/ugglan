@@ -130,7 +130,7 @@ struct TerminationSummaryScreen: View {
 
     @ViewBuilder
     private var terminationDateView: some View {
-        if let date = terminationNavigationVm.terminationDateStepModel?.date {
+        if let date = terminationNavigationVm.selectedDate {
             hSection {
                 hFloatingField(
                     value: date.displayDateDDMMMYYYYFormat,
@@ -148,31 +148,35 @@ struct TerminationSummaryScreen: View {
     let navigationModel = TerminationFlowNavigationViewModel(
         configs: [
             .init(
-                contractId: "",
+                contractId: "1",
                 contractDisplayName: "Homeowner",
                 contractExposureName: "Bellmansgsatan 19A",
                 activeFrom: "2024-12-15",
                 typeOfContract: .seApartmentBrf
-            )
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
         ],
         terminateInsuranceViewModel: .init()
     )
-    navigationModel.config = navigationModel.configs.first!
-    navigationModel.terminationDateStepModel = .init(
-        maxDate: "",
-        minDate: "",
-        extraCoverageItem: []
+    navigationModel.selectedDate = Date()
+    navigationModel.config = .init(
+        contractId: "2",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
     )
-    navigationModel.terminationDateStepModel?.date = Date()
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
     )
 
-    navigationModel.extraCoverage = [
-        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel
@@ -186,31 +190,34 @@ struct TerminationSummaryScreen: View {
     let navigationModel = TerminationFlowNavigationViewModel(
         configs: [
             .init(
-                contractId: "",
+                contractId: "1",
                 contractDisplayName: "Homeowner",
                 contractExposureName: "Bellmansgsatan 19A",
                 activeFrom: "2024-12-15",
                 typeOfContract: .seApartmentBrf
-            )
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
         ],
         terminateInsuranceViewModel: .init()
     )
-    navigationModel.config = navigationModel.configs.first!
-    navigationModel.terminationDeleteStepModel = .init(
-        extraCoverageItem: [
-            .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-            .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-        ]
+    navigationModel.config = .init(
+        contractId: "",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
     )
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
     )
 
-    navigationModel.extraCoverage = [
-        .init(displayName: "Coverage 1", displayValue: "1000 SEK"),
-        .init(displayName: "Coverage 2", displayValue: "2000 SEK"),
-    ]
     return TerminationSummaryScreen()
         .environmentObject(
             navigationModel
