@@ -24,7 +24,7 @@ struct TerminationSelectInsuranceScreen: View {
                 return items
             }(),
             preSelectedItems: { [] },
-            onSelected: {[weak vm] selected in
+            onSelected: { [weak vm] selected in
                 if let selectedContract = selected.first?.0 {
                     let config = TerminationConfirmConfig(
                         contractId: selectedContract.contractId,
