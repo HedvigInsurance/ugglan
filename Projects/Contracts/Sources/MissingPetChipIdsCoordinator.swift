@@ -7,25 +7,24 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
     @Binding fileprivate var input: MissingPetChipIdInput?
     @Binding fileprivate var options: DetentPresentationOption
 
-    @State private var singleContractInput: SingleContractInput?
-    @State private var multipleContractInput: MultipleContractInput?
+    @State private var addMissingPetChipIdInput: AddMissingPetChipIdInput?
+    @State private var selectContractInput: SelectContractInput?
 
     public func body(content: Content) -> some View {
         content
-            .detent(item: $singleContractInput) { singleContractInput in
-                AddMissingPetChipIdBottomSheet(singleContractInput.id)
+            .detent(item: $addMissingPetChipIdInput) { addMissingPetChipIdInput in
+                AddMissingPetChipIdBottomSheet(addMissingPetChipIdInput.contract)
             }
-            .modally(item: $multipleContractInput) { multipleContractInput in
+            .modally(item: $selectContractInput) { selectContractInput in
                 // TODO: contract selections
             }
             .onChange(of: input) { input in
                 guard let contracts = input?.contracts, !contracts.isEmpty else { return }
-                self.input = nil
 
-                if contracts.count == 1 {
-                    singleContractInput = .init(id: contracts.first!.id)
+                if contracts.count == 1, let contract = contracts.first {
+                    addMissingPetChipIdInput = .init(contract: contract)
                 } else {
-                    multipleContractInput = .init(contracts: contracts)
+                    selectContractInput = .init(contracts: contracts)
                 }
 
                 self.input = nil
@@ -43,8 +42,7 @@ extension View {
 }
 
 struct AddMissingPetChipIdBottomSheet: View {
-    @EnvironmentObject var navigationVm: ContractsNavigationViewModel
-    let contractId: String
+    let contract: Contract
     let petChipIdMaksing = Masking(type: .petChipId)
     @State var petChipId: String = ""
 
@@ -54,8 +52,8 @@ struct AddMissingPetChipIdBottomSheet: View {
     let router = Router()
     let service = PetService()
 
-    init(_ contractId: String) {
-        self.contractId = contractId
+    init(_ contract: Contract) {
+        self.contract = contract
     }
 
     var body: some View {
@@ -78,7 +76,7 @@ struct AddMissingPetChipIdBottomSheet: View {
                                 guard let service else { return }
                                 let error = try? await service.addMissing(
                                     petChipId: petChipIdMaksing.unmaskedValue(text: petChipId),
-                                    for: contractId
+                                    for: contract.id
                                 )
                                 if error == nil { router?.dismiss() }
                             }
@@ -108,16 +106,12 @@ enum MissingPetChipIdType: hTextFieldFocusStateCompliant {
     var next: MissingPetChipIdType? { nil }
 }
 
-private struct SingleContractInput: Identifiable & Equatable {
-    let id: String
+private struct AddMissingPetChipIdInput: Identifiable & Equatable {
+    var id: String { contract.id }
+    let contract: Contract
 }
 
-private struct MultipleContractInput: Identifiable & Equatable {
+private struct SelectContractInput: Identifiable & Equatable {
     var id: String { contracts.map(\.id).joined(separator: "-") }
-
     let contracts: [Contract]
-}
-
-#Preview {
-    AddMissingPetChipIdBottomSheet("")
 }
