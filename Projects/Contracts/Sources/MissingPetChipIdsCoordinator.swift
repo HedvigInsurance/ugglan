@@ -148,6 +148,7 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                     isLoading = false
                 } else {
                     await contractStore.sendAsync(.fetchContracts)
+                    NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
                     Toasts.sucess()
                     dismiss()
                 }
