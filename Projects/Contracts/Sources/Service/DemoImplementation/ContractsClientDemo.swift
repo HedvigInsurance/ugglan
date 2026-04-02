@@ -73,6 +73,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             typeOfContract: TypeOfContract.seHouse,
             coInsured: [],
             coOwners: [],
+            missingPetChipId: true,
         )
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }

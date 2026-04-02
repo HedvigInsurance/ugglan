@@ -137,6 +137,7 @@ public struct ContractsNavigation<Content: View>: View {
                 contractsNavigationVm: contractsNavigationVm
             )
         }
+        .handleMissingChipIds(input: $contractsNavigationVm.missingPetChipIdInput)
         .handleTerminateInsurance(
             vm: contractsNavigationVm.terminateInsuranceVm
         ) { dismissType in
@@ -162,6 +163,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var document: hPDFDocument?
     @Published public var editStakeholderConfig: StakeholdersConfig?
     @Published public var editStakeholderMissingAlert: StakeholdersConfig?
+    @Published public var missingPetChipIdInput: MissingPetChipIdInput?
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Agreement?
     @Published public var isChangeAddressPresented = false
@@ -234,6 +236,13 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
 
     case editContract
     case upcomingChanges
+}
+
+public struct MissingPetChipIdInput: Equatable {
+    let contracts: [Contract]
+    public init(contracts: [Contract]) {
+        self.contracts = contracts
+    }
 }
 
 extension ContractsNavigation: TrackingViewNameProtocol {

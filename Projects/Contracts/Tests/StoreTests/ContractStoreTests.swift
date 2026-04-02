@@ -113,6 +113,7 @@ extension ContractsStack {
                 typeOfContract: .seHouse,
                 coInsured: [],
                 coOwners: [],
+                missingPetChipId: false,
             )
         ],
         pendingContracts: [],

@@ -10,12 +10,12 @@ public struct ContractSelectView<T: Hashable>: View {
         itemPickerConfig: ItemConfig<T>,
         title: String,
         subtitle: String?,
-        modally: Bool? = false
+        modally: Bool = false
     ) {
         self.itemPickerConfig = itemPickerConfig
         self.title = title
         self.subtitle = subtitle
-        self.modally = modally ?? false
+        self.modally = modally
     }
 
     public var body: some View {

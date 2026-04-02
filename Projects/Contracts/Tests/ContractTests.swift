@@ -54,6 +54,7 @@ final class ContractsTests: XCTestCase {
                     typeOfContract: .seHouse,
                     coInsured: [],
                     coOwners: [],
+                    missingPetChipId: false,
                 )
             ],
             pendingContracts: [],

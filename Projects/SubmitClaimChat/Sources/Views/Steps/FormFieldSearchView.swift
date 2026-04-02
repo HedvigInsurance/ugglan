@@ -41,7 +41,7 @@ struct FormFieldSearchView: View {
         }
         .hFormAlwaysAttachToBottom {
             hSection {
-                hCancelButton(type: .secondary) {
+                hCancelButton(.secondary) {
                     vm.searchController.dismiss(animated: false)
                     router.dismiss()
                 }
