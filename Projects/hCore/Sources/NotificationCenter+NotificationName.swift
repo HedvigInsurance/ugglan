@@ -14,4 +14,5 @@ extension Notification.Name {
     public static let claimCreated = Notification.Name("claimCreated")
     public static let tierChanged = Notification.Name("tierChanged")
     public static let petChipIdAdded = Notification.Name("petChipIdAdded")
+    public static let openMissingPetChipId = Notification.Name("openMissingPetChipId")
 }
