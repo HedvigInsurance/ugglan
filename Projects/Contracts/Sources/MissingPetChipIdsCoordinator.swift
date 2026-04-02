@@ -5,15 +5,18 @@ import hCoreUI
 
 private struct MissingPetChipIdsCoordinator: ViewModifier {
     @Binding fileprivate var input: MissingPetChipIdInput?
-    @Binding fileprivate var options: DetentPresentationOption
+    @State fileprivate var options: DetentPresentationOption
 
     @State private var addMissingPetChipIdInput: AddMissingPetChipIdInput?
     @State private var selectContractInput: SelectContractInput?
 
     public func body(content: Content) -> some View {
         content
-            .detent(item: $addMissingPetChipIdInput) { addMissingPetChipIdInput in
-                AddMissingPetChipIdBottomSheet(.init(contract: addMissingPetChipIdInput.contract))
+            .detent(item: $addMissingPetChipIdInput, options: $options) { addMissingPetChipIdInput in
+                AddMissingPetChipIdBottomSheet(
+                    .init(contract: addMissingPetChipIdInput.contract),
+                    detentOptions: $options
+                )
             }
             .modally(item: $selectContractInput) { selectContractInput in
                 // TODO: contract selections
@@ -35,7 +38,7 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
 extension View {
     public func handleMissingChipIds(
         input: Binding<MissingPetChipIdInput?>,
-        options: Binding<DetentPresentationOption> = .constant(.alwaysOpenOnTop)
+        options: DetentPresentationOption = .alwaysOpenOnTop
     ) -> some View {
         modifier(MissingPetChipIdsCoordinator(input: input, options: options))
     }
@@ -43,9 +46,11 @@ extension View {
 
 struct AddMissingPetChipIdBottomSheet: View {
     @StateObject private var vm: AddMissingPetChipIdViewModel
+    @Binding var detentOptions: DetentPresentationOption
 
-    init(_ vm: AddMissingPetChipIdViewModel) {
+    init(_ vm: AddMissingPetChipIdViewModel, detentOptions: Binding<DetentPresentationOption>) {
         self._vm = StateObject(wrappedValue: vm)
+        self._detentOptions = detentOptions
     }
 
     var body: some View {
@@ -78,6 +83,13 @@ struct AddMissingPetChipIdBottomSheet: View {
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.chipIdTopTitle)
         .disabled(vm.isLoading)
+        .onChange(of: vm.isLoading) { isLoading in
+            if isLoading {
+                detentOptions.insert(.disableDismissOnScroll)
+            } else {
+                detentOptions.remove(.disableDismissOnScroll)
+            }
+        }
         .embededInNavigation(router: vm.router, tracking: self)
     }
 }
