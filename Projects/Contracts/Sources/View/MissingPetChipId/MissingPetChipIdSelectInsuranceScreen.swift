@@ -23,10 +23,7 @@ struct MissingPetChipIdSelectInsuranceScreen: View {
                     )
                 )
             },
-            preSelectedItems: {
-                guard let first = contracts.first else { return [] }
-                return [first]
-            },
+            preSelectedItems: { [] },
             onSelected: { selected in
                 if let contract = selected.first?.0 {
                     onContractSelected(contract)
