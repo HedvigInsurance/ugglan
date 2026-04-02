@@ -36,8 +36,8 @@ struct MissingPetChipIdSelectInsuranceScreen: View {
     var body: some View {
         ContractSelectView(
             itemPickerConfig: itemPickerConfig,
-            title: L10n.chipIdTopTitle,
-            subtitle: L10n.chipIdMissingMessage
+            title: L10n.SelectInsurance.NavigationBar.CenterElement.title,
+            subtitle: nil
         )
     }
 }
