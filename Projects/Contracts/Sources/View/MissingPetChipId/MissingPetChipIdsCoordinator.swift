@@ -140,25 +140,23 @@ class AddMissingPetChipIdViewModel: ObservableObject {
         self.contract = contract
     }
 
-    public func addMissingPetChipId() {
+    func addMissingPetChipId() {
         isLoading = true
         fieldError = nil
 
         Task {
             do {
-                if let petError = try await service.addMissing(
+                try await service.addMissing(
                     petChipId: petChipIdMasking.unmaskedValue(text: petChipId),
                     for: contract.id
-                ) {
-                    fieldError = petError.message
-                    isLoading = false
-                } else {
-                    await contractStore.sendAsync(.fetchContracts)
-                    NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
-                    Toasts.success()
-                    dismiss()
-                    isLoading = false
-                }
+                )
+                await contractStore.sendAsync(.fetchContracts)
+                NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
+                Toasts.success()
+                dismiss()
+            } catch let error as PetError {
+                fieldError = error.message
+                isLoading = false
             } catch {
                 isLoading = false
                 fieldError = L10n.somethingWentWrong

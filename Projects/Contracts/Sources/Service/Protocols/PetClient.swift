@@ -2,11 +2,11 @@ import Foundation
 
 @MainActor
 public protocol PetClient {
-    func addMissing(petChipId: String, for contractId: String) async throws -> PetError?
+    func addMissing(petChipId: String, for contractId: String) async throws
 }
 
-public struct PetError {
-    let message: String
+public struct PetError: Error {
+    public let message: String
 
     public init(message: String) {
         self.message = message
