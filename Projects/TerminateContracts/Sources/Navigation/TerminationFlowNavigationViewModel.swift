@@ -82,71 +82,6 @@ class TerminationRedirectHandler {
             )
         }
     }
-    //<<<<<<< HEAD
-    //
-    //    private func getChangeTierSource(for action: FlowTerminationSurveyRedirectAction) -> ChangeTierSource? {
-    //        switch action {
-    //        case .changeTierFoundBetterPrice:
-    //            return .betterPrice
-    //        case .changeTierMissingCoverageAndTerms:
-    //            return .betterCoverage
-    //        default:
-    //            return nil
-    //        }
-    //    }
-    //}
-    //
-    //class TerminationStepHandler {
-    //    @MainActor func route(step: TerminationContractStep, to router: NavigationRouter) -> (model: Any?, progress: Float?)
-    //    {
-    //        switch step {
-    //        case let .setTerminationDateStep(model):
-    //            router.push(TerminationFlowRouterActions.terminationDate(model: model))
-    //            return (model, nil)
-    //        case let .setTerminationDeletion(model):
-    //            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
-    //            return (model, nil)
-    //        case let .setSuccessStep(model):
-    //            router.push(TerminationFlowFinalRouterActions.success(model: model))
-    //            return (model, nil)
-    //        case let .setFailedStep(model):
-    //            router.push(TerminationFlowFinalRouterActions.fail(model: model))
-    //            return (model, nil)
-    //        case let .setTerminationSurveyStep(model):
-    //            router.push(TerminationFlowRouterActions.surveyStep(model: model))
-    //            return (model, nil)
-    //        case .openTerminationUpdateAppScreen:
-    //            router.push(TerminationFlowFinalRouterActions.updateApp)
-    //            return (nil, nil)
-    //        case let .setDeflectAutoDecom(model):
-    //            router.push(TerminationFlowRouterActions.deflectAutoDecom(model: model))
-    //            return (model, nil)
-    //        case let .setDeflectAutoCancel(model):
-    //            router.push(TerminationFlowRouterActions.deflectAutoCancel(model: model))
-    //            return (model, nil)
-    //        }
-    //    }
-    //
-    //    func getInitialAction(from step: TerminationContractStep) -> TerminationFlowActions {
-    //        switch step {
-    //        case let .setTerminationDateStep(model):
-    //            return .router(action: .terminationDate(model: model))
-    //        case .setTerminationDeletion:
-    //            return .router(action: .terminationDate(model: nil))
-    //        case let .setSuccessStep(model):
-    //            return .final(action: .success(model: model))
-    //        case let .setFailedStep(model):
-    //            return .final(action: .fail(model: model))
-    //        case let .setTerminationSurveyStep(model):
-    //            return .router(action: .surveyStep(model: model))
-    //        case .openTerminationUpdateAppScreen:
-    //            return .final(action: .updateApp)
-    //        default:
-    //            return .final(action: .fail(model: nil))
-    //        }
-    //    }
-    //=======
-    //>>>>>>> main
 }
 
 // MARK: - View Model
@@ -187,28 +122,8 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     @Published var selectedOptionId: String?
     @Published var selectedComment: String?
     @Published var selectedDate: Date?
-
-    //<<<<<<< HEAD
-    //    var redirectUrl: URL? {
-    //        didSet {
-    //            if let redirectUrl {
-    //                router.dismiss()
-    //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-    //                    NotificationCenter.default.post(name: .openDeepLink, object: redirectUrl)
-    //                }
-    //            }
-    //        }
-    //    }
-    //
-    //    let router = NavigationRouter()
-    //
-    //    private let terminateContractsService = TerminateContractsService()
-    //
-    //    @Published private(set) var currentContext: String?
-    //=======
-    // MARK: - Progress
-    //>>>>>>> main
     @Published var progress: Float? = 0
+
     private var routeCountCancellable: AnyCancellable?
 
     var extraCoverage: [ExtraCoverageItem] {
@@ -238,7 +153,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.initialStep = .router(action: .selectInsurance(configs: configs))
         self.redirectHandler.viewModel = self
 
-        routeCountCancellable = router.$count
+        routeCountCancellable = router.$path.count()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -256,7 +171,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.hasSelectInsuranceStep = false
         self.initialStep = .router(action: .survey)
         self.redirectHandler.viewModel = self
-        routeCountCancellable = router.$count
+        routeCountCancellable = router.$path.count()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -392,14 +307,14 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     }
 
     private func updateProgress() {
-        if router.lastRouteIs(TerminationFlowFinalRouterActions.self)
-            || router.lastRouteIs(DeflectScreenContent.self)
-        {
-            progress = nil
-        } else {
-            let count = router.count
-            progress = Float(count) / Float(count + remainingSteps)
-        }
+        //        if router.lastRouteIs(TerminationFlowFinalRouterActions.self)
+        //            || router.lastRouteIs(DeflectScreenContent.self)
+        //        {
+        //            progress = nil
+        //        } else {
+        //            let count = router.path.count
+        //            progress = Float(count) / Float(count + remainingSteps)
+        //        }
     }
 }
 
