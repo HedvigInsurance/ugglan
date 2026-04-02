@@ -281,9 +281,9 @@ struct InfoCardView: Identifiable, Hashable {
 public enum InfoCardType: Hashable, Comparable {
     case payment
     case missingCoInsured(type: StakeholderType)
+    case missingPetChipId
     case importantMessage(message: String)
     case renewal
     case terminated
     case updateContactInfo
-    case missingPetChipId
 }
