@@ -42,12 +42,9 @@ struct HomeBottomScrollView: View {
                 case .updateContactInfo:
                     ContactInfoView()
                 case .missingPetChipId:
-                    InfoCard(text: L10n.chipIdMissingMessage, type: .attention)
-                        .buttons([
-                            .init(buttonTitle: L10n.chipIdMissingButton) {
-                                NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
-                            }
-                        ])
+                    MissingPetChipIdInfoCard {
+                        NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
+                    }
                 }
             }
         )
