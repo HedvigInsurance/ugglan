@@ -1,4 +1,5 @@
 import Foundation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -118,8 +119,10 @@ private struct SelectContractInput: Identifiable & Equatable {
 
 @MainActor
 class AddMissingPetChipIdViewModel: ObservableObject {
+    @PresentableStore var contractStore: ContractStore
     private let service = PetService()
     let router = Router()
+
     let contract: Contract
     let petChipIdMasking = Masking(type: .petChipId)
     @Published var petChipId: String = ""
@@ -144,6 +147,8 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                     fieldError = petError.message
                     isLoading = false
                 } else {
+                    await contractStore.sendAsync(.fetchContracts)
+                    Toasts.sucess()
                     dismiss()
                 }
             } catch {
@@ -155,5 +160,17 @@ class AddMissingPetChipIdViewModel: ObservableObject {
 
     func dismiss() {
         router.dismiss()
+    }
+}
+
+extension Toasts {
+    static func sucess() {
+        Toasts.shared.displayToastBar(
+            toast: .init(
+                type: .campaign,
+                icon: hCoreUIAssets.checkmark.view,
+                text: L10n.profileMyInfoSaveSuccessToastBody
+            )
+        )
     }
 }
