@@ -998,6 +998,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openReviewContactInfo,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(petChipIdAdded),
+            name: .petChipIdAdded,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1043,6 +1050,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 contractStore.sendAsync(.fetchContracts)
             )
         }
+    }
+
+    @objc func petChipIdAdded() {
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchMemberState)
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
