@@ -40,25 +40,32 @@ private struct DismissButton: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .setToolbarTrailing {
-                Button {
-                    if withAlert {
-                        isAlertPresented = true
-                    } else {
-                        router.dismiss()
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+                ) {
+                    Button {
+                        if withAlert {
+                            isAlertPresented = true
+                        } else {
+                            router.dismiss()
+                        }
+                    } label: {
+                        Group {
+                            hCoreUIAssets.close.view
+                                .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                        }
+                        .frame(minWidth: isLiquidGlassEnabled ? nil : 44, minHeight: isLiquidGlassEnabled ? nil : 44)
                     }
-                } label: {
-                    Group {
-                        hCoreUIAssets.close.view
-                            .closeButtonOffset(y: CGFloat(reducedTopSpacing))
-                    }
-                    .frame(minWidth: 44, minHeight: 44)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
+                    .configureAlert(message: message, isPresented: $isAlertPresented)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
                 }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .accessibilityLabel(L10n.a11YClose)
-                .accessibilityAddTraits(.isButton)
             }
-            .configureAlert(message: message, isPresented: $isAlertPresented)
     }
 }
 
@@ -106,11 +113,40 @@ private struct DismissAlertPopup: ViewModifier {
             }
     }
 }
+//
+//extension View {
+//    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
+//        modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
+//    }
+//}
+//
+//private struct CloseButtonModifier: ViewModifier {
+//    let reducedTopSpacing: Int
+//    @EnvironmentObject var router: Router
+//
+//    func body(content: Content) -> some View {
+//        content
+//            .setToolbarTrailing {
+//                Button {
+//                    router.dismiss()
+//                } label: {
+//                    hCoreUIAssets.close.view
+//                        .frame(minWidth: 24, minHeight: 44)
+//                        .foregroundColor(hFillColor.Opaque.primary)
+//                }
+//                .foregroundColor(hTextColor.Opaque.primary)
+//                .accessibilityLabel(L10n.a11YClose)
+//                .accessibilityAddTraits(.isButton)
+//=======
+//                hText(message)
+//            }
+//    }
+//}
 
 extension View {
     @ViewBuilder
     func closeButtonOffset(y: CGFloat) -> some View {
-        if #available(iOS 26, *) {
+        if isLiquidGlassEnabled {
             self
         } else {
             offset(y: y)

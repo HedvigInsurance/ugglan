@@ -7,6 +7,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
     let headerBottomPadding: CGFloat
+    @Environment(\.colorScheme) var colorSchema
 
     public init(
         vm: ScrollableSegmentedViewModel,
@@ -54,9 +55,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                         }
                     }
                     .padding(.padding4)
-                    .background {
-                        hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-                    }
+                    .modifier(SegmentedContainerBackground())
                 }
                 .frame(minWidth: vm.viewWidth)
             }
@@ -79,12 +78,30 @@ public struct ScrollableSegmentedView<Content: View>: View {
         return model.title + "\n\n" + selectedTabString
     }
 
+    @ViewBuilder
     var selectedPageHeaderBackground: some View {
-        RoundedRectangle(cornerRadius: .cornerRadiusS)
-            .fill(SecondaryAlt().resting)
-            .asAnyView
-            .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
-            .offset(x: vm.selectedIndicatorOffset)
+        if #available(iOS 26.0, *), isLiquidGlassEnabled {
+            RoundedRectangle(cornerRadius: .cornerRadiusS)
+                .fill(.clear)
+                .asAnyView
+                .background {
+                    RoundedRectangle(cornerRadius: .cornerRadiusS)
+                        .fill(.clear)
+                        .asAnyView
+                        .glassEffect(
+                            .regular.interactive().tint(SecondaryAlt().resting.colorFor(colorSchema, .base).color)
+                        )
+                }
+                .allowsHitTesting(false)
+                .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
+                .offset(x: vm.selectedIndicatorOffset)
+        } else {
+            RoundedRectangle(cornerRadius: .cornerRadiusS)
+                .fill(SecondaryAlt().resting)
+                .asAnyView
+                .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
+                .offset(x: vm.selectedIndicatorOffset)
+        }
     }
 
     func headerElement(for model: PageModel) -> some View {
@@ -369,6 +386,21 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
 
     public func scrollViewWillBeginDragging(_: UIScrollView) {
         currentHeight = heights.values.max(by: { $1 > $0 }) ?? 0
+    }
+}
+
+private struct SegmentedContainerBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *), isLiquidGlassEnabled {
+            content.background {
+                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                    .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusS))
+            }
+        } else {
+            content.background {
+                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+            }
+        }
     }
 }
 

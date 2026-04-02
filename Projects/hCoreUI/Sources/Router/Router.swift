@@ -185,7 +185,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
     public func makeUIViewController(context: Context) -> UINavigationController {
         let navigation: hNavigationBaseController = {
-            let extendedNavigationWidth = options.contains(.extendedNavigationWidth)
+            let extendedNavigationWidth = options.contains(.extendedNavigationWidth) && !isLiquidGlassEnabled
             if options.contains(.largeNavigationBar) {
                 return hNavigationControllerWithLargerNavBar(extendedNavigationWidth: extendedNavigationWidth)
             } else if options.contains(.navigationBarWithProgress) {
@@ -220,6 +220,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             if let title {
                 vc.title = title
             }
+            vc.view.backgroundColor = .brand(.primaryBackground())
             vc.onViewWillAppear = { [weak vc] in
                 if options.contains(.hidesBottomBarWhenPushed) {
                     if let tabBarController = vc?.tabBarController {
