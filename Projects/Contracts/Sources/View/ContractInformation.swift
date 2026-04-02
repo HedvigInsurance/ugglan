@@ -205,17 +205,10 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func missingPetIdInfoCard(for contract: Contract) -> some View {
-        if true {
-            InfoCard(text: L10n.chipIdMissingMessage, type: .attention)
-                .buttons([
-                    .init(
-                        buttonTitle: L10n.chipIdMissingButton,
-                        buttonAction: { [weak contractsNavigationVm] in
-                            contractsNavigationVm?.missingPetChipIdInput = .init(contracts: [contract])
-                        }
-                    )
-                ])
-                .accessibilityElement(children: .combine)
+        if contract.missingPetChipId {
+            MissingPetChipIdInfoCard { [weak contractsNavigationVm] in
+                contractsNavigationVm?.missingPetChipIdInput = .init(contracts: [contract])
+            }
         }
     }
 
