@@ -54,6 +54,7 @@ enum DI {
             let crossSellClient = CrossSellClientDemo()
             let campaignClient = hCampaignClientDemo()
             let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
+            let petClient = PetClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -73,6 +74,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
             Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
             Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
+            Dependencies.shared.add(module: Module { () -> PetClient in petClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
