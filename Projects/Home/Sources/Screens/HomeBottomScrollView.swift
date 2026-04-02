@@ -41,6 +41,13 @@ struct HomeBottomScrollView: View {
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
                 case .updateContactInfo:
                     ContactInfoView()
+                case .missingPetChipId:
+                    InfoCard(text: L10n.chipIdMissingMessage, type: .attention)
+                        .buttons([
+                            .init(buttonTitle: L10n.chipIdMissingButton) {
+                                NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
+                            }
+                        ])
                 }
             }
         )
@@ -68,6 +75,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleRenewalCardView()
         handleTerminatedMessage()
         handleUpdateContactInfo()
+        handleMissingPetChipIds()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -243,6 +251,19 @@ class HomeBottomScrollViewModel: ObservableObject {
         let isContactInfoUpdateNeeded = store.state.memberInfo?.isContactInfoUpdateNeeded ?? false
         handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
     }
+
+    private func handleMissingPetChipIds() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.stateSignal
+            .map { $0.activeContracts.contains { $0.missingPetChipId } }
+            .prepend(contractStore.state.activeContracts.contains { $0.missingPetChipId })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleItem(.missingPetChipId, with: show)
+            })
+            .store(in: &cancellables)
+    }
 }
 
 #Preview {
@@ -264,4 +285,5 @@ public enum InfoCardType: Hashable, Comparable {
     case renewal
     case terminated
     case updateContactInfo
+    case missingPetChipId
 }

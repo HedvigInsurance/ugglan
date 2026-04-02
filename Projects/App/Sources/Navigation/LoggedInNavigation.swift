@@ -903,6 +903,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var missingPetChipIdInput: MissingPetChipIdInput?
     @Published var isInsuranceEvidencePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
@@ -1005,6 +1006,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .petChipIdAdded,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openMissingPetChipId),
+            name: .openMissingPetChipId,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1055,6 +1063,13 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func petChipIdAdded() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchMemberState)
+    }
+
+    @objc func openMissingPetChipId() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contracts = contractStore.state.activeContracts.filter { $0.missingPetChipId }
+        guard !contracts.isEmpty else { return }
+        missingPetChipIdInput = .init(contracts: contracts)
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

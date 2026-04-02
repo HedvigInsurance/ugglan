@@ -240,6 +240,9 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
 
 public struct MissingPetChipIdInput: Equatable {
     let contracts: [Contract]
+    public init(contracts: [Contract]) {
+        self.contracts = contracts
+    }
 }
 
 extension ContractsNavigation: TrackingViewNameProtocol {
