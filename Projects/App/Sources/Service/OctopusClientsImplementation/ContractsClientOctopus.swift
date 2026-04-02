@@ -150,7 +150,7 @@ extension Contract {
             typeOfContract: TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract),
             coInsured: contract.coInsured?.map { .init(data: $0.fragments.coInsuredFragment) } ?? [],
             coOwners: contract.coOwners?.map { .init(data: $0.fragments.coOwnerFragment) } ?? [],
-            missingPetChipId: contract.missingPetId,
+            missingPetChipId: contract.isMissingPetId,
             addonsInfo: addonsInfo,
         )
     }
