@@ -1,114 +1,107 @@
 import Foundation
 import hCore
-import hCoreUI
 
-public struct TerminationFlowSurveyStepModel: FlowStepModel {
-    var options: [TerminationFlowSurveyStepModelOption]
-    var subTitleType: SurveyScreenSubtitleType
+public struct TerminationSurveyData: Codable, Equatable, Hashable, Sendable {
+    public let options: [TerminationSurveyOption]
+    public let action: TerminationAction
 
-    public init(options: [TerminationFlowSurveyStepModelOption], subTitleType: SurveyScreenSubtitleType) {
+    public init(options: [TerminationSurveyOption], action: TerminationAction) {
         self.options = options
-        self.subTitleType = subTitleType
+        self.action = action
     }
 }
 
-public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable {
+public struct TerminationSurveyOption: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
-    let title: String
-    let suggestion: TerminationFlowSurveyStepSuggestion?
-    let feedBack: TerminationFlowSurveyStepFeedback?
-    let subOptions: [TerminationFlowSurveyStepModelOption]?
+    public let title: String
+    public let feedbackRequired: Bool
+    public let suggestion: TerminationSuggestion?
+    public let subOptions: [TerminationSurveyOption]
 
     public init(
         id: String,
         title: String,
-        suggestion: TerminationFlowSurveyStepSuggestion?,
-        feedBack: TerminationFlowSurveyStepFeedback?,
-        subOptions: [TerminationFlowSurveyStepModelOption]?
+        feedbackRequired: Bool,
+        suggestion: TerminationSuggestion?,
+        subOptions: [TerminationSurveyOption]
     ) {
         self.id = id
         self.title = title
+        self.feedbackRequired = feedbackRequired
         self.suggestion = suggestion
-        self.feedBack = feedBack
         self.subOptions = subOptions
     }
 }
 
-public enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
-    case action(action: TerminationFlowSurveyStepSuggestionAction)
-    case redirect(redirect: TerminationFlowSurveyStepSuggestionRedirection)
-    case suggestionInfo(info: TerminationFlowSurveyStepSuggestionInfo)
-}
+public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
+    public let type: TerminationSuggestionType
+    public let description: String
+    public let url: String?
 
-public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
-    public let action: FlowTerminationSurveyRedirectAction
-    let description: String
-    let buttonTitle: String
-    let type: SurveySuggestionInfoType
-
-    public init(
-        action: FlowTerminationSurveyRedirectAction,
-        description: String,
-        buttonTitle: String,
-        type: SurveySuggestionInfoType
-    ) {
-        self.action = action
-        self.description = description
-        self.buttonTitle = buttonTitle
+    public init(type: TerminationSuggestionType, description: String, url: String?) {
         self.type = type
-    }
-}
-
-public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
-    case updateAddress
-    case changeTierFoundBetterPrice
-    case changeTierMissingCoverageAndTerms
-}
-
-public struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
-    let url: String
-    let description: String
-    let buttonTitle: String
-    let type: SurveySuggestionInfoType
-
-    public init(url: String, description: String, buttonTitle: String, type: SurveySuggestionInfoType) {
+        self.description = description
         self.url = url
-        self.description = description
-        self.buttonTitle = buttonTitle
-        self.type = type
     }
-}
 
-public struct TerminationFlowSurveyStepSuggestionInfo: FlowStepModel {
-    let description: String
-    let type: SurveySuggestionInfoType
-
-    public init(description: String, type: SurveySuggestionInfoType) {
-        self.description = description
-        self.type = type
-    }
-}
-
-public struct TerminationFlowSurveyStepFeedback: FlowStepModel {
-    let isRequired: Bool
-
-    public init(isRequired: Bool) {
-        self.isRequired = isRequired
-    }
-}
-
-public enum SurveySuggestionInfoType: Codable, Sendable {
-    case info
-    case offer
-
-    var notificationType: NotificationType {
-        switch self {
-        case .info:
-            return .info
-        case .offer:
-            return .campaign
+    public var isBlocking: Bool {
+        switch type {
+        case .updateAddress, .upgradeCoverage, .downgradePrice, .redirect:
+            return true
+        case .info, .autoCancelSold, .autoCancelScrapped, .autoDecommission,
+            .autoCancelDecommission, .carAlreadyDecommission, .unknown:
+            return false
         }
     }
+
+    public var buttonTitle: String {
+        switch type {
+        case .updateAddress:
+            return L10n.terminationOfferButtonUpdateAddress
+        case .upgradeCoverage:
+            return L10n.terminationOfferButtonChangeTier
+        case .downgradePrice:
+            return L10n.terminationOfferButtonChangeTier
+        case .redirect:
+            return L10n.terminationFlowLearnMore
+        default:
+            return ""
+        }
+    }
+
+    public var isDeflect: Bool {
+        switch type {
+        case .autoCancelSold, .autoCancelScrapped, .autoDecommission,
+            .autoCancelDecommission, .carAlreadyDecommission:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+public enum TerminationSuggestionType: String, Codable, Sendable {
+    case updateAddress
+    case upgradeCoverage
+    case downgradePrice
+    case redirect
+    case info
+    case autoCancelSold
+    case autoCancelScrapped
+    case autoDecommission
+    case autoCancelDecommission
+    case carAlreadyDecommission
+    case unknown
+}
+
+public enum TerminationAction: Codable, Equatable, Hashable, Sendable {
+    case terminateWithDate(minDate: String, maxDate: String, extraCoverage: [ExtraCoverageItem])
+    case deleteInsurance(extraCoverage: [ExtraCoverageItem])
+}
+
+public enum TerminationContractResult: Equatable, Sendable {
+    case success
+    case userError(message: String)
 }
 
 public enum SurveyScreenSubtitleType: Codable, Sendable {
