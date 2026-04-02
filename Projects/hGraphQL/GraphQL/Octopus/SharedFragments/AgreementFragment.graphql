@@ -40,7 +40,7 @@ fragment ContractFragment on Contract {
       upcomingChangedAgreement {
          ...AgreementFragment
       }
-      missingPetId
+      isMissingPetId
 }
 
 fragment CoInsuredFragment on ContractCoInsured {
