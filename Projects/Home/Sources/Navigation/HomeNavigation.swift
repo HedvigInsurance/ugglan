@@ -1,7 +1,7 @@
 import Combine
 import Contracts
 import CrossSell
-import EditCoInsured
+import EditStakeholders
 import Foundation
 import Payment
 import PresentableStore
@@ -90,7 +90,7 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var connectPaymentVm = ConnectPaymentViewModel()
-    public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingStakeHolders: globalPresentableStoreContainer.get(of: ContractStore.self)
+    public var editStakeholdersVm = EditStakeholdersViewModel(
+        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }

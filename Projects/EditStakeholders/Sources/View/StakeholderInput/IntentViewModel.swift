@@ -1,0 +1,115 @@
+import Foundation
+import SwiftUI
+import hCore
+import hCoreUI
+
+@MainActor
+public class IntentViewModel: ObservableObject {
+    @Published var intent: Intent?
+    @Published var isLoading: Bool = false
+    @Published var errorMessageForInput: String?
+    @Published var errorMessageForStakeholders: String?
+    @Published var viewState: ProcessingState = .loading {
+        didSet {
+            invalidateDetents()
+        }
+    }
+
+    var service = EditStakeholdersService()
+
+    var showErrorViewForStakeholders: Bool {
+        errorMessageForStakeholders != nil
+    }
+
+    var showErrorViewForStakeholderInput: Bool {
+        errorMessageForInput != nil
+    }
+
+    public var showPriceBreakdown: Bool {
+        guard let intent else { return false }
+        return intent.newTotalCost.net != intent.currentTotalCost.net
+    }
+
+    var contractId: String?
+
+    @MainActor
+    func getIntent(
+        contractId: String,
+        origin: GetIntentOrigin,
+        stakeholders: [Stakeholder],
+        type: StakeholderType
+    ) async {
+        self.contractId = contractId
+        withAnimation {
+            self.isLoading = true
+            self.errorMessageForInput = nil
+            self.errorMessageForStakeholders = nil
+            self.viewState = .loading
+        }
+        do {
+            let data = try await service.createIntent(
+                contractId: contractId,
+                stakeholders: stakeholders,
+                type: type
+            )
+            withAnimation {
+                self.intent = data
+                self.viewState = .success
+            }
+        } catch let exception {
+            withAnimation {
+                switch origin {
+                case .stakeholderSelect:
+                    self.errorMessageForStakeholders = exception.localizedDescription
+                    self.viewState = .error(errorMessage: errorMessageForStakeholders ?? L10n.generalError)
+                case .stakeholderInput:
+                    self.errorMessageForInput = exception.localizedDescription
+                    self.viewState = .error(errorMessage: errorMessageForInput ?? L10n.generalError)
+                }
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
+
+    enum GetIntentOrigin {
+        case stakeholderSelect
+        case stakeholderInput
+    }
+
+    @MainActor
+    func performStakeholderChanges(commitId: String) async {
+        withAnimation {
+            viewState = .loading
+            self.isLoading = true
+        }
+        do {
+            try await service.commitMidtermChange(commitId: commitId)
+            withAnimation {
+                self.viewState = .success
+            }
+            AskForRating().askForReview()
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
+    }
+
+    private func invalidateDetents() {
+        for i in 1...4 {
+            Task {
+                try await Task.sleep(seconds: Float(i) * 0.1)
+                UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                    .animateChanges {
+                        UIApplication.shared.getTopViewController()?.sheetPresentationController?
+                            .invalidateDetents()
+                    }
+            }
+        }
+    }
+}

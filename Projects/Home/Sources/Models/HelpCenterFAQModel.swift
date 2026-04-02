@@ -45,13 +45,10 @@ public struct FAQModel: Codable, Equatable, Hashable, Sendable, Identifiable {
                     of: Environment.production.webBaseURL.host!,
                     with: Environment.staging.webBaseURL.host!
                 )
-            for deeplinkWithIndex in Environment.production.deepLinkUrls.enumerated() {
-                let index = deeplinkWithIndex.offset
-                answer = answer.replacingOccurrences(
-                    of: deeplinkWithIndex.element.host!,
-                    with: Environment.staging.deepLinkUrls[index].host!
-                )
-            }
+            answer = answer.replacingOccurrences(
+                of: Environment.production.deepLinkUrl.host!,
+                with: Environment.staging.deepLinkUrl.host!
+            )
         }
         self.question = question
         self.answer = answer

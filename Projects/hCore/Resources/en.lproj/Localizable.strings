@@ -173,6 +173,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHAT_TITLE" = "Messages";
 "CHAT_TOAST_PUSH_NOTIFICATIONS_TITLE" = "Push notifications";
 "CHAT_UPLOAD_PRESEND" = "Send";
+"CHIP_ID_LABEL" = "Chip-ID";
+"CHIP_ID_MISSING_BUTTON" = "Add Chip-ID";
+"CHIP_ID_MISSING_MESSAGE" = "Chip ID for your pet is missing";
+"CHIP_ID_TOP_TITLE" = "Update pet Chip-ID";
+"CHIP_ID_WRONG_INPUT" = "Must be 15 digits";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Don’t miss out on important information for your claim";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Enable notifications";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Skip";
@@ -218,7 +223,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_TEXT_INSTEAD" = "Describe using text";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
-"CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Custom item";
+"CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
 "CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
@@ -739,6 +744,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_BUTTON" = "Cancel insurance";
 "TERMINATION_DATE_TEXT" = "Select termination date";
 "TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.";
+"TERMINATION_FLOW_AUTO_CANCEL_DECOM" = "If you’ve decommissioned your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.";
+"TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION" = "Once your car is registered as active with Transportstyrelsen, your insurance will be updated automatically to your previous coverage.";
+"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED" = "If you’ve scrapped your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.";
+"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Since your car has been scrapped, your insurance will be automatically cancelled.";
+"TERMINATION_FLOW_AUTO_CANCEL_SOLD" = "If you’ve sold your car, we’ll cancel your insurance automatically. We receive this information directly from Transportstyrelsen.";
 "TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "We’ll cancel your insurance automatically";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "You’ll receive a confirmation email within a few days, where you can see your new price.";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_TITLE" = "What it costs";
@@ -747,10 +757,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_AUTO_DECOM_INFO" = "If you’ve decommissioned your car through Transportstyrelsen, your insurance will automatically switch to decommission insurance.";
 "TERMINATION_FLOW_AUTO_DECOM_NOTIFICATION" = "If you don’t want to keep your decommission insurance, you can cancel it below.";
 "TERMINATION_FLOW_AUTO_DECOM_TITLE" = "Your insurance will switch to decommission insurance";
+"TERMINATION_FLOW_AUTO_RECOMMISSION_TITLE" = "We’ll update your insurance automatically";
 "TERMINATION_FLOW_BODY" = "Select the insurance you \nwant to cancel";
 "TERMINATION_FLOW_CANCELLATION_TITLE" = "Cancel insurance";
 "TERMINATION_FLOW_CANCEL_INFO_TEXT" = "You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab \"Payments\" here in the app.";
 "TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Cancelling your insurance";
+"TERMINATION_FLOW_CAR_BACK_TITLE" = "Your car is back on the road";
 "TERMINATION_FLOW_CONFIRMATION" = "Your insurance will be cancelled directly";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Your insurance will be cancelled on %@";
@@ -763,6 +775,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_IMPORTANT_INFORMATION_TEXT" = "If there is a gap in your insurance, you may not receive future help or compensation. Make sure that you always have an active insurance.";
 "TERMINATION_FLOW_IMPORTANT_INFORMATION_TITLE" = "Important information";
 "TERMINATION_FLOW_I_UNDERSTAND_TEXT" = "I understand";
+"TERMINATION_FLOW_LEARN_MORE" = "Learn more";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23367&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_SUCCESS_SUBTITLE_WITH_DATE" = "Your insurance will be cancelled on %@. We will send you an email with all the details.";
 "TERMINATION_FLOW_SUCCESS_TITLE" = "Insurance cancelled";
