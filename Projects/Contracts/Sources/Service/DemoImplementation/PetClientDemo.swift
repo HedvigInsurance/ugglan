@@ -1,7 +1,5 @@
-import Addons
 import Foundation
 import hCore
-import hCoreUI
 
 public class PetClientDemo: PetClient {
     public init() {}

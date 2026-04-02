@@ -1,6 +1,7 @@
 import Foundation
 import PresentableStore
 import SwiftUI
+import UIKit
 import hCore
 import hCoreUI
 
@@ -154,8 +155,9 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                 } else {
                     await contractStore.sendAsync(.fetchContracts)
                     NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
-                    Toasts.sucess()
+                    Toasts.success()
                     dismiss()
+                    isLoading = false
                 }
             } catch {
                 isLoading = false
@@ -170,7 +172,7 @@ class AddMissingPetChipIdViewModel: ObservableObject {
 }
 
 extension Toasts {
-    static func sucess() {
+    static func success() {
         Toasts.shared.displayToastBar(
             toast: .init(
                 type: .campaign,

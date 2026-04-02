@@ -14,6 +14,5 @@ public struct MissingPetChipIdInfoCard: View {
             .buttons([
                 .init(buttonTitle: L10n.chipIdMissingButton) { action() }
             ])
-            .accessibilityElement(children: .combine)
     }
 }
