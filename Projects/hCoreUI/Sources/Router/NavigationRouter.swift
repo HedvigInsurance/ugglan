@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -23,31 +24,48 @@ extension String: TrackingViewNameProtocol {
 
 @MainActor
 public class NavigationRouter: ObservableObject {
-    @Published public var path = NavigationPath()
+    @Published fileprivate var path = NavigationPath()
+    @Published public private(set) var routeTypes: [Any.Type] = []
     var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
+    private var pathSyncCancellable: AnyCancellable?
 
-    public init() {}
+    public init() {
+        pathSyncCancellable =
+            $path
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newPath in
+                guard let self else { return }
+                if newPath.count < self.routeTypes.count {
+                    self.routeTypes.removeLast(self.routeTypes.count - newPath.count)
+                }
+            }
+    }
 
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
+        routeTypes.append(T.self)
         path.append(route)
     }
 
     public func pop<T>(_ hash: T.Type) {
         guard !path.isEmpty else { return }
+        routeTypes.removeLast()
         path.removeLast()
     }
 
     public func pop<T>(_ view: T) where T: View {
         guard !path.isEmpty else { return }
+        routeTypes.removeLast()
         path.removeLast()
     }
 
     public func pop() {
         guard !path.isEmpty else { return }
+        routeTypes.removeLast()
         path.removeLast()
     }
 
     public func popToRoot() {
+        routeTypes.removeAll()
         path = NavigationPath()
     }
 

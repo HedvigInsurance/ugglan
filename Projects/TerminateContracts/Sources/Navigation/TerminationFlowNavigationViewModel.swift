@@ -153,7 +153,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.initialStep = .router(action: .selectInsurance(configs: configs))
         self.redirectHandler.viewModel = self
 
-        routeCountCancellable = router.$path.count()
+        routeCountCancellable = router.$routeTypes
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -171,7 +171,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.hasSelectInsuranceStep = false
         self.initialStep = .router(action: .survey)
         self.redirectHandler.viewModel = self
-        routeCountCancellable = router.$path.count()
+        routeCountCancellable = router.$routeTypes
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -210,7 +210,6 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
         if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestion: suggestion) {
-            updateProgress()
             router.push(content)
         } else if !suggestion.isDeflect {
             Task {
@@ -307,14 +306,15 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     }
 
     private func updateProgress() {
-        //        if router.lastRouteIs(TerminationFlowFinalRouterActions.self)
-        //            || router.lastRouteIs(DeflectScreenContent.self)
-        //        {
-        //            progress = nil
-        //        } else {
-        //            let count = router.path.count
-        //            progress = Float(count) / Float(count + remainingSteps)
-        //        }
+        let pushedTypes = router.routeTypes
+        if pushedTypes.last == TerminationFlowFinalRouterActions.self
+            || pushedTypes.last == DeflectScreenContent.self
+        {
+            progress = nil
+        } else {
+            let count = router.routeTypes.count
+            progress = Float(count) / Float(count + remainingSteps)
+        }
     }
 }
 
