@@ -327,7 +327,12 @@ public struct DefaultStyling {
         // this color is used as background and system adds some alpha to it
         UIDatePicker.appearance().tintColor = .brand(.datePickerSelectionColor)
 
-        UIImageView.appearance().tintColor = .brand(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UINavigationController.self]).tintColor = .brand(
+            .primaryText()
+        )
+        UIImageView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
+            .primaryText()
+        )
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
