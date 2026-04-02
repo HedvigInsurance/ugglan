@@ -19,8 +19,13 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
                     detentOptions: $options
                 )
             }
-            .modally(item: $selectContractInput) { selectContractInput in
-                // TODO: contract selections
+            .detent(item: $selectContractInput) { selectContractInput in
+                MissingPetChipIdSelectInsuranceScreen(
+                    contracts: selectContractInput.contracts
+                ) { selectedContract in
+                    self.selectContractInput = nil
+                    self.addMissingPetChipIdInput = .init(contract: selectedContract)
+                }
             }
             .onChange(of: input) { input in
                 guard let contracts = input?.contracts, !contracts.isEmpty else { return }
