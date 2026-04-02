@@ -70,9 +70,9 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
             contractId: contractId,
             terminationDate: date.localDateString
         )
-        let query = OctopusGraphQL.TerminationFlowNotificationQuery(input: input)
+        let query = OctopusGraphQL.TerminationNotificationQuery(input: input)
         let data = try await octopus.client.fetch(query: query)
-        guard let notification = data.currentMember.terminationFlowNotification else { return nil }
+        guard let notification = data.currentMember.terminationNotification else { return nil }
         return .init(
             message: notification.message,
             type: notification.type == .case(.warning) ? .warning : .info
