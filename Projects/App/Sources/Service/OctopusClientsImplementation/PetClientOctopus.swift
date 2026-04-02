@@ -11,7 +11,7 @@ class PetClientOctopus: PetClient {
 
         let response = try await octopus.client.mutation(mutation: mutation)
 
-        if let errorMessage = response?.midtermChangePetId?.userError?.message {
+        if let errorMessage = response?.midtermChangePetId.asUserError?.message {
             throw PetError(message: errorMessage)
         }
     }
