@@ -27,7 +27,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isChangeAddressPresented = false
         var isCancellationPresented = false
         var isFirstVetPresented = false
-        var sickAbroadData: Deflection? = nil
+        var sickAbroadData: SubmitClaimChat.Deflection? = nil
         var isChangeTierPresented: ChangeTierContractsInput?
     }
 
@@ -240,7 +240,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
     }
 
-    private func getSubmitClaimDeflectScreen(sickAbroadData: Deflection) -> some View {
+    private func getSubmitClaimDeflectScreen(sickAbroadData: SubmitClaimChat.Deflection) -> some View {
         redirect(.deflect(sickAbroadData))
     }
 }
@@ -248,7 +248,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 public enum HelpCenterRedirectType {
     case travelInsurance
     case moveFlow
-    case deflect(Deflection)
+    case deflect(SubmitClaimChat.Deflection)
 }
 
 #Preview {
