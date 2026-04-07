@@ -90,7 +90,7 @@ asc_curl() {
     -X "$method"
   )
 
-  if [ -n "$data" ]; then
+  if [[ -n "$data" ]]; then
     args+=(-d "$data")
   fi
 
@@ -101,7 +101,7 @@ asc_curl() {
 
   echo "DEBUG: ${method} ${url} → HTTP ${http_code}" >&2
 
-  if [ -z "$http_code" ] || [ "$http_code" -lt 200 ] 2>/dev/null || [ "$http_code" -ge 300 ] 2>/dev/null; then
+  if [[ -z "$http_code" ]] || [[ "$http_code" -lt 200 ]] 2>/dev/null || [[ "$http_code" -ge 300 ]] 2>/dev/null; then
     echo "ERROR: ASC API ${method} ${url} returned HTTP ${http_code}" >&2
     echo "$body" >&2
     return 1
@@ -114,9 +114,9 @@ asc_curl() {
 # Prefers APP_VERSION/BUILD_NUMBER env vars (set by GitHub Actions).
 # Falls back to reading from the Xcode Cloud archive.
 get_app_version() {
-  if [ -n "${APP_VERSION:-}" ]; then
+  if [[ -n "${APP_VERSION:-}" ]]; then
     echo "$APP_VERSION"
-  elif [ -n "${CI_ARCHIVE_PATH:-}" ]; then
+  elif [[ -n "${CI_ARCHIVE_PATH:-}" ]]; then
     /usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "${CI_ARCHIVE_PATH}/Products/Applications/Hedvig.app/Info.plist"
   else
     echo "ERROR: APP_VERSION or CI_ARCHIVE_PATH must be set" >&2
@@ -125,9 +125,9 @@ get_app_version() {
 }
 
 get_build_number() {
-  if [ -n "${BUILD_NUMBER:-}" ]; then
+  if [[ -n "${BUILD_NUMBER:-}" ]]; then
     echo "$BUILD_NUMBER"
-  elif [ -n "${CI_ARCHIVE_PATH:-}" ]; then
+  elif [[ -n "${CI_ARCHIVE_PATH:-}" ]]; then
     /usr/libexec/PlistBuddy -c "Print CFBundleVersion" "${CI_ARCHIVE_PATH}/Products/Applications/Hedvig.app/Info.plist"
   else
     echo "ERROR: BUILD_NUMBER or CI_ARCHIVE_PATH must be set" >&2
@@ -216,7 +216,7 @@ wait_for_build() {
 
   echo "Waiting for build ${build_number} (version ${app_version}) to finish processing..." >&2
 
-  while [ $elapsed -lt $MAX_BUILD_WAIT_SECONDS ]; do
+  while [[ $elapsed -lt $MAX_BUILD_WAIT_SECONDS ]]; do
     local response
     response=$(asc_curl GET "${ASC_API}/builds?filter[app]=${APP_APPLE_ID}&filter[version]=${build_number}&filter[preReleaseVersion.version]=${app_version}") || {
       echo "  API error, retrying..." >&2
@@ -225,7 +225,7 @@ wait_for_build() {
       continue
     }
 
-    if [ -n "$response" ]; then
+    if [[ -n "$response" ]]; then
       local build_info
       build_info=$(echo "$response" | python3 -c "
 import sys, json
@@ -237,17 +237,17 @@ if builds:
 " 2>&1 || true)
 
       # Skip if python3 produced a traceback instead of build info
-      if [ -n "$build_info" ] && [[ "$build_info" != *"Traceback"* ]]; then
+      if [[ -n "$build_info" ]] && [[ "$build_info" != *"Traceback"* ]]; then
         local build_id="${build_info%%|*}"
         local state="${build_info##*|}"
 
         echo "  Build state: ${state}" >&2
 
-        if [ "$state" = "VALID" ]; then
+        if [[ "$state" == "VALID" ]]; then
           echo "Build ${build_number} is ready." >&2
           echo "$build_id"
           return 0
-        elif [ "$state" = "INVALID" ]; then
+        elif [[ "$state" == "INVALID" ]]; then
           echo "ERROR: Build ${build_number} is INVALID. Check App Store Connect for details." >&2
           return 1
         fi
@@ -315,7 +315,7 @@ for loc in data.get('data', []):
     local locale="${rest%%|*}"
     local existing_whats_new="${rest#*|}"
 
-    if [ -n "$existing_whats_new" ]; then
+    if [[ -n "$existing_whats_new" ]]; then
       echo "  Skipping localization ${loc_id} (${locale}) — already has release notes."
       continue
     fi
@@ -445,7 +445,7 @@ main() {
 
   # Validate required env vars
   for var in ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY APP_APPLE_ID; do
-    if [ -z "${!var:-}" ]; then
+    if [[ -z "${!var:-}" ]]; then
       echo "ERROR: Required environment variable ${var} is not set."
       exit 1
     fi
@@ -462,18 +462,18 @@ main() {
   echo "Looking for existing App Store version ${app_version}..."
   version_id=$(find_app_store_version "$app_version" || true)
 
-  if [ -n "$version_id" ]; then
+  if [[ -n "$version_id" ]]; then
     echo "App Store version ${app_version} already exists (ID: ${version_id}). Skipping creation."
   else
     echo "Creating new App Store version ${app_version}..."
     version_id=$(create_app_store_version "$app_version" || true)
-    if [ -n "$version_id" ]; then
+    if [[ -n "$version_id" ]]; then
       echo "Created App Store version ${app_version} (ID: ${version_id})."
     else
       echo "Create failed, searching again (version may already exist)..."
       version_id=$(find_app_store_version "$app_version" || true)
     fi
-    if [ -z "$version_id" ]; then
+    if [[ -z "$version_id" ]]; then
       echo "ERROR: Could not find or create App Store version ${app_version}." >&2
       exit 1
     fi

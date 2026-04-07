@@ -9,7 +9,7 @@ fi
 
 # Trigger ASC submission via GitHub Actions after the build is uploaded.
 # The workflow polls until the build appears in App Store Connect.
-if [ "${GH_ASC_SUBMIT_TOKEN+x}" ]; then
+if [[ "${GH_ASC_SUBMIT_TOKEN+x}" ]]; then
 echo "===== Triggering App Store Connect submission workflow ====="
 APP_VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "${CI_ARCHIVE_PATH}/Products/Applications/Hedvig.app/Info.plist")
 BUILD_NUMBER="${CI_BUILD_NUMBER}"
