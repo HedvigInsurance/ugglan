@@ -37,7 +37,12 @@ struct MissingPetChipIdSelectInsuranceScreen: View {
         ContractSelectView(
             itemPickerConfig: itemPickerConfig,
             title: L10n.SelectInsurance.NavigationBar.CenterElement.title,
-            subtitle: nil
+            subtitle: nil,
+            modally: true,
+        )
+        .embededInNavigation(
+            options: [.largeNavigationBar],
+            tracking: String(describing: MissingPetChipIdSelectInsuranceScreen.self)
         )
     }
 }
