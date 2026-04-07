@@ -28,6 +28,10 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
                     self.addMissingPetChipIdInput = .init(contract: selectedContract)
                 }
             }
+            .embededInNavigation(
+                options: [.largeNavigationBar],
+                tracking: String(describing: MissingPetChipIdSelectInsuranceScreen.self)
+            )
             .onChange(of: input) { input in
                 guard let contracts = input?.contracts, !contracts.isEmpty else { return }
 
