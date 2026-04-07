@@ -42,7 +42,7 @@ public struct LinkOnlyPartner: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-public struct DeflectQuestion: Sendable, Hashable {
+public struct DeflectQuestion: Codable, Sendable, Hashable {
     public let question: String
     public let answer: String
 

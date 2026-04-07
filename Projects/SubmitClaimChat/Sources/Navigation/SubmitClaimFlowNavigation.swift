@@ -48,7 +48,7 @@ struct SubmitClaimFlowNavigation: View {
                         .withDismissButton()
                 }
                 .routerDestination(
-                    for: ClaimIntentOutcomeDeflection.self,
+                    for: Deflection.self,
                     destination: { model in
                         SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
                             viewModel?.openChat()
@@ -75,7 +75,7 @@ extension View {
     }
 }
 
-extension ClaimIntentOutcomeDeflection: TrackingViewNameProtocol, NavigationTitleProtocol {
+extension Deflection: TrackingViewNameProtocol, NavigationTitleProtocol {
     public var navigationTitle: String? {
         title
     }
