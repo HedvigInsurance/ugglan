@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-class PetClientOctopus: PetClient {
+class PetChipIdClientOctopus: PetChipIdClient {
     @Inject private var octopus: hOctopus
 
     func addMissing(petChipId: String, for contractId: String) async throws {
@@ -12,7 +12,7 @@ class PetClientOctopus: PetClient {
         let response = try await octopus.client.mutation(mutation: mutation)
 
         if let errorMessage = response?.midtermChangePetId.asUserError?.message {
-            throw PetError(message: errorMessage)
+            throw PetChipIdError(message: errorMessage)
         }
     }
 }

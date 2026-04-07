@@ -125,8 +125,8 @@ private struct SelectContractInput: Identifiable & Equatable {
 
 @MainActor
 class AddMissingPetChipIdViewModel: ObservableObject {
-    @PresentableStore var contractStore: ContractStore
-    private let service = PetService()
+    @PresentableStore private var contractStore: ContractStore
+    private let service = PetChipIdService()
     let router = Router()
 
     let contract: Contract
@@ -154,12 +154,12 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                 NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
                 Toasts.success()
                 dismiss()
-            } catch let error as PetError {
+            } catch let error as PetChipIdError {
                 fieldError = error.message
                 isLoading = false
             } catch {
-                isLoading = false
                 fieldError = L10n.somethingWentWrong
+                isLoading = false
             }
         }
     }

@@ -3,8 +3,8 @@ import Foundation
 import hCore
 
 @MainActor
-public class PetService {
-    @Inject var client: PetClient
+public class PetChipIdService {
+    @Inject private var client: PetChipIdClient
 
     @Log
     func addMissing(petChipId: String, for contractId: String) async throws {
