@@ -1,0 +1,30 @@
+name: App Store Connect Submit
+
+on:
+  repository_dispatch:
+    types: [xcode-cloud-build-complete]
+  workflow_dispatch:
+    inputs:
+      app_version:
+        description: "App version (e.g. 13.3.8)"
+        required: true
+      build_number:
+        description: "Build number (e.g. 5617)"
+        required: true
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Submit to App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          APP_APPLE_ID: ${{ secrets.APP_APPLE_ID }}
+          APP_VERSION: ${{ github.event.client_payload.app_version || inputs.app_version }}
+          BUILD_NUMBER: ${{ github.event.client_payload.build_number || inputs.build_number }}
+        run: scripts/asc_submit.sh
