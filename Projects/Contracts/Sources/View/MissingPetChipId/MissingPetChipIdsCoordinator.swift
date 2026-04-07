@@ -172,15 +172,3 @@ class AddMissingPetChipIdViewModel: ObservableObject {
         router.dismiss()
     }
 }
-
-extension Toasts {
-    static func success() {
-        Toasts.shared.displayToastBar(
-            toast: .init(
-                type: .campaign,
-                icon: hCoreUIAssets.checkmark.view,
-                text: L10n.profileMyInfoSaveSuccessToastBody
-            )
-        )
-    }
-}
