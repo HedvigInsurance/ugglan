@@ -173,11 +173,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHAT_TITLE" = "Messages";
 "CHAT_TOAST_PUSH_NOTIFICATIONS_TITLE" = "Push notifications";
 "CHAT_UPLOAD_PRESEND" = "Send";
-"CHIP_ID_LABEL" = "Chip-ID";
-"CHIP_ID_MISSING_BUTTON" = "Add Chip-ID";
-"CHIP_ID_MISSING_MESSAGE" = "Chip ID for your pet is missing";
-"CHIP_ID_TOP_TITLE" = "Update pet Chip-ID";
-"CHIP_ID_WRONG_INPUT" = "Must be 15 digits";
+"CHIP_ID_LABEL" = "Pet ID (15 digits)";
+"CHIP_ID_MISSING_BUTTON" = "Add pet ID";
+"CHIP_ID_MISSING_MESSAGE" = "Add your pet’s ID for better support";
+"CHIP_ID_TOP_TITLE" = "Add pet ID";
+"CHIP_ID_WRONG_INPUT" = "Enter a 15-digit pet ID";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Don’t miss out on important information for your claim";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Enable notifications";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Skip";
