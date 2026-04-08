@@ -689,82 +689,9 @@ struct HomeTab: View {
                     .handleEditStakeholders(
                         with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm
                     )
-                case .deflect:
-                    let model: ClaimIntentOutcomeDeflection = {
-                        let partners: [Partner] = {
-                            let store: HomeStore = globalPresentableStoreContainer.get()
-                            let quickActions = store.state.quickActions
-                            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
-                                .sickAboardPartners
-                            {
-                                let partners: [Partner] = sickAbroadPartners.compactMap {
-                                    Partner(
-                                        id: $0.id,
-                                        imageUrl: $0.imageUrl,
-                                        url: $0.url,
-                                        phoneNumber: $0.phoneNumber,
-                                        title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                                        description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                                        info: L10n.submitClaimGlobalAssistanceFootnote,
-                                        buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                                        preferredImageHeight: $0.preferredImageHeight
-                                    )
-                                }
-
-                                return partners
-                            }
-                            return []
-                        }()
-                        return ClaimIntentOutcomeDeflection(
-                            title: nil,
-                            content: .init(
-                                title: L10n.submitClaimEmergencyInsuranceCoverTitle,
-                                description: L10n.submitClaimEmergencyInsuranceCoverLabel
-                            ),
-                            partners: partners,
-                            infoText: nil,
-                            warningText: L10n.submitClaimEmergencyInfoLabel,
-                            questions: [
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq1Title,
-                                    answer: L10n.submitClaimEmergencyFaq1Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq2Title,
-                                    answer: L10n.submitClaimEmergencyFaq2Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq3Title,
-                                    answer: L10n.submitClaimEmergencyFaq3Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq4Title,
-                                    answer: L10n.submitClaimEmergencyFaq4Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq5Title,
-                                    answer: L10n.submitClaimEmergencyFaq5Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq6Title,
-                                    answer: L10n.submitClaimEmergencyFaq6Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq7Title,
-                                    answer: L10n.submitClaimEmergencyFaq7Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq8Title,
-                                    answer: L10n.submitClaimEmergencyFaq8Label
-                                ),
-                            ],
-                            linkOnlyPartners: [],
-                            buttonTitle: L10n.commonClaimEmergencyTitle
-                        )
-                    }()
-
+                case let .deflect(data):
                     SubmitClaimDeflectScreen(
-                        model: model,
+                        model: data,
                         openChat: {
                             NotificationCenter.default.post(
                                 name: .openChat,
@@ -772,7 +699,7 @@ struct HomeTab: View {
                             )
                         }
                     )
-                    .configureTitle(L10n.commonClaimEmergencyTitle)
+                    .configureTitle(data.buttonTitle)
                     .withDismissButton()
                     .embededInNavigation(
                         options: [.navigationType(type: .large), .extendedNavigationWidth],

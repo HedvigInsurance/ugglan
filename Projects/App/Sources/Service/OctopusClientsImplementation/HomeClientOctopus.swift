@@ -1,6 +1,7 @@
 import Chat
 import Foundation
 import Home
+import SubmitClaimChat
 import hCore
 import hGraphQL
 
@@ -98,17 +99,27 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.firstVet(partners: firstVetPartners))
         }
 
-        if let sickAbroadPartners = actions.sickAbroadAction?.deflectPartners {
-            let firstVetPartners = sickAbroadPartners.compactMap {
-                SickAbroadPartner(
-                    id: $0.id,
-                    imageUrl: $0.imageUrl,
-                    phoneNumber: $0.phoneNumber,
-                    url: $0.url,
-                    preferredImageHeight: $0.preferredImageHeight
-                )
-            }
-            quickActions.append(.sickAbroad(partners: firstVetPartners))
+        if let sickAbroadDeflect = actions.sickAbroadDeflect {
+            let deflection = Deflection(
+                title: sickAbroadDeflect.title,
+                content: .init(
+                    title: sickAbroadDeflect.content.title,
+                    description: sickAbroadDeflect.content.description
+                ),
+                partners: sickAbroadDeflect.partners.map {
+                    .init(fragment: $0.fragments.claimIntentOutcomeDeflectionPartnerFragment)
+                },
+                infoText: sickAbroadDeflect.infoText,
+                warningText: sickAbroadDeflect.warningText,
+                questions: sickAbroadDeflect.faq.map {
+                    .init(question: $0.title, answer: $0.description)
+                },
+                linkOnlyPartners: sickAbroadDeflect.simplePartners.map {
+                    .init(url: $0.url, buttonText: $0.urlButtonTitle)
+                },
+                buttonTitle: sickAbroadDeflect.buttonTitle
+            )
+            quickActions.append(.sickAbroad(deflection: deflection))
         }
         return quickActions
     }

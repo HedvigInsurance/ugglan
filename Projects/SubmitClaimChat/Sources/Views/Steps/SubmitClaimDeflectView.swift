@@ -3,10 +3,10 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimDeflectStepView: View {
-    private let model: ClaimIntentOutcomeDeflection
+    private let model: Deflection
     @EnvironmentObject var router: Router
     public init(
-        model: ClaimIntentOutcomeDeflection,
+        model: Deflection,
     ) {
         self.model = model
     }
@@ -26,11 +26,11 @@ public struct SubmitClaimDeflectStepView: View {
 }
 
 public struct SubmitClaimDeflectScreen: View {
-    private let model: ClaimIntentOutcomeDeflection
+    private let model: Deflection
     private let openChat: () -> Void
 
     public init(
-        model: ClaimIntentOutcomeDeflection,
+        model: Deflection,
         openChat: @escaping () -> Void
     ) {
         self.model = model
@@ -192,7 +192,7 @@ public struct SubmitClaimDeflectScreen: View {
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
 
-    let model = ClaimIntentOutcomeDeflection(
+    let model = Deflection(
         title: "title",
         content: .init(
             title: "content title",
