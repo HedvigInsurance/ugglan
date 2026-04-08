@@ -5,8 +5,6 @@ import hCore
 class DefaultURLOpener: URLOpener {
     @Inject private var authorizationCodeClient: AuthorizationCodeClient
 
-    public init() {}
-
     public func openWithAuthorizationCode(_ url: URL) async {
         var urlToOpen = url
         do {
