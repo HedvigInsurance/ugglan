@@ -53,7 +53,7 @@ extension View {
 
 struct AddMissingPetChipIdBottomSheet: View {
     @StateObject private var vm: AddMissingPetChipIdViewModel
-    @Binding var detentOptions: DetentPresentationOption
+    @Binding private var detentOptions: DetentPresentationOption
 
     init(_ vm: AddMissingPetChipIdViewModel, detentOptions: Binding<DetentPresentationOption>) {
         self._vm = StateObject(wrappedValue: vm)
@@ -71,7 +71,7 @@ struct AddMissingPetChipIdBottomSheet: View {
                         focusValue: .single,
                         placeholder: L10n.chipIdLabel,
                         error: $vm.fieldError,
-                        textFieldPlaceholder: "XXX XXX XXX XXX XXX"
+                        textFieldPlaceholder: "Enter a 15-digit pet chip ID"
                     )
 
                     VStack(spacing: .padding8) {
