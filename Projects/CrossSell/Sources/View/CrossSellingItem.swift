@@ -6,11 +6,16 @@ import hCoreUI
 struct CrossSellingItem: View {
     let crossSell: CrossSell
     let discountAvailable: Bool
-    @State var fieldIsClicked = false
+    @State private var fieldIsClicked = false
+    @State private var isCrossSellLoading = false
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            Dependencies.urlOpener.open(url)
+            Task {
+                isCrossSellLoading = true
+                await Dependencies.urlOpener.openWithAuthorizationCode(url)
+                isCrossSellLoading = false
+            }
         } else {
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         }
@@ -59,6 +64,9 @@ struct CrossSellingItem: View {
                                 openExternal()
                             }
                         )
+                        .disabled(isCrossSellLoading)
+                        .hButtonIsLoading(isCrossSellLoading)
+                        .animation(.default, value: isCrossSellLoading)
                     }
                 }
                 .accessibilityElement(children: .combine)

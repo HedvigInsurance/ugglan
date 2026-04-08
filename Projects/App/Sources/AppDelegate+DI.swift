@@ -129,6 +129,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -155,6 +156,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
             }
         }
     }
