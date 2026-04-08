@@ -64,6 +64,12 @@ struct AddMissingPetChipIdBottomSheet: View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
+                    ContractInformation(
+                        title: vm.contract.currentAgreement!.productVariant.displayName,
+                        subtitle: vm.contract.exposureDisplayNameShort,
+                        pillowImage: vm.contract.typeOfContract.pillowType.bgImage
+                    )
+
                     hFloatingTextField(
                         masking: vm.petChipIdMasking,
                         value: $vm.petChipId,
