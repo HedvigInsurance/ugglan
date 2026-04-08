@@ -88,9 +88,8 @@ public struct ScrollableSegmentedView<Content: View>: View {
                     RoundedRectangle(cornerRadius: .cornerRadiusS)
                         .fill(.clear)
                         .asAnyView
-                        .glassEffect(
-                            .regular.interactive().tint(SecondaryAlt().resting.colorFor(colorSchema, .base).color)
-                        )
+                        .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusS))
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
                 }
                 .allowsHitTesting(false)
                 .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
@@ -393,8 +392,9 @@ private struct SegmentedContainerBackground: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *), isLiquidGlassEnabled {
             content.background {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                hSurfaceColor.Opaque.primary
                     .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusS))
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
             }
         } else {
             content.background {
