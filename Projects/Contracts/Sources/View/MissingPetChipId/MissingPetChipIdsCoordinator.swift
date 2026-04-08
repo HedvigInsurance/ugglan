@@ -71,7 +71,7 @@ struct AddMissingPetChipIdBottomSheet: View {
                         focusValue: .single,
                         placeholder: L10n.chipIdLabel,
                         error: $vm.fieldError,
-                        textFieldPlaceholder: "Enter a 15-digit pet chip ID"
+                        textFieldPlaceholder: "XXX XXX XXX XXX XXX"
                     )
 
                     VStack(spacing: .padding8) {
