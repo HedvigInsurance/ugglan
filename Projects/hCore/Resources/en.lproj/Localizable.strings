@@ -176,6 +176,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHIP_ID_LABEL" = "Pet ID (15 digits)";
 "CHIP_ID_MISSING_BUTTON" = "Add pet ID";
 "CHIP_ID_MISSING_MESSAGE" = "Add your pet’s ID for better support";
+"CHIP_ID_NO_INSURANCES" = "No pet insurances with missing chip ID.";
 "CHIP_ID_TOP_TITLE" = "Add pet ID";
 "CHIP_ID_WRONG_INPUT" = "Enter a 15-digit pet ID";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Don’t miss out on important information for your claim";
