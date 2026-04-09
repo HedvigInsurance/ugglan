@@ -59,7 +59,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.7.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.9.0"))]
         case .umbrella:
             return [
                 .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260407084308"))
