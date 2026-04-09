@@ -12,6 +12,7 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case umbrella
+    case kmpNativeCoroutines
     case tagkit
     case introspect
     case svgkit
@@ -62,6 +63,10 @@ public enum ExternalDependencies: CaseIterable {
         case .umbrella:
             return [
                 .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260407084308"))
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.2"))
             ]
         case .tagkit:
             return [
@@ -133,7 +138,7 @@ public enum ExternalDependencies: CaseIterable {
                 try! FileManager.default.copyItem(
                     atPath: path.pathString,
                     toPath:
-                        "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
+                    "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
                 )
             }
 
@@ -153,6 +158,10 @@ public enum ExternalDependencies: CaseIterable {
         case .umbrella:
             return [
                 .package(product: "HedvigShared")
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(product: "KMPNativeCoroutinesAsync")
             ]
         case .tagkit:
             return [
