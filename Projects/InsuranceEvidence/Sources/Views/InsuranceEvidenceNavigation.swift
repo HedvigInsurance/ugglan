@@ -9,7 +9,7 @@ class InsuranceEvidenceNavigationViewModel: ObservableObject {
     fileprivate lazy var insuranceEvidenceInputScreenViewModel = InsuranceEvidenceInputScreenViewModel(
         InsuranceEvidenceNavigationViewModel: self
     )
-    let router = Router()
+    let router = NavigationRouter()
 }
 
 public struct InsuranceEvidenceNavigation: View {
@@ -17,7 +17,7 @@ public struct InsuranceEvidenceNavigation: View {
     public init() {}
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: vm.router,
             options: .extendedNavigationWidth,
             tracking: self

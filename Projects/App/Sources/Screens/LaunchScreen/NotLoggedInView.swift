@@ -91,7 +91,7 @@ class NotLoggedViewModel: ObservableObject {
     @Published var viewState: ViewState = .loading
     @Published var showLanguagePicker = false
     @Published var showLogin = false
-    let router = Router()
+    let router = NavigationRouter()
     var onLoad: () -> Void = {}
     var cancellables = Set<AnyCancellable>()
 
