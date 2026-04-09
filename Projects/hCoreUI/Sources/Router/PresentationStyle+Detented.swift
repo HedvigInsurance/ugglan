@@ -234,18 +234,13 @@ public enum Detent: Equatable {
                 as? DetentTransitioningDelegate
             let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
 
-            let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
-
-            let hasLargeTitle =
-                (navigationController?.navigationBar.prefersLargeTitles ?? false)
-                && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
             let hasNavigationBar =
                 navigationController?.navigationBar != nil
                 && (navigationController?.isNavigationBarHidden ?? true) == false
 
             let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
 
-            let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
+            let navigationBarHeight: CGFloat = navigationBarDynamicHeight ?? 52
 
             let additionalNavigationSafeAreaInsets =
                 navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()

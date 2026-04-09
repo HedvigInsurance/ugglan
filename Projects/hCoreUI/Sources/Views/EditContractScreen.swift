@@ -7,7 +7,7 @@ public struct EditContractScreen: View {
 
     let editTypes: [EditType]
     let onSelectedType: (EditType) -> Void
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(editTypes: [EditType], onSelectedType: @escaping (EditType) -> Void) {
         self.editTypes = editTypes
@@ -87,7 +87,7 @@ public struct EditContractScreen: View {
     isLiquidGlassEnabled = true
     return hForm {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
-            .environmentObject(Router())
+            .environmentObject(NavigationRouter())
         hButton(.large, .primary, content: .init(title: "test")) {
             showBottomSheet = true
         }
@@ -95,6 +95,6 @@ public struct EditContractScreen: View {
     .hFormContentPosition(.bottom)
     .detent(presented: $showBottomSheet) {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
-            .environmentObject(Router())
+            .environmentObject(NavigationRouter())
     }
 }

@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     init() {}
 
     var body: some View {

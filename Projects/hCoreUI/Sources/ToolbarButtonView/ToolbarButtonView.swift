@@ -8,11 +8,12 @@ public struct ToolbarButtonView: View {
     var action: ((_: ToolbarOptionType)) -> Void
     let type: ToolbarOptionType
     let placement: ListToolBarPlacement
+    let useSpacing: Bool
     private var spacing: CGFloat {
-        if #available(iOS 18.0, *) {
+        if isLiquidGlassEnabled {
             return 0
         } else {
-            return -8
+            return -10
         }
     }
 
@@ -20,10 +21,12 @@ public struct ToolbarButtonView: View {
         type: ToolbarOptionType,
         placement: ListToolBarPlacement,
         action: @escaping (_: ToolbarOptionType) -> Void,
+        useSpacing: Bool = false
     ) {
         self.type = type
         self.placement = placement
         self.action = action
+        self.useSpacing = useSpacing
     }
 
     public var body: some View {
@@ -49,6 +52,7 @@ public struct ToolbarButtonView: View {
                     }
                 }
             }
+            .padding(.horizontal, useSpacing ? spacing : 0)
         }
         .showTooltip(type: type, placement: placement)
     }
@@ -69,7 +73,6 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
     @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
-    let vcName: String?
     let placement: ListToolBarPlacement
 
     let leading: Leading?
@@ -89,19 +92,16 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         self.showTrailing = showTrailing
         placement = leading == nil ? .trailing : .leading
         action = { _ in }
-        vcName = nil
         _types = .constant([])
     }
 
     public init(
         action: @escaping (_: ToolbarOptionType) -> Void,
         types: Binding<[ToolbarOptionType]>,
-        vcName: String,
         placement: ListToolBarPlacement
     ) {
         self.action = action
         _types = types
-        self.vcName = vcName
         self.placement = placement
         leading = nil
         trailing = nil
@@ -110,57 +110,48 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if #available(iOS 18.0, *) {
+        if let leading, showLeading {
             content
-                .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
-                    if let nav = vc.navigationController {
-                        if self.navVm.nav != nav {
-                            self.navVm.nav = nav
-                            setNavigation(vc)
-                        }
+                .toolbar {
+                    ToolbarItem(
+                        placement: .topBarLeading
+                    ) {
+                        leading
                     }
                 }
-                .onChange(of: types) { _ in
-                    setNavigation()
+        } else if let trailing {
+            content
+                .toolbar {
+                    ToolbarItem(
+                        placement: .topBarTrailing
+                    ) {
+                        trailing
+                    }
+                }
+            // had to do it like this so each item is seperated for iOS 26
+        } else if isLiquidGlassEnabled {
+            content
+                .introspect(.viewController, on: .iOS(.v13...)) { @MainActor [weak navVm] vc in
+                    guard let navVm else { return }
+                    if navVm.viewController != vc {
+                        navVm.viewController = vc
+                        setNavigationBarItemsUsingTypes(for: vc)
+                    }
+                }
+                .onChange(of: types) { [weak navVm] _ in
+                    if let vc = navVm?.viewController {
+                        setNavigationBarItemsUsingTypes(for: vc)
+                    }
                 }
         } else {
-            if let leading, showLeading {
-                content
-                    .navigationBarItems(
-                        leading:
-                            leading
-                    )
-            } else {
-                let view = HStack {
-                    ForEach(types, id: \.self) { type in
-                        ToolbarButtonView(type: type, placement: placement, action: action)
-                    }
+            content
+                .toolbar {
+                    ToolbarTrailingItems(types: types, placement: placement, action: action)
                 }
-                content
-                    .toolbar {
-                        ToolbarItem(
-                            placement: .topBarTrailing
-                        ) {
-                            trailing != nil && showTrailing ? trailing?.asAnyView : view.asAnyView
-                        }
-                    }
-            }
         }
     }
 
-    private func setNavigation(_ vc: UIViewController? = nil) {
-        if let leading, let vc = vc, showLeading {
-            setNavigationBarItem(for: leading, vc: vc, placement: .leading)
-        }
-        if let trailing, let vc = vc, showTrailing {
-            setNavigationBarItem(for: trailing, vc: vc, placement: .trailing)
-        } else {
-            if let vc = navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
-                setNavigationBarItemsUsingTypes(for: vc)
-            }
-        }
-    }
-
+    //used for iOS 26 to have items splited
     private func setNavigationBarItemsUsingTypes(for vc: UIViewController) {
         var buttonItems = [UIBarButtonItem]()
         for (index, type) in types.reversed().enumerated() {
@@ -179,7 +170,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                     uiBarButtonItem.badge = badge
                 }
             }
-            if index < types.count {
+            if index < types.count, isLiquidGlassEnabled {
                 if #available(iOS 26.0, *) {
                     buttonItems.append(.fixedSpace())
                 }
@@ -191,22 +182,44 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
             vc.navigationItem.setRightBarButtonItems(buttonItems, animated: false)
         }
     }
+}
 
-    private func setNavigationBarItem(for view: any View, vc: UIViewController, placement: ListToolBarPlacement) {
-        let hostingVc = UIHostingController(rootView: view.asAnyView)
-        let viewToPlace = hostingVc.view!
-        viewToPlace.backgroundColor = .clear
-        let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
-        if placement == .leading {
-            vc.navigationItem.leftBarButtonItem = uiBarButtonItem
-        } else {
-            vc.navigationItem.rightBarButtonItem = uiBarButtonItem
+private struct ToolbarTrailingItems: ToolbarContent {
+    let types: [ToolbarOptionType]
+    let placement: ListToolBarPlacement
+    let action: (_: ToolbarOptionType) -> Void
+
+    var body: some ToolbarContent {
+        if types.indices.contains(0) {
+            ToolbarItem(placement: .topBarTrailing) {
+                ToolbarButtonView(type: types[0], placement: placement, action: action, useSpacing: true)
+            }
+        }
+        if types.indices.contains(1) {
+            ToolbarItem(placement: .topBarTrailing) {
+                ToolbarButtonView(type: types[1], placement: placement, action: action, useSpacing: true)
+            }
+        }
+        if types.indices.contains(2) {
+            ToolbarItem(placement: .topBarTrailing) {
+                ToolbarButtonView(type: types[2], placement: placement, action: action, useSpacing: true)
+            }
+        }
+        if types.indices.contains(3) {
+            ToolbarItem(placement: .topBarTrailing) {
+                ToolbarButtonView(type: types[3], placement: placement, action: action, useSpacing: true)
+            }
+        }
+        if types.indices.contains(4) {
+            ToolbarItem(placement: .topBarTrailing) {
+                ToolbarButtonView(type: types[4], placement: placement, action: action, useSpacing: true)
+            }
         }
     }
 }
 
 class ToolbarButtonsViewModifierViewModel: ObservableObject {
-    weak var nav: UINavigationController?
+    weak var viewController: UIViewController?
 }
 
 extension TimeInterval {
@@ -218,7 +231,6 @@ extension TimeInterval {
 extension View {
     public func setHomeNavigationBars(
         with options: Binding<[ToolbarOptionType]>,
-        and vcName: String,
         action: @escaping (_: ToolbarOptionType) -> Void
     ) -> some View {
         ModifiedContent(
@@ -226,7 +238,6 @@ extension View {
             modifier: ToolbarViewModifier<EmptyView, EmptyView>(
                 action: action,
                 types: options,
-                vcName: vcName,
                 placement: .trailing
             )
         )

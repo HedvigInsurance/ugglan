@@ -18,7 +18,7 @@ public struct CampaignNavigation: View {
                 let store: CampaignStore = globalPresentableStoreContainer.get()
                 store.send(.fetchDiscountsData)
             }
-            .configureTitle(L10n.paymentsDiscountsSectionTitle)
+            .navigationTitle(L10n.paymentsDiscountsSectionTitle)
             .environmentObject(campaignNavigationVm)
             .routerDestination(for: CampaignRouterAction.self) { _ in
                 ForeverNavigation(useOwnNavigation: false)
