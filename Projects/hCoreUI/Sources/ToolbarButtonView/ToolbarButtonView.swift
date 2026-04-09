@@ -129,7 +129,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                     }
                 }
             // had to do it like this so each item is seperated for iOS 26
-        } else if isLiquidGlassEnabled {
+        } else if isLiquidGlassEnabled, types.count > 0 {
             content
                 .introspect(.viewController, on: .iOS(.v13...)) { @MainActor [weak navVm] vc in
                     guard let navVm else { return }
