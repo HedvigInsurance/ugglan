@@ -288,15 +288,11 @@ class DeepLinkHandler {
 
     private func handleMissingPetChipIds(_ url: URL) {
         dismissAndSelectTab(0)
-        Task {
+        Task { [weak viewModel] in
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             await contractStore.sendAsync(.fetchContracts)
-            let userInfo = url.getParameter(property: .contractId).map { ["contractId": $0] }
-            NotificationCenter.default.post(
-                name: .openMissingPetChipId,
-                object: nil,
-                userInfo: userInfo
-            )
+            let contractId = url.getParameter(property: .contractId)
+            viewModel?.openMissingPetChipId(contractId: contractId)
         }
     }
 
@@ -952,7 +948,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(openMissingPetChipId),
+            selector: #selector(onOpenMissingPetChipId),
             name: .openMissingPetChipId,
             object: nil
         )
@@ -1008,11 +1004,15 @@ class LoggedInNavigationViewModel: ObservableObject {
         homeStore.send(.fetchMemberState)
     }
 
-    @objc func openMissingPetChipId(notification: Notification) {
+    @objc func onOpenMissingPetChipId() {
+        openMissingPetChipId()
+    }
+
+    func openMissingPetChipId(contractId: String? = nil) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
 
-        if let contractId = notification.userInfo?["contractId"] as? String {
+        if let contractId {
             contracts = contracts.filter { $0.id == contractId }
         }
         guard !contracts.isEmpty else { return }

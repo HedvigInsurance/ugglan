@@ -133,7 +133,7 @@ private struct SelectContractInput: Identifiable & Equatable {
 class AddMissingPetChipIdViewModel: ObservableObject {
     @PresentableStore private var contractStore: ContractStore
     private let service = PetChipIdService()
-    let router = Router()
+    let router = NavigationRouter()
 
     let contract: Contract
     let petChipIdMasking = Masking(type: .petChipId)
