@@ -75,7 +75,7 @@ struct ClaimChatLoadingAnimationView: View {
         RiveViewModel(
             fileName: UITraitCollection.current.userInterfaceStyle == .dark
                 ? Constants.darkModeFile : Constants.lightModeFile,
-            in: Bundle(for: Router.self),
+            in: Bundle(for: NavigationRouter.self),
             animationName: RiveAnimationName.idle.rawValue,
             autoPlay: false
         )

@@ -13,8 +13,9 @@ extension View {
 struct ClaimFlowLauncher: ViewModifier {
     @Binding var startInput: StartClaimInput?
     @State private var submitClaimInput: StartClaimInput?
-    @State private var router = Router()
+    @State private var router = NavigationRouter()
     @State var disableSubmitChatClaimAnimations = false
+
     func body(content: Content) -> some View {
         content
             .detent(
@@ -26,7 +27,7 @@ struct ClaimFlowLauncher: ViewModifier {
                         submitClaimInput = startInput
                         startInput = nil
                     }
-                    .configureTitle(L10n.honestyPledgeHeader)
+                    .navigationTitle(L10n.honestyPledgeHeader)
                     .embededInNavigation(
                         options: .navigationType(type: .large),
                         tracking: self

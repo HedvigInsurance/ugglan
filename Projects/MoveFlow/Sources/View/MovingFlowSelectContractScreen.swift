@@ -8,7 +8,7 @@ struct MovingFlowSelectContractScreen: View {
 
     init(
         navigationVm: MovingFlowNavigationViewModel,
-        router: Router
+        router: NavigationRouter
     ) {
         self.navigationVm = navigationVm
         itemPickerConfig = .init(
@@ -62,6 +62,6 @@ struct MovingFlowSelectContractScreen: View {
     Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let navigationVm = MovingFlowNavigationViewModel()
-    let router = Router()
+    let router = NavigationRouter()
     return MovingFlowSelectContractScreen(navigationVm: navigationVm, router: router)
 }

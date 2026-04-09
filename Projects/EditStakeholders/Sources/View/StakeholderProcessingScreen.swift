@@ -7,7 +7,7 @@ struct StakeholderProcessingScreen: View {
     @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
     @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    private let router = Router()
+    private let router = NavigationRouter()
     init(
         showSuccessScreen: Bool,
         intentVM: IntentViewModel

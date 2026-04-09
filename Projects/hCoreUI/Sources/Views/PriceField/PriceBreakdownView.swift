@@ -4,7 +4,7 @@ import hCore
 
 struct PriceBreakdownView: View {
     let model: PriceFieldModel.PriceFieldInfoModel
-    private let router = Router()
+    private let router = NavigationRouter()
 
     var body: some View {
         hForm {

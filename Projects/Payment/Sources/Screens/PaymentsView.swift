@@ -6,7 +6,7 @@ import hCoreUI
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @StateObject var vm = PaymentsViewModel()
 

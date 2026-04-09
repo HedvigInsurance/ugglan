@@ -17,7 +17,7 @@ private class DirectDebitWebview: UIView {
     var webView = WKWebView()
     var webViewDelgate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
-    let router: Router
+    let router: NavigationRouter
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -26,7 +26,7 @@ private class DirectDebitWebview: UIView {
 
     init(
         showErrorAlert: Binding<Bool>,
-        router: Router
+        router: NavigationRouter
     ) {
         _showErrorAlert = showErrorAlert
         self.router = router
@@ -236,7 +236,7 @@ private class DirectDebitWebview: UIView {
 
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
-    let router: Router
+    let router: NavigationRouter
 
     func makeUIView(context _: Context) -> some UIView {
         DirectDebitWebview(showErrorAlert: $showErrorAlert, router: router)
@@ -250,7 +250,7 @@ public struct DirectDebitSetup: View {
     @State var showErrorAlert: Bool = false
     @State var showNotSupported: Bool = false
 
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     let setupType: SetupType
 
     public init(
@@ -319,7 +319,7 @@ public struct DirectDebitSetup: View {
                 }
             }
         }
-        .configureTitle(
+        .navigationTitle(
             setupType == .replacement
                 ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
         )

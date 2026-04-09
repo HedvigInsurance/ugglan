@@ -8,7 +8,7 @@ public struct DeflectView: View {
     private let subtitle: String
     private let buttonTitle: String?
     private let deflectAction: (() -> Void)?
-    private let router = Router()
+    private let router = NavigationRouter()
 
     init(deflect: AddonDeflect) {
         contractId = deflect.contractId

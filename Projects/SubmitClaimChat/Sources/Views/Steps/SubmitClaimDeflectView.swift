@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimDeflectStepView: View {
     private let model: Deflection
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     public init(
         model: Deflection,
     ) {

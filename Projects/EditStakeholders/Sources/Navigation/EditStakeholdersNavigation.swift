@@ -59,7 +59,7 @@ public struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
     @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
 
     public init(
@@ -72,7 +72,7 @@ public struct EditStakeholdersNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: openSpecificScreen.getTrackingType(for: config)
@@ -143,7 +143,7 @@ public struct EditStakeholdersNavigation: View {
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .none
         )
-        .configureTitle(config.stakeholderType.editTitle)
+        .navigationTitle(config.stakeholderType.editTitle)
         .addDismissEditStakeholdersFlow()
     }
 
@@ -160,12 +160,12 @@ public struct EditStakeholdersNavigation: View {
             editStakeholdersNavigation: editStakeholdersNavigationVm
         )
         .environmentObject(editStakeholdersNavigationVm)
-        .configureTitle(config.stakeholderType.addInfoTitle)
+        .navigationTitle(config.stakeholderType.addInfoTitle)
     }
 
     func openStakeholderSelectScreen(contractId: String) -> some View {
         StakeholderSelectScreen(contractId: contractId, editStakeholdersNavigation: editStakeholdersNavigationVm)
-            .configureTitle(config.stakeholderType.addInfoTitle)
+            .navigationTitle(config.stakeholderType.addInfoTitle)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -183,7 +183,7 @@ public struct EditStakeholdersNavigation: View {
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .delete
         )
-        .configureTitle(config.stakeholderType.editTitle)
+        .navigationTitle(config.stakeholderType.editTitle)
     }
 
     func stakeholderInput(stakeholderInputModel: StakeholderInputModel) -> some View {
@@ -196,7 +196,7 @@ public struct EditStakeholdersNavigation: View {
 public struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
     @StateObject var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
@@ -210,7 +210,11 @@ public struct EditStakeholdersSelectInsuranceNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openSelectInsurance()
         }
     }
@@ -233,7 +237,7 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
 
 public struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
 
     public init(
@@ -243,7 +247,11 @@ public struct EditStakeholdersAlertNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openMissingStakeholderAlert()
         }
     }

@@ -109,7 +109,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     @Published var fetchingSurvey: Bool = false
 
     // MARK: - Navigation
-    let router = Router()
+    let router = NavigationRouter()
     let initialStep: TerminationFlowActions
 
     // MARK: - Configuration
@@ -122,9 +122,8 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     @Published var selectedOptionId: String?
     @Published var selectedComment: String?
     @Published var selectedDate: Date?
-
-    // MARK: - Progress
     @Published var progress: Float? = 0
+
     private var routeCountCancellable: AnyCancellable?
 
     var extraCoverage: [ExtraCoverageItem] {
@@ -154,7 +153,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.initialStep = .router(action: .selectInsurance(configs: configs))
         self.redirectHandler.viewModel = self
 
-        routeCountCancellable = router.$count
+        routeCountCancellable = router.$routeTypes
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -172,7 +171,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
         self.hasSelectInsuranceStep = false
         self.initialStep = .router(action: .survey)
         self.redirectHandler.viewModel = self
-        routeCountCancellable = router.$count
+        routeCountCancellable = router.$routeTypes
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.updateProgress()
@@ -211,7 +210,6 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
 
     func handleSuggestion(_ suggestion: TerminationSuggestion) {
         if suggestion.isDeflect, let content = DeflectScreenContent.from(suggestion: suggestion) {
-            updateProgress()
             router.push(content)
         } else if !suggestion.isDeflect {
             Task {
@@ -308,12 +306,13 @@ class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equa
     }
 
     private func updateProgress() {
-        if router.lastRouteIs(TerminationFlowFinalRouterActions.self)
-            || router.lastRouteIs(DeflectScreenContent.self)
+        let pushedTypes = router.routeTypes
+        if pushedTypes.last == TerminationFlowFinalRouterActions.self
+            || pushedTypes.last == DeflectScreenContent.self
         {
             progress = nil
         } else {
-            let count = router.count
+            let count = router.routeTypes.count
             progress = Float(count) / Float(count + remainingSteps)
         }
     }
@@ -334,7 +333,7 @@ struct TerminationFlowNavigation: View {
     }
 
     var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: vm.router,
             options: [
                 .navigationType(type: .withProgress),

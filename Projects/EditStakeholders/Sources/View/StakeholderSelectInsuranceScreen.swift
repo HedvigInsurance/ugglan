@@ -5,13 +5,13 @@ import hCoreUI
 struct StakeholderSelectInsuranceScreen: View {
     @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
     @ObservedObject private var editStakeholdersViewModel: EditStakeholdersViewModel
-    private let router: Router
+    private let router: NavigationRouter
     private let itemPickerConfig: ItemConfig<StakeholdersConfig>
     init(
         configs: [StakeholdersConfig],
         editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel,
         editStakeholdersViewModel: EditStakeholdersViewModel,
-        router: Router
+        router: NavigationRouter
     ) {
         self.editStakeholdersNavigationVm = editStakeholdersNavigationVm
         self.editStakeholdersViewModel = editStakeholdersViewModel

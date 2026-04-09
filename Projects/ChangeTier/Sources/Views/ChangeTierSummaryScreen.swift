@@ -71,7 +71,7 @@ extension ChangeTierViewModel {
         )
     )
     let changeTierNavigationVm = ChangeTierNavigationViewModel(
-        router: Router(),
+        router: NavigationRouter(),
         vm: changeTierVm
     )
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })

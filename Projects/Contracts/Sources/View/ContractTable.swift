@@ -19,7 +19,7 @@ struct ContractTable: View {
     @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     private var isExpanded: Bool {
