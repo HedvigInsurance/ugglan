@@ -29,7 +29,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { false }
 
-    public var isAppDependency: Bool { self == .datadog }
+    public var isAppDependency: Bool { false }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
