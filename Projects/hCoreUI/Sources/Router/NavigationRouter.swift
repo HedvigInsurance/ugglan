@@ -142,10 +142,6 @@ public struct hNavigationStack<Screen: View>: View {
             if options.contains(.extendedNavigationWidth) {
                 (navController.navigationBar as? NavBar)?.extendedNavigationWidth = true
             }
-            if options.contains(.navigationBarWithProgress) {
-                (navController.navigationBar as? NavBar)?.additionalHeight = 4
-                navController.additionalSafeAreaInsets.top = 4
-            }
         }
         navController.navigationBar.setNeedsLayout()
     }
