@@ -281,6 +281,22 @@ class DeepLinkHandler {
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
+        case .missingPetChipId:
+            handleMissingPetChipIds(url)
+        }
+    }
+
+    private func handleMissingPetChipIds(_ url: URL) {
+        dismissAndSelectTab(0)
+        Task {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let userInfo = url.getParameter(property: .contractId).map { ["contractId": $0] }
+            NotificationCenter.default.post(
+                name: .openMissingPetChipId,
+                object: nil,
+                userInfo: userInfo
+            )
         }
     }
 
@@ -992,9 +1008,13 @@ class LoggedInNavigationViewModel: ObservableObject {
         homeStore.send(.fetchMemberState)
     }
 
-    @objc func openMissingPetChipId() {
+    @objc func openMissingPetChipId(notification: Notification) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contracts = contractStore.state.activeContracts.filter { $0.missingPetChipId }
+        var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
+
+        if let contractId = notification.userInfo?["contractId"] as? String {
+            contracts = contracts.filter { $0.id == contractId }
+        }
         guard !contracts.isEmpty else { return }
         missingPetChipIdInput = .init(contracts: contracts)
     }
