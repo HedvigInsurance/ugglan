@@ -63,19 +63,22 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
                 lineWidth: selectedValue == value ? 0 : 2
             )
             .background(
-                ZStack {
-                    Circle()
-                        .foregroundColor(
-                            hRadioOptionSelectedView.getFillColor(
-                                isSelected: selectedValue == value,
-                                enabled: enabled
-                            )
+                Circle()
+                    .foregroundColor(
+                        hRadioOptionSelectedView.getFillColor(
+                            isSelected: selectedValue == value,
+                            enabled: enabled
                         )
-                    Circle().fill()
-                        .frame(width: 8, height: 8)
-                        .blendMode(.destinationOut)
-                }
-                .compositingGroup()
+                    )
+                    .mask {
+                        Rectangle()
+                            .overlay {
+                                Circle()
+                                    .frame(width: 8, height: 8)
+                                    .blendMode(.destinationOut)
+                            }
+                            .compositingGroup()
+                    }
             )
     }
 
@@ -132,5 +135,4 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
             useAnimation: true
         )
     }
-    .disabled(true)
 }

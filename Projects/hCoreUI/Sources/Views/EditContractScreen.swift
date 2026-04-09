@@ -81,6 +81,20 @@ public struct EditContractScreen: View {
     }
 }
 
+@available(iOS 17.0, *)
 #Preview {
-    EditContractScreen(editTypes: []) { _ in }
+    @Previewable @State var showBottomSheet: Bool = false
+    isLiquidGlassEnabled = true
+    return hForm {
+        EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
+            .environmentObject(Router())
+        hButton(.large, .primary, content: .init(title: "test")) {
+            showBottomSheet = true
+        }
+    }
+    .hFormContentPosition(.bottom)
+    .detent(presented: $showBottomSheet) {
+        EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
+            .environmentObject(Router())
+    }
 }
