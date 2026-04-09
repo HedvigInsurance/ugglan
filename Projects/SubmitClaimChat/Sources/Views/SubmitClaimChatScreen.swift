@@ -41,7 +41,7 @@ public struct SubmitClaimChatScreen: View {
                     )
                 }
             }
-            .navigationBarProgress($viewModel.progress)
+            .modifier(ProgressBarView(progress: $viewModel.progress))
     }
 
     private var scrollContent: some View {
@@ -349,7 +349,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     @Published var outcome: ClaimIntentStepOutcome?
-    @Published var progress: Double?
+    @Published var progress: Float?
     var currentVerticalSizeClass: UserInterfaceSizeClass?
 
     /// Determines if the current input should be hidden based on scroll position, size class, and merge state

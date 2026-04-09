@@ -337,8 +337,7 @@ struct TerminationFlowNavigation: View {
         RouterHost(
             router: vm.router,
             options: [
-                .navigationType(type: .withProgress),
-                .extendedNavigationWidth,
+                .extendedNavigationWidth
             ],
             tracking: vm.initialStep
         ) {

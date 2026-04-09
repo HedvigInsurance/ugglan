@@ -188,8 +188,6 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             let extendedNavigationWidth = options.contains(.extendedNavigationWidth)
             if options.contains(.largeNavigationBar) {
                 return hNavigationControllerWithLargerNavBar(extendedNavigationWidth: extendedNavigationWidth)
-            } else if options.contains(.navigationBarWithProgress) {
-                return hNavigationController(additionalHeight: 4, extendedNavigationWidth: extendedNavigationWidth)
             }
             return hNavigationController(extendedNavigationWidth: extendedNavigationWidth)
         }()
