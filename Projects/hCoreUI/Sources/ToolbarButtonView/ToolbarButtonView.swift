@@ -170,7 +170,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                     uiBarButtonItem.badge = badge
                 }
             }
-            if index < types.count, isLiquidGlassEnabled {
+            if index < types.count {
                 if #available(iOS 26.0, *) {
                     buttonItems.append(.fixedSpace())
                 }

@@ -27,7 +27,6 @@ extension HomeScreen {
         }
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
-            and: String(describing: HomeScreen.self),
             action: { [weak navigationVm] type in
                 switch type {
                 case .crossSell:
