@@ -142,7 +142,18 @@ final class HomeTests: XCTestCase {
             fetchQuickActions: {
                 try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
                 return [
-                    .sickAbroad(partners: []),
+                    .sickAbroad(
+                        deflection: .init(
+                            title: nil,
+                            content: .init(title: "", description: ""),
+                            partners: [],
+                            infoText: nil,
+                            warningText: nil,
+                            questions: [],
+                            linkOnlyPartners: [],
+                            buttonTitle: ""
+                        )
+                    ),
                     .firstVet(partners: []),
                 ]
             },

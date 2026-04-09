@@ -173,11 +173,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHAT_TITLE" = "Meddelanden";
 "CHAT_TOAST_PUSH_NOTIFICATIONS_TITLE" = "Pushnotiser";
 "CHAT_UPLOAD_PRESEND" = "Skicka";
-"CHIP_ID_LABEL" = "Chip-ID";
-"CHIP_ID_MISSING_BUTTON" = "Lägg till Chip-ID";
-"CHIP_ID_MISSING_MESSAGE" = "Chip-ID för ditt husdjur saknas";
-"CHIP_ID_TOP_TITLE" = "Uppdatera husdjurets chip-ID";
-"CHIP_ID_WRONG_INPUT" = "Måste vara 15 siffror";
+"CHIP_ID_LABEL" = "Djur-ID (15 siffror)";
+"CHIP_ID_MISSING_BUTTON" = "Lägg till djur-ID";
+"CHIP_ID_MISSING_MESSAGE" = "Lägg till ditt husdjurs ID för bättre hjälp";
+"CHIP_ID_NO_INSURANCES" = "Inga djurförsäkringar med saknat chip-ID.";
+"CHIP_ID_TOP_TITLE" = "Lägg till djur-ID";
+"CHIP_ID_WRONG_INPUT" = "Ange ett djur-ID med 15 siffror";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så vi kan hålla dig uppdaterad om ditt ärende.";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Aktivera";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Hoppa över";

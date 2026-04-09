@@ -56,14 +56,18 @@ struct ContractInformationView: View {
                             }
 
                             if let currentAgreementCost = contract.currentAgreement?.itemCost {
-                                hRowDivider()
-                                    .hWithoutHorizontalPadding([.divider])
-                                    .padding(.horizontal, .padding16)
+                                if !displayItems.isEmpty {
+                                    hRowDivider()
+                                        .hWithoutHorizontalPadding([.divider])
+                                        .padding(.horizontal, .padding16)
+                                }
+
                                 ItemCostView(itemCost: currentAgreementCost)
                             }
 
                             if contract.supportsCoInsured || contract.supportsCoOwners {
                                 hRowDivider()
+                                    .hWithoutHorizontalPadding([.divider])
                                     .padding(.horizontal, .padding16)
                                 addCoInsuredView(contract: contract)
                             }

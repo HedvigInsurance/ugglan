@@ -1,33 +1,27 @@
 query MemberActions {
-  currentMember {
-    memberActions {
-      sickAbroadAction {
-        deflectPartners {
-          id
-          imageUrl
-          phoneNumber
-          url
-          preferredImageHeight
-        }
-      }
-      isTravelCertificateEnabled
-      isMovingEnabled
-      isConnectPaymentEnabled
-      isEditCoInsuredEnabled
-      isEditCoOwnersEnabled
-      isCancelInsuranceEnabled
-      isContactInfoUpdateNeeded
-      isChangeTierEnabled
-      firstVetAction {
-        sections {
-          buttonTitle
-          description
-          url
-          title
-        }
-      }
-    }
-  }
+	currentMember {
+		memberActions {
+			sickAbroadDeflect {
+				...DeflectFragment
+			}
+			isTravelCertificateEnabled
+			isMovingEnabled
+			isConnectPaymentEnabled
+			isEditCoInsuredEnabled
+			isEditCoOwnersEnabled
+			isCancelInsuranceEnabled
+			isContactInfoUpdateNeeded
+			isChangeTierEnabled
+			firstVetAction {
+				sections {
+					buttonTitle
+					description
+					url
+					title
+				}
+			}
+		}
+	}
 }
 
 query ConversationsTimeStamp {
