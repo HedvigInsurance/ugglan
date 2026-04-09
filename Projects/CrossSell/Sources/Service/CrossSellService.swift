@@ -1,17 +1,18 @@
 import Addons
+import AutomaticLog
 import hCore
 
 @MainActor
 class CrossSellService {
     @Inject var client: CrossSellClient
 
+    @Log(.error)
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
-        log.info("CrossSellService: getCrossSell", error: nil, attributes: nil)
-        return try await client.getCrossSell(source: source)
+        try await client.getCrossSell(source: source)
     }
 
+    @Log(.error)
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
-        log.info("CrossSellService: getAddonBanners", error: nil, attributes: nil)
-        return try await client.getAddonBanners(source: source)
+        try await client.getAddonBanners(source: source)
     }
 }
