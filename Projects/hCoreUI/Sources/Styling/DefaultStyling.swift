@@ -62,14 +62,6 @@ class NavBar: UINavigationBar {
         super.layoutSubviews()
         for subview in subviews {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
-            if let additionalHeight, stringFromClass.contains("UIProgressView") {
-                subview.frame = CGRect(
-                    x: subview.frame.origin.x,
-                    y: -additionalHeight,
-                    width: subview.frame.width,
-                    height: subview.frame.height
-                )
-            }
             if stringFromClass.contains("BarContent") {
                 subview.clipsToBounds = false
                 if #available(iOS 26.0, *) {

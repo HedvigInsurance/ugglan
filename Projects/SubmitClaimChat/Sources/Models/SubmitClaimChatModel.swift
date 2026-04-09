@@ -83,7 +83,7 @@ public struct ClaimIntent: Sendable {
     let id: String
     let isSkippable: Bool
     let isRegrettable: Bool
-    let progress: Double
+    let progress: Float
     let hint: String?
 
     public init(
@@ -91,7 +91,7 @@ public struct ClaimIntent: Sendable {
         id: String,
         isSkippable: Bool,
         isRegrettable: Bool,
-        progress: Double,
+        progress: Float,
         hint: String? = nil
     ) {
         self.currentStep = currentStep

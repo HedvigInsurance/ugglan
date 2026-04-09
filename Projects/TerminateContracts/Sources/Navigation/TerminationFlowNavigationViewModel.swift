@@ -336,8 +336,7 @@ struct TerminationFlowNavigation: View {
         hNavigationStack(
             router: vm.router,
             options: [
-                .navigationType(type: .withProgress),
-                .extendedNavigationWidth,
+                .extendedNavigationWidth
             ],
             tracking: vm.initialStep
         ) {
@@ -387,7 +386,7 @@ struct TerminationFlowNavigation: View {
                     }
                 }
         }
-        .modifier(ProgressBarView(progress: $vm.progress))
+        .addProgressBar(with: $vm.progress)
         .environmentObject(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
