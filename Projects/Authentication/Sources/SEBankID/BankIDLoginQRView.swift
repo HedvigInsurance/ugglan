@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct BankIDLoginQRView: View {
     @StateObject var vm = BankIDViewModel()
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -132,7 +132,7 @@ class BankIDViewModel: ObservableObject {
     private var seBankIdState: SEBankIDState = .init()
     var authenticationService = AuthenticationService()
     private var observeLoginTask: AnyCancellable?
-    var router: Router?
+    var router: NavigationRouter?
     init() {
         checkIfCanOpenBankId()
     }
@@ -254,7 +254,7 @@ class BankIDViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return BankIDLoginQRView {}
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
 }
 
 public enum AuthenticationRouterType: Hashable {

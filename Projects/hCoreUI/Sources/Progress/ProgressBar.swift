@@ -3,17 +3,23 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
-public struct ProgressBarView: ViewModifier {
+extension View {
+    public func addProgressBar(with progress: Binding<Float?>) -> some View {
+        self.modifier(ProgressBarView(progress: progress))
+    }
+}
+
+struct ProgressBarView: ViewModifier {
     @Binding var progress: Float?
     @State private var progressView: UIProgressView?
 
-    public init(
+    init(
         progress: Binding<Float?>
     ) {
         _progress = progress
     }
 
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         content
             .introspect(.viewController, on: .iOS(.v13...)) { viewController in
                 let navigationController =
@@ -71,34 +77,4 @@ public struct ProgressBarView: ViewModifier {
 
         self.progressView = progress
     }
-}
-
-extension View {
-    public func resetProgressOnDismiss(to value: Float?, for progress: Binding<Float?>) -> some View {
-        modifier(ResetProgressViewModifier(toValue: value, progress: progress))
-    }
-}
-
-struct ResetProgressViewModifier: ViewModifier {
-    let toValue: Float?
-    @Binding var progress: Float?
-    @StateObject private var vm = ResetProgressViewModifierViewModel()
-    func body(content: Content) -> some View {
-        content.onDeinit {
-            Task { @MainActor in
-                progress = vm.value
-            }
-        }
-        .task {
-            if !vm.didSetValue {
-                vm.value = toValue
-                vm.didSetValue = true
-            }
-        }
-    }
-}
-
-class ResetProgressViewModifierViewModel: ObservableObject {
-    var value: Float?
-    var didSetValue = false
 }

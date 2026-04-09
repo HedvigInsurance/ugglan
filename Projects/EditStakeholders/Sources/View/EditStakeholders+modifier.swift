@@ -12,7 +12,7 @@ extension View {
 
 struct EditStakeholders: ViewModifier {
     @ObservedObject var vm: EditStakeholdersViewModel
-    @State var errorRouter = Router()
+    @State var errorRouter = NavigationRouter()
     func body(content: Content) -> some View {
         content
             .detent(
