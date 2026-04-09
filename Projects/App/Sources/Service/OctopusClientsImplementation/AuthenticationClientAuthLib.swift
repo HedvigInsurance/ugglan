@@ -13,8 +13,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             additionalHttpHeadersProvider: {
                 var headers = self?.getHeaders() ?? [:]
                 return headers
-            },
-            httpClientEngine: nil
+            }
         )
     }()
 

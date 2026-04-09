@@ -61,7 +61,7 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.7.0"))]
         case .umbrella:
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260407084308"))
             ]
         case .tagkit:
             return [
