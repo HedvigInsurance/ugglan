@@ -81,21 +81,21 @@ public struct ScrollableSegmentedView<Content: View>: View {
     @ViewBuilder
     var selectedPageHeaderBackground: some View {
         if #available(iOS 26.0, *), isLiquidGlassEnabled {
-            RoundedRectangle(cornerRadius: .cornerRadiusS)
+            RoundedRectangle(cornerRadius: .cornerRadiusL)
                 .fill(.clear)
                 .asAnyView
                 .background {
-                    RoundedRectangle(cornerRadius: .cornerRadiusS)
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
                         .fill(.clear)
                         .asAnyView
-                        .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusS))
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                        .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusL))
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 }
                 .allowsHitTesting(false)
                 .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
                 .offset(x: vm.selectedIndicatorOffset)
         } else {
-            RoundedRectangle(cornerRadius: .cornerRadiusS)
+            RoundedRectangle(cornerRadius: .cornerRadiusL)
                 .fill(SecondaryAlt().resting)
                 .asAnyView
                 .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
@@ -393,12 +393,12 @@ private struct SegmentedContainerBackground: ViewModifier {
         if #available(iOS 26.0, *), isLiquidGlassEnabled {
             content.background {
                 hSurfaceColor.Opaque.primary
-                    .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusS))
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                    .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusXL))
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
             }
         } else {
             content.background {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
             }
         }
     }
