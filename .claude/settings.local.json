@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(grep -r \"IPHONEOS_DEPLOYMENT_TARGET\\\\|deploymentTarget\\\\|platform.*iOS\" /Users/sladannimcevic/Hedvig/ugglan/Tuist/ProjectDescriptionHelpers/*.swift)",
-      "Read(//Users/sladannimcevic/Hedvig/ugglan/**)",
-      "Bash(done)"
-    ]
-  }
-}
