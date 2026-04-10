@@ -80,7 +80,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
 
     @ViewBuilder
     var selectedPageHeaderBackground: some View {
-        if #available(iOS 26.0, *), isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             RoundedRectangle(cornerRadius: .cornerRadiusL)
                 .fill(.clear)
                 .asAnyView
@@ -390,7 +390,7 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
 
 private struct SegmentedContainerBackground: ViewModifier {
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *), isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             content.background {
                 hSurfaceColor.Opaque.primary
                     .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusXL))

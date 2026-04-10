@@ -10,14 +10,14 @@ public struct ToolbarButtonView: View {
     let placement: ListToolBarPlacement
     let useSpacing: Bool
     private var leadingSpacing: CGFloat {
-        if isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             return 0
         } else {
             return -.padding12
         }
     }
     private var trailingSpacing: CGFloat {
-        if isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             return 0
         } else {
             return -.padding4
@@ -51,7 +51,7 @@ public struct ToolbarButtonView: View {
                     } else {
                         imageFor(type: type)
                     }
-                    if type.showBadge && !isLiquidGlassEnabled {
+                    if #unavailable(iOS 26.0), type.showBadge {
                         Circle()
                             .fill(hSignalColor.Red.element)
                             .frame(width: 10, height: 10)
@@ -137,7 +137,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                     }
                 }
             // had to do it like this so each item is seperated for iOS 26
-        } else if isLiquidGlassEnabled, types.count > 0 {
+        } else if #available(iOS 26.0, *), types.count > 0 {
             content
                 .introspect(.viewController, on: .iOS(.v13...)) { @MainActor [weak navVm] vc in
                     guard let navVm else { return }

@@ -155,7 +155,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let content = getContent()
 
                 let vc = hHostingController(rootView: content)
-                if isLiquidGlassEnabled {
+                if #available(iOS 26.0, *) {
                     vc.view.backgroundColor = .clear
                 }
                 var shouldUseBlur: Bool {

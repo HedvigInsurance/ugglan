@@ -70,10 +70,15 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width
-                        + (isLiquidGlassEnabled
-                            ? 0
-                            : extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
+                    width: {
+                        if #available(iOS 26.0, *) {
+                            return frame.width
+                        } else {
+                            return frame.width
+                                + (extendedNavigationWidth
+                                    ? hNavigationBaseController.extendedNavigationWidthOffset : 0)
+                        }
+                    }(),
                     height: subview.frame.size.height
                 )
             }
@@ -168,7 +173,7 @@ public struct DefaultStyling {
         ]
 
         let backImageInsets: UIEdgeInsets = {
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
@@ -190,7 +195,7 @@ public struct DefaultStyling {
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             DefaultStyling.applyCommonNavigationBarStyling(appearance)
             appearance.backgroundColor = .clear
@@ -203,7 +208,7 @@ public struct DefaultStyling {
 
     public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = .clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
@@ -217,7 +222,7 @@ public struct DefaultStyling {
 
     public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = UIColor.clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()

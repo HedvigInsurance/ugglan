@@ -16,19 +16,19 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     var image: Image {
         switch self {
         case .crossSell:
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 return hCoreUIAssets.campaign.view
             } else {
                 return hCoreUIAssets.campaignQuickNav.view
             }
         case .firstVet:
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 return hCoreUIAssets.firstVet.view
             } else {
                 return hCoreUIAssets.firstVetQuickNav.view
             }
         case .chat:
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 return hCoreUIAssets.envelope.view
             } else {
                 return hCoreUIAssets.inbox.view
@@ -182,11 +182,11 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return 24
         case .crossSell:
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 return 20
             }
         case .firstVet, .chat:
-            if isLiquidGlassEnabled {
+            if #available(iOS 26.0, *) {
                 return 17
             }
         }
@@ -195,7 +195,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
 
     @MainActor
     var offsetForToolTip: CGFloat {
-        if isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             return 40
         } else {
             return 26

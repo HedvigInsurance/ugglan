@@ -133,7 +133,7 @@ struct ForeverViewModifier: ViewModifier {
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        if isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             ToolbarItem(placement: .confirmationAction) {
                 if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
                     InfoViewHolder(

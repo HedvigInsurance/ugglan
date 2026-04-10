@@ -58,7 +58,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 .allowsHitTesting(false)
                                 .accessibilityHidden(true)
                         case .default:
-                            if contentPosition == .compact, isLiquidGlassEnabled {
+                            if #available(iOS 26.0, *), contentPosition == .compact {
                                 Color.clear
                             } else {
                                 hBackgroundColor.primary
@@ -91,7 +91,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .background {
                         GeometryReader { geometry in
                             Group {
-                                if contentPosition == .compact, isLiquidGlassEnabled {
+                                if #available(iOS 26.0, *), contentPosition == .compact {
                                     Color.clear
                                 } else if case .aiPoweredGradient = bottomBackgroundStyle {
                                     Color.clear

@@ -84,7 +84,6 @@ public struct EditContractScreen: View {
 @available(iOS 17.0, *)
 #Preview {
     @Previewable @State var showBottomSheet: Bool = false
-    isLiquidGlassEnabled = true
     return hForm {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
             .environmentObject(NavigationRouter())

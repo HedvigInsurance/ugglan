@@ -217,7 +217,7 @@ public struct ChangeTierNavigation: View {
                 type: model.type
             )
             .embededInNavigation(
-                options: .navigationType(type: .large),
+                options: [.navigationType(type: .large), .navigationBarHidden],
                 tracking: ChangeTierTrackingType.edit(type: model.type)
             )
             .environmentObject(changeTierNavigationVm)

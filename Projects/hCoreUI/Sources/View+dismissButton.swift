@@ -51,11 +51,14 @@ private struct DismissButton: ViewModifier {
                             router.dismiss()
                         }
                     } label: {
-                        Group {
+                        if #available(iOS 26.0, *) {
                             hCoreUIAssets.close.view
                                 .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                        } else {
+                            hCoreUIAssets.close.view
+                                .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                                .frame(minWidth: 44, minHeight: 44)
                         }
-                        .frame(minWidth: isLiquidGlassEnabled ? nil : 44, minHeight: isLiquidGlassEnabled ? nil : 44)
                     }
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
@@ -113,40 +116,11 @@ private struct DismissAlertPopup: ViewModifier {
             }
     }
 }
-//
-//extension View {
-//    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
-//        modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
-//    }
-//}
-//
-//private struct CloseButtonModifier: ViewModifier {
-//    let reducedTopSpacing: Int
-//    @EnvironmentObject var router: Router
-//
-//    func body(content: Content) -> some View {
-//        content
-//            .setToolbarTrailing {
-//                Button {
-//                    router.dismiss()
-//                } label: {
-//                    hCoreUIAssets.close.view
-//                        .frame(minWidth: 24, minHeight: 44)
-//                        .foregroundColor(hFillColor.Opaque.primary)
-//                }
-//                .foregroundColor(hTextColor.Opaque.primary)
-//                .accessibilityLabel(L10n.a11YClose)
-//                .accessibilityAddTraits(.isButton)
-//=======
-//                hText(message)
-//            }
-//    }
-//}
 
 extension View {
     @ViewBuilder
     func closeButtonOffset(y: CGFloat) -> some View {
-        if isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             self
         } else {
             offset(y: y)

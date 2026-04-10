@@ -99,7 +99,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
             presenting: presenting,
             useBlur: options.contains(.useBlur)
         )
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             presentationController.preferredCornerRadius = .cornerRadiusXL
         }
 

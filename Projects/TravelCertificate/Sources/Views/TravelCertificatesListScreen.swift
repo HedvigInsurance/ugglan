@@ -76,7 +76,7 @@ public struct TravelCertificatesListScreen: View {
             }
         }
         .onPullToRefresh {
-            await vm.fetchTravelCertificateList()
+            await vm.fetchTravelCertificateList(showLoading: false)
         }
         .onChange(of: travelCertificateNavigationVm.isStartDateScreenPresented) { value in
             if value == nil {
@@ -190,8 +190,8 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchTravelCertificateList() async {
-        if list.isEmpty {
+    func fetchTravelCertificateList(showLoading: Bool = true) async {
+        if showLoading, list.isEmpty {
             isLoading = true
         }
         do {
