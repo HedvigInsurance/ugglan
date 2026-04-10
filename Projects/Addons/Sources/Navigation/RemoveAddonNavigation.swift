@@ -48,7 +48,6 @@ public struct RemoveAddonNavigation: View {
             } else {
                 RemoveAddonSummaryScreen(removeAddonNavigationVm)
                     .navigationTitle(L10n.offerUpdateSummaryTitle)
-                    .withAlertDismiss()
             }
         }
         .environmentObject(removeAddonNavigationVm)

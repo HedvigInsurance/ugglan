@@ -155,7 +155,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let content = getContent()
 
                 let vc = hHostingController(rootView: content)
-                if isLiquidGlassEnabled {
+                if #available(iOS 26.0, *) {
                     vc.view.backgroundColor = .clear
                 }
                 var shouldUseBlur: Bool {
@@ -168,6 +168,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
+                vc.view.accessibilityViewIsModal = true
                 vc.onDeinit = {
                     Task { @MainActor in
                         presented = false
@@ -182,7 +183,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }
 
                 presentationViewModel.presentingVC = vc
-                UIAccessibility.post(notification: .screenChanged, argument: vc.view)
                 vcToPresent?
                     .present(
                         vc,

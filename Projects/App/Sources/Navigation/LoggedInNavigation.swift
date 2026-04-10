@@ -468,7 +468,6 @@ struct LoggedInNavigation: View {
             }
             profileTab
         }
-        .tint(hTextColor.Opaque.primary)
         .onChange(of: vm.selectedTab) { newTab in
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
         }

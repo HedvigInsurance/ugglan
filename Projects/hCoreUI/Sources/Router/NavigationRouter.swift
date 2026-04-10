@@ -132,14 +132,14 @@ public struct hNavigationStack<Screen: View>: View {
 
         if options.contains(.largeNavigationBar) {
             object_setClass(navController.navigationBar, LargeNavBar.self)
-            if options.contains(.extendedNavigationWidth) {
+            if #unavailable(iOS 26.0), options.contains(.extendedNavigationWidth) {
                 (navController.navigationBar as? LargeNavBar)?.extendedNavigationWidth = true
             }
             navController.additionalSafeAreaInsets.top =
                 hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
         } else {
             object_setClass(navController.navigationBar, NavBar.self)
-            if options.contains(.extendedNavigationWidth) {
+            if #unavailable(iOS 26.0), options.contains(.extendedNavigationWidth) {
                 (navController.navigationBar as? NavBar)?.extendedNavigationWidth = true
             }
         }
@@ -266,7 +266,7 @@ extension View {
         topPadding: CGFloat = .padding8,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
-        if #available(iOS 26.0, *), isLiquidGlassEnabled {
+        if #available(iOS 26.0, *) {
             self.toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {

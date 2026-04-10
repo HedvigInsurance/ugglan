@@ -94,7 +94,7 @@ struct AddMissingPetChipIdBottomSheet: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: L10n.chipIdTopTitle)
+        .navigationTitle(L10n.chipIdTopTitle)
         .disabled(vm.isLoading)
         .onChange(of: vm.isLoading) { isLoading in
             if isLoading {

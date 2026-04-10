@@ -21,6 +21,17 @@ struct EditScreen: View {
     var body: some View {
         hForm {
             hSection {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(type.title, style: .heading1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .accessibilityAddTraits(.isHeader)
+                    hText(type.subTitle, style: .heading1)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .sectionContainerStyle(.transparent)
+            hSection {
                 radioFields
             }
             .padding(.top, .padding16)
@@ -31,10 +42,6 @@ struct EditScreen: View {
         .hFormAttachToBottom {
             bottomView
         }
-        .configureTitleView(
-            title: type.title,
-            subTitle: type.subTitle
-        )
     }
 
     @ViewBuilder

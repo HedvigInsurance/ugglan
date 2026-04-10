@@ -55,14 +55,14 @@ extension EditStakeholdersScreenType {
     }
 }
 
-public struct EditStakeholdersNavigation: View {
+struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
     @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
     @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
 
-    public init(
+    init(
         config: StakeholdersConfig,
         openSpecificScreen: EditStakeholdersScreenType? = EditStakeholdersScreenType.none
     ) {
@@ -71,7 +71,7 @@ public struct EditStakeholdersNavigation: View {
         editStakeholdersNavigationVm = .init(config: config)
     }
 
-    public var body: some View {
+    var body: some View {
         hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -184,6 +184,7 @@ public struct EditStakeholdersNavigation: View {
             type: .delete
         )
         .navigationTitle(config.stakeholderType.editTitle)
+        .addDismissEditStakeholdersFlow()
     }
 
     func stakeholderInput(stakeholderInputModel: StakeholderInputModel) -> some View {
@@ -193,14 +194,14 @@ public struct EditStakeholdersNavigation: View {
     }
 }
 
-public struct EditStakeholdersSelectInsuranceNavigation: View {
+struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
     @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
     @StateObject var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
-    public init(
+    init(
         configs: [StakeholdersConfig],
         stakeholderType: StakeholderType
     ) {
@@ -209,7 +210,7 @@ public struct EditStakeholdersSelectInsuranceNavigation: View {
         _editStakeholdersNavigationVm = .init(wrappedValue: .init(config: .init(stakeholderType: stakeholderType)))
     }
 
-    public var body: some View {
+    var body: some View {
         hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -235,18 +236,18 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
     }
 }
 
-public struct EditStakeholdersAlertNavigation: View {
+struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
     @StateObject var router = NavigationRouter()
     @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
 
-    public init(
+    init(
         config: StakeholdersConfig
     ) {
         self.config = config
     }
 
-    public var body: some View {
+    var body: some View {
         hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],

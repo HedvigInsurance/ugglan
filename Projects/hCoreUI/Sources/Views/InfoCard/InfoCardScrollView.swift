@@ -173,6 +173,7 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
 
     func calculateOffset(scrollView: UIScrollView) async {
         let offset = scrollView.contentOffset.x
+        guard cardWidth > 0 else { return }
         var indexToScroll = Int(offset / cardWidth)
         let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
         if valueOver > 0.5 {

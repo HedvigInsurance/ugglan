@@ -70,16 +70,24 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width
-                        + (extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
+                    width: {
+                        if #available(iOS 26.0, *) {
+                            return frame.width
+                        } else {
+                            return frame.width
+                                + (extendedNavigationWidth
+                                    ? hNavigationBaseController.extendedNavigationWidthOffset : 0)
+                        }
+                    }(),
                     height: subview.frame.size.height
                 )
             }
         }
     }
+}
 
-    //used for setting navigation bar items unclipped
-    func setClipsToBounds(for view: UIView, force: Bool = false) {
+extension UINavigationBar {
+    fileprivate func setClipsToBounds(for view: UIView, force: Bool = false) {
         if force {
             view.clipsToBounds = false
         }
@@ -133,6 +141,10 @@ class LargeNavBar: UINavigationBar {
             if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
+                    subview.clipsToBounds = false
+                    if #available(iOS 26.0, *) {
+                        setClipsToBounds(for: subview)
+                    }
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
@@ -161,8 +173,8 @@ public struct DefaultStyling {
         ]
 
         let backImageInsets: UIEdgeInsets = {
-            if isLiquidGlassEnabled {
-                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            if #available(iOS 26.0, *) {
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
             }
@@ -183,7 +195,7 @@ public struct DefaultStyling {
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             DefaultStyling.applyCommonNavigationBarStyling(appearance)
             appearance.backgroundColor = .clear
@@ -196,7 +208,7 @@ public struct DefaultStyling {
 
     public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = .clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
@@ -210,7 +222,7 @@ public struct DefaultStyling {
 
     public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = UIColor.clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
@@ -328,7 +340,12 @@ public struct DefaultStyling {
         // this color is used as background and system adds some alpha to it
         UIDatePicker.appearance().tintColor = .brand(.datePickerSelectionColor)
 
-        UIImageView.appearance().tintColor = .brand(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UINavigationController.self]).tintColor = .brand(
+            .primaryText()
+        )
+        UIImageView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
+            .primaryText()
+        )
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
