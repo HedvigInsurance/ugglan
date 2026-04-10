@@ -331,6 +331,8 @@ public struct DirectDebitSetup: View {
             setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton,
             style: .heading1
         )
+        .padding(.horizontal, .padding4)
+        .fixedSize()
         .onTapGesture {
             if showNotSupported {
                 router.dismiss()
