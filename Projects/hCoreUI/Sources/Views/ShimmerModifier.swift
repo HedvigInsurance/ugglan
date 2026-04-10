@@ -25,7 +25,7 @@ public struct ShimmerTextModifier: ViewModifier {
                 )
                 .onAppear {
                     withAnimation(
-                        .easeInOut(duration: 0.3)
+                        .easeInOut(duration: 1.5)
                             .repeatForever(autoreverses: false)
                     ) {
                         startPoint = .init(x: 1, y: 1)
