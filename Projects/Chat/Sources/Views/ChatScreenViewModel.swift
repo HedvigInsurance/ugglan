@@ -18,7 +18,7 @@ public class ChatConversationViewModel: ObservableObject {
 @MainActor
 public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
-    var chatNavigationVm: ChatNavigationViewModel?
+    weak var chatNavigationVm: ChatNavigationViewModel?
     let conversationVm: ChatConversationViewModel
     private var hasNext: Bool?
     var haveSentAMessage = false

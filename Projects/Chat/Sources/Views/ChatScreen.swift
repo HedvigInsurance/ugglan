@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct ChatScreen: View {
-    @StateObject var vm: ChatScreenViewModel
+    @ObservedObject var vm: ChatScreenViewModel
     @ObservedObject var conversationVm: ChatConversationViewModel
     @ObservedObject var messageVm: ChatMessageViewModel
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
@@ -13,7 +13,7 @@ public struct ChatScreen: View {
     public init(
         vm: ChatScreenViewModel
     ) {
-        _vm = StateObject(wrappedValue: vm)
+        self.vm = vm
         messageVm = vm.messageVm
         conversationVm = vm.messageVm.conversationVm
     }
