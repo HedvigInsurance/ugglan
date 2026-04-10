@@ -192,7 +192,6 @@ public struct TravelCertificateNavigation: View {
             router: createNewRouter,
             specifications: specifications
         )
-        .addDismissFlow()
     }
 
     private func showStartDateScreen(

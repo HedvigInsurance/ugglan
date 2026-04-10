@@ -169,14 +169,10 @@ class InboxViewModel: ObservableObject {
         pollTimerCancellable = Timer.publish(every: TimeInterval(5), on: .main, in: .common)
             .autoconnect()
             .sink(receiveValue: { [weak self] _ in
-                self?.fetchMessages()
+                Task { [weak self] in
+                    await self?.fetchMessages()
+                }
             })
-    }
-
-    private func fetchMessages() {
-        Task { [weak self] in
-            await self?.fetchMessages()
-        }
     }
 
     @MainActor

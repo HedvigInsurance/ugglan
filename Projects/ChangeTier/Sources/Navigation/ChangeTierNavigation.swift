@@ -298,7 +298,6 @@ public struct ChangeTierNavigation: View {
                             changeTierNavigationVm: changeTierNavigationVm
                         )
                         .navigationTitle(L10n.offerUpdateSummaryTitle)
-                        .withAlertDismiss()
                     }
                 } else {
                     EmptyView()

@@ -88,15 +88,14 @@ struct ChangeAddonNavigation: View {
                     AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))
                 } else {
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
+                        .withAlertDismiss()
                 }
             }
-            .withAlertDismiss()
             .routerDestination(for: ChangeAddonRouterActions.self) { action in
                 switch action {
                 case .summary:
                     ChangeAddonSummaryScreen(changeAddonNavigationVm)
                         .navigationTitle(L10n.offerUpdateSummaryTitle)
-                        .withAlertDismiss()
                 case .addonLandingScreen:
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                         .withDismissButton()

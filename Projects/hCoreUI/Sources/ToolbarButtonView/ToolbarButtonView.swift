@@ -9,11 +9,18 @@ public struct ToolbarButtonView: View {
     let type: ToolbarOptionType
     let placement: ListToolBarPlacement
     let useSpacing: Bool
-    private var spacing: CGFloat {
+    private var leadingSpacing: CGFloat {
         if isLiquidGlassEnabled {
             return 0
         } else {
-            return -10
+            return -.padding12
+        }
+    }
+    private var trailingSpacing: CGFloat {
+        if isLiquidGlassEnabled {
+            return 0
+        } else {
+            return -.padding4
         }
     }
 
@@ -52,7 +59,11 @@ public struct ToolbarButtonView: View {
                     }
                 }
             }
-            .padding(.horizontal, useSpacing ? spacing : 0)
+            .padding(.leading, useSpacing ? leadingSpacing : 0)
+            .padding(.trailing, useSpacing ? trailingSpacing : 0)
+        }
+        .overlay {
+            Color.red.opacity(0.0)
         }
         .showTooltip(type: type, placement: placement)
     }

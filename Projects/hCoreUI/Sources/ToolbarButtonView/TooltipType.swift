@@ -195,6 +195,11 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
 
     @MainActor
     var offsetForToolTip: CGFloat {
+        if isLiquidGlassEnabled {
+            return 40
+        } else {
+            return 26
+        }
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 40
