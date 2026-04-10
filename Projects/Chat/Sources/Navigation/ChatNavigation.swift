@@ -12,8 +12,26 @@ public class ChatNavigationViewModel: ObservableObject {
     @Published var isAutomationMessagePresented: InfoViewDataModel?
     let router = NavigationRouter()
     let chatType: ChatType
+    let chatVm: ChatScreenViewModel?
     init(chatType: ChatType) {
         self.chatType = chatType
+        let service: ChatServiceProtocol? = {
+            switch chatType {
+            case let .conversationId(conversationId):
+                ConversationService(conversationId: conversationId)
+            case let .conversationFromClaimWithId(conversationId):
+                ConversationService(conversationId: conversationId)
+            case .newConversation:
+                NewConversationService()
+            case .inbox:
+                nil
+            }
+        }()
+        if let service {
+            chatVm = .init(chatService: service)
+        } else {
+            chatVm = nil
+        }
     }
 
     func checkForPushNotificationStatus() async {
@@ -73,15 +91,14 @@ public enum ChatNavigationViewName: TrackingViewNameProtocol {
 }
 
 public struct ChatNavigation<Content: View>: View {
-    @ObservedObject private var chatNavigationViewModel: ChatNavigationViewModel
-
+    @StateObject private var chatNavigationViewModel: ChatNavigationViewModel
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
 
     public init(
         chatType: ChatType,
         @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     ) {
-        self.chatNavigationViewModel = .init(chatType: chatType)
+        self._chatNavigationViewModel = .init(wrappedValue: .init(chatType: chatType))
         self.redirectView = redirectView
     }
 
@@ -90,28 +107,11 @@ public struct ChatNavigation<Content: View>: View {
             router: chatNavigationViewModel.router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: ChatNavigationViewName.chat
-        ) {
+        ) { [unowned chatNavigationViewModel] in
             Group {
-                switch chatNavigationViewModel.chatType {
-                case let .conversationId(conversationId):
-                    ChatScreen(
-                        vm: .init(
-                            chatService: ConversationService(conversationId: conversationId)
-                        )
-                    )
-                case let .conversationFromClaimWithId(conversationId):
-                    ChatScreen(
-                        vm: .init(
-                            chatService: ConversationService(conversationId: conversationId)
-                        )
-                    )
-                case .newConversation:
-                    ChatScreen(
-                        vm: .init(
-                            chatService: NewConversationService()
-                        )
-                    )
-                case .inbox:
+                if let vm = chatNavigationViewModel.chatVm {
+                    ChatScreen(vm: vm)
+                } else {
                     InboxView()
                         .navigationTitle(L10n.chatConversationInbox)
                 }
