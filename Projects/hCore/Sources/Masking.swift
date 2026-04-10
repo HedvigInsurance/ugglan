@@ -16,6 +16,7 @@ public enum MaskType {
     case euroBonus
     case firstName
     case lastName
+    case petChipId
 }
 
 @MainActor
@@ -51,6 +52,10 @@ public struct Masking {
             let addressPredicate = NSPredicate(format: "SELF MATCHES %@", addressRegEx)
             return addressPredicate.evaluate(with: text)
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
+        case .petChipId:
+            let unmasked = unmask(text: text)
+            return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
+                && unmasked.count == 15
         case .none: return true
         case .disabledSuggestion: return true
         case .phoneNumber:
@@ -80,6 +85,7 @@ public struct Masking {
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
+        case .petChipId: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         }
     }
 
@@ -136,7 +142,7 @@ public struct Masking {
     public var keyboardType: UIKeyboardType {
         switch type {
         case .birthDate, .personalNumber,
-            .postalCode, .digits, .birthDateCoInsured:
+            .postalCode, .digits, .birthDateCoInsured, .petChipId:
             return .numberPad
         case .email: return .emailAddress
         case .phoneNumber: return .phonePad
@@ -192,6 +198,8 @@ public struct Masking {
             return L10n.contractFirstName
         case .lastName:
             return L10n.contractLastName
+        case .petChipId:
+            return "XXX XXX XXX XXX XXX"
         }
     }
 
@@ -218,6 +226,8 @@ public struct Masking {
         case .euroBonus:
             return nil
         case .firstName, .lastName: return nil
+        case .petChipId:
+            return L10n.chipIdLabel
         }
     }
 
@@ -316,6 +326,7 @@ public struct Masking {
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
         case .firstName, .lastName: return text
+        case .petChipId: return delimitedDigits(delimiterPositions: [4, 8, 12, 16], maxCount: 15 + 4, delimiter: " ")
         }
     }
 }

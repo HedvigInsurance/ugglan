@@ -50,13 +50,14 @@ private struct AttributedTextViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIViewType, context _: Context) {
         if let uiView = uiView as? AttributedUITextView {
+            uiView.fixedWidth = fixedWidth
             uiView.updateHeight()
         }
     }
 }
 
 private class AttributedUITextView: UITextView, UITextViewDelegate {
-    private let fixedWidth: CGFloat
+    fileprivate var fixedWidth: CGFloat
     @Binding private var height: CGFloat
 
     init(fixedWidth: CGFloat, attributedString: NSAttributedString, height: Binding<CGFloat>, useSecondaryColor: Bool) {

@@ -125,6 +125,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             .onChange(of: presented) { isPresent in
                 handle(isPresent: isPresent)
             }
+            .onChange(of: options) { newOptions in
+                presentationViewModel.presentingVC?.isModalInPresentation = newOptions.contains(.disableDismissOnScroll)
+            }
     }
 
     private func handle(isPresent: Bool) {

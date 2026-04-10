@@ -157,6 +157,7 @@ extension Contract {
         typeOfContract: .seHouse,
         coInsured: [],
         coOwners: [],
+        missingPetChipId: false,
     )
 }
 
