@@ -39,30 +39,49 @@ public struct ShimmerTextModifier: ViewModifier {
 }
 
 public struct Shimmer: ViewModifier {
-    @State var isInitialState: Bool = true
+    @State private var phase: CGFloat = 0
 
     public init() {}
     public func body(content: Content) -> some View {
         content
-            .mask {
+            .mask(
                 LinearGradient(
-                    gradient: .init(colors: [.black.opacity(0.4), .black, .black.opacity(0.4)]),
-                    startPoint: (isInitialState ? .init(x: -0.3, y: 0.5) : .init(x: 1, y: 0.5)),
-                    endPoint: (isInitialState ? .init(x: 0, y: 0.5) : .init(x: 1.5, y: 0.5))
+                    stops: [
+                        .init(color: .black.opacity(0.4), location: -1),
+                        .init(color: .black.opacity(0.7), location: 0.3 + phase * 0.4),
+                        .init(color: .black.opacity(0.4), location: 2),
+                    ],
+                    startPoint: .init(x: -0.5 + phase, y: 0.5),
+                    endPoint: .init(x: 0.3 + phase, y: 0.5)
                 )
-            }
-            .animation(.linear(duration: 1.4).repeatForever(autoreverses: false), value: isInitialState)
-            .onAppear() {
-                isInitialState = false
+            )
+            .onAppear {
+                withAnimation(
+                    .easeInOut(duration: 1.4)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    phase = 1.0
+                }
             }
     }
 }
 
 #Preview {
     VStack {
-        RoundedRectangle(cornerRadius: .cornerRadiusL)
-            .fill(hSurfaceColor.Opaque.primary)
-            .frame(width: 100, height: 100)
-            .modifier(Shimmer())
+        hSection {
+            RoundedRectangle(cornerRadius: .cornerRadiusL)
+                .fill(hSurfaceColor.Opaque.primary)
+                .frame(width: 100, height: 100)
+                .modifier(Shimmer())
+        }
+        .colorScheme(.light)
+        hSection {
+            RoundedRectangle(cornerRadius: .cornerRadiusL)
+                .fill(hSurfaceColor.Opaque.primary)
+                .frame(width: 100, height: 100)
+                .modifier(Shimmer())
+        }
+        .colorScheme(.dark)
     }
+    .sectionContainerStyle(.transparent)
 }
