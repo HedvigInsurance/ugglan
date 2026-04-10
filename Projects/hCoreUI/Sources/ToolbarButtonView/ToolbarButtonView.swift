@@ -62,9 +62,6 @@ public struct ToolbarButtonView: View {
             .padding(.leading, useSpacing ? leadingSpacing : 0)
             .padding(.trailing, useSpacing ? trailingSpacing : 0)
         }
-        .overlay {
-            Color.red.opacity(0.0)
-        }
         .showTooltip(type: type, placement: placement)
     }
 
