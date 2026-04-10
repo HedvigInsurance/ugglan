@@ -287,7 +287,6 @@ class DeepLinkHandler {
     }
 
     private func handleMissingPetChipIds(_ url: URL) {
-        dismissAndSelectTab(0)
         Task { [weak viewModel] in
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             await contractStore.sendAsync(.fetchContracts)
@@ -1015,7 +1014,10 @@ class LoggedInNavigationViewModel: ObservableObject {
         if let contractId {
             contracts = contracts.filter { $0.id == contractId }
         }
-        guard !contracts.isEmpty else { return }
+        guard !contracts.isEmpty else {
+            Toasts.shared.displayToastBar(toast: .init(type: .info, text: L10n.chipIdNoInsurances))
+            return
+        }
         missingPetChipIdInput = .init(contracts: contracts)
     }
 
