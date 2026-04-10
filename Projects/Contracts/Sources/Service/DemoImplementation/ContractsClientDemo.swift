@@ -81,6 +81,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 )
             ],
             coOwners: [],
+            missingPetChipId: true,
         )
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }

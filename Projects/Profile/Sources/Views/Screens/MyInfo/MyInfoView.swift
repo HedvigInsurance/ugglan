@@ -164,13 +164,7 @@ public class MyInfoViewModel: ObservableObject {
             withAnimation {
                 viewState = .success
             }
-            Toasts.shared.displayToastBar(
-                toast: .init(
-                    type: .campaign,
-                    icon: hCoreUIAssets.checkmark.view,
-                    text: L10n.profileMyInfoSaveSuccessToastBody
-                )
-            )
+            Toasts.success()
             homeStore.send(.fetchMemberState)
         } catch {
             if let error = error as? MyInfoSaveError {

@@ -105,6 +105,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     typeOfContract: .seApartmentBrf,
                     coInsured: [],
                     coOwners: [],
+                    missingPetChipId: false,
                 )
             ])
         )

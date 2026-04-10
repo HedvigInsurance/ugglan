@@ -61,6 +61,7 @@ struct LoggedInPresentations: ViewModifier {
                 ChangeTierNavigation(input: changeTierInput)
             }
             .handleAddons(input: $vm.isAddonPresented)
+            .handleMissingChipIds(input: $vm.missingPetChipIdInput)
             .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
                 dismissType in
                 switch dismissType {

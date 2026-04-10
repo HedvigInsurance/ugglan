@@ -281,6 +281,17 @@ class DeepLinkHandler {
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
+        case .missingPetChipId:
+            handleMissingPetChipIds(url)
+        }
+    }
+
+    private func handleMissingPetChipIds(_ url: URL) {
+        Task { [weak viewModel] in
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let contractId = url.getParameter(property: .contractId)
+            viewModel?.openMissingPetChipId(contractId: contractId)
         }
     }
 
@@ -830,6 +841,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var missingPetChipIdInput: MissingPetChipIdInput?
     @Published var isInsuranceEvidencePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
@@ -925,6 +937,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openReviewContactInfo,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(petChipIdAdded),
+            name: .petChipIdAdded,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onOpenMissingPetChipId),
+            name: .openMissingPetChipId,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -970,6 +996,29 @@ class LoggedInNavigationViewModel: ObservableObject {
                 contractStore.sendAsync(.fetchContracts)
             )
         }
+    }
+
+    @objc func petChipIdAdded() {
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchMemberState)
+    }
+
+    @objc func onOpenMissingPetChipId() {
+        openMissingPetChipId()
+    }
+
+    func openMissingPetChipId(contractId: String? = nil) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
+
+        if let contractId {
+            contracts = contracts.filter { $0.id == contractId }
+        }
+        guard !contracts.isEmpty else {
+            Toasts.shared.displayToastBar(toast: .init(type: .info, text: L10n.chipIdNoInsurances))
+            return
+        }
+        missingPetChipIdInput = .init(contracts: contracts)
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

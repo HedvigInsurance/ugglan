@@ -1,0 +1,10 @@
+mutation MidtermChangePetId($contractId: ID!, $petId: String!) {
+  midtermChangePetId(contractId: $contractId, petId: $petId) {
+    ... on MidtermChangePetIdActivationDate {
+      activationDate
+    }
+    ... on UserError {
+      message
+    }
+  }
+}

@@ -90,7 +90,7 @@ public struct AutomaticLog: BodyMacro {
         let fullFunctionName = typeName.isEmpty ? functionName : "\(typeName).\(functionName)"
 
         let parameters = funcDecl.signature.parameterClause.parameters
-        let parameterNames = parameters.map { $0.firstName.text }
+        let parameterNames = parameters.map { $0.secondName ?? $0.firstName }.map(\.text)
 
         let hasReturnType = funcDecl.signature.returnClause != nil
         let isAsync = funcDecl.signature.effectSpecifiers?.asyncSpecifier != nil

@@ -26,6 +26,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         typeOfContract: TypeOfContract,
         coInsured: [Stakeholder],
         coOwners: [Stakeholder],
+        missingPetChipId: Bool,
         addonsInfo: AddonsInfo? = nil,
     ) {
         self.id = id
@@ -47,6 +48,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.typeOfContract = typeOfContract
         self.coInsured = coInsured
         self.coOwners = coOwners
+        self.missingPetChipId = missingPetChipId
         self.addonsInfo = addonsInfo
     }
 
@@ -69,6 +71,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let ssn: String?
     public let coInsured: [Stakeholder]
     public let coOwners: [Stakeholder]
+    public let missingPetChipId: Bool
     public let addonsInfo: AddonsInfo?
     public var fullName: String {
         firstName + " " + lastName
