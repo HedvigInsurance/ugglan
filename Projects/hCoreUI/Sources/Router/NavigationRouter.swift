@@ -132,14 +132,14 @@ public struct hNavigationStack<Screen: View>: View {
 
         if options.contains(.largeNavigationBar) {
             object_setClass(navController.navigationBar, LargeNavBar.self)
-            if options.contains(.extendedNavigationWidth) {
+            if options.contains(.extendedNavigationWidth) && !isLiquidGlassEnabled {
                 (navController.navigationBar as? LargeNavBar)?.extendedNavigationWidth = true
             }
             navController.additionalSafeAreaInsets.top =
                 hNavigationControllerWithLargerNavBar.navigationBarHeight - 44
         } else {
             object_setClass(navController.navigationBar, NavBar.self)
-            if options.contains(.extendedNavigationWidth) {
+            if options.contains(.extendedNavigationWidth) && !isLiquidGlassEnabled {
                 (navController.navigationBar as? NavBar)?.extendedNavigationWidth = true
             }
         }
