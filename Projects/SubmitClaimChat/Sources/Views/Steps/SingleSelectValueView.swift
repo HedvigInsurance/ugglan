@@ -44,7 +44,9 @@ struct SingleSelectValueView: View {
         if let imageUrl = item.imageUrl, let url = URL(string: imageUrl) {
             KFImage(url)
                 .placeholder {
-                    WordmarkActivityIndicator(.standard)
+                    RoundedRectangle(cornerRadius: .cornerRadiusM)
+                        .fill(hSurfaceColor.Opaque.primary)
+                        .modifier(Shimmer())
                 }
                 .onFailureImage(hCoreUIAssets.helipadBig.image)
                 .resizable()
