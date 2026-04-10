@@ -147,8 +147,10 @@ class AddMissingPetChipIdViewModel: ObservableObject {
     }
 
     func addMissingPetChipId() {
-        isLoading = true
-        fieldError = nil
+        withAnimation {
+            isLoading = true
+            fieldError = nil
+        }
 
         Task {
             do {
@@ -161,11 +163,15 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                 Toasts.success()
                 dismiss()
             } catch let error as PetChipIdError {
-                fieldError = error.message
-                isLoading = false
+                withAnimation {
+                    fieldError = error.message
+                    isLoading = false
+                }
             } catch {
-                fieldError = L10n.somethingWentWrong
-                isLoading = false
+                withAnimation {
+                    fieldError = L10n.somethingWentWrong
+                    isLoading = false
+                }
             }
         }
     }
