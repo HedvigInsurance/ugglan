@@ -11,8 +11,7 @@ public class TokenRefresher {
         guard let token = try? await ApolloClient.retreiveToken() else {
             return false
         }
-        return Date().addingTimeInterval(60 * 59 + 45) > token.accessTokenExpirationDate
-        //        return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
+        return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
     public func refreshIfNeeded() async throws {
