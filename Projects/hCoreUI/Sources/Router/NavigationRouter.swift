@@ -257,6 +257,16 @@ private struct EmbededInNavigation: ViewModifier {
     }
 }
 
+extension HorizontalAlignment {
+    fileprivate var toolbarItemPlacement: ToolbarItemPlacement {
+        switch self {
+        case .center: return .title
+        case .leading: return .topBarLeading
+        case .trailing: return .topBarTrailing
+        default: return .title
+        }
+    }
+}
 extension View {
     @ViewBuilder
     @MainActor public func configureTitleView(
@@ -264,11 +274,12 @@ extension View {
         subTitle: String? = nil,
         titleColor: TitleColor? = nil,
         topPadding: CGFloat = .padding8,
+        alignment: HorizontalAlignment = .leading,
         onTitleTap: (() -> Void)? = nil
     ) -> some View {
         if #available(iOS 26.0, *) {
             self.toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem(placement: alignment.toolbarItemPlacement) {
                     Button {
                         onTitleTap?()
                     } label: {
@@ -276,7 +287,8 @@ extension View {
                             title: title,
                             subTitle: subTitle,
                             topPadding: topPadding,
-                            titleColor: titleColor ?? .default
+                            titleColor: titleColor ?? .default,
+                            alignment: alignment
                         )
                         .fixedSize()
                     }
@@ -290,6 +302,7 @@ extension View {
                     subTitle: subTitle,
                     titleColor: titleColor ?? .default,
                     topPadding: topPadding,
+                    alignment: alignment,
                     onTitleTap: onTitleTap
                 )
             }
@@ -307,14 +320,21 @@ extension View {
         subTitle: String?,
         titleColor: TitleColor,
         topPadding: CGFloat,
+        alignment: HorizontalAlignment = .leading,
         onTitleTap: (() -> Void)? = nil
     ) -> UIView {
         let view: UIView = UIHostingController(
-            rootView: titleView(title: title, subTitle: subTitle, topPadding: topPadding, titleColor: titleColor)
-                .onTapGesture {
-                    onTitleTap?()
-                }
-                .accessibilityAddTraits(.isButton)
+            rootView: titleView(
+                title: title,
+                subTitle: subTitle,
+                topPadding: topPadding,
+                titleColor: titleColor,
+                alignment: alignment
+            )
+            .onTapGesture {
+                onTitleTap?()
+            }
+            .accessibilityAddTraits(.isButton)
         )
         .view
         view.backgroundColor = .clear
@@ -323,17 +343,23 @@ extension View {
     }
 
     @ViewBuilder
-    private func titleView(title: String, subTitle: String?, topPadding: CGFloat, titleColor: TitleColor) -> some View {
+    private func titleView(
+        title: String,
+        subTitle: String?,
+        topPadding: CGFloat,
+        titleColor: TitleColor,
+        alignment: HorizontalAlignment = .leading
+    ) -> some View {
         Group {
             if let subTitle {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: alignment, spacing: 0) {
                     hText(title, style: .heading1)
                         .foregroundColor(titleViewColor(titleColor))
                         .accessibilityAddTraits(.isHeader)
                     hText(subTitle, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             } else {
                 hText(title, style: .heading1)
                     .foregroundColor(titleViewColor(titleColor))

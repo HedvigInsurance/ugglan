@@ -26,7 +26,12 @@ public struct PaymentsNavigation: View {
                 .navigationTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(title: paymentData.title, titleColor: paymentData.titleColor, topPadding: 0)
+                        .configureTitleView(
+                            title: paymentData.title,
+                            titleColor: paymentData.titleColor,
+                            topPadding: 0,
+                            alignment: .center
+                        )
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
@@ -80,12 +85,6 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
         case .paymentMethod:
             L10n.PaymentDetails.NavigationBar.title
         }
-    }
-}
-
-extension PaymentData: NavigationTitleProtocol {
-    public var navigationTitle: String? {
-        title
     }
 }
 

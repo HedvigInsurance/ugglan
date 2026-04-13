@@ -63,7 +63,10 @@ struct AddonSelectSubOptionScreen: View {
             .padding(.top, 16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: selectable.selectionTitle, subTitle: selectable.selectionDescription)
+        .configureTitleView(
+            title: selectable.selectionTitle,
+            subTitle: selectable.selectionDescription
+        )
     }
 
     @ViewBuilder

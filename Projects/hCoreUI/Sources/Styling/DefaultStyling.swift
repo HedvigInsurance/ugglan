@@ -409,6 +409,8 @@ public struct DefaultStyling {
             let tabBarItemAppearance = UITabBarItemAppearance()
             configureTabBarContent(itemAppearance: tabBarItemAppearance, style: style)
             appearance.stackedLayoutAppearance = tabBarItemAppearance
+            appearance.inlineLayoutAppearance = tabBarItemAppearance
+            appearance.compactInlineLayoutAppearance = tabBarItemAppearance
         }
 
         let standard = UITabBarAppearance()
