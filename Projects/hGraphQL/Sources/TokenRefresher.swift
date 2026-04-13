@@ -27,8 +27,6 @@ public class TokenRefresher {
             graphQlLogger.debug("Access token refresh is not needed")
             return
         }
-        forceLogoutHook()
-        throw AuthError.refreshTokenExpired
 
         if isRefreshing.value {
             graphQlLogger.debug("Already refreshing waiting until that is complete")
