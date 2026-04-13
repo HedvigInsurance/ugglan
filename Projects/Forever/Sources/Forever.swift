@@ -8,6 +8,7 @@ public struct ForeverView: View {
     @State var scrollTo: Int = -1
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
+    @State private var isInfoViewPresented = false
     @State var discountCodeHeight: CGFloat = 0 {
         didSet {
             recalculateHeight()
@@ -40,6 +41,27 @@ public struct ForeverView: View {
                     try await foreverNavigationVm.fetchForeverData()
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    SwiftUI.Button {
+                        isInfoViewPresented = true
+                    } label: {
+                        hCoreUIAssets.infoOutlined.view
+                            .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                }
+            }
+            .detent(
+                presented: $isInfoViewPresented,
+                options: .constant(.withoutGrabber)
+            ) {
+                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
+                    InfoView(
+                        title: L10n.ReferralsInfoSheet.headline,
+                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount)
+                    )
+                }
+            }
     }
 
     private var successView: some View {
@@ -61,8 +83,23 @@ public struct ForeverView: View {
                     scrollTo = 0
                 }
             }
+            .onPullToRefresh {
+                Task { @MainActor in
+                    try await foreverNavigationVm.fetchForeverData()
+                }
+            }
         }
-        .modifier(ForeverViewModifier(totalHeight: $totalHeight))
+        .background(
+            GeometryReader(content: { proxy in
+                Color.clear
+                    .onAppear {
+                        totalHeight = proxy.size.height
+                    }
+                    .onChange(of: proxy.size) { size in
+                        totalHeight = size.height
+                    }
+            })
+        )
     }
 
     private var headerView: some View {
@@ -101,63 +138,6 @@ public struct ForeverView: View {
 
     private func recalculateHeight() {
         spacing = max(totalHeight - discountCodeHeight - headerHeight, 0)
-    }
-}
-
-struct ForeverViewModifier: ViewModifier {
-    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
-    @Binding var totalHeight: CGFloat
-
-    func body(content: Content) -> some View {
-        content
-            .toolbar {
-                toolbarContent
-            }
-            .onPullToRefresh {
-                Task { @MainActor in
-                    try await foreverNavigationVm.fetchForeverData()
-                }
-            }
-            .background(
-                GeometryReader(content: { proxy in
-                    Color.clear
-                        .onAppear {
-                            totalHeight = proxy.size.height
-                        }
-                        .onChange(of: proxy.size) { size in
-                            totalHeight = size.height
-                        }
-                })
-            )
-    }
-
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        if #available(iOS 26.0, *) {
-            ToolbarItem(placement: .confirmationAction) {
-                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
-                    InfoViewHolder(
-                        title: L10n.ReferralsInfoSheet.headline,
-                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
-                        type: .navigation
-                    )
-                    .foregroundColor(hTextColor.Opaque.primary)
-                }
-            }
-        } else {
-            ToolbarItem(
-                placement: .topBarTrailing
-            ) {
-                if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
-                    InfoViewHolder(
-                        title: L10n.ReferralsInfoSheet.headline,
-                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
-                        type: .navigation
-                    )
-                    .foregroundColor(hTextColor.Opaque.primary)
-                }
-            }
-        }
     }
 }
 
