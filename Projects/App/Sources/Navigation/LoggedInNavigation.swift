@@ -1,4 +1,5 @@
 import Addons
+@preconcurrency import HedvigShared
 import ChangeTier
 import Chat
 import Claims
@@ -785,6 +786,12 @@ struct HomeTab: View {
             )
             .environmentObject(homeNavigationVm)
         }
+        .modally(
+            presented: $homeNavigationVm.isKMPHelpCenterPresented
+        ) {
+            KMPHelpCenterView()
+                .ignoresSafeArea(.all)
+        }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             presentationStyle: .detent(style: [.large])
@@ -1146,4 +1153,12 @@ extension HomeTab: TrackingViewNameProtocol {
     var nameForTracking: String {
         String(describing: HomeScreen.self)
     }
+}
+
+private struct KMPHelpCenterView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        HelpCenterViewControllerKt.HelpCenterViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }

@@ -121,6 +121,14 @@ extension HomeScreen {
                     navigationVm?.isHelpCenterPresented = true
                 }
             )
+            hButton(
+                .large,
+                .secondary,
+                content: .init(title: L10n.HomeTab.getHelp),
+                { [weak navigationVm] in
+                    navigationVm?.isKMPHelpCenterPresented = true
+                }
+            )
         }
     }
 }
