@@ -1,12 +1,12 @@
 import Environment
 import Foundation
-import UIKit
 @preconcurrency import HedvigShared
+import UIKit
 import hGraphQL
 
 class IosDeviceIdFetcher: DeviceIdFetcher {
     func fetch() async throws -> String? {
-        return await UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+        await UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
     }
 }
 
@@ -21,16 +21,16 @@ class IosAppBuildConfig: AppBuildConfig {
     var brand: String = "hedvig"
     var buildType: String = {
         #if DEBUG
-        return "debug"
+            return "debug"
         #else
-        return "release"
+            return "release"
         #endif
     }()
     var debug: Bool = {
         #if DEBUG
-        return true
+            return true
         #else
-        return false
+            return false
         #endif
     }()
     var device: String = "UIDevice.current.model"

@@ -1,5 +1,4 @@
 import Addons
-@preconcurrency import HedvigShared
 import ChangeTier
 import Chat
 import Claims
@@ -10,6 +9,7 @@ import EditStakeholders
 import Environment
 import Forever
 import Foundation
+@preconcurrency import HedvigShared
 import Home
 import InsuranceEvidence
 import Market
