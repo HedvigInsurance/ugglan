@@ -230,7 +230,7 @@ class MainNavigationViewModel: ObservableObject {
             .switchToLatest()
             .first()
             .sink { [weak self] _ in
-                self?.loggedInVm.handleDeepLink(url: deepLinkUrl)
+                self?.loggedInVm.handleDeepLink(deepLinkUrl)
                 self?.deepLinkCancellable = nil
             }
     }
