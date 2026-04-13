@@ -165,6 +165,9 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         for (index, type) in types.reversed().enumerated() {
             let viewToInject = ToolbarButtonView(type: type, placement: placement, action: action)
             let hostingVc = UIHostingController(rootView: viewToInject.asAnyView)
+            if #available(iOS 26, *) {
+                hostingVc.safeAreaRegions = []
+            }
             let viewToPlace = hostingVc.view!
             viewToPlace.backgroundColor = .clear
             let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
