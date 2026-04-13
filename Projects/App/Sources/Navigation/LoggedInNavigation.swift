@@ -789,7 +789,7 @@ struct HomeTab: View {
         .modally(
             presented: $homeNavigationVm.isKMPHelpCenterPresented
         ) {
-            KMPHelpCenterView()
+            KMPHelpCenterView(homeNavigationVm: homeNavigationVm, loggedInVm: loggedInVm)
                 .ignoresSafeArea(.all)
         }
         .detent(
@@ -1156,9 +1156,98 @@ extension HomeTab: TrackingViewNameProtocol {
 }
 
 private struct KMPHelpCenterView: UIViewControllerRepresentable {
+    let homeNavigationVm: HomeNavigationViewModel
+    let loggedInVm: LoggedInNavigationViewModel
+
     func makeUIViewController(context: Context) -> UIViewController {
-        HelpCenterViewControllerKt.HelpCenterViewController()
+        HelpCenterViewControllerKt.HelpCenterViewController(
+            onNavigateUp: { [weak homeNavigationVm] in
+                DispatchQueue.main.async { homeNavigationVm?.isKMPHelpCenterPresented = false }
+            },
+            onNavigateToInbox: { [weak homeNavigationVm] in
+                DispatchQueue.main.async {
+                    homeNavigationVm?.isKMPHelpCenterPresented = false
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
+                }
+            },
+            onNavigateToNewConversation: { [weak homeNavigationVm] in
+                DispatchQueue.main.async {
+                    homeNavigationVm?.isKMPHelpCenterPresented = false
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            },
+            onNavigateToQuickLink: { [weak homeNavigationVm, weak loggedInVm] destination in
+                DispatchQueue.main.async {
+                    homeNavigationVm?.isKMPHelpCenterPresented = false
+                    guard let homeNavigationVm, let loggedInVm else { return }
+                    handleQuickLink(destination, homeNavigationVm: homeNavigationVm, loggedInVm: loggedInVm)
+                }
+            },
+            openUrl: { urlString in
+                guard let url = URL(string: urlString) else { return }
+                DispatchQueue.main.async { loggedInVm.openUrl(url: url) }
+            },
+            tryToDialPhone: { phoneNumber in
+                guard let url = URL(string: "tel://\(phoneNumber)") else { return }
+                DispatchQueue.main.async { UIApplication.shared.open(url) }
+            }
+        )
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+
+    private func handleQuickLink(
+        _ destination: any QuickLinkDestinationOuterDestination,
+        homeNavigationVm: HomeNavigationViewModel,
+        loggedInVm: LoggedInNavigationViewModel
+    ) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if destination is QuickLinkDestinationOuterDestinationChooseInsuranceForEditCoInsured {
+            homeNavigationVm.editStakeholdersVm.start(stakeholderType: .coInsured)
+        } else if destination is QuickLinkDestinationOuterDestinationQuickLinkChangeAddress {
+            loggedInVm.isMoveContractPresented = true
+        } else if destination is QuickLinkDestinationOuterDestinationQuickLinkChangeTier {
+            let contracts: [ChangeTierContract] = contractStore.state.activeContracts
+                .filter(\.supportsChangeTier)
+                .map {
+                    .init(
+                        contractId: $0.id,
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: $0.exposureDisplayName
+                    )
+                }
+            loggedInVm.isChangeTierPresented = .init(source: .changeTier, contracts: contracts)
+        } else if let destination = destination as? QuickLinkDestinationOuterDestinationQuickLinkCoInsuredAddInfo {
+            if let contract = contractStore.state.contractForId(destination.contractId) {
+                homeNavigationVm.editStakeholdersVm.start(
+                    fromContract: .init(contract: contract, stakeholderType: .coInsured, fromInfoCard: true)
+                )
+            } else {
+                homeNavigationVm.editStakeholdersVm.start(stakeholderType: .coInsured)
+            }
+        } else if let destination = destination as? QuickLinkDestinationOuterDestinationQuickLinkCoInsuredAddOrRemove {
+            if let contract = contractStore.state.contractForId(destination.contractId) {
+                homeNavigationVm.editStakeholdersVm.start(
+                    fromContract: .init(contract: contract, stakeholderType: .coInsured, fromInfoCard: false)
+                )
+            } else {
+                homeNavigationVm.editStakeholdersVm.start(stakeholderType: .coInsured)
+            }
+        } else if destination is QuickLinkDestinationOuterDestinationQuickLinkConnectPayment {
+            homeNavigationVm.connectPaymentVm.set()
+        } else if destination is QuickLinkDestinationOuterDestinationQuickLinkTermination {
+            let contractsConfig = contractStore.state.activeContracts
+                .filter(\.canTerminate)
+                .map(\.asTerminationConfirmConfig)
+            Task {
+                do {
+                    try await loggedInVm.terminateInsuranceVm.start(with: contractsConfig)
+                } catch {
+                    Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
+                }
+            }
+        } else if destination is QuickLinkDestinationOuterDestinationQuickLinkTravelCertificate {
+            loggedInVm.isTravelInsurancePresented = true
+        }
+    }
 }
