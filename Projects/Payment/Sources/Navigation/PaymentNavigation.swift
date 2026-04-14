@@ -128,9 +128,9 @@ enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProt
     var navigationTitle: String? {
         switch self {
         case .payoutMethod:
-            return .init(describing: PayoutSelectedMethodScreen.self)
+            return L10n.payoutPageHeading
         case .setupPayoutMethod:
-            return .init(describing: PayoutChangeMethodScreen.self)
+            return L10n.payoutSelectPayoutMethod
         }
     }
 }
