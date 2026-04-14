@@ -178,7 +178,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHIP_ID_MISSING_MESSAGE" = "We are missing your pet’s ID-number";
 "CHIP_ID_NO_INSURANCES" = "You’ve already added the ID-number for all your pets";
 "CHIP_ID_TOP_TITLE" = "Update ID-number";
-"CHIP_ID_WRONG_INPUT" = "ID-number needs to be exactly 15 numbers";
+"CHIP_ID_WRONG_INPUT" = "ID-number needs to be exactly 15 digits";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Don’t miss out on important information for your claim";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Enable notifications";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Skip";
