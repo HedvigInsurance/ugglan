@@ -46,8 +46,8 @@ public struct PaymentsView: View {
                         if let statusData {
                             if let defaultPayin = statusData.defaultPayinMethod {
                                 connectedPaymentMethod(data: defaultPayin, chargingDay: statusData.chargingDay)
+                                connectedPayoutMethod(data: statusData)
                             }
-                            connectedPayoutMethod(data: statusData)
                         }
                     }
                 }
