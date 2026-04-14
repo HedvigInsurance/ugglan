@@ -32,7 +32,7 @@ struct PayoutChangeMethodScreen: View {
                                 )
                             case .invoice: break
                             case .nordea: paymentNavigationVm.showNordeaSetup = true
-                            case .swish: break
+                            case .swish: paymentNavigationVm.showSwishPayoutSetup = true
                             case .unknown: break
                             }
                         }

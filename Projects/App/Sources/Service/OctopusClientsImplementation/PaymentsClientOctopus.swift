@@ -186,6 +186,14 @@ class hPaymentClientOctopus: hPaymentClient {
             let mutation = OctopusGraphQL.PaymentMethodSetupNordeaPayoutMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupNordeaPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
+        case let .swishPayout(setAsDefault, phoneNumber):
+            let input = OctopusGraphQL.PaymentMethodSetupSwishInput(
+                setAsDefault: setAsDefault,
+                phoneNumber: phoneNumber
+            )
+            let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayoutMutation(input: input)
+            let data = try await octopus.client.mutation(mutation: mutation)!
+            return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
     }
 }
