@@ -22,8 +22,12 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.availableMethods = availableMethods
     }
 
-    public var defaultPayinMethod: PaymentMethodData? {
+    var defaultPayinMethod: PaymentMethodData? {
         payinMethods.first(where: { $0.isDefault }) ?? payinMethods.first
+    }
+
+    var defaultPayoutMethod: PaymentMethodData? {
+        payinMethods.first(where: { $0.isDefault })
     }
 }
 

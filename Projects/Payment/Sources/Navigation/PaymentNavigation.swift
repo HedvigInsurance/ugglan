@@ -13,7 +13,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
 public struct PaymentsNavigation: View {
     @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
-
+    @Inject var store: PaymentStore
     public init(
         paymentsNavigationVm: PaymentsNavigationViewModel
     ) {
@@ -45,10 +45,26 @@ public struct PaymentsNavigation: View {
                 }
                 .routerDestination(for: PayoutRouterAction.self) { routerAction in
                     switch routerAction {
-                    case .payoutMethod(let data):
-                        PayoutSelectedMethodScreen(data: data)
-                    case .setupPayoutMethod(let data):
-                        PayoutChangeMethodScreen(availableMethods: data)
+                    case .payoutMethod:
+                        PresentableStoreLens(
+                            PaymentStore.self,
+                            getter: { state in
+                                state.paymentStatusData
+                            }
+                        ) { paymentStatusData in
+                            if let paymentStatusData {
+                                PayoutSelectedMethodScreen(paymentStatusData: paymentStatusData)
+                            }
+                        }
+                    case .setupPayoutMethod:
+                        PresentableStoreLens(
+                            PaymentStore.self,
+                            getter: { state in
+                                state.paymentStatusData?.availableMethods ?? []
+                            }
+                        ) { availableMethods in
+                            PayoutChangeMethodScreen(availableMethods: availableMethods)
+                        }
                     }
                 }
         }
@@ -68,8 +84,8 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
     case paymentsView
 }
 public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
-    case payoutMethod(data: PaymentStatusData)
-    case setupPayoutMethod(data: [AvailablePaymentMethod])
+    case payoutMethod
+    case setupPayoutMethod
 
     public var nameForTracking: String {
         switch self {

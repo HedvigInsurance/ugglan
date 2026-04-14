@@ -1,3 +1,4 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,13 +6,12 @@ import hCoreUI
 struct PayoutSelectedMethodScreen: View {
     let data: PaymentStatusData
     @EnvironmentObject var router: NavigationRouter
-
     var body: some View {
         hForm {
             VStack(spacing: .padding8) {
                 hSection {
                     hFloatingField(
-                        value: payoutAccountDisplayValue,
+                        value: data.payoutAccountDisplayValue,
                         placeholder: "Konto",
                         error: nil,
                         onTap: {}
@@ -24,7 +24,7 @@ struct PayoutSelectedMethodScreen: View {
                     .disabled(true)
                 }
 
-                if showChangeButton {
+                if data.showChangeButton {
                     hSection {
                         hButton(
                             .large,
@@ -32,7 +32,7 @@ struct PayoutSelectedMethodScreen: View {
                             content: .init(title: "Ändra konto"),
                             {
                                 router.push(
-                                    PayoutRouterAction.setupPayoutMethod(data: data.availableMethods)
+                                    PayoutRouterAction.setupPayoutMethod
                                 )
                             }
                         )
@@ -42,12 +42,10 @@ struct PayoutSelectedMethodScreen: View {
             }
         }
     }
+}
 
-    private var defaultPayoutMethod: PaymentMethodData? {
-        data.payoutMethods.first(where: { $0.isDefault })
-    }
-
-    private var payoutAccountDisplayValue: String {
+extension PaymentStatusData {
+    fileprivate var payoutAccountDisplayValue: String {
         guard let method = defaultPayoutMethod else { return "" }
         switch method.details {
         case .bankAccount(let account, let bank):
@@ -61,8 +59,8 @@ struct PayoutSelectedMethodScreen: View {
         }
     }
 
-    private var showChangeButton: Bool {
-        guard let defaultPayin = data.payinMethods.first(where: { $0.isDefault }) else {
+    fileprivate var showChangeButton: Bool {
+        guard let defaultPayin = payinMethods.first(where: { $0.isDefault }) else {
             return true
         }
         if case .invoice(let delivery, _) = defaultPayin.details, delivery == .kivra {
@@ -74,7 +72,7 @@ struct PayoutSelectedMethodScreen: View {
 
 #Preview {
     PayoutSelectedMethodScreen(
-        data: .init(
+        paymentStatusData: .init(
             status: .active,
             chargingDay: nil,
             payinMethods: [
@@ -107,7 +105,7 @@ struct PayoutSelectedMethodScreen: View {
 
 #Preview("Kivra - no change button") {
     PayoutSelectedMethodScreen(
-        data: .init(
+        paymentStatusData: .init(
             status: .active,
             chargingDay: nil,
             payinMethods: [
@@ -128,7 +126,11 @@ struct PayoutSelectedMethodScreen: View {
                     details: nil
                 )
             ],
-            availableMethods: []
+            availableMethods: [
+                .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+            ]
         )
     )
     .environmentObject(NavigationRouter())

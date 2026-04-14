@@ -7,7 +7,7 @@ struct PayoutChangeMethodScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(payoutMethods, id: \.provider) { method in
+                ForEach(availableMethods.filter { $0.supportsPayout }, id: \.provider) { method in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: .padding4) {
@@ -22,10 +22,6 @@ struct PayoutChangeMethodScreen: View {
                 }
             }
         }
-    }
-
-    private var payoutMethods: [AvailablePaymentMethod] {
-        availableMethods.filter { $0.supportsPayout }
     }
 }
 
