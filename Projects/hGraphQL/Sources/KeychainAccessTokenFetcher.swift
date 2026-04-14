@@ -5,6 +5,6 @@ public class IosAccessTokenFetcher: AccessTokenFetcher {
     public init() {}
 
     public func fetch() async throws -> String? {
-        return try await ApolloClient.retreiveToken()?.accessToken
+        try await ApolloClient.retreiveToken()?.accessToken
     }
 }
