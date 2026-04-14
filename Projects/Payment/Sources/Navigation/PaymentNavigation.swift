@@ -1,4 +1,5 @@
 import Campaign
+import Combine
 import PresentableStore
 import SwiftUI
 import hCore
@@ -6,14 +7,39 @@ import hCoreUI
 
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
-    public init() {}
+    private var paymentStoreSubscription: AnyCancellable?
+    var paymentStatusViewModel: PaymentStatusViewModel?
+    public init() {
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        paymentStoreSubscription = store.stateSignal.map(\.paymentStatusData)
+            .removeDuplicates()
+            .sink(receiveValue: { [weak self] value in
+                if let value {
+                    if self?.paymentStatusViewModel == nil {
+                        self?.paymentStatusViewModel = .init(paymentStatusData: value)
+                    } else {
+                        self?.paymentStatusViewModel?.paymentStatusData = value
+                    }
+                } else {
+                    self?.paymentStatusViewModel = nil
+                }
+            })
+    }
+
     public var connectPaymentVm = ConnectPaymentViewModel()
+}
+
+class PaymentStatusViewModel: ObservableObject {
+    @Published var paymentStatusData: PaymentStatusData
+
+    init(paymentStatusData: PaymentStatusData) {
+        self.paymentStatusData = paymentStatusData
+    }
 }
 
 public struct PaymentsNavigation: View {
     @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
-    @Inject var store: PaymentStore
     public init(
         paymentsNavigationVm: PaymentsNavigationViewModel
     ) {
@@ -46,25 +72,9 @@ public struct PaymentsNavigation: View {
                 .routerDestination(for: PayoutRouterAction.self) { routerAction in
                     switch routerAction {
                     case .payoutMethod:
-                        PresentableStoreLens(
-                            PaymentStore.self,
-                            getter: { state in
-                                state.paymentStatusData
-                            }
-                        ) { paymentStatusData in
-                            if let paymentStatusData {
-                                PayoutSelectedMethodScreen(data: paymentStatusData)
-                            }
-                        }
+                        PayoutSelectedMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
                     case .setupPayoutMethod:
-                        PresentableStoreLens(
-                            PaymentStore.self,
-                            getter: { state in
-                                state.paymentStatusData?.availableMethods ?? []
-                            }
-                        ) { availableMethods in
-                            PayoutChangeMethodScreen(availableMethods: availableMethods)
-                        }
+                        PayoutChangeMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
                     }
                 }
         }
@@ -83,11 +93,11 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 
     case paymentsView
 }
-public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
+enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case payoutMethod
     case setupPayoutMethod
 
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .payoutMethod:
             return .init(describing: PayoutSelectedMethodScreen.self)
@@ -96,7 +106,7 @@ public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTi
         }
     }
 
-    public var navigationTitle: String? {
+    var navigationTitle: String? {
         switch self {
         case .payoutMethod:
             return .init(describing: PayoutSelectedMethodScreen.self)
@@ -105,12 +115,13 @@ public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTi
         }
     }
 }
-public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
+
+enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
     case paymentMethod(data: PaymentMethodData, chargingDay: Int?)
 
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .discounts:
             return .init(describing: PaymentsDiscountsRootView.self)
@@ -121,7 +132,7 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
         }
     }
 
-    public var navigationTitle: String? {
+    var navigationTitle: String? {
         switch self {
         case .discounts:
             L10n.paymentsDiscountsSectionTitle

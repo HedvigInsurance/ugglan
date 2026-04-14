@@ -2,12 +2,11 @@ import SwiftUI
 import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
-    let availableMethods: [AvailablePaymentMethod]
-
+    @ObservedObject var vm: PaymentStatusViewModel
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(availableMethods.filter { $0.supportsPayout }, id: \.provider) { method in
+                ForEach(vm.paymentStatusData.availableMethods.filter { $0.supportsPayout }, id: \.provider) { method in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: .padding4) {
@@ -49,10 +48,18 @@ extension PaymentProvider {
 
 #Preview {
     PayoutChangeMethodScreen(
-        availableMethods: [
-            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-        ]
+        vm: .init(
+            paymentStatusData: .init(
+                status: .active,
+                chargingDay: nil,
+                payinMethods: [],
+                payoutMethods: [],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ]
+            )
+        )
     )
 }
