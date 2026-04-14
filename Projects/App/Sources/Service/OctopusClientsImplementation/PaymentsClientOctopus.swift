@@ -177,6 +177,15 @@ class hPaymentClientOctopus: hPaymentClient {
             let mutation = OctopusGraphQL.PaymentMethodSetupTrustlyMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupTrustly.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
+        case let .nordeaPayout(setAsDefault, clearingNumber, accountNumber):
+            let input = OctopusGraphQL.PaymentMethodSetupNordeaPayoutInput(
+                setAsDefault: setAsDefault,
+                clearingNumber: clearingNumber,
+                accountNumber: accountNumber
+            )
+            let mutation = OctopusGraphQL.PaymentMethodSetupNordeaPayoutMutation(input: input)
+            let data = try await octopus.client.mutation(mutation: mutation)!
+            return data.paymentMethodSetupNordeaPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
     }
 }

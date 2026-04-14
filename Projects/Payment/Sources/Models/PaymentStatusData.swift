@@ -97,6 +97,7 @@ public struct AvailablePaymentMethod: Codable, Equatable, Sendable, Hashable {
 
 public enum PaymentMethodSetupType: Sendable {
     case trustly(setAsDefaultPayin: Bool, setAsDefaultPayout: Bool)
+    case nordeaPayout(setAsDefault: Bool, clearingNumber: String, accountNumber: String)
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {
