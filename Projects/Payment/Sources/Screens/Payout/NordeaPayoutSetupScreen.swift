@@ -10,53 +10,83 @@ struct NordeaPayoutSetupScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                hSection {
-                    hFloatingTextField(
-                        masking: .init(type: .digits),
-                        value: $vm.clearingNumber,
-                        equals: $vm.focusedField,
-                        focusValue: .clearing,
-                        placeholder: "Clearing",
-                        error: $vm.clearingError
-                    )
-                }
-                hSection {
-                    hFloatingTextField(
-                        masking: .init(type: .digits),
-                        value: $vm.accountNumber,
-                        equals: $vm.focusedField,
-                        focusValue: .account,
-                        placeholder: "Konto",
-                        error: $vm.accountError
-                    )
-                }
+                clearingField
+                accountField
             }
         }
         .hFormAttachToBottom {
-            hSection {
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.generalSaveButton),
-                    {
-                        Task {
-                            let success = await vm.save()
-                            if success {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
-                                store.send(.fetchPaymentStatus)
-                                router.dismiss()
-                            }
-                        }
-                    }
-                )
-                .hButtonIsLoading(vm.isLoading)
-            }
-            .padding(.vertical, .padding16)
-            .sectionContainerStyle(.transparent)
+            bottomContent
         }
+        .disabled(vm.isLoading)
         .hFormContentPosition(.compact)
         .navigationTitle("Bankkonto")
         .embededInNavigation(router: router, tracking: self)
+    }
+
+    private var clearingField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: .init(type: .clearingNumber),
+                value: $vm.clearingNumber,
+                equals: $vm.focusedField,
+                focusValue: .clearing,
+                placeholder: "Clearing",
+                error: $vm.clearingError
+            )
+        }
+    }
+
+    private var accountField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: .init(type: .bankAccountNumber),
+                value: $vm.accountNumber,
+                equals: $vm.focusedField,
+                focusValue: .account,
+                placeholder: "Konto",
+                error: $vm.accountError
+            )
+        }
+    }
+
+    private var bottomContent: some View {
+        hSection {
+            if let errorMessage = vm.errorMessage {
+                errorView(message: errorMessage)
+            }
+            saveButton
+        }
+        .padding(.vertical, .padding16)
+        .sectionContainerStyle(.transparent)
+    }
+
+    private func errorView(message: String) -> some View {
+        HStack {
+            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                .foregroundColor(hSignalColor.Red.element)
+            hText(message, style: .label)
+                .foregroundColor(hSignalColor.Red.text)
+        }
+        .padding(.bottom, .padding8)
+    }
+
+    private var saveButton: some View {
+        hButton(
+            .large,
+            .primary,
+            content: .init(title: L10n.generalSaveButton),
+            {
+                Task {
+                    let success = await vm.save()
+                    if success {
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        store.send(.fetchPaymentStatus)
+                        router.dismiss()
+                    }
+                }
+            }
+        )
+        .hButtonIsLoading(vm.isLoading)
     }
 }
 
@@ -74,43 +104,64 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     @Published var clearingError: String?
     @Published var accountError: String?
     @Published var isLoading: Bool = false
+    @Published var errorMessage: String?
 
     private let paymentService = hPaymentService()
+    private let clearingMasking = Masking(type: .clearingNumber)
+    private let accountMasking = Masking(type: .bankAccountNumber)
 
     @discardableResult
     func save() async -> Bool {
-        clearingError = nil
-        accountError = nil
-
-        guard !clearingNumber.isEmpty else {
-            clearingError = "Missing clearing number"
-            return false
-        }
-        guard !accountNumber.isEmpty else {
-            accountError = "Missing account number"
-            return false
+        withAnimation {
+            clearingError = nil
+            accountError = nil
+            errorMessage = nil
         }
 
-        isLoading = true
-        defer { isLoading = false }
+        if !validate() { return false }
+
+        withAnimation { isLoading = true }
+        defer { withAnimation { isLoading = false } }
 
         do {
             let result = try await paymentService.setupPaymentMethod(
                 .nordeaPayout(
                     setAsDefault: true,
                     clearingNumber: clearingNumber,
-                    accountNumber: accountNumber
+                    accountNumber: accountMasking.unmaskedValue(text: accountNumber)
                 )
             )
             if let errorMessage = result.errorMessage {
-                clearingError = errorMessage
+                withAnimation { self.errorMessage = errorMessage }
                 return false
             }
             return true
         } catch {
-            clearingError = error.localizedDescription
+            withAnimation { errorMessage = error.localizedDescription }
             return false
         }
+    }
+
+    private func validate() -> Bool {
+        var newClearingError: String?
+        var newAccountError: String?
+
+        if !clearingMasking.isValid(text: clearingNumber) {
+            newClearingError = "Clearing number must be 4 or 5 digits"
+        }
+        if !accountMasking.isValid(text: accountMasking.unmaskedValue(text: accountNumber)) {
+            newAccountError = "Account number must be at least 6 digits"
+        }
+
+        guard newClearingError == nil && newAccountError == nil else {
+            withAnimation {
+                clearingError = newClearingError
+                accountError = newAccountError
+                focusedField = newClearingError != nil ? .clearing : .account
+            }
+            return false
+        }
+        return true
     }
 }
 

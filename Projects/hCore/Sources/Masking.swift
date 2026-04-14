@@ -17,6 +17,8 @@ public enum MaskType {
     case firstName
     case lastName
     case petChipId
+    case bankAccountNumber
+    case clearingNumber
 }
 
 @MainActor
@@ -52,6 +54,13 @@ public struct Masking {
             let addressPredicate = NSPredicate(format: "SELF MATCHES %@", addressRegEx)
             return addressPredicate.evaluate(with: text)
         case .digits: return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
+        case .bankAccountNumber:
+            let unmasked = unmask(text: text)
+            return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
+                && unmasked.count >= 6
+        case .clearingNumber:
+            return text.count >= 4 && text.count <= 5
+                && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .petChipId:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
@@ -86,6 +95,8 @@ public struct Masking {
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
         case .petChipId: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+        case .bankAccountNumber: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+        case .clearingNumber: return text
         }
     }
 
@@ -142,7 +153,7 @@ public struct Masking {
     public var keyboardType: UIKeyboardType {
         switch type {
         case .birthDate, .personalNumber,
-            .postalCode, .digits, .birthDateCoInsured, .petChipId:
+            .postalCode, .digits, .birthDateCoInsured, .petChipId, .bankAccountNumber, .clearingNumber:
             return .numberPad
         case .email: return .emailAddress
         case .phoneNumber: return .phonePad
@@ -200,6 +211,10 @@ public struct Masking {
             return L10n.contractLastName
         case .petChipId:
             return "XXX XXX XXX XXX XXX"
+        case .bankAccountNumber:
+            return nil
+        case .clearingNumber:
+            return nil
         }
     }
 
@@ -228,6 +243,10 @@ public struct Masking {
         case .firstName, .lastName: return nil
         case .petChipId:
             return L10n.chipIdLabel
+        case .bankAccountNumber:
+            return nil
+        case .clearingNumber:
+            return nil
         }
     }
 
@@ -327,6 +346,16 @@ public struct Masking {
             return uppercasedAlphaNumeric(maxCount: 12)
         case .firstName, .lastName: return text
         case .petChipId: return delimitedDigits(delimiterPositions: [4, 8, 12, 16], maxCount: 15 + 4, delimiter: " ")
+        case .bankAccountNumber:
+            let digits = text.filter(\.isDigit)
+            var result = ""
+            for (index, char) in digits.enumerated() {
+                if index > 0, index % 3 == 0 { result.append(" ") }
+                result.append(char)
+            }
+            return result
+        case .clearingNumber:
+            return isDigit(maxCount: 5)
         }
     }
 }
