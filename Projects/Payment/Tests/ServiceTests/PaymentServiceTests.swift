@@ -33,7 +33,7 @@ final class PaymentServiceTests: XCTestCase {
                 contracts: [],
                 referralDiscount: nil,
                 amountPerReferral: .sek(20),
-                defaultPayinMethod: nil,
+                payinMethod: nil,
                 addedToThePayment: nil
             ),
             ongoing: [
@@ -50,7 +50,7 @@ final class PaymentServiceTests: XCTestCase {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    defaultPayinMethod: nil,
+                    payinMethod: nil,
                     addedToThePayment: nil
                 )
             ]
