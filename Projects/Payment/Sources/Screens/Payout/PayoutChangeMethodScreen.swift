@@ -1,7 +1,7 @@
 import SwiftUI
 import hCoreUI
 
-struct PayoutSelectMethodScreen: View {
+struct PayoutChangeMethodScreen: View {
     let availableMethods: [AvailablePaymentMethod]
 
     var body: some View {
@@ -52,7 +52,7 @@ extension PaymentProvider {
 }
 
 #Preview {
-    PayoutSelectMethodScreen(
+    PayoutChangeMethodScreen(
         availableMethods: [
             .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
             .init(provider: .swish, supportsPayin: false, supportsPayout: true),

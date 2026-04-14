@@ -48,7 +48,7 @@ public struct PaymentsNavigation: View {
                     case .payoutMethod(let data):
                         PayoutSelectedMethodScreen(data: data)
                     case .setupPayoutMethod(let data):
-                        PayoutSelectMethodScreen(availableMethods: data)
+                        PayoutChangeMethodScreen(availableMethods: data)
                     }
                 }
         }
@@ -76,7 +76,7 @@ public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTi
         case .payoutMethod:
             return .init(describing: PayoutSelectedMethodScreen.self)
         case .setupPayoutMethod:
-            return .init(describing: PayoutSelectMethodScreen.self)
+            return .init(describing: PayoutChangeMethodScreen.self)
         }
     }
 
@@ -85,7 +85,7 @@ public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTi
         case .payoutMethod:
             return .init(describing: PayoutSelectedMethodScreen.self)
         case .setupPayoutMethod:
-            return .init(describing: PayoutSelectMethodScreen.self)
+            return .init(describing: PayoutChangeMethodScreen.self)
         }
     }
 }
