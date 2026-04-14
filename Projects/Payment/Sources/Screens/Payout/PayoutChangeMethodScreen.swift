@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
@@ -27,19 +28,19 @@ struct PayoutChangeMethodScreen: View {
 extension PaymentProvider {
     var payoutTitle: String {
         switch self {
-        case .nordea: return "Bankkonto"
-        case .swish: return "Swish"
-        case .trustly: return "Trustly"
-        case .invoice: return "Faktura"
+        case .nordea: return L10n.bankPayoutMethodCardTitle
+        case .swish: return ""
+        case .trustly: return ""
+        case .invoice: return L10n.paymentsInvoice
         case .unknown: return ""
         }
     }
 
     var payoutSubtitle: String {
         switch self {
-        case .nordea: return "Utbetalning till ett svensk bankkonto"
-        case .swish: return "Snabb utbetalning med Swish"
-        case .trustly: return "Direktutbetalning via Trustly"
+        case .nordea: return L10n.bankPayoutMethodCardDescription
+        case .swish: return ""
+        case .trustly: return ""
         case .invoice: return ""
         case .unknown: return ""
         }
