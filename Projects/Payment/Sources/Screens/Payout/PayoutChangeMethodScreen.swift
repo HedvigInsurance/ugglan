@@ -1,8 +1,11 @@
+import PresentableStore
 import SwiftUI
 import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject var router: NavigationRouter
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
@@ -17,6 +20,22 @@ struct PayoutChangeMethodScreen: View {
                             Spacer()
                         }
                         .withChevronAccessory
+                        .onTap {
+                            switch method.provider {
+                            case .trustly:
+                                paymentNavigationVm.connectPaymentVm.set(
+                                    forPayin: false,
+                                    forPayout: true,
+                                    onSuccess: { [weak router] in
+                                        router?.pop()
+                                    }
+                                )
+                            case .invoice: break
+                            case .nordea: break
+                            case .swish: break
+                            case .unknown: break
+                            }
+                        }
                     }
                 }
             }
@@ -40,7 +59,7 @@ extension PaymentProvider {
         case .nordea: return "Utbetalning till ett svensk bankkonto"
         case .swish: return "Snabb utbetalning med Swish"
         case .trustly: return "Direktutbetalning via Trustly"
-        case .invoice: return ""
+        case .invoice: return "Faktura till kivra/email"
         case .unknown: return ""
         }
     }
@@ -62,4 +81,6 @@ extension PaymentProvider {
             )
         )
     )
+    .environmentObject(NavigationRouter())
+    .environmentObject(PaymentsNavigationViewModel())
 }

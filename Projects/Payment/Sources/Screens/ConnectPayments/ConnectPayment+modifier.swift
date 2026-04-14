@@ -16,8 +16,12 @@ struct ConnectPayment: ViewModifier {
                 item: $vm.setupTypeNavigationModel,
                 presentationStyle: .detent(style: [.large]),
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
-            ) { _ in
-                DirectDebitSetup()
+            ) { model in
+                DirectDebitSetup(
+                    forPayin: model.forPayin,
+                    forPayout: model.forPayout,
+                    onSuccess: model.onSuccess
+                )
             }
     }
 }
@@ -27,13 +31,30 @@ public class ConnectPaymentViewModel: ObservableObject {
     @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
 
-    public func set() {
+    public func set(
+        forPayin: Bool = true,
+        forPayout: Bool = true,
+        onSuccess: (() -> Void)? = nil
+    ) {
         Task { @MainActor [weak self] in
-            self?.setupTypeNavigationModel = .init()
+            self?.setupTypeNavigationModel = .init(
+                forPayin: forPayin,
+                forPayout: forPayout,
+                onSuccess: onSuccess
+            )
         }
     }
 }
 
-struct SetupTypeNavigationModel: Equatable, Identifiable {
+struct SetupTypeNavigationModel: Identifiable {
     let id: String = UUID().uuidString
+    let forPayin: Bool
+    let forPayout: Bool
+    let onSuccess: (() -> Void)?
+}
+
+extension SetupTypeNavigationModel: Equatable {
+    static func == (lhs: SetupTypeNavigationModel, rhs: SetupTypeNavigationModel) -> Bool {
+        lhs.id == rhs.id
+    }
 }

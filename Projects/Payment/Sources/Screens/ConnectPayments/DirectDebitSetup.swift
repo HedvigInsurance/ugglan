@@ -18,6 +18,9 @@ private class DirectDebitWebview: UIView {
     var webViewDelgate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let forPayin: Bool
+    let forPayout: Bool
+    let onSuccess: (() -> Void)?
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -26,10 +29,16 @@ private class DirectDebitWebview: UIView {
 
     init(
         showErrorAlert: Binding<Bool>,
-        router: NavigationRouter
+        router: NavigationRouter,
+        forPayin: Bool,
+        forPayout: Bool,
+        onSuccess: (() -> Void)?
     ) {
         _showErrorAlert = showErrorAlert
         self.router = router
+        self.forPayin = forPayin
+        self.forPayout = forPayout
+        self.onSuccess = onSuccess
         super.init(frame: .zero)
 
         presentWebView()
@@ -187,6 +196,7 @@ private class DirectDebitWebview: UIView {
             switch type {
             case .success:
                 paymentStore.send(.fetchPaymentStatus)
+                onSuccess?()
             case .failure:
                 break
             }
@@ -220,7 +230,7 @@ private class DirectDebitWebview: UIView {
         Task {
             do {
                 let result = try await paymentService.setupPaymentMethod(
-                    .trustly(setAsDefaultPayin: true, setAsDefaultPayout: true)
+                    .trustly(setAsDefaultPayin: forPayin, setAsDefaultPayout: forPayout)
                 )
                 guard let urlString = result.url, let url = URL(string: urlString) else {
                     self.showErrorAlert = true
@@ -243,9 +253,18 @@ private class DirectDebitWebview: UIView {
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let forPayin: Bool
+    let forPayout: Bool
+    let onSuccess: (() -> Void)?
 
     func makeUIView(context _: Context) -> some UIView {
-        DirectDebitWebview(showErrorAlert: $showErrorAlert, router: router)
+        DirectDebitWebview(
+            showErrorAlert: $showErrorAlert,
+            router: router,
+            forPayin: forPayin,
+            forPayout: forPayout,
+            onSuccess: onSuccess
+        )
     }
 
     func updateUIView(_: UIViewType, context _: Context) {}
@@ -258,9 +277,15 @@ public struct DirectDebitSetup: View {
 
     @StateObject var router = NavigationRouter()
     let setupType: SetupType
+    let forPayin: Bool
+    let forPayout: Bool
+    let onSuccess: (() -> Void)?
 
     public init(
-        setupType: SetupType? = nil
+        setupType: SetupType? = nil,
+        forPayin: Bool = true,
+        forPayout: Bool = true,
+        onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
             if let setupType {
@@ -273,6 +298,9 @@ public struct DirectDebitSetup: View {
         }()
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
+        self.forPayin = forPayin
+        self.forPayout = forPayout
+        self.onSuccess = onSuccess
     }
 
     public var body: some View {
@@ -305,15 +333,27 @@ public struct DirectDebitSetup: View {
                     )
                 )
             } else if showCancelAlert {
-                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
-                    .alert(isPresented: $showCancelAlert) {
-                        cancelAlert()
-                    }
+                DirectDebitSetupRepresentable(
+                    showErrorAlert: $showErrorAlert,
+                    router: router,
+                    forPayin: forPayin,
+                    forPayout: forPayout,
+                    onSuccess: onSuccess
+                )
+                .alert(isPresented: $showCancelAlert) {
+                    cancelAlert()
+                }
             } else {
-                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
-                    .alert(isPresented: $showErrorAlert) {
-                        errorAlert()
-                    }
+                DirectDebitSetupRepresentable(
+                    showErrorAlert: $showErrorAlert,
+                    router: router,
+                    forPayin: forPayin,
+                    forPayout: forPayout,
+                    onSuccess: onSuccess
+                )
+                .alert(isPresented: $showErrorAlert) {
+                    errorAlert()
+                }
             }
         }
         .toolbar {
