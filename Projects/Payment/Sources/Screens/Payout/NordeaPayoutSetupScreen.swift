@@ -17,7 +17,6 @@ struct NordeaPayoutSetupScreen: View {
             VStack(spacing: .padding4) {
                 clearingField
                 accountField
-                Rectangle().frame(width: 100, height: 400)
             }
         }
         .hFormAttachToBottom {
