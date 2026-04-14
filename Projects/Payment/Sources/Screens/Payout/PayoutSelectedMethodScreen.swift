@@ -72,7 +72,7 @@ extension PaymentStatusData {
 
 #Preview {
     PayoutSelectedMethodScreen(
-        paymentStatusData: .init(
+        data: .init(
             status: .active,
             chargingDay: nil,
             payinMethods: [
@@ -105,7 +105,7 @@ extension PaymentStatusData {
 
 #Preview("Kivra - no change button") {
     PayoutSelectedMethodScreen(
-        paymentStatusData: .init(
+        data: .init(
             status: .active,
             chargingDay: nil,
             payinMethods: [

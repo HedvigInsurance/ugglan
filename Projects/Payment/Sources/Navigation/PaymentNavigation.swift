@@ -53,7 +53,7 @@ public struct PaymentsNavigation: View {
                             }
                         ) { paymentStatusData in
                             if let paymentStatusData {
-                                PayoutSelectedMethodScreen(paymentStatusData: paymentStatusData)
+                                PayoutSelectedMethodScreen(data: paymentStatusData)
                             }
                         }
                     case .setupPayoutMethod:
