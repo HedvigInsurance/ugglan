@@ -6,12 +6,18 @@ import hCoreUI
 struct NordeaPayoutSetupScreen: View {
     @StateObject private var vm = NordeaPayoutSetupViewModel()
     @StateObject var router = NavigationRouter()
+    let onSuccess: (() -> Void)?
+
+    init(onSuccess: (() -> Void)? = nil) {
+        self.onSuccess = onSuccess
+    }
 
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
                 clearingField
                 accountField
+                Rectangle().frame(width: 100, height: 400)
             }
         }
         .hFormAttachToBottom {
@@ -74,18 +80,20 @@ struct NordeaPayoutSetupScreen: View {
         hButton(
             .large,
             .primary,
-            content: .init(title: L10n.generalSaveButton),
-            {
-                Task {
-                    let success = await vm.save()
+            content: .init(title: L10n.generalSaveButton)
+        ) { [weak vm, weak router, onSuccess] in
+            Task {
+                if let success = await vm?.save() {
                     if success {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         store.send(.fetchPaymentStatus)
-                        router.dismiss()
+                        onSuccess?()
+                        router?.dismiss()
+                        Toasts.success()
                     }
                 }
             }
-        )
+        }
         .hButtonIsLoading(vm.isLoading)
     }
 }
@@ -110,7 +118,6 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     private let clearingMasking = Masking(type: .clearingNumber)
     private let accountMasking = Masking(type: .bankAccountNumber)
 
-    @discardableResult
     func save() async -> Bool {
         withAnimation {
             clearingError = nil

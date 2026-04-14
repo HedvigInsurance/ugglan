@@ -86,12 +86,9 @@ public struct PaymentsNavigation: View {
             presented: $paymentsNavigationVm.showNordeaSetup,
             presentationStyle: .detent(style: [.height])
         ) {
-            NordeaPayoutSetupScreen()
-                .onDeinit { [weak router] in
-                    Task {
-                        router?.pop()
-                    }
-                }
+            NordeaPayoutSetupScreen() { [weak router] in
+                router?.pop()
+            }
         }
     }
 }
