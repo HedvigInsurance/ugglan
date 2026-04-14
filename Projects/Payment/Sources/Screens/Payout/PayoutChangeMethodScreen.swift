@@ -49,7 +49,7 @@ extension PaymentProvider {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardTitle
         case .swish: return ""
-        case .trustly: return ""
+        case .trustly: return "Trustly"
         case .invoice: return L10n.paymentsInvoice
         case .unknown: return ""
         }
@@ -59,8 +59,8 @@ extension PaymentProvider {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardDescription
         case .swish: return ""
-        case .trustly: return "Direktutbetalning via Trustly"
-        case .invoice: return "Faktura till kivra/email"
+        case .trustly: return L10n.bankPayoutMethodTrustlyDescription
+        case .invoice: return ""
         case .unknown: return ""
         }
     }
