@@ -61,13 +61,12 @@ public class hPaymentClientDemo: hPaymentClient {
                 ],
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
-                paymentChargeData: .init(
-                    paymentMethod: "Autogiro",
-                    bankName: "Handelsbanken",
-                    account: "****124124",
-                    mandate: "Trustly",
-                    dueDate: 20,
-                    chargeMethod: .trustly
+                payinMethod: .init(
+                    id: "payin-demo",
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "****124124", bank: "Handelsbanken")
                 ),
                 addedToThePayment: nil
             ),
@@ -126,7 +125,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     ],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    paymentChargeData: nil,
+                    payinMethod: nil,
                     addedToThePayment: nil
                 )
             ]
@@ -136,15 +135,30 @@ public class hPaymentClientDemo: hPaymentClient {
     public func getPaymentStatusData() async throws -> PaymentStatusData {
         try await Task.sleep(seconds: 1)
         return .init(
-            status: .noNeedToConnect,
-            paymentChargeData: .init(
-                paymentMethod: nil,
-                bankName: "Connected bank",
-                account: "****1234",
-                mandate: nil,
-                dueDate: nil,
-                chargeMethod: .trustly
-            )
+            status: .active,
+            chargingDay: 27,
+            payinMethods: [
+                .init(
+                    id: "payin-1",
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "****1234", bank: "Connected bank")
+                )
+            ],
+            payoutMethods: [],
+            availableMethods: [
+                .init(
+                    provider: .trustly,
+                    supportsPayin: true,
+                    supportsPayout: true
+                ),
+                .init(
+                    provider: .nordea,
+                    supportsPayin: true,
+                    supportsPayout: true
+                ),
+            ]
         )
     }
 
@@ -168,7 +182,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentChargeData: nil,
+                        payinMethod: nil,
                         addedToThePayment: nil
                     )
                 )
@@ -193,7 +207,7 @@ public class hPaymentClientDemo: hPaymentClient {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(10),
-                        paymentChargeData: nil,
+                        payinMethod: nil,
                         addedToThePayment: nil
                     )
                 )
@@ -202,7 +216,8 @@ public class hPaymentClientDemo: hPaymentClient {
         return [success, failed]
     }
 
-    public func getConnectPaymentUrl() async throws -> URL {
-        throw PaymentError.missingDataError(message: L10n.General.errorBody)
+    public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
+        try await Task.sleep(seconds: 1)
+        return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
     }
 }

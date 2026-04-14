@@ -39,8 +39,16 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                    case let .paymentMethod(data):
-                        PaymentMethodScreen(data: data)
+                    case let .paymentMethod(data, chargingDay):
+                        PaymentMethodScreen(data: data, chargingDay: chargingDay)
+                    }
+                }
+                .routerDestination(for: PayoutRouterAction.self) { routerAction in
+                    switch routerAction {
+                    case .payoutMethod(let data):
+                        PayoutSelectedMethodScreen(data: data)
+                    case .setupPayoutMethod(let data):
+                        PayoutSelectMethodScreen(availableMethods: data)
                     }
                 }
         }
@@ -59,11 +67,32 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 
     case paymentsView
 }
+public enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
+    case payoutMethod(data: PaymentStatusData)
+    case setupPayoutMethod(data: [AvailablePaymentMethod])
 
+    public var nameForTracking: String {
+        switch self {
+        case .payoutMethod:
+            return .init(describing: PayoutSelectedMethodScreen.self)
+        case .setupPayoutMethod:
+            return .init(describing: PayoutSelectMethodScreen.self)
+        }
+    }
+
+    public var navigationTitle: String? {
+        switch self {
+        case .payoutMethod:
+            return .init(describing: PayoutSelectedMethodScreen.self)
+        case .setupPayoutMethod:
+            return .init(describing: PayoutSelectMethodScreen.self)
+        }
+    }
+}
 public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-    case paymentMethod(data: PaymentChargeData)
+    case paymentMethod(data: PaymentMethodData, chargingDay: Int?)
 
     public var nameForTracking: String {
         switch self {

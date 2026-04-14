@@ -1,0 +1,51 @@
+query PaymentMethods {
+    currentMember {
+        paymentMethods {
+            payinMethods {
+                ...MemberPaymentMethodFragment
+            }
+            payoutMethods {
+                ...MemberPaymentMethodFragment
+            }
+            defaultPayinMethod {
+                ...MemberPaymentMethodFragment
+            }
+            defaultPayoutMethod {
+                ...MemberPaymentMethodFragment
+            }
+            availableMethods {
+                provider
+                supportsPayin
+                supportsPayout
+            }
+            chargingDay
+        }
+		activeContracts {
+			terminationDueToMissedPayments
+			terminationDate
+		}
+		pendingContracts {
+			id
+		}
+    }
+}
+
+fragment MemberPaymentMethodFragment on MemberPaymentMethod {
+    id
+    provider
+    status
+    isDefault
+    details {
+        ... on PaymentMethodInvoiceDetails {
+            delivery
+            email
+        }
+        ... on PaymentMethodSwishDetails {
+            phoneNumber
+        }
+        ... on PaymentMethodBankAccountDetails {
+            account
+            bank
+        }
+    }
+}

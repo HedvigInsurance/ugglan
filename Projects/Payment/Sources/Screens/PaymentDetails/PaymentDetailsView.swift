@@ -60,7 +60,7 @@ struct PaymentDetailsView: View {
         }
         .withHeader(
             title: L10n.PaymentDetails.NavigationBar.title,
-            infoButtonDescription: data.paymentChargeData?.chargeMethod.infoText,
+            infoButtonDescription: data.payinMethod?.provider.infoText,
             withoutBottomPadding: false
         )
         .sectionContainerStyle(.transparent)
@@ -75,8 +75,8 @@ struct PaymentDetailsView: View {
         list.append(("settlementAdjustment", AnyView(settlementAdjustmentView)))
         list.append(("total", AnyView(total)))
         list.append(("paymentDue", AnyView(paymentDue)))
-        if let paymentDetails = data.paymentChargeData {
-            list.append(("bankDetails", AnyView(bankDetails(data: paymentDetails))))
+        if let payinMethod = data.payinMethod {
+            list.append(("bankDetails", AnyView(bankDetails(data: payinMethod))))
         }
         return list
     }
@@ -152,7 +152,7 @@ struct PaymentDetailsView: View {
     var paymentStatusView: some View {
         if data.status != .upcoming {
             hSection {
-                PaymentStatusView(status: data.status, chargeMethod: data.paymentChargeData?.chargeMethod ?? .unknown) {
+                PaymentStatusView(status: data.status, provider: data.payinMethod?.provider ?? .unknown) {
                     action in
                     switch action {
                     case .viewAddedToPayment:
@@ -166,7 +166,7 @@ struct PaymentDetailsView: View {
         }
     }
 
-    private func bankDetails(data: PaymentChargeData) -> some View {
+    private func bankDetails(data: PaymentMethodData) -> some View {
         PaymentMethodView(data: data, withDate: false)
             .hWithoutHorizontalPadding([.section, .row, .divider])
     }
@@ -252,13 +252,12 @@ struct PaymentDetailsView: View {
                 type: .referral
             ),
         amountPerReferral: .sek(10),
-        paymentChargeData: .init(
-            paymentMethod: nil,
-            bankName: nil,
-            account: nil,
-            mandate: nil,
-            dueDate: 20,
-            chargeMethod: .kivra
+        payinMethod: .init(
+            id: "payin-1",
+            provider: .invoice,
+            status: .active,
+            isDefault: true,
+            details: .invoice(delivery: .kivra, email: nil)
         ),
         addedToThePayment: nil
     )

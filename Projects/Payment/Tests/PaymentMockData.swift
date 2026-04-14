@@ -22,7 +22,7 @@ struct MockPaymentData {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(20),
-                    paymentChargeData: nil,
+                    payinMethod: nil,
                     addedToThePayment: nil
                 ),
                 ongoing: [
@@ -39,30 +39,27 @@ struct MockPaymentData {
                         contracts: [],
                         referralDiscount: nil,
                         amountPerReferral: .sek(25),
-                        paymentChargeData: nil,
+                        payinMethod: nil,
                         addedToThePayment: nil
                     )
                 ]
             )
         },
         fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
-            .init(status: .active, paymentChargeData: nil)
+            .init(status: .active, chargingDay: nil, payinMethods: [], payoutMethods: [], availableMethods: [])
         },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()
         },
-        fetchConnectPaymentUrl: @escaping FetchConnectPaymentUrl = {
-            if let url = URL(string: "") {
-                return url
-            }
-            throw PaymentError.missingDataError(message: L10n.General.errorBody)
+        fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod = {
+            .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
         }
     ) -> MockPaymentService {
         let service = MockPaymentService(
             fetchPaymentData: fetchPaymentData,
             fetchPaymentStatusData: fetchPaymentStatusData,
             fetchPaymentHistoryData: fetchPaymentHistoryData,
-            fetchConnectPaymentUrl: fetchConnectPaymentUrl
+            fetchSetupPaymentMethod: fetchSetupPaymentMethod
         )
         Dependencies.shared.add(module: Module { () -> hPaymentClient in service })
         return service
@@ -72,7 +69,7 @@ struct MockPaymentData {
 typealias FetchPaymentData = () async throws -> (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData])
 typealias FetchPaymentStatusData = () async throws -> PaymentStatusData
 typealias FetchPaymentHistoryData = () async throws -> [PaymentHistoryListData]
-typealias FetchConnectPaymentUrl = () async throws -> URL
+typealias FetchSetupPaymentMethod = () async throws -> PaymentSetupResult
 
 class MockPaymentService: hPaymentClient {
     var events = [Event]()
@@ -80,25 +77,25 @@ class MockPaymentService: hPaymentClient {
     var fetchPaymentData: FetchPaymentData
     var fetchPaymentStatusData: FetchPaymentStatusData
     var fetchPaymentHistoryData: FetchPaymentHistoryData
-    var fetchConnectPaymentUrl: FetchConnectPaymentUrl
+    var fetchSetupPaymentMethod: FetchSetupPaymentMethod
 
     enum Event {
         case getPaymentData
         case getPaymentStatusData
         case getPaymentHistoryData
-        case getConnectPaymentUrl
+        case setupPaymentMethod
     }
 
     init(
         fetchPaymentData: @escaping FetchPaymentData,
         fetchPaymentStatusData: @escaping FetchPaymentStatusData,
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData,
-        fetchConnectPaymentUrl: @escaping FetchConnectPaymentUrl
+        fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod
     ) {
         self.fetchPaymentData = fetchPaymentData
         self.fetchPaymentStatusData = fetchPaymentStatusData
         self.fetchPaymentHistoryData = fetchPaymentHistoryData
-        self.fetchConnectPaymentUrl = fetchConnectPaymentUrl
+        self.fetchSetupPaymentMethod = fetchSetupPaymentMethod
     }
 
     func getPaymentData() async throws -> (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData]) {
@@ -119,9 +116,9 @@ class MockPaymentService: hPaymentClient {
         return data
     }
 
-    func getConnectPaymentUrl() async throws -> URL {
-        events.append(.getConnectPaymentUrl)
-        let data = try await fetchConnectPaymentUrl()
+    func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
+        events.append(.setupPaymentMethod)
+        let data = try await fetchSetupPaymentMethod()
         return data
     }
 }

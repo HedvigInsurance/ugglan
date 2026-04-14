@@ -219,7 +219,13 @@ private class DirectDebitWebview: UIView {
         vc.view = webView
         Task {
             do {
-                let url = try await paymentService.getConnectPaymentUrl()
+                let result = try await paymentService.setupPaymentMethod(
+                    .trustly(setAsDefaultPayin: true, setAsDefaultPayout: true)
+                )
+                guard let urlString = result.url, let url = URL(string: urlString) else {
+                    self.showErrorAlert = true
+                    return
+                }
                 let request = URLRequest(
                     url: url,
                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,

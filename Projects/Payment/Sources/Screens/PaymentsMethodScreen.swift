@@ -4,17 +4,18 @@ import hCore
 import hCoreUI
 
 struct PaymentMethodScreen: View {
-    let data: PaymentChargeData
+    let data: PaymentMethodData
+    var chargingDay: Int?
 
     var body: some View {
         hForm {
-            PaymentMethodView(data: data, withDate: true)
+            PaymentMethodView(data: data, chargingDay: chargingDay, withDate: true)
                 .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
-            if data.chargeMethod == .trustly {
+            if data.provider == .trustly {
                 ConnectPaymentBottomView(alwaysShowButton: true)
-            } else if data.chargeMethod == .kivra {
+            } else if data.provider == .invoice {
                 hSection {
                     InfoCard(
                         text:
@@ -41,16 +42,15 @@ struct PaymentMethodScreen: View {
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
     return PaymentMethodScreen(
         data: .init(
-            paymentMethod: "method",
-            bankName: "bank name",
-            account: "account",
-            mandate: nil,
-            dueDate: 26,
-            chargeMethod: .trustly
-        )
+            id: "payin-1",
+            provider: .trustly,
+            status: .active,
+            isDefault: true,
+            details: .bankAccount(account: "****1234", bank: "Nordea")
+        ),
+        chargingDay: 26
     )
 }
 
@@ -64,30 +64,34 @@ struct PaymentMethodView: View {
         let info: String?
     }
 
-    init(data: PaymentChargeData, withDate: Bool) {
+    init(data: PaymentMethodData, chargingDay: Int? = nil, withDate: Bool) {
         self.items = {
             var rows: [PaymentInfoItem] = []
-            if let paymentMethod = data.paymentMethod {
-                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethod, info: nil))
+            if let paymentMethodLabel = data.provider.paymentMethodLabel {
+                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethodLabel, info: nil))
             }
-            if withDate, let dueDate = data.dueDate?.ordinalDate() {
+            if withDate, let dueDate = chargingDay?.ordinalDate() {
                 rows.append(
                     .init(
                         title: L10n.paymentsPaymentDue,
                         value: L10n.paymentsDueDescription(dueDate),
-                        info: data.chargeMethod.infoText(for: dueDate)
+                        info: data.provider.infoText(for: dueDate)
                     )
                 )
             }
 
-            if let account = data.account {
+            switch data.details {
+            case .bankAccount(let account, let bank):
                 rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
-            }
-            if let bankName = data.bankName {
-                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bankName, info: nil))
-            }
-            if let mandate = data.mandate {
-                rows.append(PaymentInfoItem(title: L10n.paymentsMandate, value: mandate, info: nil))
+                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bank, info: nil))
+            case .swish(let phoneNumber):
+                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: phoneNumber, info: nil))
+            case .invoice(_, let email):
+                if let email {
+                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: email, info: nil))
+                }
+            case nil:
+                break
             }
             return rows
         }()

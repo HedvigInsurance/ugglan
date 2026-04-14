@@ -17,7 +17,7 @@ struct ConnectPaymentBottomView: View {
             if let statusData, !statusData.status.showConnectPayment {
                 hSection {
                     VStack(spacing: .padding16) {
-                        if alwaysShowButton || statusData.paymentChargeData == nil {
+                        if alwaysShowButton || statusData.defaultPayinMethod == nil {
                             if statusData.status == .pending {
                                 InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                             }
