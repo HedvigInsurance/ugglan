@@ -173,9 +173,9 @@ public struct PaymentsView: View {
 
     private func connectedPayoutMethod(data: PaymentStatusData) -> some View {
         hRow {
-            hCoreUIAssets.payments.view
+            hCoreUIAssets.paymentOutlined.view
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Payout details")
+            hText(L10n.payoutPageHeading)
             Spacer()
         }
         .withChevronAccessory

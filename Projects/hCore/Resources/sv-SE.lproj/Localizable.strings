@@ -85,6 +85,9 @@
 "BANKID_ON_ANOTHER_DEVICE" = "BankID på en annan enhet";
 "BANKID_USER_CANCEL_MESSAGE" = "";
 "BANKID_USER_CANCEL_TITLE" = "BankID avbröts";
+"BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Utbetalning till ett svenskt bankkonto";
+"BANK_PAYOUT_METHOD_CARD_TITLE" = "Bankkonto";
+"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "Ingen rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 försäkring";
@@ -144,6 +147,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
+"CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra konto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
@@ -589,6 +593,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_VALID_UNTIL" = "Giltig till %1$@";
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
+"PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
+"PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
 "PERIL_DETAIL.MORE_INFO" = "Läs mer";
 "PER_MONTH_SHORT" = "/mån";

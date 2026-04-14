@@ -12,7 +12,7 @@ struct PayoutSelectedMethodScreen: View {
                 hSection {
                     hFloatingField(
                         value: vm.paymentStatusData.payoutAccountDisplayValue,
-                        placeholder: "Konto",
+                        placeholder: "",
                         error: nil,
                         onTap: {}
                     )
@@ -29,7 +29,7 @@ struct PayoutSelectedMethodScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: "Ändra konto"),
+                            content: .init(title: L10n.changePayoutMethodButtonLabel),
                             {
                                 router.push(
                                     PayoutRouterAction.setupPayoutMethod
