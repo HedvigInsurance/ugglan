@@ -88,11 +88,6 @@ struct PaymentMethodScreen: View {
                 )
             )
         }
-    //    return PaymentsNavigation(paymentsNavigationVm: .init())
-    //        .environmentObject(NavigationRouter())
-    //        .task {
-
-    //        }
 }
 
 struct PaymentMethodView: View {
