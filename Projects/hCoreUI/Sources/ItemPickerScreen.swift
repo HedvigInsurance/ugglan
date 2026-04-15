@@ -408,16 +408,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-extension EnvironmentValues {
-    @Entry public var hItemPickerBottomAttachedView: AnyView? = nil
-}
-
-extension View {
-    public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
-    }
-}
-
 public enum ItemPickerAttribute {
     case singleSelect
     case disableIfNoneSelected
@@ -426,7 +416,14 @@ public enum ItemPickerAttribute {
 }
 
 extension EnvironmentValues {
+    @Entry public var hItemPickerBottomAttachedView: AnyView? = nil
     @Entry public var hItemPickerAttributes: [ItemPickerAttribute] = []
+}
+
+extension View {
+    public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
+    }
 }
 
 extension View {
@@ -455,16 +452,13 @@ enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
 
 extension EnvironmentValues {
     @Entry public var hFieldLeftAttachedView: Bool = false
+    @Entry public var hUseCheckbox: Bool = false
 }
 
 extension View {
     public var hFieldLeftAttachedView: some View {
         environment(\.hFieldLeftAttachedView, true)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hUseCheckbox: Bool = false
 }
 
 extension View {

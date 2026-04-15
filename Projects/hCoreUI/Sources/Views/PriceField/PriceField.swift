@@ -150,23 +150,20 @@ public enum StrikeThroughPriceType: Sendable {
     case crossNewPrice
 }
 
-extension EnvironmentValues {
-    @Entry public var hWithStrikeThroughPrice: StrikeThroughPriceType = .none
-}
-
-extension View {
-    public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
-        environment(\.hWithStrikeThroughPrice, setTo)
-    }
-}
-
 public enum PriceFormatting: Sendable {
     case perMonth
     case month
 }
 
 extension EnvironmentValues {
+    @Entry public var hWithStrikeThroughPrice: StrikeThroughPriceType = .none
     @Entry public var hPriceFormatting: PriceFormatting = .perMonth
+}
+
+extension View {
+    public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
+        environment(\.hWithStrikeThroughPrice, setTo)
+    }
 }
 
 extension View {

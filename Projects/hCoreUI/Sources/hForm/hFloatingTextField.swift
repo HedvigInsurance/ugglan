@@ -300,16 +300,6 @@ public enum BackgroundOption: Sendable {
     case locked
 }
 
-extension EnvironmentValues {
-    @Entry public var hBackgroundOption: [BackgroundOption] = []
-}
-
-extension View {
-    public func hBackgroundOption(option: [BackgroundOption]) -> some View {
-        environment(\.hBackgroundOption, option)
-    }
-}
-
 public enum hFieldSize: Hashable, Sendable {
     case small
     case large
@@ -334,17 +324,21 @@ public enum hFieldSize: Hashable, Sendable {
 }
 
 extension EnvironmentValues {
+    @Entry public var hBackgroundOption: [BackgroundOption] = []
     @Entry public var hFieldSize: hFieldSize = .medium
+    @Entry public var hFieldRightAttachedView: AnyView? = nil
+}
+
+extension View {
+    public func hBackgroundOption(option: [BackgroundOption]) -> some View {
+        environment(\.hBackgroundOption, option)
+    }
 }
 
 extension View {
     public func hFieldSize(_ size: hFieldSize) -> some View {
         environment(\.hFieldSize, size)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hFieldRightAttachedView: AnyView? = nil
 }
 
 extension View {

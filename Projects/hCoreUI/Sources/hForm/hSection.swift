@@ -135,6 +135,7 @@ public enum hSectionContainerStyle {
 
 extension EnvironmentValues {
     @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
+    @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
 }
 
 extension View {
@@ -142,10 +143,6 @@ extension View {
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
         environment(\.hSectionContainerStyle, style)
     }
-}
-
-extension EnvironmentValues {
-    @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
 }
 
 extension View {
@@ -193,20 +190,6 @@ struct hSectionContainerStyleModifier: ViewModifier {
     }
 }
 
-extension EnvironmentValues {
-    @Entry public var hWithoutDivider: Bool = false
-}
-
-extension View {
-    public var hWithoutDivider: some View {
-        environment(\.hWithoutDivider, true)
-    }
-
-    public func shouldShowDivider(_ show: Bool) -> some View {
-        environment(\.hWithoutDivider, show)
-    }
-}
-
 public struct HorizontalPadding: OptionSet, Sendable {
     public init(rawValue: UInt) {
         self.rawValue = rawValue
@@ -221,17 +204,25 @@ public struct HorizontalPadding: OptionSet, Sendable {
 }
 
 extension EnvironmentValues {
+    @Entry public var hWithoutDivider: Bool = false
     @Entry public var hWithoutHorizontalPadding: HorizontalPadding = .none
+    @Entry public var hSectionHeaderWithDivider: Bool = false
+}
+
+extension View {
+    public var hWithoutDivider: some View {
+        environment(\.hWithoutDivider, true)
+    }
+
+    public func shouldShowDivider(_ show: Bool) -> some View {
+        environment(\.hWithoutDivider, show)
+    }
 }
 
 extension View {
     public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
         environment(\.hWithoutHorizontalPadding, attributes)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hSectionHeaderWithDivider: Bool = false
 }
 
 extension View {

@@ -146,8 +146,15 @@ struct StatusCardBackgroundModifier: ViewModifier {
     .background(Color.gray)
 }
 
+public enum CardBackgroundColor: Sendable {
+    case `default`
+    case light
+}
+
 extension EnvironmentValues {
     @Entry public var hCardWithoutSpacing: Bool = false
+    @Entry public var hCardWithDivider: Bool = false
+    @Entry public var hCardBackgroundColor: CardBackgroundColor = CardBackgroundColor.default
 }
 
 extension View {
@@ -156,23 +163,10 @@ extension View {
     }
 }
 
-extension EnvironmentValues {
-    @Entry public var hCardWithDivider: Bool = false
-}
-
 extension View {
     public var hCardWithDivider: some View {
         environment(\.hCardWithDivider, true)
     }
-}
-
-public enum CardBackgroundColor: Sendable {
-    case `default`
-    case light
-}
-
-extension EnvironmentValues {
-    @Entry public var hCardBackgroundColor: CardBackgroundColor = CardBackgroundColor.default
 }
 
 extension View {

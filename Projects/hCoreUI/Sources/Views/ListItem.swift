@@ -147,16 +147,13 @@ public enum ListRowStyle: Sendable {
 
 extension EnvironmentValues {
     @Entry public var hListStyle: ListStyle = .chevron
+    @Entry public var hListRowStyle: ListRowStyle = .standard
 }
 
 extension View {
     public func hListStyle(_ style: ListStyle) -> some View {
         environment(\.hListStyle, style)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hListRowStyle: ListRowStyle = .standard
 }
 
 extension View {

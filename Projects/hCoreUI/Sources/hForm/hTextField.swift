@@ -33,16 +33,13 @@ extension Set where Element == hTextFieldOptions {
 
 extension EnvironmentValues {
     @Entry public var hTextFieldOptions: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
+    @Entry public var hTextFieldError: String? = nil
 }
 
 extension View {
     public func hTextFieldOptions(_ options: Set<hTextFieldOptions>) -> some View {
         environment(\.hTextFieldOptions, options)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hTextFieldError: String? = nil
 }
 
 extension View {

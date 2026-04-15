@@ -163,16 +163,6 @@ public struct InfoCard: View {
     .preferredColorScheme(.dark)
 }
 
-extension EnvironmentValues {
-    @Entry public var hInfoCardButtonConfig: [InfoCardButtonConfig]? = nil
-}
-
-extension InfoCard {
-    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
-        environment(\.hInfoCardButtonConfig, configs)
-    }
-}
-
 public struct InfoCardButtonConfig: Sendable {
     let buttonTitle: String
     let buttonAction: @MainActor @Sendable () -> Void
@@ -183,8 +173,21 @@ public struct InfoCardButtonConfig: Sendable {
     }
 }
 
+public enum InfoCardLayoutStyle: Sendable {
+    case defaultStyle
+    case bannerStyle
+}
+
 extension EnvironmentValues {
+    @Entry public var hInfoCardButtonConfig: [InfoCardButtonConfig]? = nil
     @Entry public var hInfoCardCustomView: AnyView? = nil
+    @Entry public var hInfoCardLayoutStyle: InfoCardLayoutStyle = .defaultStyle
+}
+
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+        environment(\.hInfoCardButtonConfig, configs)
+    }
 }
 
 extension View {
@@ -193,17 +196,8 @@ extension View {
     }
 }
 
-extension EnvironmentValues {
-    @Entry public var hInfoCardLayoutStyle: InfoCardLayoutStyle = .defaultStyle
-}
-
 extension View {
     public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
         environment(\.hInfoCardLayoutStyle, style)
     }
-}
-
-public enum InfoCardLayoutStyle: Sendable {
-    case defaultStyle
-    case bannerStyle
 }

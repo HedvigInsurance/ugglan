@@ -89,16 +89,13 @@ public struct SuccessScreen: View {
 
 extension EnvironmentValues {
     @Entry public var hSuccessBottomAttachedView: AnyView? = nil
+    @Entry public var hCustomSuccessView: AnyView? = nil
 }
 
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hCustomSuccessView: AnyView? = nil
 }
 
 extension View {

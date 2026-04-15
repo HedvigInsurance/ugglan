@@ -305,46 +305,7 @@ private class hUpdatedFormViewModel: ObservableObject {
     }
 }
 
-// MARK: hScrollBounce
-
-extension EnvironmentValues {
-    @Entry public var hEnableScrollBounce: Bool? = nil
-}
-
-extension View {
-    /// Used to determine if we should bounce effect on the scroll view
-    /// nil: default behaviour depending on the content position and content size
-    /// true: always on
-    /// false : always off
-    public func hSetScrollBounce(to value: Bool?) -> some View {
-        environment(\.hEnableScrollBounce, value)
-    }
-}
-
-// MARK: hAlwaysVisibleBottomAttachedView
-
-extension EnvironmentValues {
-    @Entry public var hFormAlwaysVisibleBottomAttachedView: AnyView? = nil
-}
-
-extension View {
-    /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
-    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
-    }
-}
-
-// MARK: hFormContentPosition
-
-extension EnvironmentValues {
-    @Entry public var hFormContentPosition: ContentPosition = .top
-}
-
-extension View {
-    public func hFormContentPosition(_ position: ContentPosition) -> some View {
-        environment(\.hFormContentPosition, position)
-    }
-}
+// MARK: hForm Environment Values
 
 public enum ContentPosition {
     case top
@@ -353,37 +314,11 @@ public enum ContentPosition {
     case compact
 }
 
-// MARK: hFormBottomAttachedView
-
-extension EnvironmentValues {
-    @Entry public var hFormBottomAttachedView: AnyView? = nil
-}
-
-extension View {
-    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hFormBottomAttachedView, AnyView(content()))
-    }
-}
-
-// MARK: hFormBottomBackgroundStyle
-
 public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
     case aiPoweredGradient
 }
-
-extension EnvironmentValues {
-    @Entry public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle = .default
-}
-
-extension View {
-    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
-        environment(\.hFormBottomBackgroundStyle, style)
-    }
-}
-
-// MARK: hFormTitle
 
 public enum HFormTitleSpacingType {
     case standard
@@ -431,19 +366,54 @@ public struct hTitle {
 }
 
 extension EnvironmentValues {
+    @Entry public var hEnableScrollBounce: Bool? = nil
+    @Entry public var hFormAlwaysVisibleBottomAttachedView: AnyView? = nil
+    @Entry public var hFormContentPosition: ContentPosition = .top
+    @Entry public var hFormBottomAttachedView: AnyView? = nil
+    @Entry public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle = .default
     @Entry public var hFormTitle: (title: hTitle, subTitle: hTitle?)? = nil
+    @Entry public var hFormIgnoreBottomPadding: Bool = false
+}
+
+extension View {
+    /// Used to determine if we should bounce effect on the scroll view
+    /// nil: default behaviour depending on the content position and content size
+    /// true: always on
+    /// false : always off
+    public func hSetScrollBounce(to value: Bool?) -> some View {
+        environment(\.hEnableScrollBounce, value)
+    }
+}
+
+extension View {
+    /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
+    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+        environment(\.hFormContentPosition, position)
+    }
+}
+
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hFormBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
+        environment(\.hFormBottomBackgroundStyle, style)
+    }
 }
 
 extension View {
     public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
         environment(\.hFormTitle, (title, subTitle))
     }
-}
-
-// MARK: hFormIgnoreBottomPadding
-
-extension EnvironmentValues {
-    @Entry public var hFormIgnoreBottomPadding: Bool = false
 }
 
 extension View {

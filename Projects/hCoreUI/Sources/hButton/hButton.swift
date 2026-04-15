@@ -142,22 +142,20 @@ extension View {
 
 extension EnvironmentValues {
     @Entry var hButtonConfigurationType: hButtonConfigurationType = .primary
-}
-
-// MARK: Environment Keys and Extensions
-
-extension EnvironmentValues {
     @Entry public var hUseLightMode: Bool = false
+    @Entry public var hButtonWithBorder: Bool = false
+    @Entry var hButtonIsLoading: Bool = false
+    @Entry var hButtonDontShowLoadingWhenDisabled: Bool = false
+    @Entry var hButtonTakeFullWidth: Bool = false
+    @Entry public var hUseButtonTextColor: hButtonTextColor = .default
+    @Entry var hWithTransition: AnyTransition? = nil
+    @Entry public var hCustomButtonView: AnyView? = nil
 }
 
 extension View {
     public var hUseLightMode: some View {
         environment(\.hUseLightMode, true)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hButtonWithBorder: Bool = false
 }
 
 extension View {
@@ -172,22 +170,10 @@ extension View {
     }
 }
 
-// MARK: hButtonIsLoading
-
-extension EnvironmentValues {
-    @Entry var hButtonIsLoading: Bool = false
-}
-
 extension View {
     public func hButtonIsLoading(_ isLoading: Bool) -> some View {
         environment(\.hButtonIsLoading, isLoading)
     }
-}
-
-// MARK: EnvironmentHButtonDontShowLoadingWhenDisabled
-
-extension EnvironmentValues {
-    @Entry var hButtonDontShowLoadingWhenDisabled: Bool = false
 }
 
 extension View {
@@ -196,22 +182,10 @@ extension View {
     }
 }
 
-extension EnvironmentValues {
-    @Entry var hButtonTakeFullWidth: Bool = false
-}
-
 extension View {
     public func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
         environment(\.hButtonTakeFullWidth, takeFullWidth)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hUseButtonTextColor: hButtonTextColor = .default
-}
-
-extension EnvironmentValues {
-    @Entry var hWithTransition: AnyTransition? = nil
 }
 
 extension View {
@@ -224,10 +198,6 @@ extension View {
     public func hUseButtonTextColor(_ color: hButtonTextColor) -> some View {
         environment(\.hUseButtonTextColor, color)
     }
-}
-
-extension EnvironmentValues {
-    @Entry public var hCustomButtonView: AnyView? = nil
 }
 
 extension View {
