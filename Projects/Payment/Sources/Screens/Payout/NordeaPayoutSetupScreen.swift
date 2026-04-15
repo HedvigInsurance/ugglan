@@ -24,7 +24,7 @@ struct NordeaPayoutSetupScreen: View {
         }
         .disabled(vm.isLoading)
         .hFormContentPosition(.compact)
-        .navigationTitle("Bankkonto")
+        .navigationTitle(L10n.bankPayoutMethodCardTitle)
         .embededInNavigation(router: router, tracking: self)
     }
 
@@ -35,7 +35,7 @@ struct NordeaPayoutSetupScreen: View {
                 value: $vm.clearingNumber,
                 equals: $vm.focusedField,
                 focusValue: .clearing,
-                placeholder: "Clearing",
+                placeholder: L10n.bankPayoutMethodFormClearingFieldLabel,
                 error: $vm.clearingError
             )
         }
@@ -48,7 +48,7 @@ struct NordeaPayoutSetupScreen: View {
                 value: $vm.accountNumber,
                 equals: $vm.focusedField,
                 focusValue: .account,
-                placeholder: "Konto",
+                placeholder: L10n.paymentsAccount,
                 error: $vm.accountError
             )
         }
@@ -153,10 +153,10 @@ class NordeaPayoutSetupViewModel: ObservableObject {
         var newAccountError: String?
 
         if !clearingMasking.isValid(text: clearingNumber) {
-            newClearingError = "Clearing number must be 4 or 5 digits"
+            newClearingError = L10n.claimChatFormTextMinChar(4)
         }
         if !accountMasking.isValid(text: accountMasking.unmaskedValue(text: accountNumber)) {
-            newAccountError = "Account number must be at least 6 digits"
+            newAccountError = L10n.claimChatFormTextMinChar(6)
         }
 
         guard newClearingError == nil && newAccountError == nil else {
