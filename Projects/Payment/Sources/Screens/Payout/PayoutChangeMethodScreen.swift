@@ -48,7 +48,7 @@ extension PaymentProvider {
     var payoutTitle: String {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardTitle
-        case .swish: return ""
+        case .swish: return "Swish"
         case .trustly: return "Trustly"
         case .invoice: return L10n.paymentsInvoice
         case .unknown: return ""
