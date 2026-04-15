@@ -300,25 +300,14 @@ public enum BackgroundOption: Sendable {
     case locked
 }
 
-private struct EnvironmentHBackgroundOption: EnvironmentKey {
-    static let defaultValue: [BackgroundOption] = []
-}
-
 extension EnvironmentValues {
-    public var hBackgroundOption: [BackgroundOption] {
-        get { self[EnvironmentHBackgroundOption.self] }
-        set { self[EnvironmentHBackgroundOption.self] = newValue }
-    }
+    @Entry public var hBackgroundOption: [BackgroundOption] = []
 }
 
 extension View {
     public func hBackgroundOption(option: [BackgroundOption]) -> some View {
         environment(\.hBackgroundOption, option)
     }
-}
-
-private struct EnvironmentHFieldSize: EnvironmentKey {
-    static let defaultValue: hFieldSize = .medium
 }
 
 public enum hFieldSize: Hashable, Sendable {
@@ -345,10 +334,7 @@ public enum hFieldSize: Hashable, Sendable {
 }
 
 extension EnvironmentValues {
-    public var hFieldSize: hFieldSize {
-        get { self[EnvironmentHFieldSize.self] }
-        set { self[EnvironmentHFieldSize.self] = newValue }
-    }
+    @Entry public var hFieldSize: hFieldSize = .medium
 }
 
 extension View {
@@ -357,15 +343,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHFieldAttachedView: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hFieldRightAttachedView: AnyView? {
-        get { self[EnvironmentHFieldAttachedView.self] }
-        set { self[EnvironmentHFieldAttachedView.self] = newValue }
-    }
+    @Entry public var hFieldRightAttachedView: AnyView? = nil
 }
 
 extension View {
@@ -449,15 +428,8 @@ extension hFieldSize {
     }
 }
 
-private struct EnvironmentHAnimateField: EnvironmentKey {
-    static let defaultValue = true
-}
-
 extension EnvironmentValues {
-    public var hAnimateField: Bool {
-        get { self[EnvironmentHAnimateField.self] }
-        set { self[EnvironmentHAnimateField.self] = newValue }
-    }
+    @Entry public var hAnimateField: Bool = true
 }
 
 extension View {

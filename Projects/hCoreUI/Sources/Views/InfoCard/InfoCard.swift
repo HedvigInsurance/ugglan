@@ -163,15 +163,8 @@ public struct InfoCard: View {
     .preferredColorScheme(.dark)
 }
 
-private struct EnvironmentCardButtonsConfig: EnvironmentKey {
-    static let defaultValue: [InfoCardButtonConfig]? = nil
-}
-
 extension EnvironmentValues {
-    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
-        get { self[EnvironmentCardButtonsConfig.self] }
-        set { self[EnvironmentCardButtonsConfig.self] = newValue }
-    }
+    @Entry public var hInfoCardButtonConfig: [InfoCardButtonConfig]? = nil
 }
 
 extension InfoCard {
@@ -190,16 +183,8 @@ public struct InfoCardButtonConfig: Sendable {
     }
 }
 
-@MainActor
-private struct EnvironmentInfoCardCustomView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hInfoCardCustomView: AnyView? {
-        get { self[EnvironmentInfoCardCustomView.self] }
-        set { self[EnvironmentInfoCardCustomView.self] = newValue }
-    }
+    @Entry public var hInfoCardCustomView: AnyView? = nil
 }
 
 extension View {
@@ -208,15 +193,8 @@ extension View {
     }
 }
 
-private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
-}
-
 extension EnvironmentValues {
-    public var hInfoCardLayoutStyle: InfoCardLayoutStyle {
-        get { self[EnvironmentInfoCardLayoutStyle.self] }
-        set { self[EnvironmentInfoCardLayoutStyle.self] = newValue }
-    }
+    @Entry public var hInfoCardLayoutStyle: InfoCardLayoutStyle = .defaultStyle
 }
 
 extension View {

@@ -5,15 +5,10 @@ struct hRowDividerSettings {
     let insets: EdgeInsets
 }
 
-private struct EnvironmentHRowDividerSettings: EnvironmentKey {
-    static let defaultValue = hRowDividerSettings(insets: .init(top: 0, leading: 16, bottom: 0, trailing: 16))
-}
-
 extension EnvironmentValues {
-    var hRowDividerSettings: hRowDividerSettings {
-        get { self[EnvironmentHRowDividerSettings.self] }
-        set { self[EnvironmentHRowDividerSettings.self] = newValue }
-    }
+    @Entry var hRowDividerSettings: hRowDividerSettings = .init(
+        insets: .init(top: 0, leading: 16, bottom: 0, trailing: 16)
+    )
 }
 
 public struct hRowDivider: View {

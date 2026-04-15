@@ -1,15 +1,8 @@
 import Foundation
 import SwiftUI
 
-private struct EnvironmentHasContentBelow: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    var hasContentBelow: Bool {
-        get { self[EnvironmentHasContentBelow.self] }
-        set { self[EnvironmentHasContentBelow.self] = newValue }
-    }
+    @Entry var hasContentBelow: Bool = false
 }
 
 struct RowButtonStyle: ButtonStyle {
@@ -171,15 +164,8 @@ extension hRow {
     }
 }
 
-private struct EnvironmentHRowContentAlignment: EnvironmentKey {
-    static let defaultValue: VerticalAlignment = .top
-}
-
 extension EnvironmentValues {
-    var hRowContentAlignment: VerticalAlignment {
-        get { self[EnvironmentHRowContentAlignment.self] }
-        set { self[EnvironmentHRowContentAlignment.self] = newValue }
-    }
+    @Entry var hRowContentAlignment: VerticalAlignment = .top
 }
 
 extension View {

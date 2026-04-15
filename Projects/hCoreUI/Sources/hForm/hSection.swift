@@ -133,16 +133,8 @@ public enum hSectionContainerStyle {
     case negative
 }
 
-@MainActor
-private struct EnvironmentHSectionContainerStyle: @preconcurrency EnvironmentKey {
-    static let defaultValue = hSectionContainerStyle.opaque
-}
-
 extension EnvironmentValues {
-    var hSectionContainerStyle: hSectionContainerStyle {
-        get { self[EnvironmentHSectionContainerStyle.self] }
-        set { self[EnvironmentHSectionContainerStyle.self] = newValue }
-    }
+    @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
 }
 
 extension View {
@@ -152,16 +144,8 @@ extension View {
     }
 }
 
-@MainActor
-private struct EnvironmentHSectionContainerMaskerCorners: @preconcurrency EnvironmentKey {
-    static let defaultValue = UIRectCorner.allCorners
-}
-
 extension EnvironmentValues {
-    var hSectionContainerCornerMaskedCorners: UIRectCorner {
-        get { self[EnvironmentHSectionContainerMaskerCorners.self] }
-        set { self[EnvironmentHSectionContainerMaskerCorners.self] = newValue }
-    }
+    @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
 }
 
 extension View {
@@ -209,15 +193,8 @@ struct hSectionContainerStyleModifier: ViewModifier {
     }
 }
 
-private struct EnvironmentHWithoutDivider: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    public var hWithoutDivider: Bool {
-        get { self[EnvironmentHWithoutDivider.self] }
-        set { self[EnvironmentHWithoutDivider.self] = newValue }
-    }
+    @Entry public var hWithoutDivider: Bool = false
 }
 
 extension View {
@@ -243,15 +220,8 @@ public struct HorizontalPadding: OptionSet, Sendable {
     public static let all: HorizontalPadding = [.section, .row, .divider]
 }
 
-private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue: HorizontalPadding = .none
-}
-
 extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: HorizontalPadding {
-        get { self[EnvironmentHWithoutHorizontalPadding.self] }
-        set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
-    }
+    @Entry public var hWithoutHorizontalPadding: HorizontalPadding = .none
 }
 
 extension View {
@@ -260,15 +230,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHSectionHeaderWithDivider: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hSectionHeaderWithDivider: Bool {
-        get { self[EnvironmentHSectionHeaderWithDivider.self] }
-        set { self[EnvironmentHSectionHeaderWithDivider.self] = newValue }
-    }
+    @Entry public var hSectionHeaderWithDivider: Bool = false
 }
 
 extension View {

@@ -144,10 +144,6 @@ fileprivate struct PremiumText: View {
 }
 
 // MARK: Envionment Keys
-private struct EnvironmentHWithStrikeThroughPrice: EnvironmentKey {
-    static let defaultValue: StrikeThroughPriceType = .none
-}
-
 public enum StrikeThroughPriceType: Sendable {
     case none
     case crossOldPrice
@@ -155,10 +151,7 @@ public enum StrikeThroughPriceType: Sendable {
 }
 
 extension EnvironmentValues {
-    public var hWithStrikeThroughPrice: StrikeThroughPriceType {
-        get { self[EnvironmentHWithStrikeThroughPrice.self] }
-        set { self[EnvironmentHWithStrikeThroughPrice.self] = newValue }
-    }
+    @Entry public var hWithStrikeThroughPrice: StrikeThroughPriceType = .none
 }
 
 extension View {
@@ -167,20 +160,13 @@ extension View {
     }
 }
 
-private struct EnvironmentHPriceFormatting: EnvironmentKey {
-    static let defaultValue: PriceFormatting = .perMonth
-}
-
 public enum PriceFormatting: Sendable {
     case perMonth
     case month
 }
 
 extension EnvironmentValues {
-    public var hPriceFormatting: PriceFormatting {
-        get { self[EnvironmentHPriceFormatting.self] }
-        set { self[EnvironmentHPriceFormatting.self] = newValue }
-    }
+    @Entry public var hPriceFormatting: PriceFormatting = .perMonth
 }
 
 extension View {

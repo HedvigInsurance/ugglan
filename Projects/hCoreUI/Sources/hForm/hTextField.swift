@@ -31,16 +31,8 @@ extension Set where Element == hTextFieldOptions {
     }
 }
 
-@MainActor
-private struct EnvironmentHTextFieldOptions: @preconcurrency EnvironmentKey {
-    static let defaultValue: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
-}
-
 extension EnvironmentValues {
-    public var hTextFieldOptions: Set<hTextFieldOptions> {
-        get { self[EnvironmentHTextFieldOptions.self] }
-        set { self[EnvironmentHTextFieldOptions.self] = newValue }
-    }
+    @Entry public var hTextFieldOptions: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
 }
 
 extension View {
@@ -49,15 +41,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHTextFieldError: EnvironmentKey {
-    static let defaultValue: String? = nil
-}
-
 extension EnvironmentValues {
-    public var hTextFieldError: String? {
-        get { self[EnvironmentHTextFieldError.self] }
-        set { self[EnvironmentHTextFieldError.self] = newValue }
-    }
+    @Entry public var hTextFieldError: String? = nil
 }
 
 extension View {

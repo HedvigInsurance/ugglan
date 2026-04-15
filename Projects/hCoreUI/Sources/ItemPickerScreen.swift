@@ -408,15 +408,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-private struct EnvironmentHItemPickerBottomAttachedView: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hItemPickerBottomAttachedView: AnyView? {
-        get { self[EnvironmentHItemPickerBottomAttachedView.self] }
-        set { self[EnvironmentHItemPickerBottomAttachedView.self] = newValue }
-    }
+    @Entry public var hItemPickerBottomAttachedView: AnyView? = nil
 }
 
 extension View {
@@ -432,15 +425,8 @@ public enum ItemPickerAttribute {
     case alwaysAttachToBottom
 }
 
-private struct EnvironmentHItemPickerAttributes: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: [ItemPickerAttribute] = []
-}
-
 extension EnvironmentValues {
-    public var hItemPickerAttributes: [ItemPickerAttribute] {
-        get { self[EnvironmentHItemPickerAttributes.self] }
-        set { self[EnvironmentHItemPickerAttributes.self] = newValue }
-    }
+    @Entry public var hItemPickerAttributes: [ItemPickerAttribute] = []
 }
 
 extension View {
@@ -467,15 +453,8 @@ enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
     case none
 }
 
-private struct EnvironmentHLeftAlign: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hFieldLeftAttachedView: Bool {
-        get { self[EnvironmentHLeftAlign.self] }
-        set { self[EnvironmentHLeftAlign.self] = newValue }
-    }
+    @Entry public var hFieldLeftAttachedView: Bool = false
 }
 
 extension View {
@@ -484,15 +463,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHUseCheckbox: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hUseCheckbox: Bool {
-        get { self[EnvironmentHUseCheckbox.self] }
-        set { self[EnvironmentHUseCheckbox.self] = newValue }
-    }
+    @Entry public var hUseCheckbox: Bool = false
 }
 
 extension View {

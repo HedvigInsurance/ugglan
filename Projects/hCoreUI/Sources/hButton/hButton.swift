@@ -140,28 +140,14 @@ extension View {
     }
 }
 
-private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
-    static let defaultValue = hButtonConfigurationType.primary
-}
-
 extension EnvironmentValues {
-    var hButtonConfigurationType: hButtonConfigurationType {
-        get { self[EnvironmentHButtonConfigurationType.self] }
-        set { self[EnvironmentHButtonConfigurationType.self] = newValue }
-    }
+    @Entry var hButtonConfigurationType: hButtonConfigurationType = .primary
 }
 
 // MARK: Environment Keys and Extensions
 
-private struct EnvironmentHUseLightMode: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hUseLightMode: Bool {
-        get { self[EnvironmentHUseLightMode.self] }
-        set { self[EnvironmentHUseLightMode.self] = newValue }
-    }
+    @Entry public var hUseLightMode: Bool = false
 }
 
 extension View {
@@ -170,15 +156,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHButtonWithBorder: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hButtonWithBorder: Bool {
-        get { self[EnvironmentHButtonWithBorder.self] }
-        set { self[EnvironmentHButtonWithBorder.self] = newValue }
-    }
+    @Entry public var hButtonWithBorder: Bool = false
 }
 
 extension View {
@@ -195,15 +174,8 @@ extension View {
 
 // MARK: hButtonIsLoading
 
-private struct EnvironmentHButtonIsLoading: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    var hButtonIsLoading: Bool {
-        get { self[EnvironmentHButtonIsLoading.self] }
-        set { self[EnvironmentHButtonIsLoading.self] = newValue }
-    }
+    @Entry var hButtonIsLoading: Bool = false
 }
 
 extension View {
@@ -214,15 +186,8 @@ extension View {
 
 // MARK: EnvironmentHButtonDontShowLoadingWhenDisabled
 
-private struct EnvironmentHButtonDontShowLoadingWhenDisabled: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    var hButtonDontShowLoadingWhenDisabled: Bool {
-        get { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] }
-        set { self[EnvironmentHButtonDontShowLoadingWhenDisabled.self] = newValue }
-    }
+    @Entry var hButtonDontShowLoadingWhenDisabled: Bool = false
 }
 
 extension View {
@@ -231,15 +196,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHButtonTakeFullWidth: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    var hButtonTakeFullWidth: Bool {
-        get { self[EnvironmentHButtonTakeFullWidth.self] }
-        set { self[EnvironmentHButtonTakeFullWidth.self] = newValue }
-    }
+    @Entry var hButtonTakeFullWidth: Bool = false
 }
 
 extension View {
@@ -248,26 +206,12 @@ extension View {
     }
 }
 
-private struct EnvironmentHUseButtonTextColor: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: hButtonTextColor = .default
+extension EnvironmentValues {
+    @Entry public var hUseButtonTextColor: hButtonTextColor = .default
 }
 
 extension EnvironmentValues {
-    public var hUseButtonTextColor: hButtonTextColor {
-        get { self[EnvironmentHUseButtonTextColor.self] }
-        set { self[EnvironmentHUseButtonTextColor.self] = newValue }
-    }
-}
-
-private struct EnvironmentHWithTransition: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyTransition? = nil
-}
-
-extension EnvironmentValues {
-    var hWithTransition: AnyTransition? {
-        get { self[EnvironmentHWithTransition.self] }
-        set { self[EnvironmentHWithTransition.self] = newValue }
-    }
+    @Entry var hWithTransition: AnyTransition? = nil
 }
 
 extension View {
@@ -282,16 +226,8 @@ extension View {
     }
 }
 
-@MainActor
-private struct EnvironmentHCustomButtonView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hCustomButtonView: AnyView? {
-        get { self[EnvironmentHCustomButtonView.self] }
-        set { self[EnvironmentHCustomButtonView.self] = newValue }
-    }
+    @Entry public var hCustomButtonView: AnyView? = nil
 }
 
 extension View {

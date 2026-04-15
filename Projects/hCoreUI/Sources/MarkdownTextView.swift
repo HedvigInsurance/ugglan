@@ -95,16 +95,8 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
 }
 
-@MainActor
-private struct EnvironmentAccessibilityLabel: @preconcurrency EnvironmentKey {
-    static let defaultValue: String? = nil
-}
-
 extension EnvironmentValues {
-    public var hEnvironmentAccessibilityLabel: String? {
-        get { self[EnvironmentAccessibilityLabel.self] }
-        set { self[EnvironmentAccessibilityLabel.self] = newValue }
-    }
+    @Entry public var hEnvironmentAccessibilityLabel: String? = nil
 }
 
 extension View {

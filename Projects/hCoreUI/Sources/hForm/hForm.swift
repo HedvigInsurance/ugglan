@@ -307,15 +307,8 @@ private class hUpdatedFormViewModel: ObservableObject {
 
 // MARK: hScrollBounce
 
-private struct EnvironmentHScrollBounce: EnvironmentKey {
-    static let defaultValue: Bool? = nil
-}
-
 extension EnvironmentValues {
-    public var hEnableScrollBounce: Bool? {
-        get { self[EnvironmentHScrollBounce.self] }
-        set { self[EnvironmentHScrollBounce.self] = newValue }
-    }
+    @Entry public var hEnableScrollBounce: Bool? = nil
 }
 
 extension View {
@@ -330,17 +323,8 @@ extension View {
 
 // MARK: hAlwaysVisibleBottomAttachedView
 
-/// not added to the scroll view
-@MainActor
-private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hFormAlwaysVisibleBottomAttachedView: AnyView? {
-        get { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] }
-        set { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] = newValue }
-    }
+    @Entry public var hFormAlwaysVisibleBottomAttachedView: AnyView? = nil
 }
 
 extension View {
@@ -352,16 +336,8 @@ extension View {
 
 // MARK: hFormContentPosition
 
-@MainActor
-private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
-    static let defaultValue: ContentPosition = .top
-}
-
 extension EnvironmentValues {
-    public var hFormContentPosition: ContentPosition {
-        get { self[EnvironmentHFormContentPosition.self] }
-        set { self[EnvironmentHFormContentPosition.self] = newValue }
-    }
+    @Entry public var hFormContentPosition: ContentPosition = .top
 }
 
 extension View {
@@ -379,16 +355,8 @@ public enum ContentPosition {
 
 // MARK: hFormBottomAttachedView
 
-@MainActor
-private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hFormBottomAttachedView: AnyView? {
-        get { self[EnvironmentHFormBottomAttachedView.self] }
-        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
-    }
+    @Entry public var hFormBottomAttachedView: AnyView? = nil
 }
 
 extension View {
@@ -405,16 +373,8 @@ public enum hFormBottomBackgroundStyle {
     case aiPoweredGradient
 }
 
-@MainActor
-private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency EnvironmentKey {
-    static let defaultValue: hFormBottomBackgroundStyle = .default
-}
-
 extension EnvironmentValues {
-    public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
-        get { self[EnvironmentHFormBottomBackgorundColor.self] }
-        set { self[EnvironmentHFormBottomBackgorundColor.self] = newValue }
-    }
+    @Entry public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle = .default
 }
 
 extension View {
@@ -424,11 +384,6 @@ extension View {
 }
 
 // MARK: hFormTitle
-
-@MainActor
-private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
-    static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
-}
 
 public enum HFormTitleSpacingType {
     case standard
@@ -476,10 +431,7 @@ public struct hTitle {
 }
 
 extension EnvironmentValues {
-    public var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
-        get { self[EnvironmentHFormTitle.self] }
-        set { self[EnvironmentHFormTitle.self] = newValue }
-    }
+    @Entry public var hFormTitle: (title: hTitle, subTitle: hTitle?)? = nil
 }
 
 extension View {
@@ -490,16 +442,8 @@ extension View {
 
 // MARK: hFormIgnoreBottomPadding
 
-@MainActor
-private struct EnvironmentHFormIgnoreBottomPadding: @preconcurrency EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hFormIgnoreBottomPadding: Bool {
-        get { self[EnvironmentHFormIgnoreBottomPadding.self] }
-        set { self[EnvironmentHFormIgnoreBottomPadding.self] = newValue }
-    }
+    @Entry public var hFormIgnoreBottomPadding: Bool = false
 }
 
 extension View {
