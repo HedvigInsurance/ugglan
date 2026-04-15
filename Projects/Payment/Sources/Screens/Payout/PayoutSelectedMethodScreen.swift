@@ -12,7 +12,7 @@ struct PayoutSelectedMethodScreen: View {
                 hSection {
                     hFloatingField(
                         value: vm.paymentStatusData.payoutAccountDisplayValue,
-                        placeholder: "",
+                        placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
                         error: nil,
                         onTap: {}
                     )
@@ -51,12 +51,17 @@ extension PaymentStatusData {
         case .bankAccount(let account, let bank):
             return "\(bank) \(account)"
         case .swish(let phoneNumber):
-            return "Swish \(phoneNumber)"
+            return "\(phoneNumber)"
         case .invoice:
             return method.provider.payoutTitle
         case nil:
             return method.provider.payoutTitle
         }
+    }
+
+    fileprivate var payoutAccountDisplayTitle: String {
+        guard let method = defaultPayoutMethod else { return "" }
+        return method.provider.payoutTitle
     }
 
     fileprivate var showChangeButton: Bool {
