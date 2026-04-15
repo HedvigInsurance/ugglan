@@ -615,6 +615,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Contact info";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Turned off";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Turned on";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect payment";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
 "PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";

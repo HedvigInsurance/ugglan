@@ -615,6 +615,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Kontaktinfo";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Avaktiverad";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Aktiverad";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
 "PUPPY_GUIDE_INFO" = "I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.";
