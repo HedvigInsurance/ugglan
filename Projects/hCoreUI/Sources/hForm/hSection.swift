@@ -133,34 +133,15 @@ public enum hSectionContainerStyle {
     case negative
 }
 
-@MainActor
-private struct EnvironmentHSectionContainerStyle: @preconcurrency EnvironmentKey {
-    static let defaultValue = hSectionContainerStyle.opaque
-}
-
 extension EnvironmentValues {
-    var hSectionContainerStyle: hSectionContainerStyle {
-        get { self[EnvironmentHSectionContainerStyle.self] }
-        set { self[EnvironmentHSectionContainerStyle.self] = newValue }
-    }
+    @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
+    @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
 }
 
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
         environment(\.hSectionContainerStyle, style)
-    }
-}
-
-@MainActor
-private struct EnvironmentHSectionContainerMaskerCorners: @preconcurrency EnvironmentKey {
-    static let defaultValue = UIRectCorner.allCorners
-}
-
-extension EnvironmentValues {
-    var hSectionContainerCornerMaskedCorners: UIRectCorner {
-        get { self[EnvironmentHSectionContainerMaskerCorners.self] }
-        set { self[EnvironmentHSectionContainerMaskerCorners.self] = newValue }
     }
 }
 
@@ -209,27 +190,6 @@ struct hSectionContainerStyleModifier: ViewModifier {
     }
 }
 
-private struct EnvironmentHWithoutDivider: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutDivider: Bool {
-        get { self[EnvironmentHWithoutDivider.self] }
-        set { self[EnvironmentHWithoutDivider.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutDivider: some View {
-        environment(\.hWithoutDivider, true)
-    }
-
-    public func shouldShowDivider(_ show: Bool) -> some View {
-        environment(\.hWithoutDivider, show)
-    }
-}
-
 public struct HorizontalPadding: OptionSet, Sendable {
     public init(rawValue: UInt) {
         self.rawValue = rawValue
@@ -243,31 +203,25 @@ public struct HorizontalPadding: OptionSet, Sendable {
     public static let all: HorizontalPadding = [.section, .row, .divider]
 }
 
-private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue: HorizontalPadding = .none
+extension EnvironmentValues {
+    @Entry public var hWithoutDivider: Bool = false
+    @Entry public var hWithoutHorizontalPadding: HorizontalPadding = .none
+    @Entry public var hSectionHeaderWithDivider: Bool = false
 }
 
-extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: HorizontalPadding {
-        get { self[EnvironmentHWithoutHorizontalPadding.self] }
-        set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
+extension View {
+    public var hWithoutDivider: some View {
+        environment(\.hWithoutDivider, true)
+    }
+
+    public func shouldShowDivider(_ show: Bool) -> some View {
+        environment(\.hWithoutDivider, show)
     }
 }
 
 extension View {
     public func hWithoutHorizontalPadding(_ attributes: HorizontalPadding) -> some View {
         environment(\.hWithoutHorizontalPadding, attributes)
-    }
-}
-
-private struct EnvironmentHSectionHeaderWithDivider: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hSectionHeaderWithDivider: Bool {
-        get { self[EnvironmentHSectionHeaderWithDivider.self] }
-        set { self[EnvironmentHSectionHeaderWithDivider.self] = newValue }
     }
 }
 

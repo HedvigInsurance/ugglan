@@ -125,15 +125,8 @@ public struct PresentableLoadingStoreLens<
     }
 }
 
-private struct EnvironmentPresentableStoreLensAnimation: EnvironmentKey {
-    static let defaultValue: Animation? = nil
-}
-
 extension EnvironmentValues {
-    public var presentableStoreLensAnimation: Animation? {
-        get { self[EnvironmentPresentableStoreLensAnimation.self] }
-        set { self[EnvironmentPresentableStoreLensAnimation.self] = newValue }
-    }
+    @Entry public var presentableStoreLensAnimation: Animation? = nil
 }
 
 extension View {

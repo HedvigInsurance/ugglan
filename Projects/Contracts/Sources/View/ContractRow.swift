@@ -223,15 +223,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
-private struct EnvironmentContractRowContentTruncate: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var contractRowContentTruncate: Bool {
-        get { self[EnvironmentContractRowContentTruncate.self] }
-        set { self[EnvironmentContractRowContentTruncate.self] = newValue }
-    }
+    @Entry public var contractRowContentTruncate: Bool = false
 }
 
 extension View {

@@ -219,16 +219,8 @@ public struct StateViewButtonConfig {
     }
 }
 
-@MainActor
-private struct StateViewButtonConfigKey: @preconcurrency EnvironmentKey {
-    static let defaultValue: StateViewButtonConfig? = nil
-}
-
 extension EnvironmentValues {
-    public var hStateViewButtonConfig: StateViewButtonConfig? {
-        get { self[StateViewButtonConfigKey.self] }
-        set { self[StateViewButtonConfigKey.self] = newValue }
-    }
+    @Entry public var hStateViewButtonConfig: StateViewButtonConfig? = nil
 }
 
 extension View {

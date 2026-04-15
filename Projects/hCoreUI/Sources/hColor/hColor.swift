@@ -1,16 +1,8 @@
 import Foundation
 import SwiftUI
 
-private struct EnvironmentUserInterfaceLevel: EnvironmentKey {
-    static let defaultValue: UIUserInterfaceLevel = .base
-}
-
 extension EnvironmentValues {
-    /// signals if presentation is elevated i.e modal
-    var userInterfaceLevel: UIUserInterfaceLevel {
-        get { self[EnvironmentUserInterfaceLevel.self] }
-        set { self[EnvironmentUserInterfaceLevel.self] = newValue }
-    }
+    @Entry public var userInterfaceLevel: UIUserInterfaceLevel = .base
 }
 
 public protocol hColor: View {
