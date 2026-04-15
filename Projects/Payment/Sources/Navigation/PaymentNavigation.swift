@@ -39,7 +39,7 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                    case let .paymentMethod:
+                    case .paymentMethod:
                         PaymentMethodScreen()
                     }
                 }
