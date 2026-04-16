@@ -24,7 +24,7 @@ enum ProfileRowType {
         case .claimHistory:
             return L10n.Profile.ClaimHistory.title
         case .information:
-            return L10n.profileInformation
+            return L10n.profileInfoLabel
         }
     }
 
