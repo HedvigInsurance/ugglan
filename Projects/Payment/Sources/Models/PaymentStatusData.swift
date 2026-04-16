@@ -4,14 +4,18 @@ import hCore
 public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var status: PayinMethodStatus
     public let chargingDay: Int?
+    public let defaultPayinMethod: PaymentMethodData?
     public let payinMethods: [PaymentMethodData]
+    public let defaultPayoutMethod: PaymentMethodData?
     public let payoutMethods: [PaymentMethodData]
     public let availableMethods: [AvailablePaymentMethod]
 
     public init(
         status: PayinMethodStatus,
         chargingDay: Int?,
+        defaultPayinMethod: PaymentMethodData?,
         payinMethods: [PaymentMethodData],
+        defaultPayoutMethod: PaymentMethodData?,
         payoutMethods: [PaymentMethodData],
         availableMethods: [AvailablePaymentMethod]
     ) {
@@ -20,14 +24,8 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.payinMethods = payinMethods
         self.payoutMethods = payoutMethods
         self.availableMethods = availableMethods
-    }
-
-    var defaultPayinMethod: PaymentMethodData? {
-        payinMethods.first(where: { $0.isDefault }) ?? payinMethods.first
-    }
-
-    var defaultPayoutMethod: PaymentMethodData? {
-        payoutMethods.first(where: { $0.isDefault })
+        self.defaultPayinMethod = defaultPayinMethod
+        self.defaultPayoutMethod = defaultPayoutMethod
     }
 }
 
