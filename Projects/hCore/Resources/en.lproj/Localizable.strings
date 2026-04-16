@@ -510,7 +510,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "You can’t change the payment method right now. Contact us for help.";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?";
 "KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LEGAL_A11Y" = "Accessibility";
 "LEGAL_CATEGORY_LABEL" = "Legal";
