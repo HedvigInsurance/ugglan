@@ -45,7 +45,7 @@ public struct PaymentsView: View {
                         paymentHistory
                         if let statusData {
                             if let defaultPayin = statusData.defaultPayinMethod {
-                                connectedPaymentMethod(data: defaultPayin, chargingDay: statusData.chargingDay)
+                                connectedPaymentMethod
                                 connectedPayoutMethod(data: statusData)
                             }
                         }
@@ -158,7 +158,7 @@ public struct PaymentsView: View {
         }
     }
 
-    private func connectedPaymentMethod(data: PaymentMethodData, chargingDay: Int?) -> some View {
+    private var connectedPaymentMethod: some View {
         hRow {
             hCoreUIAssets.payments.view
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -167,7 +167,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            router.push(PaymentsRouterAction.paymentMethod(data: data, chargingDay: chargingDay))
+            router.push(PaymentsRouterAction.paymentMethod)
         }
     }
 

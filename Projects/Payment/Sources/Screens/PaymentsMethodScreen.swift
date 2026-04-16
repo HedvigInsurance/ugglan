@@ -4,36 +4,48 @@ import hCore
 import hCoreUI
 
 struct PaymentMethodScreen: View {
-    let data: PaymentMethodData
-    var chargingDay: Int?
+    @EnvironmentObject var paymentsNavigationVM: PaymentsNavigationViewModel
 
     var body: some View {
-        hForm {
-            PaymentMethodView(data: data, chargingDay: chargingDay, withDate: true)
-                .hWithoutHorizontalPadding([.row, .divider])
-        }
-        .hFormAttachToBottom {
-            if data.provider == .trustly {
-                ConnectPaymentBottomView(alwaysShowButton: true)
-            } else if data.provider == .invoice {
-                hSection {
-                    InfoCard(
-                        text:
-                            L10n.kivraNotificationBoxText,
-                        type: .info
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentStatusData
+            }
+        ) { paymentChargeData in
+            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultPayinMethod {
+                hForm {
+                    PaymentMethodView(
+                        data: defaultPayinMethod,
+                        chargingDay: paymentChargeData.chargingDay,
+                        withDate: true
                     )
-                    .buttons(
-                        [
-                            .init(
-                                buttonTitle: L10n.openChat,
-                                buttonAction: {
-                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                                }
-                            )
-                        ]
-                    )
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
-                .sectionContainerStyle(.transparent)
+                .hFormAttachToBottom {
+                    if defaultPayinMethod.provider == .trustly {
+                        ConnectPaymentBottomView(alwaysShowButton: true)
+                    } else if defaultPayinMethod.provider == .invoice {
+                        hSection {
+                            InfoCard(
+                                text:
+                                    L10n.kivraNotificationBoxText,
+                                type: .info
+                            )
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: L10n.profilePaymentConnectDirectDebitButton,
+                                        buttonAction: {
+                                            paymentsNavigationVM.connectPaymentVm.set()
+                                        }
+                                    )
+                                ]
+                            )
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                }
             }
         }
     }
@@ -42,16 +54,56 @@ struct PaymentMethodScreen: View {
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return PaymentMethodScreen(
-        data: .init(
-            id: "payin-1",
-            provider: .trustly,
-            status: .active,
-            isDefault: true,
-            details: .bankAccount(account: "****1234", bank: "Nordea")
-        ),
-        chargingDay: 26
-    )
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+
+    return PaymentMethodScreen()
+        .environmentObject(PaymentsNavigationViewModel())
+        .onAppear {
+            print("test")
+            Task {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setPaymentStatus(
+                        data: .init(
+                            status: .active,
+                            chargingDay: 27,
+                            payinMethods: [
+                                .init(
+                                    id: "id",
+                                    provider: .invoice,
+                                    status: .active,
+                                    isDefault: true,
+                                    details: .invoice(delivery: .kivra, email: nil)
+                                )
+                            ],
+                            payoutMethods: [],
+                            availableMethods: []
+                        )
+                    )
+                )
+                await delay(2)
+                print(store.state.paymentStatusData)
+                store.send(
+                    .setPaymentStatus(
+                        data: .init(
+                            status: .active,
+                            chargingDay: 27,
+                            payinMethods: [
+                                .init(
+                                    id: "id",
+                                    provider: .trustly,
+                                    status: .active,
+                                    isDefault: true,
+                                    details: .bankAccount(account: "*****123", bank: "Nordea")
+                                )
+                            ],
+                            payoutMethods: [],
+                            availableMethods: []
+                        )
+                    )
+                )
+            }
+        }
 }
 
 struct PaymentMethodView: View {

@@ -68,8 +68,8 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                    case let .paymentMethod(data, chargingDay):
-                        PaymentMethodScreen(data: data, chargingDay: chargingDay)
+                    case .paymentMethod:
+                        PaymentMethodScreen()
                     }
                 }
                 .routerDestination(for: PayoutRouterAction.self) { routerAction in
@@ -138,7 +138,7 @@ enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProt
 enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-    case paymentMethod(data: PaymentMethodData, chargingDay: Int?)
+    case paymentMethod
 
     var nameForTracking: String {
         switch self {
