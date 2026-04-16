@@ -8,7 +8,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public let payinMethods: [PaymentMethodData]
     public let defaultPayoutMethod: PaymentMethodData?
     public let payoutMethods: [PaymentMethodData]
-    public let availableMethods: [AvailablePaymentMethod]
+    private let availableMethods: [AvailablePaymentMethod]
 
     public init(
         status: PayinMethodStatus,
