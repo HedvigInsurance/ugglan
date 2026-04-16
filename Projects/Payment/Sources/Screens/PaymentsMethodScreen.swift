@@ -4,35 +4,44 @@ import hCore
 import hCoreUI
 
 struct PaymentMethodScreen: View {
-    let data: PaymentChargeData
+    @EnvironmentObject var paymentsNavigationVM: PaymentsNavigationViewModel
 
     var body: some View {
-        hForm {
-            PaymentMethodView(data: data, withDate: true)
-                .hWithoutHorizontalPadding([.row, .divider])
-        }
-        .hFormAttachToBottom {
-            if data.chargeMethod == .trustly {
-                ConnectPaymentBottomView(alwaysShowButton: true)
-            } else if data.chargeMethod == .kivra {
-                hSection {
-                    InfoCard(
-                        text:
-                            L10n.kivraNotificationBoxText,
-                        type: .info
-                    )
-                    .buttons(
-                        [
-                            .init(
-                                buttonTitle: L10n.openChat,
-                                buttonAction: {
-                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                                }
-                            )
-                        ]
-                    )
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentStatusData?.paymentChargeData
+            }
+        ) { paymentChargeData in
+            if let paymentChargeData {
+                hForm {
+                    PaymentMethodView(data: paymentChargeData, withDate: true)
+                        .hWithoutHorizontalPadding([.row, .divider])
                 }
-                .sectionContainerStyle(.transparent)
+                .hFormAttachToBottom {
+                    if paymentChargeData.chargeMethod == .trustly {
+                        ConnectPaymentBottomView(alwaysShowButton: true)
+                    } else if paymentChargeData.chargeMethod == .kivra {
+                        hSection {
+                            InfoCard(
+                                text:
+                                    L10n.kivraNotificationBoxText,
+                                type: .info
+                            )
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: L10n.profilePaymentConnectDirectDebitButton,
+                                        buttonAction: {
+                                            paymentsNavigationVM.connectPaymentVm.set()
+                                        }
+                                    )
+                                ]
+                            )
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                }
             }
         }
     }
@@ -41,17 +50,44 @@ struct PaymentMethodScreen: View {
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
 
-    return PaymentMethodScreen(
-        data: .init(
-            paymentMethod: "method",
-            bankName: "bank name",
-            account: "account",
-            mandate: nil,
-            dueDate: 26,
-            chargeMethod: .trustly
-        )
-    )
+    return PaymentMethodScreen()
+        .environmentObject(PaymentsNavigationViewModel())
+        .task {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
+                        status: .active,
+                        paymentChargeData: .init(
+                            paymentMethod: nil,
+                            bankName: nil,
+                            account: nil,
+                            mandate: nil,
+                            dueDate: 27,
+                            chargeMethod: .kivra
+                        )
+                    )
+                )
+            )
+            await delay(2)
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
+                        status: .active,
+                        paymentChargeData: .init(
+                            paymentMethod: "method",
+                            bankName: "Nordea",
+                            account: "*****123",
+                            mandate: nil,
+                            dueDate: 27,
+                            chargeMethod: .trustly
+                        )
+                    )
+                )
+            )
+        }
 }
 
 struct PaymentMethodView: View {
