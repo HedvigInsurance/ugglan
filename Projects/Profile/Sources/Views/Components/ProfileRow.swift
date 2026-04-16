@@ -49,6 +49,8 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.certificates)
         case .claimHistory:
             router.push(ProfileRouterType.claimHistory)
+        case .legal:
+            router.push(ProfileRouterType.legal)
         }
     }
 }

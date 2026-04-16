@@ -43,6 +43,7 @@ public struct ProfileView: View {
                         ProfileRow(row: .claimHistory)
                     }
                     ProfileRow(row: .appInfo)
+                    ProfileRow(row: .legal)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
                 }

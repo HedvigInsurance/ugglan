@@ -69,6 +69,8 @@ public struct ProfileNavigation<Content: View>: View {
                             infoButtonPlacement: .trailing,
                             useOwnNavigation: false
                         )
+                    case .legal:
+                        LegalScreen()
                     }
                 }
                 .routerDestination(
@@ -132,6 +134,7 @@ public enum ProfileRouterType: Hashable {
     case certificates
     case claimHistory
     case travelCertificates
+    case legal
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -172,6 +175,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: ClaimHistoryScreen.self)
         case .travelCertificates:
             return .init(describing: TravelCertificatesListScreen.self)
+        case .legal:
+            return .init(describing: LegalScreen.self)
         }
     }
 }
@@ -193,6 +198,8 @@ extension ProfileRouterType: NavigationTitleProtocol {
             L10n.Profile.ClaimHistory.title
         case .travelCertificates:
             L10n.TravelCertificate.cardTitle
+        case .legal:
+            L10n.legalCategoryLabel
         }
     }
 }

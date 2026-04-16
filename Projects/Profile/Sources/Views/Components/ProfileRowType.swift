@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 enum ProfileRowType {
-    case myInfo, appInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory
+    case myInfo, appInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory, legal
     case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
@@ -25,6 +25,8 @@ enum ProfileRowType {
             return L10n.InsuranceEvidence.documentTitle
         case .claimHistory:
             return L10n.Profile.ClaimHistory.title
+        case .legal:
+            return L10n.legalCategoryLabel
         }
     }
 
@@ -47,6 +49,8 @@ enum ProfileRowType {
             return hCoreUIAssets.document.view
         case .claimHistory:
             return hCoreUIAssets.clock.view
+        case .legal:
+            return hCoreUIAssets.bookmark.view
         }
     }
 }
