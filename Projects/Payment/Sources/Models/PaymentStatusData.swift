@@ -27,6 +27,18 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.defaultPayinMethod = defaultPayinMethod
         self.defaultPayoutMethod = defaultPayoutMethod
     }
+
+    var availablePayoutMethods: [AvailablePaymentMethod] {
+        availableMethods.filter({ $0.supportsPayout })
+    }
+
+    var showPayinSection: Bool {
+        !payinMethods.isEmpty || defaultPayinMethod != nil
+    }
+
+    var showPayoutSection: Bool {
+        (!availablePayoutMethods.isEmpty || defaultPayoutMethod != nil) && showPayinSection
+    }
 }
 
 public struct PaymentMethodData: Codable, Equatable, Sendable, Hashable, Identifiable {

@@ -21,6 +21,13 @@ final class StorePaymentStatusTests: XCTestCase {
         let statusData: PaymentStatusData = .init(
             status: .active,
             chargingDay: 27,
+            defaultPayinMethod: .init(
+                id: "1",
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "descriptor", bank: "displayName")
+            ),
             payinMethods: [
                 .init(
                     id: "1",
@@ -30,6 +37,7 @@ final class StorePaymentStatusTests: XCTestCase {
                     details: .bankAccount(account: "descriptor", bank: "displayName")
                 )
             ],
+            defaultPayoutMethod: nil,
             payoutMethods: [],
             availableMethods: []
         )
