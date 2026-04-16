@@ -71,7 +71,7 @@ extension PaymentStatusData {
     }
 
     fileprivate var showChangeButton: Bool {
-        !availableMethods.filter({ $0.supportsPayout }).isEmpty
+        !availablePayoutMethods.isEmpty
     }
 }
 #Preview {
