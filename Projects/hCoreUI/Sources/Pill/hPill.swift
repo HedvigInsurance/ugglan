@@ -291,15 +291,8 @@ public enum hPillAttrubutes {
     case withChevron
 }
 
-private struct EnvironmentHPillAttributes: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: [hPillAttrubutes] = []
-}
-
 extension EnvironmentValues {
-    public var hPillAttributes: [hPillAttrubutes] {
-        get { self[EnvironmentHPillAttributes.self] }
-        set { self[EnvironmentHPillAttributes.self] = newValue }
-    }
+    @Entry public var hPillAttributes: [hPillAttrubutes] = []
 }
 
 extension View {
