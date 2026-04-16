@@ -65,13 +65,7 @@ extension PaymentStatusData {
     }
 
     fileprivate var showChangeButton: Bool {
-        guard let defaultPayin = payinMethods.first(where: { $0.isDefault }) else {
-            return true
-        }
-        if case .invoice(let delivery, _) = defaultPayin.details, delivery == .kivra {
-            return true
-        }
-        return false
+        !availableMethods.filter({ $0.supportsPayout }).isEmpty
     }
 }
 #Preview {
@@ -80,6 +74,13 @@ extension PaymentStatusData {
             paymentStatusData: .init(
                 status: .active,
                 chargingDay: nil,
+                defaultPayinMethod: .init(
+                    id: "1",
+                    provider: .nordea,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                ),
                 payinMethods: [
                     .init(
                         id: "1",
@@ -89,6 +90,13 @@ extension PaymentStatusData {
                         details: .bankAccount(account: "3300-920123132", bank: "Nordea")
                     )
                 ],
+                defaultPayoutMethod: .init(
+                    id: "2",
+                    provider: .nordea,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                ),
                 payoutMethods: [
                     .init(
                         id: "2",
@@ -115,6 +123,13 @@ extension PaymentStatusData {
             paymentStatusData: .init(
                 status: .active,
                 chargingDay: nil,
+                defaultPayinMethod: .init(
+                    id: "1",
+                    provider: .invoice,
+                    status: .active,
+                    isDefault: true,
+                    details: .invoice(delivery: .kivra, email: nil)
+                ),
                 payinMethods: [
                     .init(
                         id: "1",
@@ -124,6 +139,13 @@ extension PaymentStatusData {
                         details: .invoice(delivery: .kivra, email: nil)
                     )
                 ],
+                defaultPayoutMethod: .init(
+                    id: "2",
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: nil
+                ),
                 payoutMethods: [
                     .init(
                         id: "2",

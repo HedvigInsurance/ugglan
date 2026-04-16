@@ -53,7 +53,9 @@ extension PaymentProvider {
             paymentStatusData: .init(
                 status: .active,
                 chargingDay: nil,
+                defaultPayinMethod: nil,
                 payinMethods: [],
+                defaultPayoutMethod: nil,
                 payoutMethods: [],
                 availableMethods: [
                     .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
