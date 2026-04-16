@@ -87,33 +87,14 @@ public struct SuccessScreen: View {
         }
 }
 
-@MainActor
-private struct EnvironmentHSuccessBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hSuccessBottomAttachedView: AnyView? {
-        get { self[EnvironmentHSuccessBottomAttachedView.self] }
-        set { self[EnvironmentHSuccessBottomAttachedView.self] = newValue }
-    }
+    @Entry public var hSuccessBottomAttachedView: AnyView? = nil
+    @Entry public var hCustomSuccessView: AnyView? = nil
 }
 
 extension View {
     public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         environment(\.hSuccessBottomAttachedView, AnyView(content()))
-    }
-}
-
-@MainActor
-private struct EnvironmentHCustomSuccessView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
-extension EnvironmentValues {
-    public var hCustomSuccessView: AnyView? {
-        get { self[EnvironmentHCustomSuccessView.self] }
-        set { self[EnvironmentHCustomSuccessView.self] = newValue }
     }
 }
 

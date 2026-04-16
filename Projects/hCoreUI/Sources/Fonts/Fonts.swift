@@ -51,16 +51,8 @@ public enum Fonts {
     }
 }
 
-@MainActor
-private struct EnvironmentWithoutFontMultiplier: @preconcurrency EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hWithoutFontMultiplier: Bool {
-        get { self[EnvironmentWithoutFontMultiplier.self] }
-        set { self[EnvironmentWithoutFontMultiplier.self] = newValue }
-    }
+    @Entry public var hWithoutFontMultiplier: Bool = false
 }
 
 extension View {
