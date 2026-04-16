@@ -41,6 +41,12 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 }
 
+extension Sequence where Element == PaymentMethodData {
+    var hasMethodInProgress: Bool {
+        !self.filter({ $0.status == .pending }).isEmpty
+    }
+}
+
 public struct PaymentMethodData: Codable, Equatable, Sendable, Hashable, Identifiable {
     public let id: String
     public let provider: PaymentProvider

@@ -23,6 +23,9 @@ struct PayoutSelectedMethodScreen: View {
                     .hBackgroundOption(option: [.locked])
                     .disabled(true)
                 }
+                if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                }
 
                 if vm.paymentStatusData.showChangeButton {
                     hSection {

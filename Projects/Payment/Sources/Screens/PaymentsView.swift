@@ -60,7 +60,16 @@ public struct PaymentsView: View {
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
-            bottomPart
+            PresentableStoreLens(
+                PaymentStore.self,
+                getter: { state in
+                    state.paymentStatusData
+                }
+            ) { statusData in
+                if let statusData, statusData.payinMethods.isEmpty {
+                    ConnectPaymentBottomView()
+                }
+            }
         }
         .onPullToRefresh {
             await store.send(.fetchPaymentStatus)
@@ -188,10 +197,6 @@ public struct PaymentsView: View {
                 router.push(PayoutRouterAction.payoutMethod)
             }
         }
-    }
-
-    private var bottomPart: some View {
-        ConnectPaymentBottomView(alwaysShowButton: false)
     }
 }
 
