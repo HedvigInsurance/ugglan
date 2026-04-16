@@ -46,7 +46,15 @@ struct MockPaymentData {
             )
         },
         fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
-            .init(status: .active, chargingDay: nil, payinMethods: [], payoutMethods: [], availableMethods: [])
+            .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: nil,
+                payinMethods: [],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: []
+            )
         },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()

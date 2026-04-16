@@ -62,10 +62,18 @@ extension PaymentStatusData {
             )
         }
 
+        let defaultPayinMethod: PaymentMethodData? = paymentMethods.defaultPayinMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+
+        let defaultPayoutMethod: PaymentMethodData? = paymentMethods.defaultPayoutMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+
         self.init(
             status: status,
             chargingDay: paymentMethods.chargingDay,
+            defaultPayinMethod: defaultPayinMethod,
             payinMethods: payinMethods,
+            defaultPayoutMethod: defaultPayoutMethod,
             payoutMethods: payoutMethods,
             availableMethods: availableMethods
         )

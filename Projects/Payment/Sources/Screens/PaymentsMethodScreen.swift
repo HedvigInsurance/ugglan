@@ -58,51 +58,63 @@ struct PaymentMethodScreen: View {
 
     return PaymentMethodScreen()
         .environmentObject(PaymentsNavigationViewModel())
-        .onAppear {
-            print("test")
-            Task {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setPaymentStatus(
-                        data: .init(
+        .task {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
+                        status: .active,
+                        chargingDay: 27,
+                        defaultPayinMethod: .init(
+                            id: "id",
+                            provider: .invoice,
                             status: .active,
-                            chargingDay: 27,
-                            payinMethods: [
-                                .init(
-                                    id: "id",
-                                    provider: .invoice,
-                                    status: .active,
-                                    isDefault: true,
-                                    details: .invoice(delivery: .kivra, email: nil)
-                                )
-                            ],
-                            payoutMethods: [],
-                            availableMethods: []
-                        )
+                            isDefault: true,
+                            details: .invoice(delivery: .kivra, email: nil)
+                        ),
+                        payinMethods: [
+                            .init(
+                                id: "id",
+                                provider: .invoice,
+                                status: .active,
+                                isDefault: true,
+                                details: .invoice(delivery: .kivra, email: nil)
+                            )
+                        ],
+                        defaultPayoutMethod: nil,
+                        payoutMethods: [],
+                        availableMethods: []
                     )
                 )
-                await delay(2)
-                print(store.state.paymentStatusData)
-                store.send(
-                    .setPaymentStatus(
-                        data: .init(
+            )
+            await delay(2)
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
+                        status: .active,
+                        chargingDay: 27,
+                        defaultPayinMethod: .init(
+                            id: "id",
+                            provider: .trustly,
                             status: .active,
-                            chargingDay: 27,
-                            payinMethods: [
-                                .init(
-                                    id: "id",
-                                    provider: .trustly,
-                                    status: .active,
-                                    isDefault: true,
-                                    details: .bankAccount(account: "*****123", bank: "Nordea")
-                                )
-                            ],
-                            payoutMethods: [],
-                            availableMethods: []
-                        )
+                            isDefault: true,
+                            details: .bankAccount(account: "*****123", bank: "Nordea")
+                        ),
+                        payinMethods: [
+                            .init(
+                                id: "id",
+                                provider: .trustly,
+                                status: .active,
+                                isDefault: true,
+                                details: .bankAccount(account: "*****123", bank: "Nordea")
+                            )
+                        ],
+                        defaultPayoutMethod: nil,
+                        payoutMethods: [],
+                        availableMethods: []
                     )
                 )
-            }
+            )
         }
 }
 
