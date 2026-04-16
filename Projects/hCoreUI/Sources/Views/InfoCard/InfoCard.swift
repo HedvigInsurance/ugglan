@@ -163,23 +163,6 @@ public struct InfoCard: View {
     .preferredColorScheme(.dark)
 }
 
-private struct EnvironmentCardButtonsConfig: EnvironmentKey {
-    static let defaultValue: [InfoCardButtonConfig]? = nil
-}
-
-extension EnvironmentValues {
-    public var hInfoCardButtonConfig: [InfoCardButtonConfig]? {
-        get { self[EnvironmentCardButtonsConfig.self] }
-        set { self[EnvironmentCardButtonsConfig.self] = newValue }
-    }
-}
-
-extension InfoCard {
-    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
-        environment(\.hInfoCardButtonConfig, configs)
-    }
-}
-
 public struct InfoCardButtonConfig: Sendable {
     let buttonTitle: String
     let buttonAction: @MainActor @Sendable () -> Void
@@ -190,15 +173,20 @@ public struct InfoCardButtonConfig: Sendable {
     }
 }
 
-@MainActor
-private struct EnvironmentInfoCardCustomView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
+public enum InfoCardLayoutStyle: Sendable {
+    case defaultStyle
+    case bannerStyle
 }
 
 extension EnvironmentValues {
-    public var hInfoCardCustomView: AnyView? {
-        get { self[EnvironmentInfoCardCustomView.self] }
-        set { self[EnvironmentInfoCardCustomView.self] = newValue }
+    @Entry public var hInfoCardButtonConfig: [InfoCardButtonConfig]? = nil
+    @Entry public var hInfoCardCustomView: AnyView? = nil
+    @Entry public var hInfoCardLayoutStyle: InfoCardLayoutStyle = .defaultStyle
+}
+
+extension InfoCard {
+    public func buttons(_ configs: [InfoCardButtonConfig]) -> some View {
+        environment(\.hInfoCardButtonConfig, configs)
     }
 }
 
@@ -208,24 +196,8 @@ extension View {
     }
 }
 
-private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
-}
-
-extension EnvironmentValues {
-    public var hInfoCardLayoutStyle: InfoCardLayoutStyle {
-        get { self[EnvironmentInfoCardLayoutStyle.self] }
-        set { self[EnvironmentInfoCardLayoutStyle.self] = newValue }
-    }
-}
-
 extension View {
     public func hInfoCardLayoutStyle(_ style: InfoCardLayoutStyle) -> some View {
         environment(\.hInfoCardLayoutStyle, style)
     }
-}
-
-public enum InfoCardLayoutStyle: Sendable {
-    case defaultStyle
-    case bannerStyle
 }

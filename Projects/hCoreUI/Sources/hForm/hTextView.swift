@@ -209,7 +209,6 @@ private struct FreeTextInputView: View {
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
     @State var height: CGFloat = 0
-    @Environment(\.safeAreaInsets) private var safeAreaInsets
     @State private var inEdit: Bool = false
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -548,32 +547,6 @@ private class TextView: UITextView, UITextViewDelegate {
             maskLayer.addSublayer(gradientLayer)
             layer.mask = maskLayer
         }
-    }
-}
-
-@MainActor
-private struct SafeAreaInsetsKey: @preconcurrency EnvironmentKey {
-    static var defaultValue: EdgeInsets {
-        let keyWindow = UIApplication.shared.connectedScenes
-            .filter { $0.activationState == .foregroundActive }
-            .map { $0 as? UIWindowScene }
-            .compactMap { $0 }
-            .first?
-            .windows
-            .filter(\.isKeyWindow).first
-        return (keyWindow?.safeAreaInsets ?? .zero).insets
-    }
-}
-
-extension EnvironmentValues {
-    var safeAreaInsets: EdgeInsets {
-        self[SafeAreaInsetsKey.self]
-    }
-}
-
-extension UIEdgeInsets {
-    fileprivate var insets: EdgeInsets {
-        EdgeInsets(top: top, leading: left, bottom: bottom, trailing: right)
     }
 }
 

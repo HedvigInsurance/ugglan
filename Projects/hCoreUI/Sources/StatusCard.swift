@@ -146,15 +146,15 @@ struct StatusCardBackgroundModifier: ViewModifier {
     .background(Color.gray)
 }
 
-private struct EnvironmentHCardWithoutSpacing: EnvironmentKey {
-    static let defaultValue = false
+public enum CardBackgroundColor: Sendable {
+    case `default`
+    case light
 }
 
 extension EnvironmentValues {
-    public var hCardWithoutSpacing: Bool {
-        get { self[EnvironmentHCardWithoutSpacing.self] }
-        set { self[EnvironmentHCardWithoutSpacing.self] = newValue }
-    }
+    @Entry public var hCardWithoutSpacing: Bool = false
+    @Entry public var hCardWithDivider: Bool = false
+    @Entry public var hCardBackgroundColor: CardBackgroundColor = CardBackgroundColor.default
 }
 
 extension View {
@@ -163,36 +163,9 @@ extension View {
     }
 }
 
-private struct EnvironmentHCardWithDivider: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hCardWithDivider: Bool {
-        get { self[EnvironmentHCardWithDivider.self] }
-        set { self[EnvironmentHCardWithDivider.self] = newValue }
-    }
-}
-
 extension View {
     public var hCardWithDivider: some View {
         environment(\.hCardWithDivider, true)
-    }
-}
-
-public enum CardBackgroundColor: Sendable {
-    case `default`
-    case light
-}
-
-private struct EnvironmentHCardBackgroundColor: EnvironmentKey {
-    static let defaultValue = CardBackgroundColor.default
-}
-
-extension EnvironmentValues {
-    public var hCardBackgroundColor: CardBackgroundColor {
-        get { self[EnvironmentHCardBackgroundColor.self] }
-        set { self[EnvironmentHCardBackgroundColor.self] = newValue }
     }
 }
 

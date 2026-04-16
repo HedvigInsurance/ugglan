@@ -88,6 +88,7 @@
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Utbetalning till ett svenskt bankkonto";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bankkonto";
 "BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing";
+"BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Direktutbetalning via Trustly";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "Ingen rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 försäkring";
@@ -509,8 +510,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Din försäkring täcker inte";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Vi försöker reparera i första hand, men om din %1$@ skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$li%%** av inköpspriset **%3$@**, alltså **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Värdering";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?";
 "KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
+"LEGAL_A11Y" = "Tillgänglighet";
+"LEGAL_CATEGORY_LABEL" = "Juridisk information";
+"LEGAL_INFORMATION" = "Juridisk information";
+"LEGAL_PRIVACY_POLICY" = "Personuppgifter";
 "LETTER_TO_EIR_SUBJECT" = "Fråga angående skadeanmälan - Fordon reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
@@ -608,12 +613,14 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL" = "Tillåt notiser för att bli meddelad vid nya uppdateringar om din skadeanmälan";
 "PROFILE_APP_INFO" = "Appinfo";
 "PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION" = "Radera mitt konto";
+"PROFILE_INFO_LABEL" = "Information";
 "PROFILE_MY_INFO_REVIEW_INFO_CARD" = "Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.";
 "PROFILE_MY_INFO_ROW_TITLE" = "Kontaktinfo";
 "PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Ändringar sparade";
 "PROFILE_MY_INFO_TITLE" = "Kontaktinfo";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Avaktiverad";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Aktiverad";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
 "PUPPY_GUIDE_INFO" = "I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.";

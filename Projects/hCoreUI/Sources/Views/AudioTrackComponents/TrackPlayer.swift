@@ -97,6 +97,10 @@ struct TrackPlayer: View {
             .frame(height: 64)
             .background(
                 trackPlayerBackground
+                    ?? AnyView(
+                        RoundedRectangle(cornerRadius: .cornerRadiusL)
+                            .fill(hSurfaceColor.Opaque.primary)
+                    )
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()
@@ -120,19 +124,8 @@ struct TrackPlayer: View {
     )
     TrackPlayer(audioPlayer: audioPlayer)
 }
-@MainActor
-private struct EnvironmentTrackPlayerBackground: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView = AnyView(
-        RoundedRectangle(cornerRadius: .cornerRadiusL)
-            .fill(hSurfaceColor.Opaque.primary)
-    )
-}
-
 extension EnvironmentValues {
-    public var trackPlayerBackground: AnyView {
-        get { self[EnvironmentTrackPlayerBackground.self] }
-        set { self[EnvironmentTrackPlayerBackground.self] = newValue }
-    }
+    @Entry public var trackPlayerBackground: AnyView? = nil
 }
 
 extension View {

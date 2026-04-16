@@ -2,16 +2,8 @@ import Combine
 import Foundation
 import SwiftUI
 
-@MainActor
-private struct EnvironmentDefaultHTextStyle: @preconcurrency EnvironmentKey {
-    static let defaultValue: HFontTextStyle? = nil
-}
-
 extension EnvironmentValues {
-    public var defaultHTextStyle: HFontTextStyle? {
-        get { self[EnvironmentDefaultHTextStyle.self] }
-        set { self[EnvironmentDefaultHTextStyle.self] = newValue }
-    }
+    @Entry public var defaultHTextStyle: HFontTextStyle? = nil
 }
 
 extension View {

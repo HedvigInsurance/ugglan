@@ -73,15 +73,8 @@ public struct GenericErrorView: View {
     )
 }
 
-private struct EnvironmenthExtraTopPadding: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hExtraTopPadding: Bool {
-        get { self[EnvironmenthExtraTopPadding.self] }
-        set { self[EnvironmenthExtraTopPadding.self] = newValue }
-    }
+    @Entry public var hExtraTopPadding: Bool = false
 }
 
 extension View {
