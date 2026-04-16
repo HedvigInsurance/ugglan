@@ -24,7 +24,10 @@ struct PayoutSelectedMethodScreen: View {
                     .disabled(true)
                 }
                 if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
-                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    hSection {
+                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    }
+                    .sectionContainerStyle(.transparent)
                 }
 
                 if vm.paymentStatusData.showChangeButton {
