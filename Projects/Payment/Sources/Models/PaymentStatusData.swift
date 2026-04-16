@@ -43,7 +43,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
 
 extension Sequence where Element == PaymentMethodData {
     var hasMethodInProgress: Bool {
-        !self.filter({ $0.status == .pending }).isEmpty
+        !self.filter({ $0.status == .pending && $0.isDefault == true }).isEmpty
     }
 }
 
