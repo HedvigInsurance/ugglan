@@ -137,6 +137,13 @@ public class hPaymentClientDemo: hPaymentClient {
         return .init(
             status: .active,
             chargingDay: 27,
+            defaultPayinMethod: .init(
+                id: "payin-1",
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "****1234", bank: "Connected bank")
+            ),
             payinMethods: [
                 .init(
                     id: "payin-1",
@@ -146,6 +153,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     details: .bankAccount(account: "****1234", bank: "Connected bank")
                 )
             ],
+            defaultPayoutMethod: nil,
             payoutMethods: [],
             availableMethods: [
                 .init(
