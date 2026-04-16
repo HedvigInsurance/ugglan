@@ -44,8 +44,10 @@ public struct PaymentsView: View {
                         discounts
                         paymentHistory
                         if let statusData {
-                            if let defaultPayin = statusData.defaultPayinMethod {
+                            if statusData.showPayinSection {
                                 connectedPaymentMethod
+                            }
+                            if statusData.showPayoutSection {
                                 connectedPayoutMethod(data: statusData)
                             }
                         }

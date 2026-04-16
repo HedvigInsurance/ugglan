@@ -39,7 +39,11 @@ extension PaymentStatusData {
                 }
             }
 
-            guard let defaultPayin = data.currentMember.paymentMethods.defaultPayinMethod else {
+            guard
+                let defaultPayin = data.currentMember.paymentMethods.defaultPayinMethod?.fragments
+                    .memberPaymentMethodFragment
+                    ?? data.currentMember.paymentMethods.payinMethods.first?.fragments.memberPaymentMethodFragment
+            else {
                 return .needsSetup
             }
             return defaultPayin.status.asPayinMethodStatus
