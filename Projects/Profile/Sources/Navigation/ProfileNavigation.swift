@@ -192,7 +192,7 @@ extension ProfileRouterType: NavigationTitleProtocol {
         case .travelCertificates:
             L10n.TravelCertificate.cardTitle
         case .information:
-            L10n.profileInformation
+            L10n.profileInfoLabel
         }
     }
 }

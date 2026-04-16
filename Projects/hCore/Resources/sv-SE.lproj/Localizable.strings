@@ -510,7 +510,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Din försäkring täcker inte";
 "KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "Vi försöker reparera i första hand, men om din %1$@ skulle behöva ersättas helt (ex. om den blivit stulen) ersätts du med **%2$li%%** av inköpspriset **%3$@**, alltså **%4$@**.";
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Värdering";
-"KIVRA_NOTIFICATION_BOX_TEXT" = "Du kan inte ändra betalmetod just nu. Kontakta oss för hjälp.";
+"KIVRA_NOTIFICATION_BOX_TEXT" = "Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?";
 "KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
 "LEGAL_A11Y" = "Tillgänglighet";
 "LEGAL_CATEGORY_LABEL" = "Juridisk information";
@@ -613,10 +613,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL" = "Tillåt notiser för att bli meddelad vid nya uppdateringar om din skadeanmälan";
 "PROFILE_APP_INFO" = "Appinfo";
 "PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION" = "Radera mitt konto";
+"PROFILE_INFO_LABEL" = "Information";
 "PROFILE_MY_INFO_REVIEW_INFO_CARD" = "Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.";
 "PROFILE_MY_INFO_ROW_TITLE" = "Kontaktinfo";
 "PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Ändringar sparade";
-"PROFILE_INFORMATION" = "Information";
 "PROFILE_MY_INFO_TITLE" = "Kontaktinfo";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Avaktiverad";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Aktiverad";
