@@ -24,7 +24,7 @@ struct PaymentMethodScreen: View {
                 }
                 .hFormAttachToBottom {
                     if defaultPayinMethod.provider == .trustly {
-                        ConnectPaymentBottomView(alwaysShowButton: true)
+                        ConnectPaymentBottomView()
                     } else if defaultPayinMethod.provider == .invoice {
                         hSection {
                             InfoCard(
