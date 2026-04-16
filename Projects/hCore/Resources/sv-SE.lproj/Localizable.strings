@@ -613,6 +613,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL" = "Tillåt notiser för att bli meddelad vid nya uppdateringar om din skadeanmälan";
 "PROFILE_APP_INFO" = "Appinfo";
 "PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION" = "Radera mitt konto";
+"PROFILE_INFO_LABEL" = "Information";
 "PROFILE_MY_INFO_REVIEW_INFO_CARD" = "Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.";
 "PROFILE_MY_INFO_ROW_TITLE" = "Kontaktinfo";
 "PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Ändringar sparade";

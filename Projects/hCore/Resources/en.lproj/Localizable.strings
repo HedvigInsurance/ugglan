@@ -613,6 +613,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_ALLOW_NOTIFICATIONS_INFO_LABEL" = "Allow notifications to get notified when we have new updates regarding your claim";
 "PROFILE_APP_INFO" = "App info";
 "PROFILE_DELETE_ACCOUNT_CONFIRM_DELETION" = "Delete my account";
+"PROFILE_INFO_LABEL" = "Information";
 "PROFILE_MY_INFO_REVIEW_INFO_CARD" = "Make sure your contact info is up to date, so we can reach you if needed.";
 "PROFILE_MY_INFO_ROW_TITLE" = "Contact";
 "PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Changes saved";
