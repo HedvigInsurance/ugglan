@@ -616,6 +616,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_REVIEW_INFO_CARD" = "Se till att dina kontaktuppgifter är uppdaterade, så att vi kan nå dig om vi behöver.";
 "PROFILE_MY_INFO_ROW_TITLE" = "Kontaktinfo";
 "PROFILE_MY_INFO_SAVE_SUCCESS_TOAST_BODY" = "Ändringar sparade";
+"PROFILE_INFORMATION" = "Information";
 "PROFILE_MY_INFO_TITLE" = "Kontaktinfo";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Avaktiverad";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Aktiverad";

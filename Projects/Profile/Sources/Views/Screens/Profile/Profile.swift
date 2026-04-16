@@ -42,8 +42,7 @@ public struct ProfileView: View {
                     if Dependencies.featureFlags().isClaimHistoryEnabled {
                         ProfileRow(row: .claimHistory)
                     }
-                    ProfileRow(row: .appInfo)
-                    ProfileRow(row: .legal)
+                    ProfileRow(row: .information)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
                 }

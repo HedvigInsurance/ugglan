@@ -48,8 +48,6 @@ public struct ProfileNavigation<Content: View>: View {
                     switch redirectType {
                     case .myInfo:
                         MyInfoView()
-                    case .appInfo:
-                        AppInfoView()
                     case .settings:
                         SettingsView()
                     case .euroBonus:
@@ -69,8 +67,8 @@ public struct ProfileNavigation<Content: View>: View {
                             infoButtonPlacement: .trailing,
                             useOwnNavigation: false
                         )
-                    case .legal:
-                        LegalScreen()
+                    case .information:
+                        InformationScreen()
                     }
                 }
                 .routerDestination(
@@ -128,13 +126,12 @@ public struct ProfileNavigation<Content: View>: View {
 
 public enum ProfileRouterType: Hashable {
     case myInfo
-    case appInfo
     case settings
     case euroBonus
     case certificates
     case claimHistory
     case travelCertificates
-    case legal
+    case information
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -163,8 +160,6 @@ extension ProfileRouterType: TrackingViewNameProtocol {
         switch self {
         case .myInfo:
             return .init(describing: MyInfoView.self)
-        case .appInfo:
-            return .init(describing: AppInfoView.self)
         case .settings:
             return .init(describing: SettingsView.self)
         case .euroBonus:
@@ -175,8 +170,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: ClaimHistoryScreen.self)
         case .travelCertificates:
             return .init(describing: TravelCertificatesListScreen.self)
-        case .legal:
-            return .init(describing: LegalScreen.self)
+        case .information:
+            return .init(describing: InformationScreen.self)
         }
     }
 }
@@ -186,8 +181,6 @@ extension ProfileRouterType: NavigationTitleProtocol {
         switch self {
         case .myInfo:
             L10n.profileMyInfoRowTitle
-        case .appInfo:
-            L10n.profileAppInfo
         case .settings:
             L10n.EmbarkOnboardingMoreOptions.settingsLabel
         case .euroBonus:
@@ -198,8 +191,8 @@ extension ProfileRouterType: NavigationTitleProtocol {
             L10n.Profile.ClaimHistory.title
         case .travelCertificates:
             L10n.TravelCertificate.cardTitle
-        case .legal:
-            L10n.legalCategoryLabel
+        case .information:
+            L10n.profileInformation
         }
     }
 }
