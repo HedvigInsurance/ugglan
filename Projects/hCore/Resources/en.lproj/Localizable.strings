@@ -512,6 +512,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "You can’t change the payment method right now. Contact us for help.";
 "KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
+"LEGAL_A11Y" = "Accessibility";
+"LEGAL_CATEGORY_LABEL" = "Legal";
+"LEGAL_INFORMATION" = "Legal information";
+"LEGAL_PRIVACY_POLICY" = "Privacy policy";
 "LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
@@ -615,6 +619,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Contact info";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Turned off";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Turned on";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect payment";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
 "PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";
