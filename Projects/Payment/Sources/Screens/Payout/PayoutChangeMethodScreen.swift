@@ -7,7 +7,7 @@ struct PayoutChangeMethodScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(vm.paymentStatusData.availableMethods.filter { $0.supportsPayout }, id: \.provider) { method in
+                ForEach(vm.paymentStatusData.availablePayoutMethods, id: \.provider) { method in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: .padding4) {
