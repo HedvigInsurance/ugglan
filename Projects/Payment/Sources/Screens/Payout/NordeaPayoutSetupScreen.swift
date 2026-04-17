@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,6 +15,15 @@ struct NordeaPayoutSetupScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
+                hSection {
+                    HStack {
+                        Spacer()
+                        hText(vm.bankName, style: .label)
+                    }
+                    .padding(.horizontal, .padding8)
+                }
+                .padding(.bottom, -.padding2)
+                .sectionContainerStyle(.transparent)
                 clearingField
                 accountField
             }
@@ -95,6 +105,7 @@ struct NordeaPayoutSetupScreen: View {
 class NordeaPayoutSetupViewModel: ObservableObject {
     @Published var clearingNumber: String = ""
     @Published var accountNumber: String = ""
+    @Published var bankName: String = " "
     @Published var focusedField: NordeaPayoutField?
     @Published var clearingError: String?
     @Published var accountError: String?
@@ -104,6 +115,19 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     private let paymentService = hPaymentService()
     private let clearingMasking = Masking(type: .clearingNumber)
     private let accountMasking = Masking(type: .bankAccountNumber)
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        $clearingNumber
+            .receive(on: RunLoop.main)
+            .sink { [weak self] newValue in
+                let cleaned = newValue.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
+                withAnimation {
+                    self?.bankName = Int(cleaned)?.bankName ?? " "
+                }
+            }
+            .store(in: &cancellables)
+    }
 
     func save() async -> Bool {
         withAnimation {
