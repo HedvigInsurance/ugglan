@@ -66,7 +66,6 @@ struct PaymentMethodScreen: View {
                         status: .active,
                         chargingDay: 27,
                         defaultPayinMethod: .init(
-                            id: "id",
                             provider: .invoice,
                             status: .active,
                             isDefault: true,
@@ -74,7 +73,6 @@ struct PaymentMethodScreen: View {
                         ),
                         payinMethods: [
                             .init(
-                                id: "id",
                                 provider: .invoice,
                                 status: .active,
                                 isDefault: true,
@@ -94,7 +92,6 @@ struct PaymentMethodScreen: View {
                         status: .active,
                         chargingDay: 27,
                         defaultPayinMethod: .init(
-                            id: "id",
                             provider: .trustly,
                             status: .active,
                             isDefault: true,
@@ -102,7 +99,6 @@ struct PaymentMethodScreen: View {
                         ),
                         payinMethods: [
                             .init(
-                                id: "id",
                                 provider: .trustly,
                                 status: .active,
                                 isDefault: true,

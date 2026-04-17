@@ -18,8 +18,6 @@ struct ConnectPayment: ViewModifier {
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { model in
                 DirectDebitSetup(
-                    forPayin: model.forPayin,
-                    forPayout: model.forPayout,
                     onSuccess: model.onSuccess
                 )
             }
@@ -32,14 +30,10 @@ public class ConnectPaymentViewModel: ObservableObject {
     public init() {}
 
     public func set(
-        forPayin: Bool = true,
-        forPayout: Bool = true,
         onSuccess: (() -> Void)? = nil
     ) {
         Task { @MainActor [weak self] in
             self?.setupTypeNavigationModel = .init(
-                forPayin: forPayin,
-                forPayout: forPayout,
                 onSuccess: onSuccess
             )
         }
@@ -48,8 +42,6 @@ public class ConnectPaymentViewModel: ObservableObject {
 
 struct SetupTypeNavigationModel: Identifiable {
     let id: String = UUID().uuidString
-    let forPayin: Bool
-    let forPayout: Bool
     let onSuccess: (() -> Void)?
 }
 

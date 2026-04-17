@@ -31,7 +31,6 @@ query PaymentMethods {
 }
 
 fragment MemberPaymentMethodFragment on MemberPaymentMethod {
-    id
     provider
     status
     isDefault

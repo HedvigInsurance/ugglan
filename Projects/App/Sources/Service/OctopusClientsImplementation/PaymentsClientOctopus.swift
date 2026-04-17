@@ -125,7 +125,6 @@ extension PaymentMethodData {
             return nil
         }()
         self.init(
-            id: fragment.id,
             provider: provider,
             status: status,
             isDefault: fragment.isDefault,
@@ -179,19 +178,16 @@ class hPaymentClientOctopus: hPaymentClient {
 
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         switch type {
-        case let .trustly(setAsDefaultPayin, setAsDefaultPayout):
+        case .trustly:
             let input = OctopusGraphQL.PaymentMethodSetupTrustlyInput(
-                setAsDefaultPayin: setAsDefaultPayin,
-                setAsDefaultPayout: setAsDefaultPayout,
                 successUrl: "hedvig://payment/success",
                 failureUrl: "hedvig://payment/failure"
             )
             let mutation = OctopusGraphQL.PaymentMethodSetupTrustlyMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupTrustly.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
-        case let .nordeaPayout(setAsDefault, clearingNumber, accountNumber):
+        case let .nordeaPayout(clearingNumber, accountNumber):
             let input = OctopusGraphQL.PaymentMethodSetupNordeaPayoutInput(
-                setAsDefault: setAsDefault,
                 clearingNumber: clearingNumber,
                 accountNumber: accountNumber
             )
@@ -275,7 +271,6 @@ extension PaymentData {
             if let paymentProvider = data.paymentProvider {
                 let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
                 return PaymentMethodData.init(
-                    id: paymentProvider,
                     provider: realPaymentProvider,
                     status: .active,
                     isDefault: true,
@@ -466,7 +461,6 @@ extension PaymentData {
             if let paymentProvider = data.paymentProvider {
                 let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
                 return PaymentMethodData.init(
-                    id: paymentProvider,
                     provider: realPaymentProvider,
                     status: .active,
                     isDefault: true,

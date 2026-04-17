@@ -132,7 +132,6 @@ class NordeaPayoutSetupViewModel: ObservableObject {
         do {
             let result = try await paymentService.setupPaymentMethod(
                 .nordeaPayout(
-                    setAsDefault: true,
                     clearingNumber: clearingNumber,
                     accountNumber: accountMasking.unmaskedValue(text: accountNumber)
                 )
