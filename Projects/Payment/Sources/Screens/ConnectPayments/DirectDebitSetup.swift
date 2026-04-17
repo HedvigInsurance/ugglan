@@ -265,12 +265,13 @@ public struct DirectDebitSetup: View {
     @State var showErrorAlert: Bool = false
     @State var showNotSupported: Bool = false
 
-    @StateObject var router = NavigationRouter()
+    @ObservedObject var router = NavigationRouter()
     let setupType: SetupType
     let onSuccess: (() -> Void)?
 
     public init(
         setupType: SetupType? = nil,
+        router: NavigationRouter? = nil,
         onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
@@ -285,6 +286,7 @@ public struct DirectDebitSetup: View {
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
         self.onSuccess = onSuccess
+        self.router = router ?? NavigationRouter()
     }
 
     public var body: some View {
