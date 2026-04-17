@@ -8,7 +8,11 @@ import hCoreUI
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
+    @Published var showNordeaSetup = false
+
     var paymentStatusViewModel: PaymentStatusViewModel?
+    public var connectPaymentVm = ConnectPaymentViewModel()
+
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         paymentStoreSubscription = store.stateSignal.map(\.paymentStatusData)
@@ -25,8 +29,6 @@ public class PaymentsNavigationViewModel: ObservableObject {
                 }
             })
     }
-
-    public var connectPaymentVm = ConnectPaymentViewModel()
 }
 
 class PaymentStatusViewModel: ObservableObject {
@@ -80,6 +82,14 @@ public struct PaymentsNavigation: View {
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
+        .detent(
+            presented: $paymentsNavigationVm.showNordeaSetup,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            NordeaPayoutSetupScreen() { [weak router] in
+                router?.pop()
+            }
+        }
     }
 }
 
