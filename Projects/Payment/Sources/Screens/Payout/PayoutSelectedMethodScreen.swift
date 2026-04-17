@@ -7,46 +7,81 @@ struct PayoutSelectedMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
     @EnvironmentObject var paymentsNavigationViewModel: PaymentsNavigationViewModel
     @EnvironmentObject var router: NavigationRouter
+    let withCloseButton: Bool
     var body: some View {
-        hForm {
-            VStack(spacing: .padding8) {
+        if vm.paymentStatusData.defaultPayoutMethod == nil {
+            hForm {
                 hSection {
-                    hFloatingField(
-                        value: vm.paymentStatusData.payoutAccountDisplayValue,
-                        placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
-                        error: nil,
-                        onTap: {}
+                    InfoCard(
+                        text: "It looks like you are missing payout method. Add it so we can payout to you",
+                        type: .info
                     )
-                    .hFieldTrailingView {
-                        hCoreUIAssets.lock.view
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                    .hBackgroundOption(option: [.locked])
-                    .disabled(true)
                 }
+                .padding(.bottom, .padding8)
             }
-            .padding(.top, .padding16)
-        }
-        .hFormAttachToBottom {
-            if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
-                hSection {
-                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                }
-                .sectionContainerStyle(.transparent)
-            }
-
-            if vm.paymentStatusData.showChangeButton {
+            .hFormAttachToBottom {
                 hSection {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title: L10n.changePayoutMethodButtonLabel),
+                        content: .init(title: "Add payout method"),
                         {
                             paymentsNavigationViewModel.showPayoutSetup = true
                         }
                     )
                 }
-                .sectionContainerStyle(.transparent)
+            }
+            .hFormContentPosition(.bottom)
+            .sectionContainerStyle(.transparent)
+        } else {
+            hForm {
+                VStack(spacing: .padding8) {
+                    hSection {
+                        hFloatingField(
+                            value: vm.paymentStatusData.payoutAccountDisplayValue,
+                            placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
+                            error: nil,
+                            onTap: {}
+                        )
+                        .hFieldTrailingView {
+                            hCoreUIAssets.lock.view
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        }
+                        .hBackgroundOption(option: [.locked])
+                        .disabled(true)
+                    }
+                }
+                .padding(.top, .padding16)
+            }
+            .hFormAttachToBottom {
+                if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
+                    hSection {
+                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
+                if withCloseButton {
+                    hSection {
+                        hCloseButton { [weak router] in
+                            router?.dismiss()
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                } else {
+                    if vm.paymentStatusData.showChangeButton {
+                        hSection {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.changePayoutMethodButtonLabel),
+                                {
+                                    paymentsNavigationViewModel.showPayoutSetup = true
+                                }
+                            )
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                }
             }
         }
     }
@@ -116,7 +151,8 @@ extension PaymentStatusData {
                     .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
                 ]
             )
-        )
+        ),
+        withCloseButton: false
     )
     .environmentObject(NavigationRouter())
 }
@@ -161,7 +197,43 @@ extension PaymentStatusData {
                     .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
                 ]
             )
-        )
+        ),
+        withCloseButton: false
     )
     .environmentObject(NavigationRouter())
+}
+
+#Preview("PayoutSelectedMethodScreen - no default payout") {
+    PayoutSelectedMethodScreen(
+        vm: .init(
+            paymentStatusData: .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: .init(
+                    provider: .invoice,
+                    status: .active,
+                    isDefault: true,
+                    details: .invoice(delivery: .kivra, email: nil)
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .invoice,
+                        status: .active,
+                        isDefault: true,
+                        details: .invoice(delivery: .kivra, email: nil)
+                    )
+                ],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ]
+            )
+        ),
+        withCloseButton: false
+    )
+    .environmentObject(NavigationRouter())
+    .environmentObject(PaymentsNavigationViewModel())
 }

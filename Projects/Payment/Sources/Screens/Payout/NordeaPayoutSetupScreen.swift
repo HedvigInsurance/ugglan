@@ -92,7 +92,6 @@ struct NordeaPayoutSetupScreen: View {
                 if let success = await vm?.save() {
                     if success {
                         onSuccess?()
-                        Toasts.success()
                     }
                 }
             }

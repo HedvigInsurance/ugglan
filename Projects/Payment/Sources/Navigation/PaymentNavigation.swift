@@ -69,7 +69,10 @@ public struct PaymentsNavigation: View {
                     case .paymentMethod:
                         PaymentMethodScreen()
                     case .payoutMethod:
-                        PayoutSelectedMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
+                        PayoutSelectedMethodScreen(
+                            vm: paymentsNavigationVm.paymentStatusViewModel!,
+                            withCloseButton: false
+                        )
                     }
                 }
         }

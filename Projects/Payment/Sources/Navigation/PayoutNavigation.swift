@@ -4,8 +4,9 @@ import hCore
 import hCoreUI
 
 struct PayoutNavigation: View {
-    @Environment(\.dismiss) var dissmiss
     @StateObject private var router = NavigationRouter()
+    @StateObject private var paymentMethodRouter = NavigationRouter()
+
     @State private var showConnectPayoutMethod: PaymentProvider?
     @ObservedObject private var paymentsNavigationVm: PaymentsNavigationViewModel
     init(
@@ -16,41 +17,62 @@ struct PayoutNavigation: View {
 
     public var body: some View {
         if let paymentStatusViewModel = paymentsNavigationVm.paymentStatusViewModel {
-            hNavigationStack(router: router, tracking: PayoutRouterAction.selectPayoutMethod) {
+            hNavigationStack(router: router, tracking: PayoutRouterAction.changeMethod) {
                 PayoutChangeMethodScreen(vm: paymentStatusViewModel) { provider in
                     showConnectPayoutMethod = provider
                 }
                 .navigationTitle(L10n.payoutSelectPayoutMethod)
-                .withAlertDismiss()
+                .withDismissButton()
+                .routerDestination(for: PayoutRouterAction.self, options: .hidesBackButton) { type in
+                    switch type {
+                    case .payoutMethod:
+                        PayoutSelectedMethodScreen(vm: paymentStatusViewModel, withCloseButton: true)
+                            .withDismissButton()
+                    case .changeMethod:
+                        PayoutChangeMethodScreen(vm: paymentStatusViewModel) { provider in
+                            showConnectPayoutMethod = provider
+                        }
+                    }
+                }
             }
             .detent(
                 item: $showConnectPayoutMethod,
                 presentationStyle: showConnectPayoutMethod?.detentPresentationStyle ?? .detent(style: [.large]),
                 options: .constant(showConnectPayoutMethod?.options ?? [])
-            ) { paymentProvider in
+            ) { [weak paymentMethodRouter] paymentProvider in
                 switch paymentProvider {
                 case .nordea:
                     NordeaPayoutSetupScreen() {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         store.send(.fetchPaymentStatus)
-                        dissmiss()
+                        paymentMethodRouter?.dismiss()
+                        router.push(PayoutRouterAction.payoutMethod)
                         Toasts.success()
                     }
                     .navigationTitle(PaymentProvider.nordea.payoutTitle)
-                    .embededInNavigation(tracking: PaymentProvider.nordea)
+                    .embededInNavigation(
+                        router: paymentMethodRouter ?? NavigationRouter(),
+                        tracking: PaymentProvider.nordea
+                    )
 
                 case .swish:
                     SwishPayoutSetupScreen() {
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         store.send(.fetchPaymentStatus)
-                        dissmiss()
+                        paymentMethodRouter?.dismiss()
+                        router.push(PayoutRouterAction.payoutMethod)
+
                         Toasts.success()
                     }
                     .navigationTitle(PaymentProvider.swish.payoutTitle)
-                    .embededInNavigation(tracking: PaymentProvider.swish)
+                    .embededInNavigation(
+                        router: paymentMethodRouter ?? NavigationRouter(),
+                        tracking: PaymentProvider.swish
+                    )
                 case .trustly:
-                    DirectDebitSetup() {
-                        dissmiss()
+                    DirectDebitSetup(router: paymentMethodRouter) {
+                        paymentMethodRouter?.dismiss()
+                        router.push(PayoutRouterAction.payoutMethod)
                         Toasts.success()
                     }
                 case .invoice, .unknown:
@@ -105,12 +127,15 @@ extension PaymentProvider: TrackingViewNameProtocol, NavigationTitleProtocol {
 }
 
 private enum PayoutRouterAction: Hashable, TrackingViewNameProtocol {
-    case selectPayoutMethod
+    case changeMethod
+    case payoutMethod
 
     var nameForTracking: String {
         switch self {
-        case .selectPayoutMethod:
+        case .changeMethod:
             return String(describing: PayoutChangeMethodScreen.self)
+        case .payoutMethod:
+            return String(describing: PayoutSelectedMethodScreen.self)
         }
     }
 }
