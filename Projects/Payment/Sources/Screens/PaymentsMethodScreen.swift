@@ -23,21 +23,33 @@ struct PaymentMethodScreen: View {
                         ConnectPaymentBottomView(alwaysShowButton: true)
                     } else if paymentChargeData.chargeMethod == .kivra {
                         hSection {
-                            InfoCard(
-                                text:
-                                    L10n.kivraNotificationBoxText,
-                                type: .info
-                            )
-                            .buttons(
-                                [
-                                    .init(
-                                        buttonTitle: L10n.profilePaymentConnectDirectDebitButton,
-                                        buttonAction: {
-                                            paymentsNavigationVM.connectPaymentVm.set()
-                                        }
+                            PresentableStoreLens(
+                                PaymentStore.self,
+                                getter: { state in
+                                    state.paymentStatusData
+                                }
+                            ) { statusData in
+                                if let statusData {
+                                    InfoCard(
+                                        text:
+                                            statusData.status == .pending
+                                            ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                                        type: .info
                                     )
-                                ]
-                            )
+                                    .buttons(
+                                        [
+                                            .init(
+                                                buttonTitle: statusData.status == .pending
+                                                    ? statusData.status.connectButtonTitle
+                                                    : L10n.profilePaymentConnectDirectDebitButton,
+                                                buttonAction: {
+                                                    paymentsNavigationVM.connectPaymentVm.set()
+                                                }
+                                            )
+                                        ]
+                                    )
+                                }
+                            }
                         }
                         .sectionContainerStyle(.transparent)
                     }
