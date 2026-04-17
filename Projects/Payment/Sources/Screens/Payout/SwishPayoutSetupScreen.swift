@@ -32,7 +32,7 @@ struct SwishPayoutSetupScreen: View {
                 value: $vm.phoneNumber,
                 equals: $vm.focusedField,
                 focusValue: .phoneNumber,
-                placeholder: "Mobilnummer",
+                placeholder: L10n.phoneNumberRowTitle,
                 error: $vm.phoneNumberError
             )
         }
@@ -123,7 +123,7 @@ class SwishPayoutSetupViewModel: ObservableObject {
     private func validate() -> Bool {
         guard phoneNumberMasking.isValid(text: phoneNumber) else {
             withAnimation {
-                phoneNumberError = "Ange ett giltigt mobilnummer"
+                phoneNumberError = L10n.myInfoPhoneNumberMalformedError
                 focusedField = .phoneNumber
             }
             return false
