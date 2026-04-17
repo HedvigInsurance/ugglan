@@ -220,7 +220,7 @@ private class DirectDebitWebview: UIView {
         Task {
             do {
                 let result = try await paymentService.setupPaymentMethod(
-                    .trustly(setAsDefaultPayin: true, setAsDefaultPayout: true)
+                    .trustly
                 )
                 guard let urlString = result.url, let url = URL(string: urlString) else {
                     self.showErrorAlert = true

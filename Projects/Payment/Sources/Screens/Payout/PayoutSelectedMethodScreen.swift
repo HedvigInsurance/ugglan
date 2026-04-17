@@ -81,7 +81,6 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    id: "1",
                     provider: .nordea,
                     status: .active,
                     isDefault: true,
@@ -89,7 +88,6 @@ extension PaymentStatusData {
                 ),
                 payinMethods: [
                     .init(
-                        id: "1",
                         provider: .nordea,
                         status: .active,
                         isDefault: true,
@@ -97,7 +95,6 @@ extension PaymentStatusData {
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    id: "2",
                     provider: .nordea,
                     status: .active,
                     isDefault: true,
@@ -105,7 +102,6 @@ extension PaymentStatusData {
                 ),
                 payoutMethods: [
                     .init(
-                        id: "2",
                         provider: .nordea,
                         status: .active,
                         isDefault: true,
@@ -130,7 +126,6 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    id: "1",
                     provider: .invoice,
                     status: .active,
                     isDefault: true,
@@ -138,7 +133,6 @@ extension PaymentStatusData {
                 ),
                 payinMethods: [
                     .init(
-                        id: "1",
                         provider: .invoice,
                         status: .active,
                         isDefault: true,
@@ -146,7 +140,6 @@ extension PaymentStatusData {
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    id: "2",
                     provider: .trustly,
                     status: .active,
                     isDefault: true,
@@ -154,7 +147,6 @@ extension PaymentStatusData {
                 ),
                 payoutMethods: [
                     .init(
-                        id: "2",
                         provider: .trustly,
                         status: .active,
                         isDefault: true,

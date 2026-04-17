@@ -71,7 +71,6 @@ final class PaymentServiceTests: XCTestCase {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                id: "1",
                 provider: .trustly,
                 status: .active,
                 isDefault: true,
@@ -79,7 +78,6 @@ final class PaymentServiceTests: XCTestCase {
             ),
             payinMethods: [
                 .init(
-                    id: "1",
                     provider: .trustly,
                     status: .active,
                     isDefault: true,
@@ -132,7 +130,7 @@ final class PaymentServiceTests: XCTestCase {
         sut = mockService
 
         let result = try! await mockService.setupPaymentMethod(
-            .trustly(setAsDefaultPayin: true, setAsDefaultPayout: true)
+            .trustly
         )
         assert(result == expectedResult)
     }
