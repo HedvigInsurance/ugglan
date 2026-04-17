@@ -150,7 +150,7 @@ extension PaymentStatusData {
                         provider: .trustly,
                         status: .active,
                         isDefault: true,
-                        details: nil
+                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
                     )
                 ],
                 availableMethods: [
