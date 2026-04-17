@@ -48,20 +48,20 @@ extension Sequence where Element == PaymentMethodData {
 }
 
 public struct PaymentMethodData: Codable, Equatable, Sendable, Hashable, Identifiable {
-    public let id: String
+    public var id: String {
+        provider.asString + status.asString
+    }
     public let provider: PaymentProvider
     public let status: PaymentMethodStatus
     public let isDefault: Bool
     public let details: PaymentMethodDetails?
 
     public init(
-        id: String,
         provider: PaymentProvider,
         status: PaymentMethodStatus,
         isDefault: Bool,
         details: PaymentMethodDetails?
     ) {
-        self.id = id
         self.provider = provider
         self.status = status
         self.isDefault = isDefault
@@ -112,7 +112,7 @@ public struct AvailablePaymentMethod: Codable, Equatable, Sendable, Hashable {
 }
 
 public enum PaymentMethodSetupType: Sendable {
-    case trustly(setAsDefaultPayin: Bool, setAsDefaultPayout: Bool)
+    case trustly
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {

@@ -25,8 +25,6 @@ struct PayoutChangeMethodScreen: View {
                             switch method.provider {
                             case .trustly:
                                 paymentNavigationVm.connectPaymentVm.set(
-                                    forPayin: false,
-                                    forPayout: true,
                                     onSuccess: { [weak router] in
                                         router?.pop()
                                     }

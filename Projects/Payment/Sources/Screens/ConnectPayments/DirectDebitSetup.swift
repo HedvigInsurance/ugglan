@@ -18,8 +18,6 @@ private class DirectDebitWebview: UIView {
     var webViewDelgate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
-    let forPayin: Bool
-    let forPayout: Bool
     let onSuccess: (() -> Void)?
 
     @available(*, unavailable)
@@ -30,14 +28,10 @@ private class DirectDebitWebview: UIView {
     init(
         showErrorAlert: Binding<Bool>,
         router: NavigationRouter,
-        forPayin: Bool,
-        forPayout: Bool,
         onSuccess: (() -> Void)?
     ) {
         _showErrorAlert = showErrorAlert
         self.router = router
-        self.forPayin = forPayin
-        self.forPayout = forPayout
         self.onSuccess = onSuccess
         super.init(frame: .zero)
 
@@ -230,7 +224,7 @@ private class DirectDebitWebview: UIView {
         Task {
             do {
                 let result = try await paymentService.setupPaymentMethod(
-                    .trustly(setAsDefaultPayin: forPayin, setAsDefaultPayout: forPayout)
+                    .trustly
                 )
                 guard let urlString = result.url, let url = URL(string: urlString) else {
                     self.showErrorAlert = true
@@ -253,16 +247,12 @@ private class DirectDebitWebview: UIView {
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
-    let forPayin: Bool
-    let forPayout: Bool
     let onSuccess: (() -> Void)?
 
     func makeUIView(context _: Context) -> some UIView {
         DirectDebitWebview(
             showErrorAlert: $showErrorAlert,
             router: router,
-            forPayin: forPayin,
-            forPayout: forPayout,
             onSuccess: onSuccess
         )
     }
@@ -277,14 +267,10 @@ public struct DirectDebitSetup: View {
 
     @StateObject var router = NavigationRouter()
     let setupType: SetupType
-    let forPayin: Bool
-    let forPayout: Bool
     let onSuccess: (() -> Void)?
 
     public init(
         setupType: SetupType? = nil,
-        forPayin: Bool = true,
-        forPayout: Bool = true,
         onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
@@ -298,8 +284,6 @@ public struct DirectDebitSetup: View {
         }()
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
-        self.forPayin = forPayin
-        self.forPayout = forPayout
         self.onSuccess = onSuccess
     }
 
@@ -336,8 +320,6 @@ public struct DirectDebitSetup: View {
                 DirectDebitSetupRepresentable(
                     showErrorAlert: $showErrorAlert,
                     router: router,
-                    forPayin: forPayin,
-                    forPayout: forPayout,
                     onSuccess: onSuccess
                 )
                 .alert(isPresented: $showCancelAlert) {
@@ -347,8 +329,6 @@ public struct DirectDebitSetup: View {
                 DirectDebitSetupRepresentable(
                     showErrorAlert: $showErrorAlert,
                     router: router,
-                    forPayin: forPayin,
-                    forPayout: forPayout,
                     onSuccess: onSuccess
                 )
                 .alert(isPresented: $showErrorAlert) {
