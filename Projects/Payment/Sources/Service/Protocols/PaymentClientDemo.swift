@@ -62,7 +62,6 @@ public class hPaymentClientDemo: hPaymentClient {
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
                 payinMethod: .init(
-                    id: "payin-demo",
                     provider: .trustly,
                     status: .active,
                     isDefault: true,
@@ -138,7 +137,6 @@ public class hPaymentClientDemo: hPaymentClient {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                id: "payin-1",
                 provider: .trustly,
                 status: .active,
                 isDefault: true,
@@ -146,7 +144,6 @@ public class hPaymentClientDemo: hPaymentClient {
             ),
             payinMethods: [
                 .init(
-                    id: "payin-1",
                     provider: .trustly,
                     status: .active,
                     isDefault: true,

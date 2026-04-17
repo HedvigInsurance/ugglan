@@ -253,7 +253,6 @@ struct PaymentDetailsView: View {
             ),
         amountPerReferral: .sek(10),
         payinMethod: .init(
-            id: "payin-1",
             provider: .invoice,
             status: .active,
             isDefault: true,

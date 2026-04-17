@@ -22,7 +22,6 @@ final class StorePaymentStatusTests: XCTestCase {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                id: "1",
                 provider: .trustly,
                 status: .active,
                 isDefault: true,
@@ -30,7 +29,6 @@ final class StorePaymentStatusTests: XCTestCase {
             ),
             payinMethods: [
                 .init(
-                    id: "1",
                     provider: .trustly,
                     status: .active,
                     isDefault: true,

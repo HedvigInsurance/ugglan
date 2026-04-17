@@ -112,7 +112,6 @@ class SwishPayoutSetupViewModel: ObservableObject {
         do {
             let result = try await paymentService.setupPaymentMethod(
                 .swishPayout(
-                    setAsDefault: true,
                     phoneNumber: phoneNumberMasking.unmaskedValue(text: phoneNumber)
                 )
             )
