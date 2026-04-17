@@ -5,6 +5,7 @@ import hCoreUI
 
 struct PayoutSelectedMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
+    @EnvironmentObject var paymentsNavigationViewModel: PaymentsNavigationViewModel
     @EnvironmentObject var router: NavigationRouter
     var body: some View {
         hForm {
@@ -23,28 +24,29 @@ struct PayoutSelectedMethodScreen: View {
                     .hBackgroundOption(option: [.locked])
                     .disabled(true)
                 }
-                if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
-                    hSection {
-                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                    }
-                    .sectionContainerStyle(.transparent)
+            }
+            .padding(.top, .padding16)
+        }
+        .hFormAttachToBottom {
+            if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
+                hSection {
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                 }
+                .sectionContainerStyle(.transparent)
+            }
 
-                if vm.paymentStatusData.showChangeButton {
-                    hSection {
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(title: L10n.changePayoutMethodButtonLabel),
-                            {
-                                router.push(
-                                    PayoutRouterAction.setupPayoutMethod
-                                )
-                            }
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+            if vm.paymentStatusData.showChangeButton {
+                hSection {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.changePayoutMethodButtonLabel),
+                        {
+                            paymentsNavigationViewModel.showPayoutSetup = true
+                        }
+                    )
                 }
+                .sectionContainerStyle(.transparent)
             }
         }
     }

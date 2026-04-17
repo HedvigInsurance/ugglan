@@ -8,9 +8,7 @@ import hCoreUI
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
-    @Published var showNordeaSetup = false
-    @Published var showSwishPayoutSetup = false
-
+    @Published var showPayoutSetup = false
     var paymentStatusViewModel: PaymentStatusViewModel?
     public var connectPaymentVm = ConnectPaymentViewModel()
 
@@ -70,34 +68,18 @@ public struct PaymentsNavigation: View {
                         PaymentHistoryView()
                     case .paymentMethod:
                         PaymentMethodScreen()
-                    }
-                }
-                .routerDestination(for: PayoutRouterAction.self) { routerAction in
-                    switch routerAction {
                     case .payoutMethod:
                         PayoutSelectedMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
-                    case .setupPayoutMethod:
-                        PayoutChangeMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
                     }
                 }
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
         .detent(
-            presented: $paymentsNavigationVm.showNordeaSetup,
-            presentationStyle: .detent(style: [.height])
+            presented: $paymentsNavigationVm.showPayoutSetup,
+            presentationStyle: .detent(style: [.large])
         ) {
-            NordeaPayoutSetupScreen() { [weak router] in
-                router?.pop()
-            }
-        }
-        .detent(
-            presented: $paymentsNavigationVm.showSwishPayoutSetup,
-            presentationStyle: .detent(style: [.height])
-        ) {
-            SwishPayoutSetupScreen() { [weak router] in
-                router?.pop()
-            }
+            PayoutNavigation(paymentsNavigationVm: paymentsNavigationVm)
         }
     }
 }
@@ -112,33 +94,12 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 
     case paymentsView
 }
-enum PayoutRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
-    case payoutMethod
-    case setupPayoutMethod
-
-    var nameForTracking: String {
-        switch self {
-        case .payoutMethod:
-            return .init(describing: PayoutSelectedMethodScreen.self)
-        case .setupPayoutMethod:
-            return .init(describing: PayoutChangeMethodScreen.self)
-        }
-    }
-
-    var navigationTitle: String? {
-        switch self {
-        case .payoutMethod:
-            return L10n.payoutPageHeading
-        case .setupPayoutMethod:
-            return L10n.payoutSelectPayoutMethod
-        }
-    }
-}
 
 enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
     case paymentMethod
+    case payoutMethod
 
     var nameForTracking: String {
         switch self {
@@ -148,17 +109,21 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
             return .init(describing: PaymentHistoryView.self)
         case .paymentMethod:
             return .init(describing: PaymentMethodScreen.self)
+        case .payoutMethod:
+            return .init(describing: PayoutSelectedMethodScreen.self)
         }
     }
 
     var navigationTitle: String? {
         switch self {
         case .discounts:
-            L10n.paymentsDiscountsSectionTitle
+            return L10n.paymentsDiscountsSectionTitle
         case .history:
-            L10n.paymentHistoryTitle
+            return L10n.paymentHistoryTitle
         case .paymentMethod:
-            L10n.PaymentDetails.NavigationBar.title
+            return L10n.PaymentDetails.NavigationBar.title
+        case .payoutMethod:
+            return L10n.payoutPageHeading
         }
     }
 }

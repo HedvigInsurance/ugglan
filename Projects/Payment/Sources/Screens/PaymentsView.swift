@@ -192,9 +192,9 @@ public struct PaymentsView: View {
         .withChevronAccessory
         .onTap {
             if data.payoutMethods.isEmpty, !data.availablePayoutMethods.isEmpty {
-                router.push(PayoutRouterAction.setupPayoutMethod)
+                //                router.push(PayoutRouterAction.setupPayoutMethod)
             } else if !data.payinMethods.isEmpty {
-                router.push(PayoutRouterAction.payoutMethod)
+                router.push(PaymentsRouterAction.payoutMethod)
             }
         }
     }

@@ -5,8 +5,8 @@ import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
-    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @EnvironmentObject var router: NavigationRouter
+    let onSelectedProvider: (_: PaymentProvider) -> Void
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
@@ -21,19 +21,8 @@ struct PayoutChangeMethodScreen: View {
                             Spacer()
                         }
                         .withChevronAccessory
-                        .onTap {
-                            switch method.provider {
-                            case .trustly:
-                                paymentNavigationVm.connectPaymentVm.set(
-                                    onSuccess: { [weak router] in
-                                        router?.pop()
-                                    }
-                                )
-                            case .invoice: break
-                            case .nordea: paymentNavigationVm.showNordeaSetup = true
-                            case .swish: paymentNavigationVm.showSwishPayoutSetup = true
-                            case .unknown: break
-                            }
+                        .onTap { [onSelectedProvider] in
+                            onSelectedProvider(method.provider)
                         }
                     }
                 }
@@ -81,7 +70,7 @@ extension PaymentProvider {
                 ]
             )
         )
-    )
+    ) { _ in }
     .environmentObject(NavigationRouter())
     .environmentObject(PaymentsNavigationViewModel())
 }
