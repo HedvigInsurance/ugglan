@@ -5,7 +5,7 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
+extension GraphQLEnum<OctopusGraphQL.MemberPaymentMethodStatus> {
     var asPayinMethodStatus: PayinMethodStatus {
         switch self {
         case let .case(t):
@@ -14,8 +14,6 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
                 return .active
             case .pending:
                 return .pending
-            case .needsSetup:
-                return .needsSetup
             }
         case .unknown:
             return .unknown
@@ -25,7 +23,7 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
 
 @MainActor
 extension PaymentStatusData {
-    init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
+    init(data: OctopusGraphQL.PaymentMethodsQuery.Data) {
         let status: PayinMethodStatus = {
             if data.currentMember.activeContracts.isEmpty, data.currentMember.pendingContracts.isEmpty {
                 return .noNeedToConnect
@@ -41,11 +39,96 @@ extension PaymentStatusData {
                 }
             }
 
-            return data.currentMember.paymentInformation.status.asPayinMethodStatus
+            guard
+                let defaultPayin = data.currentMember.paymentMethods.defaultPayinMethod?.fragments
+                    .memberPaymentMethodFragment
+                    ?? data.currentMember.paymentMethods.payinMethods.first?.fragments.memberPaymentMethodFragment
+            else {
+                return .needsSetup
+            }
+            return defaultPayin.status.asPayinMethodStatus
         }()
+        let paymentMethods = data.currentMember.paymentMethods
+
+        let payinMethods: [PaymentMethodData] = paymentMethods.payinMethods.map {
+            PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
+        }
+
+        let payoutMethods: [PaymentMethodData] = paymentMethods.payoutMethods.map {
+            PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
+        }
+
+        let availableMethods: [AvailablePaymentMethod] = paymentMethods.availableMethods.map {
+            .init(
+                provider: PaymentProvider.from(graphQL: $0.provider),
+                supportsPayin: $0.supportsPayin,
+                supportsPayout: $0.supportsPayout
+            )
+        }
+
+        let defaultPayinMethod: PaymentMethodData? = paymentMethods.defaultPayinMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+
+        let defaultPayoutMethod: PaymentMethodData? = paymentMethods.defaultPayoutMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+
         self.init(
             status: status,
-            paymentChargeData: .init(with: data.currentMember.paymentInformation.chargeMethod)
+            chargingDay: paymentMethods.chargingDay,
+            defaultPayinMethod: defaultPayinMethod,
+            payinMethods: payinMethods,
+            defaultPayoutMethod: defaultPayoutMethod,
+            payoutMethods: payoutMethods,
+            availableMethods: availableMethods
+        )
+    }
+}
+
+extension PaymentProvider {
+    static func from(graphQL provider: GraphQLEnum<OctopusGraphQL.MemberPaymentProvider>) -> PaymentProvider {
+        switch provider {
+        case .case(.trustly): return .trustly
+        case .case(.swish): return .swish
+        case .case(.nordea): return .nordea
+        case .case(.invoice): return .invoice
+        default: return .unknown
+        }
+    }
+}
+
+@MainActor
+extension PaymentMethodData {
+    init(fragment: OctopusGraphQL.MemberPaymentMethodFragment) {
+        let provider = PaymentProvider.from(graphQL: fragment.provider)
+        let status: PaymentMethodStatus = {
+            switch fragment.status {
+            case .case(.active): return .active
+            case .case(.pending): return .pending
+            default: return .unknown
+            }
+        }()
+        let details: PaymentMethodDetails? = {
+            if let bankAccount = fragment.details.asPaymentMethodBankAccountDetails {
+                return .bankAccount(account: bankAccount.account, bank: bankAccount.bank)
+            } else if let swish = fragment.details.asPaymentMethodSwishDetails {
+                return .swish(phoneNumber: swish.phoneNumber)
+            } else if let invoice = fragment.details.asPaymentMethodInvoiceDetails {
+                let delivery: PaymentMethodDetails.InvoiceDelivery = {
+                    switch invoice.delivery {
+                    case .case(.kivra): return .kivra
+                    case .case(.mail): return .mail
+                    default: return .unknown
+                    }
+                }()
+                return .invoice(delivery: delivery, email: invoice.email)
+            }
+            return nil
+        }()
+        self.init(
+            provider: provider,
+            status: status,
+            isDefault: fragment.isDefault,
+            details: details
         )
     }
 }
@@ -58,7 +141,7 @@ class hPaymentClientOctopus: hPaymentClient {
         let client = octopus.client
 
         async let dataResult = client.fetch(query: OctopusGraphQL.PaymentDataQuery())
-        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentInformationQuery())
+        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentMethodsQuery())
 
         let (data, paymentDetailsData) = try await (dataResult, paymentDetailsResult)
 
@@ -68,7 +151,7 @@ class hPaymentClientOctopus: hPaymentClient {
         )
         let upcomingPayment = PaymentData(
             with: data,
-            paymentChargeData: paymentDetailsData,
+            paymentMethodsData: paymentDetailsData,
             amountPerReferral: amountPerReferral
         )
         let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap {
@@ -82,7 +165,7 @@ class hPaymentClientOctopus: hPaymentClient {
     }
 
     func getPaymentStatusData() async throws -> PaymentStatusData {
-        let query = OctopusGraphQL.PaymentInformationQuery()
+        let query = OctopusGraphQL.PaymentMethodsQuery()
         let data = try await octopus.client.fetch(query: query)
         return PaymentStatusData(data: data)
     }
@@ -93,13 +176,31 @@ class hPaymentClientOctopus: hPaymentClient {
         return PaymentHistoryListData.getHistory(with: data.currentMember)
     }
 
-    func getConnectPaymentUrl() async throws -> URL {
-        let mutation = OctopusGraphQL.RegisterDirectDebitMutation(clientContext: GraphQLNullable.none)
-        let data = try await octopus.client.mutation(mutation: mutation)!
-        if let url = URL(string: data.registerDirectDebit2.url) {
-            return url
+    func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
+        switch type {
+        case .trustly:
+            let input = OctopusGraphQL.PaymentMethodSetupTrustlyInput(
+                successUrl: "hedvig://payment/success",
+                failureUrl: "hedvig://payment/failure"
+            )
+            let mutation = OctopusGraphQL.PaymentMethodSetupTrustlyMutation(input: input)
+            let data = try await octopus.client.mutation(mutation: mutation)!
+            return data.paymentMethodSetupTrustly.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
-        throw PaymentError.missingDataError(message: L10n.General.errorBody)
+    }
+}
+
+extension OctopusGraphQL.PaymentMethodSetupOutputFragment {
+    func toPaymentSetupResult() -> PaymentSetupResult {
+        let status: PaymentSetupResult.PaymentSetupStatus = {
+            switch self.status {
+            case .case(.active): return .active
+            case .case(.pending): return .pending
+            case .case(.failed): return .failed
+            default: return .unknown
+            }
+        }()
+        return PaymentSetupResult(status: status, url: url, errorMessage: error?.message)
     }
 }
 
@@ -108,7 +209,7 @@ extension PaymentData {
     // used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
-        paymentChargeData: OctopusGraphQL.PaymentInformationQuery.Data,
+        paymentMethodsData: OctopusGraphQL.PaymentMethodsQuery.Data,
         amountPerReferral: MonetaryAmount
     ) {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
@@ -126,7 +227,8 @@ extension PaymentData {
             return nil
         }()
 
-        let paymentChargeData = PaymentChargeData(with: paymentChargeData, and: chargeFragment.chargeMethod)
+        let payinMethod: PaymentMethodData? = paymentMethodsData.currentMember.paymentMethods.defaultPayinMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
 
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
@@ -137,7 +239,7 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: paymentChargeData,
+            payinMethod: payinMethod,
             addedToThePayment: []
         )
     }
@@ -157,6 +259,18 @@ extension PaymentData {
             }
             return nil
         }()
+        let payingMethod: PaymentMethodData? = {
+            if let paymentProvider = data.paymentProvider {
+                let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
+                return PaymentMethodData.init(
+                    provider: realPaymentProvider,
+                    status: .active,
+                    isDefault: true,
+                    details: nil
+                )
+            }
+            return nil
+        }()
         self.init(
             id: data.id ?? "",
             payment: .init(with: data),
@@ -166,72 +280,8 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: .init(
-                paymentMethod: nil,
-                bankName: nil,
-                account: nil,
-                mandate: nil,
-                dueDate: nil,
-                chargeMethod: data.chargeMethod
-            ),
+            payinMethod: payingMethod,
             addedToThePayment: []
-        )
-    }
-}
-
-extension OctopusGraphQL.MemberChargeFragment {
-    var chargeMethod: PaymentChargeData.PaymentChargeMethod {
-        .from(provider: paymentProvider)
-    }
-}
-
-extension OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod {
-    var paymentChargeMethod: PaymentChargeData.PaymentChargeMethod {
-        .from(provider: paymentProvider)
-    }
-}
-
-extension PaymentChargeData {
-    init?(
-        with model: OctopusGraphQL.PaymentInformationQuery.Data,
-        and paymentsChargeMethod: PaymentChargeData.PaymentChargeMethod?
-    ) {
-        guard let paymentsChargeMethod else {
-            return nil
-        }
-        guard let chargeMethod = model.currentMember.paymentInformation.chargeMethod else {
-            self.init(
-                paymentMethod: nil,
-                bankName: nil,
-                account: nil,
-                mandate: nil,
-                dueDate: nil,
-                chargeMethod: paymentsChargeMethod
-            )
-            return
-        }
-
-        self.init(
-            paymentMethod: chargeMethod.paymentMethod,
-            bankName: chargeMethod.displayName,
-            account: chargeMethod.descriptor,
-            mandate: chargeMethod.mandate,
-            dueDate: chargeMethod.dueDate,
-            chargeMethod: paymentsChargeMethod
-        )
-    }
-
-    init?(with model: OctopusGraphQL.PaymentInformationQuery.Data.CurrentMember.PaymentInformation.ChargeMethod?) {
-        guard let chargeMethod = model else {
-            return nil
-        }
-        self.init(
-            paymentMethod: chargeMethod.paymentMethod,
-            bankName: chargeMethod.displayName,
-            account: chargeMethod.descriptor,
-            mandate: chargeMethod.mandate,
-            dueDate: chargeMethod.dueDate,
-            chargeMethod: chargeMethod.paymentChargeMethod
         )
     }
 }
@@ -398,6 +448,19 @@ extension PaymentData {
             }
             return nil
         }()
+
+        let payingMethod: PaymentMethodData? = {
+            if let paymentProvider = data.paymentProvider {
+                let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
+                return PaymentMethodData.init(
+                    provider: realPaymentProvider,
+                    status: .active,
+                    isDefault: true,
+                    details: nil
+                )
+            }
+            return nil
+        }()
         self.init(
             id: data.id ?? "",
             payment: .init(with: chargeFragment),
@@ -407,14 +470,7 @@ extension PaymentData {
             },
             referralDiscount: referralDiscount,
             amountPerReferral: amountPerReferral,
-            paymentChargeData: .init(
-                paymentMethod: nil,
-                bankName: nil,
-                account: nil,
-                mandate: nil,
-                dueDate: nil,
-                chargeMethod: data.chargeMethod
-            ),
+            payinMethod: payingMethod,
             addedToThePayment: {
                 if let nextPayment {
                     [nextPayment]

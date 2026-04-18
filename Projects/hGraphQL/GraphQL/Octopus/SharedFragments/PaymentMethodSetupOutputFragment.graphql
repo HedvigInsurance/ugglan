@@ -1,0 +1,7 @@
+fragment PaymentMethodSetupOutputFragment on PaymentMethodSetupOutput {
+    status
+    url
+    error {
+        message
+    }
+}

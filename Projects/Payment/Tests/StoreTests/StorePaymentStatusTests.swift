@@ -20,14 +20,24 @@ final class StorePaymentStatusTests: XCTestCase {
     func testFetchPaymentStatusSuccess() async throws {
         let statusData: PaymentStatusData = .init(
             status: .active,
-            paymentChargeData: .init(
-                paymentMethod: "method",
-                bankName: "displayName",
-                account: "descriptor",
-                mandate: "mandate",
-                dueDate: 27,
-                chargeMethod: .trustly
-            )
+            chargingDay: 27,
+            defaultPayinMethod: .init(
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "descriptor", bank: "displayName")
+            ),
+            payinMethods: [
+                .init(
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "descriptor", bank: "displayName")
+                )
+            ],
+            defaultPayoutMethod: nil,
+            payoutMethods: [],
+            availableMethods: []
         )
 
         let mockService = MockPaymentData.createMockPaymentService(
