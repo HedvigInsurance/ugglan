@@ -138,7 +138,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
             vm?.textField = textField
             if masking.keyboardType == .numberPad {
-                let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+                let toolbar = UIToolbar()
                 let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
                 let doneButton = UIBarButtonItem(
@@ -146,6 +146,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     target: self,
                     action: #selector(textField.dismissKeyboad)
                 )
+                toolbar.tintColor = .brand(.primaryText())
+                toolbar.sizeToFit()
                 toolbar.setItems([space, doneButton], animated: false)
                 vm?.textField?.inputAccessoryView = toolbar
             }
