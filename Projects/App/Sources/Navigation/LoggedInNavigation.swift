@@ -848,7 +848,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
 
-    private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
         didSet {
@@ -888,12 +887,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(openDeepLinkNotification),
-            name: .openDeepLink,
-            object: nil
-        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registerForPushNotification),
@@ -1022,16 +1015,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         missingPetChipIdInput = .init(contracts: contracts)
     }
 
-    @objc func openDeepLinkNotification(notification: Notification) {
-        if let deepLinkUrl = notification.object as? URL {
-            if ApplicationState.currentState == .loggedIn {
-                handleDeepLinks(deepLinkUrl: deepLinkUrl)
-            } else if !deepLinkUrl.absoluteString.contains("//bankid") {
-                deeplinkToBeOpenedAfterLogin = deepLinkUrl
-            }
-        }
-    }
-
     @objc func claimCreated(notification: Notification) {
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
@@ -1062,14 +1045,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    func actionAfterLogin() {
-        if let deeplinkToBeOpenedAfterLogin {
-            handleDeepLinks(deepLinkUrl: deeplinkToBeOpenedAfterLogin)
-            self.deeplinkToBeOpenedAfterLogin = nil
-        }
-    }
-
-    private func handleDeepLinks(deepLinkUrl: URL?) {
+    func handleDeepLink(_ deepLinkUrl: URL?) {
         deepLinkHandler.handle(deepLinkUrl)
     }
 
