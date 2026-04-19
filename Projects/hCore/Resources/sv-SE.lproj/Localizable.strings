@@ -516,7 +516,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
 "LEGAL_A11Y" = "Tillgänglighet";
 "LEGAL_CATEGORY_LABEL" = "Juridisk information";
-"LEGAL_INFORMATION" = "Juridisk information";
+"LEGAL_INFORMATION" = "Legal information";
 "LEGAL_PRIVACY_POLICY" = "Personuppgifter";
 "LETTER_TO_EIR_SUBJECT" = "Fråga angående skadeanmälan - Fordon reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
