@@ -48,7 +48,7 @@ struct SubmitClaimSingleSelectView: View {
                     minWidth: .padding60
                 )
                 .hFieldSize(.large)
-                .fullyWrapped(true)
+                .capsuleShape(true)
                 .transition(.submitClaimOptionAppear)
                 .onTapGesture { selectOption(id: option.id) }
                 .accessibilityAddTraits(.isButton)
@@ -135,7 +135,7 @@ struct SubmitClaimSingleSelectResultView: View {
                 withBorder: false
             )
             .hFieldSize(.large)
-            .fullyWrapped(true)
+            .capsuleShape(true)
         }
     }
 }

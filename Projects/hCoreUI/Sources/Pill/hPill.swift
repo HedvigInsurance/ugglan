@@ -21,8 +21,8 @@ public struct hPill: View {
     let withBorder: Bool
     let minWidth: CGFloat?
 
-    @Environment(\.fullyWrapped) var fullyWrapped
-    @Environment(\.hFieldSize) var hFieldSize
+    @Environment(\.capsuleShape) var capsuleShape
+    @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.hPillAttributes) var attributes
 
@@ -42,10 +42,10 @@ public struct hPill: View {
     }
 
     private var getFontStyle: HFontTextStyle {
-        if fullyWrapped {
+        if capsuleShape {
             return .body1
         }
-        switch hFieldSize {
+        switch fieldSize {
         case .large:
             return .body1
         default:
@@ -70,8 +70,8 @@ fileprivate struct PillModifier: ViewModifier {
     let colorLevel: PillColor.PillColorLevel
     let withBorder: Bool
     let minWidth: CGFloat?
-    @Environment(\.hFieldSize) var hFieldSize
-    @Environment(\.fullyWrapped) var fullyWrapped
+    @Environment(\.hFieldSize) var fieldSize
+    @Environment(\.capsuleShape) var capsuleShape
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, getHorizontalPadding)
@@ -92,10 +92,10 @@ fileprivate struct PillModifier: ViewModifier {
     }
 
     private var getHorizontalPadding: CGFloat {
-        if fullyWrapped {
+        if capsuleShape {
             return .padding14
         }
-        switch hFieldSize {
+        switch fieldSize {
         case .small:
             return .padding6
         case .medium:
@@ -106,10 +106,10 @@ fileprivate struct PillModifier: ViewModifier {
     }
 
     private var getTopPadding: CGFloat {
-        if fullyWrapped {
+        if capsuleShape {
             return 7
         }
-        switch hFieldSize {
+        switch fieldSize {
         case .small:
             return 3
         case .medium:
@@ -120,10 +120,10 @@ fileprivate struct PillModifier: ViewModifier {
     }
 
     private var getBottomPadding: CGFloat {
-        if fullyWrapped {
+        if capsuleShape {
             return 9
         }
-        switch hFieldSize {
+        switch fieldSize {
         case .small:
             return 3
         case .medium:
@@ -134,10 +134,10 @@ fileprivate struct PillModifier: ViewModifier {
     }
 
     private var getCornerRadius: CGFloat {
-        if fullyWrapped {
+        if capsuleShape {
             return .cornerRadiusXXL
         }
-        switch hFieldSize {
+        switch fieldSize {
         case .small:
             return .cornerRadiusXS
         case .medium:
@@ -315,12 +315,12 @@ extension View {
 }
 
 extension EnvironmentValues {
-    @Entry public var fullyWrapped: Bool = false
+    @Entry public var capsuleShape: Bool = false
 }
 
 extension View {
-    public func fullyWrapped(_ fullyWrapped: Bool) -> some View {
-        environment(\.fullyWrapped, fullyWrapped)
+    public func capsuleShape(_ capsuleShape: Bool) -> some View {
+        environment(\.capsuleShape, capsuleShape)
     }
 }
 

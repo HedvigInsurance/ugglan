@@ -294,7 +294,7 @@ struct FormFieldView: View {
                     withBorder: false
                 )
                 .hFieldSize(.large)
-                .fullyWrapped(true)
+                .capsuleShape(true)
                 .onTapGesture {
                     fieldViewModel.value = tag
                 }
@@ -347,7 +347,7 @@ struct SubmitClaimFormResultView: View {
                 .foregroundColor(fieldTextColor(for: item))
                 .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
                 .hFieldSize(.large)
-                .fullyWrapped(true)
+                .capsuleShape(true)
                 .accessibilityLabel(value.getAccessibilityLabelDate)
         case let .searchResult(value):
             SingleSelectValueView(item: value.displayValue, onTap: nil)
