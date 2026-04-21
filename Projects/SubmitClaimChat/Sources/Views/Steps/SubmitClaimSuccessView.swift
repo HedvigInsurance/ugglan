@@ -29,6 +29,7 @@ public struct SubmitClaimSuccessView: View {
                 )
             )
         )
+        .hFormBottomBackgroundColor(.aiPoweredGradient)
     }
 }
 

@@ -46,18 +46,15 @@ public struct SubmitClaimDeflectScreen: View {
                     contentSection
                     questionsSection
                 }
-                .padding(.top, .padding8)
+                .padding(.top, .padding16)
             }
-            .sectionContainerStyle(.negative)
+            .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding([.section])
         }
         .hFormAttachToBottom {
             bottomAttachedView
         }
-        .hFormBottomBackgroundColor(
-            model.hasSupportView
-                ? .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary) : .default
-        )
+        .hFormBottomBackgroundColor(.aiPoweredGradient)
         .edgesIgnoringSafeArea(.bottom)
     }
 
@@ -76,17 +73,19 @@ public struct SubmitClaimDeflectScreen: View {
 
     @ViewBuilder
     private var partnersSection: some View {
-        hRow {
-            VStack(spacing: .padding16) {
-                partnerInfoHeader
-                VStack(spacing: .padding8) {
-                    ForEach(model.partners, id: \.id) { partner in
-                        ClaimContactCard(model: partner)
+        if (model.title != nil && model.infoText != nil) || !model.partners.isEmpty {
+            hRow {
+                VStack(spacing: .padding16) {
+                    partnerInfoHeader
+                    VStack(spacing: .padding8) {
+                        ForEach(model.partners, id: \.id) { partner in
+                            ClaimContactCard(model: partner)
+                        }
                     }
                 }
             }
+            .verticalPadding(0)
         }
-        .verticalPadding(0)
     }
 
     @ViewBuilder
@@ -146,7 +145,7 @@ public struct SubmitClaimDeflectScreen: View {
                         NotificationCenter.default.post(name: .openDeepLink, object: url)
                     }
                 )
-                .sectionContainerStyle(.opaque)
+                .sectionContainerStyle(.transparent)
                 .hWithoutHorizontalPadding([])
             }
         }

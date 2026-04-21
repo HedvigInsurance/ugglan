@@ -268,7 +268,7 @@ struct FormFieldView: View {
         }
         if let selectedItem = fieldViewModel.selectedSearchItem {
             SingleSelectValueView(item: selectedItem.displayValue, onTap: presentSearch)
-                .sectionContainerStyle(.opaque)
+                .sectionContainerStyle(.translucent)
                 .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverChangeValue)
         } else {
             DropdownView(
@@ -293,7 +293,8 @@ struct FormFieldView: View {
                     colorLevel: .two,
                     withBorder: false
                 )
-                .hFieldSize(.capsuleShape)
+                .hFieldSize(.large)
+                .fullyWrapped(true)
                 .onTapGesture {
                     fieldViewModel.value = tag
                 }
@@ -345,7 +346,8 @@ struct SubmitClaimFormResultView: View {
             hText(value)
                 .foregroundColor(fieldTextColor(for: item))
                 .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-                .hFieldSize(.capsuleShape)
+                .hFieldSize(.large)
+                .fullyWrapped(true)
                 .accessibilityLabel(value.getAccessibilityLabelDate)
         case let .searchResult(value):
             SingleSelectValueView(item: value.displayValue, onTap: nil)
