@@ -600,6 +600,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_VALID_UNTIL" = "Giltig till %1$@";
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
+"PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
+"PAYOUT_MISSING_INFO" = "Det verkar som att du saknar utbetalningsmetod. Lägg till den så att vi kan betala ut till dig.";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
