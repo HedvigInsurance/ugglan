@@ -15,7 +15,7 @@ private class DirectDebitWebview: UIView {
     var cancellables = Set<AnyCancellable>()
     let vc = UIViewController()
     var webView = WKWebView()
-    var webViewDelgate = WebViewDelegate(webView: .init())
+    var webViewDelegate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
 
@@ -58,19 +58,13 @@ private class DirectDebitWebview: UIView {
         webView.backgroundColor = .brand(.secondaryBackground())
         webView.isOpaque = false
 
-        webViewDelgate = WebViewDelegate(webView: webView)
-        webViewDelgate.actionPublished
-            .sink { _ in
-            } receiveValue: { [weak self] navigationAction in
-                if navigationAction.targetFrame == nil {
-                    if let url = navigationAction.request.url {
-                        self?.vc
-                            .present(
-                                SFSafariViewController(url: url),
-                                animated: true,
-                                completion: nil
-                            )
-                    }
+        webViewDelegate = WebViewDelegate(webView: webView)
+        webViewDelegate.actionPublished
+            .sink { [weak self] navigationAction in
+                if navigationAction.targetFrame == nil,
+                    let url = navigationAction.request.url
+                {
+                    self?.vc.present(SFSafariViewController(url: url), animated: true)
                 }
             }
             .store(in: &cancellables)
@@ -97,17 +91,9 @@ private class DirectDebitWebview: UIView {
             make.size.equalToSuperview()
         }
 
-        webViewDelgate.isLoading
-            .sink { _ in
-            } receiveValue: { loading in
-                if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
-            }
-            .store(in: &cancellables)
-
-        webViewDelgate.isLoading
-            .sink { _ in
-            } receiveValue: { loading in
-                if loading { activityIndicator.alpha = 1 } else { activityIndicator.alpha = 0 }
+        webViewDelegate.isLoading
+            .sink { loading in
+                activityIndicator.alpha = loading ? 1 : 0
             }
             .store(in: &cancellables)
     }
@@ -117,15 +103,13 @@ private class DirectDebitWebview: UIView {
         let shouldDismissViewSignal = CurrentValueSubject<Bool, Never>(false)
 
         let publisherDelay = Timer.TimerPublisher(interval: 5.0, runLoop: .main, mode: .default).autoconnect()
-        Publishers.CombineLatest3(publisherDelay, webViewDelgate.isLoading, resultSubject)
-            .sink { _ in
-            } receiveValue: { [weak self] _, isLoading, URL in
+        Publishers.CombineLatest3(publisherDelay, webViewDelegate.isLoading, resultSubject)
+            .sink { [weak self] _, isLoading, url in
                 publisherDelay.upstream.connect().cancel()
                 if isLoading {
                     didFailToLoadWebViewSignal.send(true)
-                    if let url = URL {
+                    if let url {
                         Dependencies.urlOpener.open(url)
-                        didFailToLoadWebViewSignal.send(true)
                     } else {
                         self?.showErrorAlert = true
                     }
@@ -137,8 +121,7 @@ private class DirectDebitWebview: UIView {
             didFailToLoadWebViewSignal,
             NotificationCenter.Publisher(center: .default, name: UIApplication.willEnterForegroundNotification)
         )
-        .sink { _ in
-        } receiveValue: { didFail, _ in
+        .sink { didFail, _ in
             if didFail {
                 shouldDismissViewSignal.send(true)
             }
@@ -148,7 +131,7 @@ private class DirectDebitWebview: UIView {
         shouldDismissViewSignal
             .filter { $0 }
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { _ in }) { [weak self] _ in
+            .sink { [weak self] _ in
                 self?.paymentStore.send(.fetchPaymentStatus)
                 self?.router.dismiss()
             }
@@ -156,80 +139,65 @@ private class DirectDebitWebview: UIView {
     }
 
     private func checkForResult() {
-        webViewDelgate.decidePolicyForNavigationAction
+        webViewDelegate.decidePolicyForNavigationAction
             .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] success in
-                guard let self = self else {
-                    return
-                }
-                self.showResultScreen(
-                    type: success
-                        ? .success
-                        : .failure
-                )
+            .sink { [weak self] success in
+                self?.showResultScreen(type: success ? .success : .failure)
             }
             .store(in: &cancellables)
     }
 
     private func showResultScreen(type: DirectDebitResultType) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
-
-            let directDebitResult = DirectDebitResult(
-                type: type,
-                retry: {
-                    self.checkForResult()
-                }
-            )
-
-            switch type {
-            case .success:
-                paymentStore.send(.fetchPaymentStatus)
-            case .failure:
-                break
+        vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
+        let directDebitResult = DirectDebitResult(
+            type: type,
+            action: { [weak self, weak router] in
+                router?.dismiss()
             }
-            let debitResultHostingView = UIHostingController(rootView: directDebitResult)
-            let backgrondView = UIView()
-            let schema = UITraitCollection.current.userInterfaceStyle == .light ? ColorScheme.light : .dark
-            backgrondView.backgroundColor = hBackgroundColor.primary.colorFor(schema, .base).color.uiColor()
-            self.addSubview(backgrondView)
-            self.addSubview(debitResultHostingView.view)
-            backgrondView.snp.makeConstraints { make in
-                make.leading.trailing.equalToSuperview()
-                make.bottom.equalToSuperview().inset(-100)
-                make.top.equalToSuperview().inset(-100)
-            }
+        )
 
-            debitResultHostingView.view.snp.makeConstraints { make in
-                make.trailing.leading.top.bottom.equalToSuperview()
-            }
-
-            UIView.transition(
-                with: self,
-                duration: 0.3,
-                options: .transitionCrossDissolve,
-                animations: {}
-            )
+        if type == .success {
+            paymentStore.send(.fetchPaymentStatus)
         }
+
+        let debitResultHostingView = UIHostingController(rootView: directDebitResult)
+        let backgroundView = UIView()
+        let scheme = UITraitCollection.current.userInterfaceStyle == .light ? ColorScheme.light : .dark
+        backgroundView.backgroundColor = hBackgroundColor.primary.colorFor(scheme, .base).color.uiColor()
+        addSubview(backgroundView)
+        addSubview(debitResultHostingView.view)
+
+        backgroundView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-100)
+            make.top.equalToSuperview().inset(-100)
+        }
+
+        debitResultHostingView.view.snp.makeConstraints { make in
+            make.trailing.leading.top.bottom.equalToSuperview()
+        }
+
+        UIView.transition(
+            with: self,
+            duration: 0.3,
+            options: .transitionCrossDissolve,
+            animations: {}
+        )
     }
 
     private func startRegistration() async {
         vc.view = webView
-        Task {
-            do {
-                let url = try await paymentService.getConnectPaymentUrl()
-                let request = URLRequest(
-                    url: url,
-                    cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
-                    timeoutInterval: 10
-                )
-                resultSubject.send(url)
-                webView.load(request)
-            } catch {
-                self.showErrorAlert = true
-            }
+        do {
+            let url = try await paymentService.getConnectPaymentUrl()
+            let request = URLRequest(
+                url: url,
+                cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                timeoutInterval: 10
+            )
+            resultSubject.send(url)
+            webView.load(request)
+        } catch {
+            self.showErrorAlert = true
         }
     }
 }
@@ -246,8 +214,14 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 }
 
 public struct DirectDebitSetup: View {
-    @State var showCancelAlert: Bool = false
-    @State var showErrorAlert: Bool = false
+    enum AlertType: Identifiable {
+        case cancel
+        case error
+
+        var id: Self { self }
+    }
+
+    @State var activeAlert: AlertType?
     @State var showNotSupported: Bool = false
 
     @StateObject var router = NavigationRouter()
@@ -281,8 +255,8 @@ public struct DirectDebitSetup: View {
                     .init(
                         actionButtonAttachedToBottom: .init(
                             buttonTitle: L10n.openChat,
-                            buttonAction: {
-                                router.dismiss()
+                            buttonAction: { [weak router] in
+                                router?.dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                                     NotificationCenter.default.post(
                                         name: .openChat,
@@ -292,21 +266,21 @@ public struct DirectDebitSetup: View {
                             }
                         ),
                         dismissButton: .init(
-                            buttonAction: {
-                                router.dismiss()
+                            buttonAction: { [weak router] in
+                                router?.dismiss()
                             }
                         )
                     )
                 )
-            } else if showCancelAlert {
-                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
-                    .alert(isPresented: $showCancelAlert) {
-                        cancelAlert()
-                    }
             } else {
-                DirectDebitSetupRepresentable(showErrorAlert: $showErrorAlert, router: router)
-                    .alert(isPresented: $showErrorAlert) {
-                        errorAlert()
+                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router)
+                    .alert(item: $activeAlert) { alertType in
+                        switch alertType {
+                        case .cancel:
+                            cancelAlert()
+                        case .error:
+                            errorAlert()
+                        }
                     }
             }
         }
@@ -326,6 +300,13 @@ public struct DirectDebitSetup: View {
         .embededInNavigation(router: router, tracking: self)
     }
 
+    private var showErrorAlertBinding: Binding<Bool> {
+        Binding(
+            get: { activeAlert == .error },
+            set: { if $0 { activeAlert = .error } }
+        )
+    }
+
     private var dismissButton: some View {
         hText(
             setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton,
@@ -333,11 +314,11 @@ public struct DirectDebitSetup: View {
         )
         .padding(.horizontal, .padding4)
         .fixedSize()
-        .onTapGesture {
+        .onTapGesture { [weak router] in
             if showNotSupported {
-                router.dismiss()
+                router?.dismiss()
             } else {
-                showCancelAlert = true
+                activeAlert = .cancel
             }
         }
         .accessibilityAddTraits(.isButton)
@@ -347,8 +328,8 @@ public struct DirectDebitSetup: View {
         Alert(
             title: Text(L10n.PayInIframeInAppCancelAlert.title),
             message: Text(L10n.PayInIframeInAppCancelAlert.body),
-            primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
-                router.dismiss()
+            primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) { [weak router] in
+                router?.dismiss()
             },
             secondaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.dismissButton))
         )
@@ -359,8 +340,8 @@ public struct DirectDebitSetup: View {
             title: Text(L10n.generalError),
             message: Text(L10n.somethingWentWrong),
             primaryButton: .default(Text(L10n.generalRetry)),
-            secondaryButton: .cancel(Text(L10n.alertCancel)) {
-                router.dismiss()
+            secondaryButton: .cancel(Text(L10n.alertCancel)) { [weak router] in
+                router?.dismiss()
             }
         )
     }

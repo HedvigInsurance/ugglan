@@ -33,7 +33,7 @@ enum DirectDebitResultType {
 struct DirectDebitResult: View {
     let type: DirectDebitResultType
     @EnvironmentObject var router: NavigationRouter
-    let retry: () -> Void
+    let action: () -> Void
 
     var body: some View {
         switch type {
@@ -60,9 +60,9 @@ struct DirectDebitResult: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
-                        buttonTitle: type.mainButtonText,
-                        buttonAction: {
-                            retry()
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: { [action] in
+                            action()
                         }
                     )
                 )
@@ -72,5 +72,5 @@ struct DirectDebitResult: View {
 }
 
 #Preview {
-    DirectDebitResult(type: .success, retry: {})
+    DirectDebitResult(type: .success, action: {})
 }
