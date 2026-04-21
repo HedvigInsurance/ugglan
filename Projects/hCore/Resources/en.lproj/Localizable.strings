@@ -600,6 +600,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_VALID_UNTIL" = "Valid until %1$@";
 "PAYMENTS_VIEW_PAYMENT" = "View payment";
 "PAYMENT_HISTORY_TITLE" = "Payment history";
+"PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
+"PAYOUT_MISSING_INFO" = "It looks like you are missing payout method. Add it so we can payout to you";
 "PAYOUT_PAGE_HEADING" = "Payout account";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Choose payout method";
 /* Label that hints the user to slide up in order to reveal more info */
