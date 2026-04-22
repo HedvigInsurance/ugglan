@@ -167,16 +167,12 @@ struct hFieldLabel: View {
     }
 
     var body: some View {
-        let sizeToScaleFrom = size.labelFont.fontSize
-        let sizeToScaleTo = HFontTextStyle.label.fontSize
-        let ratio = sizeToScaleTo / sizeToScaleFrom
-        return hText(
+        hText(
             placeholder
         )
-        .hTextStyle(useScaleEffect ? font : (shouldMoveLabel ? .label : font))
+        .hTextStyle(shouldMoveLabel ? .label : font)
         .padding(.leading, 1)
         .foregroundColor(getTextColor())
-        .scaleEffect(useScaleEffect ? (shouldMoveLabel ? ratio : 1) : 1, anchor: .leading)
     }
 
     private var font: HFontTextStyle {
