@@ -88,9 +88,6 @@
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Utbetalning till ett svenskt bankkonto";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bankkonto";
 "BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing";
-"BANK_PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
-"BANK_PAYOUT_METHOD_SWISH_DESCRIPTION" = "Direktutbetalning via Swish";
-"BANK_PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Direktutbetalning via Trustly";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "Ingen rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 försäkring";
@@ -601,6 +598,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
+"PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
+"PAYOUT_METHOD_SWISH_DESCRIPTION" = "Direktutbetalning via Swish";
+"PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Direktutbetalning via Trustly";
 "PAYOUT_MISSING_INFO" = "Det verkar som att du saknar utbetalningsmetod. Lägg till den så att vi kan betala ut till dig.";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
