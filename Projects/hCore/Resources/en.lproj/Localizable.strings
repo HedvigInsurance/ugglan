@@ -85,9 +85,9 @@
 "BANKID_ON_ANOTHER_DEVICE" = "BankID on another device";
 "BANKID_USER_CANCEL_MESSAGE" = "Signing with BankID failed, please try again";
 "BANKID_USER_CANCEL_TITLE" = "BankID was cancelled";
-"BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Payout via a Swedish bank account";
+"BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Payout to a Swedish bank account";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bank account";
-"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing";
+"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing number";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ discount";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "No discount";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 insurance";
@@ -147,7 +147,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
-"CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change account";
+"CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Claim";
@@ -599,9 +599,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
-"PAYOUT_METHOD_SWISH_DESCRIPTION" = "Direct payment via Swish";
-"PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Direct payment via Trustly";
-"PAYOUT_MISSING_INFO" = "It looks like you are missing payout method. Add it so we can payout to you";
+"PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
+"PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Payout via Trustly";
+"PAYOUT_MISSING_INFO" = "You haven’t added a payout method yet. Add one to receive payouts.";
 "PAYOUT_PAGE_HEADING" = "Payout account";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Choose payout method";
 /* Label that hints the user to slide up in order to reveal more info */

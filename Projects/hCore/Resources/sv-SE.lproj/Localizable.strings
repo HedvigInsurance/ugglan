@@ -87,7 +87,7 @@
 "BANKID_USER_CANCEL_TITLE" = "BankID avbröts";
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Utbetalning till ett svenskt bankkonto";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bankkonto";
-"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing";
+"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearingnummer";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "Ingen rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 försäkring";
@@ -147,7 +147,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
-"CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra konto";
+"CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
@@ -599,9 +599,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
-"PAYOUT_METHOD_SWISH_DESCRIPTION" = "Direktutbetalning via Swish";
-"PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Direktutbetalning via Trustly";
-"PAYOUT_MISSING_INFO" = "Det verkar som att du saknar utbetalningsmetod. Lägg till den så att vi kan betala ut till dig.";
+"PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
+"PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Utbetalning via Trustly";
+"PAYOUT_MISSING_INFO" = "Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
