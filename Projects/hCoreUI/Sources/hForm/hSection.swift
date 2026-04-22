@@ -160,14 +160,8 @@ struct hSectionContainerStyleModifier: ViewModifier {
         case .transparent:
             content
         case .translucent:
-            Group {
-                if #available(iOS 26.0, *) {
-                    content.background(hSurfaceColor.Translucent.secondary)
-                } else {
-                    content.background(hSurfaceColor.Opaque.primary)
-                }
-            }
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
+            content.background(hSurfaceColor.Translucent.secondary)
+                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
         case .opaque:
             content.background(
                 hSurfaceColor.Opaque.primary
