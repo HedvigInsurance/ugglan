@@ -21,7 +21,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         isUploadingFilesEnabled: Bool,
         showClaimClosedFlow: Bool,
         infoText: String?,
-        displayItems: [ClaimDisplayItem]
+        displayItems: [ClaimDisplayItem],
+        isPartnerClaim: Bool = false,
+        handlerEmail: String? = nil
     ) {
         self.id = id
         self.status = status
@@ -39,6 +41,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.showClaimClosedFlow = showClaimClosedFlow
         self.infoText = infoText
         self.displayItems = displayItems
+        self.isPartnerClaim = isPartnerClaim
+        self.handlerEmail = handlerEmail
     }
 
     public let claimType: String
@@ -57,7 +61,17 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let showClaimClosedFlow: Bool
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
+    public let isPartnerClaim: Bool
+    public let handlerEmail: String?
     public var statusParagraph: String? {
+        if isPartnerClaim {
+            switch status {
+            case .beingHandled:
+                return L10n.ClaimStatus.BeingHandled.supportText
+            default:
+                return nil
+            }
+        }
         switch status {
         case .submitted:
             return L10n.ClaimStatus.Submitted.supportText
