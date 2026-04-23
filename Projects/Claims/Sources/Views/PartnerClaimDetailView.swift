@@ -18,7 +18,6 @@ public struct PartnerClaimDetailView: View {
                     claimCardSection(claim: claim)
                     statusContextSection
                     claimDetailsSection(claim: claim)
-                    contactSection(handlerEmail: claim.handlerEmail)
                     documentSection(claim: claim)
                 }
             }
@@ -88,28 +87,6 @@ public struct PartnerClaimDetailView: View {
                 .sectionContainerStyle(.transparent)
             }
             .padding(.vertical, .padding8)
-        }
-    }
-
-    @ViewBuilder
-    private func contactSection(handlerEmail: String?) -> some View {
-        if let handlerEmail {
-            hSection {
-                hRow {
-                    HStack {
-                        hText(handlerEmail)
-                        Spacer()
-                        hCoreUIAssets.arrowNorthEast.view
-                    }
-                }
-                .withEmptyAccessory
-                .onTap {
-                    if let url = URL(string: "mailto:\(handlerEmail)") {
-                        Dependencies.urlOpener.open(url)
-                    }
-                }
-            }
-            .withHeader(title: L10n.ClaimStatusDetail.MessageView.body)
         }
     }
 
