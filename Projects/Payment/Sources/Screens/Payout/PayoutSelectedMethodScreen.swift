@@ -54,8 +54,8 @@ extension PaymentStatusData {
     fileprivate var payoutAccountDisplayValue: String {
         guard let method = defaultPayoutMethod else { return "" }
         switch method.details {
-        case .bankAccount(let account, let bank):
-            return "\(bank) \(account)"
+        case .bankAccount(let account, _):
+            return "\(account)"
         case .swish(let phoneNumber):
             return "\(phoneNumber)"
         case .invoice:
@@ -67,6 +67,20 @@ extension PaymentStatusData {
 
     fileprivate var payoutAccountDisplayTitle: String {
         guard let method = defaultPayoutMethod else { return "" }
+        guard let details = method.details else { return method.provider.payoutTitle }
+        let sufix: String? = {
+            switch details {
+            case .invoice:
+                return nil
+            case .swish:
+                return nil
+            case .bankAccount(_, let bank):
+                return bank
+            }
+        }()
+        if let sufix {
+            return method.provider.payoutTitle + " - " + sufix
+        }
         return method.provider.payoutTitle
     }
 
@@ -98,7 +112,7 @@ extension PaymentStatusData {
                     provider: .nordea,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                    details: .bankAccount(account: "3300-920123132", bank: "Nordea LONG NAME LONG LONG LONG LONG l")
                 ),
                 payoutMethods: [
                     .init(
@@ -143,14 +157,14 @@ extension PaymentStatusData {
                     provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: nil
+                    details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
                 ),
                 payoutMethods: [
                     .init(
                         provider: .trustly,
                         status: .active,
                         isDefault: true,
-                        details: nil
+                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
                     )
                 ],
                 availableMethods: [
