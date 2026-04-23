@@ -135,4 +135,87 @@ final class FetchClaimsTests: XCTestCase {
         let respondedFiles = try! await mockService.fetchFiles()
         assert(respondedFiles == files)
     }
+
+    func testFetchActiveClaimsIncludesPartnerClaims() async {
+        let regularClaim = ClaimModel(
+            id: "regular-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-15",
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken phone",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: []
+        )
+
+        let partnerClaim = ClaimModel(
+            id: "partner-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-20",
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Car damage",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: [],
+            isPartnerClaim: true,
+            handlerEmail: "claims@eir.se"
+        )
+
+        let mockService = MockData.createMockFetchClaimService(
+            fetchActive: { [partnerClaim, regularClaim] }
+        )
+        sut = mockService
+
+        let respondedClaims = try! await mockService.fetchActive()
+        XCTAssertEqual(respondedClaims.count, 2)
+        XCTAssertTrue(respondedClaims.contains(where: { $0.isPartnerClaim }))
+        XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.handlerEmail, "claims@eir.se")
+        XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.claimType, "Car damage")
+    }
+
+    func testPartnerClaimModelProperties() async {
+        let partnerClaim = ClaimModel(
+            id: "partner-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-20",
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Car damage",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: [],
+            isPartnerClaim: true,
+            handlerEmail: "claims@eir.se"
+        )
+
+        XCTAssertTrue(partnerClaim.isPartnerClaim)
+        XCTAssertEqual(partnerClaim.handlerEmail, "claims@eir.se")
+        XCTAssertNil(partnerClaim.conversation)
+        XCTAssertNil(partnerClaim.signedAudioURL)
+        XCTAssertFalse(partnerClaim.isUploadingFilesEnabled)
+        XCTAssertFalse(partnerClaim.showClaimClosedFlow)
+    }
 }
