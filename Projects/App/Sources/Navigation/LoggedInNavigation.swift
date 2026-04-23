@@ -855,7 +855,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
-    @Published var isPayoutMethodPresented = false
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
