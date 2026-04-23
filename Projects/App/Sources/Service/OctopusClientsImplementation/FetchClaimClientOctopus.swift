@@ -14,7 +14,12 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             let activeClaims = activeClaimsData.currentMember.claimsActive.map {
                 ClaimModel(claim: $0.fragments.claimFragment)
             }
-            return activeClaims
+            let partnerClaims = activeClaimsData.currentMember.partnerClaimsActive.map {
+                ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
+            }
+            return (activeClaims + partnerClaims).sorted {
+                ($0.submittedAt ?? "") > ($1.submittedAt ?? "")
+            }
         } else {
             let data = try await octopus.client.fetch(
                 query: OctopusGraphQL.ClaimsQuery()
@@ -31,7 +36,12 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         let claimsHistory = historyClaimsData.currentMember.claimsHistory.map {
             ClaimModel(claim: $0.fragments.claimFragment)
         }
-        return claimsHistory
+        let partnerClaimsHistory = historyClaimsData.currentMember.partnerClaimsHistory.map {
+            ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
+        }
+        return (claimsHistory + partnerClaimsHistory).sorted {
+            ($0.submittedAt ?? "") > ($1.submittedAt ?? "")
+        }
     }
 }
 
@@ -63,6 +73,38 @@ extension ClaimModel {
                     .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
             }
+        )
+    }
+}
+
+@MainActor
+extension ClaimModel {
+    init(partnerClaim: OctopusGraphQL.PartnerClaimFragment) {
+        self.init(
+            id: partnerClaim.id,
+            status: partnerClaim.status?.asClaimStatus ?? .none,
+            outcome: nil,
+            submittedAt: partnerClaim.submittedAt,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: MonetaryAmount(optionalFragment: partnerClaim.payoutAmount?.fragments.moneyFragment),
+            targetFileUploadUri: "",
+            claimType: partnerClaim.claimType ?? L10n.Claim.Casetype.insuranceCase,
+            productVariant: .init(data: partnerClaim.productVariant?.fragments.productVariantFragment),
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: partnerClaim.displayItems.compactMap { item in
+                let displayValue: String =
+                    item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
+                        .localDateToIso8601Date?
+                        .displayDateDDMMMYYYYFormat ?? item.displayValue
+                return .init(displayTitle: item.displayTitle, displayValue: displayValue)
+            },
+            isPartnerClaim: true,
+            handlerEmail: partnerClaim.handlerEmail
         )
     }
 }
