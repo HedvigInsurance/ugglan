@@ -71,7 +71,7 @@ extension HomeScreen {
                 switch vm.memberContractState {
                 case .active, .terminated:
                     VStack(spacing: .padding16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
+                        HomeBottomScrollView()
                         VStack(spacing: .padding8) {
                             startAClaimButton
                             openHelpCenter
@@ -79,7 +79,7 @@ extension HomeScreen {
                     }
                 case .future:
                     VStack(spacing: .padding16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
+                        HomeBottomScrollView()
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
                         openHelpCenter
@@ -127,7 +127,6 @@ extension HomeScreen {
 @MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
-    let homeBottomScrollViewModel = HomeBottomScrollViewModel()
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []

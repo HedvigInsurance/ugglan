@@ -9,13 +9,9 @@ import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @ObservedObject private var vm: HomeBottomScrollViewModel
+    @StateObject private var vm = HomeBottomScrollViewModel()
     @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
-
-    init(vm: HomeBottomScrollViewModel) {
-        self.vm = vm
-    }
 
     var body: some View {
         InfoCardScrollView(
@@ -26,6 +22,8 @@ struct HomeBottomScrollView: View {
                 case .payment:
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
+                case .payout:
+                    missingPayout
                 case .renewal:
                     RenewalCardView()
                 case let .importantMessage(id):
@@ -47,6 +45,23 @@ struct HomeBottomScrollView: View {
                     }
                 }
             }
+        )
+    }
+
+    private var missingPayout: some View {
+        InfoCard(
+            text: L10n.payoutMissingInfo,
+            type: .attention
+        )
+        .buttons(
+            [
+                .init(
+                    buttonTitle: L10n.payoutAddPayoutMethod,
+                    buttonAction: {
+                        navigationVm.isPayoutMethodPresented = true
+                    }
+                )
+            ]
         )
     }
 }
@@ -111,7 +126,7 @@ class HomeBottomScrollViewModel: ObservableObject {
             handleItem(.terminated, with: false)
         }
         let needsPaymentSetupPublisher = paymentStore.stateSignal
-            .map { $0.paymentStatusData?.status }
+            .map { $0.paymentStatusData }
             .removeDuplicates()
             .prepend()
         let memberStatePublisher = homeStore.stateSignal
@@ -128,15 +143,21 @@ class HomeBottomScrollViewModel: ObservableObject {
 
         setConnectPayments(
             for: homeStore.state.memberContractState,
-            status: paymentStore.state.paymentStatusData?.status
+            status: paymentStore.state.paymentStatusData
         )
     }
 
-    private func setConnectPayments(for userStatus: MemberContractState?, status: PayinMethodStatus?) {
+    private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
+        let missingPayin = status?.status.showConnectPayment ?? false
+        let missingPayout = status?.defaultPayoutMethod == nil
         handleItem(
             .payment,
-            with: status?.showConnectPayment ?? false
+            with: missingPayin
                 && [MemberContractState.active, MemberContractState.future].contains(userStatus)
+        )
+        handleItem(
+            .payout,
+            with: missingPayout && !missingPayin
         )
     }
 
@@ -265,7 +286,7 @@ class HomeBottomScrollViewModel: ObservableObject {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-    return HomeBottomScrollView(vm: .init())
+    return HomeBottomScrollView()
 }
 
 struct InfoCardView: Identifiable, Hashable {
@@ -277,6 +298,7 @@ struct InfoCardView: Identifiable, Hashable {
 
 public enum InfoCardType: Hashable, Comparable {
     case payment
+    case payout
     case missingCoInsured(type: StakeholderType)
     case missingPetChipId
     case importantMessage(message: String)

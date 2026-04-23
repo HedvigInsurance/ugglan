@@ -779,7 +779,7 @@ struct HomeTab: View {
             }
         )
         .detent(
-            presented: $loggedInVm.isPayoutMethodPresented,
+            presented: $homeNavigationVm.isPayoutMethodPresented,
             presentationStyle: .detent(
                 style: [.large]),
             options: .constant([.alwaysOpenOnTop])
