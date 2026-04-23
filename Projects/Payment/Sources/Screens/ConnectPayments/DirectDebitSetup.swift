@@ -18,6 +18,7 @@ private class DirectDebitWebview: UIView {
     var webViewDelegate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let onSuccess: (() -> Void)?
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -26,10 +27,12 @@ private class DirectDebitWebview: UIView {
 
     init(
         showErrorAlert: Binding<Bool>,
-        router: NavigationRouter
+        router: NavigationRouter,
+        onSuccess: (() -> Void)?
     ) {
         _showErrorAlert = showErrorAlert
         self.router = router
+        self.onSuccess = onSuccess
         super.init(frame: .zero)
 
         presentWebView()
@@ -211,9 +214,14 @@ private class DirectDebitWebview: UIView {
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let onSuccess: (() -> Void)?
 
     func makeUIView(context _: Context) -> some UIView {
-        DirectDebitWebview(showErrorAlert: $showErrorAlert, router: router)
+        DirectDebitWebview(
+            showErrorAlert: $showErrorAlert,
+            router: router,
+            onSuccess: onSuccess
+        )
     }
 
     func updateUIView(_: UIViewType, context _: Context) {}
@@ -232,9 +240,11 @@ public struct DirectDebitSetup: View {
 
     @StateObject var router = NavigationRouter()
     let setupType: SetupType
+    let onSuccess: (() -> Void)?
 
     public init(
-        setupType: SetupType? = nil
+        setupType: SetupType? = nil,
+        onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
             if let setupType {
@@ -247,6 +257,7 @@ public struct DirectDebitSetup: View {
         }()
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
+        self.onSuccess = onSuccess
     }
 
     public var body: some View {
@@ -279,15 +290,17 @@ public struct DirectDebitSetup: View {
                     )
                 )
             } else {
-                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router)
-                    .alert(item: $activeAlert) { alertType in
-                        switch alertType {
-                        case .cancel:
-                            cancelAlert()
-                        case .error:
-                            errorAlert()
-                        }
+                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router) { [onSuccess] in
+                    onSuccess?()
+                }
+                .alert(item: $activeAlert) { alertType in
+                    switch alertType {
+                    case .cancel:
+                        cancelAlert()
+                    case .error:
+                        errorAlert()
                     }
+                }
             }
         }
         .toolbar {

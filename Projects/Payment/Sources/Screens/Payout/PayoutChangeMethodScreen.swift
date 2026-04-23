@@ -4,6 +4,8 @@ import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject var router: NavigationRouter
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
@@ -18,6 +20,20 @@ struct PayoutChangeMethodScreen: View {
                             Spacer()
                         }
                         .withChevronAccessory
+                        .onTap {
+                            switch method.provider {
+                            case .trustly:
+                                paymentNavigationVm.connectPaymentVm.set(
+                                    onSuccess: { [weak router] in
+                                        router?.pop()
+                                    }
+                                )
+                            case .invoice: break
+                            case .nordea: break
+                            case .swish: break
+                            case .unknown: break
+                            }
+                        }
                     }
                 }
             }
@@ -30,7 +46,7 @@ extension PaymentProvider {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardTitle
         case .swish: return ""
-        case .trustly: return ""
+        case .trustly: return "Trustly"
         case .invoice: return L10n.paymentsInvoice
         case .unknown: return ""
         }
@@ -40,7 +56,7 @@ extension PaymentProvider {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardDescription
         case .swish: return ""
-        case .trustly: return ""
+        case .trustly: return L10n.payoutMethodTrustlyDescription
         case .invoice: return ""
         case .unknown: return ""
         }
@@ -65,4 +81,6 @@ extension PaymentProvider {
             )
         )
     )
+    .environmentObject(NavigationRouter())
+    .environmentObject(PaymentsNavigationViewModel())
 }
