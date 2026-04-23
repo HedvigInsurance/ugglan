@@ -16,6 +16,11 @@ class FetchClaimDetailsService {
         return try await client.get(for: id)
     }
 
+    func getPartnerClaim() async throws -> ClaimModel {
+        log.info("\(FetchClaimDetailsService.self): getPartnerClaim for \(id)", error: nil, attributes: nil)
+        return try await client.getPartnerClaim(for: id)
+    }
+
     func getFiles() async throws -> [File] {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
         return try await client.getFiles(for: id)
@@ -30,6 +35,7 @@ class FetchClaimDetailsService {
 @MainActor
 public protocol hFetchClaimDetailsClient {
     func get(for id: String) async throws -> ClaimModel
+    func getPartnerClaim(for id: String) async throws -> ClaimModel
     func getFiles(for id: String) async throws -> [File]
     func acknowledgeClosedStatus(for id: String) async throws
 }
@@ -37,6 +43,7 @@ public protocol hFetchClaimDetailsClient {
 public enum ClaimDetailsType {
     case claim(id: String)
     case conversation(claimId: String)
+    case partnerClaim(id: String)
 
     var claimId: String {
         switch self {
@@ -44,7 +51,14 @@ public enum ClaimDetailsType {
             return id
         case let .conversation(claimId):
             return claimId
+        case let .partnerClaim(id):
+            return id
         }
+    }
+
+    var isPartnerClaim: Bool {
+        if case .partnerClaim = self { return true }
+        return false
     }
 }
 
