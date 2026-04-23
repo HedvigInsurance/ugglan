@@ -77,8 +77,13 @@ public struct ProfileNavigation<Content: View>: View {
                 ) { redirectType in
                     switch redirectType {
                     case let .claimsCard(claim):
-                        ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                            .navigationTitle(L10n.claimsYourClaim)
+                        if claim.isPartnerClaim {
+                            PartnerClaimDetailView(claim: claim, claimId: claim.id)
+                                .navigationTitle(L10n.claimsYourClaim)
+                        } else {
+                            ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                                .navigationTitle(L10n.claimsYourClaim)
+                        }
                     }
                 }
         }
