@@ -668,7 +668,12 @@ struct HomeTab: View {
         hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    if claim.isPartnerClaim {
+                        PartnerClaimDetailView(claim: claim, claimId: claim.id)
+                            .navigationTitle(L10n.claimsYourClaim)
+                    } else {
+                        openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    }
                 }
                 .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
