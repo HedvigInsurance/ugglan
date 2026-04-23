@@ -17,8 +17,13 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             let partnerClaims = activeClaimsData.currentMember.partnerClaimsActive.map {
                 ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
             }
-            return (activeClaims + partnerClaims).sorted {
-                ($0.submittedAt ?? "") > ($1.submittedAt ?? "")
+            return (activeClaims + partnerClaims).sorted { lhs, rhs in
+                switch (lhs.submittedAt, rhs.submittedAt) {
+                case let (l?, r?): return l > r
+                case (_?, nil): return true
+                case (nil, _?): return false
+                case (nil, nil): return false
+                }
             }
         } else {
             let data = try await octopus.client.fetch(
@@ -39,8 +44,13 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         let partnerClaimsHistory = historyClaimsData.currentMember.partnerClaimsHistory.map {
             ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
         }
-        return (claimsHistory + partnerClaimsHistory).sorted {
-            ($0.submittedAt ?? "") > ($1.submittedAt ?? "")
+        return (claimsHistory + partnerClaimsHistory).sorted { lhs, rhs in
+            switch (lhs.submittedAt, rhs.submittedAt) {
+            case let (l?, r?): return l > r
+            case (_?, nil): return true
+            case (nil, _?): return false
+            case (nil, nil): return false
+            }
         }
     }
 }

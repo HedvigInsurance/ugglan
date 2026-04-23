@@ -165,7 +165,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
 
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        .init(describing: ClaimDetailView.self)
+        isPartnerClaim
+            ? .init(describing: PartnerClaimDetailView.self)
+            : .init(describing: ClaimDetailView.self)
     }
 }
 
