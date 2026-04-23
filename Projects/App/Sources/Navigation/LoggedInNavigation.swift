@@ -59,6 +59,8 @@ class PushNotificationHandler {
             handleInsuranceEvidence()
         case .TRAVEL_CERTIFICATE:
             handleTravelCertificate()
+        case .PAYOUT:
+            viewModel?.showPayout()
         }
     }
 
@@ -283,6 +285,8 @@ class DeepLinkHandler {
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
             handleMissingPetChipIds(url)
+        case .payout:
+            viewModel?.showPayout()
         }
     }
 
@@ -969,6 +973,14 @@ class LoggedInNavigationViewModel: ObservableObject {
             )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+    }
+
+    func showPayout() {
+        Task { [weak self] in
+            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+            await paymentStore.sendAsync(.fetchPaymentStatus)
+            self?.homeNavigationVm.isPayoutMethodPresented = true
+        }
     }
 
     @objc func openChangeTier(notification: Notification) {
