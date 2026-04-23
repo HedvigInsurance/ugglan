@@ -238,12 +238,16 @@ public struct DirectDebitSetup: View {
     @State var activeAlert: AlertType?
     @State var showNotSupported: Bool = false
 
-    @StateObject var router = NavigationRouter()
+    @StateObject private var ownedRouter = NavigationRouter()
+    @ObservedObject private var externalRouter: NavigationRouter
+    private var hasExternalRouter: Bool
+    var router: NavigationRouter { hasExternalRouter ? externalRouter : ownedRouter }
     let setupType: SetupType
     let onSuccess: (() -> Void)?
 
     public init(
         setupType: SetupType? = nil,
+        router: NavigationRouter? = nil,
         onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
@@ -258,6 +262,8 @@ public struct DirectDebitSetup: View {
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
         self.onSuccess = onSuccess
+        self.hasExternalRouter = router != nil
+        self._externalRouter = ObservedObject(wrappedValue: router ?? NavigationRouter())
     }
 
     public var body: some View {
