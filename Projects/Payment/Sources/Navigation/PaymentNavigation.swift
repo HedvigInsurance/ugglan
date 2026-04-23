@@ -9,6 +9,7 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
     @Published var showNordeaSetup = false
+    @Published var showSwishPayoutSetup = false
     var paymentStatusViewModel: PaymentStatusViewModel?
     public var connectPaymentVm = ConnectPaymentViewModel()
 
@@ -86,6 +87,14 @@ public struct PaymentsNavigation: View {
             presentationStyle: .detent(style: [.height])
         ) {
             NordeaPayoutSetupScreen() { [weak router] in
+                router?.pop()
+            }
+        }
+        .detent(
+            presented: $paymentsNavigationVm.showSwishPayoutSetup,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            SwishPayoutSetupScreen() { [weak router] in
                 router?.pop()
             }
         }
