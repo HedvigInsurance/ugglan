@@ -42,7 +42,7 @@ public struct ProfileView: View {
                     if Dependencies.featureFlags().isClaimHistoryEnabled {
                         ProfileRow(row: .claimHistory)
                     }
-                    ProfileRow(row: .appInfo)
+                    ProfileRow(row: .information)
                     ProfileRow(row: .settings)
                         .hWithoutDivider
                 }
@@ -82,7 +82,7 @@ public struct ProfileView: View {
         .onPullToRefresh {
             await store.sendAsync(.fetchProfileState)
         }
-        .configureTitle(L10n.profileTitle)
+        .navigationTitle(L10n.profileTitle)
     }
 
     @ViewBuilder

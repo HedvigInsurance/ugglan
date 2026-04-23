@@ -282,6 +282,17 @@ class DeepLinkHandler {
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
+        case .missingPetChipId:
+            handleMissingPetChipIds(url)
+        }
+    }
+
+    private func handleMissingPetChipIds(_ url: URL) {
+        Task { [weak viewModel] in
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let contractId = url.getParameter(property: .contractId)
+            viewModel?.openMissingPetChipId(contractId: contractId)
         }
     }
 
@@ -436,9 +447,9 @@ class DeepLinkHandler {
 
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
-    @StateObject private var router = Router()
-    @StateObject private var foreverRouter = Router()
-    @StateObject private var paymentsRouter = Router()
+    @StateObject private var router = NavigationRouter()
+    @StateObject private var foreverRouter = NavigationRouter()
+    @StateObject private var paymentsRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
@@ -458,7 +469,6 @@ struct LoggedInNavigation: View {
             }
             profileTab
         }
-        .tint(hTextColor.Opaque.primary)
         .onChange(of: vm.selectedTab) { newTab in
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
         }
@@ -486,7 +496,7 @@ struct LoggedInNavigation: View {
             options: .constant(.alwaysOpenOnTop),
         ) {
             MyInfoView(presentationMode: .sheet)
-                .configureTitle(L10n.missingContactInfoCardButton)
+                .navigationTitle(L10n.missingContactInfoCardButton)
                 .embededInNavigation(
                     options: [.largeNavigationBar],
                     tracking: ProfileRouterType.myInfo
@@ -656,7 +666,7 @@ struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
     var body: some View {
-        RouterHost(router: homeNavigationVm.router, tracking: self) {
+        hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(claim: claim, type: .claim(id: claim.id))
@@ -690,82 +700,9 @@ struct HomeTab: View {
                     .handleEditStakeholders(
                         with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm
                     )
-                case .deflect:
-                    let model: ClaimIntentOutcomeDeflection = {
-                        let partners: [Partner] = {
-                            let store: HomeStore = globalPresentableStoreContainer.get()
-                            let quickActions = store.state.quickActions
-                            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
-                                .sickAboardPartners
-                            {
-                                let partners: [Partner] = sickAbroadPartners.compactMap {
-                                    Partner(
-                                        id: $0.id,
-                                        imageUrl: $0.imageUrl,
-                                        url: $0.url,
-                                        phoneNumber: $0.phoneNumber,
-                                        title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-                                        description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-                                        info: L10n.submitClaimGlobalAssistanceFootnote,
-                                        buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
-                                        preferredImageHeight: $0.preferredImageHeight
-                                    )
-                                }
-
-                                return partners
-                            }
-                            return []
-                        }()
-                        return ClaimIntentOutcomeDeflection(
-                            title: nil,
-                            content: .init(
-                                title: L10n.submitClaimEmergencyInsuranceCoverTitle,
-                                description: L10n.submitClaimEmergencyInsuranceCoverLabel
-                            ),
-                            partners: partners,
-                            infoText: nil,
-                            warningText: L10n.submitClaimEmergencyInfoLabel,
-                            questions: [
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq1Title,
-                                    answer: L10n.submitClaimEmergencyFaq1Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq2Title,
-                                    answer: L10n.submitClaimEmergencyFaq2Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq3Title,
-                                    answer: L10n.submitClaimEmergencyFaq3Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq4Title,
-                                    answer: L10n.submitClaimEmergencyFaq4Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq5Title,
-                                    answer: L10n.submitClaimEmergencyFaq5Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq6Title,
-                                    answer: L10n.submitClaimEmergencyFaq6Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq7Title,
-                                    answer: L10n.submitClaimEmergencyFaq7Label
-                                ),
-                                .init(
-                                    question: L10n.submitClaimEmergencyFaq8Title,
-                                    answer: L10n.submitClaimEmergencyFaq8Label
-                                ),
-                            ],
-                            linkOnlyPartners: [],
-                            buttonTitle: L10n.commonClaimEmergencyTitle
-                        )
-                    }()
-
+                case let .deflect(data):
                     SubmitClaimDeflectScreen(
-                        model: model,
+                        model: data,
                         openChat: {
                             NotificationCenter.default.post(
                                 name: .openChat,
@@ -773,7 +710,7 @@ struct HomeTab: View {
                             )
                         }
                     )
-                    .configureTitle(L10n.commonClaimEmergencyTitle)
+                    .navigationTitle(L10n.commonClaimEmergencyTitle)
                     .withDismissButton()
                     .embededInNavigation(
                         options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -798,7 +735,7 @@ struct HomeTab: View {
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: LoggedInNavigationDetentType.firstVet
@@ -852,7 +789,7 @@ struct HomeTab: View {
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
-            .configureTitle(L10n.claimsYourClaim)
+            .navigationTitle(L10n.claimsYourClaim)
             .onDeinit {
                 Task {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -910,6 +847,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var missingPetChipIdInput: MissingPetChipIdInput?
     @Published var isInsuranceEvidencePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isFaqTopicPresented: FaqTopic?
@@ -1005,6 +943,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openReviewContactInfo,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(petChipIdAdded),
+            name: .petChipIdAdded,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onOpenMissingPetChipId),
+            name: .openMissingPetChipId,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1050,6 +1002,31 @@ class LoggedInNavigationViewModel: ObservableObject {
                 contractStore.sendAsync(.fetchContracts)
             )
         }
+    }
+
+    @objc func petChipIdAdded() {
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchMemberState)
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetchContracts)
+    }
+
+    @objc func onOpenMissingPetChipId() {
+        openMissingPetChipId()
+    }
+
+    func openMissingPetChipId(contractId: String? = nil) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
+
+        if let contractId {
+            contracts = contracts.filter { $0.id == contractId }
+        }
+        guard !contracts.isEmpty else {
+            Toasts.shared.displayToastBar(toast: .init(type: .info, text: L10n.chipIdNoInsurances))
+            return
+        }
+        missingPetChipIdInput = .init(contracts: contracts)
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {

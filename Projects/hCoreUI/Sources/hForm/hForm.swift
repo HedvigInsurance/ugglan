@@ -58,7 +58,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 .allowsHitTesting(false)
                                 .accessibilityHidden(true)
                         case .default:
-                            if contentPosition == .compact, isLiquidGlassEnabled {
+                            if #available(iOS 26.0, *), contentPosition == .compact {
                                 Color.clear
                             } else {
                                 hBackgroundColor.primary
@@ -91,7 +91,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .background {
                         GeometryReader { geometry in
                             Group {
-                                if contentPosition == .compact, isLiquidGlassEnabled {
+                                if #available(iOS 26.0, *), contentPosition == .compact {
                                     Color.clear
                                 } else if case .aiPoweredGradient = bottomBackgroundStyle {
                                     Color.clear
@@ -305,70 +305,7 @@ private class hUpdatedFormViewModel: ObservableObject {
     }
 }
 
-// MARK: hScrollBounce
-
-private struct EnvironmentHScrollBounce: EnvironmentKey {
-    static let defaultValue: Bool? = nil
-}
-
-extension EnvironmentValues {
-    public var hEnableScrollBounce: Bool? {
-        get { self[EnvironmentHScrollBounce.self] }
-        set { self[EnvironmentHScrollBounce.self] = newValue }
-    }
-}
-
-extension View {
-    /// Used to determine if we should bounce effect on the scroll view
-    /// nil: default behaviour depending on the content position and content size
-    /// true: always on
-    /// false : always off
-    public func hSetScrollBounce(to value: Bool?) -> some View {
-        environment(\.hEnableScrollBounce, value)
-    }
-}
-
-// MARK: hAlwaysVisibleBottomAttachedView
-
-/// not added to the scroll view
-@MainActor
-private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
-extension EnvironmentValues {
-    public var hFormAlwaysVisibleBottomAttachedView: AnyView? {
-        get { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] }
-        set { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] = newValue }
-    }
-}
-
-extension View {
-    /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
-    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
-    }
-}
-
-// MARK: hFormContentPosition
-
-@MainActor
-private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
-    static let defaultValue: ContentPosition = .top
-}
-
-extension EnvironmentValues {
-    public var hFormContentPosition: ContentPosition {
-        get { self[EnvironmentHFormContentPosition.self] }
-        set { self[EnvironmentHFormContentPosition.self] = newValue }
-    }
-}
-
-extension View {
-    public func hFormContentPosition(_ position: ContentPosition) -> some View {
-        environment(\.hFormContentPosition, position)
-    }
-}
+// MARK: hForm Environment Values
 
 public enum ContentPosition {
     case top
@@ -377,57 +314,10 @@ public enum ContentPosition {
     case compact
 }
 
-// MARK: hFormBottomAttachedView
-
-@MainActor
-private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
-extension EnvironmentValues {
-    public var hFormBottomAttachedView: AnyView? {
-        get { self[EnvironmentHFormBottomAttachedView.self] }
-        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
-    }
-}
-
-extension View {
-    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hFormBottomAttachedView, AnyView(content()))
-    }
-}
-
-// MARK: hFormBottomBackgroundStyle
-
 public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
     case aiPoweredGradient
-}
-
-@MainActor
-private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency EnvironmentKey {
-    static let defaultValue: hFormBottomBackgroundStyle = .default
-}
-
-extension EnvironmentValues {
-    public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
-        get { self[EnvironmentHFormBottomBackgorundColor.self] }
-        set { self[EnvironmentHFormBottomBackgorundColor.self] = newValue }
-    }
-}
-
-extension View {
-    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
-        environment(\.hFormBottomBackgroundStyle, style)
-    }
-}
-
-// MARK: hFormTitle
-
-@MainActor
-private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
-    static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
 }
 
 public enum HFormTitleSpacingType {
@@ -476,29 +366,53 @@ public struct hTitle {
 }
 
 extension EnvironmentValues {
-    public var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
-        get { self[EnvironmentHFormTitle.self] }
-        set { self[EnvironmentHFormTitle.self] = newValue }
+    @Entry public var hEnableScrollBounce: Bool? = nil
+    @Entry public var hFormAlwaysVisibleBottomAttachedView: AnyView? = nil
+    @Entry public var hFormContentPosition: ContentPosition = .top
+    @Entry public var hFormBottomAttachedView: AnyView? = nil
+    @Entry public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle = .default
+    @Entry public var hFormTitle: (title: hTitle, subTitle: hTitle?)? = nil
+    @Entry public var hFormIgnoreBottomPadding: Bool = false
+}
+
+extension View {
+    /// Used to determine if we should bounce effect on the scroll view
+    /// nil: default behaviour depending on the content position and content size
+    /// true: always on
+    /// false : always off
+    public func hSetScrollBounce(to value: Bool?) -> some View {
+        environment(\.hEnableScrollBounce, value)
+    }
+}
+
+extension View {
+    /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
+    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+        environment(\.hFormContentPosition, position)
+    }
+}
+
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hFormBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
+        environment(\.hFormBottomBackgroundStyle, style)
     }
 }
 
 extension View {
     public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
         environment(\.hFormTitle, (title, subTitle))
-    }
-}
-
-// MARK: hFormIgnoreBottomPadding
-
-@MainActor
-private struct EnvironmentHFormIgnoreBottomPadding: @preconcurrency EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hFormIgnoreBottomPadding: Bool {
-        get { self[EnvironmentHFormIgnoreBottomPadding.self] }
-        set { self[EnvironmentHFormIgnoreBottomPadding.self] = newValue }
     }
 }
 
@@ -523,12 +437,50 @@ public struct BackgroundBlurView: UIViewRepresentable {
     public init() {}
 
     public func makeUIView(context _: Context) -> UIView {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         for subview in view.subviews {
             subview.backgroundColor = UIColor.clear
         }
-        return view
+        return MaskedView(subView: view)
     }
 
-    public func updateUIView(_: UIView, context _: Context) {}
+    public func updateUIView(_ view: UIView, context _: Context) {}
+}
+
+private class MaskedView: UIView {
+    init(subView: UIView) {
+        super.init(frame: .zero)
+        backgroundColor = .clear
+        self.addSubview(subView)
+        subView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let transparent = UIColor(white: 0, alpha: 0).cgColor
+        let opaque = UIColor(white: 0, alpha: 1).cgColor
+
+        let maskLayer = CALayer()
+        maskLayer.frame = bounds
+
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = CGRect(
+            x: bounds.origin.x,
+            y: 0,
+            width: bounds.size.width,
+            height: bounds.size.height
+        )
+        gradientLayer.startPoint = .init(x: 0.5, y: 0)
+        gradientLayer.endPoint = .init(x: 0.5, y: 1)
+        let point: NSNumber = NSNumber(value: 20 / bounds.size.height)
+        gradientLayer.colors = [transparent, opaque, opaque]
+        gradientLayer.locations = [0.0, point, 1]
+
+        maskLayer.addSublayer(gradientLayer)
+        layer.mask = maskLayer
+    }
 }

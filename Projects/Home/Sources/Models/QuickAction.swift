@@ -1,8 +1,9 @@
 import Foundation
+import SubmitClaimChat
 import hCore
 
 public enum QuickAction: Codable, Equatable, Hashable, Sendable {
-    case sickAbroad(partners: [SickAbroadPartner])
+    case sickAbroad(deflection: Deflection)
     case firstVet(partners: [FirstVetPartner])
     case editInsurance(actions: EditInsuranceActionsWrapper)
     case travelInsurance
@@ -92,22 +93,6 @@ public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identif
     }
 }
 
-public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
-    public let id: String
-    public let imageUrl: String?
-    public let phoneNumber: String?
-    public let url: String?
-    public let preferredImageHeight: Int?
-
-    public init(id: String, imageUrl: String?, phoneNumber: String?, url: String?, preferredImageHeight: Int?) {
-        self.id = id
-        self.imageUrl = imageUrl
-        self.phoneNumber = phoneNumber
-        self.url = url
-        self.preferredImageHeight = preferredImageHeight
-    }
-}
-
 public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
     let description: String?
@@ -143,13 +128,6 @@ extension QuickAction {
     public var firstVetPartners: [FirstVetPartner]? {
         switch self {
         case let .firstVet(partners): partners
-        default: nil
-        }
-    }
-
-    public var sickAboardPartners: [SickAbroadPartner]? {
-        switch self {
-        case let .sickAbroad(partners): partners
         default: nil
         }
     }

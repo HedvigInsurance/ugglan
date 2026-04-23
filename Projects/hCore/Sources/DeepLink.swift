@@ -30,6 +30,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case submitClaim = "submit-claim"
     case claimChat = "claim-chat"
     case carPlusAddon = "car-plus-addon"
+    case missingPetChipId = "pet-id"
 
     public func getDeeplinkTextFor(contractName: String?) -> String {
         switch self {
@@ -99,6 +100,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.addonCarPlusDisplayName
         case .claimChat:
             return "claim"
+        case .missingPetChipId:
+            return L10n.chipIdMissingMessage
         }
     }
 

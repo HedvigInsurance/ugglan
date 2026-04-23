@@ -6,7 +6,7 @@ struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let selectable: AddonOfferSelectable
     @State var selectedAddon: AddonOfferQuote?
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     init(
         selectable: AddonOfferSelectable,
@@ -63,7 +63,10 @@ struct AddonSelectSubOptionScreen: View {
             .padding(.top, 16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: selectable.selectionTitle, subTitle: selectable.selectionDescription)
+        .configureTitleView(
+            title: selectable.selectionTitle,
+            subTitle: selectable.selectionDescription
+        )
     }
 
     @ViewBuilder

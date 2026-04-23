@@ -133,7 +133,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     id: id,
                     isSkippable: isSkippable,
                     isRegrettable: isRegrettable,
-                    progress: intentFragment?.progress ?? 0,
+                    progress: Float(intentFragment?.progress ?? 0),
                     hint: intentFragment?.currentStep?.hint
                 )
             )

@@ -5,6 +5,7 @@ import EditStakeholders
 import Payment
 import PresentableStore
 import SafariServices
+import SubmitClaimChat
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -18,7 +19,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    public let router = Router()
+    public let router = NavigationRouter()
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?
@@ -26,7 +27,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isChangeAddressPresented = false
         var isCancellationPresented = false
         var isFirstVetPresented = false
-        var isSickAbroadPresented = false
+        var sickAbroadData: SubmitClaimChat.Deflection? = nil
         var isChangeTierPresented: ChangeTierContractsInput?
     }
 
@@ -72,7 +73,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: helpCenterVm.router,
             options: .extendedNavigationWidth,
             tracking: HelpCenterDetentRouterType.startView
@@ -92,7 +93,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
-                    .configureTitle(L10n.chatConversationInbox)
+                    .navigationTitle(L10n.chatConversationInbox)
             }
         }
         .ignoresSafeArea()
@@ -101,7 +102,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             presentationStyle: .detent(style: [.large])
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
-                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -114,10 +115,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             ChangeTierNavigation(input: input)
         }
         .detent(
-            presented: $helpCenterVm.quickActions.isSickAbroadPresented,
+            item: $helpCenterVm.quickActions.sickAbroadData,
             presentationStyle: .detent(style: [.large])
-        ) {
-            getSubmitClaimDeflectScreen()
+        ) { sickAbroadData in
+            getSubmitClaimDeflectScreen(sickAbroadData: sickAbroadData)
         }
         .modally(
             presented: $helpCenterVm.quickActions.isTravelCertificatePresented,
@@ -144,7 +145,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         handle(quickAction: selectedType.asQuickAction)
                     }
                 )
-                .configureTitle(L10n.hcQuickActionsEditInsuranceTitle)
+                .navigationTitle(L10n.hcQuickActionsEditInsuranceTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large)],
                     tracking: HelpCenterDetentRouterType.editYourInsurance
@@ -233,21 +234,21 @@ public struct HelpCenterNavigation<Content: View>: View {
             )
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
-        case .sickAbroad:
-            helpCenterVm.quickActions.isSickAbroadPresented = true
+        case let .sickAbroad(data):
+            helpCenterVm.quickActions.sickAbroadData = data
         case .removeAddons: break  // TODO:
         }
     }
 
-    private func getSubmitClaimDeflectScreen() -> some View {
-        redirect(.deflect)
+    private func getSubmitClaimDeflectScreen(sickAbroadData: SubmitClaimChat.Deflection) -> some View {
+        redirect(.deflect(sickAbroadData))
     }
 }
 
 public enum HelpCenterRedirectType {
     case travelInsurance
     case moveFlow
-    case deflect
+    case deflect(SubmitClaimChat.Deflection)
 }
 
 #Preview {

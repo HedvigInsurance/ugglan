@@ -55,14 +55,14 @@ extension EditStakeholdersScreenType {
     }
 }
 
-public struct EditStakeholdersNavigation: View {
+struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
     @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
 
-    public init(
+    init(
         config: StakeholdersConfig,
         openSpecificScreen: EditStakeholdersScreenType? = EditStakeholdersScreenType.none
     ) {
@@ -71,8 +71,8 @@ public struct EditStakeholdersNavigation: View {
         editStakeholdersNavigationVm = .init(config: config)
     }
 
-    public var body: some View {
-        RouterHost(
+    var body: some View {
+        hNavigationStack(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
             tracking: openSpecificScreen.getTrackingType(for: config)
@@ -143,7 +143,7 @@ public struct EditStakeholdersNavigation: View {
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .none
         )
-        .configureTitle(config.stakeholderType.editTitle)
+        .navigationTitle(config.stakeholderType.editTitle)
         .addDismissEditStakeholdersFlow()
     }
 
@@ -160,12 +160,12 @@ public struct EditStakeholdersNavigation: View {
             editStakeholdersNavigation: editStakeholdersNavigationVm
         )
         .environmentObject(editStakeholdersNavigationVm)
-        .configureTitle(config.stakeholderType.addInfoTitle)
+        .navigationTitle(config.stakeholderType.addInfoTitle)
     }
 
     func openStakeholderSelectScreen(contractId: String) -> some View {
         StakeholderSelectScreen(contractId: contractId, editStakeholdersNavigation: editStakeholdersNavigationVm)
-            .configureTitle(config.stakeholderType.addInfoTitle)
+            .navigationTitle(config.stakeholderType.addInfoTitle)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
@@ -183,7 +183,8 @@ public struct EditStakeholdersNavigation: View {
             intentViewModel: editStakeholdersNavigationVm.intentViewModel,
             type: .delete
         )
-        .configureTitle(config.stakeholderType.editTitle)
+        .navigationTitle(config.stakeholderType.editTitle)
+        .addDismissEditStakeholdersFlow()
     }
 
     func stakeholderInput(stakeholderInputModel: StakeholderInputModel) -> some View {
@@ -193,14 +194,14 @@ public struct EditStakeholdersNavigation: View {
     }
 }
 
-public struct EditStakeholdersSelectInsuranceNavigation: View {
+struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
     @StateObject var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
-    public init(
+    init(
         configs: [StakeholdersConfig],
         stakeholderType: StakeholderType
     ) {
@@ -209,8 +210,12 @@ public struct EditStakeholdersSelectInsuranceNavigation: View {
         _editStakeholdersNavigationVm = .init(wrappedValue: .init(config: .init(stakeholderType: stakeholderType)))
     }
 
-    public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+    var body: some View {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openSelectInsurance()
         }
     }
@@ -231,19 +236,23 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
     }
 }
 
-public struct EditStakeholdersAlertNavigation: View {
+struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
-    @StateObject var router = Router()
+    @StateObject var router = NavigationRouter()
     @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
 
-    public init(
+    init(
         config: StakeholdersConfig
     ) {
         self.config = config
     }
 
-    public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .large), .extendedNavigationWidth], tracking: self) {
+    var body: some View {
+        hNavigationStack(
+            router: router,
+            options: [.navigationType(type: .large), .extendedNavigationWidth],
+            tracking: self
+        ) {
             openMissingStakeholderAlert()
         }
     }

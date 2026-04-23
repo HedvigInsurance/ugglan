@@ -6,10 +6,10 @@ public struct hCancelButton: View {
     let type: hButtonConfigurationType
 
     public init(
-        type: hButtonConfigurationType? = .ghost,
+        _ type: hButtonConfigurationType = .ghost,
         _ action: @escaping () -> Void
     ) {
-        self.type = type ?? .ghost
+        self.type = type
         self.action = action
     }
 

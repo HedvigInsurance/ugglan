@@ -250,6 +250,18 @@ private class ToastUIView: UIView {
     }
 }
 
+extension Toasts {
+    public static func success() {
+        Toasts.shared.displayToastBar(
+            toast: .init(
+                type: .campaign,
+                icon: hCoreUIAssets.checkmark.view,
+                text: L10n.profileMyInfoSaveSuccessToastBody
+            )
+        )
+    }
+}
+
 #Preview {
     VStack {
         Button(

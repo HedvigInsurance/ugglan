@@ -76,7 +76,7 @@ public struct TravelCertificatesListScreen: View {
             }
         }
         .onPullToRefresh {
-            await vm.fetchTravelCertificateList()
+            await vm.fetchTravelCertificateList(showLoading: false)
         }
         .onChange(of: travelCertificateNavigationVm.isStartDateScreenPresented) { value in
             if value == nil {
@@ -145,14 +145,14 @@ extension View {
         switch withPlacement {
         case .leading:
             setToolbarLeading {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .leading) { _ in
+                ToolbarButtonView(type: ToolbarOptionType.travelCertificate, placement: .leading) { _ in
                     action()
                 }
                 .accessibilityValue(L10n.Toast.readMore)
             }
         case .trailing:
             setToolbarTrailing {
-                ToolbarButtonView(types: .constant([ToolbarOptionType.travelCertificate]), placement: .trailing) { _ in
+                ToolbarButtonView(type: ToolbarOptionType.travelCertificate, placement: .trailing) { _ in
                     action()
                 }
                 .accessibilityValue(L10n.Toast.readMore)
@@ -190,8 +190,8 @@ class TravelCertificatesListScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchTravelCertificateList() async {
-        if list.isEmpty {
+    func fetchTravelCertificateList(showLoading: Bool = true) async {
+        if showLoading, list.isEmpty {
             isLoading = true
         }
         do {

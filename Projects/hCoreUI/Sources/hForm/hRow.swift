@@ -1,25 +1,11 @@
 import Foundation
 import SwiftUI
 
-enum hRowPosition {
-    case top
-    case middle
-    case bottom
-    case unique
-}
-
-private struct EnvironmentHRowPosition: EnvironmentKey {
-    static let defaultValue = hRowPosition.unique
-}
-
 extension EnvironmentValues {
-    var hRowPosition: hRowPosition {
-        get { self[EnvironmentHRowPosition.self] }
-        set { self[EnvironmentHRowPosition.self] = newValue }
-    }
+    @Entry var hasContentBelow: Bool = false
 }
 
-struct RowButtonStyle: SwiftUI.ButtonStyle {
+struct RowButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
@@ -37,7 +23,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 }
 
 public struct hRow<Content: View, Accessory: View>: View {
-    @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
+    @Environment(\.hasContentBelow) var hasContentBelow
     @Environment(\.hWithoutDivider) var hWithoutDivider
     @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     @Environment(\.hRowContentAlignment) var contentAlignment
@@ -95,7 +81,7 @@ public struct hRow<Content: View, Accessory: View>: View {
             .padding(.vertical, verticalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)
-            if position == .middle || position == .top, !hWithoutDivider {
+            if hasContentBelow, !hWithoutDivider {
                 hRowDivider()
             }
         }
@@ -178,15 +164,8 @@ extension hRow {
     }
 }
 
-private struct EnvironmentHRowContentAlignment: EnvironmentKey {
-    static let defaultValue: VerticalAlignment = .top
-}
-
 extension EnvironmentValues {
-    var hRowContentAlignment: VerticalAlignment {
-        get { self[EnvironmentHRowContentAlignment.self] }
-        set { self[EnvironmentHRowContentAlignment.self] = newValue }
-    }
+    @Entry var hRowContentAlignment: VerticalAlignment = .top
 }
 
 extension View {
@@ -197,7 +176,7 @@ extension View {
 
 extension hRow {
     internal func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
-        SwiftUI.Button(
+        Button(
             action: {
                 onTap()
                 let generator = UIImpactFeedbackGenerator(style: .light)
@@ -225,5 +204,23 @@ extension hRow {
         } else {
             self
         }
+    }
+}
+
+private struct AsRowModifier: ViewModifier {
+    let noSpacing: Bool
+    func body(content: Content) -> some View {
+        if noSpacing {
+            hRow { content }.noSpacing()
+        } else {
+            hRow { content }
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    public func wrapInRow(noSpacing: Bool = true) -> some View {
+        modifier(AsRowModifier(noSpacing: noSpacing))
     }
 }

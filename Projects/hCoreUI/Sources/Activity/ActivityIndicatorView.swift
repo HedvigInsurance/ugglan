@@ -38,7 +38,7 @@ struct LoadingViewWithContent: ViewModifier {
 struct LoadingViewWithContentForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
     private(set) var errorTrackingName: TrackingViewNameProtocol?
-    let router: Router?
+    let router: NavigationRouter?
     let errorTitle: String?
 
     func body(content: Content) -> some View {
@@ -105,7 +105,7 @@ extension View {
     public func loading(
         _ state: Binding<ProcessingState>,
         errorTitle: String? = nil,
-        errorTrackingNameWithRouter: (trackingName: TrackingViewNameProtocol, router: Router)? = nil
+        errorTrackingNameWithRouter: (trackingName: TrackingViewNameProtocol, router: NavigationRouter)? = nil
     ) -> some View {
         modifier(
             LoadingViewWithContentForProcessingState(

@@ -83,7 +83,7 @@ public struct ClaimIntent: Sendable {
     let id: String
     let isSkippable: Bool
     let isRegrettable: Bool
-    let progress: Double
+    let progress: Float
     let hint: String?
 
     public init(
@@ -91,7 +91,7 @@ public struct ClaimIntent: Sendable {
         id: String,
         isSkippable: Bool,
         isRegrettable: Bool,
-        progress: Double,
+        progress: Float,
         hint: String? = nil
     ) {
         self.currentStep = currentStep
@@ -136,7 +136,7 @@ public enum ClaimIntentStepContent: Sendable {
     case fileUpload(model: ClaimIntentStepContentFileUpload)
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: ClaimIntentStepContentSelect)
-    case deflect(model: ClaimIntentOutcomeDeflection)
+    case deflect(model: Deflection)
 }
 
 public enum ClaimIntentStepOutcome: Sendable, Hashable {
@@ -339,19 +339,20 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     }
 }
 
-public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
+public struct Deflection: Codable, Sendable, Hashable, Identifiable {
+    public let id: String
     let title: String?
-    let content: ClaimIntentOutcomeDeflectionInfoBlock
+    let content: InfoBlock
     let partners: [Partner]
     let infoText: String?
     let warningText: String?
     let questions: [DeflectQuestion]
     let linkOnlyPartners: [LinkOnlyPartner]
-    let buttonTitle: String
+    public let buttonTitle: String
 
     public init(
         title: String?,
-        content: ClaimIntentOutcomeDeflectionInfoBlock,
+        content: InfoBlock,
         partners: [Partner],
         infoText: String?,
         warningText: String?,
@@ -359,6 +360,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
         linkOnlyPartners: [LinkOnlyPartner],
         buttonTitle: String,
     ) {
+        self.id = UUID().uuidString
         self.title = title
         self.content = content
         self.partners = partners.filter({ $0.imageUrl != nil })
@@ -369,7 +371,7 @@ public struct ClaimIntentOutcomeDeflection: Sendable, Hashable {
         self.buttonTitle = buttonTitle
     }
 
-    public struct ClaimIntentOutcomeDeflectionInfoBlock: Sendable, Hashable {
+    public struct InfoBlock: Codable, Sendable, Hashable {
         let title: String
         let description: String
 

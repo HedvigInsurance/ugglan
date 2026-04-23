@@ -11,7 +11,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
 }
 
 public struct PaymentsNavigation: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
 
     public init(
@@ -21,12 +21,17 @@ public struct PaymentsNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: PaymentsDetentActions.paymentsView) {
+        hNavigationStack(router: router, tracking: PaymentsDetentActions.paymentsView) {
             PaymentsView()
-                .configureTitle(L10n.myPaymentTitle)
+                .navigationTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(title: paymentData.title, titleColor: paymentData.titleColor, topPadding: 0)
+                        .configureTitleView(
+                            title: paymentData.title,
+                            titleColor: paymentData.titleColor,
+                            topPadding: 0,
+                            alignment: .center
+                        )
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
@@ -34,8 +39,8 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                    case let .paymentMethod(data):
-                        PaymentMethodScreen(data: data)
+                    case .paymentMethod:
+                        PaymentMethodScreen()
                     }
                 }
         }
@@ -58,7 +63,7 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-    case paymentMethod(data: PaymentChargeData)
+    case paymentMethod
 
     public var nameForTracking: String {
         switch self {
@@ -83,15 +88,9 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
     }
 }
 
-extension PaymentData: NavigationTitleProtocol {
-    public var navigationTitle: String? {
-        title
-    }
-}
-
 #Preview {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentsNavigation(paymentsNavigationVm: .init())
-        .environmentObject(Router())
+        .environmentObject(NavigationRouter())
 }

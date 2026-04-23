@@ -34,9 +34,9 @@ struct SubmitClaimFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
+        hNavigationStack(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
-                .configureTitle(L10n.claimChatTitle)
+                .navigationTitle(L10n.claimChatTitle)
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
@@ -48,7 +48,7 @@ struct SubmitClaimFlowNavigation: View {
                         .withDismissButton()
                 }
                 .routerDestination(
-                    for: ClaimIntentOutcomeDeflection.self,
+                    for: Deflection.self,
                     destination: { model in
                         SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
                             viewModel?.openChat()
@@ -75,7 +75,7 @@ extension View {
     }
 }
 
-extension ClaimIntentOutcomeDeflection: TrackingViewNameProtocol, NavigationTitleProtocol {
+extension Deflection: TrackingViewNameProtocol, NavigationTitleProtocol {
     public var navigationTitle: String? {
         title
     }

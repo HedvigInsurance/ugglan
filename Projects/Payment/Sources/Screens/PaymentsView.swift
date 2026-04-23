@@ -6,7 +6,7 @@ import hCoreUI
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @StateObject var vm = PaymentsViewModel()
 
@@ -44,7 +44,7 @@ public struct PaymentsView: View {
                         discounts
                         paymentHistory
                         if let data = statusData?.paymentChargeData {
-                            connectedPaymentMethod(data: data)
+                            connectedPaymentMethod
                         }
                     }
                 }
@@ -155,7 +155,7 @@ public struct PaymentsView: View {
         }
     }
 
-    private func connectedPaymentMethod(data: PaymentChargeData) -> some View {
+    private var connectedPaymentMethod: some View {
         hRow {
             hCoreUIAssets.payments.view
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -164,7 +164,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            router.push(PaymentsRouterAction.paymentMethod(data: data))
+            router.push(PaymentsRouterAction.paymentMethod)
         }
     }
 

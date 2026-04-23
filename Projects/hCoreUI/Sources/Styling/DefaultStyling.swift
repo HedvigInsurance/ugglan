@@ -38,8 +38,18 @@ public class hNavigationController: hNavigationBaseController {
 }
 
 class NavBar: UINavigationBar {
-    var additionalHeight: CGFloat?
-    var extendedNavigationWidth: Bool = false
+    private static var additionalHeightKey: UInt8 = 0
+    private static var extendedWidthKey: UInt8 = 0
+    var additionalHeight: CGFloat? {
+        get { objc_getAssociatedObject(self, &NavBar.additionalHeightKey) as? CGFloat }
+        set {
+            objc_setAssociatedObject(self, &NavBar.additionalHeightKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    var extendedNavigationWidth: Bool {
+        get { objc_getAssociatedObject(self, &NavBar.extendedWidthKey) as? Bool ?? false }
+        set { objc_setAssociatedObject(self, &NavBar.extendedWidthKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+    }
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         if let additionalHeight {
             return CGSize(width: size.width, height: size.height + additionalHeight)
@@ -52,14 +62,6 @@ class NavBar: UINavigationBar {
         super.layoutSubviews()
         for subview in subviews {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
-            if let additionalHeight, stringFromClass.contains("UIProgressView") {
-                subview.frame = CGRect(
-                    x: subview.frame.origin.x,
-                    y: -additionalHeight,
-                    width: subview.frame.width,
-                    height: subview.frame.height
-                )
-            }
             if stringFromClass.contains("BarContent") {
                 subview.clipsToBounds = false
                 if #available(iOS 26.0, *) {
@@ -68,16 +70,24 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: additionalHeight ?? subview.frame.origin.y,
-                    width: frame.width
-                        + (extendedNavigationWidth ? hNavigationBaseController.extendedNavigationWidthOffset : 0),
+                    width: {
+                        if #available(iOS 26.0, *) {
+                            return frame.width
+                        } else {
+                            return frame.width
+                                + (extendedNavigationWidth
+                                    ? hNavigationBaseController.extendedNavigationWidthOffset : 0)
+                        }
+                    }(),
                     height: subview.frame.size.height
                 )
             }
         }
     }
+}
 
-    //used for setting navigation bar items unclipped
-    func setClipsToBounds(for view: UIView, force: Bool = false) {
+extension UINavigationBar {
+    fileprivate func setClipsToBounds(for view: UIView, force: Bool = false) {
         if force {
             view.clipsToBounds = false
         }
@@ -111,7 +121,13 @@ public class hNavigationControllerWithLargerNavBar: hNavigationBaseController {
 }
 
 class LargeNavBar: UINavigationBar {
-    var extendedNavigationWidth: Bool = false
+    private static var extendedWidthKey: UInt8 = 0
+    var extendedNavigationWidth: Bool {
+        get { objc_getAssociatedObject(self, &LargeNavBar.extendedWidthKey) as? Bool ?? false }
+        set {
+            objc_setAssociatedObject(self, &LargeNavBar.extendedWidthKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
     override func sizeThatFits(_: CGSize) -> CGSize {
         CGSize(
             width: UIScreen.main.bounds.size.width,
@@ -125,6 +141,10 @@ class LargeNavBar: UINavigationBar {
             if subview.frame.size.height != hNavigationControllerWithLargerNavBar.navigationBarHeight {
                 let stringFromClass = NSStringFromClass(subview.classForCoder)
                 if stringFromClass.contains("BarContent") {
+                    subview.clipsToBounds = false
+                    if #available(iOS 26.0, *) {
+                        setClipsToBounds(for: subview)
+                    }
                     subview.frame = CGRect(
                         x: 0,
                         y: -12,
@@ -153,8 +173,8 @@ public struct DefaultStyling {
         ]
 
         let backImageInsets: UIEdgeInsets = {
-            if isLiquidGlassEnabled {
-                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            if #available(iOS 26.0, *) {
+                UIEdgeInsets(top: 0, left: 0, bottom: 0, right: -4)
             } else {
                 UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
             }
@@ -175,7 +195,7 @@ public struct DefaultStyling {
 
     public static func scrollEdgeNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             DefaultStyling.applyCommonNavigationBarStyling(appearance)
             appearance.backgroundColor = .clear
@@ -188,7 +208,7 @@ public struct DefaultStyling {
 
     public static func standardNavigationBarAppearance(style: UIUserInterfaceStyle) -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = .clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
@@ -202,7 +222,7 @@ public struct DefaultStyling {
 
     public static func compactNavigationBarAppearance() -> UINavigationBarAppearance {
         let appearance = UINavigationBarAppearance()
-        if !isLiquidGlassEnabled {
+        if #unavailable(iOS 26.0) {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = UIColor.clear
             appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
@@ -320,7 +340,12 @@ public struct DefaultStyling {
         // this color is used as background and system adds some alpha to it
         UIDatePicker.appearance().tintColor = .brand(.datePickerSelectionColor)
 
-        UIImageView.appearance().tintColor = .brand(.primaryText())
+        UIImageView.appearance(whenContainedInInstancesOf: [UINavigationController.self]).tintColor = .brand(
+            .primaryText()
+        )
+        UIImageView.appearance(whenContainedInInstancesOf: [UIAlertController.self]).tintColor = .brand(
+            .primaryText()
+        )
         UIImageView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = .brand(
             .primaryText()
         )
@@ -384,6 +409,8 @@ public struct DefaultStyling {
             let tabBarItemAppearance = UITabBarItemAppearance()
             configureTabBarContent(itemAppearance: tabBarItemAppearance, style: style)
             appearance.stackedLayoutAppearance = tabBarItemAppearance
+            appearance.inlineLayoutAppearance = tabBarItemAppearance
+            appearance.compactInlineLayoutAppearance = tabBarItemAppearance
         }
 
         let standard = UITabBarAppearance()

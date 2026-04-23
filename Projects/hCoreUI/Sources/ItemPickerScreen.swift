@@ -155,6 +155,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 getCell(for: item.object)
                     .id(item.object)
             }
+            .sectionContainerStyle(.translucent)
             .disabled(isLoading)
         }
     }
@@ -407,23 +408,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-private struct EnvironmentHItemPickerBottomAttachedView: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyView? = nil
-}
-
-extension EnvironmentValues {
-    public var hItemPickerBottomAttachedView: AnyView? {
-        get { self[EnvironmentHItemPickerBottomAttachedView.self] }
-        set { self[EnvironmentHItemPickerBottomAttachedView.self] = newValue }
-    }
-}
-
-extension View {
-    public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
-    }
-}
-
 public enum ItemPickerAttribute {
     case singleSelect
     case disableIfNoneSelected
@@ -431,14 +415,14 @@ public enum ItemPickerAttribute {
     case alwaysAttachToBottom
 }
 
-private struct EnvironmentHItemPickerAttributes: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: [ItemPickerAttribute] = []
+extension EnvironmentValues {
+    @Entry public var hItemPickerBottomAttachedView: AnyView? = nil
+    @Entry public var hItemPickerAttributes: [ItemPickerAttribute] = []
 }
 
-extension EnvironmentValues {
-    public var hItemPickerAttributes: [ItemPickerAttribute] {
-        get { self[EnvironmentHItemPickerAttributes.self] }
-        set { self[EnvironmentHItemPickerAttributes.self] = newValue }
+extension View {
+    public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hItemPickerBottomAttachedView, AnyView(content()))
     }
 }
 
@@ -466,31 +450,14 @@ enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
     case none
 }
 
-private struct EnvironmentHLeftAlign: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
 extension EnvironmentValues {
-    public var hFieldLeftAttachedView: Bool {
-        get { self[EnvironmentHLeftAlign.self] }
-        set { self[EnvironmentHLeftAlign.self] = newValue }
-    }
+    @Entry public var hFieldLeftAttachedView: Bool = false
+    @Entry public var hUseCheckbox: Bool = false
 }
 
 extension View {
     public var hFieldLeftAttachedView: some View {
         environment(\.hFieldLeftAttachedView, true)
-    }
-}
-
-private struct EnvironmentHUseCheckbox: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hUseCheckbox: Bool {
-        get { self[EnvironmentHUseCheckbox.self] }
-        set { self[EnvironmentHUseCheckbox.self] = newValue }
     }
 }
 

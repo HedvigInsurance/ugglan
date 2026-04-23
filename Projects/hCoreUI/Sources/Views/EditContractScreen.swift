@@ -7,7 +7,7 @@ public struct EditContractScreen: View {
 
     let editTypes: [EditType]
     let onSelectedType: (EditType) -> Void
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(editTypes: [EditType], onSelectedType: @escaping (EditType) -> Void) {
         self.editTypes = editTypes
@@ -81,6 +81,19 @@ public struct EditContractScreen: View {
     }
 }
 
+@available(iOS 17.0, *)
 #Preview {
-    EditContractScreen(editTypes: []) { _ in }
+    @Previewable @State var showBottomSheet: Bool = false
+    return hForm {
+        EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
+            .environmentObject(NavigationRouter())
+        hButton(.large, .primary, content: .init(title: "test")) {
+            showBottomSheet = true
+        }
+    }
+    .hFormContentPosition(.bottom)
+    .detent(presented: $showBottomSheet) {
+        EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
+            .environmentObject(NavigationRouter())
+    }
 }

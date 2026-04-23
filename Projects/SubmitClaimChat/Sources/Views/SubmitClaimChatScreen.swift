@@ -8,7 +8,7 @@ public struct SubmitClaimChatScreen: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
@@ -41,7 +41,7 @@ public struct SubmitClaimChatScreen: View {
                     )
                 }
             }
-            .navigationBarProgress($viewModel.progress)
+            .addProgressBar(with: $viewModel.progress)
     }
 
     private var scrollContent: some View {
@@ -79,6 +79,7 @@ public struct SubmitClaimChatScreen: View {
                 .onAppear {
                     scrollCoordinator.scrollViewHeight = proxy.size.height
                 }
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .onChange(of: proxy.size) { value in
                     scrollCoordinator.scrollViewHeight = value.height
                 }
@@ -186,7 +187,7 @@ struct ScrollToBottomButton: View {
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     var body: some View {
         VStack {
             if step.state.showInput {
@@ -349,7 +350,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     @Published var outcome: ClaimIntentStepOutcome?
-    @Published var progress: Double?
+    @Published var progress: Float?
     var currentVerticalSizeClass: UserInterfaceSizeClass?
 
     /// Determines if the current input should be hidden based on scroll position, size class, and merge state
@@ -360,7 +361,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - Dependencies
     private let flowManager: ClaimIntentFlowManager
     let openChat: () -> Void
-    let router = Router()
+    let router = NavigationRouter()
     private let input: StartClaimInput
     // MARK: - Initialization
     init(

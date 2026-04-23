@@ -86,13 +86,21 @@ struct MessageView: View {
                 .accessibilityLabel(L10n.chatSentALink)
         case let .deepLink(url):
             if let type = DeepLink.getType(from: url) {
-                Button {
-                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                } label: {
-                    hText(type.getDeeplinkTextFor(contractName: url.contractName))
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .multilineTextAlignment(.leading)
-                }
+                MarkdownView(
+                    config: .init(
+                        text: "[\(type.getDeeplinkTextFor(contractName: url.contractName))](\(url.absoluteString))",
+                        fontStyle: .body1,
+                        color: message.textColor,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        isSelectable: true,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
+                )
+                .hEnvironmentAccessibilityLabel(message.timeStampString)
             } else {
                 MarkdownView(
                     config: .init(

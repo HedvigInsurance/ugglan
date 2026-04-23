@@ -19,7 +19,7 @@ struct ContractTable: View {
     @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     private var isExpanded: Bool {
@@ -167,7 +167,6 @@ struct ContractTable: View {
                                     return sum - (height - peek)
                                 }
                         ContractRow(
-                            cardId: contract.id,
                             image: contract.pillowType?.bgImage,
                             terminationMessage: contract.terminationMessage,
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName
@@ -179,9 +178,20 @@ struct ContractTable: View {
                             tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
                             onClick: {
                                 router.push(contract)
+                            },
+                            onBottomContentHeightChange: { height in
+                                bottomContentHeights[contract.id] = height
                             }
                         )
                         .contractCardTruncate(to: !isExpanded)
+                        .background(
+                            GeometryReader { geo in
+                                Color.clear
+                                    .onReceive(Just(geo.size.height)) { height in
+                                        cardHeights[contract.id] = height
+                                    }
+                            }
+                        )
                         .fixedSize(horizontal: false, vertical: true)
                         .scaleEffect(cardDrawRotation && index > 0 ? (isExpanded ? 0.99 : 1.01) : 1)
                         .zIndex(Double(-index))
@@ -216,12 +226,6 @@ struct ContractTable: View {
                                 return sum - (height - peek)
                             }
                 )
-                .onPreferenceChange(ContractRowBottomHeightKey.self) { heights in
-                    bottomContentHeights = heights
-                }
-                .onPreferenceChange(ContractRowCardHeightKey.self) { heights in
-                    cardHeights = heights
-                }
             }
         }
         .presentableStoreLensAnimation(.spring())

@@ -50,7 +50,7 @@ public struct DatePickerView: View {
                 .hUseButtonTextColor(.negative)
                 .frame(maxWidth: .infinity, alignment: .bottom)
 
-                hCancelButton(type: .secondary) {
+                hCancelButton(.secondary) {
                     vm.cancelAction.execute()
                 }
                 .sectionContainerStyle(.transparent)

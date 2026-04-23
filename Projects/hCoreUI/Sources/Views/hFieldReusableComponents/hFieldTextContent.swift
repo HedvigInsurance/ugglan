@@ -108,16 +108,8 @@ public struct hFieldTextContent<T>: View {
     }
 }
 
-@MainActor
-private struct EnvironmentHFieldBottomAttachedView: @preconcurrency EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hFieldBottomAttachedView: AnyView? {
-        get { self[EnvironmentHFieldBottomAttachedView.self] }
-        set { self[EnvironmentHFieldBottomAttachedView.self] = newValue }
-    }
+    @Entry public var hFieldBottomAttachedView: AnyView? = nil
 }
 
 extension View {

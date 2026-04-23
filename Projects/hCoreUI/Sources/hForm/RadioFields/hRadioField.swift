@@ -204,8 +204,6 @@ extension hFieldSize {
             return 20
         case .medium:
             return 19
-        case .capsuleShape:
-            return 19
         }
     }
 
@@ -216,8 +214,6 @@ extension hFieldSize {
         case .large, .extraLarge:
             return 10
         case .medium:
-            return 11.5
-        case .capsuleShape:
             return 11.5
         }
     }
@@ -233,8 +229,6 @@ extension hFieldSize {
         case .large, .extraLarge:
             return 9
         case .medium:
-            return 12.5
-        case .capsuleShape:
             return 12.5
         }
     }

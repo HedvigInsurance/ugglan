@@ -8,7 +8,7 @@ import hCoreUI
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
     let onQuickAction: (QuickAction) -> Void
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     public init(
         onQuickAction: @escaping (QuickAction) -> Void

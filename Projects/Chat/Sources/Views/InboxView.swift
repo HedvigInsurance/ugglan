@@ -18,6 +18,16 @@ public struct InboxView: View {
         .onPullToRefresh {
             await vm.fetchMessages()
         }
+        .loading($vm.processingState)
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonAction: { [weak vm] in
+                        vm?.configureFetching()
+                    }
+                )
+            )
+        )
     }
 
     @ViewBuilder
@@ -137,7 +147,7 @@ class InboxViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
     private var pollTimerCancellable: AnyCancellable?
     private var chatClosedObserver: NSObjectProtocol?
-
+    @Published var processingState: ProcessingState = .success
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return true
@@ -161,7 +171,7 @@ class InboxViewModel: ObservableObject {
         }
     }
 
-    private func configureFetching() {
+    func configureFetching() {
         pollTimerCancellable = nil
         Task {
             await fetchMessages()
@@ -169,25 +179,31 @@ class InboxViewModel: ObservableObject {
         pollTimerCancellable = Timer.publish(every: TimeInterval(5), on: .main, in: .common)
             .autoconnect()
             .sink(receiveValue: { [weak self] _ in
-                self?.fetchMessages()
+                Task { [weak self] in
+                    await self?.fetchMessages()
+                }
             })
     }
-
-    private func fetchMessages() {
-        Task { [weak self] in
-            await self?.fetchMessages()
-        }
-    }
-
     @MainActor
     func fetchMessages() async {
         do {
+            if self.conversations.isEmpty {
+                withAnimation {
+                    processingState = .loading
+                }
+            }
             let conversations = try await service.getConversations()
             withAnimation {
                 self.conversations = conversations
+                self.processingState = .success
             }
-        } catch _ {
-            // TODO: EXCEPTION
+        } catch {
+            if self.conversations.isEmpty {
+                withAnimation {
+                    pollTimerCancellable?.cancel()
+                    processingState = .error(errorMessage: error.localizedDescription)
+                }
+            }
         }
     }
 

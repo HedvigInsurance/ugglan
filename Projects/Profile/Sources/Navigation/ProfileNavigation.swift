@@ -15,7 +15,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isConfirmEmailPreferencesPresented = false
     @Published public var isCreateInsuranceEvidencePresented = false
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
-    public let profileRouter = Router()
+    public let profileRouter = NavigationRouter()
 
     public init() {}
 }
@@ -39,7 +39,7 @@ public struct ProfileNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: profileNavigationViewModel.profileRouter,
             tracking: ProfileDetentType.profile
         ) {
@@ -48,8 +48,6 @@ public struct ProfileNavigation<Content: View>: View {
                     switch redirectType {
                     case .myInfo:
                         MyInfoView()
-                    case .appInfo:
-                        AppInfoView()
                     case .settings:
                         SettingsView()
                     case .euroBonus:
@@ -69,6 +67,8 @@ public struct ProfileNavigation<Content: View>: View {
                             infoButtonPlacement: .trailing,
                             useOwnNavigation: false
                         )
+                    case .information:
+                        InformationScreen()
                     }
                 }
                 .routerDestination(
@@ -78,7 +78,7 @@ public struct ProfileNavigation<Content: View>: View {
                     switch redirectType {
                     case let .claimsCard(claim):
                         ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                            .configureTitle(L10n.claimsYourClaim)
+                            .navigationTitle(L10n.claimsYourClaim)
                     }
                 }
         }
@@ -98,7 +98,7 @@ public struct ProfileNavigation<Content: View>: View {
 
             content: {
                 redirect(.pickLanguage)
-                    .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
+                    .navigationTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
                     .embededInNavigation(
                         options: .navigationType(type: .large),
                         tracking: ProfileDetentType.languagePicker
@@ -126,12 +126,12 @@ public struct ProfileNavigation<Content: View>: View {
 
 public enum ProfileRouterType: Hashable {
     case myInfo
-    case appInfo
     case settings
     case euroBonus
     case certificates
     case claimHistory
     case travelCertificates
+    case information
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -160,8 +160,6 @@ extension ProfileRouterType: TrackingViewNameProtocol {
         switch self {
         case .myInfo:
             return .init(describing: MyInfoView.self)
-        case .appInfo:
-            return .init(describing: AppInfoView.self)
         case .settings:
             return .init(describing: SettingsView.self)
         case .euroBonus:
@@ -172,6 +170,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: ClaimHistoryScreen.self)
         case .travelCertificates:
             return .init(describing: TravelCertificatesListScreen.self)
+        case .information:
+            return .init(describing: InformationScreen.self)
         }
     }
 }
@@ -181,8 +181,6 @@ extension ProfileRouterType: NavigationTitleProtocol {
         switch self {
         case .myInfo:
             L10n.profileMyInfoRowTitle
-        case .appInfo:
-            L10n.profileAppInfo
         case .settings:
             L10n.EmbarkOnboardingMoreOptions.settingsLabel
         case .euroBonus:
@@ -193,6 +191,8 @@ extension ProfileRouterType: NavigationTitleProtocol {
             L10n.Profile.ClaimHistory.title
         case .travelCertificates:
             L10n.TravelCertificate.cardTitle
+        case .information:
+            L10n.profileInfoLabel
         }
     }
 }

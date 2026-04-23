@@ -43,28 +43,7 @@ fragment ClaimIntentStepFragment on ClaimIntentStep {
 
 fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
     ... on ClaimIntentStepContentDeflection {
-        infoText
-        warningText
-        partnersInfo {
-            title
-            description
-        }
-        content {
-            description
-            title
-        }
-        faq {
-            title
-            description
-        }
-        title
-        partners {
-            ...ClaimIntentOutcomeDeflectionPartnerFragment
-        }
-        simplePartners {
-            ...ClaimIntentOutcomeDeflectionSimplePartnerFragment
-        }
-        buttonTitle
+		...DeflectFragment
     }
     ... on ClaimIntentStepContentForm {
         fields {
@@ -110,6 +89,31 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         defaultSelectedId
         style
     }
+}
+
+fragment DeflectFragment on ClaimIntentStepContentDeflection {
+	infoText
+	warningText
+	partnersInfo {
+		title
+		description
+	}
+	content {
+		description
+		title
+	}
+	faq {
+		title
+		description
+	}
+	title
+	partners {
+		...ClaimIntentOutcomeDeflectionPartnerFragment
+	}
+	simplePartners {
+		...ClaimIntentOutcomeDeflectionSimplePartnerFragment
+	}
+	buttonTitle
 }
 
 fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormField {

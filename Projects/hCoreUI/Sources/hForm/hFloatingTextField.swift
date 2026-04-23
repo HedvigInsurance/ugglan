@@ -138,7 +138,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
             vm?.textField = textField
             if masking.keyboardType == .numberPad {
-                let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+                let toolbar = UIToolbar()
                 let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
 
                 let doneButton = UIBarButtonItem(
@@ -146,6 +146,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     target: self,
                     action: #selector(textField.dismissKeyboad)
                 )
+                toolbar.tintColor = .brand(.primaryText())
+                toolbar.sizeToFit()
                 toolbar.setItems([space, doneButton], animated: false)
                 vm?.textField?.inputAccessoryView = toolbar
             }
@@ -300,15 +302,30 @@ public enum BackgroundOption: Sendable {
     case locked
 }
 
-private struct EnvironmentHBackgroundOption: EnvironmentKey {
-    static let defaultValue: [BackgroundOption] = []
+public enum hFieldSize: Hashable, Sendable {
+    case small
+    case medium
+    case large
+    case extraLarge
+
+    var horizontalPadding: CGFloat {
+        switch self {
+        case .small:
+            return .padding14
+        case .medium:
+            return .padding16
+        case .large:
+            return .padding16
+        case .extraLarge:
+            return .padding16
+        }
+    }
 }
 
 extension EnvironmentValues {
-    public var hBackgroundOption: [BackgroundOption] {
-        get { self[EnvironmentHBackgroundOption.self] }
-        set { self[EnvironmentHBackgroundOption.self] = newValue }
-    }
+    @Entry public var hBackgroundOption: [BackgroundOption] = []
+    @Entry public var hFieldSize: hFieldSize = .medium
+    @Entry public var hFieldRightAttachedView: AnyView? = nil
 }
 
 extension View {
@@ -317,54 +334,9 @@ extension View {
     }
 }
 
-private struct EnvironmentHFieldSize: EnvironmentKey {
-    static let defaultValue: hFieldSize = .medium
-}
-
-public enum hFieldSize: Hashable, Sendable {
-    case small
-    case large
-    case extraLarge
-    case medium
-    case capsuleShape
-
-    var horizontalPadding: CGFloat {
-        switch self {
-        case .small:
-            return .padding14
-        case .large:
-            return .padding16
-        case .extraLarge:
-            return .padding16
-        case .medium:
-            return .padding16
-        case .capsuleShape:
-            return 100
-        }
-    }
-}
-
-extension EnvironmentValues {
-    public var hFieldSize: hFieldSize {
-        get { self[EnvironmentHFieldSize.self] }
-        set { self[EnvironmentHFieldSize.self] = newValue }
-    }
-}
-
 extension View {
     public func hFieldSize(_ size: hFieldSize) -> some View {
         environment(\.hFieldSize, size)
-    }
-}
-
-private struct EnvironmentHFieldAttachedView: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyView? = nil
-}
-
-extension EnvironmentValues {
-    public var hFieldRightAttachedView: AnyView? {
-        get { self[EnvironmentHFieldAttachedView.self] }
-        set { self[EnvironmentHFieldAttachedView.self] = newValue }
     }
 }
 
@@ -429,7 +401,6 @@ extension hFieldSize {
         case .small: return -13
         case .medium: return -14
         case .large: return -15
-        case .capsuleShape: return -14
         case .extraLarge: return -15
         }
     }
@@ -444,20 +415,12 @@ extension hFieldSize {
         case .medium: return .body1
         case .large: return .body2
         case .extraLarge: return .body2
-        case .capsuleShape: return .body1
         }
     }
 }
 
-private struct EnvironmentHAnimateField: EnvironmentKey {
-    static let defaultValue = true
-}
-
 extension EnvironmentValues {
-    public var hAnimateField: Bool {
-        get { self[EnvironmentHAnimateField.self] }
-        set { self[EnvironmentHAnimateField.self] = newValue }
-    }
+    @Entry public var hAnimateField: Bool = true
 }
 
 extension View {

@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimChatHonestyPledgeScreen: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @State private var hasAgreedToHonestyPledge = false
     let onConfirm: (_ withAnimations: Bool) -> Void
 

@@ -5,11 +5,11 @@ import hCoreUI
 struct TravelCertificateSelectInsuranceScreen: View {
     @State var isLoading: Bool = false
     let specifications: [TravelInsuranceContractSpecification]
-    let router: Router
+    let router: NavigationRouter
     let itemPickerConfig: ItemConfig<TravelInsuranceContractSpecification>
 
     init(
-        router: Router,
+        router: NavigationRouter,
         specifications: [TravelInsuranceContractSpecification]
     ) {
         self.specifications = specifications

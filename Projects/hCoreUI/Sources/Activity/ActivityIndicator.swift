@@ -1,15 +1,8 @@
 import Foundation
 import SwiftUI
 
-private struct EnvironmentUseDarkColor: EnvironmentKey {
-    static let defaultValue = false
-}
-
 extension EnvironmentValues {
-    public var useDarkColor: Bool {
-        get { self[EnvironmentUseDarkColor.self] }
-        set { self[EnvironmentUseDarkColor.self] = newValue }
-    }
+    @Entry public var useDarkColor: Bool = false
 }
 
 extension View {

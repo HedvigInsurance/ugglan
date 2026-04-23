@@ -5,7 +5,7 @@ import hCoreUI
 final class SubmitClaimDeflectStep: ClaimIntentStepHandler {
     override var sender: SubmitClaimChatMessageSender { .hedvig }
 
-    let deflectModel: ClaimIntentOutcomeDeflection
+    let deflectModel: Deflection
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,

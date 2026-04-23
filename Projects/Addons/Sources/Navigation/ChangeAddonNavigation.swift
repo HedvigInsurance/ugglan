@@ -49,7 +49,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var activeAddonInfoModel: InfoViewDataModel?
     public let input: ChangeAddonInput
 
-    let router = Router()
+    let router = NavigationRouter()
 
     init(input: ChangeAddonInput) {
         self.input = input
@@ -77,7 +77,7 @@ struct ChangeAddonNavigation: View {
     }
 
     var body: some View {
-        RouterHost(
+        hNavigationStack(
             router: changeAddonNavigationVm.router,
             options: [.extendedNavigationWidth],
             tracking: ChangeAddonTrackingType.changeAddonScreen
@@ -88,15 +88,14 @@ struct ChangeAddonNavigation: View {
                     AddonSelectInsuranceScreen(.init(changeAddonNavigationVm))
                 } else {
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
+                        .withAlertDismiss()
                 }
             }
-            .withAlertDismiss()
             .routerDestination(for: ChangeAddonRouterActions.self) { action in
                 switch action {
                 case .summary:
                     ChangeAddonSummaryScreen(changeAddonNavigationVm)
-                        .configureTitle(L10n.offerUpdateSummaryTitle)
-                        .withAlertDismiss()
+                        .navigationTitle(L10n.offerUpdateSummaryTitle)
                 case .addonLandingScreen:
                     ChangeAddonScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                         .withDismissButton()

@@ -145,31 +145,14 @@ public enum ListRowStyle: Sendable {
     case filled
 }
 
-private struct EnvironmentHListStyle: EnvironmentKey {
-    static let defaultValue: ListStyle = .chevron
-}
-
 extension EnvironmentValues {
-    public var hListStyle: ListStyle {
-        get { self[EnvironmentHListStyle.self] }
-        set { self[EnvironmentHListStyle.self] = newValue }
-    }
+    @Entry public var hListStyle: ListStyle = .chevron
+    @Entry public var hListRowStyle: ListRowStyle = .standard
 }
 
 extension View {
     public func hListStyle(_ style: ListStyle) -> some View {
         environment(\.hListStyle, style)
-    }
-}
-
-private struct EnvironmentHListRowStyle: EnvironmentKey {
-    static let defaultValue: ListRowStyle = .standard
-}
-
-extension EnvironmentValues {
-    public var hListRowStyle: ListRowStyle {
-        get { self[EnvironmentHListRowStyle.self] }
-        set { self[EnvironmentHListRowStyle.self] = newValue }
     }
 }
 

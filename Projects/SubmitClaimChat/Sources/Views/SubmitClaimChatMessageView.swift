@@ -148,7 +148,8 @@ struct ClaimStepResultView: View {
             hText(L10n.claimChatSkippedStep)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-                .hFieldSize(.capsuleShape)
+                .hFieldSize(.large)
+                .capsuleShape(true)
                 .accessibilityHidden(true)
         } else if viewModel.state.showResults {
             if let viewModel = viewModel as? SubmitClaimAudioStep {
@@ -172,7 +173,8 @@ struct ClaimStepResultView: View {
                 colorLevel: .two,
                 withBorder: false
             )
-            .hFieldSize(.capsuleShape)
+            .hFieldSize(.large)
+            .capsuleShape(true)
             .hPillAttributes(attributes: [.withChevron])
             .accessibilityHint(editHint)
             .accessibilityFocused($isEditButtonFocused)

@@ -25,7 +25,7 @@ private struct DismissButton: ViewModifier {
     let reducedTopSpacing: Int
     let withAlert: Bool
     let message: String?
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @State var isAlertPresented = false
 
     init(
@@ -40,25 +40,35 @@ private struct DismissButton: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .setToolbarTrailing {
-                Button {
-                    if withAlert {
-                        isAlertPresented = true
-                    } else {
-                        router.dismiss()
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+                ) {
+                    Button {
+                        if withAlert {
+                            isAlertPresented = true
+                        } else {
+                            router.dismiss()
+                        }
+                    } label: {
+                        if #available(iOS 26.0, *) {
+                            hCoreUIAssets.close.view
+                                .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                        } else {
+                            hCoreUIAssets.close.view
+                                .closeButtonOffset(y: CGFloat(reducedTopSpacing))
+                                .frame(minWidth: 44, minHeight: 44)
+                        }
                     }
-                } label: {
-                    Group {
-                        hCoreUIAssets.close.view
-                            .closeButtonOffset(y: CGFloat(reducedTopSpacing))
-                    }
-                    .frame(minWidth: 44, minHeight: 44)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
+                    .configureAlert(message: message, isPresented: $isAlertPresented)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .accessibilityLabel(L10n.a11YClose)
+                    .accessibilityAddTraits(.isButton)
                 }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .accessibilityLabel(L10n.a11YClose)
-                .accessibilityAddTraits(.isButton)
             }
-            .configureAlert(message: message, isPresented: $isAlertPresented)
     }
 }
 
@@ -75,7 +85,7 @@ private struct DismissAlertPopup: ViewModifier {
     let cancelButton: String
 
     @Binding var isPresented: Bool
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
 
     init(
         title: String = L10n.General.areYouSure,
@@ -110,7 +120,7 @@ private struct DismissAlertPopup: ViewModifier {
 extension View {
     @ViewBuilder
     func closeButtonOffset(y: CGFloat) -> some View {
-        if #available(iOS 26, *) {
+        if #available(iOS 26.0, *) {
             self
         } else {
             offset(y: y)

@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct MyInfoView: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @StateObject var vm = MyInfoViewModel()
     let presentationMode: PresentationMode
 
@@ -164,13 +164,7 @@ public class MyInfoViewModel: ObservableObject {
             withAnimation {
                 viewState = .success
             }
-            Toasts.shared.displayToastBar(
-                toast: .init(
-                    type: .campaign,
-                    icon: hCoreUIAssets.checkmark.view,
-                    text: L10n.profileMyInfoSaveSuccessToastBody
-                )
-            )
+            Toasts.success()
             homeStore.send(.fetchMemberState)
         } catch {
             if let error = error as? MyInfoSaveError {

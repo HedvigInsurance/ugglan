@@ -133,15 +133,8 @@ public struct hFloatingField: View {
     }
 }
 
-private struct EnvironmentHCFieldTrailingView: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
-    public var hFieldTrailingView: AnyView? {
-        get { self[EnvironmentHCFieldTrailingView.self] }
-        set { self[EnvironmentHCFieldTrailingView.self] = newValue }
-    }
+    @Entry public var hFieldTrailingView: AnyView? = nil
 }
 
 extension View {

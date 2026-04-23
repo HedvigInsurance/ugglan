@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 struct ProfileRow: View {
-    @EnvironmentObject var router: Router
+    @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
 
     let row: ProfileRowType
@@ -35,8 +35,6 @@ struct ProfileRow: View {
         switch row {
         case .myInfo:
             router.push(ProfileRouterType.myInfo)
-        case .appInfo:
-            router.push(ProfileRouterType.appInfo)
         case .settings:
             router.push(ProfileRouterType.settings)
         case .eurobonus:
@@ -49,6 +47,8 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.certificates)
         case .claimHistory:
             router.push(ProfileRouterType.claimHistory)
+        case .information:
+            router.push(ProfileRouterType.information)
         }
     }
 }

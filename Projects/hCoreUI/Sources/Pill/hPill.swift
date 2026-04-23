@@ -21,6 +21,7 @@ public struct hPill: View {
     let withBorder: Bool
     let minWidth: CGFloat?
 
+    @Environment(\.capsuleShape) var capsuleShape
     @Environment(\.hFieldSize) var fieldSize
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.hPillAttributes) var attributes
@@ -41,8 +42,11 @@ public struct hPill: View {
     }
 
     private var getFontStyle: HFontTextStyle {
+        if capsuleShape {
+            return .body1
+        }
         switch fieldSize {
-        case .large, .capsuleShape:
+        case .large:
             return .body1
         default:
             return .label
@@ -67,6 +71,7 @@ fileprivate struct PillModifier: ViewModifier {
     let withBorder: Bool
     let minWidth: CGFloat?
     @Environment(\.hFieldSize) var fieldSize
+    @Environment(\.capsuleShape) var capsuleShape
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, getHorizontalPadding)
@@ -87,6 +92,9 @@ fileprivate struct PillModifier: ViewModifier {
     }
 
     private var getHorizontalPadding: CGFloat {
+        if capsuleShape {
+            return .padding14
+        }
         switch fieldSize {
         case .small:
             return .padding6
@@ -94,34 +102,41 @@ fileprivate struct PillModifier: ViewModifier {
             return .padding10
         case .large, .extraLarge:
             return .padding12
-        case .capsuleShape:
-            return .padding14
         }
     }
 
     private var getTopPadding: CGFloat {
+        if capsuleShape {
+            return 7
+        }
         switch fieldSize {
         case .small:
             return 3
         case .medium:
             return 6.5
-        case .large, .capsuleShape, .extraLarge:
+        case .large, .extraLarge:
             return 7
         }
     }
 
     private var getBottomPadding: CGFloat {
+        if capsuleShape {
+            return 9
+        }
         switch fieldSize {
         case .small:
             return 3
         case .medium:
             return 7.5
-        case .large, .capsuleShape, .extraLarge:
+        case .large, .extraLarge:
             return 9
         }
     }
 
     private var getCornerRadius: CGFloat {
+        if capsuleShape {
+            return .cornerRadiusXXL
+        }
         switch fieldSize {
         case .small:
             return .cornerRadiusXS
@@ -129,8 +144,6 @@ fileprivate struct PillModifier: ViewModifier {
             return .cornerRadiusS
         case .large:
             return .cornerRadiusM
-        case .capsuleShape:
-            return .cornerRadiusXXL
         case .extraLarge:
             return .cornerRadiusXL
         }
@@ -291,20 +304,23 @@ public enum hPillAttrubutes {
     case withChevron
 }
 
-private struct EnvironmentHPillAttributes: @preconcurrency EnvironmentKey {
-    @MainActor static let defaultValue: [hPillAttrubutes] = []
-}
-
 extension EnvironmentValues {
-    public var hPillAttributes: [hPillAttrubutes] {
-        get { self[EnvironmentHPillAttributes.self] }
-        set { self[EnvironmentHPillAttributes.self] = newValue }
-    }
+    @Entry public var hPillAttributes: [hPillAttrubutes] = []
 }
 
 extension View {
     public func hPillAttributes(attributes: [hPillAttrubutes]) -> some View {
         environment(\.hPillAttributes, attributes)
+    }
+}
+
+extension EnvironmentValues {
+    @Entry public var capsuleShape: Bool = false
+}
+
+extension View {
+    public func capsuleShape(_ capsuleShape: Bool) -> some View {
+        environment(\.capsuleShape, capsuleShape)
     }
 }
 

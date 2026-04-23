@@ -18,7 +18,7 @@ struct SubmitClaimTaskResultView: View {
             .padding(.horizontal, -.padding2)
             if viewModel.taskModel.description != "" {
                 hText(viewModel.taskModel.description, style: .body1)
-                    .modifier(ShimmerModifier(isActive: true))
+                    .modifier(ShimmerTextModifier(isActive: true))
                     .transition(.opacity)
                     .animation(.easeInOut, value: viewModel.taskModel)
             }

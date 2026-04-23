@@ -139,11 +139,11 @@ public class hPaymentClientDemo: hPaymentClient {
             status: .noNeedToConnect,
             paymentChargeData: .init(
                 paymentMethod: nil,
-                bankName: "Connected bank",
-                account: "****1234",
+                bankName: nil,
+                account: nil,
                 mandate: nil,
                 dueDate: nil,
-                chargeMethod: .trustly
+                chargeMethod: .kivra
             )
         )
     }
