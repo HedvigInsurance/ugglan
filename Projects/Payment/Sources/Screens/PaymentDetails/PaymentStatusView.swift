@@ -4,7 +4,7 @@ import hCoreUI
 
 struct PaymentStatusView: View {
     let status: PaymentData.PaymentStatus
-    let chargeMethod: PaymentChargeData.PaymentChargeMethod
+    let provider: PaymentProvider
     let onAction: (PaymentData.PaymentStatus.PaymentStatusAction) -> Void
     var body: some View {
         switch status {
@@ -31,7 +31,7 @@ struct PaymentStatusView: View {
                     .stroke(hBorderColor.primary, lineWidth: 0.5)
             )
         case .pending:
-            if let infoTextForPendingStatus = chargeMethod.infoTextForPendingStatus {
+            if let infoTextForPendingStatus = provider.infoTextForPendingStatus {
                 InfoCard(text: infoTextForPendingStatus, type: .info)
             }
         case let .failedForPrevious(from, to):
@@ -65,10 +65,10 @@ struct PaymentStatusView: View {
     Localization.Locale.currentLocale.send(.sv_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return VStack {
-        PaymentStatusView(status: .pending, chargeMethod: .trustly) { _ in }
-        PaymentStatusView(status: .success, chargeMethod: .trustly) { _ in }
-        PaymentStatusView(status: .addedtoFuture(date: "2023-10-11"), chargeMethod: .trustly) { _ in }
-        PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11"), chargeMethod: .trustly) {
+        PaymentStatusView(status: .pending, provider: .trustly) { _ in }
+        PaymentStatusView(status: .success, provider: .trustly) { _ in }
+        PaymentStatusView(status: .addedtoFuture(date: "2023-10-11"), provider: .trustly) { _ in }
+        PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11"), provider: .trustly) {
             _ in
         }
 
@@ -82,7 +82,7 @@ struct PaymentStatusView: View {
 
             PaymentStatusView(
                 status: .failedForPrevious(from: serverDateFrom, to: serverDateTo),
-                chargeMethod: .trustly
+                provider: .trustly
             ) { _ in }
         }
         Spacer()
