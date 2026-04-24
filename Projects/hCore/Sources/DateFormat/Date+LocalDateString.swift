@@ -135,6 +135,13 @@ public class DateService {
         return formatter
     }()
 
+    lazy private(set) var localDateToIso8601DateNoFractional: ISO8601DateFormatter = {
+        var formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        formatter.timeZone = .current
+        return formatter
+    }()
+
     fileprivate func asOrdinal(for day: Int) -> String {
         let lastDigit = day % 10
         let sufix: String = {

@@ -44,8 +44,7 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
                 .init(displayTitle: "Damage date", displayValue: "20 Apr 2026"),
                 .init(displayTitle: "Registration number", displayValue: "ABC 123"),
             ],
-            isPartnerClaim: true,
-            handlerEmail: "claims@eir.se"
+            isPartnerClaim: true
         )
     }
 

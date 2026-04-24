@@ -173,8 +173,7 @@ final class FetchClaimsTests: XCTestCase {
             showClaimClosedFlow: false,
             infoText: nil,
             displayItems: [],
-            isPartnerClaim: true,
-            handlerEmail: "claims@eir.se"
+            isPartnerClaim: true
         )
 
         let mockService = MockData.createMockFetchClaimService(
@@ -185,7 +184,6 @@ final class FetchClaimsTests: XCTestCase {
         let respondedClaims = try! await mockService.fetchActive()
         XCTAssertEqual(respondedClaims.count, 2)
         XCTAssertTrue(respondedClaims.contains(where: { $0.isPartnerClaim }))
-        XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.handlerEmail, "claims@eir.se")
         XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.claimType, "Car damage")
     }
 
@@ -207,15 +205,14 @@ final class FetchClaimsTests: XCTestCase {
             showClaimClosedFlow: false,
             infoText: nil,
             displayItems: [],
-            isPartnerClaim: true,
-            handlerEmail: "claims@eir.se"
+            isPartnerClaim: true
         )
 
         XCTAssertTrue(partnerClaim.isPartnerClaim)
-        XCTAssertEqual(partnerClaim.handlerEmail, "claims@eir.se")
         XCTAssertNil(partnerClaim.conversation)
         XCTAssertNil(partnerClaim.signedAudioURL)
         XCTAssertFalse(partnerClaim.isUploadingFilesEnabled)
         XCTAssertFalse(partnerClaim.showClaimClosedFlow)
     }
+
 }
