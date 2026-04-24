@@ -35,8 +35,9 @@ struct ClaimStatusCard: View {
 
     var getSubTitle: String? {
         guard let submittedAt = claim.submittedAt else { return nil }
-        return L10n.ClaimStatus.ClaimDetails.submitted + " "
-            + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+        let date = submittedAt.localDateToDate ?? submittedAt.localDateToIso8601Date
+        guard let formatted = date?.displayDateDDMMMYYYYFormat else { return nil }
+        return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
     }
 }
 
@@ -61,6 +62,20 @@ struct ClaimPills: View {
 
 extension ClaimPills {
     private var statusPill: hPill? {
+        if claim.isPartnerClaim {
+            if claim.status == .closed {
+                return hPill(
+                    text: L10n.Claim.StatusBar.closed,
+                    color: .grey,
+                    colorLevel: .three
+                )
+            }
+            return hPill(
+                text: L10n.Home.ClaimCard.Pill.claim,
+                color: .grey,
+                colorLevel: .two
+            )
+        }
         if claim.status == .reopened || (claim.status == .closed && claim.outcome != .paid) {
             return hPill(
                 text: claim.status.title,
@@ -78,6 +93,7 @@ extension ClaimPills {
     }
 
     private var outcomePill: hPill? {
+        if claim.isPartnerClaim { return nil }
         if let outcome = claim.outcome {
             return hPill(
                 text: outcome.text.capitalized,

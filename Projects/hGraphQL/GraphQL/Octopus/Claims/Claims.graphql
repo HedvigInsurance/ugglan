@@ -11,6 +11,9 @@ query ActiveClaims {
         claimsActive {
             ...ClaimFragment
         }
+        partnerClaimsActive {
+            ...PartnerClaimFragment
+        }
     }
 }
 
@@ -18,6 +21,9 @@ query HistoryClaims {
     currentMember {
         claimsHistory {
             ...ClaimFragment
+        }
+        partnerClaimsHistory {
+            ...PartnerClaimFragment
         }
     }
 }
@@ -47,5 +53,26 @@ fragment ClaimFragment on Claim {
     displayItems {
     	displayTitle
         displayValue
+    }
+}
+
+fragment PartnerClaimFragment on PartnerClaim {
+    id
+    externalId
+    exposureDisplayName
+    status
+    submittedAt
+    payoutAmount {
+        ...MoneyFragment
+    }
+    associatedTypeOfContract
+    claimType
+    handlerEmail
+    displayItems {
+        displayTitle
+        displayValue
+    }
+    productVariant {
+        ...ProductVariantFragment
     }
 }

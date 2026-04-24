@@ -61,8 +61,9 @@ public struct ClaimHistoryScreen: View {
 
     func getSubTitle(for claim: ClaimModel) -> String? {
         guard let submittedAt = claim.submittedAt else { return nil }
-        return L10n.ClaimStatus.ClaimDetails.submitted + " "
-            + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+        let date = submittedAt.localDateToDate ?? submittedAt.localDateToIso8601Date
+        guard let formatted = date?.displayDateDDMMMYYYYFormat else { return nil }
+        return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
     }
 }
 

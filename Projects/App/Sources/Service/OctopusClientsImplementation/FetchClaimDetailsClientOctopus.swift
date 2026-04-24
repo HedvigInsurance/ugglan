@@ -16,6 +16,15 @@ class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
         throw FetchClaimDetailsError.noClaimFound
     }
 
+    func getPartnerClaim(for id: String) async throws -> ClaimModel {
+        let query = OctopusGraphQL.PartnerClaimDetailQuery(claimId: id)
+        let data = try await octopus.client.fetch(query: query)
+        if let fragment = data.partnerClaim?.fragments.partnerClaimFragment {
+            return ClaimModel(partnerClaim: fragment)
+        }
+        throw FetchClaimDetailsError.noClaimFound
+    }
+
     func getFiles(for id: String) async throws -> [File] {
         let query = OctopusGraphQL.ClaimFilesQuery(claimId: id)
         let data = try await octopus.client.fetch(query: query)
