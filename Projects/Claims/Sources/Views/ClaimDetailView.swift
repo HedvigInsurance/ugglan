@@ -437,7 +437,8 @@ public class ClaimDetailViewModel: ObservableObject {
         claimProcessingState = .loading
         Task {
             do {
-                let claim = type.isPartnerClaim
+                let claim =
+                    type.isPartnerClaim
                     ? try await claimDetailsService.getPartnerClaim()
                     : try await claimDetailsService.get()
                 self.claim = claim

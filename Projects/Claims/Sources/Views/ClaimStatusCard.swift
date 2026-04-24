@@ -174,7 +174,7 @@ extension ClaimModel {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return hForm {
         hSection {
