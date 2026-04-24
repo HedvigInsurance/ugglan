@@ -21,8 +21,8 @@ public class hPaymentService {
         return try await client.getPaymentHistoryData()
     }
 
-    public func getConnectPaymentUrl() async throws -> URL {
-        log.info("hPaymentService: getConnectPaymentUrl", error: nil, attributes: nil)
-        return try await client.getConnectPaymentUrl()
+    public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
+        log.info("hPaymentService: setupPaymentMethod \(type)", error: nil, attributes: nil)
+        return try await client.setupPaymentMethod(type)
     }
 }

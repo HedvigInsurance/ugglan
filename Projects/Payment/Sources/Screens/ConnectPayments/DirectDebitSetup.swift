@@ -188,7 +188,13 @@ private class DirectDebitWebview: UIView {
     private func startRegistration() async {
         vc.view = webView
         do {
-            let url = try await paymentService.getConnectPaymentUrl()
+            let result = try await paymentService.setupPaymentMethod(
+                .trustly
+            )
+            guard let urlString = result.url, let url = URL(string: urlString) else {
+                self.showErrorAlert = true
+                return
+            }
             let request = URLRequest(
                 url: url,
                 cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
