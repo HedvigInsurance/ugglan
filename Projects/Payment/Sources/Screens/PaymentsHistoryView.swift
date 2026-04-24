@@ -21,10 +21,6 @@ public struct PaymentHistoryView: View {
                     dismissButton: nil
                 )
             )
-            .task {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(.getHistory)
-            }
     }
 
     private var successView: some View {
@@ -92,7 +88,7 @@ public struct PaymentHistoryView: View {
                                 .padding(.horizontal, -16)
                                 .accessibilityElement(children: .combine)
                             }
-                            .withHeader(title: item.year, withoutBottomPadding: true)
+                            .withHeader(title: String(item.year), withoutBottomPadding: true)
                         }
                         if history.flatMap(\.valuesPerMonth).count >= 12 {
                             hSection {
@@ -102,7 +98,11 @@ public struct PaymentHistoryView: View {
                     }
                     .padding(.vertical, .padding16)
                 }
+                .hSetScrollBounce(to: true)
                 .sectionContainerStyle(.transparent)
+                .onPullToRefresh {
+                    await store.sendAsync(.getHistory)
+                }
             }
         }
         .presentableStoreLensAnimation(.default)

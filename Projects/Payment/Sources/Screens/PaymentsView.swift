@@ -13,6 +13,7 @@ public struct PaymentsView: View {
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
+        store.send(.getHistory)
         store.send(.fetchPaymentStatus)
     }
 
@@ -24,6 +25,7 @@ public struct PaymentsView: View {
                     actionButton: .init(buttonAction: {
                         store.send(.load)
                         store.send(.fetchPaymentStatus)
+                        store.send(.getHistory)
                     }),
                     dismissButton: nil
                 )
@@ -32,7 +34,7 @@ public struct PaymentsView: View {
 
     private var successView: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 payments
                 PresentableStoreLens(
                     PaymentStore.self,
@@ -43,7 +45,7 @@ public struct PaymentsView: View {
                     hSection {
                         discounts
                         paymentHistory
-                        if let data = statusData?.paymentChargeData {
+                        if statusData?.paymentChargeData != nil {
                             connectedPaymentMethod
                         }
                     }
@@ -58,8 +60,10 @@ public struct PaymentsView: View {
             bottomPart
         }
         .onPullToRefresh {
-            await store.send(.fetchPaymentStatus)
-            await store.send(.load)
+            async let fetchStatus: () = store.send(.fetchPaymentStatus)
+            async let load: () = store.sendAsync(.load)
+            async let history: () = store.sendAsync(.getHistory)
+            _ = await (fetchStatus, load, history)
         }
     }
 
@@ -70,7 +74,19 @@ public struct PaymentsView: View {
                 state
             }
         ) { state in
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
+                if let overdueData = state.paymentOverdueData {
+                    hSection {
+                        PaymentOverdueCardView(
+                            amountDue: overdueData.payment.net,
+                            onReviewPayment: {
+                                paymentNavigationVm.connectPaymentVm.set()
+                            }
+                        )
+                    }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.bottom, .padding8)
+                }
                 if !state.ongoingPaymentData.isEmpty {
                     ForEach(state.ongoingPaymentData, id: \.id) { paymentData in
                         paymentView(for: paymentData)

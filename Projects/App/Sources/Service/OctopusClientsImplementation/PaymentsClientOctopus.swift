@@ -370,7 +370,7 @@ extension PaymentHistoryListData {
             let history = groupedPaymenthsByYear[year] ?? []
             let paymentHistoryForYear = PaymentHistoryListData(
                 id: String(year),
-                year: String(year),
+                year: year,
                 valuesPerMonth: history
             )
             paymentHistoryList.append(paymentHistoryForYear)
