@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public protocol hPaymentClient {
+public protocol hPaymentClient: Sendable {
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData])
     func getPaymentStatusData() async throws -> PaymentStatusData
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData]

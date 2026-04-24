@@ -584,6 +584,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_FAILED" = "Denna betalning misslyckades och lades till i din betalning den %1$@ .";
 "PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Betalningshistorik";
 "PAYMENTS_PAYMENT_METHOD" = "Betalningssätt";
+"PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE" = "Belopp att betala: %1$@";
+"PAYMENTS_PAYMENT_OVERDUE_BODY" = "Vi kunde inte dra betalningen från ditt bankkonto. Betala nu för att hålla din försäkring aktiv.";
+"PAYMENTS_PAYMENT_OVERDUE_BUTTON" = "Granska betalning";
+"PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Förfallen betalning";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Betalning genomförd";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ dagar";
 "PAYMENTS_PERIOD_FULL" = "Hel period";
