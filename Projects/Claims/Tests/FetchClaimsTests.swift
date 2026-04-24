@@ -214,4 +214,5 @@ final class FetchClaimsTests: XCTestCase {
         XCTAssertFalse(partnerClaim.isUploadingFilesEnabled)
         XCTAssertFalse(partnerClaim.showClaimClosedFlow)
     }
+
 }

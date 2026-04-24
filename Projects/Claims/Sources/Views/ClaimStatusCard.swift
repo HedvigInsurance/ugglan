@@ -35,8 +35,9 @@ struct ClaimStatusCard: View {
 
     var getSubTitle: String? {
         guard let submittedAt = claim.submittedAt else { return nil }
-        return L10n.ClaimStatus.ClaimDetails.submitted + " "
-            + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+        let date = submittedAt.localDateToDate ?? submittedAt.localDateToIso8601Date
+        guard let formatted = date?.displayDateDDMMMYYYYFormat else { return nil }
+        return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
     }
 }
 
@@ -173,7 +174,7 @@ extension ClaimModel {
     }
 }
 
-#Preview {
+#Preview{
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return hForm {
         hSection {
