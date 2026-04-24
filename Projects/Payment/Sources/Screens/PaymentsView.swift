@@ -78,9 +78,9 @@ public struct PaymentsView: View {
                 if let overdueData = state.paymentOverdueData {
                     hSection {
                         PaymentOverdueCardView(
-                            amountDue: overdueData.payment.net,
+                            amountDue: overdueData.paymentData.payment.net,
                             onReviewPayment: {
-                                paymentNavigationVm.connectPaymentVm.set()
+                                router.push(overdueData)
                             }
                         )
                     }

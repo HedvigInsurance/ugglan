@@ -99,18 +99,25 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         let upcomingData = state.paymentData
         let historyData = state.paymentHistory
         let statusData = state.paymentStatusData
-        guard let upcomingData, let statusData else { return }
+        guard let upcomingData, let statusData, let chargeData = statusData.paymentChargeData else { return }
         guard statusData.paymentChargeData?.chargeMethod == .trustly else { return }
         let hasOutstandingPeriod = upcomingData.contracts.contains { contract in
             contract.periods.contains { $0.isOutstanding }
         }
         guard hasOutstandingPeriod else { return }
         guard
-            let firstOutstadingPaymentData = historyData.lazy
+            let firstOutstandingPaymentData = historyData.lazy
                 .flatMap({ $0.valuesPerMonth })
                 .first(where: { $0.paymentData.status.hasFailed })?
                 .paymentData
         else { return }
-        await sendAsync(.setPaymentOverdueData(data: firstOutstadingPaymentData))
+        await sendAsync(
+            .setPaymentOverdueData(
+                data: .init(
+                    paymentData: firstOutstandingPaymentData,
+                    paymentChargeData: chargeData
+                )
+            )
+        )
     }
 }
