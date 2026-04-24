@@ -5,7 +5,6 @@ query PaymentData {
         }
         futureCharge {
             ...MemberChargeFragment
-            pastFailedChargeIds
         }
         ongoingCharges {
             ...MemberChargeFragment
