@@ -28,10 +28,21 @@ public struct ClaimDetailView: View {
                 if let claim = vm.claim {
                     infoCardSection(text: claim.infoText)
                     claimCardSection(claim: claim)
-                    infoAndContactSection
-                    memberFreeTextSection
+                    if !claim.isPartnerClaim {
+                        infoAndContactSection
+                        memberFreeTextSection
+                    } else if let statusParagraph {
+                        hSection {
+                            hRow {
+                                hText(statusParagraph, style: .body1)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
                     claimDetailsSection
-                    uploadFilesSection
+                    if !claim.isPartnerClaim {
+                        uploadFilesSection
+                    }
                     documentSection(appealInstructionUrl: claim.appealInstructionsUrl)
                 }
             }
@@ -368,19 +379,21 @@ public class ClaimDetailViewModel: ObservableObject {
         claimDetailsService = .init(id: type.claimId)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.type = type
+        let isPartnerClaim = claim?.isPartnerClaim == true || type.isPartnerClaim
         let files = store.state.files[type.claimId] ?? []
         fileGridViewModel = .init(files: files, options: [])
-        Task {
-            await fetchFiles()
-        }
-        fileGridViewModel.$files
-            .sink { _ in
-            } receiveValue: { [weak self] files in
-                self?.hasFiles = !files.isEmpty
+        if !isPartnerClaim {
+            Task {
+                await fetchFiles()
             }
-            .store(in: &cancellables)
-
-        handleClaimChat()
+            fileGridViewModel.$files
+                .sink { _ in
+                } receiveValue: { [weak self] files in
+                    self?.hasFiles = !files.isEmpty
+                }
+                .store(in: &cancellables)
+            handleClaimChat()
+        }
         if let claim {
             claimProcessingState = .success
             if let url = URL(string: claim.signedAudioURL) {
@@ -424,7 +437,9 @@ public class ClaimDetailViewModel: ObservableObject {
         claimProcessingState = .loading
         Task {
             do {
-                let claim = try await claimDetailsService.get()
+                let claim = type.isPartnerClaim
+                    ? try await claimDetailsService.getPartnerClaim()
+                    : try await claimDetailsService.get()
                 self.claim = claim
                 claimProcessingState = .success
             } catch {

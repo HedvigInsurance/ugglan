@@ -22,8 +22,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         showClaimClosedFlow: Bool,
         infoText: String?,
         displayItems: [ClaimDisplayItem],
-        isPartnerClaim: Bool = false,
-        handlerEmail: String? = nil
+        isPartnerClaim: Bool = false
     ) {
         self.id = id
         self.status = status
@@ -42,7 +41,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.infoText = infoText
         self.displayItems = displayItems
         self.isPartnerClaim = isPartnerClaim
-        self.handlerEmail = handlerEmail
     }
 
     public let claimType: String
@@ -62,7 +60,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
     public let isPartnerClaim: Bool
-    public let handlerEmail: String?
     public var statusParagraph: String? {
         if isPartnerClaim {
             switch status {
@@ -165,9 +162,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
 
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        isPartnerClaim
-            ? .init(describing: PartnerClaimDetailView.self)
-            : .init(describing: ClaimDetailView.self)
+        .init(describing: ClaimDetailView.self)
     }
 }
 
