@@ -7,9 +7,11 @@ struct PaymentDetailsView: View {
     private let data: PaymentData
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: NavigationRouter
+    private let showsStatus: Bool
 
-    init(data: PaymentData) {
+    init(data: PaymentData, showsStatus: Bool = true) {
         self.data = data
+        self.showsStatus = showsStatus
     }
 
     var body: some View {
@@ -22,6 +24,12 @@ struct PaymentDetailsView: View {
             }
             .padding(.vertical, .padding8)
         }
+        .configureTitleView(
+            title: data.title,
+            titleColor: data.titleColor,
+            topPadding: 0,
+            alignment: .center
+        )
     }
 
     private var contractsSection: some View {
@@ -150,7 +158,7 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder
     var paymentStatusView: some View {
-        if data.status != .upcoming {
+        if data.status != .upcoming && showsStatus {
             hSection {
                 PaymentStatusView(status: data.status, chargeMethod: data.paymentChargeData?.chargeMethod ?? .unknown) {
                     action in

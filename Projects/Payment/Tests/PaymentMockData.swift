@@ -124,4 +124,7 @@ class MockPaymentService: hPaymentClient {
         let data = try await fetchConnectPaymentUrl()
         return data
     }
+
+    func chargeOutstandingPayment() async throws {
+    }
 }

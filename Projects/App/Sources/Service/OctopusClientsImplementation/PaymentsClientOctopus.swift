@@ -101,6 +101,11 @@ class hPaymentClientOctopus: hPaymentClient {
         }
         throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }
+
+    func chargeOutstandingPayment() async throws {
+        // TODO: Call GraphQL mutation for manual charge
+        await delay(2)
+    }
 }
 
 @MainActor
