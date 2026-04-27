@@ -28,7 +28,7 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             id: "partner-1",
             status: .beingHandled,
             outcome: nil,
-            submittedAt: "2026-04-20",
+            submittedAt: "2026-04-20".localDateToDate,
             signedAudioURL: nil,
             memberFreeText: nil,
             payoutAmount: nil,

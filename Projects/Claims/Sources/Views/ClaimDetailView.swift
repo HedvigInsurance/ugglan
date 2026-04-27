@@ -304,7 +304,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     case fileUpload
 }
 
-#Preview {
+#Preview{
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
@@ -314,7 +314,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
         id: "claimId",
         status: .beingHandled,
         outcome: .none,
-        submittedAt: "2023-11-11",
+        submittedAt: "2023-11-11".localDateToDate,
         signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
         memberFreeText: nil,
         payoutAmount: nil,

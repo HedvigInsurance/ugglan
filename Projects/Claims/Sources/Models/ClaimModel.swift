@@ -9,7 +9,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         id: String,
         status: ClaimStatus,
         outcome: ClaimOutcome?,
-        submittedAt: String?,
+        submittedAt: Date?,
         signedAudioURL: String?,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
@@ -48,7 +48,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let status: ClaimStatus
     public let outcome: ClaimOutcome?
-    public let submittedAt: String?
+    public let submittedAt: Date?
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
