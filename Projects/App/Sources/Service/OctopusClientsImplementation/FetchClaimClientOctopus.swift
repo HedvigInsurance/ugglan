@@ -66,7 +66,7 @@ extension ClaimModel {
             id: claim.id,
             status: claim.status?.asClaimStatus ?? .none,
             outcome: claim.outcome?.asClaimOutcome,
-            submittedAt: claim.submittedAt?.localDateToDate ?? claim.submittedAt?.localDateToIso8601Date,
+            submittedAt: claim.submittedAt.localDateToDate ?? claim.submittedAt.localDateToIso8601Date,
             signedAudioURL: claim.audioUrl ?? "",
             memberFreeText: claim.memberFreeText,
             payoutAmount: MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment),
