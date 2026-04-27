@@ -149,7 +149,7 @@ class HomeBottomScrollViewModel: ObservableObject {
 
     private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
         let missingPayin = status?.status.showConnectPayment ?? false
-        let missingPayout = status?.defaultPayoutMethod == nil && status?.availableMethods.count ?? 0 > 0
+        let missingPayout = status?.defaultOrFirstPayoutMethod == nil && status?.availableMethods.count ?? 0 > 0
         handleItem(
             .payment,
             with: missingPayin
