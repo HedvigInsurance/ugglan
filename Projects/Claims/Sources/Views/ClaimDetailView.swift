@@ -304,7 +304,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     case fileUpload
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
