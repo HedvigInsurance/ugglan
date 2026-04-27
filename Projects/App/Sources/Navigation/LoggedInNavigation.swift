@@ -176,9 +176,9 @@ class PushNotificationHandler {
     func handleClaimDetails(claimId: String?) async {
         guard let viewModel = viewModel else { return }
         if let claimId {
-            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            let claimDetailsService = FetchClaimDetailsService(id: claimId)
             do {
-                let claim = try await claimService.get(for: claimId)
+                let claim = try await claimDetailsService.getWithPartnerFallback()
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 viewModel.selectedTab = 0
                 Task { [weak viewModel] in

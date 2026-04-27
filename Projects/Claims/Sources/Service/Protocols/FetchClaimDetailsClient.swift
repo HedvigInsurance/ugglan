@@ -21,6 +21,14 @@ class FetchClaimDetailsService {
         return try await client.getPartnerClaim(for: id)
     }
 
+    func getWithPartnerFallback() async throws -> ClaimModel {
+        do {
+            return try await client.get(for: id)
+        } catch FetchClaimDetailsError.noClaimFound {
+            return try await client.getPartnerClaim(for: id)
+        }
+    }
+
     func getFiles() async throws -> [File] {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
         return try await client.getFiles(for: id)

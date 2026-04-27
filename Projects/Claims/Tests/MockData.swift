@@ -111,3 +111,45 @@ class MockFetchClaimsService: hFetchClaimsClient {
         return data
     }
 }
+
+typealias FetchClaimDetail = @Sendable (String) async throws -> ClaimModel
+typealias FetchClaimFile = (String) async throws -> [hCore.File]
+
+class MockFetchClaimDetailsService: hFetchClaimDetailsClient {
+    var getCallCount = 0
+    var getPartnerClaimCallCount = 0
+    var fetchClaimDetails: FetchClaimDetail
+    var fetchPartnerClaimDetails: FetchClaimDetail
+    var fetchClaimFiles: FetchClaimFile
+    var acknowledgeClosedStatusHandler: (String) async throws -> Void
+
+    init(
+        fetchClaimDetails: @escaping FetchClaimDetail = { _ in throw FetchClaimDetailsError.noClaimFound },
+        fetchPartnerClaimDetails: @escaping FetchClaimDetail = { _ in throw FetchClaimDetailsError.noClaimFound },
+        fetchClaimFiles: @escaping FetchClaimFile = { _ in [] },
+        acknowledgeClosedStatusHandler: @escaping (String) async throws -> Void = { _ in }
+    ) {
+        self.fetchClaimDetails = fetchClaimDetails
+        self.fetchPartnerClaimDetails = fetchPartnerClaimDetails
+        self.fetchClaimFiles = fetchClaimFiles
+        self.acknowledgeClosedStatusHandler = acknowledgeClosedStatusHandler
+    }
+
+    func get(for id: String) async throws -> ClaimModel {
+        getCallCount += 1
+        return try await fetchClaimDetails(id)
+    }
+
+    func getPartnerClaim(for id: String) async throws -> ClaimModel {
+        getPartnerClaimCallCount += 1
+        return try await fetchPartnerClaimDetails(id)
+    }
+
+    func getFiles(for id: String) async throws -> [hCore.File] {
+        try await fetchClaimFiles(id)
+    }
+
+    func acknowledgeClosedStatus(for id: String) async throws {
+        try await acknowledgeClosedStatusHandler(id)
+    }
+}
