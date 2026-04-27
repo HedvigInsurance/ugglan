@@ -5,7 +5,6 @@ import hCore
 
 @MainActor
 final class FetchClaimDetailsTests: XCTestCase {
-
     override func tearDown() async throws {
         Dependencies.shared.remove(for: hFetchClaimDetailsClient.self)
     }
