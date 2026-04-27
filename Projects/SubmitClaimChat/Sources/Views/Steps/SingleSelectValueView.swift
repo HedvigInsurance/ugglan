@@ -27,6 +27,7 @@ struct SingleSelectValueView: View {
             .onTapGesture {
                 onTap()
             }
+            .accessibilityAddTraits(.isButton)
             .accessibilityAction {
                 onTap()
             }

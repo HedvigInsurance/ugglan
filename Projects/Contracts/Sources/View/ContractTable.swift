@@ -115,11 +115,6 @@ struct ContractTable: View {
                     }
                 }
             }
-            .onAppear {
-                Task {
-                    await vm.getAddonBanners()
-                }
-            }
             .animation(.easeInOut(duration: 0.3), value: isExpanded)
             .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
                 if !isActive {
@@ -143,6 +138,11 @@ struct ContractTable: View {
                         scrollToCardId = nil
                     }
                 }
+            }
+        }
+        .onAppear {
+            Task {
+                await vm.getAddonBanners()
             }
         }
     }
