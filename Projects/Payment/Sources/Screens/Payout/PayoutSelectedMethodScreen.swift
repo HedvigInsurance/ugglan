@@ -16,7 +16,7 @@ public struct PayoutSelectedMethodScreen: View {
 
     @ViewBuilder
     private var content: some View {
-        if vm.paymentStatusData.defaultPayoutMethod == nil {
+        if vm.paymentStatusData.defaultOrFirstPayoutMethod == nil {
             hForm {
                 hSection {
                     VStack(spacing: .padding16) {
@@ -93,7 +93,7 @@ public struct PayoutSelectedMethodScreen: View {
 
 extension PaymentStatusData {
     fileprivate var payoutAccountDisplayValue: String {
-        guard let method = defaultPayoutMethod else { return "" }
+        guard let method = defaultOrFirstPayoutMethod else { return "" }
         switch method.details {
         case .bankAccount(let account, _):
             return "\(account)"
@@ -102,12 +102,12 @@ extension PaymentStatusData {
         case .invoice:
             return method.provider.payoutTitle
         case nil:
-            return method.provider.payoutTitle
+            return "----"
         }
     }
 
     fileprivate var payoutAccountDisplayTitle: String {
-        guard let method = defaultPayoutMethod else { return "" }
+        guard let method = defaultOrFirstPayoutMethod else { return "" }
         guard let details = method.details else { return method.provider.payoutTitle }
         let sufix: String? = {
             switch details {
