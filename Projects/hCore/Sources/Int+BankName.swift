@@ -1,7 +1,15 @@
 import Foundation
 
-extension Int {
+extension String {
     public var bankName: String? {
+        let digits = self.filter(\.isNumber)
+        return Int(digits)?.bankNameForClearing
+            ?? Int(String(digits.prefix(4)))?.bankNameForClearing
+    }
+}
+
+extension Int {
+    fileprivate var bankNameForClearing: String? {
         switch self {
         case 1000...1099: return "Sveriges Riksbank"
         case 1100...1199: return "Nordea"

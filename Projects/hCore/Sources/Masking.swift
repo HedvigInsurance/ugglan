@@ -18,7 +18,6 @@ public enum MaskType {
     case lastName
     case petChipId
     case bankAccountNumber
-    case clearingNumber
 }
 
 @MainActor
@@ -58,9 +57,6 @@ public struct Masking {
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
                 && unmasked.count >= 6
-        case .clearingNumber:
-            return text.count >= 4 && text.count <= 5
-                && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: text))
         case .petChipId:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
@@ -96,7 +92,6 @@ public struct Masking {
         case .birthDateCoInsured: return text
         case .petChipId: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .bankAccountNumber: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
-        case .clearingNumber: return text
         }
     }
 
@@ -153,7 +148,7 @@ public struct Masking {
     public var keyboardType: UIKeyboardType {
         switch type {
         case .birthDate, .personalNumber,
-            .postalCode, .digits, .birthDateCoInsured, .petChipId, .bankAccountNumber, .clearingNumber:
+            .postalCode, .digits, .birthDateCoInsured, .petChipId, .bankAccountNumber:
             return .numberPad
         case .email: return .emailAddress
         case .phoneNumber: return .phonePad
@@ -213,8 +208,6 @@ public struct Masking {
             return "XXX XXX XXX XXX XXX"
         case .bankAccountNumber:
             return nil
-        case .clearingNumber:
-            return nil
         }
     }
 
@@ -244,8 +237,6 @@ public struct Masking {
         case .petChipId:
             return L10n.chipIdLabel
         case .bankAccountNumber:
-            return nil
-        case .clearingNumber:
             return nil
         }
     }
@@ -355,8 +346,6 @@ public struct Masking {
                 result.append(char)
             }
             return result
-        case .clearingNumber:
-            return isDigit(maxCount: 5)
         }
     }
 }
