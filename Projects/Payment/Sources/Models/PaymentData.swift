@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hCoreUI
 
-public typealias PaymentOverdueData = PaymentData
+public typealias MissedPaymentData = PaymentData
 
 public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let id: String

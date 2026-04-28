@@ -8,7 +8,7 @@ public struct PaymentState: StateProtocol {
     public var ongoingPaymentData: [PaymentData] = []
     public var paymentStatusData: PaymentStatusData?
     var paymentHistory: [PaymentHistoryListData] = []
-    var paymentOverdueData: PaymentOverdueData?
+    var missedPaymentData: MissedPaymentData?
     public init() {}
 }
 
@@ -20,13 +20,15 @@ public enum PaymentAction: ActionProtocol {
     case setPaymentStatus(data: PaymentStatusData)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
-    case setPaymentOverdueData(data: PaymentOverdueData?)
+    case getMissedPayment
+    case setMissedPaymentData(data: MissedPaymentData?)
 }
 
 public enum LoadingAction: LoadingProtocol {
     case getPaymentData
     case getPaymentStatus
     case getHistory
+    case getMissedPayment
 }
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
@@ -39,7 +41,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 let payment = try await paymentService.getPaymentData()
                 await sendAsync(.setPaymentData(data: payment.upcoming))
                 await sendAsync(.setOngoingPaymentData(data: payment.ongoing))
-                await setPaymentOverdueData()
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentData)
             }
@@ -47,7 +48,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             do {
                 let statusData = try await paymentService.getPaymentStatusData()
                 await sendAsync(.setPaymentStatus(data: statusData))
-                await setPaymentOverdueData()
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentStatus)
             }
@@ -55,9 +55,15 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             do {
                 let data = try await paymentService.getPaymentHistoryData()
                 await sendAsync(.setHistory(to: data))
-                await setPaymentOverdueData()
             } catch {
                 setError(L10n.General.errorBody, for: .getHistory)
+            }
+        case .getMissedPayment:
+            do {
+                let data = try await paymentService.getMissedPaymentData()
+                await sendAsync(.setMissedPaymentData(data: data))
+            } catch {
+                setError(L10n.General.errorBody, for: .getMissedPayment)
             }
         default:
             break
@@ -85,32 +91,12 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setHistory(data):
             removeLoading(for: .getHistory)
             newState.paymentHistory = data
-        case let .setPaymentOverdueData(data):
-            newState.paymentOverdueData = data
+        case .getMissedPayment:
+            setLoading(for: .getMissedPayment)
+        case let .setMissedPaymentData(data):
+            newState.missedPaymentData = data
+            removeLoading(for: .getMissedPayment)
         }
         return newState
-    }
-
-    /// Determines whether to show the overdue payment card for Trustly users.
-    /// Checks that the user pays via Trustly, has at least one outstanding contract period,
-    /// and has a failed payment in their history. If all conditions are met, dispatches
-    /// the first failed historical payment data so the UI can render the overdue card.
-    private func setPaymentOverdueData() async {
-        let upcomingData = state.paymentData
-        let historyData = state.paymentHistory
-        let statusData = state.paymentStatusData
-        guard let upcomingData, let statusData else { return }
-        guard statusData.paymentChargeData?.chargeMethod == .trustly else { return }
-        let hasOutstandingPeriod = upcomingData.contracts.contains { contract in
-            contract.periods.contains { $0.isOutstanding }
-        }
-        guard hasOutstandingPeriod else { return }
-        guard
-            let firstOutstadingPaymentData = historyData.lazy
-                .flatMap({ $0.valuesPerMonth })
-                .first(where: { $0.paymentData.status.hasFailed })?
-                .paymentData
-        else { return }
-        await sendAsync(.setPaymentOverdueData(data: firstOutstadingPaymentData))
     }
 }

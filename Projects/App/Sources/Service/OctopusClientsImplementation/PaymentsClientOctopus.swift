@@ -101,6 +101,25 @@ class hPaymentClientOctopus: hPaymentClient {
         }
         throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }
+
+    func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        .init(
+            id: "id",
+            payment: .init(
+                gross: .sek(300),
+                net: .sek(200),
+                carriedAdjustment: nil,
+                settlementAdjustment: nil,
+                date: "2026-04-30"
+            ),
+            status: .failedForPrevious(from: "2026-04-30", to: "2026-05-30"),
+            contracts: [],
+            referralDiscount: nil,
+            amountPerReferral: .sek(10),
+            paymentChargeData: nil,
+            addedToThePayment: []
+        )
+    }
 }
 
 @MainActor
