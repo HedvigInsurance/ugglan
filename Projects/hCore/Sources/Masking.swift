@@ -64,7 +64,7 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .phoneNumber:
-            let phoneRegEx = "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$"
+            let phoneRegEx = "^\\+?[0-9]{7,15}$"
             let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegEx)
             return phonePredicate.evaluate(with: text)
         case .euroBonus: return text.count > 3
@@ -329,7 +329,8 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
         case .digits: return text.filter(\.isDigit)
         case .email: return text
-        case .phoneNumber: return text
+        case .phoneNumber:
+            return text.range(of: "^\\+?[0-9]*$", options: .regularExpression) != nil ? text : previousText
         case .none: return text
         case .address: return text
         case .disabledSuggestion: return text

@@ -30,7 +30,7 @@ struct PayoutChangeMethodScreen: View {
                                 )
                             case .invoice: break
                             case .nordea: paymentNavigationVm.showNordeaSetup = true
-                            case .swish: break
+                            case .swish: paymentNavigationVm.showSwishPayoutSetup = true
                             case .unknown: break
                             }
                         }
@@ -45,7 +45,7 @@ extension PaymentProvider {
     var payoutTitle: String {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardTitle
-        case .swish: return ""
+        case .swish: return "Swish"
         case .trustly: return "Trustly"
         case .invoice: return L10n.paymentsInvoice
         case .unknown: return ""
@@ -55,9 +55,9 @@ extension PaymentProvider {
     var payoutSubtitle: String {
         switch self {
         case .nordea: return L10n.bankPayoutMethodCardDescription
-        case .swish: return ""
+        case .swish: return L10n.payoutMethodSwishDescription
         case .trustly: return L10n.payoutMethodTrustlyDescription
-        case .invoice: return ""
+        case .invoice: return L10n.payoutMethodInvoiceDescription
         case .unknown: return ""
         }
     }
