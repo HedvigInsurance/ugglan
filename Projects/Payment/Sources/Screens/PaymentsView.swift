@@ -79,8 +79,9 @@ public struct PaymentsView: View {
                 if let missedPaymentData = state.missedPaymentData {
                     hSection {
                         MissedPaymentCardView(
-                            amountDue: missedPaymentData.payment.net,
+                            amountDue: missedPaymentData.paymentData.payment.net,
                             onReviewPayment: {
+                                router.push(missedPaymentData)
                             }
                         )
                     }
