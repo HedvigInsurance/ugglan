@@ -2,8 +2,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentOverdueScreen: View {
-    let overdueData: PaymentOverdueData
+struct MissedPaymentScreen: View {
+    let missedPaymentdata: MissedPaymentData
     @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
@@ -43,7 +43,9 @@ struct PaymentOverdueScreen: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 hText(
-                    L10n.paymentsPaymentOverdueDetailsSince(overdueData.paymentData.payment.date.displayDateShort),
+                    L10n.paymentsPaymentOverdueDetailsSince(
+                        missedPaymentdata.paymentData.payment.date.displayDateShort
+                    ),
                     style: .heading1
                 )
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -84,9 +86,9 @@ struct PaymentOverdueScreen: View {
         VStack(alignment: .leading, spacing: .padding4) {
             infoRow(
                 label: L10n.paymentsPaymentOverdueDetailsDueDate,
-                value: overdueData.paymentData.payment.date.displayDate
+                value: missedPaymentdata.paymentData.payment.date.displayDate
             )
-            if let account = overdueData.paymentChargeData.account {
+            if let account = missedPaymentdata.paymentChargeData.account {
                 infoRow(
                     label: L10n.bankPayoutMethodCardTitle,
                     value: account
@@ -110,7 +112,7 @@ struct PaymentOverdueScreen: View {
             hText(L10n.PaymentDetails.ReceiptCard.total, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             Spacer()
-            hText(overdueData.paymentData.payment.net.formattedAmount, style: .heading1)
+            hText(missedPaymentdata.paymentData.payment.net.formattedAmount, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
         }
     }
@@ -120,7 +122,7 @@ struct PaymentOverdueScreen: View {
             .medium,
             .primary,
             content: .init(
-                title: L10n.paymentsPaymentOverdueDetailsPay(overdueData.paymentData.payment.net.formattedAmount)
+                title: L10n.paymentsPaymentOverdueDetailsPay(missedPaymentdata.paymentData.payment.net.formattedAmount)
             ),
             {
                 // TODO: Trigger manual payment
@@ -163,8 +165,8 @@ struct PaymentOverdueScreen: View {
         ),
         addedToThePayment: nil
     )
-    return PaymentOverdueScreen(
-        overdueData: .init(
+    return MissedPaymentScreen(
+        missedPaymentdata: .init(
             paymentData: data,
             paymentChargeData: data.paymentChargeData!
         )

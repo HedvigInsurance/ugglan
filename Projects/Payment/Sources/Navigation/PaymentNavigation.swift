@@ -43,8 +43,8 @@ public struct PaymentsNavigation: View {
                         PaymentMethodScreen()
                     }
                 }
-                .routerDestination(for: PaymentOverdueData.self) { item in
-                    PaymentOverdueScreen(overdueData: item)
+                .routerDestination(for: MissedPaymentData.self) { item in
+                    MissedPaymentScreen(missedPaymentdata: item)
                         .navigationTitle(L10n.paymentsPaymentOverdueTitle)
                 }
         }
