@@ -559,6 +559,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "OS_VERSION_TOO_LOW_BODY" = "%@ stöds inte. Uppdatera till det senaste operativsystemet för att kunna använda Hedvig-appen.";
 "OS_VERSION_TOO_LOW_TITLE" = "Ditt operativsystem måste uppdateras";
 "PAYMENTS_ACCOUNT" = "Konto";
+"PAYMENTS_ACCOUNT_SETUP_FAILED" = "Failed to setup payout method";
 "PAYMENTS_ADD_CAMPAIGN_CODE" = "Lägg till kampanjkod";
 "PAYMENTS_AMOUNT_TO_PAY" = "Att betala";
 "PAYMENTS_AUTOGIRO_LABEL" = "Autogiro";
@@ -569,10 +570,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_DUE_DESCRIPTION" = "%1$@ varje månad";
 "PAYMENTS_EXPIRED_DATE" = "Utgått %1$@";
 "PAYMENTS_HISTORY_INFO" = "Skicka ett meddelande till oss här i appen om du behöver mer info om betalningar äldre än 12 månader.";
+"PAYMENTS_INVALID_BANK_ACCOUNT" = "Invalid bank account";
 "PAYMENTS_INVITE_FRIENDS" = "Dela din kod";
 "PAYMENTS_INVOICE" = "Faktura";
 "PAYMENTS_IN_PROGRESS" = "Betalningen behandlas. Notera att det kan ta 1 till 3 bankdagar innan beloppet dras från ditt konto";
 "PAYMENTS_IN_PROGRESS_KIVRA" = "Du hittar din faktura i Kivra-appen";
+"PAYMENTS_KIVRA_NO_ACCOUNT" = "Kivra inbox is not enabled";
 "PAYMENTS_MANDATE" = "Autogiromandat";
 "PAYMENTS_MISSED_PAYMENT" = "Din betalning för perioden %1$@ – %2$@ gick inte igenom. Beloppet har lagts till i denna betalning.";
 "PAYMENTS_NO_HISTORY_DATA" = "Du har ingen betalningshistorik";

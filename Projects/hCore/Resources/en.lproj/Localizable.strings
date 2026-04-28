@@ -559,6 +559,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "OS_VERSION_TOO_LOW_BODY" = "%@ is not supported. Update to the latest operating system to use the Hedvig app.";
 "OS_VERSION_TOO_LOW_TITLE" = "Your iOS needs to be updated";
 "PAYMENTS_ACCOUNT" = "Account";
+"PAYMENTS_ACCOUNT_SETUP_FAILED" = "Failed to setup payout method";
 "PAYMENTS_ADD_CAMPAIGN_CODE" = "Add campaign code";
 "PAYMENTS_AMOUNT_TO_PAY" = "Amount to pay";
 "PAYMENTS_AUTOGIRO_LABEL" = "Direct debit";
@@ -569,10 +570,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_DUE_DESCRIPTION" = "%1$@ each month";
 "PAYMENTS_EXPIRED_DATE" = "Expired %1$@";
 "PAYMENTS_HISTORY_INFO" = "For information about payments older than 12 months, please send us a message here in the app.";
+"PAYMENTS_INVALID_BANK_ACCOUNT" = "Invalid bank account";
 "PAYMENTS_INVITE_FRIENDS" = "Share your code";
 "PAYMENTS_INVOICE" = "Invoice";
 "PAYMENTS_IN_PROGRESS" = "The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account";
 "PAYMENTS_IN_PROGRESS_KIVRA" = "You can find your invoice in the Kivra app";
+"PAYMENTS_KIVRA_NO_ACCOUNT" = "Kivra inbox is not enabled";
 "PAYMENTS_MANDATE" = "Mandate";
 "PAYMENTS_MISSED_PAYMENT" = "Your payment for the period %1$@ – %2$@ didn't process as expected. The amount has been added to this payment.";
 "PAYMENTS_NO_HISTORY_DATA" = "There is no record of your payment history";
