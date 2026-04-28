@@ -95,7 +95,7 @@ public struct Masking {
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
         case .petChipId: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
-        case .bankAccountNumber: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+        case .bankAccountNumber: return text.replacingOccurrences(of: "[\\s\\-]", with: "", options: .regularExpression)
         case .clearingNumber: return text
         }
     }
@@ -348,13 +348,7 @@ public struct Masking {
         case .firstName, .lastName: return text
         case .petChipId: return delimitedDigits(delimiterPositions: [4, 8, 12, 16], maxCount: 15 + 4, delimiter: " ")
         case .bankAccountNumber:
-            let digits = text.filter(\.isDigit)
-            var result = ""
-            for (index, char) in digits.enumerated() {
-                if index > 0, index % 3 == 0 { result.append(" ") }
-                result.append(char)
-            }
-            return result
+            return String(text.filter { $0.isDigit || $0 == " " || $0 == "-" })
         case .clearingNumber:
             return isDigit(maxCount: 5)
         }
