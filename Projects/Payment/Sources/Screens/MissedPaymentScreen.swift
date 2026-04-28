@@ -40,9 +40,9 @@ struct MissedPaymentScreen: View {
             presented: $showPaymentDetails,
             presentationStyle: .detent(style: [.large])
         ) {
-            PaymentDetailsView(data: overdueData.paymentData, showsStatus: false)
+            PaymentDetailsView(data: missedPaymentdata.paymentData, showsStatus: false)
                 .withDismissButton()
-                .embededInNavigation(tracking: overdueData.paymentData)
+                .embededInNavigation(tracking: missedPaymentdata.paymentData)
         }
         .disabled(vm.processingState == .loading)
         .modally(
