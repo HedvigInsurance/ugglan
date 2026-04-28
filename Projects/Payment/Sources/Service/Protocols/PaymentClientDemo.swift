@@ -209,4 +209,8 @@ public class hPaymentClientDemo: hPaymentClient {
     public func chargeOutstandingPayment() async throws {
         try await Task.sleep(seconds: 1)
     }
+
+    public func getMissedPaymentData() async throws -> MissedPaymentData? {
+        nil
+    }
 }

@@ -106,6 +106,34 @@ class hPaymentClientOctopus: hPaymentClient {
         // TODO: Call GraphQL mutation for manual charge
         await delay(2)
     }
+    func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        .init(
+            paymentData: .init(
+                id: "id",
+                payment: .init(
+                    gross: .sek(300),
+                    net: .sek(200),
+                    carriedAdjustment: nil,
+                    settlementAdjustment: nil,
+                    date: "2026-04-30"
+                ),
+                status: .failedForPrevious(from: "2026-04-30", to: "2026-05-30"),
+                contracts: [],
+                referralDiscount: nil,
+                amountPerReferral: .sek(10),
+                paymentChargeData: nil,
+                addedToThePayment: []
+            ),
+            paymentChargeData: .init(
+                paymentMethod: "trustly",
+                bankName: "bank",
+                account: "account",
+                mandate: "mandata",
+                dueDate: 27,
+                chargeMethod: .trustly
+            )
+        )
+    }
 }
 
 @MainActor

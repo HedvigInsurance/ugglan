@@ -7,6 +7,7 @@ public protocol hPaymentClient: Sendable {
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData]
     func getConnectPaymentUrl() async throws -> URL
     func chargeOutstandingPayment() async throws
+    func getMissedPaymentData() async throws -> MissedPaymentData?
 }
 
 public enum PaymentError: Error {

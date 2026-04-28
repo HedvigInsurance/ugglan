@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentOverdueCardView: View {
+struct MissedPaymentCardView: View {
     let amountDue: MonetaryAmount
     let onReviewPayment: () -> Void
 
@@ -53,7 +53,7 @@ struct PaymentOverdueCardView: View {
 }
 
 #Preview {
-    PaymentOverdueCardView(
+    MissedPaymentCardView(
         amountDue: .sek(200)
     ) {}
 }

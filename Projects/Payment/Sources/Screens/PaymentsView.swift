@@ -15,6 +15,7 @@ public struct PaymentsView: View {
         store.send(.load)
         store.send(.getHistory)
         store.send(.fetchPaymentStatus)
+        store.send(.getMissedPayment)
     }
 
     public var body: some View {
@@ -75,12 +76,12 @@ public struct PaymentsView: View {
             }
         ) { state in
             VStack(spacing: .padding8) {
-                if let overdueData = state.paymentOverdueData {
+                if let missedPaymentData = state.missedPaymentData {
                     hSection {
-                        PaymentOverdueCardView(
-                            amountDue: overdueData.paymentData.payment.net,
+                        MissedPaymentCardView(
+                            amountDue: missedPaymentData.paymentData.payment.net,
                             onReviewPayment: {
-                                router.push(overdueData)
+                                router.push(missedPaymentData)
                             }
                         )
                     }
