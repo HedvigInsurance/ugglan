@@ -584,6 +584,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_FAILED" = "This payment failed and was added to your payment on %1$@.";
 "PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Payment history";
 "PAYMENTS_PAYMENT_METHOD" = "Payment method";
+"PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE" = "Amount due: %1$@";
+"PAYMENTS_PAYMENT_OVERDUE_BODY" = "We couldn't collect this payment from your bank account. Pay now to keep your insurance active.";
+"PAYMENTS_PAYMENT_OVERDUE_BUTTON" = "Review payment";
+"PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Payment overdue";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Payment successful";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ days";
 "PAYMENTS_PERIOD_FULL" = "Full period";

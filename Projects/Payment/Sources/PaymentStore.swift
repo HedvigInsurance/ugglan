@@ -8,6 +8,7 @@ public struct PaymentState: StateProtocol {
     public var ongoingPaymentData: [PaymentData] = []
     public var paymentStatusData: PaymentStatusData?
     var paymentHistory: [PaymentHistoryListData] = []
+    var missedPaymentData: MissedPaymentData?
     public init() {}
 }
 
@@ -19,12 +20,15 @@ public enum PaymentAction: ActionProtocol {
     case setPaymentStatus(data: PaymentStatusData)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
+    case getMissedPayment
+    case setMissedPaymentData(data: MissedPaymentData?)
 }
 
 public enum LoadingAction: LoadingProtocol {
     case getPaymentData
     case getPaymentStatus
     case getHistory
+    case getMissedPayment
 }
 
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
@@ -34,25 +38,32 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         switch action {
         case .load:
             do {
-                let paymentData = try await paymentService.getPaymentData()
-                await sendAsync(.setPaymentData(data: paymentData.upcoming))
-                await sendAsync(.setOngoingPaymentData(data: paymentData.ongoing))
+                let payment = try await paymentService.getPaymentData()
+                await sendAsync(.setPaymentData(data: payment.upcoming))
+                await sendAsync(.setOngoingPaymentData(data: payment.ongoing))
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentData)
             }
         case .fetchPaymentStatus:
             do {
                 let statusData = try await paymentService.getPaymentStatusData()
-                send(.setPaymentStatus(data: statusData))
+                await sendAsync(.setPaymentStatus(data: statusData))
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentStatus)
             }
         case .getHistory:
             do {
                 let data = try await paymentService.getPaymentHistoryData()
-                send(.setHistory(to: data))
+                await sendAsync(.setHistory(to: data))
             } catch {
                 setError(L10n.General.errorBody, for: .getHistory)
+            }
+        case .getMissedPayment:
+            do {
+                let data = try await paymentService.getMissedPaymentData()
+                await sendAsync(.setMissedPaymentData(data: data))
+            } catch {
+                setError(L10n.General.errorBody, for: .getMissedPayment)
             }
         default:
             break
@@ -80,6 +91,11 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setHistory(data):
             removeLoading(for: .getHistory)
             newState.paymentHistory = data
+        case .getMissedPayment:
+            setLoading(for: .getMissedPayment)
+        case let .setMissedPaymentData(data):
+            newState.missedPaymentData = data
+            removeLoading(for: .getMissedPayment)
         }
         return newState
     }
