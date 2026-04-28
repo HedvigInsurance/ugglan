@@ -75,7 +75,10 @@ public enum PaymentMethodStatus: Codable, Equatable, Sendable, Hashable {
     case unknown
 }
 
-public enum PaymentProvider: Codable, Equatable, Sendable, Hashable {
+public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable {
+    public var id: String {
+        self.asString
+    }
     case trustly
     case swish
     case nordea

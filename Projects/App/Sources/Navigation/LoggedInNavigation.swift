@@ -778,6 +778,14 @@ struct HomeTab: View {
                 )
             }
         )
+        .detent(
+            presented: $loggedInVm.isPayoutMethodPresented,
+            presentationStyle: .detent(
+                style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            PayoutNavigation(paymentsNavigationVm: loggedInVm.paymentsNavigationVm)
+        }
     }
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
@@ -847,7 +855,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
-
+    @Published var isPayoutMethodPresented = false
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
