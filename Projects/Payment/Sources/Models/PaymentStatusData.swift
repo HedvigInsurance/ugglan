@@ -41,11 +41,11 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     public var defaultOrFirstPayoutMethod: PaymentMethodData? {
-        defaultPayoutMethod ?? payoutMethods.first
+        defaultPayoutMethod ?? payoutMethods.first(where: { $0.isDefault })
     }
 
     public var defaultOrFirstPayinMethod: PaymentMethodData? {
-        defaultPayinMethod ?? payinMethods.first
+        defaultPayinMethod ?? payinMethods.first(where: { $0.isDefault })
     }
 }
 

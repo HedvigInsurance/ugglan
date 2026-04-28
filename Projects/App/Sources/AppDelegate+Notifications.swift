@@ -156,4 +156,5 @@ enum PushNotificationType: String {
     case OPEN_CLAIM
     case INSURANCE_EVIDENCE
     case TRAVEL_CERTIFICATE
+    case PAYOUT
 }
