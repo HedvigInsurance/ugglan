@@ -214,7 +214,7 @@ class MainNavigationViewModel: ObservableObject {
 
         let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
         let isColdStart = abs(timeSinceLaunch) < 1
-        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(1)
+        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(0.2)
 
         deepLinkCancellable =
             $stateToShow
