@@ -3,12 +3,12 @@ import hCore
 
 public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var status: PayinMethodStatus
-    public let chargingDay: Int?
-    public let defaultPayinMethod: PaymentMethodData?
-    public let payinMethods: [PaymentMethodData]
-    public let defaultPayoutMethod: PaymentMethodData?
-    public let payoutMethods: [PaymentMethodData]
-    private let availableMethods: [AvailablePaymentMethod]
+    let chargingDay: Int?
+    private let defaultPayinMethod: PaymentMethodData?
+    let payinMethods: [PaymentMethodData]
+    private let defaultPayoutMethod: PaymentMethodData?
+    let payoutMethods: [PaymentMethodData]
+    public let availableMethods: [AvailablePaymentMethod]
 
     public init(
         status: PayinMethodStatus,
@@ -33,11 +33,19 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultPayinMethod != nil
+        !payinMethods.isEmpty || defaultOrFirstPayinMethod != nil
     }
 
     var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultPayoutMethod != nil) && showPayinSection
+        (!availablePayoutMethods.isEmpty || defaultOrFirstPayoutMethod != nil) && showPayinSection
+    }
+
+    public var defaultOrFirstPayoutMethod: PaymentMethodData? {
+        defaultPayoutMethod ?? payoutMethods.first
+    }
+
+    public var defaultOrFirstPayinMethod: PaymentMethodData? {
+        defaultPayinMethod ?? payinMethods.first
     }
 }
 
@@ -116,7 +124,7 @@ public struct AvailablePaymentMethod: Codable, Equatable, Sendable, Hashable {
 
 public enum PaymentMethodSetupType: Sendable {
     case trustly
-    case nordeaPayout(clearingNumber: String, accountNumber: String)
+    case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
 }
 

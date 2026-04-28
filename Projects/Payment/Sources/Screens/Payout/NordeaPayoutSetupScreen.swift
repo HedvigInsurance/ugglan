@@ -16,7 +16,6 @@ struct NordeaPayoutSetupScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                clearingField
                 accountField
             }
         }
@@ -27,19 +26,6 @@ struct NordeaPayoutSetupScreen: View {
         .disabled(vm.isLoading)
     }
 
-    private var clearingField: some View {
-        hSection {
-            hFloatingTextField(
-                masking: .init(type: .clearingNumber),
-                value: $vm.clearingNumber,
-                equals: $vm.focusedField,
-                focusValue: .clearing,
-                placeholder: placeholder,
-                error: $vm.clearingError
-            )
-        }
-    }
-
     private var accountField: some View {
         hSection {
             hFloatingTextField(
@@ -47,7 +33,7 @@ struct NordeaPayoutSetupScreen: View {
                 value: $vm.accountNumber,
                 equals: $vm.focusedField,
                 focusValue: .account,
-                placeholder: L10n.paymentsAccount,
+                placeholder: placeholder,
                 error: $vm.accountError
             )
         }
@@ -93,15 +79,14 @@ struct NordeaPayoutSetupScreen: View {
 
     private var placeholder: String {
         if let bankName = vm.bankName {
-            return L10n.bankPayoutMethodFormClearingFieldLabel + " - " + bankName
+            return L10n.paymentsAccount + " - " + bankName
         }
-        return L10n.bankPayoutMethodFormClearingFieldLabel
+        return L10n.paymentsAccount
     }
 }
 
 @MainActor
 class NordeaPayoutSetupViewModel: ObservableObject {
-    @Published var clearingNumber: String = ""
     @Published var accountNumber: String = ""
     @Published var bankName: String?
     @Published var focusedField: NordeaPayoutField?
@@ -111,17 +96,15 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     @Published var errorMessage: String?
 
     private let paymentService = hPaymentService()
-    private let clearingMasking = Masking(type: .clearingNumber)
     private let accountMasking = Masking(type: .bankAccountNumber)
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        $clearingNumber
+        $accountNumber
             .receive(on: RunLoop.main)
             .sink { [weak self] newValue in
-                let cleaned = newValue.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "-", with: "")
                 withAnimation {
-                    self?.bankName = Int(cleaned)?.bankName
+                    self?.bankName = newValue.bankName
                 }
             }
             .store(in: &cancellables)
@@ -142,7 +125,6 @@ class NordeaPayoutSetupViewModel: ObservableObject {
         do {
             let result = try await paymentService.setupPaymentMethod(
                 .nordeaPayout(
-                    clearingNumber: clearingNumber,
                     accountNumber: accountMasking.unmaskedValue(text: accountNumber)
                 )
             )
@@ -158,21 +140,16 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     }
 
     private func validate() -> Bool {
-        var newClearingError: String?
         var newAccountError: String?
 
-        if !clearingMasking.isValid(text: clearingNumber) {
-            newClearingError = L10n.claimChatFormTextMinChar(4)
-        }
         if !accountMasking.isValid(text: accountMasking.unmaskedValue(text: accountNumber)) {
             newAccountError = L10n.claimChatFormTextMinChar(6)
         }
 
-        guard newClearingError == nil && newAccountError == nil else {
+        guard newAccountError == nil else {
             withAnimation {
-                clearingError = newClearingError
                 accountError = newAccountError
-                focusedField = newClearingError != nil ? .clearing : .account
+                focusedField = .account
             }
             return false
         }
