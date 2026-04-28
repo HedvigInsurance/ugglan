@@ -172,16 +172,8 @@ public class FileGridViewModel: ObservableObject {
     }
 }
 
-@MainActor
-private struct FileGridAlignment: @preconcurrency EnvironmentKey {
-    static let defaultValue: HorizontalAlignment = .trailing
-}
-
 extension EnvironmentValues {
-    public var hFileGridAlignment: HorizontalAlignment {
-        get { self[FileGridAlignment.self] }
-        set { self[FileGridAlignment.self] = newValue }
-    }
+    @Entry public var hFileGridAlignment: HorizontalAlignment = .trailing
 }
 
 extension View {

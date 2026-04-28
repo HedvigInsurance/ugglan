@@ -79,6 +79,7 @@ public struct SubmitClaimChatScreen: View {
                 .onAppear {
                     scrollCoordinator.scrollViewHeight = proxy.size.height
                 }
+                .hFormBottomBackgroundColor(.aiPoweredGradient)
                 .onChange(of: proxy.size) { value in
                     scrollCoordinator.scrollViewHeight = value.height
                 }
