@@ -1,4 +1,5 @@
 import Combine
+@preconcurrency import HedvigShared
 import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -7,6 +8,8 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
+    @State private var puppyGuideAvailable: Bool = false
+    @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: NavigationRouter
 
@@ -50,6 +53,7 @@ public struct HelpCenterStartView: View {
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             .accessibilityElement(children: .combine)
+                            puppyGuideEntry
                             displayQuickActions(from: vm.quickActions)
                             displayTopics()
                             if let helpCenterModel = vm.helpCenterModel {
@@ -88,6 +92,33 @@ public struct HelpCenterStartView: View {
             vc.navigationItem.searchController = vm.searchController
             vc.definesPresentationContext = true
             vm.updateColors()
+        }
+        .task {
+            puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { available in
+                DispatchQueue.main.async { puppyGuideAvailable = available }
+            }
+        }
+        .onDisappear {
+            puppyGuideCancellable?.cancel()
+            puppyGuideCancellable = nil
+        }
+    }
+
+    @ViewBuilder
+    private var puppyGuideEntry: some View {
+        if puppyGuideAvailable {
+            hSection {
+                hRow {
+                    hText("Puppy guide")
+                    Spacer()
+                }
+                .withChevronAccessory
+                .onTap { [weak router] in
+                    router?.push(PuppyGuideRoute.list)
+                }
+            }
+            .hWithoutHorizontalPadding([.section])
+            .sectionContainerStyle(.opaque)
         }
     }
 

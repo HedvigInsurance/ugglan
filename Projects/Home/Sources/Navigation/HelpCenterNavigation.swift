@@ -42,6 +42,18 @@ public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
     case inbox
 }
 
+public enum PuppyGuideRoute: Hashable, TrackingViewNameProtocol {
+    case list
+    case article(storyName: String)
+
+    public var nameForTracking: String {
+        switch self {
+        case .list: return "PuppyGuideList"
+        case .article: return "PuppyGuideArticle"
+        }
+    }
+}
+
 private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -94,6 +106,18 @@ public struct HelpCenterNavigation<Content: View>: View {
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
                     .navigationTitle(L10n.chatConversationInbox)
+            }
+            .routerDestination(for: PuppyGuideRoute.self) { [router = helpCenterVm.router] route in
+                switch route {
+                case .list:
+                    PuppyGuideListHost(router: router)
+                        .ignoresSafeArea()
+                        .navigationBarHidden(true)
+                case let .article(storyName):
+                    PuppyArticleHost(storyName: storyName, router: router)
+                        .ignoresSafeArea()
+                        .navigationBarHidden(true)
+                }
             }
         }
         .ignoresSafeArea()
