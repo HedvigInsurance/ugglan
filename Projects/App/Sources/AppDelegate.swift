@@ -9,6 +9,7 @@ import CoreDependencies
 import DatadogLogs
 import Forever
 import Foundation
+@preconcurrency import HedvigShared
 import MoveFlow
 import Payment
 import PresentableStore
@@ -164,6 +165,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        Main_nativeKt.doInitKoin(
+            accessTokenFetcher: IosAccessTokenFetcher(),
+            deviceIdFetcher: IosDeviceIdFetcher(),
+            featureManager: IosFeatureManager(isFeatureEnabledBlock: { _ in false }),
+            appBuildConfig: IosAppBuildConfig()
+        )
+        IosLogcatLogger.companion.install()
         ApolloClient.bundle = Bundle.main
 
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
