@@ -10,48 +10,50 @@ public struct PayoutSelectedMethodScreen: View {
         self.vm = vm
     }
 
-    public var body: some View {
-        content
+    private var paymentStatusData: PaymentStatusData {
+        vm.paymentStatusData
     }
 
-    @ViewBuilder
-    private var content: some View {
-        if vm.paymentStatusData.defaultOrFirstPayoutMethod == nil {
-            hForm {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        hCoreUIAssets.infoFilled.view
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(hSignalColor.Blue.element)
-
-                        hText(L10n.payoutMissingInfo)
-                            .multilineTextAlignment(.center)
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-            .hFormAttachToBottom {
-                hSection {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: L10n.payoutAddPayoutMethod),
-                        {
-                            router.push(PayoutRouterActions.changePayoutMethod)
-                        }
-                    )
-                }
-            }
-            .hFormContentPosition(.center)
-            .sectionContainerStyle(.transparent)
+    public var body: some View {
+        if paymentStatusData.defaultOrFirstPayoutMethod == nil {
+            missingPayoutView
         } else {
-            hForm {
-                VStack(spacing: .padding8) {
+            existingPayoutView
+        }
+    }
+
+    private var missingPayoutView: some View {
+        hForm {
+            hSection {
+                VStack(spacing: .padding16) {
+                    hCoreUIAssets.infoFilled.view
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.Blue.element)
+
+                    hText(L10n.payoutMissingInfo)
+                        .multilineTextAlignment(.center)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .hFormAttachToBottom {
+            changePayoutButton(title: L10n.payoutAddPayoutMethod)
+        }
+        .hFormContentPosition(.center)
+        .sectionContainerStyle(.transparent)
+    }
+
+    private var existingPayoutView: some View {
+        hForm {
+            VStack(spacing: .padding8) {
+                if let displayValue = paymentStatusData.payoutAccountDisplayValue,
+                    let displayTitle = paymentStatusData.payoutAccountDisplayTitle
+                {
                     hSection {
                         hFloatingField(
-                            value: vm.paymentStatusData.payoutAccountDisplayValue,
-                            placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
+                            value: displayValue,
+                            placeholder: displayTitle,
                             error: nil,
                             onTap: {}
                         )
@@ -63,37 +65,42 @@ public struct PayoutSelectedMethodScreen: View {
                         .disabled(true)
                     }
                 }
-                .padding(.top, .padding16)
             }
-            .hFormAttachToBottom {
-                if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
-                    hSection {
-                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                    }
-                    .sectionContainerStyle(.transparent)
+            .padding(.top, .padding16)
+        }
+        .hFormAttachToBottom {
+            if paymentStatusData.payoutMethods.hasMethodInProgress {
+                hSection {
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                 }
+                .sectionContainerStyle(.transparent)
+            }
 
-                if vm.paymentStatusData.showChangeButton {
-                    hSection {
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(title: L10n.changePayoutMethodButtonLabel),
-                            {
-                                router.push(PayoutRouterActions.changePayoutMethod)
-                            }
-                        )
+            changePayoutButton(title: L10n.changePayoutMethodButtonLabel)
+        }
+    }
+
+    @ViewBuilder
+    private func changePayoutButton(title: String) -> some View {
+        if paymentStatusData.showChangeButton {
+            hSection {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: title),
+                    {
+                        router.push(PayoutRouterActions.changePayoutMethod)
                     }
-                    .sectionContainerStyle(.transparent)
-                }
+                )
             }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
 
 extension PaymentStatusData {
-    fileprivate var payoutAccountDisplayValue: String {
-        guard let method = defaultOrFirstPayoutMethod else { return "" }
+    fileprivate var payoutAccountDisplayValue: String? {
+        guard let method = defaultOrFirstPayoutMethod else { return nil }
         switch method.details {
         case .bankAccount(let account, _):
             return "\(account)"
@@ -102,12 +109,12 @@ extension PaymentStatusData {
         case .invoice:
             return method.provider.payoutTitle
         case nil:
-            return L10n.referralPendingStatusLabel
+            return nil
         }
     }
 
-    fileprivate var payoutAccountDisplayTitle: String {
-        guard let method = defaultOrFirstPayoutMethod else { return "" }
+    fileprivate var payoutAccountDisplayTitle: String? {
+        guard let method = defaultOrFirstPayoutMethod else { return nil }
         guard let details = method.details else { return method.provider.payoutTitle }
         let sufix: String? = {
             switch details {
