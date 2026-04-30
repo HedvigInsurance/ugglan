@@ -3,7 +3,7 @@ import Foundation
 public struct PaymentHistoryListData: Codable, Equatable, Identifiable, Sendable {
     public let id: String
     let year: Int
-    let valuesPerMonth: [PaymentHistory]
+    public let valuesPerMonth: [PaymentHistory]
 
     public init(id: String, year: Int, valuesPerMonth: [PaymentHistory]) {
         self.id = id

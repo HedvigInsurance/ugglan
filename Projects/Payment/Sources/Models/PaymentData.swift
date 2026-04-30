@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct PaymentData: Codable, Equatable, Hashable, Sendable {
-    let id: String
+    public let id: String
     public let payment: PaymentStack
     let status: PaymentStatus
     let contracts: [ContractPaymentDetails]
