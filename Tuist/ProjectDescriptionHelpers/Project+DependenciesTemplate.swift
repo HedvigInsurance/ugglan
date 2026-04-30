@@ -175,7 +175,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .umbrella:
             if let path = localUmbrellaXCFrameworkPath {
-                return [.xcframework(path: Path(path))]
+                return [.xcframework(path: Path(stringLiteral: path))]
             }
             return [
                 .package(product: "HedvigShared")
