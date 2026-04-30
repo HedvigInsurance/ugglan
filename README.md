@@ -58,3 +58,33 @@ Before release making sure you `Cancel` or release any pending releases on App S
 5. Enter desired App Store version number
 
 6. Click `Run workflow`
+
+## Iterating on shared KMP code (HedvigShared aka Umbrella)
+
+Production builds consume `HedvigShared.xcframework` as a Swift Package published from the [Android repo](https://github.com/HedvigInsurance/android) via the `umbrella.yml` workflow. That round-trip takes ~25 minutes, which is too slow for an inner loop. For local development you can swap it for an XCFramework you build yourself — no permanent project changes.
+
+**Prerequisites**
+
+Check out the android repo as a sibling of this one. The directories must be named exactly `android` and `ugglan`:
+
+```
+<parent>/
+├── android/
+└── ugglan/   ← you are here
+```
+
+**Use a local build**
+
+```sh
+scripts/use-local-umbrella.sh
+```
+
+This builds `HedvigShared.xcframework` from your android checkout, writes a gitignored marker file (`.local-umbrella-path`) so Tuist picks up the local artifact, and re-runs `tuist generate`. After this, normal Xcode builds use your local Kotlin changes — only re-run the script when you've changed Kotlin code and want iOS to see it.
+
+**Go back to the published package**
+
+```sh
+scripts/use-released-umbrella.sh
+```
+
+Removes the marker and regenerates against the version pinned in `Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift`. Always run this before opening a PR — the marker is gitignored so PRs are unaffected, but you want your local build to match what CI builds.

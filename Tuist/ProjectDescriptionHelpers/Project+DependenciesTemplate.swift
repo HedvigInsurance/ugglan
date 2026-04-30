@@ -1,6 +1,23 @@
 import Foundation
 import ProjectDescription
 
+/// Reads `<repo-root>/.local-umbrella-path` (a developer-local, gitignored file written by
+/// `scripts/use-local-umbrella.sh`). If it points to an existing `HedvigShared.xcframework`,
+/// the umbrella dependency is swapped for that local artifact; otherwise the published
+/// package is used unchanged. Lets devs iterate on KMP changes without round-tripping CI.
+private var localUmbrellaXCFrameworkPath: String? {
+    let markerPath = "\(FileManager.default.currentDirectoryPath)/.local-umbrella-path"
+    guard let raw = try? String(contentsOfFile: markerPath, encoding: .utf8) else { return nil }
+    let path = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !path.isEmpty, FileManager.default.fileExists(atPath: path) else {
+        FileHandle.standardError.write(Data(
+            "warning: .local-umbrella-path points to '\(path)' which does not exist. Falling back to released umbrella.\n".utf8
+        ))
+        return nil
+    }
+    return path
+}
+
 public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
@@ -61,8 +78,9 @@ public enum ExternalDependencies: CaseIterable {
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.9.0"))]
         case .umbrella:
+            if localUmbrellaXCFrameworkPath != nil { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260422132718"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260429153454"))
             ]
         case .kmpNativeCoroutines:
             return [
@@ -156,6 +174,9 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogTrace"),
             ]
         case .umbrella:
+            if let path = localUmbrellaXCFrameworkPath {
+                return [.xcframework(path: Path(path))]
+            }
             return [
                 .package(product: "HedvigShared")
             ]
