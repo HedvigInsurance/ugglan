@@ -101,6 +101,7 @@ class MainNavigationViewModel: ObservableObject {
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
     private var pushNotificationCancellable: AnyCancellable?
+    private var deepLinkCancellable: AnyCancellable?
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -126,7 +127,6 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = true
                     }
-                    loggedInVm.actionAfterLogin()
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
@@ -175,6 +175,13 @@ class MainNavigationViewModel: ObservableObject {
             name: .handlePushNotification,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleDeepLink),
+            name: .openDeepLink,
+            object: nil
+        )
     }
 
     @objc func handlePushNotification(notification: Notification) {
@@ -199,6 +206,32 @@ class MainNavigationViewModel: ObservableObject {
             .sink { [weak self] _ in
                 self?.loggedInVm.handle(notification: notification)
                 self?.pushNotificationCancellable = nil
+            }
+    }
+
+    @objc func handleDeepLink(notification: Notification) {
+        guard let deepLinkUrl = notification.object as? URL else { return }
+
+        let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
+        let isColdStart = abs(timeSinceLaunch) < 1
+        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(0.2)
+
+        deepLinkCancellable =
+            $stateToShow
+            .map { state -> AnyPublisher<ApplicationState.Screen, Never> in
+                if state == .loggedIn {
+                    return Just(state)
+                        .delay(for: delay, scheduler: RunLoop.main)
+                        .eraseToAnyPublisher()
+                } else {
+                    return Empty().eraseToAnyPublisher()
+                }
+            }
+            .switchToLatest()
+            .first()
+            .sink { [weak self] _ in
+                self?.loggedInVm.handleDeepLink(deepLinkUrl)
+                self?.deepLinkCancellable = nil
             }
     }
 
