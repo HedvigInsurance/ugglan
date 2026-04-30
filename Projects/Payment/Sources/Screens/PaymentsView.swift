@@ -43,8 +43,13 @@ public struct PaymentsView: View {
                     hSection {
                         discounts
                         paymentHistory
-                        if let data = statusData?.paymentChargeData {
-                            connectedPaymentMethod
+                        if let statusData {
+                            if statusData.showPayinSection {
+                                connectedPaymentMethod
+                            }
+                            if statusData.showPayoutSection {
+                                connectedPayoutMethod(data: statusData)
+                            }
                         }
                     }
                 }
@@ -55,7 +60,16 @@ public struct PaymentsView: View {
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
-            bottomPart
+            PresentableStoreLens(
+                PaymentStore.self,
+                getter: { state in
+                    state.paymentStatusData
+                }
+            ) { statusData in
+                if let statusData, statusData.payinMethods.isEmpty {
+                    ConnectPaymentBottomView()
+                }
+            }
         }
         .onPullToRefresh {
             await store.send(.fetchPaymentStatus)
@@ -168,8 +182,21 @@ public struct PaymentsView: View {
         }
     }
 
-    private var bottomPart: some View {
-        ConnectPaymentBottomView(alwaysShowButton: false)
+    private func connectedPayoutMethod(data: PaymentStatusData) -> some View {
+        hRow {
+            hCoreUIAssets.paymentOutlined.view
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText(L10n.payoutPageHeading)
+            Spacer()
+        }
+        .withChevronAccessory
+        .onTap {
+            if data.payoutMethods.isEmpty, !data.availablePayoutMethods.isEmpty {
+                router.push(PayoutRouterAction.setupPayoutMethod)
+            } else if !data.payinMethods.isEmpty {
+                router.push(PayoutRouterAction.payoutMethod)
+            }
+        }
     }
 }
 
@@ -201,5 +228,8 @@ public class PaymentsViewModel: ObservableObject {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return PaymentsView().environmentObject(PaymentsNavigationViewModel())
+    return PaymentsNavigation(
+        paymentsNavigationVm: PaymentsNavigationViewModel()
+    )
+    .environmentObject(NavigationRouter())
 }

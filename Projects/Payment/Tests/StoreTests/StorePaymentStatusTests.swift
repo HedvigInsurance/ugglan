@@ -20,14 +20,24 @@ final class StorePaymentStatusTests: XCTestCase {
     func testFetchPaymentStatusSuccess() async throws {
         let statusData: PaymentStatusData = .init(
             status: .active,
-            paymentChargeData: .init(
-                paymentMethod: "method",
-                bankName: "displayName",
-                account: "descriptor",
-                mandate: "mandate",
-                dueDate: 27,
-                chargeMethod: .trustly
-            )
+            chargingDay: 27,
+            defaultPayinMethod: .init(
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "descriptor", bank: "displayName")
+            ),
+            payinMethods: [
+                .init(
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "descriptor", bank: "displayName")
+                )
+            ],
+            defaultPayoutMethod: nil,
+            payoutMethods: [],
+            availableMethods: []
         )
 
         let mockService = MockPaymentData.createMockPaymentService(
@@ -36,20 +46,21 @@ final class StorePaymentStatusTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
-        try await Task.sleep(seconds: 0.1)
+        try await Task.sleep(seconds: 0.3)
         XCTAssertNil(store.loadingState[.getPaymentStatus])
         assert(store.state.paymentStatusData == statusData)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentStatusData)
     }
 
-    func testFetchPaymentStatusFailure() async {
+    func testFetchPaymentStatusFailure() async throws {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { throw PaymentError.missingDataError(message: "error") }
         )
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
+        try await Task.sleep(seconds: 0.3)
         assert(store.loadingState[.getPaymentStatus] != nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentStatusData)

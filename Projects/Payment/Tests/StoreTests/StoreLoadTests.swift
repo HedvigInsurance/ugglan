@@ -32,7 +32,7 @@ final class StoreLoadTests: XCTestCase {
                 contracts: [],
                 referralDiscount: nil,
                 amountPerReferral: .sek(20),
-                paymentChargeData: nil,
+                payinMethod: nil,
                 addedToThePayment: nil
             ),
             ongoing: [
@@ -49,7 +49,7 @@ final class StoreLoadTests: XCTestCase {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(15),
-                    paymentChargeData: nil,
+                    payinMethod: nil,
                     addedToThePayment: nil
                 )
             ]
