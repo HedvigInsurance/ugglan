@@ -21,6 +21,9 @@ public struct PaymentHistoryView: View {
                     dismissButton: nil
                 )
             )
+            .onAppear {
+                store.send(.getHistory)
+            }
     }
 
     private var successView: some View {

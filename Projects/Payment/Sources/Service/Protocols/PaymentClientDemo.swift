@@ -205,6 +205,11 @@ public class hPaymentClientDemo: hPaymentClient {
     public func getConnectPaymentUrl() async throws -> URL {
         throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }
+
+    public func chargeOutstandingPayment() async throws {
+        try await Task.sleep(seconds: 1)
+    }
+
     public func getMissedPaymentData() async throws -> MissedPaymentData? {
         nil
     }

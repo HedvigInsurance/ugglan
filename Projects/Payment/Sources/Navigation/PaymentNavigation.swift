@@ -26,12 +26,6 @@ public struct PaymentsNavigation: View {
                 .navigationTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(
-                            title: paymentData.title,
-                            titleColor: paymentData.titleColor,
-                            topPadding: 0,
-                            alignment: .center
-                        )
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {

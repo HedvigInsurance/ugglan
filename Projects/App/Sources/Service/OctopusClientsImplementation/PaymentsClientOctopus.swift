@@ -102,33 +102,31 @@ class hPaymentClientOctopus: hPaymentClient {
         throw PaymentError.missingDataError(message: L10n.General.errorBody)
     }
 
+    func chargeOutstandingPayment() async throws {
+        let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
+        let data = try await octopus.client.mutation(mutation: mutation)
+        if let userError = data?.manuallyChargeMember.userError {
+            throw PaymentError.missingDataError(message: userError.message ?? L10n.General.errorBody)
+        }
+    }
+
     func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
-        .init(
-            paymentData: .init(
-                id: "id",
-                payment: .init(
-                    gross: .sek(300),
-                    net: .sek(200),
-                    carriedAdjustment: nil,
-                    settlementAdjustment: nil,
-                    date: "2026-04-30"
-                ),
-                status: .failedForPrevious(from: "2026-04-30", to: "2026-05-30"),
-                contracts: [],
-                referralDiscount: nil,
-                amountPerReferral: .sek(10),
-                paymentChargeData: nil,
-                addedToThePayment: []
-            ),
-            paymentChargeData: .init(
-                paymentMethod: "trustly",
-                bankName: "bank",
-                account: "account",
-                mandate: "mandata",
-                dueDate: 27,
-                chargeMethod: .trustly
-            )
-        )
+        let query = OctopusGraphQL.MisssedChargeIdQuery()
+        let data = try await octopus.client.fetch(query: query)
+        guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
+
+        async let statusData = getPaymentStatusData()
+        async let historyData = getPaymentHistoryData()
+
+        guard let paymentChargeData = try await statusData.paymentChargeData,
+            let item =
+                try await historyData
+                .flatMap({ $0.valuesPerMonth })
+                .compactMap({ $0.paymentData })
+                .first(where: { $0.id == id })
+        else { return nil }
+
+        return .init(paymentData: item, paymentChargeData: paymentChargeData)
     }
 }
 
