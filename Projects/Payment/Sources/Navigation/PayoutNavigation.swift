@@ -13,17 +13,17 @@ public struct PayoutNavigation: View {
     }
 
     public var body: some View {
-        if let paymentStatusViewModel = paymentsNavigationVm.paymentStatusViewModel {
+        if let paymentsNavigationVm = paymentsNavigationVm.paymentStatusViewModel {
             hNavigationStack(router: router, tracking: PayoutRouterActions.selectedPayoutMethod) {
-                PayoutSelectedMethodScreen(vm: paymentStatusViewModel)
+                PayoutSelectedMethodScreen(vm: paymentsNavigationVm)
                     .navigationTitle(L10n.payoutPageHeading)
                     .withDismissButton()
                     .routerDestination(for: PayoutRouterActions.self) { action in
                         switch action {
                         case .selectedPayoutMethod:
-                            PayoutSelectedMethodScreen(vm: paymentStatusViewModel)
+                            PayoutSelectedMethodScreen(vm: paymentsNavigationVm)
                         case .changePayoutMethod:
-                            PayoutChangeMethodScreen(vm: paymentStatusViewModel)
+                            PayoutChangeMethodScreen(vm: paymentsNavigationVm)
                         }
                     }
             }
