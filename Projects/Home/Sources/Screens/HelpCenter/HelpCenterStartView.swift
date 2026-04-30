@@ -95,7 +95,7 @@ public struct HelpCenterStartView: View {
         }
         .task {
             puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { available in
-                DispatchQueue.main.async { puppyGuideAvailable = available }
+                DispatchQueue.main.async { puppyGuideAvailable = available.boolValue }
             }
         }
         .onDisappear {
