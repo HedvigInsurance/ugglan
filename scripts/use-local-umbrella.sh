@@ -17,9 +17,6 @@ if [[ ! -d "$ANDROID_REPO" ]]; then
     exit 1
 fi
 
-echo "==> Building HedvigShared.xcframework from $ANDROID_REPO"
-( cd "$ANDROID_REPO" && ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework )
-
 XCFRAMEWORK="$ANDROID_REPO/app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework"
 if [[ ! -d "$XCFRAMEWORK" ]]; then
     echo "error: gradle build did not produce $XCFRAMEWORK" >&2
@@ -28,6 +25,9 @@ fi
 
 echo "$XCFRAMEWORK" > "$UGGLAN_ROOT/.local-umbrella-path"
 echo "==> Marker written: $UGGLAN_ROOT/.local-umbrella-path"
+
+echo "==> Building HedvigShared.xcframework from $ANDROID_REPO"
+( cd "$ANDROID_REPO" && ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework )
 
 ( cd "$UGGLAN_ROOT" && tuist generate )
 echo "==> Done. Open Ugglan.xcworkspace and rebuild."
