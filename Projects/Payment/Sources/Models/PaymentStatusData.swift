@@ -3,12 +3,12 @@ import hCore
 
 public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var status: PayinMethodStatus
-    public let chargingDay: Int?
-    public let defaultPayinMethod: PaymentMethodData?
-    public let payinMethods: [PaymentMethodData]
-    public let defaultPayoutMethod: PaymentMethodData?
-    public let payoutMethods: [PaymentMethodData]
-    private let availableMethods: [AvailablePaymentMethod]
+    let chargingDay: Int?
+    private let defaultPayinMethod: PaymentMethodData?
+    let payinMethods: [PaymentMethodData]
+    private let defaultPayoutMethod: PaymentMethodData?
+    let payoutMethods: [PaymentMethodData]
+    public let availableMethods: [AvailablePaymentMethod]
 
     public init(
         status: PayinMethodStatus,
@@ -29,15 +29,23 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
-        availableMethods.filter({ $0.supportsPayout })
+        availableMethods.filter((\.supportsPayout))
     }
 
     var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultPayinMethod != nil
+        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
     var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultPayoutMethod != nil) && showPayinSection
+        (!availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil) && showPayinSection
+    }
+
+    public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
+        defaultPayoutMethod ?? payoutMethods.first(where: (\.isDefault))
+    }
+
+    public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
+        defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
     }
 }
 
@@ -75,7 +83,10 @@ public enum PaymentMethodStatus: Codable, Equatable, Sendable, Hashable {
     case unknown
 }
 
-public enum PaymentProvider: Codable, Equatable, Sendable, Hashable {
+public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable {
+    public var id: String {
+        self.asString
+    }
     case trustly
     case swish
     case nordea
@@ -113,6 +124,8 @@ public struct AvailablePaymentMethod: Codable, Equatable, Sendable, Hashable {
 
 public enum PaymentMethodSetupType: Sendable {
     case trustly
+    case nordeaPayout(accountNumber: String)
+    case swishPayout(phoneNumber: String)
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {

@@ -13,7 +13,7 @@ struct PaymentMethodScreen: View {
                 state.paymentStatusData
             }
         ) { paymentChargeData in
-            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultPayinMethod {
+            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod {
                 hForm {
                     PaymentMethodView(
                         data: defaultPayinMethod,
@@ -27,33 +27,24 @@ struct PaymentMethodScreen: View {
                         ConnectPaymentBottomView()
                     } else if defaultPayinMethod.provider == .invoice {
                         hSection {
-                            PresentableStoreLens(
-                                PaymentStore.self,
-                                getter: { state in
-                                    state.paymentStatusData
-                                }
-                            ) { statusData in
-                                if let statusData {
-                                    InfoCard(
-                                        text:
-                                            statusData.status == .pending
-                                            ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                                        type: .info
+                            InfoCard(
+                                text:
+                                    paymentChargeData.payinMethods.hasMethodInProgress
+                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                                type: .info
+                            )
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
+                                            ? paymentChargeData.status.connectButtonTitle
+                                            : L10n.profilePaymentConnectDirectDebitButton,
+                                        buttonAction: {
+                                            paymentsNavigationVM.connectPaymentVm.set()
+                                        }
                                     )
-                                    .buttons(
-                                        [
-                                            .init(
-                                                buttonTitle: statusData.status == .pending
-                                                    ? statusData.status.connectButtonTitle
-                                                    : L10n.profilePaymentConnectDirectDebitButton,
-                                                buttonAction: {
-                                                    paymentsNavigationVM.connectPaymentVm.set()
-                                                }
-                                            )
-                                        ]
-                                    )
-                                }
-                            }
+                                ]
+                            )
                         }
                         .sectionContainerStyle(.transparent)
                     }

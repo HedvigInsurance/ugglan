@@ -72,6 +72,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var claimsAutomationStartInput: StartClaimInput?
     @Published public var isHelpCenterPresented = false
+    @Published public var isPayoutMethodPresented = false
 
     @Published public var navBarItems = NavBarItems()
 
