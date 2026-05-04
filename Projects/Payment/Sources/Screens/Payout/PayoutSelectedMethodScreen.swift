@@ -15,7 +15,7 @@ public struct PayoutSelectedMethodScreen: View {
     }
 
     public var body: some View {
-        if paymentStatusData.defaultOrFirstPayoutMethod == nil {
+        if paymentStatusData.defaultOrFirstDefaultPayoutMethod == nil {
             missingPayoutView
         } else {
             existingPayoutView
@@ -100,7 +100,7 @@ public struct PayoutSelectedMethodScreen: View {
 
 extension PaymentStatusData {
     fileprivate var payoutAccountDisplayValue: String? {
-        guard let method = defaultOrFirstPayoutMethod else { return nil }
+        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
         switch method.details {
         case .bankAccount(let account, _):
             return "\(account)"
@@ -114,7 +114,7 @@ extension PaymentStatusData {
     }
 
     fileprivate var payoutAccountDisplayTitle: String? {
-        guard let method = defaultOrFirstPayoutMethod else { return nil }
+        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
         guard let details = method.details else { return method.provider.payoutTitle }
         let sufix: String? = {
             switch details {

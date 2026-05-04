@@ -33,18 +33,18 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultOrFirstPayinMethod != nil
+        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
     var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultOrFirstPayoutMethod != nil) && showPayinSection
+        (!availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil) && showPayinSection
     }
 
-    public var defaultOrFirstPayoutMethod: PaymentMethodData? {
+    public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
         defaultPayoutMethod ?? payoutMethods.first(where: { $0.isDefault })
     }
 
-    public var defaultOrFirstPayinMethod: PaymentMethodData? {
+    public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
         defaultPayinMethod ?? payinMethods.first(where: { $0.isDefault })
     }
 }
