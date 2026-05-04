@@ -62,12 +62,10 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let isPartnerClaim: Bool
     public var statusParagraph: String? {
         if isPartnerClaim {
-            switch status {
-            case .beingHandled:
-                return L10n.ClaimStatus.BeingHandled.supportText
-            default:
+            if status == .closed {
                 return nil
             }
+            return L10n.ClaimStatus.Partner.supportText
         }
         switch status {
         case .submitted:

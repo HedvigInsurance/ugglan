@@ -983,6 +983,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Your claim was unfortunately not covered. Please see conversation for more details on the decision.";
 /* Figma */
 "claim_status.paid.support_text" = "We got you covered. You should have received the payment by now. \n\nSee your messages here in the app for more details.";
+"claim_status.partner.support_text" = "Your claim is being reviewed by our motor specialists at Eir.";
 /* Figma */
 "claim_status.submitted.support_text" = "We have received your claim and will start reviewing it soon.";
 /* Figma */
@@ -994,6 +995,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.add_more_files" = "Add more files";
 "claim_status_detail.added_files" = "Added files";
 "claim_status_detail.documents.title" = "Claim documents";
+"claim_status_detail.email_view.body" = "Open email";
 /* Figma */
 "claim_status_detail.info_error.body" = "The claim audio couldn't be downloaded. Please try again to be able to listen to it.";
 /* Figma */
