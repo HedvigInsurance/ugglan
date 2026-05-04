@@ -969,6 +969,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.";
 "claim_status.claim_details.button" = "Show details";
+"claim_status.claim_details.exposure_display_name" = "Reg nr";
+"claim_status.claim_details.external_id" = "Ärendenummer";
+"claim_status.claim_details.handler_email" = "E-mail";
 "claim_status.claim_details.info_text" = "Is something missing? Send us a message here in the app.";
 "claim_status.claim_details.submitted" = "Submitted";
 "claim_status.claim_details.title" = "Claim details";
