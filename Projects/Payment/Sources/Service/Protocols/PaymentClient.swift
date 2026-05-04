@@ -5,7 +5,7 @@ public protocol hPaymentClient {
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData])
     func getPaymentStatusData() async throws -> PaymentStatusData
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData]
-    func getConnectPaymentUrl() async throws -> URL
+    func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult
 }
 
 public enum PaymentError: Error {
