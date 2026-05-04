@@ -144,14 +144,21 @@ struct PaymentMethodView: View {
             }
 
             switch data.details {
-            case .bankAccount(let account, let bank):
+            case let .bankAccount(account, bank):
                 rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
                 rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bank, info: nil))
             case .swish(let phoneNumber):
                 rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: phoneNumber, info: nil))
-            case .invoice(_, let email):
-                if let email {
-                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: email, info: nil))
+            case let .invoice(delivery, email):
+                switch delivery {
+                case .kivra:
+                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: "Kivra", info: nil))
+                case .mail:
+                    if let email {
+                        rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: email, info: nil))
+                    }
+                case .unknown:
+                    break
                 }
             case nil:
                 break

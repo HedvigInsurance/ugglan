@@ -5,7 +5,7 @@ import hCoreUI
 public struct PayoutSelectedMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
     @EnvironmentObject var router: NavigationRouter
-
+    @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
     public init(vm: PaymentStatusViewModel) {
         self.vm = vm
     }
@@ -15,10 +15,12 @@ public struct PayoutSelectedMethodScreen: View {
     }
 
     public var body: some View {
-        if paymentStatusData.defaultOrFirstDefaultPayoutMethod == nil {
-            missingPayoutView
-        } else {
+        if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
             existingPayoutView
+        } else if paymentStatusData.availablePayoutMethods.isEmpty {
+            missingPayinView
+        } else {
+            missingPayoutView
         }
     }
 
@@ -39,6 +41,42 @@ public struct PayoutSelectedMethodScreen: View {
         }
         .hFormAttachToBottom {
             changePayoutButton(title: L10n.payoutAddPayoutMethod)
+        }
+        .hFormContentPosition(.center)
+        .sectionContainerStyle(.transparent)
+    }
+
+    private var missingPayinView: some View {
+        hForm {
+            hSection {
+                VStack(spacing: .padding16) {
+                    hCoreUIAssets.infoFilled.view
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.Blue.element)
+                    VStack(spacing: .padding2) {
+                        hText(L10n.payoutNoPayoutOptionsTitle)
+                            .multilineTextAlignment(.center)
+                        hText(L10n.payoutNoPayoutOptionsSubtitle)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .hFormAttachToBottom {
+            hSection {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton),
+                    { [weak paymentsNavigationVm] in
+                        router.dismiss()
+                        paymentsNavigationVm?.connectPaymentVm.set()
+                    }
+                )
+            }
+            .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.center)
         .sectionContainerStyle(.transparent)

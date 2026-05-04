@@ -4,14 +4,9 @@ import hCoreUI
 
 public struct PayoutNavigation: View {
     @StateObject private var router = NavigationRouter()
-    @ObservedObject private var paymentsNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject private var paymentsNavigationVm: PaymentsNavigationViewModel
 
-    public init(
-        paymentsNavigationVm: PaymentsNavigationViewModel
-    ) {
-        self.paymentsNavigationVm = paymentsNavigationVm
-    }
-
+    public init() {}
     public var body: some View {
         if let paymentsNavigationVm = paymentsNavigationVm.paymentStatusViewModel {
             hNavigationStack(router: router, tracking: PayoutRouterActions.selectedPayoutMethod) {

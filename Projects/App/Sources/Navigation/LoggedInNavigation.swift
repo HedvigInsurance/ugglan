@@ -788,7 +788,8 @@ struct HomeTab: View {
                 style: [.large]),
             options: .constant([.alwaysOpenOnTop])
         ) {
-            PayoutNavigation(paymentsNavigationVm: loggedInVm.paymentsNavigationVm)
+            PayoutNavigation()
+                .environmentObject(loggedInVm.paymentsNavigationVm)
         }
     }
 
