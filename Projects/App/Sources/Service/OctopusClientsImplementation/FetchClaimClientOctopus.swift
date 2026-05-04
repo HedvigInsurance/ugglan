@@ -112,7 +112,10 @@ extension ClaimModel {
                     .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
             },
-            isPartnerClaim: true
+            isPartnerClaim: true,
+            handlerEmail: partnerClaim.handlerEmail,
+            exposureDisplayName: partnerClaim.exposureDisplayName,
+            externalId: partnerClaim.externalId
         )
     }
 }
