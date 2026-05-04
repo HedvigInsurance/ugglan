@@ -13,7 +13,7 @@ struct PaymentMethodScreen: View {
                 state.paymentStatusData
             }
         ) { paymentChargeData in
-            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstPayinMethod {
+            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod {
                 hForm {
                     PaymentMethodView(
                         data: defaultPayinMethod,

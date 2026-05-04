@@ -29,23 +29,23 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
-        availableMethods.filter({ $0.supportsPayout })
+        availableMethods.filter((\.supportsPayout))
     }
 
     var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultOrFirstPayinMethod != nil
+        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
     var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultOrFirstPayoutMethod != nil) && showPayinSection
+        (!availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil) && showPayinSection
     }
 
-    public var defaultOrFirstPayoutMethod: PaymentMethodData? {
-        defaultPayoutMethod ?? payoutMethods.first(where: { $0.isDefault })
+    public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
+        defaultPayoutMethod ?? payoutMethods.first(where: (\.isDefault))
     }
 
-    public var defaultOrFirstPayinMethod: PaymentMethodData? {
-        defaultPayinMethod ?? payinMethods.first(where: { $0.isDefault })
+    public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
+        defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
     }
 }
 
