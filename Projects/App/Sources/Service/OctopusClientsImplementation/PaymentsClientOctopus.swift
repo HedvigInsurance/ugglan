@@ -1,4 +1,5 @@
 import Campaign
+import Environment
 import Foundation
 import Payment
 import PresentableStore
@@ -180,8 +181,8 @@ class hPaymentClientOctopus: hPaymentClient {
         switch type {
         case .trustly:
             let input = OctopusGraphQL.PaymentMethodSetupTrustlyInput(
-                successUrl: "hedvig://payment/success",
-                failureUrl: "hedvig://payment/failure"
+                successUrl: Environment.current.webBaseURL.appending(path: "success").absoluteString,
+                failureUrl: Environment.current.webBaseURL.appending(path: "fail").absoluteString
             )
             let mutation = OctopusGraphQL.PaymentMethodSetupTrustlyMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
