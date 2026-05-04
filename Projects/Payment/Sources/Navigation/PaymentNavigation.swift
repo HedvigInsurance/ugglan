@@ -8,33 +8,9 @@ import hCoreUI
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
-    public private(set) var paymentStatusViewModel: PaymentStatusViewModel?
     public var connectPaymentVm = ConnectPaymentViewModel()
 
-    public init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        paymentStoreSubscription = store.stateSignal.map(\.paymentStatusData)
-            .removeDuplicates()
-            .sink(receiveValue: { [weak self] value in
-                if let value {
-                    if self?.paymentStatusViewModel == nil {
-                        self?.paymentStatusViewModel = .init(paymentStatusData: value)
-                    } else {
-                        self?.paymentStatusViewModel?.paymentStatusData = value
-                    }
-                } else {
-                    self?.paymentStatusViewModel = nil
-                }
-            })
-    }
-}
-
-public class PaymentStatusViewModel: ObservableObject {
-    @Published var paymentStatusData: PaymentStatusData
-
-    init(paymentStatusData: PaymentStatusData) {
-        self.paymentStatusData = paymentStatusData
-    }
+    public init() {}
 }
 
 public struct PaymentsNavigation: View {
@@ -68,21 +44,15 @@ public struct PaymentsNavigation: View {
                     case .paymentMethod:
                         PaymentMethodScreen()
                     case .payoutMethod:
-                        if let vm = paymentsNavigationVm.paymentStatusViewModel {
-                            PayoutSelectedMethodScreen(vm: vm)
-                        }
+                        PayoutSelectedMethodScreen()
                     }
                 }
                 .routerDestination(for: PayoutRouterActions.self) { routerAction in
                     switch routerAction {
                     case .selectedPayoutMethod:
-                        if let vm = paymentsNavigationVm.paymentStatusViewModel {
-                            PayoutSelectedMethodScreen(vm: vm)
-                        }
+                        PayoutSelectedMethodScreen()
                     case .changePayoutMethod:
-                        if let vm = paymentsNavigationVm.paymentStatusViewModel {
-                            PayoutChangeMethodScreen(vm: vm)
-                        }
+                        PayoutChangeMethodScreen()
                     }
                 }
         }

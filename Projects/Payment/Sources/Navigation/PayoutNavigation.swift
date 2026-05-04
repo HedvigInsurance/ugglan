@@ -8,20 +8,18 @@ public struct PayoutNavigation: View {
 
     public init() {}
     public var body: some View {
-        if let paymentsNavigationVm = paymentsNavigationVm.paymentStatusViewModel {
-            hNavigationStack(router: router, tracking: PayoutRouterActions.selectedPayoutMethod) {
-                PayoutSelectedMethodScreen(vm: paymentsNavigationVm)
-                    .navigationTitle(L10n.payoutPageHeading)
-                    .withDismissButton()
-                    .routerDestination(for: PayoutRouterActions.self) { action in
-                        switch action {
-                        case .selectedPayoutMethod:
-                            PayoutSelectedMethodScreen(vm: paymentsNavigationVm)
-                        case .changePayoutMethod:
-                            PayoutChangeMethodScreen(vm: paymentsNavigationVm)
-                        }
+        hNavigationStack(router: router, tracking: PayoutRouterActions.selectedPayoutMethod) {
+            PayoutSelectedMethodScreen()
+                .navigationTitle(L10n.payoutPageHeading)
+                .withDismissButton()
+                .routerDestination(for: PayoutRouterActions.self) { action in
+                    switch action {
+                    case .selectedPayoutMethod:
+                        PayoutSelectedMethodScreen()
+                    case .changePayoutMethod:
+                        PayoutChangeMethodScreen()
                     }
-            }
+                }
         }
     }
 }

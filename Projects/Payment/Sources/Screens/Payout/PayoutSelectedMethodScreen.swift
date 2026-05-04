@@ -1,30 +1,32 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct PayoutSelectedMethodScreen: View {
-    @ObservedObject var vm: PaymentStatusViewModel
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
-    public init(vm: PaymentStatusViewModel) {
-        self.vm = vm
-    }
-
-    private var paymentStatusData: PaymentStatusData {
-        vm.paymentStatusData
-    }
 
     public var body: some View {
-        if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
-            existingPayoutView
-        } else if paymentStatusData.availablePayoutMethods.isEmpty {
-            missingPayinView
-        } else {
-            missingPayoutView
+        PresentableStoreLens(
+            PaymentStore.self,
+            getter: { state in
+                state.paymentStatusData
+            }
+        ) { paymentStatusData in
+            if let paymentStatusData {
+                if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
+                    existingPayoutView(paymentStatusData: paymentStatusData)
+                } else if paymentStatusData.availablePayoutMethods.isEmpty {
+                    missingPayinView
+                } else {
+                    missingPayoutView(paymentStatusData: paymentStatusData)
+                }
+            }
         }
     }
 
-    private var missingPayoutView: some View {
+    private func missingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
         hForm {
             hSection {
                 VStack(spacing: .padding16) {
@@ -40,7 +42,7 @@ public struct PayoutSelectedMethodScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
-            changePayoutButton(title: L10n.payoutAddPayoutMethod)
+            changePayoutButton(paymentStatusData: paymentStatusData, title: L10n.payoutAddPayoutMethod)
         }
         .hFormContentPosition(.center)
         .sectionContainerStyle(.transparent)
@@ -70,8 +72,8 @@ public struct PayoutSelectedMethodScreen: View {
                     .large,
                     .primary,
                     content: .init(title: L10n.profilePaymentConnectDirectDebitButton),
-                    { [weak paymentsNavigationVm] in
-                        router.dismiss()
+                    { [weak router, weak paymentsNavigationVm] in
+                        router?.dismiss()
                         paymentsNavigationVm?.connectPaymentVm.set()
                     }
                 )
@@ -82,7 +84,7 @@ public struct PayoutSelectedMethodScreen: View {
         .sectionContainerStyle(.transparent)
     }
 
-    private var existingPayoutView: some View {
+    private func existingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
         hForm {
             VStack(spacing: .padding8) {
                 if let displayValue = paymentStatusData.payoutAccountDisplayValue,
@@ -114,20 +116,20 @@ public struct PayoutSelectedMethodScreen: View {
                 .sectionContainerStyle(.transparent)
             }
 
-            changePayoutButton(title: L10n.changePayoutMethodButtonLabel)
+            changePayoutButton(paymentStatusData: paymentStatusData, title: L10n.changePayoutMethodButtonLabel)
         }
     }
 
     @ViewBuilder
-    private func changePayoutButton(title: String) -> some View {
+    private func changePayoutButton(paymentStatusData: PaymentStatusData, title: String) -> some View {
         if paymentStatusData.showChangeButton {
             hSection {
                 hButton(
                     .large,
                     .primary,
                     content: .init(title: title),
-                    {
-                        router.push(PayoutRouterActions.changePayoutMethod)
+                    { [weak router] in
+                        router?.push(PayoutRouterActions.changePayoutMethod)
                     }
                 )
             }
@@ -175,124 +177,107 @@ extension PaymentStatusData {
     }
 }
 #Preview {
-    PayoutSelectedMethodScreen(
-        vm: .init(
-            paymentStatusData: .init(
-                status: .active,
-                chargingDay: nil,
-                defaultPayinMethod: .init(
-                    provider: .nordea,
-                    status: .active,
-                    isDefault: true,
-                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                ),
-                payinMethods: [
-                    .init(
-                        provider: .nordea,
+    PayoutSelectedMethodScreen()
+        .environmentObject(NavigationRouter())
+        .onAppear {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
                         status: .active,
-                        isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        chargingDay: nil,
+                        defaultPayinMethod: .init(
+                            provider: .nordea,
+                            status: .active,
+                            isDefault: true,
+                            details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        ),
+                        payinMethods: [
+                            .init(
+                                provider: .nordea,
+                                status: .active,
+                                isDefault: true,
+                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                            )
+                        ],
+                        defaultPayoutMethod: .init(
+                            provider: .nordea,
+                            status: .active,
+                            isDefault: true,
+                            details: .bankAccount(
+                                account: "3300-920123132",
+                                bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                            )
+                        ),
+                        payoutMethods: [
+                            .init(
+                                provider: .nordea,
+                                status: .active,
+                                isDefault: true,
+                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                            )
+                        ],
+                        availableMethods: [
+                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                        ]
                     )
-                ],
-                defaultPayoutMethod: .init(
-                    provider: .nordea,
-                    status: .active,
-                    isDefault: true,
-                    details: .bankAccount(account: "3300-920123132", bank: "Nordea LONG NAME LONG LONG LONG LONG l")
-                ),
-                payoutMethods: [
-                    .init(
-                        provider: .nordea,
-                        status: .active,
-                        isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                    )
-                ],
-                availableMethods: [
-                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                ]
+                )
             )
-        )
-    )
-    .environmentObject(NavigationRouter())
+        }
 }
 
 #Preview("Kivra - no change button") {
-    PayoutSelectedMethodScreen(
-        vm: .init(
-            paymentStatusData: .init(
-                status: .active,
-                chargingDay: nil,
-                defaultPayinMethod: .init(
-                    provider: .invoice,
-                    status: .active,
-                    isDefault: true,
-                    details: .invoice(delivery: .kivra, email: nil)
-                ),
-                payinMethods: [
-                    .init(
-                        provider: .invoice,
-                        status: .active,
-                        isDefault: true,
-                        details: .invoice(delivery: .kivra, email: nil)
-                    )
-                ],
-                defaultPayoutMethod: .init(
-                    provider: .trustly,
-                    status: .active,
-                    isDefault: true,
-                    details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
-                ),
-                payoutMethods: [
-                    .init(
-                        provider: .trustly,
-                        status: .active,
-                        isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                    )
-                ],
-                availableMethods: [
-                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                ]
-            )
-        )
-    )
-    .environmentObject(NavigationRouter())
+    PayoutSelectedMethodScreen()
+        .environmentObject(NavigationRouter())
 }
 
 #Preview("PayoutSelectedMethodScreen - no default payout") {
-    PayoutSelectedMethodScreen(
-        vm: .init(
-            paymentStatusData: .init(
-                status: .active,
-                chargingDay: nil,
-                defaultPayinMethod: .init(
-                    provider: .invoice,
-                    status: .active,
-                    isDefault: true,
-                    details: .invoice(delivery: .kivra, email: nil)
-                ),
-                payinMethods: [
-                    .init(
-                        provider: .invoice,
+    PayoutSelectedMethodScreen()
+        .environmentObject(NavigationRouter())
+        .onAppear {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
                         status: .active,
-                        isDefault: true,
-                        details: .invoice(delivery: .kivra, email: nil)
+                        chargingDay: nil,
+                        defaultPayinMethod: .init(
+                            provider: .invoice,
+                            status: .active,
+                            isDefault: true,
+                            details: .invoice(delivery: .kivra, email: nil)
+                        ),
+                        payinMethods: [
+                            .init(
+                                provider: .invoice,
+                                status: .active,
+                                isDefault: true,
+                                details: .invoice(delivery: .kivra, email: nil)
+                            )
+                        ],
+                        defaultPayoutMethod: .init(
+                            provider: .trustly,
+                            status: .active,
+                            isDefault: true,
+                            details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
+                        ),
+                        payoutMethods: [
+                            .init(
+                                provider: .trustly,
+                                status: .active,
+                                isDefault: true,
+                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                            )
+                        ],
+                        availableMethods: [
+                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                        ]
                     )
-                ],
-                defaultPayoutMethod: nil,
-                payoutMethods: [],
-                availableMethods: [
-                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                ]
+                )
             )
-        )
-    )
-    .environmentObject(NavigationRouter())
+        }
 }

@@ -11,7 +11,6 @@ public struct PaymentsView: View {
     @StateObject var vm = PaymentsViewModel()
 
     public init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
     }

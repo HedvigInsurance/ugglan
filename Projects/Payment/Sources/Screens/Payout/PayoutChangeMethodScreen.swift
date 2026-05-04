@@ -4,27 +4,35 @@ import hCore
 import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
-    @ObservedObject var vm: PaymentStatusViewModel
     @EnvironmentObject var router: NavigationRouter
     @StateObject private var paymentMethodRouter = NavigationRouter()
     @State private var showConnectPayoutMethod: PaymentProvider?
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding4) {
-                ForEach(vm.paymentStatusData.availablePayoutMethods, id: \.provider) { method in
-                    hSection {
-                        hRow {
-                            VStack(alignment: .leading, spacing: .padding4) {
-                                hText(method.provider.payoutTitle)
-                                hText(method.provider.payoutSubtitle, style: .label)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
+            PresentableStoreLens(
+                PaymentStore.self,
+                getter: { state in
+                    state.paymentStatusData
+                }
+            ) { paymentStatusData in
+                if let paymentStatusData {
+                    VStack(spacing: .padding4) {
+                        ForEach(paymentStatusData.availablePayoutMethods, id: \.provider) { method in
+                            hSection {
+                                hRow {
+                                    VStack(alignment: .leading, spacing: .padding4) {
+                                        hText(method.provider.payoutTitle)
+                                        hText(method.provider.payoutSubtitle, style: .label)
+                                            .foregroundColor(hTextColor.Translucent.secondary)
+                                    }
+                                    Spacer()
+                                }
+                                .withChevronAccessory
+                                .onTap {
+                                    showConnectPayoutMethod = method.provider
+                                }
                             }
-                            Spacer()
-                        }
-                        .withChevronAccessory
-                        .onTap {
-                            showConnectPayoutMethod = method.provider
                         }
                     }
                 }
@@ -90,25 +98,29 @@ extension PaymentProvider {
 }
 
 #Preview {
-    PayoutChangeMethodScreen(
-        vm: .init(
-            paymentStatusData: .init(
-                status: .active,
-                chargingDay: nil,
-                defaultPayinMethod: nil,
-                payinMethods: [],
-                defaultPayoutMethod: nil,
-                payoutMethods: [],
-                availableMethods: [
-                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                ]
+    PayoutChangeMethodScreen()
+        .environmentObject(NavigationRouter())
+        .environmentObject(PaymentsNavigationViewModel())
+        .onAppear {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(
+                .setPaymentStatus(
+                    data: .init(
+                        status: .active,
+                        chargingDay: nil,
+                        defaultPayinMethod: nil,
+                        payinMethods: [],
+                        defaultPayoutMethod: nil,
+                        payoutMethods: [],
+                        availableMethods: [
+                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                        ]
+                    )
+                )
             )
-        )
-    )
-    .environmentObject(NavigationRouter())
-    .environmentObject(PaymentsNavigationViewModel())
+        }
 }
 
 @MainActor
