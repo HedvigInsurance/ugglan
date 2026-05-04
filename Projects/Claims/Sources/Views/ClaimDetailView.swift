@@ -229,20 +229,20 @@ public struct ClaimDetailView: View {
     }
 
     private func copyableRow(title: String, value: String) -> some View {
-        hRow {
-            HStack {
-                hText(title)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                Spacer()
-                hText(value)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-        .withCustomAccessory {
+        HStack {
+            hText(title)
+                .foregroundColor(hTextColor.Opaque.secondary)
+            Spacer()
+            hText(value)
+                .foregroundColor(hTextColor.Opaque.secondary)
             hCoreUIAssets.copy.view
+                .foregroundColor(hTextColor.Opaque.secondary)
                 .accessibilityHidden(true)
         }
-        .onTap {
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .onTapGesture {
             UIPasteboard.general.string = value
             Toasts.shared.displayToastBar(
                 toast: .init(
