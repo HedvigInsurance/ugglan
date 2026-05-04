@@ -3,25 +3,25 @@ import PresentableStore
 import hCore
 
 @MainActor
-class FetchClaimDetailsService {
+public class FetchClaimDetailsService {
     @Inject var client: hFetchClaimDetailsClient
     let id: String
 
-    init(id: String) {
+    public init(id: String) {
         self.id = id
     }
 
-    func get() async throws -> ClaimModel {
+    public func get() async throws -> ClaimModel {
         log.info("\(FetchClaimDetailsService.self): get for \(id)", error: nil, attributes: nil)
         return try await client.get(for: id)
     }
 
-    func getPartnerClaim() async throws -> ClaimModel {
+    public func getPartnerClaim() async throws -> ClaimModel {
         log.info("\(FetchClaimDetailsService.self): getPartnerClaim for \(id)", error: nil, attributes: nil)
         return try await client.getPartnerClaim(for: id)
     }
 
-    func getWithPartnerFallback() async throws -> ClaimModel {
+    public func getWithPartnerFallback() async throws -> ClaimModel {
         do {
             return try await client.get(for: id)
         } catch FetchClaimDetailsError.noClaimFound {
@@ -29,12 +29,12 @@ class FetchClaimDetailsService {
         }
     }
 
-    func getFiles() async throws -> [File] {
+    public func getFiles() async throws -> [File] {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
         return try await client.getFiles(for: id)
     }
 
-    func acknowledgeClosedStatus(for id: String) async throws {
+    public func acknowledgeClosedStatus(for id: String) async throws {
         log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(id)", error: nil, attributes: nil)
         return try await client.acknowledgeClosedStatus(for: id)
     }

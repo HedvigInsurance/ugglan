@@ -17,15 +17,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             let partnerClaims = activeClaimsData.currentMember.partnerClaimsActive.map {
                 ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
             }
-            return (activeClaims + partnerClaims)
-                .sorted { lhs, rhs in
-                    switch (lhs.submittedAt, rhs.submittedAt) {
-                    case let (l?, r?): return l > r
-                    case (_?, nil): return true
-                    case (nil, _?): return false
-                    case (nil, nil): return false
-                    }
-                }
+            return (activeClaims + partnerClaims).sortedBySubmittedAt()
         } else {
             let data = try await octopus.client.fetch(
                 query: OctopusGraphQL.ClaimsQuery()
@@ -45,15 +37,20 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         let partnerClaimsHistory = historyClaimsData.currentMember.partnerClaimsHistory.map {
             ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
         }
-        return (claimsHistory + partnerClaimsHistory)
-            .sorted { lhs, rhs in
-                switch (lhs.submittedAt, rhs.submittedAt) {
-                case let (l?, r?): return l > r
-                case (_?, nil): return true
-                case (nil, _?): return false
-                case (nil, nil): return false
-                }
+        return (claimsHistory + partnerClaimsHistory).sortedBySubmittedAt()
+    }
+}
+
+extension [ClaimModel] {
+    fileprivate func sortedBySubmittedAt() -> [ClaimModel] {
+        sorted { lhs, rhs in
+            switch (lhs.submittedAt, rhs.submittedAt) {
+            case let (l?, r?): return l > r
+            case (_?, nil): return true
+            case (nil, _?): return false
+            case (nil, nil): return false
             }
+        }
     }
 }
 
