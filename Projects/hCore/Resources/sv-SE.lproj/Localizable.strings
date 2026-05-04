@@ -983,6 +983,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.";
 /* Figma */
 "claim_status.paid.support_text" = "Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget. \n\nSe dina meddelanden för mer information om hur vi beräknade din ersättning.";
+"claim_status.partner.support_text" = "Din skadeanmälan granskas av våra motorspecialister på Eir.";
 /* Figma */
 "claim_status.submitted.support_text" = "Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.";
 /* Figma */
@@ -994,6 +995,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.add_more_files" = "Lägg till fler";
 "claim_status_detail.added_files" = "Tillagda filer";
 "claim_status_detail.documents.title" = "Försäkringsdokument";
+"claim_status_detail.email_view.body" = "Öppna mail";
 /* Figma */
 "claim_status_detail.info_error.body" = "Det gick inte att ladda ned din inspelade skadeanmälan. Försök igen för att kunna lyssna på den.";
 /* Figma */
