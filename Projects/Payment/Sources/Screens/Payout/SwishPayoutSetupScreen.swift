@@ -1,11 +1,9 @@
-import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct NordeaPayoutSetupScreen: View {
-    @StateObject private var vm = NordeaPayoutSetupViewModel()
+struct SwishPayoutSetupScreen: View {
+    @StateObject private var vm = SwishPayoutSetupViewModel()
     @StateObject var router = NavigationRouter()
     let onSuccess: (() -> Void)?
 
@@ -16,7 +14,7 @@ struct NordeaPayoutSetupScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                accountField
+                phoneNumberField
             }
         }
         .hFormContentPosition(.compact)
@@ -26,17 +24,18 @@ struct NordeaPayoutSetupScreen: View {
         .disabled(vm.isLoading)
     }
 
-    private var accountField: some View {
+    private var phoneNumberField: some View {
         hSection {
             hFloatingTextField(
-                masking: .init(type: .bankAccountNumber),
-                value: $vm.accountNumber,
+                masking: .init(type: .phoneNumber),
+                value: $vm.phoneNumber,
                 equals: $vm.focusedField,
-                focusValue: .account,
-                placeholder: placeholder,
-                error: $vm.accountError
+                focusValue: .phoneNumber,
+                placeholder: L10n.phoneNumberRowTitle,
+                error: $vm.phoneNumberError
             )
         }
+        .sectionContainerStyle(.transparent)
     }
 
     private var bottomContent: some View {
@@ -67,53 +66,35 @@ struct NordeaPayoutSetupScreen: View {
             content: .init(title: L10n.generalSaveButton)
         ) { [weak vm, onSuccess] in
             Task {
-                if let success = await vm?.save() {
-                    if success {
-                        onSuccess?()
-                    }
+                if let success = await vm?.save(), success {
+                    onSuccess?()
                 }
             }
         }
         .hButtonIsLoading(vm.isLoading)
     }
+}
 
-    private var placeholder: String {
-        if let bankName = vm.bankName {
-            return L10n.paymentsAccount + " - " + bankName
-        }
-        return L10n.paymentsAccount
+extension SwishPayoutSetupScreen: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        .init(describing: SwishPayoutSetupScreen.self)
     }
 }
 
 @MainActor
-class NordeaPayoutSetupViewModel: ObservableObject {
-    @Published var accountNumber: String = ""
-    @Published var bankName: String?
-    @Published var focusedField: NordeaPayoutField?
-    @Published var clearingError: String?
-    @Published var accountError: String?
+class SwishPayoutSetupViewModel: ObservableObject {
+    @Published var phoneNumber: String = ""
+    @Published var focusedField: SwishPayoutField?
+    @Published var phoneNumberError: String?
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
     private let paymentService = hPaymentService()
-    private let accountMasking = Masking(type: .bankAccountNumber)
-    private var cancellables = Set<AnyCancellable>()
-
-    init() {
-        $accountNumber
-            .receive(on: RunLoop.main)
-            .sink { [weak self] newValue in
-                withAnimation {
-                    self?.bankName = newValue.bankName
-                }
-            }
-            .store(in: &cancellables)
-    }
+    private let phoneNumberMasking = Masking(type: .phoneNumber)
 
     func save() async -> Bool {
         withAnimation {
-            clearingError = nil
-            accountError = nil
+            phoneNumberError = nil
             errorMessage = nil
         }
 
@@ -124,8 +105,8 @@ class NordeaPayoutSetupViewModel: ObservableObject {
 
         do {
             let result = try await paymentService.setupPaymentMethod(
-                .nordeaPayout(
-                    accountNumber: accountMasking.unmaskedValue(text: accountNumber)
+                .swishPayout(
+                    phoneNumber: phoneNumberMasking.unmaskedValue(text: phoneNumber)
                 )
             )
             if let errorMessage = result.errorMessage {
@@ -140,16 +121,10 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     }
 
     private func validate() -> Bool {
-        var newAccountError: String?
-
-        if !accountMasking.isValid(text: accountMasking.unmaskedValue(text: accountNumber)) {
-            newAccountError = L10n.claimChatFormTextMinChar(10)
-        }
-
-        guard newAccountError == nil else {
+        guard phoneNumberMasking.isValid(text: phoneNumber) else {
             withAnimation {
-                accountError = newAccountError
-                focusedField = .account
+                phoneNumberError = L10n.myInfoPhoneNumberMalformedError
+                focusedField = .phoneNumber
             }
             return false
         }
@@ -157,21 +132,19 @@ class NordeaPayoutSetupViewModel: ObservableObject {
     }
 }
 
-enum NordeaPayoutField: hTextFieldFocusStateCompliant {
-    case clearing
-    case account
+enum SwishPayoutField: hTextFieldFocusStateCompliant {
+    case phoneNumber
 
-    static var last: NordeaPayoutField { .account }
+    static var last: SwishPayoutField { .phoneNumber }
 
-    var next: NordeaPayoutField? {
+    var next: SwishPayoutField? {
         switch self {
-        case .clearing: return .account
-        case .account: return nil
+        case .phoneNumber: return nil
         }
     }
 }
 
 #Preview {
-    NordeaPayoutSetupScreen()
+    SwishPayoutSetupScreen()
         .environmentObject(NavigationRouter())
 }

@@ -56,7 +56,7 @@ public struct Masking {
         case .bankAccountNumber:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
-                && unmasked.count >= 6
+                && unmasked.count >= 10
         case .petChipId:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
@@ -64,7 +64,7 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .phoneNumber:
-            let phoneRegEx = "^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$"
+            let phoneRegEx = "^\\+?[0-9]{7,15}$"
             let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegEx)
             return phonePredicate.evaluate(with: text)
         case .euroBonus: return text.count > 3
@@ -91,7 +91,7 @@ public struct Masking {
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
         case .petChipId: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
-        case .bankAccountNumber: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
+        case .bankAccountNumber: return text.replacingOccurrences(of: "[\\s\\-]", with: "", options: .regularExpression)
         }
     }
 
@@ -329,7 +329,8 @@ public struct Masking {
             return delimitedDigits(delimiterPositions: [5, 8], maxCount: 10, delimiter: "-")
         case .digits: return text.filter(\.isDigit)
         case .email: return text
-        case .phoneNumber: return text
+        case .phoneNumber:
+            return text.range(of: "^\\+?[0-9]*$", options: .regularExpression) != nil ? text : previousText
         case .none: return text
         case .address: return text
         case .disabledSuggestion: return text
@@ -338,13 +339,7 @@ public struct Masking {
         case .firstName, .lastName: return text
         case .petChipId: return delimitedDigits(delimiterPositions: [4, 8, 12, 16], maxCount: 15 + 4, delimiter: " ")
         case .bankAccountNumber:
-            let digits = text.filter(\.isDigit)
-            var result = ""
-            for (index, char) in digits.enumerated() {
-                if index > 0, index % 3 == 0 { result.append(" ") }
-                result.append(char)
-            }
-            return result
+            return String(text.filter { $0.isDigit || $0 == " " || $0 == "-" })
         }
     }
 }
