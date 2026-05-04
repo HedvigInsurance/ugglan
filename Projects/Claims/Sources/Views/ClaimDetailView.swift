@@ -186,6 +186,9 @@ public struct ClaimDetailView: View {
                             }
                             .accessibilityElement(children: .combine)
                         }
+                        if claim.isPartnerClaim {
+                            partnerInfoRows(claim: claim)
+                        }
                     }
                 }
                 .withHeader(
@@ -196,6 +199,58 @@ public struct ClaimDetailView: View {
                 .sectionContainerStyle(.transparent)
             }
             .padding(.vertical, .padding8)
+        }
+    }
+
+    @ViewBuilder
+    private func partnerInfoRows(claim: ClaimModel) -> some View {
+        if let exposure = claim.exposureDisplayName, !exposure.isEmpty {
+            HStack {
+                hText(L10n.ClaimStatus.ClaimDetails.exposureDisplayName)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                Spacer()
+                hText(exposure)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .accessibilityElement(children: .combine)
+        }
+        if let externalId = claim.externalId, !externalId.isEmpty {
+            copyableRow(
+                title: L10n.ClaimStatus.ClaimDetails.externalId,
+                value: externalId
+            )
+        }
+        if let handlerEmail = claim.handlerEmail, !handlerEmail.isEmpty {
+            copyableRow(
+                title: L10n.ClaimStatus.ClaimDetails.handlerEmail,
+                value: handlerEmail
+            )
+        }
+    }
+
+    private func copyableRow(title: String, value: String) -> some View {
+        hRow {
+            HStack {
+                hText(title)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                Spacer()
+                hText(value)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+        }
+        .withCustomAccessory {
+            hCoreUIAssets.copy.view
+                .accessibilityHidden(true)
+        }
+        .onTap {
+            UIPasteboard.general.string = value
+            Toasts.shared.displayToastBar(
+                toast: .init(
+                    type: .campaign,
+                    icon: hCoreUIAssets.checkmark.view,
+                    text: L10n.General.copied
+                )
+            )
         }
     }
 
