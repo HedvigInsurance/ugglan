@@ -22,7 +22,10 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         showClaimClosedFlow: Bool,
         infoText: String?,
         displayItems: [ClaimDisplayItem],
-        isPartnerClaim: Bool = false
+        isPartnerClaim: Bool = false,
+        handlerEmail: String? = nil,
+        exposureDisplayName: String? = nil,
+        externalId: String? = nil
     ) {
         self.id = id
         self.status = status
@@ -41,6 +44,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.infoText = infoText
         self.displayItems = displayItems
         self.isPartnerClaim = isPartnerClaim
+        self.handlerEmail = handlerEmail
+        self.exposureDisplayName = exposureDisplayName
+        self.externalId = externalId
     }
 
     public let claimType: String
@@ -60,6 +66,9 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
     public let isPartnerClaim: Bool
+    public let handlerEmail: String?
+    public let exposureDisplayName: String?
+    public let externalId: String?
     public var statusParagraph: String? {
         if isPartnerClaim {
             if status == .closed {
