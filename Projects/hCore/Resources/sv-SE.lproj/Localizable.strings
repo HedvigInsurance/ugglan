@@ -613,8 +613,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Utbetalning via Trustly";
 "PAYOUT_MISSING_INFO" = "Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.";
-"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "Lägg till en för att få utbetalningar";
-"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "Inget utbetalningskonto tillagt";
+"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "För att kunna få utbetalningar behöver du koppla autogiro";
+"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "Ingen utbetalningsmetod tillagd";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
@@ -637,7 +637,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Kontaktinfo";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Avaktiverad";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Aktiverad";
-"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Lägg till utbetalningskonto";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
 "PUPPY_GUIDE_INFO" = "I valpguiden hittar du användbara artiklar som hjälper dig med allt från första veterinärbesöket till hur du väljer rätt foder.";
