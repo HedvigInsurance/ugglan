@@ -29,7 +29,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
-        availableMethods.filter({ $0.supportsPayout })
+        availableMethods.filter((\.supportsPayout))
     }
 
     var showPayinSection: Bool {
@@ -41,11 +41,11 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
-        defaultPayoutMethod ?? payoutMethods.first(where: { $0.isDefault })
+        defaultPayoutMethod ?? payoutMethods.first(where: (\.isDefault))
     }
 
     public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
-        defaultPayinMethod ?? payinMethods.first(where: { $0.isDefault })
+        defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
     }
 }
 
