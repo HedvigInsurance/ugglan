@@ -85,14 +85,6 @@ public struct PaymentsNavigation: View {
                         }
                     }
                 }
-                .routerDestination(for: PayoutRouterActions.self) { routerAction in
-                    switch routerAction {
-                    case .selectedPayoutMethod:
-                        PayoutSelectedMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
-                    case .changePayoutMethod:
-                        PayoutChangeMethodScreen(vm: paymentsNavigationVm.paymentStatusViewModel!)
-                    }
-                }
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)

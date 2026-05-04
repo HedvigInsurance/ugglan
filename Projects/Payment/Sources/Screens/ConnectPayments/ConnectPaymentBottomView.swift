@@ -23,8 +23,8 @@ struct ConnectPaymentBottomView: View {
                             .large,
                             .secondary,
                             content: .init(title: statusData.status.connectButtonTitle),
-                            {
-                                paymentNavigationVm.connectPaymentVm.set()
+                            { [weak paymentNavigationVm] in
+                                paymentNavigationVm?.connectPaymentVm.set()
                             }
                         )
                     }
