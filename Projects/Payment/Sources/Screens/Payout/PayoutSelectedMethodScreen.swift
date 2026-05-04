@@ -109,7 +109,7 @@ extension PaymentStatusData {
         case .invoice:
             return method.provider.payoutTitle
         case nil:
-            return nil
+            return ""
         }
     }
 
