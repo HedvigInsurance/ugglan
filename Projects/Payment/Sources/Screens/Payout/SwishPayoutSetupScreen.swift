@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -18,13 +17,11 @@ struct SwishPayoutSetupScreen: View {
                 phoneNumberField
             }
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             bottomContent
         }
         .disabled(vm.isLoading)
-        .hFormContentPosition(.compact)
-        .navigationTitle("Swish")
-        .embededInNavigation(router: router, tracking: self)
     }
 
     private var phoneNumberField: some View {
@@ -67,14 +64,10 @@ struct SwishPayoutSetupScreen: View {
             .large,
             .primary,
             content: .init(title: L10n.generalSaveButton)
-        ) { [weak vm, weak router, onSuccess] in
+        ) { [weak vm, onSuccess] in
             Task {
                 if let success = await vm?.save(), success {
-                    let store: PaymentStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchPaymentStatus)
                     onSuccess?()
-                    router?.dismiss()
-                    Toasts.success()
                 }
             }
         }

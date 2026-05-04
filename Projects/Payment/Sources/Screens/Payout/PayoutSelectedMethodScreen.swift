@@ -1,28 +1,71 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct PayoutSelectedMethodScreen: View {
+public struct PayoutSelectedMethodScreen: View {
     @ObservedObject var vm: PaymentStatusViewModel
     @EnvironmentObject var router: NavigationRouter
-    var body: some View {
-        hForm {
-            VStack(spacing: .padding8) {
+
+    public init(vm: PaymentStatusViewModel) {
+        self.vm = vm
+    }
+
+    public var body: some View {
+        content
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if vm.paymentStatusData.defaultPayoutMethod == nil {
+            hForm {
                 hSection {
-                    hFloatingField(
-                        value: vm.paymentStatusData.payoutAccountDisplayValue,
-                        placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
-                        error: nil,
-                        onTap: {}
-                    )
-                    .hFieldTrailingView {
-                        hCoreUIAssets.lock.view
-                            .foregroundColor(hTextColor.Translucent.secondary)
+                    VStack(spacing: .padding16) {
+                        hCoreUIAssets.infoFilled.view
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(hSignalColor.Blue.element)
+
+                        hText(L10n.payoutMissingInfo)
+                            .multilineTextAlignment(.center)
                     }
-                    .hBackgroundOption(option: [.locked])
-                    .disabled(true)
                 }
+                .sectionContainerStyle(.transparent)
+            }
+            .hFormAttachToBottom {
+                hSection {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.payoutAddPayoutMethod),
+                        {
+                            router.push(PayoutRouterActions.changePayoutMethod)
+                        }
+                    )
+                }
+            }
+            .hFormContentPosition(.center)
+            .sectionContainerStyle(.transparent)
+        } else {
+            hForm {
+                VStack(spacing: .padding8) {
+                    hSection {
+                        hFloatingField(
+                            value: vm.paymentStatusData.payoutAccountDisplayValue,
+                            placeholder: vm.paymentStatusData.payoutAccountDisplayTitle,
+                            error: nil,
+                            onTap: {}
+                        )
+                        .hFieldTrailingView {
+                            hCoreUIAssets.lock.view
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        }
+                        .hBackgroundOption(option: [.locked])
+                        .disabled(true)
+                    }
+                }
+                .padding(.top, .padding16)
+            }
+            .hFormAttachToBottom {
                 if vm.paymentStatusData.payoutMethods.hasMethodInProgress {
                     hSection {
                         InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
@@ -37,9 +80,7 @@ struct PayoutSelectedMethodScreen: View {
                             .primary,
                             content: .init(title: L10n.changePayoutMethodButtonLabel),
                             {
-                                router.push(
-                                    PayoutRouterAction.setupPayoutMethod
-                                )
+                                router.push(PayoutRouterActions.changePayoutMethod)
                             }
                         )
                     }
@@ -167,6 +208,39 @@ extension PaymentStatusData {
                         details: .bankAccount(account: "3300-920123132", bank: "Nordea")
                     )
                 ],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ]
+            )
+        )
+    )
+    .environmentObject(NavigationRouter())
+}
+
+#Preview("PayoutSelectedMethodScreen - no default payout") {
+    PayoutSelectedMethodScreen(
+        vm: .init(
+            paymentStatusData: .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: .init(
+                    provider: .invoice,
+                    status: .active,
+                    isDefault: true,
+                    details: .invoice(delivery: .kivra, email: nil)
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .invoice,
+                        status: .active,
+                        isDefault: true,
+                        details: .invoice(delivery: .kivra, email: nil)
+                    )
+                ],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
                 availableMethods: [
                     .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
                     .init(provider: .swish, supportsPayin: false, supportsPayout: true),

@@ -19,13 +19,11 @@ struct NordeaPayoutSetupScreen: View {
                 accountField
             }
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             bottomContent
         }
         .disabled(vm.isLoading)
-        .hFormContentPosition(.compact)
-        .navigationTitle(L10n.bankPayoutMethodCardTitle)
-        .embededInNavigation(router: router, tracking: self)
     }
 
     private var accountField: some View {
@@ -67,15 +65,11 @@ struct NordeaPayoutSetupScreen: View {
             .large,
             .primary,
             content: .init(title: L10n.generalSaveButton)
-        ) { [weak vm, weak router, onSuccess] in
+        ) { [weak vm, onSuccess] in
             Task {
                 if let success = await vm?.save() {
                     if success {
-                        let store: PaymentStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchPaymentStatus)
                         onSuccess?()
-                        router?.dismiss()
-                        Toasts.success()
                     }
                 }
             }
@@ -88,12 +82,6 @@ struct NordeaPayoutSetupScreen: View {
             return L10n.paymentsAccount + " - " + bankName
         }
         return L10n.paymentsAccount
-    }
-}
-
-extension NordeaPayoutSetupScreen: TrackingViewNameProtocol {
-    var nameForTracking: String {
-        .init(describing: NordeaPayoutSetupScreen.self)
     }
 }
 
