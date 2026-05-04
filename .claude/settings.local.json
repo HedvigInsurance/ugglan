@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find . -name '*.swift' -not -path './build/*' -exec grep -l '@preconcurrency' {} \\\\;)",
+      "Bash(xargs sed:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)"
+    ]
+  }
+}

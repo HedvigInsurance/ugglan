@@ -4,7 +4,6 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
-@preconcurrency
 public enum DetentPresentationStyle: Equatable {
     case detent(style: [Detent])
     case center

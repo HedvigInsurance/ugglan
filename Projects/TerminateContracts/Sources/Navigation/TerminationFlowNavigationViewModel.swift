@@ -87,7 +87,7 @@ class TerminationRedirectHandler {
 // MARK: - View Model
 
 @MainActor
-class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
+class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
     static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         lhs.id == rhs.id
     }

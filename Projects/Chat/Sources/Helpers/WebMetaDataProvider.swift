@@ -1,5 +1,5 @@
-@preconcurrency import Foundation
-@preconcurrency import LinkPresentation
+import Foundation
+import LinkPresentation
 import SwiftUI
 import UniformTypeIdentifiers
 import hCoreUI
