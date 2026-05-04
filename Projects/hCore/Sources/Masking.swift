@@ -56,7 +56,7 @@ public struct Masking {
         case .bankAccountNumber:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))
-                && unmasked.count >= 6
+                && unmasked.count >= 10
         case .petChipId:
             let unmasked = unmask(text: text)
             return CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: unmasked))

@@ -143,7 +143,7 @@ class NordeaPayoutSetupViewModel: ObservableObject {
         var newAccountError: String?
 
         if !accountMasking.isValid(text: accountMasking.unmaskedValue(text: accountNumber)) {
-            newAccountError = L10n.claimChatFormTextMinChar(6)
+            newAccountError = L10n.claimChatFormTextMinChar(10)
         }
 
         guard newAccountError == nil else {
