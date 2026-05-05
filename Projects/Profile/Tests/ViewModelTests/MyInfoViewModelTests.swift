@@ -1,6 +1,6 @@
 import Home
 import PresentableStore
-@preconcurrency import XCTest
+import XCTest
 import hCore
 
 @testable import Profile
