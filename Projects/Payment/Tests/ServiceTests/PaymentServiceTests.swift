@@ -33,7 +33,7 @@ final class PaymentServiceTests: XCTestCase {
                 contracts: [],
                 referralDiscount: nil,
                 amountPerReferral: .sek(20),
-                paymentChargeData: nil,
+                payinMethod: nil,
                 addedToThePayment: nil
             ),
             ongoing: [
@@ -50,7 +50,7 @@ final class PaymentServiceTests: XCTestCase {
                     contracts: [],
                     referralDiscount: nil,
                     amountPerReferral: .sek(10),
-                    paymentChargeData: nil,
+                    payinMethod: nil,
                     addedToThePayment: nil
                 )
             ]
@@ -69,14 +69,24 @@ final class PaymentServiceTests: XCTestCase {
     func testFetchPaymentStatusDataSuccess() async {
         let paymentStatusData: PaymentStatusData = .init(
             status: .active,
-            paymentChargeData: .init(
-                paymentMethod: "method",
-                bankName: "displayName",
-                account: "descriptor",
-                mandate: "mandate",
-                dueDate: 27,
-                chargeMethod: .trustly
-            )
+            chargingDay: 27,
+            defaultPayinMethod: .init(
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "descriptor", bank: "displayName")
+            ),
+            payinMethods: [
+                .init(
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "descriptor", bank: "displayName")
+                )
+            ],
+            defaultPayoutMethod: nil,
+            payoutMethods: [],
+            availableMethods: []
         )
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
@@ -105,20 +115,23 @@ final class PaymentServiceTests: XCTestCase {
         assert(respondedPaymentHistoryData == paymentHistoryData)
     }
 
-    func testFetchConnectPaymentUrlSuccess() async {
-        let connectPaymentUrl = URL(string: "https://hedvig.se")
+    func testSetupPaymentMethodSuccess() async {
+        let expectedResult = PaymentSetupResult(
+            status: .pending,
+            url: "https://hedvig.se/trustly",
+            errorMessage: nil
+        )
 
         let mockService = MockPaymentData.createMockPaymentService(
-            fetchConnectPaymentUrl: {
-                if let connectPaymentUrl {
-                    return connectPaymentUrl
-                }
-                throw PaymentError.missingDataError(message: L10n.General.errorBody)
+            fetchSetupPaymentMethod: {
+                expectedResult
             }
         )
         sut = mockService
 
-        let respondedConnectPaymentUrl = try! await mockService.getConnectPaymentUrl()
-        assert(respondedConnectPaymentUrl == connectPaymentUrl)
+        let result = try! await mockService.setupPaymentMethod(
+            .trustly
+        )
+        assert(result == expectedResult)
     }
 }
