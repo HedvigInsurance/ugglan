@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Build HedvigShared.xcframework from the sibling android repo and point Tuist at it,
-# bypassing the published umbrella package. Run this after every Kotlin change you
-# want to test on iOS — Xcode rebuilds in between are normal.
+# Switch Ugglan to "local umbrella" mode: HedvigShared.framework is built fresh from
+# the sibling android repo by a pre-build phase on every Xcode build, instead of being
+# consumed as a published Swift Package. After running this once, every Xcode rebuild
+# picks up your latest Kotlin changes — no extra commands needed between iterations.
 #
 # Requires android and ugglan to be checked out as siblings:
 #   <parent>/android
@@ -17,18 +18,9 @@ if [[ ! -d "$ANDROID_REPO" ]]; then
     exit 1
 fi
 
-XCFRAMEWORK="$ANDROID_REPO/app/umbrella/build/XCFrameworks/release/HedvigShared.xcframework"
-if [[ ! -d "$XCFRAMEWORK" ]]; then
-    echo "error: gradle build did not produce $XCFRAMEWORK" >&2
-    exit 1
-fi
+touch "$UGGLAN_ROOT/.local-umbrella-path"
+echo "==> Marker created at $UGGLAN_ROOT/.local-umbrella-path"
 
-echo "$XCFRAMEWORK" > "$UGGLAN_ROOT/.local-umbrella-path"
-echo "==> Marker written: $UGGLAN_ROOT/.local-umbrella-path"
-
-echo "==> Building HedvigShared.xcframework from $ANDROID_REPO"
-( cd "$ANDROID_REPO" && ./gradlew :umbrella:assembleHedvigSharedReleaseXCFramework )
-
-( cd "$UGGLAN_ROOT" && tuist generate )
-echo "==> Done. Open Ugglan.xcworkspace and rebuild."
+( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
+echo "==> Done. Open Ugglan.xcworkspace and build — gradle runs as a pre-build phase."
 echo "    Run scripts/use-released-umbrella.sh to revert to the published package."

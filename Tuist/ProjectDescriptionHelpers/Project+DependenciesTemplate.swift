@@ -1,21 +1,15 @@
 import Foundation
 import ProjectDescription
 
-/// Reads `<repo-root>/.local-umbrella-path` (a developer-local, gitignored file written by
-/// `scripts/use-local-umbrella.sh`). If it points to an existing `HedvigShared.xcframework`,
-/// the umbrella dependency is swapped for that local artifact; otherwise the published
-/// package is used unchanged. Lets devs iterate on KMP changes without round-tripping CI.
-private var localUmbrellaXCFrameworkPath: String? {
+/// Marker `<repo-root>/.local-umbrella-path` (gitignored, created by
+/// `scripts/use-local-umbrella.sh`) flips Tuist into "embed-for-Xcode" mode: the umbrella
+/// dependency is dropped and a pre-build script (attached to CoreDependencies) calls
+/// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
+/// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
+/// released SPM package unchanged.
+public var isLocalUmbrellaMode: Bool {
     let markerPath = "\(FileManager.default.currentDirectoryPath)/.local-umbrella-path"
-    guard let raw = try? String(contentsOfFile: markerPath, encoding: .utf8) else { return nil }
-    let path = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard !path.isEmpty, FileManager.default.fileExists(atPath: path) else {
-        FileHandle.standardError.write(Data(
-            "warning: .local-umbrella-path points to '\(path)' which does not exist. Falling back to released umbrella.\n".utf8
-        ))
-        return nil
-    }
-    return path
+    return FileManager.default.fileExists(atPath: markerPath)
 }
 
 public enum ExternalDependencies: CaseIterable {
@@ -78,9 +72,9 @@ public enum ExternalDependencies: CaseIterable {
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.9.0"))]
         case .umbrella:
-            if localUmbrellaXCFrameworkPath != nil { return [] }
+            if isLocalUmbrellaMode { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260429153454"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260506173129"))
             ]
         case .kmpNativeCoroutines:
             return [
@@ -174,8 +168,11 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogTrace"),
             ]
         case .umbrella:
-            if let path = localUmbrellaXCFrameworkPath {
-                return [.xcframework(path: Path(stringLiteral: path))]
+            if isLocalUmbrellaMode {
+                // No declared dependency. The CoreDependencies pre-build script
+                // produces HedvigShared.framework in $(BUILT_PRODUCTS_DIR), which the
+                // Swift compiler resolves automatically via the default framework search path.
+                return []
             }
             return [
                 .package(product: "HedvigShared")
@@ -216,7 +213,8 @@ extension Project {
     public static func dependenciesFramework(
         name: String,
         externalDependencies: [ExternalDependencies],
-        sdks: [String] = []
+        sdks: [String] = [],
+        scripts: [TargetScript] = []
     ) -> Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
@@ -271,6 +269,7 @@ extension Project {
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
+                    scripts: scripts,
                     dependencies: dependencies,
                     settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )

@@ -6,5 +6,5 @@ set -euo pipefail
 
 UGGLAN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 rm -f "$UGGLAN_ROOT/.local-umbrella-path"
-( cd "$UGGLAN_ROOT" && tuist generate )
+( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
 echo "==> Reverted to released umbrella."

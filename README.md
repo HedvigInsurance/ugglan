@@ -61,7 +61,7 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 ## Iterating on shared KMP code (HedvigShared aka Umbrella)
 
-Production builds consume `HedvigShared.xcframework` as a Swift Package published from the [Android repo](https://github.com/HedvigInsurance/android) via the `umbrella.yml` workflow. That round-trip takes ~25 minutes, which is too slow for an inner loop. For local development you can swap it for an XCFramework you build yourself — no permanent project changes.
+Production consumes `HedvigShared.xcframework` (multi-slice) as a Swift Package published from the [Android repo](https://github.com/HedvigInsurance/android) by the `umbrella.yml` workflow — ~25 minutes per round-trip, too slow for an inner loop. Local mode swaps that for a single-slice `.framework` that Xcode rebuilds on every build, matching whatever architecture/SDK/configuration is selected. Production cycle stays unchanged; CI is unaffected.
 
 **Prerequisites**
 
@@ -73,18 +73,22 @@ Check out the android repo as a sibling of this one. The directories must be nam
 └── ugglan/   ← you are here
 ```
 
-**Use a local build**
+**Switch to local mode**
 
 ```sh
 scripts/use-local-umbrella.sh
 ```
 
-This builds `HedvigShared.xcframework` from your android checkout, writes a gitignored marker file (`.local-umbrella-path`) so Tuist picks up the local artifact, and re-runs `tuist generate`. After this, normal Xcode builds use your local Kotlin changes — only re-run the script when you've changed Kotlin code and want iOS to see it.
+Creates a gitignored marker file (`.local-umbrella-path`) and re-runs `tuist generate`. From now on, every time you build Ugglan in Xcode, a pre-build phase on `CoreDependencies` invokes `./gradlew :umbrella:embedAndSignAppleFrameworkForXcode` in `../android` and drops the freshly-built `HedvigShared.framework` into `${BUILT_PRODUCTS_DIR}`. Edit Kotlin, hit ⌘R; iOS sees your changes.
 
-**Go back to the published package**
+**Switch back to the published package**
 
 ```sh
 scripts/use-released-umbrella.sh
 ```
 
-Removes the marker and regenerates against the version pinned in `Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift`. Always run this before opening a PR — the marker is gitignored so PRs are unaffected, but you want your local build to match what CI builds.
+Removes the marker and regenerates against the version pinned in `Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift`. Always run this before opening a PR — the marker is gitignored so PRs are unaffected, but your local build should match what CI builds.
+
+**About `scripts/post-build-action.sh`**
+
+This script runs as a post-build phase on the Ugglan target and copies frameworks into the app bundle. Local mode introduces an additional concern: Compose Multiplatform's resource reader uses `Bundle.main` and looks for resources at `<App>.app/compose-resources/composeResources/...`, but in our Tuist multi-target setup gradle's output ends up bundled inside `CoreDependencies.framework/compose-resources/` (Xcode's standard "Copy Bundle Resources" phase sweeps it up there). The script lifts that directory out to the app-bundle root so `Bundle.main` can find it. If you ever see `MissingResourceException` for a path under `Ugglan.app/compose-resources/...`, this copy is what's responsible.
