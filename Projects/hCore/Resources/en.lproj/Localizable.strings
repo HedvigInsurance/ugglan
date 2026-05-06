@@ -594,6 +594,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY" = "Pay %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE" = "Overdue since %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS" = "View payment details";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE" = "No overdue payments";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE" = "Payments up to date";
 "PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Payment overdue";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Payment successful";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ days";
