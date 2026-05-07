@@ -31,16 +31,36 @@ final class SwipeBackHostingController: UIViewController, UIGestureRecognizerDel
         previousDelegate = recognizer.delegate
         recognizer.delegate = self
         recognizer.isEnabled = true
+        recognizer.addTarget(self, action: #selector(handleInteractivePop(_:)))
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        guard let recognizer = navigationController?.interactivePopGestureRecognizer,
-              recognizer.delegate === self else { return }
-        recognizer.delegate = previousDelegate
+        guard let recognizer = navigationController?.interactivePopGestureRecognizer else { return }
+        if recognizer.delegate === self {
+            recognizer.delegate = previousDelegate
+        }
+        recognizer.removeTarget(self, action: #selector(handleInteractivePop(_:)))
+        // Always restore — if we leave the screen mid-gesture we mustn't leak a disabled child.
+        child.view.isUserInteractionEnabled = true
     }
 
     func gestureRecognizerShouldBegin(_: UIGestureRecognizer) -> Bool {
         (navigationController?.viewControllers.count ?? 0) > 1
+    }
+
+    /// When the system's edge-pan fires, Compose may already be tracking the same touch
+    /// (e.g. as a horizontal scroll on a list row). Toggling `isUserInteractionEnabled`
+    /// makes UIKit deliver `touchesCancelled` so Compose abandons the in-flight gesture.
+    /// Restored on gesture end so taps work again immediately.
+    @objc private func handleInteractivePop(_ gesture: UIGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            child.view.isUserInteractionEnabled = false
+        case .ended, .cancelled, .failed:
+            child.view.isUserInteractionEnabled = true
+        default:
+            break
+        }
     }
 }
