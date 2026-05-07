@@ -18,6 +18,6 @@ if compgen -G "$DERIVED_DATA/Ugglan-*" > /dev/null; then
     rm -rf "$DERIVED_DATA"/Ugglan-*
 fi
 
-rm -f "$UGGLAN_ROOT/.local-umbrella-path"
+rm -f "$UGGLAN_ROOT/.local-umbrella"
 ( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
 echo "==> Reverted to released umbrella."

@@ -25,8 +25,8 @@ if compgen -G "$DERIVED_DATA/Ugglan-*" > /dev/null; then
     rm -rf "$DERIVED_DATA"/Ugglan-*
 fi
 
-touch "$UGGLAN_ROOT/.local-umbrella-path"
-echo "==> Marker created at $UGGLAN_ROOT/.local-umbrella-path"
+touch "$UGGLAN_ROOT/.local-umbrella"
+echo "==> Marker created at $UGGLAN_ROOT/.local-umbrella"
 
 ( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
 echo "==> Done. Open Ugglan.xcworkspace and build."

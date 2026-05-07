@@ -8,7 +8,7 @@ set -euo pipefail
 
 UGGLAN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TEMPLATE="$UGGLAN_ROOT/Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift"
-MARKER="$UGGLAN_ROOT/.local-umbrella-path"
+MARKER="$UGGLAN_ROOT/.local-umbrella"
 REPO="HedvigInsurance/umbrella"
 
 if [[ ! -f "$TEMPLATE" ]]; then

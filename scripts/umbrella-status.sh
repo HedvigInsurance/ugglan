@@ -7,7 +7,7 @@
 set -euo pipefail
 
 UGGLAN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-MARKER="$UGGLAN_ROOT/.local-umbrella-path"
+MARKER="$UGGLAN_ROOT/.local-umbrella"
 
 if [ -f "$MARKER" ]; then
     echo "Umbrella mode: local"

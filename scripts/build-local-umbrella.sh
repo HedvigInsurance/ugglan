@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Pre-build phase on CoreDependencies. Runs gradle to rebuild HedvigShared.framework
-# into ${BUILT_PRODUCTS_DIR} when .local-umbrella-path is present; no-op otherwise.
+# into ${BUILT_PRODUCTS_DIR} when .local-umbrella is present; no-op otherwise.
 
 set -euo pipefail
 
 UGGLAN_ROOT="$SRCROOT/../.."
-if [ ! -f "$UGGLAN_ROOT/.local-umbrella-path" ]; then
+if [ ! -f "$UGGLAN_ROOT/.local-umbrella" ]; then
     exit 0
 fi
 

@@ -1,14 +1,14 @@
 import Foundation
 import ProjectDescription
 
-/// Marker `<repo-root>/.local-umbrella-path` (gitignored, created by
+/// Marker `<repo-root>/.local-umbrella` (gitignored, created by
 /// `scripts/use-local-umbrella.sh`) flips Tuist into "embed-for-Xcode" mode: the umbrella
 /// dependency is dropped and a pre-build script (attached to CoreDependencies) calls
 /// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
 /// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
 /// released SPM package unchanged.
 public var isLocalUmbrellaMode: Bool {
-    let markerPath = "\(FileManager.default.currentDirectoryPath)/.local-umbrella-path"
+    let markerPath = "\(FileManager.default.currentDirectoryPath)/.local-umbrella"
     return FileManager.default.fileExists(atPath: markerPath)
 }
 
