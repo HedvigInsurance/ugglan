@@ -41,10 +41,12 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             showClaimClosedFlow: false,
             infoText: nil,
             displayItems: [
-                .init(displayTitle: "Damage date", displayValue: "20 Apr 2026"),
-                .init(displayTitle: "Registration number", displayValue: "ABC 123"),
+                .init(displayTitle: "Damage date", displayValue: "20 Apr 2026")
             ],
-            isPartnerClaim: true
+            isPartnerClaim: true,
+            handlerEmail: "claims@eir.se",
+            exposureDisplayName: "ABC 123",
+            externalId: "EIR-2026-000123"
         )
     }
 

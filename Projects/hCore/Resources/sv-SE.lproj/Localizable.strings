@@ -613,6 +613,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Utbetalning via Trustly";
 "PAYOUT_MISSING_INFO" = "Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.";
+"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "Lägg till en för att få utbetalningar";
+"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "Ingen utbetalningsmetod tillagd";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
@@ -969,6 +971,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.";
 "claim_status.claim_details.button" = "Se detaljer";
+"claim_status.claim_details.exposure_display_name" = "Reg nr";
+"claim_status.claim_details.external_id" = "Ärendenummer";
+"claim_status.claim_details.handler_email" = "E-mail";
 "claim_status.claim_details.info_text" = "Saknas något? Skicka ett meddelande till oss här i appen.";
 "claim_status.claim_details.submitted" = "Inskickad";
 "claim_status.claim_details.title" = "Detaljer om skadeanmälan";
@@ -983,7 +988,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.";
 /* Figma */
 "claim_status.paid.support_text" = "Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget. \n\nSe dina meddelanden för mer information om hur vi beräknade din ersättning.";
-"claim_status.partner.support_text" = "Din skadeanmälan granskas av våra motorspecialister på Eir.";
+"claim_status.partner.support_text" = "Den här skadan hanteras av vår externa partner Eir via mail.\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.";
 /* Figma */
 "claim_status.submitted.support_text" = "Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.";
 /* Figma */
