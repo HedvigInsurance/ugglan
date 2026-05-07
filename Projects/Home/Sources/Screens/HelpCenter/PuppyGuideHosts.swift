@@ -1,4 +1,4 @@
- @preconcurrency import HedvigShared
+@preconcurrency import HedvigShared
 import SwiftUI
 import hCoreUI
 
@@ -6,7 +6,7 @@ struct PuppyGuideListHost: UIViewControllerRepresentable {
     weak var router: NavigationRouter?
 
     func makeUIViewController(context: Context) -> UIViewController {
-        PuppyGuideViewControllersKt.PuppyGuideViewController(
+        let composeVC = PuppyGuideViewControllersKt.PuppyGuideViewController(
             onNavigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             },
@@ -16,6 +16,7 @@ struct PuppyGuideListHost: UIViewControllerRepresentable {
                 }
             }
         )
+        return SwipeBackHostingController(child: composeVC)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -26,12 +27,13 @@ struct PuppyArticleHost: UIViewControllerRepresentable {
     weak var router: NavigationRouter?
 
     func makeUIViewController(context: Context) -> UIViewController {
-        PuppyGuideViewControllersKt.PuppyArticleViewController(
+        let composeVC = PuppyGuideViewControllersKt.PuppyArticleViewController(
             storyName: storyName,
             navigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             }
         )
+        return SwipeBackHostingController(child: composeVC)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
