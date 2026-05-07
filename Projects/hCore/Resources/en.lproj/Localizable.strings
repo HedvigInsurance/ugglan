@@ -520,6 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "To reactivate your insurance from cancellation, reach out to the Hedvig Service Team after the charge has appeared on your account";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Review contact info";
@@ -990,7 +991,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Your claim was unfortunately not covered. Please see conversation for more details on the decision.";
 /* Figma */
 "claim_status.paid.support_text" = "We got you covered. You should have received the payment by now. \n\nSee your messages here in the app for more details.";
-"claim_status.partner.support_text" = "This claim is handled by our external partner Eir by email.\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.";
+"claim_status.partner.support_text" = "This claim is handled by our external partner Eir by email.\n\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.";
 /* Figma */
 "claim_status.submitted.support_text" = "We have received your claim and will start reviewing it soon.";
 /* Figma */
