@@ -38,14 +38,13 @@ class MovingFlowQuoteManager {
                 guard let viewModel = viewModel,
                     let movingFlowConfirmViewModel = viewModel.movingFlowConfirmViewModel
                 else { return }
-
+                router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                 await movingFlowConfirmViewModel.confirmMoveIntent(
                     intentId: viewModel.moveConfigurationModel?.id ?? "",
                     currentHomeQuoteId: viewModel.selectedHomeQuote?.id ?? "",
                     removedAddons: viewModel.removedAddonIds
                 )
             }
-            router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
         }
 
         return vm
