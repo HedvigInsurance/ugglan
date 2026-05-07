@@ -1,0 +1,7 @@
+mutation PaymentMethodSetupTrustly($input: PaymentMethodSetupTrustlyInput!) {
+    paymentMethodSetupTrustly(input: $input) {
+        ...PaymentMethodSetupOutputFragment
+    }
+}
+
+

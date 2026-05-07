@@ -1,5 +1,5 @@
 import Addons
-@preconcurrency import XCTest
+import XCTest
 import hCore
 
 @testable import Contracts

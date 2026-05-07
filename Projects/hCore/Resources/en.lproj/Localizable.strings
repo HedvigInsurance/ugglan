@@ -594,6 +594,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY" = "Pay %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE" = "Overdue since %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS" = "View payment details";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE" = "No overdue payments";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE" = "Payments up to date";
 "PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Payment overdue";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Payment successful";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ days";
@@ -613,8 +615,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Payout via Trustly";
 "PAYOUT_MISSING_INFO" = "You haven’t added a payout method yet. Add one to receive payouts.";
-"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "Add one to receive payouts";
-"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "No payout method added";
+"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "To receive payouts, you need to connect direct debit";
+"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "No payout method available";
 "PAYOUT_PAGE_HEADING" = "Payout account";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Choose payout method";
 /* Label that hints the user to slide up in order to reveal more info */
@@ -637,7 +639,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Contact info";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Turned off";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Turned on";
-"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect payment";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect direct debit";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
 "PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";

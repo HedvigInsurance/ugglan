@@ -10,7 +10,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let contracts: [ContractPaymentDetails]
     let referralDiscount: Discount?
     let amountPerReferral: MonetaryAmount
-    let paymentChargeData: PaymentChargeData?
+    let payinMethod: PaymentMethodData?
     // had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
 
@@ -21,7 +21,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         contracts: [ContractPaymentDetails],
         referralDiscount: Discount?,
         amountPerReferral: MonetaryAmount,
-        paymentChargeData: PaymentChargeData?,
+        payinMethod: PaymentMethodData?,
         addedToThePayment: [PaymentData]?
     ) {
         self.id = id
@@ -30,7 +30,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         self.contracts = contracts
         self.referralDiscount = referralDiscount
         self.amountPerReferral = amountPerReferral
-        self.paymentChargeData = paymentChargeData
+        self.payinMethod = payinMethod
         self.addedToThePayment = addedToThePayment
     }
 

@@ -2,7 +2,7 @@ import Foundation
 import hGraphQL
 
 @MainActor
-extension hGraphQL.GraphQLError: @retroactive @preconcurrency LocalizedError {
+extension hGraphQL.GraphQLError: @preconcurrency @retroactive LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .graphQLError:

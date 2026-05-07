@@ -56,8 +56,9 @@ struct ContractTable: View {
                     .loadingWithButtonLoading($vm.viewState)
                     .hStateViewButtonConfig(
                         .init(
-                            actionButton: .init(buttonAction: { [weak store] in
-                                store?.send(.fetchContracts)
+                            actionButton: .init(buttonAction: {
+                                let store: ContractStore = globalPresentableStoreContainer.get()
+                                store.send(.fetchContracts)
                             }),
                             dismissButton: nil
                         )

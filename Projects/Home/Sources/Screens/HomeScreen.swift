@@ -71,7 +71,7 @@ extension HomeScreen {
                 switch vm.memberContractState {
                 case .active, .terminated:
                     VStack(spacing: .padding16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
+                        HomeBottomScrollView()
                         VStack(spacing: .padding8) {
                             startAClaimButton
                             openHelpCenter
@@ -79,7 +79,7 @@ extension HomeScreen {
                     }
                 case .future:
                     VStack(spacing: .padding16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
+                        HomeBottomScrollView()
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
                         openHelpCenter
@@ -127,7 +127,6 @@ extension HomeScreen {
 @MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
-    let homeBottomScrollViewModel = HomeBottomScrollViewModel()
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
@@ -221,7 +220,7 @@ class HomeVM: ObservableObject {
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
 }
 
-#Preview("Active") {
+#Preview("Active"){
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -237,7 +236,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("ActiveInFuture") {
+#Preview("ActiveInFuture"){
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -254,7 +253,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("TerminatedToday") {
+#Preview("TerminatedToday"){
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -270,7 +269,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("Terminated") {
+#Preview("Terminated"){
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -286,7 +285,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("Deleted") {
+#Preview("Deleted"){
     fetchDependenciesForPreview()
 
     return HomeScreen()

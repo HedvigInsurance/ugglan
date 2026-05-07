@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 
 @MainActor
-public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
+public class AudioPlayer: NSObject, @MainActor ObservableObject {
     public init(
         url: URL?
     ) {

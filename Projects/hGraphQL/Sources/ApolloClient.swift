@@ -1,5 +1,5 @@
-@preconcurrency import Apollo
-@preconcurrency import ApolloWebSocket
+import Apollo
+import ApolloWebSocket
 import Disk
 import Environment
 import Foundation

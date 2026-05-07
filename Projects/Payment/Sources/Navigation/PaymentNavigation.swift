@@ -1,4 +1,5 @@
 import Campaign
+import Combine
 import PresentableStore
 import SwiftUI
 import hCore
@@ -6,14 +7,15 @@ import hCoreUI
 
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
-    public init() {}
+    private var paymentStoreSubscription: AnyCancellable?
     public var connectPaymentVm = ConnectPaymentViewModel()
+
+    public init() {}
 }
 
 public struct PaymentsNavigation: View {
     @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
-
     public init(
         paymentsNavigationVm: PaymentsNavigationViewModel
     ) {
@@ -41,6 +43,16 @@ public struct PaymentsNavigation: View {
                         PaymentHistoryView()
                     case .paymentMethod:
                         PaymentMethodScreen()
+                    case .payoutMethod:
+                        PayoutSelectedMethodScreen()
+                    }
+                }
+                .routerDestination(for: PayoutRouterActions.self) { routerAction in
+                    switch routerAction {
+                    case .selectedPayoutMethod:
+                        PayoutSelectedMethodScreen()
+                    case .changePayoutMethod:
+                        PayoutChangeMethodScreen()
                     }
                 }
         }
@@ -60,12 +72,13 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
     case paymentsView
 }
 
-public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
+enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
     case paymentMethod
+    case payoutMethod
 
-    public var nameForTracking: String {
+    var nameForTracking: String {
         switch self {
         case .discounts:
             return .init(describing: PaymentsDiscountsRootView.self)
@@ -73,22 +86,26 @@ public enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, Navigation
             return .init(describing: PaymentHistoryView.self)
         case .paymentMethod:
             return .init(describing: PaymentMethodScreen.self)
+        case .payoutMethod:
+            return .init(describing: PayoutSelectedMethodScreen.self)
         }
     }
 
-    public var navigationTitle: String? {
+    var navigationTitle: String? {
         switch self {
         case .discounts:
-            L10n.paymentsDiscountsSectionTitle
+            return L10n.paymentsDiscountsSectionTitle
         case .history:
-            L10n.paymentHistoryTitle
+            return L10n.paymentHistoryTitle
         case .paymentMethod:
-            L10n.PaymentDetails.NavigationBar.title
+            return L10n.PaymentDetails.NavigationBar.title
+        case .payoutMethod:
+            return L10n.payoutPageHeading
         }
     }
 }
 
-#Preview {
+#Preview{
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentsNavigation(paymentsNavigationVm: .init())
