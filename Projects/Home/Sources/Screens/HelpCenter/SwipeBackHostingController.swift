@@ -1,5 +1,20 @@
 import UIKit
 
+private let edgeSwipeZoneWidth: CGFloat = 16
+
+private final class EdgeSwipePassthroughView: UIView {
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let isRTL = effectiveUserInterfaceLayoutDirection == .rightToLeft
+        let inLeadingZone = isRTL
+            ? point.x > bounds.maxX - edgeSwipeZoneWidth
+            : point.x < edgeSwipeZoneWidth
+        if inLeadingZone {
+            return nil
+        }
+        return super.hitTest(point, with: event)
+    }
+}
+
 final class SwipeBackHostingController: UIViewController, UIGestureRecognizerDelegate {
     private let child: UIViewController
     private weak var previousDelegate: UIGestureRecognizerDelegate?
@@ -10,6 +25,10 @@ final class SwipeBackHostingController: UIViewController, UIGestureRecognizerDel
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) is not used") }
+
+    override func loadView() {
+        view = EdgeSwipePassthroughView()
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
