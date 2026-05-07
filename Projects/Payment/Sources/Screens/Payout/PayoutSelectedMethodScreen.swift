@@ -176,7 +176,7 @@ extension PaymentStatusData {
         !availablePayoutMethods.isEmpty
     }
 }
-#Preview{
+#Preview {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {
@@ -228,12 +228,12 @@ extension PaymentStatusData {
         }
 }
 
-#Preview("Kivra - no change button"){
+#Preview("Kivra - no change button") {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
 }
 
-#Preview("PayoutSelectedMethodScreen - no default payout"){
+#Preview("PayoutSelectedMethodScreen - no default payout") {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {

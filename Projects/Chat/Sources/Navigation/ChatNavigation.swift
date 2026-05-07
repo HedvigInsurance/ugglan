@@ -152,7 +152,7 @@ public struct ChatNavigation<Content: View>: View {
     }
 }
 
-#Preview{
+#Preview {
     ChatNavigation(chatType: .newConversation) { _, _ in
         EmptyView()
     }

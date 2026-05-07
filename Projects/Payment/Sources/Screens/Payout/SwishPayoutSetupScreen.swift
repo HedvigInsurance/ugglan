@@ -144,7 +144,7 @@ enum SwishPayoutField: hTextFieldFocusStateCompliant {
     }
 }
 
-#Preview{
+#Preview {
     SwishPayoutSetupScreen()
         .environmentObject(NavigationRouter())
 }

@@ -97,7 +97,7 @@ extension PaymentProvider {
     }
 }
 
-#Preview{
+#Preview {
     PayoutChangeMethodScreen()
         .environmentObject(NavigationRouter())
         .environmentObject(PaymentsNavigationViewModel())

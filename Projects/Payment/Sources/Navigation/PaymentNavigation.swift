@@ -105,7 +105,7 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentsNavigation(paymentsNavigationVm: .init())

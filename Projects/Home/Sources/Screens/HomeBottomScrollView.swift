@@ -284,7 +284,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return HomeBottomScrollView()
 }
