@@ -141,7 +141,7 @@ public class PaymentsHistoryViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.sv_SE)
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })

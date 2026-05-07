@@ -384,7 +384,7 @@ extension DirectDebitSetup: TrackingViewNameProtocol {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     return DirectDebitSetup(setupType: .initial)

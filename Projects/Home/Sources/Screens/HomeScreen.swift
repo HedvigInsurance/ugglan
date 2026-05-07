@@ -220,7 +220,7 @@ class HomeVM: ObservableObject {
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
 }
 
-#Preview("Active"){
+#Preview("Active") {
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -236,7 +236,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("ActiveInFuture"){
+#Preview("ActiveInFuture") {
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -253,7 +253,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("TerminatedToday"){
+#Preview("TerminatedToday") {
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -269,7 +269,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("Terminated"){
+#Preview("Terminated") {
     fetchDependenciesForPreview()
 
     return HomeScreen()
@@ -285,7 +285,7 @@ class HomeVM: ObservableObject {
         }
 }
 
-#Preview("Deleted"){
+#Preview("Deleted") {
     fetchDependenciesForPreview()
 
     return HomeScreen()

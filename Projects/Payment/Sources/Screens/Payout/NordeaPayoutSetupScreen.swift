@@ -171,7 +171,7 @@ enum NordeaPayoutField: hTextFieldFocusStateCompliant {
     }
 }
 
-#Preview{
+#Preview {
     NordeaPayoutSetupScreen()
         .environmentObject(NavigationRouter())
 }

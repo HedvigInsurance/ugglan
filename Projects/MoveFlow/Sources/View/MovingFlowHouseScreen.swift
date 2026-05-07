@@ -220,7 +220,7 @@ struct MovingFlowHouseScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.sv_SE)
     Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
