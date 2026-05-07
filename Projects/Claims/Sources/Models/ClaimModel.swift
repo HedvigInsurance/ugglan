@@ -9,7 +9,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         id: String,
         status: ClaimStatus,
         outcome: ClaimOutcome?,
-        submittedAt: String?,
+        submittedAt: Date?,
         signedAudioURL: String?,
         memberFreeText: String?,
         payoutAmount: MonetaryAmount?,
@@ -21,7 +21,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         isUploadingFilesEnabled: Bool,
         showClaimClosedFlow: Bool,
         infoText: String?,
-        displayItems: [ClaimDisplayItem]
+        displayItems: [ClaimDisplayItem],
+        isPartnerClaim: Bool = false,
+        handlerEmail: String? = nil,
+        exposureDisplayName: String? = nil,
+        externalId: String? = nil
     ) {
         self.id = id
         self.status = status
@@ -39,6 +43,10 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.showClaimClosedFlow = showClaimClosedFlow
         self.infoText = infoText
         self.displayItems = displayItems
+        self.isPartnerClaim = isPartnerClaim
+        self.handlerEmail = handlerEmail
+        self.exposureDisplayName = exposureDisplayName
+        self.externalId = externalId
     }
 
     public let claimType: String
@@ -46,7 +54,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let status: ClaimStatus
     public let outcome: ClaimOutcome?
-    public let submittedAt: String?
+    public let submittedAt: Date?
     public let signedAudioURL: String?
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
@@ -57,7 +65,17 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let showClaimClosedFlow: Bool
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
+    public let isPartnerClaim: Bool
+    public let handlerEmail: String?
+    public let exposureDisplayName: String?
+    public let externalId: String?
     public var statusParagraph: String? {
+        if isPartnerClaim {
+            if status == .closed {
+                return nil
+            }
+            return L10n.ClaimStatus.Partner.supportText
+        }
         switch status {
         case .submitted:
             return L10n.ClaimStatus.Submitted.supportText

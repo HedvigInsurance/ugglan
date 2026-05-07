@@ -178,9 +178,9 @@ class PushNotificationHandler {
     func handleClaimDetails(claimId: String?) async {
         guard let viewModel = viewModel else { return }
         if let claimId {
-            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            let claimDetailsService = FetchClaimDetailsService(id: claimId)
             do {
-                let claim = try await claimService.get(for: claimId)
+                let claim = try await claimDetailsService.getWithPartnerFallback()
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 viewModel.selectedTab = 0
                 Task { [weak viewModel] in
@@ -672,7 +672,10 @@ struct HomeTab: View {
         hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    openClaimDetails(
+                        claim: claim,
+                        type: claim.isPartnerClaim ? .partnerClaim(id: claim.id) : .claim(id: claim.id)
+                    )
                 }
                 .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()

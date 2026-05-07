@@ -14,7 +14,10 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             let activeClaims = activeClaimsData.currentMember.claimsActive.map {
                 ClaimModel(claim: $0.fragments.claimFragment)
             }
-            return activeClaims
+            let partnerClaims = activeClaimsData.currentMember.partnerClaimsActive.map {
+                ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
+            }
+            return (activeClaims + partnerClaims).sortedBySubmittedAt()
         } else {
             let data = try await octopus.client.fetch(
                 query: OctopusGraphQL.ClaimsQuery()
@@ -31,7 +34,23 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         let claimsHistory = historyClaimsData.currentMember.claimsHistory.map {
             ClaimModel(claim: $0.fragments.claimFragment)
         }
-        return claimsHistory
+        let partnerClaimsHistory = historyClaimsData.currentMember.partnerClaimsHistory.map {
+            ClaimModel(partnerClaim: $0.fragments.partnerClaimFragment)
+        }
+        return (claimsHistory + partnerClaimsHistory).sortedBySubmittedAt()
+    }
+}
+
+extension [ClaimModel] {
+    fileprivate func sortedBySubmittedAt() -> [ClaimModel] {
+        sorted { lhs, rhs in
+            switch (lhs.submittedAt, rhs.submittedAt) {
+            case let (l?, r?): return l > r
+            case (_?, nil): return true
+            case (nil, _?): return false
+            case (nil, nil): return false
+            }
+        }
     }
 }
 
@@ -44,7 +63,7 @@ extension ClaimModel {
             id: claim.id,
             status: claim.status?.asClaimStatus ?? .none,
             outcome: claim.outcome?.asClaimOutcome,
-            submittedAt: claim.submittedAt,
+            submittedAt: claim.submittedAt.localDateToDate ?? claim.submittedAt.localDateToIso8601Date,
             signedAudioURL: claim.audioUrl ?? "",
             memberFreeText: claim.memberFreeText,
             payoutAmount: MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment),
@@ -63,6 +82,40 @@ extension ClaimModel {
                     .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
             }
+        )
+    }
+}
+
+@MainActor
+extension ClaimModel {
+    init(partnerClaim: OctopusGraphQL.PartnerClaimFragment) {
+        self.init(
+            id: partnerClaim.id,
+            status: partnerClaim.status?.asClaimStatus ?? .none,
+            outcome: nil,
+            submittedAt: partnerClaim.submittedAt?.localDateToDate ?? partnerClaim.submittedAt?.localDateToIso8601Date,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: MonetaryAmount(optionalFragment: partnerClaim.payoutAmount?.fragments.moneyFragment),
+            targetFileUploadUri: "",
+            claimType: partnerClaim.claimType ?? L10n.Claim.Casetype.insuranceCase,
+            productVariant: .init(data: partnerClaim.productVariant?.fragments.productVariantFragment),
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: partnerClaim.displayItems.compactMap { item in
+                let displayValue: String =
+                    item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
+                    .localDateToIso8601Date?
+                    .displayDateDDMMMYYYYFormat ?? item.displayValue
+                return .init(displayTitle: item.displayTitle, displayValue: displayValue)
+            },
+            isPartnerClaim: true,
+            handlerEmail: partnerClaim.handlerEmail,
+            exposureDisplayName: partnerClaim.exposureDisplayName,
+            externalId: partnerClaim.externalId
         )
     }
 }

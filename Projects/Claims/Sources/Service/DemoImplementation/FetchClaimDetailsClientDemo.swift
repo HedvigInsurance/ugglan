@@ -23,6 +23,33 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
         )
     }
 
+    public func getPartnerClaim(for _: String) async throws -> ClaimModel {
+        .init(
+            id: "partner-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-20".localDateToDate,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Car damage",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: [
+                .init(displayTitle: "Damage date", displayValue: "20 Apr 2026")
+            ],
+            isPartnerClaim: true,
+            handlerEmail: "claims@eir.se",
+            exposureDisplayName: "ABC 123",
+            externalId: "EIR-2026-000123"
+        )
+    }
+
     public func getFiles(for _: String) async throws -> [File] {
         []
     }
