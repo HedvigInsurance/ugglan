@@ -59,6 +59,8 @@ class PushNotificationHandler {
             handleInsuranceEvidence()
         case .TRAVEL_CERTIFICATE:
             handleTravelCertificate()
+        case .PAYOUT:
+            viewModel?.showPayout()
         }
     }
 
@@ -176,9 +178,9 @@ class PushNotificationHandler {
     func handleClaimDetails(claimId: String?) async {
         guard let viewModel = viewModel else { return }
         if let claimId {
-            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            let claimDetailsService = FetchClaimDetailsService(id: claimId)
             do {
-                let claim = try await claimService.get(for: claimId)
+                let claim = try await claimDetailsService.getWithPartnerFallback()
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 viewModel.selectedTab = 0
                 Task { [weak viewModel] in
@@ -283,6 +285,8 @@ class DeepLinkHandler {
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
             handleMissingPetChipIds(url)
+        case .payout:
+            viewModel?.showPayout()
         }
     }
 
@@ -668,7 +672,10 @@ struct HomeTab: View {
         hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    openClaimDetails(
+                        claim: claim,
+                        type: claim.isPartnerClaim ? .partnerClaim(id: claim.id) : .claim(id: claim.id)
+                    )
                 }
                 .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
@@ -778,6 +785,15 @@ struct HomeTab: View {
                 )
             }
         )
+        .detent(
+            presented: $homeNavigationVm.isPayoutMethodPresented,
+            presentationStyle: .detent(
+                style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            PayoutNavigation()
+                .environmentObject(loggedInVm.paymentsNavigationVm)
+        }
     }
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
@@ -955,6 +971,14 @@ class LoggedInNavigationViewModel: ObservableObject {
             )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
+    }
+
+    func showPayout() {
+        Task { [weak self] in
+            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+            await paymentStore.sendAsync(.fetchPaymentStatus)
+            self?.homeNavigationVm.isPayoutMethodPresented = true
+        }
     }
 
     @objc func openChangeTier(notification: Notification) {

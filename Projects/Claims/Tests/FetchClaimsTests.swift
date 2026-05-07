@@ -1,4 +1,4 @@
-@preconcurrency import XCTest
+import XCTest
 import hCore
 
 @testable import Claims
@@ -9,6 +9,7 @@ final class FetchClaimsTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     }
 
     override func tearDown() async throws {
@@ -24,7 +25,7 @@ final class FetchClaimsTests: XCTestCase {
                 id: "id1",
                 status: .beingHandled,
                 outcome: .none,
-                submittedAt: "2024-07-27",
+                submittedAt: "2024-07-27".localDateToDate,
                 signedAudioURL: nil,
                 memberFreeText: nil,
                 payoutAmount: nil,
@@ -42,7 +43,7 @@ final class FetchClaimsTests: XCTestCase {
                 id: "id2",
                 status: .beingHandled,
                 outcome: .paid,
-                submittedAt: "2024-07-01",
+                submittedAt: "2024-07-01".localDateToDate,
                 signedAudioURL: nil,
                 memberFreeText: nil,
                 payoutAmount: nil,
@@ -73,7 +74,7 @@ final class FetchClaimsTests: XCTestCase {
                 id: "id3",
                 status: .closed,
                 outcome: .paid,
-                submittedAt: "2024-07-01",
+                submittedAt: "2024-07-01".localDateToDate,
                 signedAudioURL: nil,
                 memberFreeText: nil,
                 payoutAmount: nil,
@@ -134,5 +135,84 @@ final class FetchClaimsTests: XCTestCase {
 
         let respondedFiles = try! await mockService.fetchFiles()
         assert(respondedFiles == files)
+    }
+
+    func testFetchActiveClaimsIncludesPartnerClaims() async {
+        let regularClaim = ClaimModel(
+            id: "regular-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-15".localDateToDate,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken phone",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: []
+        )
+
+        let partnerClaim = ClaimModel(
+            id: "partner-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-20".localDateToDate,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Car damage",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: [],
+            isPartnerClaim: true
+        )
+
+        let mockService = MockData.createMockFetchClaimService(
+            fetchActive: { [partnerClaim, regularClaim] }
+        )
+        sut = mockService
+
+        let respondedClaims = try! await mockService.fetchActive()
+        XCTAssertEqual(respondedClaims.count, 2)
+        XCTAssertTrue(respondedClaims.contains(where: { $0.isPartnerClaim }))
+        XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.claimType, "Car damage")
+    }
+
+    func testPartnerClaimModelProperties() async {
+        let partnerClaim = ClaimModel(
+            id: "partner-1",
+            status: .beingHandled,
+            outcome: nil,
+            submittedAt: "2026-04-20".localDateToDate,
+            signedAudioURL: nil,
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Car damage",
+            productVariant: nil,
+            conversation: nil,
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: false,
+            showClaimClosedFlow: false,
+            infoText: nil,
+            displayItems: [],
+            isPartnerClaim: true
+        )
+
+        XCTAssertTrue(partnerClaim.isPartnerClaim)
+        XCTAssertNil(partnerClaim.conversation)
+        XCTAssertNil(partnerClaim.signedAudioURL)
+        XCTAssertFalse(partnerClaim.isUploadingFilesEnabled)
+        XCTAssertFalse(partnerClaim.showClaimClosedFlow)
     }
 }

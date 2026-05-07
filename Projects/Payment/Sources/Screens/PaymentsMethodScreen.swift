@@ -10,46 +10,41 @@ struct PaymentMethodScreen: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData?.paymentChargeData
+                state.paymentStatusData
             }
         ) { paymentChargeData in
-            if let paymentChargeData {
+            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod {
                 hForm {
-                    PaymentMethodView(data: paymentChargeData, withDate: true)
-                        .hWithoutHorizontalPadding([.row, .divider])
+                    PaymentMethodView(
+                        data: defaultPayinMethod,
+                        chargingDay: paymentChargeData.chargingDay,
+                        withDate: true
+                    )
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
                 .hFormAttachToBottom {
-                    if paymentChargeData.chargeMethod == .trustly {
-                        ConnectPaymentBottomView(alwaysShowButton: true)
-                    } else if paymentChargeData.chargeMethod == .kivra {
+                    if defaultPayinMethod.provider == .trustly {
+                        ConnectPaymentBottomView()
+                    } else if defaultPayinMethod.provider == .invoice {
                         hSection {
-                            PresentableStoreLens(
-                                PaymentStore.self,
-                                getter: { state in
-                                    state.paymentStatusData
-                                }
-                            ) { statusData in
-                                if let statusData {
-                                    InfoCard(
-                                        text:
-                                            statusData.status == .pending
-                                            ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                                        type: .info
+                            InfoCard(
+                                text:
+                                    paymentChargeData.payinMethods.hasMethodInProgress
+                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                                type: .info
+                            )
+                            .buttons(
+                                [
+                                    .init(
+                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
+                                            ? paymentChargeData.status.connectButtonTitle
+                                            : L10n.profilePaymentConnectDirectDebitButton,
+                                        buttonAction: {
+                                            paymentsNavigationVM.connectPaymentVm.set()
+                                        }
                                     )
-                                    .buttons(
-                                        [
-                                            .init(
-                                                buttonTitle: statusData.status == .pending
-                                                    ? statusData.status.connectButtonTitle
-                                                    : L10n.profilePaymentConnectDirectDebitButton,
-                                                buttonAction: {
-                                                    paymentsNavigationVM.connectPaymentVm.set()
-                                                }
-                                            )
-                                        ]
-                                    )
-                                }
-                            }
+                                ]
+                            )
                         }
                         .sectionContainerStyle(.transparent)
                     }
@@ -72,14 +67,24 @@ struct PaymentMethodScreen: View {
                 .setPaymentStatus(
                     data: .init(
                         status: .active,
-                        paymentChargeData: .init(
-                            paymentMethod: nil,
-                            bankName: nil,
-                            account: nil,
-                            mandate: nil,
-                            dueDate: 27,
-                            chargeMethod: .kivra
-                        )
+                        chargingDay: 27,
+                        defaultPayinMethod: .init(
+                            provider: .invoice,
+                            status: .active,
+                            isDefault: true,
+                            details: .invoice(delivery: .kivra, email: nil)
+                        ),
+                        payinMethods: [
+                            .init(
+                                provider: .invoice,
+                                status: .active,
+                                isDefault: true,
+                                details: .invoice(delivery: .kivra, email: nil)
+                            )
+                        ],
+                        defaultPayoutMethod: nil,
+                        payoutMethods: [],
+                        availableMethods: []
                     )
                 )
             )
@@ -88,14 +93,24 @@ struct PaymentMethodScreen: View {
                 .setPaymentStatus(
                     data: .init(
                         status: .active,
-                        paymentChargeData: .init(
-                            paymentMethod: "method",
-                            bankName: "Nordea",
-                            account: "*****123",
-                            mandate: nil,
-                            dueDate: 27,
-                            chargeMethod: .trustly
-                        )
+                        chargingDay: 27,
+                        defaultPayinMethod: .init(
+                            provider: .trustly,
+                            status: .active,
+                            isDefault: true,
+                            details: .bankAccount(account: "*****123", bank: "Nordea")
+                        ),
+                        payinMethods: [
+                            .init(
+                                provider: .trustly,
+                                status: .active,
+                                isDefault: true,
+                                details: .bankAccount(account: "*****123", bank: "Nordea")
+                            )
+                        ],
+                        defaultPayoutMethod: nil,
+                        payoutMethods: [],
+                        availableMethods: []
                     )
                 )
             )
@@ -112,30 +127,41 @@ struct PaymentMethodView: View {
         let info: String?
     }
 
-    init(data: PaymentChargeData, withDate: Bool) {
+    init(data: PaymentMethodData, chargingDay: Int? = nil, withDate: Bool) {
         self.items = {
             var rows: [PaymentInfoItem] = []
-            if let paymentMethod = data.paymentMethod {
-                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethod, info: nil))
+            if let paymentMethodLabel = data.provider.paymentMethodLabel {
+                rows.append(PaymentInfoItem(title: L10n.paymentsPaymentMethod, value: paymentMethodLabel, info: nil))
             }
-            if withDate, let dueDate = data.dueDate?.ordinalDate() {
+            if withDate, let dueDate = chargingDay?.ordinalDate() {
                 rows.append(
                     .init(
                         title: L10n.paymentsPaymentDue,
                         value: L10n.paymentsDueDescription(dueDate),
-                        info: data.chargeMethod.infoText(for: dueDate)
+                        info: data.provider.infoText(for: dueDate)
                     )
                 )
             }
 
-            if let account = data.account {
+            switch data.details {
+            case let .bankAccount(account, bank):
                 rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
-            }
-            if let bankName = data.bankName {
-                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bankName, info: nil))
-            }
-            if let mandate = data.mandate {
-                rows.append(PaymentInfoItem(title: L10n.paymentsMandate, value: mandate, info: nil))
+                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bank, info: nil))
+            case .swish(let phoneNumber):
+                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: phoneNumber, info: nil))
+            case let .invoice(delivery, email):
+                switch delivery {
+                case .kivra:
+                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: "Kivra", info: nil))
+                case .mail:
+                    if let email {
+                        rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: email, info: nil))
+                    }
+                case .unknown:
+                    break
+                }
+            case nil:
+                break
             }
             return rows
         }()

@@ -18,6 +18,7 @@ private class DirectDebitWebview: UIView {
     var webViewDelegate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let onSuccess: (() -> Void)?
 
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -26,10 +27,12 @@ private class DirectDebitWebview: UIView {
 
     init(
         showErrorAlert: Binding<Bool>,
-        router: NavigationRouter
+        router: NavigationRouter,
+        onSuccess: (() -> Void)?
     ) {
         _showErrorAlert = showErrorAlert
         self.router = router
+        self.onSuccess = onSuccess
         super.init(frame: .zero)
 
         presentWebView()
@@ -188,7 +191,13 @@ private class DirectDebitWebview: UIView {
     private func startRegistration() async {
         vc.view = webView
         do {
-            let url = try await paymentService.getConnectPaymentUrl()
+            let result = try await paymentService.setupPaymentMethod(
+                .trustly
+            )
+            guard let urlString = result.url, let url = URL(string: urlString) else {
+                self.showErrorAlert = true
+                return
+            }
             let request = URLRequest(
                 url: url,
                 cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
@@ -205,9 +214,14 @@ private class DirectDebitWebview: UIView {
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     @Binding var showErrorAlert: Bool
     let router: NavigationRouter
+    let onSuccess: (() -> Void)?
 
     func makeUIView(context _: Context) -> some UIView {
-        DirectDebitWebview(showErrorAlert: $showErrorAlert, router: router)
+        DirectDebitWebview(
+            showErrorAlert: $showErrorAlert,
+            router: router,
+            onSuccess: onSuccess
+        )
     }
 
     func updateUIView(_: UIViewType, context _: Context) {}
@@ -224,11 +238,17 @@ public struct DirectDebitSetup: View {
     @State var activeAlert: AlertType?
     @State var showNotSupported: Bool = false
 
-    @StateObject var router = NavigationRouter()
+    @StateObject private var ownedRouter = NavigationRouter()
+    @ObservedObject private var externalRouter: NavigationRouter
+    private var hasExternalRouter: Bool
+    var router: NavigationRouter { hasExternalRouter ? externalRouter : ownedRouter }
     let setupType: SetupType
+    let onSuccess: (() -> Void)?
 
     public init(
-        setupType: SetupType? = nil
+        setupType: SetupType? = nil,
+        router: NavigationRouter? = nil,
+        onSuccess: (() -> Void)? = nil
     ) {
         let finalSetupType: SetupType = {
             if let setupType {
@@ -241,6 +261,9 @@ public struct DirectDebitSetup: View {
         }()
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
+        self.onSuccess = onSuccess
+        self.hasExternalRouter = router != nil
+        self._externalRouter = ObservedObject(wrappedValue: router ?? NavigationRouter())
     }
 
     public var body: some View {
@@ -273,15 +296,17 @@ public struct DirectDebitSetup: View {
                     )
                 )
             } else {
-                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router)
-                    .alert(item: $activeAlert) { alertType in
-                        switch alertType {
-                        case .cancel:
-                            cancelAlert()
-                        case .error:
-                            errorAlert()
-                        }
+                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router) { [onSuccess] in
+                    onSuccess?()
+                }
+                .alert(item: $activeAlert) { alertType in
+                    switch alertType {
+                    case .cancel:
+                        cancelAlert()
+                    case .error:
+                        errorAlert()
                     }
+                }
             }
         }
         .toolbar {

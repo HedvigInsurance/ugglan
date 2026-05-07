@@ -1,5 +1,5 @@
 import PresentableStore
-@preconcurrency import XCTest
+import XCTest
 
 @testable import Contracts
 

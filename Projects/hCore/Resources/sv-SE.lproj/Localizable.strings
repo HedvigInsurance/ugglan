@@ -87,7 +87,6 @@
 "BANKID_USER_CANCEL_TITLE" = "BankID avbröts";
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Utbetalning till ett svenskt bankkonto";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bankkonto";
-"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearingnummer";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "Ingen rabatt";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 försäkring";
@@ -595,6 +594,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY" = "Betala %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE" = "Försenad sedan %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS" = "Visa betalningsdetaljer";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE" = "Inga försenade betalningar";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE" = "Allt är betalt";
 "PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Försenad betalning";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Betalning genomförd";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ dagar";
@@ -614,6 +615,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Utbetalning via Trustly";
 "PAYOUT_MISSING_INFO" = "Du har inte lagt till någon utbetalningsmetod än. Lägg till en för att vi ska kunna betala ut till dig.";
+"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "För att kunna få utbetalningar behöver du koppla autogiro";
+"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "Ingen utbetalningsmetod tillagd";
 "PAYOUT_PAGE_HEADING" = "Utbetalningskonto";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Välj utbetalningsmetod";
 /* Label that hints the user to slide up in order to reveal more info */
@@ -970,6 +973,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.";
 "claim_status.claim_details.button" = "Se detaljer";
+"claim_status.claim_details.exposure_display_name" = "Reg nr";
+"claim_status.claim_details.external_id" = "Ärendenummer";
+"claim_status.claim_details.handler_email" = "E-mail";
 "claim_status.claim_details.info_text" = "Saknas något? Skicka ett meddelande till oss här i appen.";
 "claim_status.claim_details.submitted" = "Inskickad";
 "claim_status.claim_details.title" = "Detaljer om skadeanmälan";
@@ -984,6 +990,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.";
 /* Figma */
 "claim_status.paid.support_text" = "Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget. \n\nSe dina meddelanden för mer information om hur vi beräknade din ersättning.";
+"claim_status.partner.support_text" = "Den här skadan hanteras av vår externa partner Eir via mail.\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.";
 /* Figma */
 "claim_status.submitted.support_text" = "Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.";
 /* Figma */
@@ -995,6 +1002,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.add_more_files" = "Lägg till fler";
 "claim_status_detail.added_files" = "Tillagda filer";
 "claim_status_detail.documents.title" = "Försäkringsdokument";
+"claim_status_detail.email_view.body" = "Öppna mail";
 /* Figma */
 "claim_status_detail.info_error.body" = "Det gick inte att ladda ned din inspelade skadeanmälan. Försök igen för att kunna lyssna på den.";
 /* Figma */

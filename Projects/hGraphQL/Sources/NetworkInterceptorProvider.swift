@@ -1,5 +1,5 @@
-@preconcurrency import Apollo
-@preconcurrency import ApolloAPI
+import Apollo
+import ApolloAPI
 import Foundation
 
 /// use to override the URLSessionClient's task delegate used by apollo

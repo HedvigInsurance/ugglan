@@ -3,25 +3,38 @@ import PresentableStore
 import hCore
 
 @MainActor
-class FetchClaimDetailsService {
+public class FetchClaimDetailsService {
     @Inject var client: hFetchClaimDetailsClient
     let id: String
 
-    init(id: String) {
+    public init(id: String) {
         self.id = id
     }
 
-    func get() async throws -> ClaimModel {
+    public func get() async throws -> ClaimModel {
         log.info("\(FetchClaimDetailsService.self): get for \(id)", error: nil, attributes: nil)
         return try await client.get(for: id)
     }
 
-    func getFiles() async throws -> [File] {
+    public func getPartnerClaim() async throws -> ClaimModel {
+        log.info("\(FetchClaimDetailsService.self): getPartnerClaim for \(id)", error: nil, attributes: nil)
+        return try await client.getPartnerClaim(for: id)
+    }
+
+    public func getWithPartnerFallback() async throws -> ClaimModel {
+        do {
+            return try await client.get(for: id)
+        } catch FetchClaimDetailsError.noClaimFound {
+            return try await client.getPartnerClaim(for: id)
+        }
+    }
+
+    public func getFiles() async throws -> [File] {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
         return try await client.getFiles(for: id)
     }
 
-    func acknowledgeClosedStatus(for id: String) async throws {
+    public func acknowledgeClosedStatus(for id: String) async throws {
         log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(id)", error: nil, attributes: nil)
         return try await client.acknowledgeClosedStatus(for: id)
     }
@@ -30,6 +43,7 @@ class FetchClaimDetailsService {
 @MainActor
 public protocol hFetchClaimDetailsClient {
     func get(for id: String) async throws -> ClaimModel
+    func getPartnerClaim(for id: String) async throws -> ClaimModel
     func getFiles(for id: String) async throws -> [File]
     func acknowledgeClosedStatus(for id: String) async throws
 }
@@ -37,6 +51,7 @@ public protocol hFetchClaimDetailsClient {
 public enum ClaimDetailsType {
     case claim(id: String)
     case conversation(claimId: String)
+    case partnerClaim(id: String)
 
     var claimId: String {
         switch self {
@@ -44,7 +59,14 @@ public enum ClaimDetailsType {
             return id
         case let .conversation(claimId):
             return claimId
+        case let .partnerClaim(id):
+            return id
         }
+    }
+
+    var isPartnerClaim: Bool {
+        if case .partnerClaim = self { return true }
+        return false
     }
 }
 
