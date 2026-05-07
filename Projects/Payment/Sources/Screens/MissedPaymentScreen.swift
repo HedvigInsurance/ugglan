@@ -1,12 +1,33 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
+extension View {
+    public func handleMissedPayment(data: Binding<MissedPaymentData?>) -> some View {
+        self.detent(
+            item: data,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant(.alwaysOpenOnTop)
+        ) { missedPaymentData in
+            MissedPaymentScreen(
+                missedPaymentdata: missedPaymentData,
+                onSuccess: {
+                    data.wrappedValue = nil
+                }
+            )
+            .withDismissButton()
+            .navigationTitle(L10n.paymentsPaymentOverdueTitle)
+            .embededInNavigation(tracking: missedPaymentData)
+        }
+    }
+}
+
 struct MissedPaymentScreen: View {
     let missedPaymentdata: MissedPaymentData
-    @EnvironmentObject var router: NavigationRouter
-    @State private var showPaymentDetails = false
     @StateObject private var vm = PaymentOverdueScreenViewModel()
+    let onSuccess: () -> Void
 
     var body: some View {
         hForm {
@@ -30,14 +51,14 @@ struct MissedPaymentScreen: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
-                    buttonAction: {
-                        vm.processingState = .success
+                    buttonAction: { [weak vm] in
+                        vm?.processingState = .success
                     }
                 )
             )
         )
         .detent(
-            presented: $showPaymentDetails,
+            presented: $vm.showPaymentDetails,
             presentationStyle: .detent(style: [.large])
         ) {
             PaymentDetailsView(data: missedPaymentdata.paymentData, showsStatus: false)
@@ -58,16 +79,20 @@ struct MissedPaymentScreen: View {
                     actionButtonAttachedToBottom: .init(
                         buttonTitle: L10n.generalDoneButton,
                         buttonStyle: .secondary,
-                        buttonAction: {
-                            vm.showSuccessScreen = false
+                        buttonAction: { [weak vm] in
+                            vm?.showSuccessScreen = false
                         }
                     )
                 )
             )
             .withDismissButton()
             .embededInNavigation(tracking: String(describing: SuccessScreen.self))
-            .onAppear {
-                router.popToRoot()
+            .onDeinit {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                store.send(.setMissedPaymentData(data: nil))
+                Task { @MainActor in
+                    onSuccess()
+                }
             }
         }
     }
@@ -107,8 +132,8 @@ struct MissedPaymentScreen: View {
             .medium,
             .ghost,
             content: .init(title: L10n.paymentsPaymentOverdueDetailsViewDetails),
-            {
-                showPaymentDetails = true
+            { [weak vm] in
+                vm?.showPaymentDetails = true
             }
         )
         .hButtonTakeFullWidth(true)
@@ -168,8 +193,8 @@ struct MissedPaymentScreen: View {
             content: .init(
                 title: L10n.paymentsPaymentOverdueDetailsPay(missedPaymentdata.paymentData.payment.net.formattedAmount)
             ),
-            {
-                vm.chargeOutstandingPayment()
+            { [weak vm] in
+                vm?.chargeOutstandingPayment()
             }
         )
         .hButtonTakeFullWidth(true)
@@ -189,15 +214,17 @@ class PaymentOverdueScreenViewModel: ObservableObject {
     private let paymentService = hPaymentService()
     @Published var processingState: ProcessingState = .success
     @Published var showSuccessScreen = false
+    @Published var showPaymentDetails = false
+
     func chargeOutstandingPayment() {
         processingState = .loading
         Task {
             do {
-                try await paymentService.chargeOutstandingPayment()
-                processingState = .success
-                showSuccessScreen = true
+                try await self.paymentService.chargeOutstandingPayment()
+                self.processingState = .success
+                self.showSuccessScreen = true
             } catch {
-                processingState = .error(errorMessage: error.localizedDescription)
+                self.processingState = .error(errorMessage: error.localizedDescription)
             }
         }
     }
@@ -227,6 +254,7 @@ class PaymentOverdueScreenViewModel: ObservableObject {
         ),
         addedToThePayment: nil
     )
+
     return MissedPaymentScreen(
         missedPaymentdata: .init(
             paymentData: paymentData,
@@ -236,7 +264,8 @@ class PaymentOverdueScreenViewModel: ObservableObject {
                 isDefault: true,
                 details: .bankAccount(account: "account", bank: "bank")
             )
-        )
+        ),
+        onSuccess: {}
     )
     .environmentObject(NavigationRouter())
 }

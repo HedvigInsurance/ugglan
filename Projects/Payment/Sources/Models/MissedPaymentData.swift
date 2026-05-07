@@ -1,7 +1,9 @@
 import hCore
 import hCoreUI
 
-public struct MissedPaymentData: Codable, Equatable, Sendable, Hashable {
+public struct MissedPaymentData: Codable, Equatable, Sendable, Hashable, Identifiable {
+    public var id: String { paymentData.id }
+
     let paymentData: PaymentData
     let paymentMethodData: PaymentMethodData
 
