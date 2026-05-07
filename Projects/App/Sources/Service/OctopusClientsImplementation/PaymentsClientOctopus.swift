@@ -203,6 +203,25 @@ class hPaymentClientOctopus: hPaymentClient {
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
     }
+
+    func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        .init(
+            id: "id",
+            payment: .init(
+                gross: .sek(300),
+                net: .sek(200),
+                carriedAdjustment: nil,
+                settlementAdjustment: nil,
+                date: "2026-04-30"
+            ),
+            status: .failedForPrevious(from: "2026-04-30", to: "2026-05-30"),
+            contracts: [],
+            referralDiscount: nil,
+            amountPerReferral: .sek(10),
+            payinMethod: nil,
+            addedToThePayment: []
+        )
+    }
 }
 
 extension OctopusGraphQL.PaymentMethodSetupOutputFragment {
@@ -435,7 +454,7 @@ extension PaymentHistoryListData {
             let history = groupedPaymenthsByYear[year] ?? []
             let paymentHistoryForYear = PaymentHistoryListData(
                 id: String(year),
-                year: String(year),
+                year: year,
                 valuesPerMonth: history
             )
             paymentHistoryList.append(paymentHistoryForYear)
