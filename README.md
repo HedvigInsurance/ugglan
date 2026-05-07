@@ -61,11 +61,25 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 ## Iterating on shared KMP code (HedvigShared aka Umbrella)
 
-Production consumes `HedvigShared.xcframework` (multi-slice) as a Swift Package published from the [Android repo](https://github.com/HedvigInsurance/android) by the `umbrella.yml` workflow — ~25 minutes per round-trip, too slow for an inner loop. Local mode swaps that for a single-slice `.framework` that Xcode rebuilds on every build, matching whatever architecture/SDK/configuration is selected. Production cycle stays unchanged; CI is unaffected.
+If you never edit Kotlin, you can ignore this section — run [post-checkout.sh](scripts/post-checkout.sh), build, and ship as normal. Xcode pulls `HedvigShared` automatically from a Swift Package and `scripts/post-build-action.sh` handles the rest. The setup below is for the inner loop when you *are* iterating on shared Kotlin code from the sibling [`android/`](https://github.com/HedvigInsurance/android) repo.
 
-**Prerequisites**
+### How HedvigShared is wired
 
-Check out the android repo as a sibling of this one. The directories must be named exactly `android` and `ugglan`:
+```
+android/                                  ugglan/
+└─ app/umbrella  ──gradle──>  HedvigShared.framework  ──linker──>  CoreDependencies.framework
+   (Kotlin code)              (static archive,                     (carries the Kotlin
+                               wrapper not in .app bundle)          symbols at runtime)
+```
+
+- **`umbrella`** is the Gradle module on the android side that exposes Kotlin code to iOS. Its build product, **`HedvigShared.framework`**, is what iOS imports.
+- The framework is `isStatic = true`, so its archive is **statically linked into `CoreDependencies.framework`** at workspace build time — that's where the Kotlin code actually lives at runtime. The `HedvigShared.framework` wrapper itself is a build-time linker artifact and is removed from the `.app` bundle by `post-build-action.sh`.
+- **Released mode** (default): `HedvigShared.framework` comes from a published Swift Package built by [`umbrella.yml`](https://github.com/HedvigInsurance/android/blob/develop/.github/workflows/umbrella.yml) — round-tripping a Kotlin change through CI takes ~25 minutes.
+- **Local mode**: a Tuist toggle + a gradle pre-build phase rebuilds the framework from your sibling `android/` checkout on every Xcode build, ~5–10s per Kotlin change.
+
+### Local mode
+
+Check out the android repo as a sibling. The directories must be named exactly `android` and `ugglan`:
 
 ```
 <parent>/
@@ -73,22 +87,20 @@ Check out the android repo as a sibling of this one. The directories must be nam
 └── ugglan/   ← you are here
 ```
 
-**Switch to local mode**
+**Switch to local mode** (close Xcode first):
 
 ```sh
 scripts/use-local-umbrella.sh
 ```
 
-Creates a gitignored marker file (`.local-umbrella-path`) and re-runs `tuist generate`. From now on, every time you build Ugglan in Xcode, a pre-build phase on `CoreDependencies` invokes `./gradlew :umbrella:embedAndSignAppleFrameworkForXcode` in `../android` and drops the freshly-built `HedvigShared.framework` into `${BUILT_PRODUCTS_DIR}`. Edit Kotlin, hit ⌘R; iOS sees your changes.
+Then `open Ugglan.xcworkspace` and build. Edit Kotlin, hit ⌘R; iOS picks it up.
 
-**Switch back to the published package**
+**Switch back to the published package** before opening a PR:
 
 ```sh
 scripts/use-released-umbrella.sh
 ```
 
-Removes the marker and regenerates against the version pinned in `Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift`. Always run this before opening a PR — the marker is gitignored so PRs are unaffected, but your local build should match what CI builds.
+Both scripts wipe Ugglan's DerivedData (mixing artifacts from both modes silently corrupts signatures) and refuse to run if Xcode is open. Run `scripts/umbrella-status.sh` to see which mode you're currently in.
 
-**About `scripts/post-build-action.sh`**
-
-This script runs as a post-build phase on the Ugglan target and copies frameworks into the app bundle. Local mode introduces an additional concern: Compose Multiplatform's resource reader uses `Bundle.main` and looks for resources at `<App>.app/compose-resources/composeResources/...`, but in our Tuist multi-target setup gradle's output ends up bundled inside `CoreDependencies.framework/compose-resources/` (Xcode's standard "Copy Bundle Resources" phase sweeps it up there). The script lifts that directory out to the app-bundle root so `Bundle.main` can find it. If you ever see `MissingResourceException` for a path under `Ugglan.app/compose-resources/...`, this copy is what's responsible.
+`scripts/post-build-action.sh` does the iOS-side surgery that makes both modes work — removes the static `HedvigShared.framework` from the bundle, lifts `compose-resources/` to the right path for `Bundle.main`, re-signs the app. Read the comments in the script if you ever debug an install error or a `MissingResourceException`.

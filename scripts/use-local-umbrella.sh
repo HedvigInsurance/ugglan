@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
-# Switch Ugglan to "local umbrella" mode: HedvigShared.framework is built fresh from
-# the sibling android repo by a pre-build phase on every Xcode build, instead of being
-# consumed as a published Swift Package. After running this once, every Xcode rebuild
-# picks up your latest Kotlin changes — no extra commands needed between iterations.
-#
-# Requires android and ugglan to be checked out as siblings:
-#   <parent>/android
-#   <parent>/ugglan   <-- you are here
+# Switch Ugglan to local-umbrella mode: gradle pre-build phase rebuilds
+# HedvigShared.framework from the sibling android/ repo on every Xcode build.
+# Requires android/ and ugglan/ to be siblings.
 
 set -euo pipefail
 
@@ -18,9 +13,21 @@ if [[ ! -d "$ANDROID_REPO" ]]; then
     exit 1
 fi
 
+# DerivedData must be wiped on every mode switch; mixing artifacts from both modes
+# produces silent signature corruption that iOS rejects on install.
+if pgrep -x Xcode >/dev/null; then
+    echo "error: Xcode is running. Close it before switching modes." >&2
+    exit 1
+fi
+DERIVED_DATA="$HOME/Library/Developer/Xcode/DerivedData"
+if compgen -G "$DERIVED_DATA/Ugglan-*" > /dev/null; then
+    echo "==> Wiping $DERIVED_DATA/Ugglan-*"
+    rm -rf "$DERIVED_DATA"/Ugglan-*
+fi
+
 touch "$UGGLAN_ROOT/.local-umbrella-path"
 echo "==> Marker created at $UGGLAN_ROOT/.local-umbrella-path"
 
 ( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
-echo "==> Done. Open Ugglan.xcworkspace and build — gradle runs as a pre-build phase."
-echo "    Run scripts/use-released-umbrella.sh to revert to the published package."
+echo "==> Done. Open Ugglan.xcworkspace and build."
+echo "    Run scripts/use-released-umbrella.sh to revert."

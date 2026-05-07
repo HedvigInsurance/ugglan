@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Pre-build phase attached to the CoreDependencies target. Builds HedvigShared.framework
-# directly into ${BUILT_PRODUCTS_DIR} via the KMP `embedAndSignAppleFrameworkForXcode`
-# task, but only when `.local-umbrella-path` is present (set by use-local-umbrella.sh).
-# When absent, this is a no-op and Ugglan consumes the released SPM package as usual.
-#
-# Mirrors the pattern used by android/micro-apps/umbrella-consumer.
+# Pre-build phase on CoreDependencies. Runs gradle to rebuild HedvigShared.framework
+# into ${BUILT_PRODUCTS_DIR} when .local-umbrella-path is present; no-op otherwise.
 
 set -euo pipefail
 
