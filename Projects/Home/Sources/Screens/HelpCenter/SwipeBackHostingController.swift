@@ -5,7 +5,8 @@ private let edgeSwipeZoneWidth: CGFloat = 16
 private final class EdgeSwipePassthroughView: UIView {
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let isRTL = effectiveUserInterfaceLayoutDirection == .rightToLeft
-        let inLeadingZone = isRTL
+        let inLeadingZone =
+            isRTL
             ? point.x > bounds.maxX - edgeSwipeZoneWidth
             : point.x < edgeSwipeZoneWidth
         if inLeadingZone {
@@ -36,11 +37,11 @@ final class SwipeBackHostingController: UIViewController, UIGestureRecognizerDel
         child.view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(child.view)
         NSLayoutConstraint.activate([
-                                        child.view.topAnchor.constraint(equalTo: view.topAnchor),
-                                        child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                                        child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                                        child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                                    ])
+            child.view.topAnchor.constraint(equalTo: view.topAnchor),
+            child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
         child.didMove(toParent: self)
     }
 
