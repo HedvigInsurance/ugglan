@@ -63,6 +63,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
                 let data = try await paymentService.getMissedPaymentData()
                 await sendAsync(.setMissedPaymentData(data: data))
             } catch {
+                await sendAsync(.setMissedPaymentData(data: nil))
                 setError(L10n.General.errorBody, for: .getMissedPayment)
             }
         default:

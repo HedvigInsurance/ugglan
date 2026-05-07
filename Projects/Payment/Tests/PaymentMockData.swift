@@ -129,4 +129,7 @@ class MockPaymentService: hPaymentClient {
         let data = try await fetchSetupPaymentMethod()
         return data
     }
+
+    func chargeOutstandingPayment() async throws {
+    }
 }
