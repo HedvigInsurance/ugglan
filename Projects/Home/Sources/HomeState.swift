@@ -2,7 +2,7 @@ import Apollo
 import Combine
 import CrossSell
 import Foundation
-@preconcurrency import PresentableStore
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

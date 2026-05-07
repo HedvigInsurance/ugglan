@@ -22,7 +22,6 @@ public struct PaymentHistoryView: View {
                 )
             )
             .task {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
                 store.send(.getHistory)
             }
     }

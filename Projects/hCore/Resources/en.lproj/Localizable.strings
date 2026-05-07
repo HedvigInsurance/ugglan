@@ -87,7 +87,6 @@
 "BANKID_USER_CANCEL_TITLE" = "BankID was cancelled";
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Payout to a Swedish bank account";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bank account";
-"BANK_PAYOUT_METHOD_FORM_CLEARING_FIELD_LABEL" = "Clearing number";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ discount";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_NO_DISCOUNT" = "No discount";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 insurance";
@@ -521,6 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "To reactivate your insurance from cancellation, reach out to the Hedvig Service Team after the charge has appeared on your account";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Review contact info";
@@ -583,7 +583,21 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_DUE_INFO" = "If you update your bank account close to the %1$@, the withdrawal might take a few extra days.";
 "PAYMENTS_PAYMENT_FAILED" = "This payment failed and was added to your payment on %1$@.";
 "PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Payment history";
+"PAYMENTS_PAYMENT_IN_PROGRESS" = "Payment in progress";
+"PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION" = "It may take up to 5 business days for the charge to appear";
 "PAYMENTS_PAYMENT_METHOD" = "Payment method";
+"PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE" = "Amount due: %1$@";
+"PAYMENTS_PAYMENT_OVERDUE_BODY" = "We couldn't collect this payment from your bank account. Pay now to keep your coverage active.";
+"PAYMENTS_PAYMENT_OVERDUE_BUTTON" = "Review payment";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_BODY" = "Pay now to avoid interruption";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_DUE_DATE" = "Payment due";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_FINE_PRINT" = "Ensure your account has enough funds to cover this payment";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_PAY" = "Pay %1$@";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_SINCE" = "Overdue since %1$@";
+"PAYMENTS_PAYMENT_OVERDUE_DETAILS_VIEW_DETAILS" = "View payment details";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_SUBTITLE" = "No overdue payments";
+"PAYMENTS_PAYMENT_OVERDUE_MISSING_TITLE" = "Payments up to date";
+"PAYMENTS_PAYMENT_OVERDUE_TITLE" = "Payment overdue";
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Payment successful";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ days";
 "PAYMENTS_PERIOD_FULL" = "Full period";
@@ -602,6 +616,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Payout via Trustly";
 "PAYOUT_MISSING_INFO" = "You haven’t added a payout method yet. Add one to receive payouts.";
+"PAYOUT_NO_PAYOUT_OPTIONS_SUBTITLE" = "To receive payouts, you need to connect direct debit";
+"PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "No payout method available";
 "PAYOUT_PAGE_HEADING" = "Payout account";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Choose payout method";
 /* Label that hints the user to slide up in order to reveal more info */
@@ -624,7 +640,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_MY_INFO_TITLE" = "Contact info";
 "PROFILE_NOTIFICATIONS_STATUS_OFF" = "Turned off";
 "PROFILE_NOTIFICATIONS_STATUS_ON" = "Turned on";
-"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect payment";
+"PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect direct debit";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
 "PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";
@@ -958,6 +974,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.";
 "claim_status.claim_details.button" = "Show details";
+"claim_status.claim_details.exposure_display_name" = "Reg. no.";
+"claim_status.claim_details.external_id" = "Reference number";
+"claim_status.claim_details.handler_email" = "Email";
 "claim_status.claim_details.info_text" = "Is something missing? Send us a message here in the app.";
 "claim_status.claim_details.submitted" = "Submitted";
 "claim_status.claim_details.title" = "Claim details";
@@ -972,6 +991,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Your claim was unfortunately not covered. Please see conversation for more details on the decision.";
 /* Figma */
 "claim_status.paid.support_text" = "We got you covered. You should have received the payment by now. \n\nSee your messages here in the app for more details.";
+"claim_status.partner.support_text" = "This claim is handled by our external partner Eir by email.\n\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.";
 /* Figma */
 "claim_status.submitted.support_text" = "We have received your claim and will start reviewing it soon.";
 /* Figma */
@@ -983,6 +1003,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.add_more_files" = "Add more files";
 "claim_status_detail.added_files" = "Added files";
 "claim_status_detail.documents.title" = "Claim documents";
+"claim_status_detail.email_view.body" = "Open email";
 /* Figma */
 "claim_status_detail.info_error.body" = "The claim audio couldn't be downloaded. Please try again to be able to listen to it.";
 /* Figma */

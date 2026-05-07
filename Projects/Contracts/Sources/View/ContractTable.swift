@@ -56,8 +56,9 @@ struct ContractTable: View {
                     .loadingWithButtonLoading($vm.viewState)
                     .hStateViewButtonConfig(
                         .init(
-                            actionButton: .init(buttonAction: { [weak store] in
-                                store?.send(.fetchContracts)
+                            actionButton: .init(buttonAction: {
+                                let store: ContractStore = globalPresentableStoreContainer.get()
+                                store.send(.fetchContracts)
                             }),
                             dismissButton: nil
                         )
@@ -115,11 +116,6 @@ struct ContractTable: View {
                     }
                 }
             }
-            .onAppear {
-                Task {
-                    await vm.getAddonBanners()
-                }
-            }
             .animation(.easeInOut(duration: 0.3), value: isExpanded)
             .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
                 if !isActive {
@@ -143,6 +139,11 @@ struct ContractTable: View {
                         scrollToCardId = nil
                     }
                 }
+            }
+        }
+        .onAppear {
+            Task {
+                await vm.getAddonBanners()
             }
         }
     }

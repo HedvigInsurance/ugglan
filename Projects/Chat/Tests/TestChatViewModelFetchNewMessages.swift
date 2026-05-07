@@ -1,5 +1,5 @@
 import Foundation
-@preconcurrency import XCTest
+import XCTest
 
 @testable import Chat
 

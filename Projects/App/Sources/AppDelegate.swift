@@ -17,7 +17,7 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-@preconcurrency import UserNotifications
+import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL

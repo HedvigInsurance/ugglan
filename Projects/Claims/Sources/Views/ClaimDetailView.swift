@@ -28,10 +28,21 @@ public struct ClaimDetailView: View {
                 if let claim = vm.claim {
                     infoCardSection(text: claim.infoText)
                     claimCardSection(claim: claim)
-                    infoAndContactSection
-                    memberFreeTextSection
+                    if !claim.isPartnerClaim {
+                        infoAndContactSection
+                        memberFreeTextSection
+                    } else if let statusParagraph {
+                        hSection {
+                            hRow {
+                                hText(statusParagraph, style: .body1)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
                     claimDetailsSection
-                    uploadFilesSection
+                    if !claim.isPartnerClaim {
+                        uploadFilesSection
+                    }
                     documentSection(appealInstructionUrl: claim.appealInstructionsUrl)
                 }
             }
@@ -175,6 +186,9 @@ public struct ClaimDetailView: View {
                             }
                             .accessibilityElement(children: .combine)
                         }
+                        if claim.isPartnerClaim {
+                            partnerInfoRows(claim: claim)
+                        }
                     }
                 }
                 .withHeader(
@@ -185,6 +199,58 @@ public struct ClaimDetailView: View {
                 .sectionContainerStyle(.transparent)
             }
             .padding(.vertical, .padding8)
+        }
+    }
+
+    @ViewBuilder
+    private func partnerInfoRows(claim: ClaimModel) -> some View {
+        if let exposure = claim.exposureDisplayName, !exposure.isEmpty {
+            HStack {
+                hText(L10n.ClaimStatus.ClaimDetails.exposureDisplayName)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                Spacer()
+                hText(exposure)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .accessibilityElement(children: .combine)
+        }
+        if let externalId = claim.externalId, !externalId.isEmpty {
+            copyableRow(
+                title: L10n.ClaimStatus.ClaimDetails.externalId,
+                value: externalId
+            )
+        }
+        if let handlerEmail = claim.handlerEmail, !handlerEmail.isEmpty {
+            copyableRow(
+                title: L10n.ClaimStatus.ClaimDetails.handlerEmail,
+                value: handlerEmail
+            )
+        }
+    }
+
+    private func copyableRow(title: String, value: String) -> some View {
+        HStack {
+            hText(title)
+                .foregroundColor(hTextColor.Opaque.secondary)
+            Spacer()
+            hText(value)
+                .foregroundColor(hTextColor.Opaque.secondary)
+            hCoreUIAssets.copy.view
+                .foregroundColor(hTextColor.Opaque.secondary)
+                .accessibilityHidden(true)
+        }
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .onTapGesture {
+            UIPasteboard.general.string = value
+            Toasts.shared.displayToastBar(
+                toast: .init(
+                    type: .campaign,
+                    icon: hCoreUIAssets.checkmark.view,
+                    text: L10n.General.copied
+                )
+            )
         }
     }
 
@@ -303,7 +369,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
         id: "claimId",
         status: .beingHandled,
         outcome: .none,
-        submittedAt: "2023-11-11",
+        submittedAt: "2023-11-11".localDateToDate,
         signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
         memberFreeText: nil,
         payoutAmount: nil,
@@ -330,6 +396,42 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     return ClaimDetailView(
         claim: claim,
         type: .claim(id: "claimId")
+    )
+}
+
+#Preview("Partner claim") {
+    Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+
+    let claim = ClaimModel(
+        id: "partnerClaimId",
+        status: .beingHandled,
+        outcome: nil,
+        submittedAt: "2026-04-20".localDateToDate,
+        signedAudioURL: nil,
+        memberFreeText: nil,
+        payoutAmount: nil,
+        targetFileUploadUri: "",
+        claimType: "Car damage",
+        productVariant: nil,
+        conversation: nil,
+        appealInstructionsUrl: nil,
+        isUploadingFilesEnabled: false,
+        showClaimClosedFlow: false,
+        infoText: nil,
+        displayItems: [
+            .init(displayTitle: "Damage date", displayValue: "20 Apr 2026")
+        ],
+        isPartnerClaim: true,
+        handlerEmail: "claims@eir.se",
+        exposureDisplayName: "ABC 123",
+        externalId: "EIR-2026-000123"
+    )
+    return ClaimDetailView(
+        claim: claim,
+        type: .partnerClaim(id: "partnerClaimId")
     )
 }
 
@@ -368,19 +470,21 @@ public class ClaimDetailViewModel: ObservableObject {
         claimDetailsService = .init(id: type.claimId)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         self.type = type
+        let isPartnerClaim = claim?.isPartnerClaim == true || type.isPartnerClaim
         let files = store.state.files[type.claimId] ?? []
         fileGridViewModel = .init(files: files, options: [])
-        Task {
-            await fetchFiles()
-        }
-        fileGridViewModel.$files
-            .sink { _ in
-            } receiveValue: { [weak self] files in
-                self?.hasFiles = !files.isEmpty
+        if !isPartnerClaim {
+            Task {
+                await fetchFiles()
             }
-            .store(in: &cancellables)
-
-        handleClaimChat()
+            fileGridViewModel.$files
+                .sink { _ in
+                } receiveValue: { [weak self] files in
+                    self?.hasFiles = !files.isEmpty
+                }
+                .store(in: &cancellables)
+            handleClaimChat()
+        }
         if let claim {
             claimProcessingState = .success
             if let url = URL(string: claim.signedAudioURL) {
@@ -424,7 +528,10 @@ public class ClaimDetailViewModel: ObservableObject {
         claimProcessingState = .loading
         Task {
             do {
-                let claim = try await claimDetailsService.get()
+                let claim =
+                    type.isPartnerClaim
+                    ? try await claimDetailsService.getPartnerClaim()
+                    : try await claimDetailsService.get()
                 self.claim = claim
                 claimProcessingState = .success
             } catch {

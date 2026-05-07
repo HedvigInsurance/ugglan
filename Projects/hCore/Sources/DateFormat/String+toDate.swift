@@ -8,6 +8,7 @@ extension String {
 
     public var localDateToIso8601Date: Date? {
         Dependencies.dateService.localDateToIso8601Date.date(from: self)
+            ?? Dependencies.dateService.localDateToIso8601DateNoFractional.date(from: self)
     }
 
     public var localBirthDateStringToDate: Date? {

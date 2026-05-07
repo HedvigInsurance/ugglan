@@ -127,7 +127,7 @@ public struct DatePickerView: View {
 }
 
 @MainActor
-public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @preconcurrency Identifiable {
+public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
     public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
         lhs.id == rhs.id
     }

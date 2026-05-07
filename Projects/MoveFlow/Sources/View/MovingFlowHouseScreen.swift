@@ -257,11 +257,10 @@ public struct ExtraBuildingType: Sendable, Hashable {
 }
 
 @MainActor
-public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
+public class HouseInformationInputModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
     public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
         true
     }
-
     @Inject private var service: MoveFlowClient
     @Published var type: MovingFlowHouseFieldType?
     @Published public var yearOfConstruction: String = ""

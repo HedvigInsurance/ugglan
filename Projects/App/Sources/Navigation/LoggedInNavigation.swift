@@ -59,6 +59,8 @@ class PushNotificationHandler {
             handleInsuranceEvidence()
         case .TRAVEL_CERTIFICATE:
             handleTravelCertificate()
+        case .PAYOUT:
+            viewModel?.showPayout()
         }
     }
 
@@ -176,9 +178,9 @@ class PushNotificationHandler {
     func handleClaimDetails(claimId: String?) async {
         guard let viewModel = viewModel else { return }
         if let claimId {
-            let claimService: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+            let claimDetailsService = FetchClaimDetailsService(id: claimId)
             do {
-                let claim = try await claimService.get(for: claimId)
+                let claim = try await claimDetailsService.getWithPartnerFallback()
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 viewModel.selectedTab = 0
                 Task { [weak viewModel] in
@@ -283,6 +285,8 @@ class DeepLinkHandler {
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
             handleMissingPetChipIds(url)
+        case .payout:
+            viewModel?.showPayout()
         }
     }
 
@@ -668,7 +672,10 @@ struct HomeTab: View {
         hNavigationStack(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
+                    openClaimDetails(
+                        claim: claim,
+                        type: claim.isPartnerClaim ? .partnerClaim(id: claim.id) : .claim(id: claim.id)
+                    )
                 }
                 .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
@@ -778,6 +785,15 @@ struct HomeTab: View {
                 )
             }
         )
+        .detent(
+            presented: $homeNavigationVm.isPayoutMethodPresented,
+            presentationStyle: .detent(
+                style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            PayoutNavigation()
+                .environmentObject(loggedInVm.paymentsNavigationVm)
+        }
     }
 
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
@@ -848,7 +864,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
 
-    private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
         didSet {
@@ -888,12 +903,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func setupObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(openDeepLinkNotification),
-            name: .openDeepLink,
-            object: nil
-        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registerForPushNotification),
@@ -964,6 +973,14 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
     }
 
+    func showPayout() {
+        Task { [weak self] in
+            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+            await paymentStore.sendAsync(.fetchPaymentStatus)
+            self?.homeNavigationVm.isPayoutMethodPresented = true
+        }
+    }
+
     @objc func openChangeTier(notification: Notification) {
         let contractId = notification.object as? String
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -1022,16 +1039,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         missingPetChipIdInput = .init(contracts: contracts)
     }
 
-    @objc func openDeepLinkNotification(notification: Notification) {
-        if let deepLinkUrl = notification.object as? URL {
-            if ApplicationState.currentState == .loggedIn {
-                handleDeepLinks(deepLinkUrl: deepLinkUrl)
-            } else if !deepLinkUrl.absoluteString.contains("//bankid") {
-                deeplinkToBeOpenedAfterLogin = deepLinkUrl
-            }
-        }
-    }
-
     @objc func claimCreated(notification: Notification) {
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
@@ -1062,14 +1069,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    func actionAfterLogin() {
-        if let deeplinkToBeOpenedAfterLogin {
-            handleDeepLinks(deepLinkUrl: deeplinkToBeOpenedAfterLogin)
-            self.deeplinkToBeOpenedAfterLogin = nil
-        }
-    }
-
-    private func handleDeepLinks(deepLinkUrl: URL?) {
+    func handleDeepLink(_ deepLinkUrl: URL?) {
         deepLinkHandler.handle(deepLinkUrl)
     }
 
