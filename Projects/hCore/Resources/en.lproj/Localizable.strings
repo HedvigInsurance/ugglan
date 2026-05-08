@@ -520,7 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
-"MANUAL_CHARGE_CANCELLATION_WARNING" = "To reactivate your insurance from cancellation, reach out to the Hedvig Service Team after the charge has appeared on your account";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "Activate your coverage again by contacting us once your payment has been processed";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Review contact info";
