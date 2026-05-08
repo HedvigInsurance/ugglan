@@ -7,9 +7,17 @@ import ProjectDescription
 /// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
 /// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
 /// released SPM package unchanged.
+///
+/// `#filePath` is this file's absolute path at compile time —
+/// `<repo-root>/Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift` —
+/// so walking up three directories always lands on the repo root, regardless of where
+/// Tuist's manifest-evaluation subprocess sets its cwd.
 public var isLocalUmbrellaMode: Bool {
-    let markerPath = "\(FileManager.default.currentDirectoryPath)/.local-umbrella"
-    return FileManager.default.fileExists(atPath: markerPath)
+    let projectRoot = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+    return FileManager.default.fileExists(atPath: projectRoot.appendingPathComponent(".local-umbrella").path)
 }
 
 public enum ExternalDependencies: CaseIterable {

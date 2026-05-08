@@ -18,6 +18,16 @@ if compgen -G "$DERIVED_DATA/Ugglan-*" > /dev/null; then
     rm -rf "$DERIVED_DATA"/Ugglan-*
 fi
 
+# Tuist content-hashes manifest source files for caching, but the marker check
+# is a side-effect filesystem read invisible to that hash. Without busting the
+# Manifests cache on every mode switch, `tuist generate` returns the previously
+# evaluated result and silently produces a pbxproj for the wrong mode.
+TUIST_MANIFEST_CACHE="$HOME/.cache/tuist/Manifests"
+if [[ -d "$TUIST_MANIFEST_CACHE" ]]; then
+    echo "==> Busting Tuist manifest cache at $TUIST_MANIFEST_CACHE"
+    rm -rf "$TUIST_MANIFEST_CACHE"
+fi
+
 rm -f "$UGGLAN_ROOT/.local-umbrella"
 ( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
 echo "==> Reverted to released umbrella."
