@@ -37,23 +37,31 @@ public struct HelpCenterStartView: View {
                             }
                             .padding(.top, 20)
                         } else {
-                            HStack {
-                                Spacer()
-                                hCoreUIAssets.bigPillowBlack.view
-                                    .resizable()
-                                    .frame(width: 160, height: 160)
-                                    .padding(.bottom, 26)
-                                    .padding(.top, 39)
-                                Spacer()
+                            ZStack {
+                                if puppyGuideAvailable {
+                                    puppyGuideEntry
+                                        .transition(.opacity.combined(with: .scale))
+                                } else {
+                                    HStack {
+                                        Spacer()
+                                        hCoreUIAssets.bigPillowBlack.view
+                                            .resizable()
+                                            .frame(width: 160, height: 160)
+                                            .padding(.bottom, 26)
+                                            .padding(.top, 39)
+                                        Spacer()
+                                    }
+                                    .accessibilityHidden(true)
+                                    .transition(.opacity.combined(with: .scale))
+                                }
                             }
-                            .accessibilityHidden(true)
+                            .animation(.smooth, value: puppyGuideAvailable)
                             VStack(alignment: .leading, spacing: .padding8) {
                                 hText(L10n.hcHomeViewQuestion)
                                 hText(L10n.hcHomeViewAnswer)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             .accessibilityElement(children: .combine)
-                            puppyGuideEntry
                             displayQuickActions(from: vm.quickActions)
                             displayTopics()
                             if let helpCenterModel = vm.helpCenterModel {
@@ -104,21 +112,39 @@ public struct HelpCenterStartView: View {
         }
     }
 
-    @ViewBuilder
     private var puppyGuideEntry: some View {
-        if puppyGuideAvailable {
-            hSection {
-                hRow {
-                    hText("Puppy guide")
-                    Spacer()
-                }
-                .withChevronAccessory
-                .onTap { [weak router] in
-                    router?.push(PuppyGuideRoute.list)
-                }
+        VStack(alignment: .leading, spacing: 0) {
+            ZStack(alignment: .topLeading) {
+                hCoreUIAssets.hundarBadarPet.view
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 182)
+                    .clipped()
+                hPill(text: L10n.puppyGuideLabel, color: .pink)
+                    .hFieldSize(.small)
+                    .padding(.padding16)
             }
-            .hWithoutHorizontalPadding([.section])
-            .sectionContainerStyle(.opaque)
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.puppyGuideTitle)
+                hText(L10n.puppyGuideSubtitle)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .padding(.horizontal, .padding16)
+            .padding(.top, .padding16)
+            hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
+                router?.push(PuppyGuideRoute.list)
+            }
+            .hButtonWithBorder
+            .hButtonTakeFullWidth(true)
+            .padding(.padding16)
+        }
+        .background(hBackgroundColor.primary)
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+        .shadow(color: Color.black.opacity(0.06), radius: 1, x: 0, y: 1)
+        .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+        .onTapGesture { [weak router] in
+            router?.push(PuppyGuideRoute.list)
         }
     }
 
