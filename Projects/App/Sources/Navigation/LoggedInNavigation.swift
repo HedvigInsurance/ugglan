@@ -1124,4 +1124,3 @@ extension HomeTab: TrackingViewNameProtocol {
         String(describing: HomeScreen.self)
     }
 }
-
