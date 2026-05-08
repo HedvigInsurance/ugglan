@@ -520,7 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
 "LOGOUT_ALERT_TITLE" = "Är du säker på att du vill logga ut?";
 "LOGOUT_BUTTON" = "Logga ut";
-"MANUAL_CHARGE_CANCELLATION_WARNING" = "För att återaktivera din försäkring efter avslut, kontakta Hedvig Service Team när betalningen har registrerats på ditt konto";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats";
 "MANUAL_INPUT_LIST_OTHER" = "Annat";
 "MARKETING_GET_HEDVIG" = "Få ett prisförslag";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Se över kontaktuppgifter";
