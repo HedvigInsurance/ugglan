@@ -12,7 +12,7 @@ struct InsuranceEvidenceProcessingScreen: View {
             successViewBody: L10n.InsuranceEvidence.emailSentDescription,
             state: $vm.viewState
         )
-        .hSuccessBottomAttachedView {
+        .hStateViewBottomAttachedView {
             bottomSuccessView
         }
         .hStateViewButtonConfig(

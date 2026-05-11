@@ -18,7 +18,7 @@ public struct MovingFlowHousingTypeScreen: View {
             loadingViewText: L10n.embarkLoading,
             state: $movingFlowNavigationVm.viewState
         )
-        .hCustomSuccessView {
+        .hStateViewCustomSuccessView {
             hForm {}
                 .hFormTitle(
                     title: .init(

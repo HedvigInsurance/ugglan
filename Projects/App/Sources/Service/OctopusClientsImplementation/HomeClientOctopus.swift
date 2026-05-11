@@ -30,7 +30,7 @@ class HomeClientOctopus: HomeClient {
         let data =
             try await octopus
             .client
-            .fetch(query: OctopusGraphQL.HomeQuery())
+            .fetch(query: OctopusGraphQL.HomeQuery(includeManualCharge: featureFlags.isManualChargeEnabled))
 
         let memberId = data.currentMember.id
         let isContactInfoUpdateNeeded = data.currentMember.memberActions?.isContactInfoUpdateNeeded ?? false
@@ -39,7 +39,11 @@ class HomeClientOctopus: HomeClient {
         let futureStatus = data.currentMember.futureStatus
 
         return .init(
-            memberInfo: .init(id: memberId, isContactInfoUpdateNeeded: isContactInfoUpdateNeeded),
+            memberInfo: .init(
+                id: memberId,
+                isContactInfoUpdateNeeded: isContactInfoUpdateNeeded,
+                hasMissedCharge: data.currentMember.missedChargeIdToChargeManually != nil
+            ),
             contracts: contracts,
             contractState: contractState,
             futureState: futureStatus

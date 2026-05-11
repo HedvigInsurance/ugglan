@@ -10,13 +10,16 @@ import hCoreUI
 public struct MemberInfo: Codable, Equatable, Sendable {
     let id: String
     let isContactInfoUpdateNeeded: Bool
+    public let hasMissedCharge: Bool
 
     public init(
         id: String,
-        isContactInfoUpdateNeeded: Bool
+        isContactInfoUpdateNeeded: Bool,
+        hasMissedCharge: Bool
     ) {
         self.id = id
         self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
+        self.hasMissedCharge = hasMissedCharge
     }
 }
 
@@ -83,6 +86,7 @@ public enum HomeAction: ActionProtocol {
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
     case recommendedProductUpdated
+    case clearMissedCharge
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -100,12 +104,18 @@ public enum HomeLoadingType: LoadingProtocol {
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
     private var newOfferSubscription: AnyCancellable?
+    private var didChargeOutstandingPaymentSubscription: AnyCancellable?
     required init() {
         super.init()
         let store: CrossSellStore = globalPresentableStoreContainer.get()
         newOfferSubscription = store.stateSignal.map(\.hasNewOffer).removeDuplicates()
             .sink { [weak self] _ in
                 self?.send(.recommendedProductUpdated)
+            }
+        didChargeOutstandingPaymentSubscription = NotificationCenter.default
+            .publisher(for: .didChargeOutstandingPayment)
+            .sink { [weak self] _ in
+                self?.send(.clearMissedCharge)
             }
     }
 
@@ -192,6 +202,14 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
+        case .clearMissedCharge:
+            if let memberInfo = newState.memberInfo {
+                newState.memberInfo = MemberInfo(
+                    id: memberInfo.id,
+                    isContactInfoUpdateNeeded: memberInfo.isContactInfoUpdateNeeded,
+                    hasMissedCharge: false
+                )
+            }
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setToolbarTypes(&newState)

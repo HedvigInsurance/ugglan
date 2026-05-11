@@ -127,6 +127,7 @@ extension HomeScreen {
 @MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
+    @Inject private var featureFlags: FeatureFlags
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
@@ -146,6 +147,15 @@ class HomeVM: ObservableObject {
         toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
         observeToolbarOptionTypes()
+        featureFlags
+            .$isManualChargeEnabled
+            .dropFirst()
+            .removeDuplicates()
+            .sink { value in
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(.fetchMemberState)
+            }
+            .store(in: &cancellables)
     }
 
     func fetchHomeState() {

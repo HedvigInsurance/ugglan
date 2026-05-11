@@ -888,12 +888,17 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
     @Published var missedPaymentData: MissedPaymentData?
+    @Published var hasMissedPayment = false
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
         didSet {
-            guard #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad else { return }
-            tabBar?.traitOverrides.horizontalSizeClass = .compact
+            if #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad {
+                tabBar?.traitOverrides.horizontalSizeClass = .compact
+            }
+            Task { @MainActor [weak self] in
+                self?.updatePaymentsBadge()
+            }
         }
     }
 
@@ -914,6 +919,17 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.stateSignal
+            .map { $0.memberInfo }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] memberInfo in
+                self?.hasMissedPayment = memberInfo?.hasMissedCharge ?? false
+                self?.updatePaymentsBadge()
+            }
+            .store(in: &cancellables)
+
         $selectedTab
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -925,6 +941,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func updatePaymentsBadge() {
+        tabBar?.updateBadgeDot(visible: hasMissedPayment, forTabTitled: L10n.tabPaymentsTitle)
     }
 
     private func setupObservers() {

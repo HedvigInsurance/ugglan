@@ -213,6 +213,7 @@ class hPaymentClientOctopus: hPaymentClient {
     }
 
     func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        guard Dependencies.featureFlags().isManualChargeEnabled else { return nil }
         let query = OctopusGraphQL.MisssedChargeIdQuery()
         let data = try await octopus.client.fetch(query: query)
         guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
@@ -220,14 +221,14 @@ class hPaymentClientOctopus: hPaymentClient {
         async let statusData = getPaymentStatusData()
         async let historyData = getPaymentHistoryData()
 
-        guard let paymentMethodData = try await statusData.defaultOrFirstDefaultPayoutMethod,
-            let paymentData =
+        guard let paymentMethodData = try await statusData.defaultOrFirstDefaultPayinMethod,
+            var paymentData =
                 try await historyData
                 .flatMap({ $0.valuesPerMonth })
                 .compactMap({ $0.paymentData })
                 .first(where: { $0.id == id })
         else { return nil }
-
+        paymentData.showStatusInfo = false
         return .init(
             paymentData: paymentData,
             paymentMethodData: paymentMethodData
