@@ -112,11 +112,9 @@ public struct HelpCenterNavigation<Content: View>: View {
                 case .list:
                     PuppyGuideListHost(router: router)
                         .ignoresSafeArea()
-                        .navigationBarHidden(true)
                 case let .article(storyName):
                     PuppyArticleHost(storyName: storyName, router: router)
                         .ignoresSafeArea()
-                        .navigationBarHidden(true)
                 }
             }
         }
