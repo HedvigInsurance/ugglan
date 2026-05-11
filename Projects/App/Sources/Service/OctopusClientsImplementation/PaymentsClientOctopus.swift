@@ -217,16 +217,15 @@ class hPaymentClientOctopus: hPaymentClient {
         let data = try await octopus.client.fetch(query: query)
         guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
 
-        async let statusData = getPaymentStatusData()
-        async let historyData = getPaymentHistoryData()
+        let (statusData, historyData) = try await (getPaymentStatusData(), getPaymentHistoryData())
+        let paymentMethodData = statusData.defaultOrFirstDefaultPayoutMethod
+        let paymentData =
+            historyData
+            .flatMap({ $0.valuesPerMonth })
+            .compactMap({ $0.paymentData })
+            .first(where: { $0.id == id })
 
-        guard let paymentMethodData = try await statusData.defaultOrFirstDefaultPayoutMethod,
-            let paymentData =
-                try await historyData
-                .flatMap({ $0.valuesPerMonth })
-                .compactMap({ $0.paymentData })
-                .first(where: { $0.id == id })
-        else { return nil }
+        guard let paymentMethodData, let paymentData else { return nil }
 
         return .init(
             paymentData: paymentData,
