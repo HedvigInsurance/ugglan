@@ -30,7 +30,7 @@ public class hPaymentClientDemo: hPaymentClient {
                                 from: "2025-02-01",
                                 to: "2023-02-28",
                                 amount: .sek(200),
-                                isOutstanding: false,
+                                isOutstanding: true,
                                 desciption: nil
                             )
                         ],
@@ -170,7 +170,7 @@ public class hPaymentClientDemo: hPaymentClient {
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         let success = PaymentHistoryListData(
             id: "2023",
-            year: "2023",
+            year: 2023,
             valuesPerMonth: [
                 .init(
                     id: "id1",
@@ -195,7 +195,7 @@ public class hPaymentClientDemo: hPaymentClient {
         )
         let failed = PaymentHistoryListData(
             id: "2023",
-            year: "2023",
+            year: 2023,
             valuesPerMonth: [
                 .init(
                     id: "id1",
@@ -224,5 +224,8 @@ public class hPaymentClientDemo: hPaymentClient {
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         try await Task.sleep(seconds: 1)
         return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
+    }
+    public func getMissedPaymentData() async throws -> MissedPaymentData? {
+        nil
     }
 }

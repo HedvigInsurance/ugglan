@@ -12,7 +12,9 @@ public struct PaymentsView: View {
 
     public init() {
         store.send(.load)
+        store.send(.getHistory)
         store.send(.fetchPaymentStatus)
+        store.send(.getMissedPayment)
     }
 
     public var body: some View {
@@ -23,6 +25,7 @@ public struct PaymentsView: View {
                     actionButton: .init(buttonAction: {
                         store.send(.load)
                         store.send(.fetchPaymentStatus)
+                        store.send(.getHistory)
                     }),
                     dismissButton: nil
                 )
@@ -31,7 +34,7 @@ public struct PaymentsView: View {
 
     private var successView: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 payments
                 PresentableStoreLens(
                     PaymentStore.self,
@@ -60,8 +63,10 @@ public struct PaymentsView: View {
             }
         }
         .onPullToRefresh {
-            await store.send(.fetchPaymentStatus)
-            await store.send(.load)
+            async let fetchStatus: () = store.send(.fetchPaymentStatus)
+            async let load: () = store.sendAsync(.load)
+            async let history: () = store.sendAsync(.getHistory)
+            _ = await (fetchStatus, load, history)
         }
     }
 
@@ -72,7 +77,15 @@ public struct PaymentsView: View {
                 state
             }
         ) { [weak paymentNavigationVm] state in
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
+                if let missedPaymentData = state.missedPaymentData {
+                    MissedPaymentCardView(
+                        amountDue: missedPaymentData.payment.net,
+                        onReviewPayment: {
+                        }
+                    )
+                    .padding(.bottom, .padding8)
+                }
                 if !state.ongoingPaymentData.isEmpty {
                     ForEach(state.ongoingPaymentData, id: \.id) { paymentData in
                         PaymentView(paymentData: paymentData)
@@ -221,6 +234,7 @@ public class PaymentsViewModel: ObservableObject {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PaymentsNavigation(
         paymentsNavigationVm: PaymentsNavigationViewModel()
     )
