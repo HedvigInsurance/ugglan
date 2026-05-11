@@ -520,7 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
-"MANUAL_CHARGE_CANCELLATION_WARNING" = "To reactivate your insurance from cancellation, reach out to the Hedvig Service Team after the charge has appeared on your account";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "Activate your coverage again by contacting us once your payment has been processed";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Review contact info";
@@ -584,7 +584,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_FAILED" = "This payment failed and was added to your payment on %1$@.";
 "PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Payment history";
 "PAYMENTS_PAYMENT_IN_PROGRESS" = "Payment in progress";
-"PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION" = "It may take up to 5 business days for the charge to appear";
+"PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION" = "It may take up to 5 business days for the charge to process";
 "PAYMENTS_PAYMENT_METHOD" = "Payment method";
 "PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE" = "Amount due: %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_BODY" = "We couldn't collect this payment from your bank account. Pay now to keep your coverage active.";
@@ -677,6 +677,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SEARCH_PLACEHOLDER" = "Search";
 "SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "Select the insurance you want to edit";
 "SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "Select insurance";
+"SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE" = "Payment can't be charged";
 "SETTINGS_LANGUAGE_TITLE" = "Language";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Yes, unsubscribe";
 /* Figma */
@@ -974,9 +975,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "We have reopened your claim and one of our insurance specialists is reviewing it. We'll get back to you soon with an update.";
 "claim_status.claim_details.button" = "Show details";
-"claim_status.claim_details.exposure_display_name" = "Reg. no.";
+"claim_status.claim_details.exposure_display_name" = "Registration number";
 "claim_status.claim_details.external_id" = "Reference number";
-"claim_status.claim_details.handler_email" = "Email";
+"claim_status.claim_details.handler_email" = "Claim email";
 "claim_status.claim_details.info_text" = "Is something missing? Send us a message here in the app.";
 "claim_status.claim_details.submitted" = "Submitted";
 "claim_status.claim_details.title" = "Claim details";
@@ -991,7 +992,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Your claim was unfortunately not covered. Please see conversation for more details on the decision.";
 /* Figma */
 "claim_status.paid.support_text" = "We got you covered. You should have received the payment by now. \n\nSee your messages here in the app for more details.";
-"claim_status.partner.support_text" = "This claim is handled by our external partner Eir by email.\n\nAlready in contact with them? Reply to your existing email thread to keep all claim details in one conversation.";
+"claim_status.partner.support_text" = "Our car specialists at Eir handle this claim by email.\n\nYou’ll receive a confirmation by email once it’s been reviewed. If you need to get in touch about your claim, reply in the same email thread.";
 /* Figma */
 "claim_status.submitted.support_text" = "We have received your claim and will start reviewing it soon.";
 /* Figma */
