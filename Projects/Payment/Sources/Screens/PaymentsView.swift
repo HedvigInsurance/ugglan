@@ -79,11 +79,15 @@ public struct PaymentsView: View {
         ) { [weak paymentNavigationVm] state in
             VStack(spacing: .padding8) {
                 if let missedPaymentData = state.missedPaymentData {
-                    MissedPaymentCardView(
-                        amountDue: missedPaymentData.payment.net,
-                        onReviewPayment: {
-                        }
-                    )
+                    hSection {
+                        MissedPaymentCardView(
+                            amountDue: missedPaymentData.paymentData.payment.net,
+                            onReviewPayment: {
+                                router.push(missedPaymentData)
+                            }
+                        )
+                    }
+                    .sectionContainerStyle(.transparent)
                     .padding(.bottom, .padding8)
                 }
                 if !state.ongoingPaymentData.isEmpty {

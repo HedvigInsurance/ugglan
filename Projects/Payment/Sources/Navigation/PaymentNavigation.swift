@@ -55,6 +55,10 @@ public struct PaymentsNavigation: View {
                         PayoutChangeMethodScreen()
                     }
                 }
+                .routerDestination(for: MissedPaymentData.self) { item in
+                    MissedPaymentScreen(missedPaymentdata: item)
+                        .navigationTitle(L10n.paymentsPaymentOverdueTitle)
+                }
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
