@@ -48,7 +48,6 @@ struct MissedPaymentScreen: View {
                     }
                 }
             }
-            .sectionContainerStyle(.negative)
         }
         .trackErrorState(for: $vm.processingState, errorTitle: L10n.selfManualChargeChangesBeenMadeTitle)
         .hStateViewButtonConfig(
