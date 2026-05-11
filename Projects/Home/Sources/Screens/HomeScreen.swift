@@ -167,7 +167,6 @@ class HomeVM: ObservableObject {
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 store.send(.fetchChatNotifications)
-                print("FETCHD AT \(Date())")
             }
     }
 
