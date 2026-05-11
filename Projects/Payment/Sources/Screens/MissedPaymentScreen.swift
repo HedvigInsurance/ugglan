@@ -37,19 +37,10 @@ struct MissedPaymentScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                hSection {
+                CardView {
                     overdueCard
                         .padding(.padding16)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                                .inset(by: 0.5)
-                                .stroke(hBorderColor.primary, lineWidth: 1)
-
-                        )
                 }
-                .cornerRadius(.cornerRadiusXL)
-                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
                 .padding(.top, .padding8)
                 if showInfoMesaage {
                     hSection {
