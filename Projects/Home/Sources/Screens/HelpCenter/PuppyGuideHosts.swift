@@ -6,7 +6,7 @@ struct PuppyGuideListHost: UIViewControllerRepresentable {
     weak var router: NavigationRouter?
 
     func makeUIViewController(context: Context) -> UIViewController {
-        let composeVC = PuppyGuideViewControllersKt.PuppyGuideViewController(
+        return PuppyGuideViewControllersKt.PuppyGuideViewController(
             onNavigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             },
@@ -16,7 +16,6 @@ struct PuppyGuideListHost: UIViewControllerRepresentable {
                 }
             }
         )
-        return SwipeBackHostingController(child: composeVC)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
@@ -27,13 +26,12 @@ struct PuppyArticleHost: UIViewControllerRepresentable {
     weak var router: NavigationRouter?
 
     func makeUIViewController(context: Context) -> UIViewController {
-        let composeVC = PuppyGuideViewControllersKt.PuppyArticleViewController(
+        return PuppyGuideViewControllersKt.PuppyArticleViewController(
             storyName: storyName,
             navigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             }
         )
-        return SwipeBackHostingController(child: composeVC)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
