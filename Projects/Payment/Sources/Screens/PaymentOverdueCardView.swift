@@ -7,48 +7,52 @@ struct MissedPaymentCardView: View {
     let onReviewPayment: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: .padding16) {
-            VStack(alignment: .leading, spacing: .padding8) {
-                HStack(alignment: .center, spacing: .padding10) {
-                    hCoreUIAssets.warningTriangleFilled.view
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(hSignalColor.Red.element)
-                        .padding(.padding8)
-                        .background(hSignalColor.Red.fill)
-                        .clipShape(Circle())
-
-                    VStack(alignment: .leading, spacing: .padding2) {
-                        hText(L10n.paymentsPaymentOverdueTitle, style: .label)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                        hText(L10n.paymentsPaymentOverdueAmountDue(amountDue.formattedAmount), style: .label)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    Spacer()
+        CardView {
+            VStack(alignment: .leading, spacing: .padding16) {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    headerRow
+                    hText(L10n.paymentsPaymentOverdueBody, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                hText(L10n.paymentsPaymentOverdueBody, style: .label)
+                reviewButton
+            }
+            .padding(.padding16)
+        }
+    }
+
+    private var headerRow: some View {
+        HStack(alignment: .center, spacing: .padding10) {
+            warningIcon
+            VStack(alignment: .leading, spacing: .padding2) {
+                hText(L10n.paymentsPaymentOverdueTitle, style: .label)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                hText(L10n.paymentsPaymentOverdueAmountDue(amountDue.formattedAmount), style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
-            hButton(
-                .small,
-                .primary,
-                content: .init(title: L10n.paymentsPaymentOverdueButton),
-                {
-                    onReviewPayment()
-                }
-            )
-            .hButtonTakeFullWidth(true)
+            Spacer()
         }
-        .padding(.padding16)
-        .background(hFillColor.Opaque.negative)
-        .cornerRadius(.cornerRadiusXL)
-        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
-        .overlay(
-            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                .inset(by: 0.5)
-                .stroke(hBorderColor.primary, lineWidth: 1)
+    }
+
+    private var warningIcon: some View {
+        hCoreUIAssets.warningTriangleFilled.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+            .padding(.padding8)
+            .background(hSignalColor.Red.fill)
+            .clipShape(Circle())
+    }
+
+    private var reviewButton: some View {
+        hButton(
+            .small,
+            .primary,
+            content: .init(title: L10n.paymentsPaymentOverdueButton),
+            {
+                onReviewPayment()
+            }
         )
+        .hButtonTakeFullWidth(true)
     }
 }
 

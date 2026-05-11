@@ -79,14 +79,11 @@ public struct PaymentsView: View {
         ) { [weak paymentNavigationVm] state in
             VStack(spacing: .padding8) {
                 if let missedPaymentData = state.missedPaymentData {
-                    hSection {
-                        MissedPaymentCardView(
-                            amountDue: missedPaymentData.payment.net,
-                            onReviewPayment: {
-                            }
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                    MissedPaymentCardView(
+                        amountDue: missedPaymentData.payment.net,
+                        onReviewPayment: {
+                        }
+                    )
                     .padding(.bottom, .padding8)
                 }
                 if !state.ongoingPaymentData.isEmpty {
@@ -237,6 +234,7 @@ public class PaymentsViewModel: ObservableObject {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PaymentsNavigation(
         paymentsNavigationVm: PaymentsNavigationViewModel()
     )
