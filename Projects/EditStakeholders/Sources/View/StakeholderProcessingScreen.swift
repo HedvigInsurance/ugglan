@@ -40,7 +40,7 @@ struct StakeholderProcessingScreen: View {
             },
             state: $intentViewModel.viewState
         )
-        .hSuccessBottomAttachedView {
+        .hStateViewBottomAttachedView {
             customBottomSuccessView
         }
         .hStateViewButtonConfig(errorButtons)

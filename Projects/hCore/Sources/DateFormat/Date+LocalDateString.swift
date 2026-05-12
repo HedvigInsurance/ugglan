@@ -96,7 +96,7 @@ public class DateService {
     lazy private(set) fileprivate var displayddMMM: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: locale.code)
-        formatter.dateFormat = "dd MMM"
+        formatter.dateFormat = "d MMM"
         return formatter
     }()
 
@@ -117,7 +117,7 @@ public class DateService {
     lazy private(set) fileprivate var displayddMMMyyyy: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: locale.code)
-        formatter.dateFormat = "dd MMM yyyy"
+        formatter.dateFormat = "d MMM yyyy"
         return formatter
     }()
 

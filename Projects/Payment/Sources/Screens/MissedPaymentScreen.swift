@@ -19,6 +19,9 @@ extension View {
             )
             .withDismissButton()
             .navigationTitle(L10n.paymentsPaymentOverdueTitle)
+            .routerDestination(for: PaymentData.self) { paymentData in
+                PaymentDetailsView(data: paymentData)
+            }
             .embededInNavigation(tracking: missedPaymentData)
         }
     }
@@ -26,42 +29,55 @@ extension View {
 
 struct MissedPaymentScreen: View {
     let missedPaymentdata: MissedPaymentData
+    @PresentableStore var paymentStore: PaymentStore
     @StateObject private var vm = PaymentOverdueScreenViewModel()
+    @EnvironmentObject var router: NavigationRouter
     let onSuccess: () -> Void
 
     var body: some View {
         hForm {
-            CardView {
-                overdueCard
-                    .padding(.padding16)
+            VStack(spacing: .padding16) {
+                CardView {
+                    overdueCard
+                        .padding(.padding16)
+                }
+                .padding(.top, .padding8)
+                if showInfoMesaage {
+                    hSection {
+                        infoCard
+                    }
+                }
             }
-            .padding(.vertical, .padding8)
         }
-        .trackErrorState(for: $vm.processingState)
+        .trackErrorState(for: $vm.processingState, errorTitle: L10n.selfManualChargeChangesBeenMadeTitle)
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
-                    buttonAction: { [weak vm] in
-                        vm?.processingState = .success
+                    buttonTitle: L10n.openChat,
+                    buttonAction: { [weak router] in
+                        router?.popToRoot()
+                        router?.dismiss()
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                    }
+                ),
+                actionButtonAttachedToBottom: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonStyle: .secondary,
+                    buttonAction: { [weak router] in
+                        router?.popToRoot()
+                        router?.dismiss()
                     }
                 )
             )
         )
-        .detent(
-            presented: $vm.showPaymentDetails,
-            presentationStyle: .detent(style: [.large])
-        ) {
-            PaymentDetailsView(data: missedPaymentdata.paymentData, showsStatus: false)
-                .withDismissButton()
-                .embededInNavigation(tracking: missedPaymentdata.paymentData)
-        }
         .disabled(vm.processingState == .loading)
         .modally(
             presented: $vm.showSuccessScreen
         ) {
-            SuccessScreen(
+            StateView(
+                type: showInfoMesaage ? .error : .success,
                 title: L10n.paymentsPaymentInProgress,
-                subtitle: L10n.paymentsPaymentInProgressDescription,
+                bodyText: L10n.paymentsPaymentInProgressDescription,
                 formPosition: .center
             )
             .hStateViewButtonConfig(
@@ -75,6 +91,11 @@ struct MissedPaymentScreen: View {
                     )
                 )
             )
+            .hStateViewContentBottomAttachedView {
+                if showInfoMesaage {
+                    infoCard
+                }
+            }
             .withDismissButton()
             .embededInNavigation(tracking: String(describing: SuccessScreen.self))
             .onDeinit {
@@ -101,6 +122,7 @@ struct MissedPaymentScreen: View {
                 .resizable()
                 .frame(width: 40, height: 40)
                 .foregroundColor(hSignalColor.Red.element)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 0) {
                 hText(
@@ -115,6 +137,7 @@ struct MissedPaymentScreen: View {
             }
             Spacer()
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var viewPaymentDetailsButton: some View {
@@ -122,8 +145,8 @@ struct MissedPaymentScreen: View {
             .medium,
             .ghost,
             content: .init(title: L10n.paymentsPaymentOverdueDetailsViewDetails),
-            { [weak vm] in
-                vm?.showPaymentDetails = true
+            { [weak router] in
+                router?.push(missedPaymentdata.paymentData)
             }
         )
         .hButtonTakeFullWidth(true)
@@ -164,6 +187,7 @@ struct MissedPaymentScreen: View {
             hText(value, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var totalRow: some View {
@@ -174,6 +198,7 @@ struct MissedPaymentScreen: View {
             hText(missedPaymentdata.paymentData.payment.net.formattedAmount, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var payButton: some View {
@@ -197,6 +222,18 @@ struct MissedPaymentScreen: View {
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
     }
+
+    private var infoCard: some View {
+        InfoCard(
+            text: L10n.manualChargeCancellationWarning,
+            type: .attention
+        )
+    }
+
+    private var showInfoMesaage: Bool {
+        if case .contactUs = paymentStore.state.paymentStatusData?.status { return true }
+        return false
+    }
 }
 
 @MainActor
@@ -204,7 +241,6 @@ class PaymentOverdueScreenViewModel: ObservableObject {
     private let paymentService = hPaymentService()
     @Published var processingState: ProcessingState = .success
     @Published var showSuccessScreen = false
-    @Published var showPaymentDetails = false
 
     func chargeOutstandingPayment() {
         processingState = .loading
@@ -245,6 +281,20 @@ class PaymentOverdueScreenViewModel: ObservableObject {
         addedToThePayment: nil
     )
 
+    let store: PaymentStore = globalPresentableStoreContainer.get()
+    store.send(
+        .setPaymentStatus(
+            data: .init(
+                status: .contactUs(date: "22. maj 2026."),
+                chargingDay: 27,
+                defaultPayinMethod: nil,
+                payinMethods: [],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: []
+            )
+        )
+    )
     return MissedPaymentScreen(
         missedPaymentdata: .init(
             paymentData: paymentData,

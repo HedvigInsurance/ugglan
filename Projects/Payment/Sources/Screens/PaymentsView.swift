@@ -10,12 +10,6 @@ public struct PaymentsView: View {
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @StateObject var vm = PaymentsViewModel()
 
-    public init() {
-        store.send(.load)
-        store.send(.fetchPaymentStatus)
-        store.send(.getMissedPayment)
-    }
-
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.viewState)
@@ -29,6 +23,11 @@ public struct PaymentsView: View {
                     dismissButton: nil
                 )
             )
+            .task {
+                store.send(.load)
+                store.send(.fetchPaymentStatus)
+                store.send(.getMissedPayment)
+            }
     }
 
     private var successView: some View {
@@ -47,6 +46,7 @@ public struct PaymentsView: View {
                 }
             }
             .padding(.vertical, .padding8)
+            .hButtonIsLoading(false)
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
@@ -78,15 +78,12 @@ public struct PaymentsView: View {
         ) { [weak paymentNavigationVm] state in
             VStack(spacing: .padding8) {
                 if let missedPaymentData = state.missedPaymentData {
-                    hSection {
-                        MissedPaymentCardView(
-                            amountDue: missedPaymentData.paymentData.payment.net,
-                            onReviewPayment: {
-                                router.push(missedPaymentData)
-                            }
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                    MissedPaymentCardView(
+                        amountDue: missedPaymentData.paymentData.payment.net,
+                        onReviewPayment: {
+                            router.push(missedPaymentData)
+                        }
+                    )
                     .padding(.bottom, .padding8)
                 }
                 if !state.ongoingPaymentData.isEmpty {

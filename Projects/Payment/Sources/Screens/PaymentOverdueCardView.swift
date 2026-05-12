@@ -31,6 +31,7 @@ struct MissedPaymentCardView: View {
             }
             Spacer()
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var warningIcon: some View {
@@ -41,6 +42,7 @@ struct MissedPaymentCardView: View {
             .padding(.padding8)
             .background(hSignalColor.Red.fill)
             .clipShape(Circle())
+            .accessibilityHidden(true)
     }
 
     private var reviewButton: some View {

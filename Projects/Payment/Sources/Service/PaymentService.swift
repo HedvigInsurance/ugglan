@@ -25,6 +25,7 @@ public class hPaymentService {
     @Log(.error)
     public func chargeOutstandingPayment() async throws {
         try await client.chargeOutstandingPayment()
+        NotificationCenter.default.post(name: .didChargeOutstandingPayment, object: nil)
     }
     @Log(.error)
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {

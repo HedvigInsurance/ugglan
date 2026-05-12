@@ -356,20 +356,6 @@ public struct DefaultStyling {
     private static func setTabBarAppearance() {
         func configureAppearance(appearance: UITabBarAppearance, isStandard: Bool, style: UIUserInterfaceStyle) {
             func configureTabBarContent(itemAppearance: UITabBarItemAppearance, style: UIUserInterfaceStyle) {
-                func configureBadge(appearance: UITabBarItemStateAppearance) {
-                    appearance.badgeBackgroundColor = .clear
-                    appearance.badgePositionAdjustment.horizontal = 0
-                    appearance.badgePositionAdjustment.vertical = -4
-                    appearance.badgeTextAttributes = [
-                        NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
-                        NSAttributedString.Key.font: Fonts.fontFor(style: .display1, withoutFontMultipler: true),
-                    ]
-                }
-                configureBadge(appearance: itemAppearance.normal)
-                configureBadge(appearance: itemAppearance.selected)
-                configureBadge(appearance: itemAppearance.focused)
-                configureBadge(appearance: itemAppearance.disabled)
-
                 let selectedColor = hFillColor.Opaque.primary.colorFor(.init(style) ?? .light, .base).color.uiColor()
                 let nonSelecetedColor = hFillColor.Translucent.secondary.colorFor(.init(style) ?? .light, .base).color
                     .uiColor()
