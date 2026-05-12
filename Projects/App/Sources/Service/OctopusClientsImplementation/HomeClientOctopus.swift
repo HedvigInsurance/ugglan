@@ -30,7 +30,7 @@ class HomeClientOctopus: HomeClient {
         let data =
             try await octopus
             .client
-            .fetch(query: OctopusGraphQL.HomeQuery(includeManualCharge: featureFlags.isManualChargeEnabled))
+            .fetch(query: OctopusGraphQL.HomeQuery())
 
         let memberId = data.currentMember.id
         let isContactInfoUpdateNeeded = data.currentMember.memberActions?.isContactInfoUpdateNeeded ?? false

@@ -1,4 +1,4 @@
-query Home($includeManualCharge: Boolean!) {
+query Home {
   currentMember {
     id
     activeContracts {
@@ -12,6 +12,6 @@ query Home($includeManualCharge: Boolean!) {
     memberActions {
         isContactInfoUpdateNeeded
     }
-    missedChargeIdToChargeManually @include(if: $includeManualCharge)
+    missedChargeIdToChargeManually
   }
 }

@@ -87,9 +87,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isClaimHistoryEnabled: unleashClient.isEnabled(
                 name: "enable_claim_history"
-            ),
-            isManualChargeEnabled: unleashClient.isEnabled(
-                name: "enable_manual_charge"
             )
         )
         featureDataPublisher.send(data)
