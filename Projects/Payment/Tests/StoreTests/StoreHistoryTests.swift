@@ -21,7 +21,7 @@ final class StoreHistoryTests: XCTestCase {
             [
                 .init(
                     id: "id",
-                    year: "2024",
+                    year: 2024,
                     valuesPerMonth: []
                 )
             ]
