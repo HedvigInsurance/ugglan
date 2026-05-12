@@ -14,7 +14,8 @@
       "Bash(brew uninstall *)",
       "Bash(brew reinstall *)",
       "Bash(awk '/Begin PBXFileSystemSynchronizedRootGroup section/,/End PBXFileSystemSynchronizedRootGroup section/' Projects/App/Ugglan.xcodeproj/project.pbxproj)",
-      "Bash(awk '/3704DAED1424261F75C3E205.*Sources.*= \\\\{/,/};/' Projects/App/Ugglan.xcodeproj/project.pbxproj)"
+      "Bash(awk '/3704DAED1424261F75C3E205.*Sources.*= \\\\{/,/};/' Projects/App/Ugglan.xcodeproj/project.pbxproj)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }
