@@ -66,7 +66,6 @@ public struct PaymentsView: View {
             async let load: () = store.sendAsync(.load)
             async let missedPayment: () = store.sendAsync(.getMissedPayment)
             _ = await (fetchStatus, load, missedPayment)
-            let ss = ""
         }
     }
 
@@ -79,15 +78,12 @@ public struct PaymentsView: View {
         ) { [weak paymentNavigationVm] state in
             VStack(spacing: .padding8) {
                 if let missedPaymentData = state.missedPaymentData {
-                    hSection {
-                        MissedPaymentCardView(
-                            amountDue: missedPaymentData.paymentData.payment.net,
-                            onReviewPayment: {
-                                router.push(missedPaymentData)
-                            }
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                    MissedPaymentCardView(
+                        amountDue: missedPaymentData.paymentData.payment.net,
+                        onReviewPayment: {
+                            router.push(missedPaymentData)
+                        }
+                    )
                     .padding(.bottom, .padding8)
                 }
                 if !state.ongoingPaymentData.isEmpty {
