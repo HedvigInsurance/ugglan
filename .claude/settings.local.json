@@ -5,7 +5,16 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)"
+      "Bash(git commit -m ':*)",
+      "Bash(tuist generate *)",
+      "Bash(tuist version *)",
+      "Read(//Users/sladannimcevic/**)",
+      "Bash(brew list *)",
+      "Bash(brew install *)",
+      "Bash(brew uninstall *)",
+      "Bash(brew reinstall *)",
+      "Bash(awk '/Begin PBXFileSystemSynchronizedRootGroup section/,/End PBXFileSystemSynchronizedRootGroup section/' Projects/App/Ugglan.xcodeproj/project.pbxproj)",
+      "Bash(awk '/3704DAED1424261F75C3E205.*Sources.*= \\\\{/,/};/' Projects/App/Ugglan.xcodeproj/project.pbxproj)"
     ]
   }
 }

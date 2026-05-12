@@ -160,8 +160,8 @@ let project = Project(
             bundleId: "com.hedvigForsakring.test.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Test/Info.plist",
-            sources: ["Sources/**", ""],
             resources: ["Resources/**", "Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            buildableFolders: ["Sources"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
@@ -218,7 +218,6 @@ let project = Project(
             bundleId: "com.hedvig.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Production/Info.plist",
-            sources: ["Sources/**"],
             resources: [
                 "Resources/**",
                 .glob(
@@ -227,6 +226,7 @@ let project = Project(
                 ),
                 "Config/PrivacyInfo.xcprivacy",
             ],
+            buildableFolders: ["Sources"],
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: prodAppDependencies,
