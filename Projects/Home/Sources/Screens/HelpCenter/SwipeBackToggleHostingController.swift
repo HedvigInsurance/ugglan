@@ -1,3 +1,4 @@
+@preconcurrency import HedvigShared
 import SwiftUI
 import UIKit
 
