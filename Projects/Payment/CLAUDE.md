@@ -1,39 +1,78 @@
 # Payment
 
-Manages payment information display, payment method setup, and connects payment methods (Trustly/Kivra). Displays upcoming/ongoing payments with detailed breakdowns, payment history, and payment status tracking through Trustly or Kivra providers.
+Manages payment information display, payin method setup (Trustly/Kivra/Adyen), payout method setup (Nordea/Swish), payment history, overdue/missed payment recovery, and payment status. Displays upcoming/ongoing payments with detailed breakdowns and routes users to fix payment issues.
 
 ## Architecture
 
-Legacy mixed pattern: `PaymentStore` (extends `LoadingStateStore`) manages centralized state alongside several ViewModels (`PaymentsViewModel`, `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `PaymentsHistoryViewModel`). Some views still use `PresentableStoreLens` for reactive data binding. Navigation managed through `PaymentsNavigation` which coordinates tab routing and detail views. Payment method setup uses `DirectDebitSetup` view with WebView integration for Trustly flows.
+Legacy `PresentableStore` for state + reactive data binding, with a mix of `NavigationRouter`-driven new flows and view-level ViewModels for setup screens.
 
-Key services: `hPaymentClient` protocol defines payment data fetching; `hPaymentService` is a wrapper. `PaymentStore` manages states: upcoming/ongoing payments, payment status, and payment history. Data flows: UI -> PresentableStoreLens -> PaymentStore state updates via service calls.
+- `PaymentStore` extends `LoadingStateStore<PaymentState, PaymentAction, LoadingAction>`. State includes `paymentData`, `ongoingPaymentData`, `paymentStatusData` (payin + payout methods + available providers), `paymentHistory`, and `missedPaymentData`. Effects call `hPaymentClient` and dispatch setters; views observe via `PresentableStoreLens` or `@PresentableStore`.
+- Per-flow ViewModels exist on top of the store: `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `NordeaPayoutSetupViewModel`, `SwishPayoutSetupViewModel`, `PaymentOverdueScreenViewModel`, `PaymentsHistoryViewModel`. None use `@Inject` directly at the top level — service calls go through the store or are dispatched from setup VMs.
+- `hPaymentClient` protocol exposes: `getPaymentData`, `getPaymentStatusData`, `getPaymentHistoryData`, `getMissedPaymentData`, `setupPaymentMethod(_:)`, `chargeOutstandingPayment()`. Octopus implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/` (per project convention). Demo implementation is `hPaymentClientDemo` in this module.
+- Setup providers are modeled by `PaymentProvider` (Trustly, Adyen, Kivra for payin; Nordea, Swish for payout). Each provider decides its own detent presentation style and the screen to show.
 
 ## Key Files
 
-- Entry point: `Sources/Navigation/PaymentNavigation.swift` (tab routing)
-- Screens: `Screens/PaymentsView.swift` (main), `Screens/PaymentDetails/PaymentDetailsView.swift` (payment detail), `Screens/PaymentsHistoryView.swift` (history list), `Screens/PaymentsMethodScreen.swift` (payment method display)
-- Store: `PaymentStore.swift` (state management)
-- Service: `PaymentService.swift` + `PaymentClient.swift` protocol + `PaymentClientDemo.swift`
-- Models: `PaymentData.swift`, `PaymentStatusData.swift`, `PaymentHistoryData.swift`
-- Connect Payment: `DirectDebitSetup.swift` (WebView wrapper for Trustly), `ConnectPayment+modifier.swift` (view modifier for modal presentation)
+### Navigation
+- `Sources/Navigation/PaymentNavigation.swift` — `PaymentsNavigation` (uses `hNavigationStack` + `NavigationRouter`), `PaymentsNavigationViewModel`, `PaymentsRouterAction` (`.discounts`, `.history`, `.paymentMethod`, `.payoutMethod`). Route destinations include `PaymentData`, `MissedPaymentData`, and `PayoutRouterActions`.
+- `Sources/Navigation/PayoutNavigation.swift` — Standalone `PayoutNavigation` for entering the payout-method flow from outside Payments tab. Routes `.selectedPayoutMethod` and `.changePayoutMethod`.
+
+### Main screens
+- `Sources/Screens/PaymentsView.swift` — Main payments tab; shows upcoming/ongoing payments, overdue card, payin/payout sections.
+- `Sources/Screens/PaymentDetails/PaymentDetailsView.swift` — Single-payment detail with breakdown.
+- `Sources/Screens/PaymentDetails/PaymentDetailsContractDetails.swift` — Per-contract breakdown rows inside the detail.
+- `Sources/Screens/PaymentDetails/PaymentStatusView.swift` — Status badge/banner reused on detail screens.
+- `Sources/Screens/PaymentsHistoryView.swift` — Closed payments list. Contains `PaymentsHistoryViewModel`.
+- `Sources/Screens/PaymentsMethodScreen.swift` — Payin method management; lists current method and provider options.
+
+### Connect Payin (payment method setup)
+- `Sources/Screens/ConnectPayments/ConnectPayment+modifier.swift` — `.handleConnectPayment(with:)` modifier that presents the connect-payment detent based on `ConnectPaymentViewModel`.
+- `Sources/Screens/ConnectPayments/ConnectPaymentCard.swift` — Card content shown inside the connect-payment detent.
+- `Sources/Screens/ConnectPayments/ConnectPaymentBottomView.swift` — Bottom button content for the connect-payment sheet.
+- `Sources/Screens/ConnectPayments/DirectDebitSetup.swift` — `UIViewRepresentable` wrapping `WKWebView` for Trustly/Adyen flows.
+- `Sources/Screens/ConnectPayments/TrustlyScriptHandler.swift` — Bridges Trustly JS messages back to Swift.
+- `Sources/Screens/ConnectPayments/DirectDebitResult.swift` — Result/feedback view after a setup attempt.
+
+### Payout (Nordea / Swish)
+- `Sources/Screens/Payout/PayoutSelectedMethodScreen.swift` — Entry view: shows existing payout method, or routes to add-method if missing.
+- `Sources/Screens/Payout/PayoutChangeMethodScreen.swift` — Lists available payout providers (filtered via `availablePayoutMethods`) and opens the provider-specific setup detent.
+- `Sources/Screens/Payout/NordeaPayoutSetupScreen.swift` — Account-number entry form for Nordea (uses `NordeaPayoutSetupViewModel`).
+- `Sources/Screens/Payout/SwishPayoutSetupScreen.swift` — Phone-number entry form for Swish (uses `SwishPayoutSetupViewModel`).
+
+### Overdue / missed payment
+- `Sources/Models/MissedPaymentData.swift` — `MissedPaymentData` model (paymentData + paymentMethodData). Conforms to `TrackingViewNameProtocol`.
+- `Sources/Screens/MissedPaymentScreen.swift` — Full-screen flow for reviewing and clearing an overdue payment. Contains `.handleMissedPayment(data:)` View extension that presents it as a detent.
+- `Sources/Screens/PaymentOverdueCardView.swift` — `MissedPaymentCardView` shown inline on the home/payments screen when a missed payment exists.
+
+### Store / models / service
+- `Sources/PaymentStore.swift` — `PaymentState`, `PaymentAction`, `LoadingAction`, `PaymentStore`.
+- `Sources/Models/PaymentData.swift`, `PaymentStatusData.swift`, `PaymentHistoryData.swift` — Core data models; `PaymentStatusData` exposes payin/payout method lists and computed defaults.
+- `Sources/Helpers/PaymentData+titleView.swift` — Display helpers.
+- `Sources/Service/Protocols/PaymentClient.swift` — `hPaymentClient` protocol + `PaymentError`.
+- `Sources/Service/Protocols/PaymentClientDemo.swift` — Demo client (note: lives directly under `Protocols/`, not in `DemoImplementation/`).
+- `Sources/Service/PaymentService.swift` — Service wrapper.
 
 ## Dependencies
 
-- Imports: hCore, hCoreUI, Campaign (for referral discounts), Contracts, Forever, PresentableStore, Apollo, WebKit (for Trustly setup)
-- Imported by: App (main), Home (payment status badge)
+- Imports: hCore, hCoreUI, Campaign (referral discounts), Contracts, Forever, PresentableStore, Apollo, WebKit (for Trustly setup webview).
+- Project-level dependencies declared in `Project.swift`: hCore, hCoreUI, Contracts, Forever, Campaign.
+- Depended on by: App (main), Home (overdue card, payment status badge).
 
 ## Navigation
 
-- `PaymentsRouterAction` enum: `.discounts` -> Campaign module, `.history` -> PaymentHistoryView, `.paymentMethod(data:)` -> PaymentMethodScreen
-- Entry: PaymentsNavigation as tab 3 in LoggedInNavigation
-- Connect payment triggered via ConnectPaymentViewModel -> presented as detent modal with DirectDebitSetup
+- `PaymentsNavigation` uses `hNavigationStack + NavigationRouter` (new style). `RouterHost + Router` is no longer used here.
+- `PaymentsRouterAction`: `.discounts` → CampaignNavigation, `.history` → `PaymentHistoryView`, `.paymentMethod` → `PaymentMethodScreen`, `.payoutMethod` → `PayoutSelectedMethodScreen`.
+- `PayoutRouterActions`: `.selectedPayoutMethod` → `PayoutSelectedMethodScreen`, `.changePayoutMethod` → `PayoutChangeMethodScreen`.
+- `PayoutNavigation` is a standalone `hNavigationStack` that wraps the payout flow when entered from outside the payments tab.
+- Connect payin is triggered by setting state on `ConnectPaymentViewModel`; the `.handleConnectPayment(with:)` modifier presents the appropriate detent. Provider-specific setup (Nordea/Swish/Trustly/etc.) is shown as a detent whose style/options come from `PaymentProvider`.
+- Missed payment is presented via `.handleMissedPayment(data:)` as a large detent embedding its own navigation stack.
 
 ## Gotchas
 
-- **Legacy Store pattern**: Uses `PresentableStore` throughout, not ViewModels
-- DirectDebitSetup uses UIViewRepresentable with WKWebView for Trustly/external provider flows; complex Combine-based state synchronization
-- ConnectPaymentViewModel held at navigation level to survive view dismissals; SetupType determined at runtime
-- Payment status `hasFailed` only returns true for `.addedtoFuture` (outstanding), not for other error states
-- Real OctopusImplementation lives in App module (`hPaymentClientOctopus`), not in hGraphQL
-- Feature flag check (`isConnectPaymentEnabled`) in DirectDebitSetup prevents flow if not enabled
-- Kivra payments show info card with chat button; Trustly shows setup flow
+- **Legacy `PresentableStore`** is the source of truth; `PresentableStoreLens` is still used throughout (e.g., `PayoutSelectedMethodScreen` reads `state.paymentStatusData` via a lens). Setup screens (Nordea/Swish) maintain their own local state and dispatch to the store on success via `globalPresentableStoreContainer.get()`.
+- **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.
+- **`DirectDebitSetup`** is a UIKit `UIViewRepresentable` wrapping `WKWebView`; uses `TrustlyScriptHandler` for JS↔Swift bridging and Combine-based state synchronization. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.
+- **`ConnectPaymentViewModel`** is held at navigation level so it survives view dismissals; `SetupType` is determined at runtime based on `PaymentProvider`.
+- **`PayinMethodStatus.hasFailed`** only returns true for `.addedtoFuture` (outstanding charge), not for arbitrary error states.
+- **Overdue charge action**: `hPaymentClient.chargeOutstandingPayment()` is the API used by `MissedPaymentScreen` to trigger a re-charge; success bubbles back through the screen's `onSuccess` closure, popping back to the payments root.
+- Kivra payments show an info card with a chat button instead of a setup flow; Trustly/Adyen open the webview flow.

@@ -34,8 +34,7 @@ Main application entry point for the Hedvig iOS app. Manages root navigation (lo
 - Logged-in tab contents use their respective module navigation components.
 
 ## Gotchas
-- **Misplaced OctopusImplementation**: `Sources/Service/OctopusClientsImplementation/` contains Octopus implementations for nearly all feature modules (contracts, claims, payments, profile, forever, chat, etc.). Per project convention, these should live in `Projects/hGraphQL/GraphQL/Octopus/`, not in the App module.
-- **Misplaced AnalyticsClient and NotificationClient OctopusImplementation**: `Sources/Service/AnalyticsCoordinator/OctopusImplementation/` and `Sources/Service/Notifications/OctopusImplementation/` also live locally rather than in hGraphQL.
+- **Octopus implementations are centralized here by convention**: `Sources/Service/OctopusClientsImplementation/` is the canonical home for OctopusGraphQL-backed service implementations for every feature module (contracts, claims, payments, profile, forever, chat, etc.). Protocols live in their feature modules; the real implementations live here. The `AnalyticsCoordinator/` and `Notifications/` services also follow this pattern with local OctopusImplementation/DemoImplementation directories.
 - `DI.initAndRegisterClient()` has duplicated registration blocks for staging vs production that are nearly identical, making maintenance error-prone.
 - `LoggedInNavigation.swift` is very large (900+ lines) and handles push notifications, deep links, tab management, and modal presentation all in one file.
 - The `LoginNavigation` uses legacy `RouterHost + Router` while `LoggedInNavigation` uses SwiftUI `TabView`. Both navigation patterns coexist.

@@ -33,7 +33,6 @@ tuist generate              # Regenerate Xcode workspace after module changes
 | Contracts | Insurance contract management and details |
 | CrossSell | Cross-selling insurance products |
 | EditStakeholders | Co-insured and co-owner management |
-| ExampleUtil | Development utilities and examples |
 | Forever | Referral program |
 | hCore | Core utilities, DI container, state management, extensions |
 | hCoreUI | Design system: components, colors, spacing, typography |
@@ -47,8 +46,6 @@ tuist generate              # Regenerate Xcode workspace after module changes
 | Profile | User profile, settings, app info |
 | SubmitClaimChat | Claims submission flow (current, chat-based) |
 | TerminateContracts | Contract cancellation flow |
-| Testing | Shared test utilities |
-| TestingUtil | Additional test helpers |
 | TravelCertificate | Travel insurance certificate generation |
 
 ## Project Structure

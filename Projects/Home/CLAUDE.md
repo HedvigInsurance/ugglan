@@ -17,6 +17,7 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 - **Demo service**: `Service/DemoImplementation/HomeClientDemo.swift`
 - **Components**: `Screens/Components/MainHomeView.swift`, `ImportantMessagesView.swift`, `RenewalCard.swift`, `FutureSectionView.swift`, `ContactInfoView.swift`, `StakeholderInfoHomeView.swift`
 - **Help Center views**: `Screens/HelpCenter/HelpCenterStartView.swift`, `HelpCenterTopicView.swift`, `HelpCenterQuestionView.swift`
+- **Help Center reusable components**: `Screens/HelpCenter/ReusableComponents/HelpCenterPill.swift`, `HelpCenterQuestion.swift`, `HelpCenterQuickActionView.swift`, `HelpCenterSupportView.swift`, `HelpViewSource.swift`
 - **Models**: `Models/Contract.swift`, `ImportantMessage.swift`, `QuickAction.swift`, `HelpCenterFAQModel.swift`, `MemberContractState.swift`, `UpcomingRenewal.swift`
 - **Derived views**: `Screens/HomeBottomScrollView.swift`, `Screens/CommonClaims/FirstVetView.swift`
 
