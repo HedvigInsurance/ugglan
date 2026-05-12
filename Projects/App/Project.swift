@@ -344,6 +344,7 @@ let project = Project(
                         scriptText: #"""
                             REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
                             LOG="/tmp/hedvig-translations.log"
+                            : > "$LOG"
                             /usr/bin/osascript -e 'display notification "Running translations.sh — tail /tmp/hedvig-translations.log" with title "Hedvig"' &
                             nohup /bin/zsh -l -c "
                                 [ -f ~/.zshrc ] && source ~/.zshrc
@@ -375,6 +376,7 @@ let project = Project(
                         scriptText: #"""
                             REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
                             LOG="/tmp/hedvig-codegen.log"
+                            : > "$LOG"
                             /usr/bin/osascript -e 'display notification "Running codegen.sh — tail /tmp/hedvig-codegen.log" with title "Hedvig"' &
                             nohup /bin/zsh -l -c "
                                 [ -f ~/.zshrc ] && source ~/.zshrc
@@ -385,6 +387,38 @@ let project = Project(
                                     /usr/bin/osascript -e 'display notification \"codegen.sh done\" with title \"Hedvig\" sound name \"Glass\"'
                                 else
                                     /usr/bin/osascript -e \"display notification 'codegen.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
+        ),
+        Scheme.scheme(
+            name: "Run Post Checkout",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "post-checkout.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-post-checkout.log"
+                            : > "$LOG"
+                            /usr/bin/osascript -e 'display notification "Running post-checkout.sh — tail /tmp/hedvig-post-checkout.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/post-checkout.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"post-checkout.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'post-checkout.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
                                 fi
                             " >/dev/null 2>&1 &
                             disown
