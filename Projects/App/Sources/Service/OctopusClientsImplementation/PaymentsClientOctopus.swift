@@ -204,30 +204,32 @@ class hPaymentClientOctopus: hPaymentClient {
         }
     }
 
+    func chargeOutstandingPayment() async throws {
+        let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
+        let data = try await octopus.client.mutation(mutation: mutation)
+        if let userError = data?.manuallyChargeMember.userError {
+            throw PaymentError.missingDataError(message: userError.message ?? L10n.General.errorBody)
+        }
+    }
+
     func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
-        .init(
-            paymentData: .init(
-                id: "id",
-                payment: .init(
-                    gross: .sek(300),
-                    net: .sek(200),
-                    carriedAdjustment: nil,
-                    settlementAdjustment: nil,
-                    date: "2026-04-30"
-                ),
-                status: .failedForPrevious(from: "2026-04-30", to: "2026-05-30"),
-                contracts: [],
-                referralDiscount: nil,
-                amountPerReferral: .sek(10),
-                payinMethod: nil,
-                addedToThePayment: []
-            ),
-            paymentMethodData: .init(
-                provider: .trustly,
-                status: .active,
-                isDefault: true,
-                details: .bankAccount(account: "account", bank: "bank")
-            )
+        let query = OctopusGraphQL.MisssedChargeIdQuery()
+        let data = try await octopus.client.fetch(query: query)
+        guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
+
+        let (statusData, historyData) = try await (getPaymentStatusData(), getPaymentHistoryData())
+        let paymentMethodData = statusData.defaultOrFirstDefaultPayoutMethod
+        let paymentData =
+            historyData
+            .flatMap({ $0.valuesPerMonth })
+            .compactMap({ $0.paymentData })
+            .first(where: { $0.id == id })
+
+        guard let paymentMethodData, let paymentData else { return nil }
+
+        return .init(
+            paymentData: paymentData,
+            paymentMethodData: paymentMethodData
         )
     }
 }

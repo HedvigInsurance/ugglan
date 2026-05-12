@@ -1,4 +1,5 @@
 import Apollo
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -6,23 +7,27 @@ import hCore
 public class hPaymentService {
     @Inject var client: hPaymentClient
 
+    @Log(.error)
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData?]) {
-        log.info("hPaymentService: getPaymentData", error: nil, attributes: nil)
-        return try await client.getPaymentData()
+        try await client.getPaymentData()
     }
 
+    @Log(.error)
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        log.info("hPaymentService: getPaymentStatusData", error: nil, attributes: nil)
-        return try await client.getPaymentStatusData()
+        try await client.getPaymentStatusData()
     }
 
+    @Log(.error)
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
-        log.info("hPaymentService: getPaymentHistoryData", error: nil, attributes: nil)
-        return try await client.getPaymentHistoryData()
+        try await client.getPaymentHistoryData()
     }
 
+    @Log(.error)
+    public func chargeOutstandingPayment() async throws {
+        try await client.chargeOutstandingPayment()
+    }
+    @Log(.error)
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
-        log.info("hPaymentService: setupPaymentMethod \(type)", error: nil, attributes: nil)
-        return try await client.setupPaymentMethod(type)
+        try await client.setupPaymentMethod(type)
     }
 }

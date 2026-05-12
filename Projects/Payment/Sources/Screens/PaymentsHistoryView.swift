@@ -22,7 +22,7 @@ public struct PaymentHistoryView: View {
                 )
             )
             .task {
-                store.send(.getHistory)
+                await store.sendAsync(.getHistory)
             }
     }
 

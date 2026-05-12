@@ -12,7 +12,6 @@ public struct PaymentsView: View {
 
     public init() {
         store.send(.load)
-        store.send(.getHistory)
         store.send(.fetchPaymentStatus)
         store.send(.getMissedPayment)
     }
@@ -25,7 +24,7 @@ public struct PaymentsView: View {
                     actionButton: .init(buttonAction: {
                         store.send(.load)
                         store.send(.fetchPaymentStatus)
-                        store.send(.getHistory)
+                        store.send(.getMissedPayment)
                     }),
                     dismissButton: nil
                 )
@@ -65,8 +64,8 @@ public struct PaymentsView: View {
         .onPullToRefresh {
             async let fetchStatus: () = store.send(.fetchPaymentStatus)
             async let load: () = store.sendAsync(.load)
-            async let history: () = store.sendAsync(.getHistory)
-            _ = await (fetchStatus, load, history)
+            async let missedPayment: () = store.sendAsync(.getMissedPayment)
+            _ = await (fetchStatus, load, missedPayment)
         }
     }
 
