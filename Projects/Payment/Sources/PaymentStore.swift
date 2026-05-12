@@ -8,7 +8,7 @@ public struct PaymentState: StateProtocol {
     public var ongoingPaymentData: [PaymentData] = []
     public var paymentStatusData: PaymentStatusData?
     var paymentHistory: [PaymentHistoryListData] = []
-    var missedPaymentData: MissedPaymentData?
+    public internal(set) var missedPaymentData: MissedPaymentData?
     public init() {}
 }
 

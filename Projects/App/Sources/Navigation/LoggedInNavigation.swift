@@ -287,6 +287,31 @@ class DeepLinkHandler {
             handleMissingPetChipIds(url)
         case .payout:
             viewModel?.showPayout()
+        case .manualCharge:
+            handleManualCharge()
+        }
+    }
+
+    private func handleManualCharge() {
+        Task { [weak viewModel] in
+            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+            await paymentStore.sendAsync(.getMissedPayment)
+
+            // if we have error after fetching missed payment
+            if case .error = paymentStore.loadingState[.getMissedPayment] {
+                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
+                // if we have missedPaymentData
+            } else if let missedPaymentData = paymentStore.state.missedPaymentData {
+                viewModel?.missedPaymentData = missedPaymentData
+            } else {
+                Toasts.shared.displayToastBar(
+                    toast: .init(
+                        type: .info,
+                        text: L10n.paymentsPaymentOverdueMissingTitle,
+                        description: L10n.paymentsPaymentOverdueMissingSubtitle
+                    )
+                )
+            }
         }
     }
 
@@ -452,7 +477,6 @@ struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
     @StateObject private var router = NavigationRouter()
     @StateObject private var foreverRouter = NavigationRouter()
-    @StateObject private var paymentsRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
@@ -505,6 +529,7 @@ struct LoggedInNavigation: View {
                     tracking: ProfileRouterType.myInfo
                 )
         }
+        .handleMissedPayment(data: $vm.missedPaymentData)
     }
 
     var homeTab: some View {
@@ -580,7 +605,6 @@ struct LoggedInNavigation: View {
 
     var paymentsTab: some View {
         PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm)
-            .environmentObject(paymentsRouter)
             .tabItem {
                 vm.selectedTab == 3
                     ? hCoreUIAssets.paymentsTabActive.view : hCoreUIAssets.paymentsTab.view
@@ -863,6 +887,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
+    @Published var missedPaymentData: MissedPaymentData?
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
