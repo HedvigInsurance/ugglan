@@ -258,6 +258,15 @@ let project = Project(
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
+        Target.target(
+            name: "Tools",
+            destinations: .iOS,
+            product: .staticLibrary,
+            bundleId: "com.hedvig.tools",
+            deploymentTargets: .iOS("16.0"),
+            sources: ["Tools/Empty.swift"],
+            dependencies: []
+        ),
     ],
     schemes: [
         Scheme.scheme(
@@ -323,6 +332,68 @@ let project = Project(
                 targets: ["Hedvig"]
             ),
             runAction: .runAction(executable: "Hedvig")
+        ),
+        Scheme.scheme(
+            name: "Run Translations",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "translations.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-translations.log"
+                            /usr/bin/osascript -e 'display notification "Running translations.sh — tail /tmp/hedvig-translations.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/translations.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"translations.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'translations.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
+        ),
+        Scheme.scheme(
+            name: "Run Codegen",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "codegen.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-codegen.log"
+                            /usr/bin/osascript -e 'display notification "Running codegen.sh — tail /tmp/hedvig-codegen.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/codegen.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"codegen.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'codegen.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
         ),
     ],
     additionalFiles: []
