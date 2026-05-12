@@ -16,7 +16,7 @@ public class HomeClientDemo: HomeClient {
         )
     }
 
-    public func getMissedCharge() async throws -> Bool {
+    public func getHasMissedCharge() async throws -> Bool {
         false
     }
 

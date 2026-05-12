@@ -65,7 +65,7 @@ class MockHomeService: HomeClient {
     enum Event {
         case getImportantMessages
         case getMemberState
-        case getMissedCharge
+        case getHasMissedCharge
         case getQuickActions
         case getMessagesState
         case getFaq
@@ -99,8 +99,8 @@ class MockHomeService: HomeClient {
         return data
     }
 
-    func getMissedCharge() async throws -> Bool {
-        events.append(.getMissedCharge)
+    func getHasMissedCharge() async throws -> Bool {
+        events.append(.getHasMissedCharge)
         let data = try await fetchMissedCharge()
         return data
     }

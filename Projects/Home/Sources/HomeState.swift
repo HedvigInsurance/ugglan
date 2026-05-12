@@ -146,7 +146,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             }
         case .fetchMissedCharge:
             do {
-                let hasMissedCharge = try await homeService.getMissedCharge()
+                let hasMissedCharge = try await homeService.getHasMissedCharge()
                 send(.setHasMissedCharge(hasMissedCharge))
             } catch {}
         case .fetchQuickActions:

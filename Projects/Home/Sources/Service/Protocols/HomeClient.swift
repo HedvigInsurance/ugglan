@@ -4,7 +4,7 @@ import Foundation
 public protocol HomeClient {
     func getImportantMessages() async throws -> [ImportantMessage]
     func getMemberState() async throws -> MemberState
-    func getMissedCharge() async throws -> Bool
+    func getHasMissedCharge() async throws -> Bool
     func getQuickActions() async throws -> [QuickAction]
     func getMessagesState() async throws -> MessageState
     func getFAQ() async throws -> HelpCenterFAQModel

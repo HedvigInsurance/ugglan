@@ -49,7 +49,7 @@ class HomeClientOctopus: HomeClient {
         )
     }
 
-    func getMissedCharge() async throws -> Bool {
+    func getHasMissedCharge() async throws -> Bool {
         let data = try await octopus.client.fetch(query: OctopusGraphQL.MisssedChargeIdQuery())
         return data.currentMember.missedChargeIdToChargeManually != nil
     }
