@@ -203,6 +203,36 @@ class hPaymentClientOctopus: hPaymentClient {
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
     }
+
+    func chargeOutstandingPayment() async throws {
+        let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
+        let data = try await octopus.client.mutation(mutation: mutation)
+        if let userError = data?.manuallyChargeMember.userError {
+            throw PaymentError.missingDataError(message: userError.message ?? L10n.General.errorBody)
+        }
+    }
+
+    func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        let query = OctopusGraphQL.MisssedChargeIdQuery()
+        let data = try await octopus.client.fetch(query: query)
+        guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
+
+        let (statusData, historyData) = try await (getPaymentStatusData(), getPaymentHistoryData())
+        let paymentMethodData = statusData.defaultOrFirstDefaultPayinMethod
+        let paymentData =
+            historyData
+            .flatMap({ $0.valuesPerMonth })
+            .compactMap({ $0.paymentData })
+            .first(where: { $0.id == id })
+
+        guard let paymentMethodData, var paymentData else { return nil }
+        paymentData.showStatusInfo = false
+
+        return .init(
+            paymentData: paymentData,
+            paymentMethodData: paymentMethodData
+        )
+    }
 }
 
 extension OctopusGraphQL.PaymentMethodSetupOutputFragment {
@@ -435,7 +465,7 @@ extension PaymentHistoryListData {
             let history = groupedPaymenthsByYear[year] ?? []
             let paymentHistoryForYear = PaymentHistoryListData(
                 id: String(year),
-                year: String(year),
+                year: year,
                 valuesPerMonth: history
             )
             paymentHistoryList.append(paymentHistoryForYear)

@@ -15,7 +15,7 @@ struct TravelCertificateProcessingScreen: View {
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
             state: $vm.viewState
         )
-        .hSuccessBottomAttachedView {
+        .hStateViewBottomAttachedView {
             bottomSuccessView
         }
         .hStateViewButtonConfig(

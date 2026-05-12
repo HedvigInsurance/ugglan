@@ -146,6 +146,7 @@ class HomeVM: ObservableObject {
         toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
         observeToolbarOptionTypes()
+        store.send(.fetchMissedCharge)
     }
 
     func fetchHomeState() {
@@ -154,6 +155,9 @@ class HomeVM: ObservableObject {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
+        if store.state.hasMissedCharge {
+            store.send(.fetchMissedCharge)
+        }
         let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
         crossSellStore.send(.fetchRecommendedCrossSellId)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()

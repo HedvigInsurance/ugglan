@@ -18,6 +18,9 @@ struct MockData {
                 futureState: .none
             )
         },
+        fetchMissedCharge: @escaping FetchMissedCharge = {
+            false
+        },
         fetchQuickActions: @escaping FetchQuickActions = {
             [
                 .editCoInsured,
@@ -34,6 +37,7 @@ struct MockData {
         let service = MockHomeService(
             fetchImportantMessages: fetchImportantMessages,
             fetchMemberState: fetchMemberState,
+            fetchMissedCharge: fetchMissedCharge,
             fetchQuickActions: fetchQuickActions,
             fetchLatestMessageState: fetchLatestMessageState,
             fetchFAQ: fetchFAQ
@@ -45,6 +49,7 @@ struct MockData {
 
 typealias FetchImportantMessages = () async throws -> [ImportantMessage]
 typealias FetchMemberState = () async throws -> MemberState
+typealias FetchMissedCharge = () async throws -> Bool
 typealias FetchQuickActions = () async throws -> [QuickAction]
 typealias FetchLatestMessageState = @Sendable () async throws -> Home.MessageState
 typealias FetchFAQ = () async throws -> Home.HelpCenterFAQModel
@@ -53,12 +58,14 @@ class MockHomeService: HomeClient {
     var events = [Event]()
     var fetchImportantMessages: FetchImportantMessages
     var fetchMemberState: FetchMemberState
+    var fetchMissedCharge: FetchMissedCharge
     var fetchQuickActions: FetchQuickActions
     var fetchLatestMessageState: FetchLatestMessageState
     var fetchFAQ: FetchFAQ
     enum Event {
         case getImportantMessages
         case getMemberState
+        case getHasMissedCharge
         case getQuickActions
         case getMessagesState
         case getFaq
@@ -67,12 +74,14 @@ class MockHomeService: HomeClient {
     init(
         fetchImportantMessages: @escaping FetchImportantMessages,
         fetchMemberState: @escaping FetchMemberState,
+        fetchMissedCharge: @escaping FetchMissedCharge,
         fetchQuickActions: @escaping FetchQuickActions,
         fetchLatestMessageState: @escaping FetchLatestMessageState,
         fetchFAQ: @escaping FetchFAQ
     ) {
         self.fetchImportantMessages = fetchImportantMessages
         self.fetchMemberState = fetchMemberState
+        self.fetchMissedCharge = fetchMissedCharge
         self.fetchQuickActions = fetchQuickActions
         self.fetchLatestMessageState = fetchLatestMessageState
         self.fetchFAQ = fetchFAQ
@@ -87,6 +96,12 @@ class MockHomeService: HomeClient {
     func getMemberState() async throws -> MemberState {
         events.append(.getMemberState)
         let data = try await fetchMemberState()
+        return data
+    }
+
+    func getHasMissedCharge() async throws -> Bool {
+        events.append(.getHasMissedCharge)
+        let data = try await fetchMissedCharge()
         return data
     }
 

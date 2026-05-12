@@ -213,6 +213,7 @@ class CustomTextView: UITextView, UITextViewDelegate {
                 Dependencies.urlOpener.open(url)
             }
         } else {
+            ImpactGenerator.light()
             config.onUrlClicked(URL)
         }
 
