@@ -9,11 +9,15 @@ public class HomeClientDemo: HomeClient {
 
     public func getMemberState() async throws -> MemberState {
         .init(
-            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false, hasMissedCharge: false),
+            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.active,
             futureState: FutureStatus.none
         )
+    }
+
+    public func getMissedCharge() async throws -> Bool {
+        false
     }
 
     public func getQuickActions() async throws -> [QuickAction] {

@@ -10,22 +10,20 @@ import hCoreUI
 public struct MemberInfo: Codable, Equatable, Sendable {
     let id: String
     let isContactInfoUpdateNeeded: Bool
-    public let hasMissedCharge: Bool
 
     public init(
         id: String,
-        isContactInfoUpdateNeeded: Bool,
-        hasMissedCharge: Bool
+        isContactInfoUpdateNeeded: Bool
     ) {
         self.id = id
         self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
-        self.hasMissedCharge = hasMissedCharge
     }
 }
 
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
     public var memberInfo: MemberInfo?
+    public var hasMissedCharge: Bool = false
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -70,6 +68,8 @@ public struct HomeState: StateProtocol {
 
 public enum HomeAction: ActionProtocol {
     case fetchMemberState
+    case fetchMissedCharge
+    case setHasMissedCharge(_ hasMissedCharge: Bool)
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
@@ -144,6 +144,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             } catch _ {
                 setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
+        case .fetchMissedCharge:
+            do {
+                let hasMissedCharge = try await homeService.getMissedCharge()
+                send(.setHasMissedCharge(hasMissedCharge))
+            } catch {}
         case .fetchQuickActions:
             do {
                 let quickActions = try await homeService.getQuickActions()
@@ -202,14 +207,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
+        case let .setHasMissedCharge(hasMissedCharge):
+            newState.hasMissedCharge = hasMissedCharge
         case .clearMissedCharge:
-            if let memberInfo = newState.memberInfo {
-                newState.memberInfo = MemberInfo(
-                    id: memberInfo.id,
-                    isContactInfoUpdateNeeded: memberInfo.isContactInfoUpdateNeeded,
-                    hasMissedCharge: false
-                )
-            }
+            newState.hasMissedCharge = false
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setToolbarTypes(&newState)

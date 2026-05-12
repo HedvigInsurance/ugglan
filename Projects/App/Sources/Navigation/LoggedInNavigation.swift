@@ -921,11 +921,11 @@ class LoggedInNavigationViewModel: ObservableObject {
 
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
-            .map { $0.memberInfo }
+            .map { $0.hasMissedCharge }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] memberInfo in
-                self?.hasMissedPayment = memberInfo?.hasMissedCharge ?? false
+            .sink { [weak self] hasMissedCharge in
+                self?.hasMissedPayment = hasMissedCharge
                 self?.updatePaymentsBadge()
             }
             .store(in: &cancellables)
@@ -1062,6 +1062,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func petChipIdAdded() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchMemberState)
+        homeStore.send(.fetchMissedCharge)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
     }

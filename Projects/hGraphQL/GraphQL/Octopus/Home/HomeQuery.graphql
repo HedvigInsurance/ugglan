@@ -12,6 +12,5 @@ query Home {
     memberActions {
         isContactInfoUpdateNeeded
     }
-    missedChargeIdToChargeManually
   }
 }
