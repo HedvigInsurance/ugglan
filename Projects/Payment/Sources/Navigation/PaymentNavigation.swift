@@ -9,12 +9,12 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
     public var connectPaymentVm = ConnectPaymentViewModel()
+    let paymentsRouter = NavigationRouter()
 
     public init() {}
 }
 
 public struct PaymentsNavigation: View {
-    @EnvironmentObject var router: NavigationRouter
     @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
     public init(
         paymentsNavigationVm: PaymentsNavigationViewModel
@@ -23,17 +23,11 @@ public struct PaymentsNavigation: View {
     }
 
     public var body: some View {
-        hNavigationStack(router: router, tracking: PaymentsDetentActions.paymentsView) {
+        hNavigationStack(router: paymentsNavigationVm.paymentsRouter, tracking: PaymentsDetentActions.paymentsView) {
             PaymentsView()
                 .navigationTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
                     PaymentDetailsView(data: paymentData)
-                        .configureTitleView(
-                            title: paymentData.title,
-                            titleColor: paymentData.titleColor,
-                            topPadding: 0,
-                            alignment: .center
-                        )
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
                     switch routerAction {
@@ -54,6 +48,17 @@ public struct PaymentsNavigation: View {
                     case .changePayoutMethod:
                         PayoutChangeMethodScreen()
                     }
+                }
+                .routerDestination(for: MissedPaymentData.self) { item in
+                    MissedPaymentScreen(
+                        missedPaymentdata: item,
+                        onSuccess: {
+                            Task { @MainActor in
+                                paymentsNavigationVm.paymentsRouter.popToRoot()
+                            }
+                        }
+                    )
+                    .navigationTitle(L10n.paymentsPaymentOverdueTitle)
                 }
         }
         .environmentObject(paymentsNavigationVm)
@@ -109,5 +114,4 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentsNavigation(paymentsNavigationVm: .init())
-        .environmentObject(NavigationRouter())
 }

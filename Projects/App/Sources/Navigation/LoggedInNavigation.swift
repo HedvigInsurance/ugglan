@@ -287,6 +287,31 @@ class DeepLinkHandler {
             handleMissingPetChipIds(url)
         case .payout:
             viewModel?.showPayout()
+        case .manualCharge:
+            handleManualCharge()
+        }
+    }
+
+    private func handleManualCharge() {
+        Task { [weak viewModel] in
+            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+            await paymentStore.sendAsync(.getMissedPayment)
+
+            // if we have error after fetching missed payment
+            if case .error = paymentStore.loadingState[.getMissedPayment] {
+                Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
+                // if we have missedPaymentData
+            } else if let missedPaymentData = paymentStore.state.missedPaymentData {
+                viewModel?.missedPaymentData = missedPaymentData
+            } else {
+                Toasts.shared.displayToastBar(
+                    toast: .init(
+                        type: .info,
+                        text: L10n.paymentsPaymentOverdueMissingTitle,
+                        description: L10n.paymentsPaymentOverdueMissingSubtitle
+                    )
+                )
+            }
         }
     }
 
@@ -325,8 +350,11 @@ class DeepLinkHandler {
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {
-        dismissAndSelectTab(0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
+        if viewModel?.homeNavigationVm.isHelpCenterPresented == true {
+            viewModel?.helpCenterVm.router.popToRoot()
+            viewModel?.homeNavigationVm.openChat = nil
+        } else {
+            dismissAndSelectTab(0)
             viewModel?.homeNavigationVm.isHelpCenterPresented = true
         }
     }
@@ -452,7 +480,6 @@ struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
     @StateObject private var router = NavigationRouter()
     @StateObject private var foreverRouter = NavigationRouter()
-    @StateObject private var paymentsRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
@@ -505,6 +532,7 @@ struct LoggedInNavigation: View {
                     tracking: ProfileRouterType.myInfo
                 )
         }
+        .handleMissedPayment(data: $vm.missedPaymentData)
     }
 
     var homeTab: some View {
@@ -580,7 +608,6 @@ struct LoggedInNavigation: View {
 
     var paymentsTab: some View {
         PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm)
-            .environmentObject(paymentsRouter)
             .tabItem {
                 vm.selectedTab == 3
                     ? hCoreUIAssets.paymentsTabActive.view : hCoreUIAssets.paymentsTab.view
@@ -689,7 +716,8 @@ struct HomeTab: View {
             startInput: $homeNavigationVm.claimsAutomationStartInput
         )
         .modally(
-            presented: $homeNavigationVm.isHelpCenterPresented
+            presented: $homeNavigationVm.isHelpCenterPresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm
@@ -863,12 +891,18 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
+    @Published var missedPaymentData: MissedPaymentData?
+    @Published var hasMissedPayment = false
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
         didSet {
-            guard #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad else { return }
-            tabBar?.traitOverrides.horizontalSizeClass = .compact
+            if #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad {
+                tabBar?.traitOverrides.horizontalSizeClass = .compact
+            }
+            Task { @MainActor [weak self] in
+                self?.updatePaymentsBadge()
+            }
         }
     }
 
@@ -889,6 +923,17 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.stateSignal
+            .map { $0.hasMissedCharge }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] hasMissedCharge in
+                self?.hasMissedPayment = hasMissedCharge
+                self?.updatePaymentsBadge()
+            }
+            .store(in: &cancellables)
+
         $selectedTab
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -900,6 +945,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func updatePaymentsBadge() {
+        tabBar?.updateBadgeDot(visible: hasMissedPayment, forTabTitled: L10n.tabPaymentsTitle)
     }
 
     private func setupObservers() {

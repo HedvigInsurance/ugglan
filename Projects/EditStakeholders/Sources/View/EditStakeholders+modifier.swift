@@ -17,7 +17,8 @@ struct EditStakeholders: ViewModifier {
         content
             .detent(
                 item: $vm.editStakeholderModelDetent,
-                presentationStyle: .detent(style: [.height])
+                presentationStyle: .detent(style: [.height]),
+                options: .constant(.alwaysOpenOnTop)
             ) { stakeholderModel in
                 let contractsSupportingStakeholders = stakeholderModel.contractsSupportingStakeholders
                 if contractsSupportingStakeholders.count > 1, let stakeholderType = vm.stakeholderType {
@@ -31,13 +32,15 @@ struct EditStakeholders: ViewModifier {
                 }
             }
             .modally(
-                item: $vm.editStakeholderModelFullScreen
+                item: $vm.editStakeholderModelFullScreen,
+                options: .constant(.alwaysOpenOnTop)
             ) { stakeholderModel in
                 getEditStakeholdersNavigation(stakeholderModel: stakeholderModel)
             }
             .detent(
                 item: $vm.editStakeholderModelMissingAlert,
-                presentationStyle: .detent(style: [.height])
+                presentationStyle: .detent(style: [.height]),
+                options: .constant(.alwaysOpenOnTop)
             ) { config in
                 getMissingStakeholderAlertView(
                     missingContractConfig: config
@@ -45,7 +48,6 @@ struct EditStakeholders: ViewModifier {
             }
             .detent(
                 item: $vm.editStakeholderModelError,
-
                 options: .constant([.alwaysOpenOnTop])
             ) { errorModel in
                 GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)

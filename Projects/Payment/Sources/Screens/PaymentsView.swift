@@ -10,11 +10,6 @@ public struct PaymentsView: View {
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @StateObject var vm = PaymentsViewModel()
 
-    public init() {
-        store.send(.load)
-        store.send(.fetchPaymentStatus)
-    }
-
     public var body: some View {
         successView
             .loadingWithButtonLoading($vm.viewState)
@@ -23,15 +18,21 @@ public struct PaymentsView: View {
                     actionButton: .init(buttonAction: {
                         store.send(.load)
                         store.send(.fetchPaymentStatus)
+                        store.send(.getMissedPayment)
                     }),
                     dismissButton: nil
                 )
             )
+            .task {
+                store.send(.load)
+                store.send(.fetchPaymentStatus)
+                store.send(.getMissedPayment)
+            }
     }
 
     private var successView: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 payments
                 PresentableStoreLens(
                     PaymentStore.self,
@@ -45,6 +46,7 @@ public struct PaymentsView: View {
                 }
             }
             .padding(.vertical, .padding8)
+            .hButtonIsLoading(false)
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
@@ -60,8 +62,10 @@ public struct PaymentsView: View {
             }
         }
         .onPullToRefresh {
-            await store.send(.fetchPaymentStatus)
-            await store.send(.load)
+            async let fetchStatus: () = store.send(.fetchPaymentStatus)
+            async let load: () = store.sendAsync(.load)
+            async let missedPayment: () = store.sendAsync(.getMissedPayment)
+            _ = await (fetchStatus, load, missedPayment)
         }
     }
 
@@ -72,7 +76,16 @@ public struct PaymentsView: View {
                 state
             }
         ) { [weak paymentNavigationVm] state in
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
+                if let missedPaymentData = state.missedPaymentData {
+                    MissedPaymentCardView(
+                        amountDue: missedPaymentData.paymentData.payment.net,
+                        onReviewPayment: {
+                            router.push(missedPaymentData)
+                        }
+                    )
+                    .padding(.bottom, .padding8)
+                }
                 if !state.ongoingPaymentData.isEmpty {
                     ForEach(state.ongoingPaymentData, id: \.id) { paymentData in
                         PaymentView(paymentData: paymentData)
@@ -221,6 +234,7 @@ public class PaymentsViewModel: ObservableObject {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PaymentsNavigation(
         paymentsNavigationVm: PaymentsNavigationViewModel()
     )

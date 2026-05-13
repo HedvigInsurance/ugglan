@@ -520,7 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
 "LOGOUT_ALERT_TITLE" = "Är du säker på att du vill logga ut?";
 "LOGOUT_BUTTON" = "Logga ut";
-"MANUAL_CHARGE_CANCELLATION_WARNING" = "För att återaktivera din försäkring efter avslut, kontakta Hedvig Service Team när betalningen har registrerats på ditt konto";
+"MANUAL_CHARGE_CANCELLATION_WARNING" = "Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats";
 "MANUAL_INPUT_LIST_OTHER" = "Annat";
 "MARKETING_GET_HEDVIG" = "Få ett prisförslag";
 "MISSING_CONTACT_INFO_CARD_BUTTON" = "Se över kontaktuppgifter";
@@ -584,7 +584,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_FAILED" = "Denna betalning misslyckades och lades till i din betalning den %1$@ .";
 "PAYMENTS_PAYMENT_HISTORY_BUTTON_LABEL" = "Betalningshistorik";
 "PAYMENTS_PAYMENT_IN_PROGRESS" = "Betalning pågår";
-"PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION" = "Det kan ta upp till 5 bankdagar innan betalningen syns";
+"PAYMENTS_PAYMENT_IN_PROGRESS_DESCRIPTION" = "Det kan ta upp till 5 bankdagar innan betalningen registreras";
 "PAYMENTS_PAYMENT_METHOD" = "Betalningssätt";
 "PAYMENTS_PAYMENT_OVERDUE_AMOUNT_DUE" = "Att betala: %1$@";
 "PAYMENTS_PAYMENT_OVERDUE_BODY" = "Vi kunde inte dra betalningen från ditt bankkonto. Betala för att undvika avbrott i ditt skydd.";
@@ -677,6 +677,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SEARCH_PLACEHOLDER" = "Sök";
 "SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "Välj den försäkring du vill uppdatera";
 "SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "";
+"SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE" = "Betalningen kan inte genomföras";
 "SETTINGS_LANGUAGE_TITLE" = "Språk";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Ja, avregistrera";
 /* Figma */
@@ -974,9 +975,9 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.being_handled_reopened.support_text" = "Vi har återöppnat din skadeanmälan och en av våra försäkringsspecialister granskar den. Vi hör av oss snart med en uppdatering.";
 "claim_status.claim_details.button" = "Se detaljer";
-"claim_status.claim_details.exposure_display_name" = "Reg nr";
+"claim_status.claim_details.exposure_display_name" = "Registreringsnummer";
 "claim_status.claim_details.external_id" = "Ärendenummer";
-"claim_status.claim_details.handler_email" = "E-mail";
+"claim_status.claim_details.handler_email" = "Mail för ärende";
 "claim_status.claim_details.info_text" = "Saknas något? Skicka ett meddelande till oss här i appen.";
 "claim_status.claim_details.submitted" = "Inskickad";
 "claim_status.claim_details.title" = "Detaljer om skadeanmälan";
@@ -991,7 +992,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.not_covered.support_text" = "Tyvärr täcks inte din skada. Se konversation för mer information om beslutet.";
 /* Figma */
 "claim_status.paid.support_text" = "Din skada har täckts. Du borde ha fått ersättningen utbetald vid det här laget. \n\nSe dina meddelanden för mer information om hur vi beräknade din ersättning.";
-"claim_status.partner.support_text" = "Den här skadan hanteras av vår externa partner Eir via mail.\n\nRedan i kontakt med dem? Svara i din befintliga mailtråd så att all skadeinformation hålls samlad i en och samma konversation.";
+"claim_status.partner.support_text" = "Våra bilspecialister på Eir hanterar din skadeanmälan via mail.\n\nNär de har gått igenom ärendet får du en bekräftelse via mail. Behöver du komma i kontakt kring din anmälan, svara i samma e-posttråd.";
 /* Figma */
 "claim_status.submitted.support_text" = "Vi har tagit emot din skadeanmälan och kommer snart att börja granska den.";
 /* Figma */

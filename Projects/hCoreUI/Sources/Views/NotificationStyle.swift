@@ -56,6 +56,24 @@ public enum NotificationType {
     }
 
     @hColorBuilder
+    public var descriptionColor: some hColor {
+        switch self {
+        case .info:
+            hSignalColor.Blue.text
+        case .attention:
+            hSignalColor.Amber.text
+        case .error:
+            hSignalColor.Red.text
+        case .campaign:
+            hSignalColor.Green.text
+        case .neutral:
+            hTextColor.Opaque.secondary
+        case .escalation:
+            hTextColor.Translucent.secondary.colorFor(.light, .base)
+        }
+    }
+
+    @hColorBuilder
     public var imageColor: some hColor {
         switch self {
         case .info:
@@ -70,16 +88,6 @@ public enum NotificationType {
             hFillColor.Opaque.secondary
         case .escalation:
             hPerilColor.Purple.fillThree
-        }
-    }
-
-    @hColorBuilder
-    public var toastImageColor: some hColor {
-        switch self {
-        case .info:
-            hSignalColor.Green.element
-        default:
-            imageColor
         }
     }
 }

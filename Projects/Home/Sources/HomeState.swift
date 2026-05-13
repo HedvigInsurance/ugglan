@@ -23,6 +23,7 @@ public struct MemberInfo: Codable, Equatable, Sendable {
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
     public var memberInfo: MemberInfo?
+    public var hasMissedCharge: Bool = false
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -67,6 +68,8 @@ public struct HomeState: StateProtocol {
 
 public enum HomeAction: ActionProtocol {
     case fetchMemberState
+    case fetchMissedCharge
+    case setHasMissedCharge(_ hasMissedCharge: Bool)
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
@@ -83,6 +86,7 @@ public enum HomeAction: ActionProtocol {
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
     case hideImportantMessage(id: String)
     case recommendedProductUpdated
+    case clearMissedCharge
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -100,12 +104,18 @@ public enum HomeLoadingType: LoadingProtocol {
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
     private var newOfferSubscription: AnyCancellable?
+    private var didChargeOutstandingPaymentSubscription: AnyCancellable?
     required init() {
         super.init()
         let store: CrossSellStore = globalPresentableStoreContainer.get()
         newOfferSubscription = store.stateSignal.map(\.hasNewOffer).removeDuplicates()
             .sink { [weak self] _ in
                 self?.send(.recommendedProductUpdated)
+            }
+        didChargeOutstandingPaymentSubscription = NotificationCenter.default
+            .publisher(for: .didChargeOutstandingPayment)
+            .sink { [weak self] _ in
+                self?.send(.clearMissedCharge)
             }
     }
 
@@ -134,6 +144,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             } catch _ {
                 setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
+        case .fetchMissedCharge:
+            do {
+                let hasMissedCharge = try await homeService.getHasMissedCharge()
+                send(.setHasMissedCharge(hasMissedCharge))
+            } catch {}
         case .fetchQuickActions:
             do {
                 let quickActions = try await homeService.getQuickActions()
@@ -192,6 +207,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
+        case let .setHasMissedCharge(hasMissedCharge):
+            newState.hasMissedCharge = hasMissedCharge
+        case .clearMissedCharge:
+            newState.hasMissedCharge = false
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setToolbarTypes(&newState)

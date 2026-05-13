@@ -20,7 +20,7 @@ We have two automated workflows to ensure accessibility compliance:
 
 ### How It Works
 
-1. **Schedule**: Runs every Monday at 9:00 AM UTC
+1. **Schedule**: Runs every Friday at 11:00 AM UTC
 2. **Scope**: Scans all Swift files in the codebase (except tests)
 3. **Auto-Fix**: Automatically applies common accessibility fixes
 4. **PR Creation**: Creates a pull request with the auto-fixes for review
@@ -217,13 +217,13 @@ To change the weekly audit schedule, edit `.github/workflows/WeeklyAccessibility
 ```yaml
 on:
   schedule:
-    # Change the cron expression (currently Monday 9 AM UTC)
-    - cron: '0 9 * * 1'
+    # Change the cron expression (currently Friday 11 AM UTC)
+    - cron: '0 11 * * 5'
 ```
 
 Common cron patterns:
+- `0 11 * * 5` - Every Friday at 11 AM UTC
 - `0 9 * * 1` - Every Monday at 9 AM UTC
-- `0 9 * * 5` - Every Friday at 9 AM UTC
 - `0 0 1 * *` - First day of every month at midnight UTC
 
 ## Limitations

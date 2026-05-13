@@ -12,8 +12,8 @@ public struct ProcessingStateView: View {
     var onAppearLoadingView: (() -> Void)?
     var showSuccessScreen: Bool
 
-    @Environment(\.hCustomSuccessView) var customSuccessView
-    @Environment(\.hSuccessBottomAttachedView) var successBottomView
+    @Environment(\.hStateViewCustomSuccessView) var customSuccessView
+    @Environment(\.hStateViewBottomAttachedView) var successBottomView
 
     public init(
         showSuccessScreen: Bool? = true,
@@ -211,8 +211,8 @@ public struct hProgressViewStyle: ProgressViewStyle {
 })
 
 extension View {
-    public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
-        modifier(TrackErrorState(processingState: state))
+    public func trackErrorState(for state: Binding<ProcessingState>, errorTitle: String? = nil) -> some View {
+        modifier(TrackErrorState(processingState: state, errorTitle: errorTitle))
     }
     public func trackError(for error: Binding<Error?>) -> some View {
         modifier(TrackError(error: error))
@@ -243,12 +243,15 @@ private struct TrackError: ViewModifier {
 private struct TrackErrorState: ViewModifier {
     @State private var error: String?
     @Binding var processingState: ProcessingState
+    let errorTitle: String?
     func body(content: Content) -> some View {
         Group {
             if let error {
                 GenericErrorView(
+                    title: errorTitle,
                     description: error,
-                    formPosition: .center
+                    formPosition: .center,
+
                 )
             } else {
                 content

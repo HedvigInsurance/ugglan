@@ -55,6 +55,21 @@ extension Sequence where Element == PaymentMethodData {
     }
 }
 
+extension PaymentMethodData {
+    var info: String {
+        switch self.details {
+        case .bankAccount(let account, _):
+            return "\(account)"
+        case .swish(let phoneNumber):
+            return "\(phoneNumber)"
+        case .invoice:
+            return self.provider.payoutTitle
+        case nil:
+            return ""
+        }
+    }
+}
+
 public struct PaymentMethodData: Codable, Equatable, Sendable, Hashable, Identifiable {
     public var id: String {
         provider.asString + status.asString

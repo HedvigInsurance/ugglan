@@ -32,6 +32,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case carPlusAddon = "car-plus-addon"
     case missingPetChipId = "pet-id"
     case payout = "payout"
+    case manualCharge = "manual-charge"
 
     public func getDeeplinkTextFor(contractName: String?) -> String {
         switch self {
@@ -105,6 +106,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.chipIdMissingMessage
         case .payout:
             return L10n.payoutPageHeading
+        case .manualCharge:
+            return L10n.paymentsPaymentOverdueTitle
         }
     }
 

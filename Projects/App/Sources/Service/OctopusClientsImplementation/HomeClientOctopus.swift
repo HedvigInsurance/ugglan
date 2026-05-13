@@ -39,11 +39,19 @@ class HomeClientOctopus: HomeClient {
         let futureStatus = data.currentMember.futureStatus
 
         return .init(
-            memberInfo: .init(id: memberId, isContactInfoUpdateNeeded: isContactInfoUpdateNeeded),
+            memberInfo: .init(
+                id: memberId,
+                isContactInfoUpdateNeeded: isContactInfoUpdateNeeded
+            ),
             contracts: contracts,
             contractState: contractState,
             futureState: futureStatus
         )
+    }
+
+    func getHasMissedCharge() async throws -> Bool {
+        let data = try await octopus.client.fetch(query: OctopusGraphQL.MisssedChargeIdQuery())
+        return data.currentMember.missedChargeIdToChargeManually != nil
     }
 
     func getQuickActions() async throws -> [QuickAction] {

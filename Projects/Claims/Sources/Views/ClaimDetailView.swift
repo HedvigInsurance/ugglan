@@ -252,6 +252,7 @@ public struct ClaimDetailView: View {
                 )
             )
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     private var uploadFilesSection: some View {
