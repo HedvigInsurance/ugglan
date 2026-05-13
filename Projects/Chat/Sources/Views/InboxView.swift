@@ -115,10 +115,21 @@ public struct InboxView: View {
     @ViewBuilder
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
-            hText(newestMessage.latestMessageText, style: .label)
-                .lineLimit(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .foregroundColor(getNewestMessageColor(for: conversation))
+            let color = getNewestMessageColor(for: conversation)
+            MarkdownView(
+                config: .init(
+                    text: newestMessage.latestMessageText,
+                    fontStyle: .label,
+                    color: color,
+                    linkColor: color,
+                    linkUnderlineStyle: nil,
+                    isSelectable: false,
+                    maxLines: 1,
+                    disableLinks: true,
+                    onUrlClicked: { _ in
+                    }
+                )
+            )
         }
     }
 

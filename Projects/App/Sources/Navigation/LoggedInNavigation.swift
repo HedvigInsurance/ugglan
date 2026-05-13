@@ -350,8 +350,11 @@ class DeepLinkHandler {
     }
 
     private func handleHelpCenterDeeplink(_ url: URL) {
-        dismissAndSelectTab(0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
+        if viewModel?.homeNavigationVm.isHelpCenterPresented == true {
+            viewModel?.helpCenterVm.router.popToRoot()
+            viewModel?.homeNavigationVm.openChat = nil
+        } else {
+            dismissAndSelectTab(0)
             viewModel?.homeNavigationVm.isHelpCenterPresented = true
         }
     }
@@ -713,7 +716,8 @@ struct HomeTab: View {
             startInput: $homeNavigationVm.claimsAutomationStartInput
         )
         .modally(
-            presented: $homeNavigationVm.isHelpCenterPresented
+            presented: $homeNavigationVm.isHelpCenterPresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm
