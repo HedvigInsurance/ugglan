@@ -40,7 +40,7 @@ public struct HelpCenterStartView: View {
                             ZStack {
                                 if puppyGuideAvailable {
                                     puppyGuideEntry
-                                        .transition(.opacity.combined(with: .scale))
+                                        .transition(.opacity)
                                 } else {
                                     HStack {
                                         Spacer()
@@ -52,7 +52,7 @@ public struct HelpCenterStartView: View {
                                         Spacer()
                                     }
                                     .accessibilityHidden(true)
-                                    .transition(.opacity.combined(with: .scale))
+                                    .transition(.opacity)
                                 }
                             }
                             .animation(.smooth, value: puppyGuideAvailable)
@@ -113,7 +113,7 @@ public struct HelpCenterStartView: View {
     }
 
     private var puppyGuideEntry: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        CardView {
             ZStack(alignment: .topLeading) {
                 hCoreUIAssets.hundarBadarPet.view
                     .resizable()
@@ -125,24 +125,21 @@ public struct HelpCenterStartView: View {
                     .hFieldSize(.small)
                     .padding(.padding16)
             }
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.puppyGuideTitle)
-                hText(L10n.puppyGuideSubtitle)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+            VStack(alignment: .leading, spacing: .padding16) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.puppyGuideTitle)
+                    hText(L10n.puppyGuideSubtitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
+                    router?.push(PuppyGuideRoute.list)
+                }
+                .hButtonWithBorder
+                .hButtonTakeFullWidth(true)
             }
-            .padding(.horizontal, .padding16)
-            .padding(.top, .padding16)
-            hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
-                router?.push(PuppyGuideRoute.list)
-            }
-            .hButtonWithBorder
-            .hButtonTakeFullWidth(true)
             .padding(.padding16)
         }
-        .background(hBackgroundColor.primary)
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
-        .shadow(color: Color.black.opacity(0.06), radius: 1, x: 0, y: 1)
-        .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+        .hWithoutHorizontalPadding([.section])
         .onTapGesture { [weak router] in
             router?.push(PuppyGuideRoute.list)
         }
