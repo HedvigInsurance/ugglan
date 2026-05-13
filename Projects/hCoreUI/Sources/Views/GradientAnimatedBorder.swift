@@ -7,8 +7,7 @@ extension View {
 }
 
 private struct GradientShapeBorderViewModifier<S: Shape>: ViewModifier {
-    @State private var angle: Angle = .degrees(0)
-    private let timer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
+    @State private var rotation: Double = 0
     let shape: S
 
     init(
@@ -21,16 +20,20 @@ private struct GradientShapeBorderViewModifier<S: Shape>: ViewModifier {
         content
             .clipShape(shape)
             .overlay {
-                shape.stroke(
-                    gradient,
-                    lineWidth: 2
-                )
-            }
-            .onReceive(timer) { _ in
-                animateGradient()
+                GeometryReader { geo in
+                    let diameter = hypot(geo.size.width, geo.size.height)
+                    Circle()
+                        .fill(gradient)
+                        .frame(width: diameter, height: diameter)
+                        .rotationEffect(.degrees(rotation))
+                        .position(x: geo.size.width / 2, y: geo.size.height / 2)
+                        .mask(shape.stroke(lineWidth: 2))
+                }
             }
             .onAppear {
-                animateGradient()
+                withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                    rotation = 360
+                }
             }
     }
 
@@ -46,15 +49,8 @@ private struct GradientShapeBorderViewModifier<S: Shape>: ViewModifier {
                 Gradient.Stop(color: Color(red: 0.78, green: 0.53, blue: 1), location: 0.92),
             ],
             center: UnitPoint(x: 0.5, y: 0.5),
-            angle: angle
+            angle: .degrees(0)
         )
-    }
-
-    private func animateGradient() {
-        withAnimation(.easeInOut(duration: 2)) {
-            let previousAngle = angle
-            angle = previousAngle + Angle(degrees: 180)
-        }
     }
 }
 
