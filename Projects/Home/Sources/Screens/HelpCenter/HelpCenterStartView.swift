@@ -121,9 +121,11 @@ public struct HelpCenterStartView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 182)
                     .clipped()
+                    .accessibilityHidden(true)
                 hPill(text: L10n.puppyGuideLabel, color: .pink)
                     .hFieldSize(.small)
                     .padding(.padding16)
+                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: .padding16) {
                 VStack(alignment: .leading, spacing: 0) {
@@ -131,6 +133,7 @@ public struct HelpCenterStartView: View {
                     hText(L10n.puppyGuideSubtitle)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
+                .accessibilityElement(children: .combine)
                 hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
                     router?.push(PuppyGuideRoute.list)
                 }
