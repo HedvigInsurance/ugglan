@@ -2,8 +2,20 @@
 import SwiftUI
 import UIKit
 
+@MainActor
 final class SwipeBackToggleHostingController: UIViewController {
     private let child: UIViewController
+    // Compose doesn't expose its real scroll position through any native UIScrollView,
+    // so we use a hidden dummy one as the nav bar's tracked content scroll view and
+    // forward Compose's scroll offset onto its contentOffset. iOS then drives the
+    // scroll-edge appearance transition the standard way.
+    private let trackingScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.backgroundColor = .clear
+        return scrollView
+    }()
 
     init(child: UIViewController) {
         self.child = child
@@ -14,16 +26,31 @@ final class SwipeBackToggleHostingController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.addSubview(trackingScrollView)
+        NSLayoutConstraint.activate([
+            trackingScrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            trackingScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            trackingScrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            trackingScrollView.heightAnchor.constraint(equalTo: view.heightAnchor, constant: 1),
+        ])
+        setContentScrollView(trackingScrollView)
         addChild(child)
         child.view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(child.view)
+        trackingScrollView.addSubview(child.view)
+        child.view.insetsLayoutMarginsFromSafeArea = true
         NSLayoutConstraint.activate([
-            child.view.topAnchor.constraint(equalTo: view.topAnchor),
-            child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            child.view.topAnchor.constraint(equalTo: trackingScrollView.topAnchor),
+            child.view.bottomAnchor.constraint(equalTo: trackingScrollView.bottomAnchor),
+            child.view.widthAnchor.constraint(equalTo: trackingScrollView.widthAnchor),
+            child.view.heightAnchor.constraint(equalTo: trackingScrollView.heightAnchor),
         ])
         child.didMove(toParent: self)
+    }
+
+    func setScrollOffset(_ offset: CGFloat) {
+        let y = min(1, max(0, offset))
+        guard y != trackingScrollView.contentOffset.y else { return }
+        trackingScrollView.contentOffset = CGPoint(x: 0, y: y)
     }
 
     // NavigationStack on iOS 18+/26 uses a private pan recognizer for swipe-back
@@ -45,6 +72,14 @@ final class SwipeBackBridge: NSObject, IosSwipeBackController {
     weak var host: SwipeBackToggleHostingController?
 
     func setSwipeBackEnabled(isEnabled: Bool) {
-        host?.setSwipeBackEnabled(isEnabled)
+        Task { [host] in
+            await host?.setSwipeBackEnabled(isEnabled)
+        }
+    }
+
+    func setScrollOffset(_ offset: CGFloat) {
+        Task { [host] in
+            await host?.setScrollOffset(offset)
+        }
     }
 }
