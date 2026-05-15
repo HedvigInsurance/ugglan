@@ -39,6 +39,7 @@ public struct ChatScreen: View {
                 isTargetedForDropdown: $isTargetedForDropdown
             )
         )
+        .trackVisibility(as: ChatScreen.self)
     }
 
     @ViewBuilder

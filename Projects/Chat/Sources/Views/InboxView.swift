@@ -28,6 +28,7 @@ public struct InboxView: View {
                 )
             )
         )
+        .trackVisibility(as: InboxView.self)
     }
 
     @ViewBuilder
