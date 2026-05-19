@@ -4,10 +4,11 @@ set -x
 
 curl https://mise.run | sh
 export PATH="$HOME/.local/bin:$PATH"
-mise install tuist@4.50.2
+TUIST_VERSION=$(cat "$CI_PRIMARY_REPOSITORY_PATH/.tuist-version")
+mise install tuist@"$TUIST_VERSION"
 eval "$(mise activate bash --shims)" # Addds the activated tools to $PATH
 echo "👉 Setting mise globally:"
-mise use -g tuist
+mise use -g tuist@"$TUIST_VERSION"
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
 
