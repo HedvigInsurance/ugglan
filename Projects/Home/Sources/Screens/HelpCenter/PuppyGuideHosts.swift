@@ -16,7 +16,12 @@ struct PuppyGuideListHost: UIViewControllerRepresentable {
                     router?.push(PuppyGuideRoute.article(storyName: storyName))
                 }
             },
-            swipeBackController: bridge
+            swipeBackController: bridge,
+            onScrollOffsetChanged: { [bridge] offsetDp in
+                DispatchQueue.main.async {
+                    bridge.setScrollOffset(CGFloat(offsetDp.floatValue))
+                }
+            }
         )
         let host = SwipeBackToggleHostingController(child: composeVC)
         bridge.host = host
@@ -37,7 +42,12 @@ struct PuppyArticleHost: UIViewControllerRepresentable {
             navigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             },
-            swipeBackController: bridge
+            swipeBackController: bridge,
+            onScrollOffsetChanged: { [bridge] offsetDp in
+                DispatchQueue.main.async {
+                    bridge.setScrollOffset(CGFloat(offsetDp.floatValue))
+                }
+            }
         )
         let host = SwipeBackToggleHostingController(child: composeVC)
         bridge.host = host
