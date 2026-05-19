@@ -17,7 +17,7 @@ extension Project {
         dependencies: [String] = ["CoreDependencies"],
         sdks: [String] = []
     ) -> Project {
-        let settings: [String: SettingValue] = ["SWIFT_VERSION": "6.3"]
+        let settings: [String: SettingValue] = ["SWIFT_VERSION": swiftVersion]
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
