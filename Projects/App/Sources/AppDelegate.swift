@@ -169,6 +169,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             accessTokenFetcher: IosAccessTokenFetcher(),
             deviceIdFetcher: IosDeviceIdFetcher(),
             featureManager: IosFeatureManager(isFeatureEnabledBlock: { _ in false }),
+            languageStorage: IosLanguageStorage(),
             appBuildConfig: IosAppBuildConfig()
         )
         IosLogcatLogger.companion.install()

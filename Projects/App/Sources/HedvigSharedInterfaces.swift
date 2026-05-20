@@ -2,11 +2,30 @@ import Environment
 import Foundation
 @preconcurrency import HedvigShared
 import UIKit
+import hCore
 import hGraphQL
 
 class IosDeviceIdFetcher: DeviceIdFetcher {
     func fetch() async throws -> String? {
         await UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+    }
+}
+
+class IosLanguageStorage: LanguageStorage {
+    func getCurrentLanguageTag() -> String {
+        Localization.Locale.currentLocale.value.lprojCode
+    }
+
+    func getSelectedLanguageTag() -> String? {
+        Localization.Locale.currentLocale.value.lprojCode
+    }
+
+    func setLanguageTag(tag: String) {
+        let locale: Localization.Locale = (tag == Localization.Locale.sv_SE.lprojCode) ? .sv_SE : .en_SE
+        DispatchQueue.main.async {
+            ApplicationState.setPreferredLocale(locale)
+            Localization.Locale.currentLocale.send(locale)
+        }
     }
 }
 
