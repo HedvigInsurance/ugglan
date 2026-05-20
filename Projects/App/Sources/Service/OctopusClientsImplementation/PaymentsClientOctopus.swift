@@ -201,6 +201,13 @@ class hPaymentClientOctopus: hPaymentClient {
             let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayoutMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
+        case let .swishPayin(phoneNumber):
+            let input = OctopusGraphQL.PaymentMethodSetupSwishInput(
+                phoneNumber: phoneNumber
+            )
+            let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayinMutation(input: input)
+            let data = try await octopus.client.mutation(mutation: mutation)!
+            return data.paymentMethodSetupSwishPayin.toPaymentSetupResult()
         }
     }
 
@@ -246,6 +253,20 @@ extension OctopusGraphQL.PaymentMethodSetupOutputFragment {
             }
         }()
         return PaymentSetupResult(status: status, url: url, errorMessage: error?.message)
+    }
+}
+
+extension OctopusGraphQL.PaymentMethodSetupSwishPayinMutation.Data.PaymentMethodSetupSwishPayin {
+    func toPaymentSetupResult() -> PaymentSetupResult {
+        let status: PaymentSetupResult.PaymentSetupStatus = {
+            switch self.status {
+            case .case(.active): return .active
+            case .case(.pending): return .pending
+            case .case(.failed): return .failed
+            default: return .unknown
+            }
+        }()
+        return PaymentSetupResult(status: status, url: url, errorMessage: error?.message, orderId: orderId)
     }
 }
 

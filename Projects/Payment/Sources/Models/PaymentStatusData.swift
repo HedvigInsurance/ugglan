@@ -28,6 +28,10 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.defaultPayoutMethod = defaultPayoutMethod
     }
 
+    var availablePayinMethods: [AvailablePaymentMethod] {
+        availableMethods.filter((\.supportsPayin))
+    }
+
     var availablePayoutMethods: [AvailablePaymentMethod] {
         availableMethods.filter((\.supportsPayout))
     }
@@ -141,17 +145,20 @@ public enum PaymentMethodSetupType: Sendable {
     case trustly
     case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
+    case swishPayin(phoneNumber: String)
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {
     public let status: PaymentSetupStatus
     public let url: String?
     public let errorMessage: String?
+    public let orderId: String?
 
-    public init(status: PaymentSetupStatus, url: String?, errorMessage: String?) {
+    public init(status: PaymentSetupStatus, url: String?, errorMessage: String?, orderId: String? = nil) {
         self.status = status
         self.url = url
         self.errorMessage = errorMessage
+        self.orderId = orderId
     }
 
     public enum PaymentSetupStatus: Codable, Equatable, Sendable {
@@ -222,9 +229,9 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     var connectButtonTitle: String {
         switch self {
         case .active, .pending:
-            return L10n.myPaymentDirectDebitReplaceButton
+            return "Change payin method"  //L10n.myPaymentDirectDebitReplaceButton
         case .needsSetup, .unknown, .noNeedToConnect, .contactUs:
-            return L10n.myPaymentDirectDebitButton
+            return "Connect payment method"  //L10n.myPaymentDirectDebitButton
         }
     }
 

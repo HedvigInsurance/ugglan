@@ -10,6 +10,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
     public var connectPaymentVm = ConnectPaymentViewModel()
     let paymentsRouter = NavigationRouter()
+    @Published public var isPayinPresented = false
 
     public init() {}
 }
@@ -63,6 +64,14 @@ public struct PaymentsNavigation: View {
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
+        .detent(
+            presented: $paymentsNavigationVm.isPayinPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            PayinChangeMethodNavigation()
+                .environmentObject(paymentsNavigationVm)
+        }
     }
 }
 

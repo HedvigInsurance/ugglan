@@ -1,0 +1,10 @@
+mutation PaymentMethodSetupSwishPayin($input: PaymentMethodSetupSwishInput!) {
+  paymentMethodSetupSwishPayin(input: $input) {
+    status
+    orderId
+    url
+    error {
+      message
+    }
+  }
+}

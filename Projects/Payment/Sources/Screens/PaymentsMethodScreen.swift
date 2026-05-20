@@ -39,8 +39,9 @@ struct PaymentMethodScreen: View {
                                         buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
                                             ? paymentChargeData.status.connectButtonTitle
                                             : L10n.profilePaymentConnectDirectDebitButton,
-                                        buttonAction: {
-                                            paymentsNavigationVM.connectPaymentVm.set()
+                                        buttonAction: { [weak paymentsNavigationVM] in
+                                            //                                            paymentsNavigationVM.connectPaymentVm.set()
+                                            paymentsNavigationVM?.isPayinPresented = true
                                         }
                                     )
                                 ]

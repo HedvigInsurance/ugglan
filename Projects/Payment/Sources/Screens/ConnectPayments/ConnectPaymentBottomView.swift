@@ -24,7 +24,7 @@ struct ConnectPaymentBottomView: View {
                             .secondary,
                             content: .init(title: statusData.status.connectButtonTitle),
                             { [weak paymentNavigationVm] in
-                                paymentNavigationVm?.connectPaymentVm.set()
+                                paymentNavigationVm?.isPayinPresented = true
                             }
                         )
                     }
