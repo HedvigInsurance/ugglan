@@ -31,4 +31,9 @@ public class hPaymentService {
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         try await client.setupPaymentMethod(type)
     }
+
+    @Log(.error)
+    public func setDefaultPayin(provider: PaymentProvider) async throws -> String? {
+        try await client.setDefaultPayin(provider: provider)
+    }
 }

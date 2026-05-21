@@ -69,7 +69,7 @@ public struct PaymentsNavigation: View {
             presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop])
         ) {
-            PayinChangeMethodNavigation()
+            PayinNavigation()
                 .environmentObject(paymentsNavigationVm)
         }
     }

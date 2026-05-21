@@ -43,11 +43,11 @@ struct PayinChangeMethodScreen: View {
             presentationStyle: showConnectPayinMethod?.payinDetentPresentationStyle ?? .detent(style: [.large]),
             options: .constant(showConnectPayinMethod?.payinOptions ?? [])
         ) { [weak router, weak paymentMethodRouter] paymentProvider in
-            let onSuccess = { [weak paymentMethodRouter] in
+            let onSuccess = { [weak paymentMethodRouter, weak router] in
                 let store: PaymentStore = globalPresentableStoreContainer.get()
                 store.send(.fetchPaymentStatus)
                 paymentMethodRouter?.dismiss()
-                router?.dismiss()
+                router?.pop()
             }
             switch paymentProvider {
             case .trustly:

@@ -95,6 +95,16 @@ extension PaymentProvider {
         default: return .unknown
         }
     }
+
+    func toGraphQLPaymentProvider() -> GraphQLEnum<OctopusGraphQL.MemberPaymentProvider> {
+        switch self {
+        case .trustly: return .case(.trustly)
+        case .swish: return .case(.swish)
+        case .nordea: return .case(.nordea)
+        case .invoice: return .case(.invoice)
+        case .unknown: return .unknown("UNKNOWN")
+        }
+    }
 }
 
 @MainActor
@@ -209,6 +219,13 @@ class hPaymentClientOctopus: hPaymentClient {
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayin.toPaymentSetupResult()
         }
+    }
+
+    func setDefaultPayin(provider: PaymentProvider) async throws -> String? {
+        let graphQLProvider = provider.toGraphQLPaymentProvider()
+        let mutation = OctopusGraphQL.PaymentMethodSetDefaultPayinMutation(provider: graphQLProvider)
+        let data = try await octopus.client.mutation(mutation: mutation)
+        return data?.paymentMethodSetDefaultPayin?.message
     }
 
     func chargeOutstandingPayment() async throws {

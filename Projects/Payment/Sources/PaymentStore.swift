@@ -47,7 +47,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .fetchPaymentStatus:
             do {
                 let statusData = try await paymentService.getPaymentStatusData()
-                print("CALLED AT \(Date())")
                 await sendAsync(.setPaymentStatus(data: statusData))
             } catch {
                 setError(L10n.General.errorBody, for: .getPaymentStatus)

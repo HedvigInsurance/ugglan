@@ -7,6 +7,7 @@ public protocol hPaymentClient: Sendable {
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData]
     func getMissedPaymentData() async throws -> MissedPaymentData?
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult
+    func setDefaultPayin(provider: PaymentProvider) async throws -> String?
     func chargeOutstandingPayment() async throws
 }
 

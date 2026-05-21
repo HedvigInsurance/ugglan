@@ -23,32 +23,32 @@ struct PaymentMethodScreen: View {
                     .hWithoutHorizontalPadding([.row, .divider])
                 }
                 .hFormAttachToBottom {
-                    if defaultPayinMethod.provider == .trustly {
-                        ConnectPaymentBottomView()
-                    } else if defaultPayinMethod.provider == .invoice {
-                        hSection {
-                            InfoCard(
-                                text:
-                                    paymentChargeData.payinMethods.hasMethodInProgress
-                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                                type: .info
-                            )
-                            .buttons(
-                                [
-                                    .init(
-                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
-                                            ? paymentChargeData.status.connectButtonTitle
-                                            : L10n.profilePaymentConnectDirectDebitButton,
-                                        buttonAction: { [weak paymentsNavigationVM] in
-                                            //                                            paymentsNavigationVM.connectPaymentVm.set()
-                                            paymentsNavigationVM?.isPayinPresented = true
-                                        }
-                                    )
-                                ]
-                            )
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
+                    //                    if defaultPayinMethod.provider == .trustly {
+                    ConnectPaymentBottomView()
+                    //                    } else if defaultPayinMethod.provider == .invoice {
+                    //                        hSection {
+                    //                            InfoCard(
+                    //                                text:
+                    //                                    paymentChargeData.payinMethods.hasMethodInProgress
+                    //                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                    //                                type: .info
+                    //                            )
+                    //                            .buttons(
+                    //                                [
+                    //                                    .init(
+                    //                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
+                    //                                            ? paymentChargeData.status.connectButtonTitle
+                    //                                            : L10n.profilePaymentConnectDirectDebitButton,
+                    //                                        buttonAction: { [weak paymentsNavigationVM] in
+                    //                                            //                                            paymentsNavigationVM.connectPaymentVm.set()
+                    //                                            paymentsNavigationVM?.isPayinPresented = true
+                    //                                        }
+                    //                                    )
+                    //                                ]
+                    //                            )
+                    //                        }
+                    //                        .sectionContainerStyle(.transparent)
+                    //                    }
                 }
             }
         }

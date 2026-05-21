@@ -520,6 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
 "LOGOUT_ALERT_TITLE" = "Är du säker på att du vill logga ut?";
 "LOGOUT_BUTTON" = "Logga ut";
+"MANAGE_BILLING_METHODS_BUTTON" = "";
 "MANUAL_CHARGE_CANCELLATION_WARNING" = "Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats";
 "MANUAL_INPUT_LIST_OTHER" = "Annat";
 "MARKETING_GET_HEDVIG" = "Få ett prisförslag";
@@ -1237,6 +1238,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "referrals_#info_sheet.body" = "När någon skaffar Hedvig via din länk eller med din kod får ni båda %1$@ rabatt per månad. Hedvig Forever gäller så länge ni båda är medlemmar hos Hedvig, förhoppningsvis forever. Rabatten gäller ner till 0 kr per månad.";
 /* Figma page App iOS */
 "referrals_#info_sheet.headline" = "Hedvig Forever";
+/* Button to take the member back to resume an ongoing shop session */
+"resume_shopping" = "Återuppta handlingen";
 "sas_integration.change_eurobonus_number" = "Ändra EuroBonus-nummer";
 "sas_integration.connect_eurobonus" = "Anslut EuroBonus";
 "sas_integration.enter_your_number" = "Ange ditt nummer";

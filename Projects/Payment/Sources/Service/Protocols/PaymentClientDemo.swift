@@ -226,6 +226,11 @@ public class hPaymentClientDemo: hPaymentClient {
         return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
     }
 
+    public func setDefaultPayin(provider: PaymentProvider) async throws -> String? {
+        try await Task.sleep(seconds: 1)
+        return nil
+    }
+
     public func chargeOutstandingPayment() async throws {
         try await Task.sleep(seconds: 1)
     }
