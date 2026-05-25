@@ -5,9 +5,14 @@
 
 #include "Debug.xcconfig"
 
-// Sandboxed apps can't be unit tested since they can't load some random 
+// Sandboxed apps can't be unit tested since they can't load some random
 // external bundle. So we disable sandboxing for testing.
-CODE_SIGN_ENTITLEMENTS = 
+CODE_SIGN_ENTITLEMENTS =
 
 // Allow @testable imports
 ENABLE_TESTABILITY = YES
+
+// Force arm64-only simulator builds for tests. The HedvigShared KMP framework
+// is produced arm64-only on Apple Silicon (local + Xcode Cloud); an x86_64
+// simulator destination would fail with module/header mismatches.
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64
