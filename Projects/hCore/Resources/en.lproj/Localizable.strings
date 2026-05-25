@@ -520,6 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
+"MANAGE_BILLING_METHODS_BUTTON" = "Manage your payment methods";
 "MANUAL_CHARGE_CANCELLATION_WARNING" = "Activate your coverage again by contacting us once your payment has been processed";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
@@ -1175,6 +1176,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "offer.remove_discount_button" = "Remove discount";
 "offer.remove_discount_error_alert_body" = "Please try again.";
 "offer.remove_discount_error_alert_title" = "Couldn't remove discount";
+"ongoing_shop_session_action_button" = "Continue purchase";
+"ongoing_shop_session_dismiss_offer" = "Dismiss offer";
 /* This text key is to describe the actions for accessibility reasons. */
 "open_chat" = "Write message";
 /* Figma page Pay-In Flow */

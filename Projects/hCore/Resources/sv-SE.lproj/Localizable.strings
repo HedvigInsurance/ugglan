@@ -520,6 +520,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
 "LOGOUT_ALERT_TITLE" = "Är du säker på att du vill logga ut?";
 "LOGOUT_BUTTON" = "Logga ut";
+"MANAGE_BILLING_METHODS_BUTTON" = "";
 "MANUAL_CHARGE_CANCELLATION_WARNING" = "Aktivera ditt försäkringsskydd igen genom att kontakta oss när din betalning har registrerats";
 "MANUAL_INPUT_LIST_OTHER" = "Annat";
 "MARKETING_GET_HEDVIG" = "Få ett prisförslag";
@@ -1175,6 +1176,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "offer.remove_discount_button" = "Ta bort rabatt";
 "offer.remove_discount_error_alert_body" = "Försök igen.";
 "offer.remove_discount_error_alert_title" = "Det gick inte att ta bort rabatten";
+"ongoing_shop_session_action_button" = "Fortsätt köpet";
+"ongoing_shop_session_dismiss_offer" = "Avvisa erbjudandet";
 /* This text key is to describe the actions for accessibility reasons. */
 "open_chat" = "Skriv meddelande";
 /* Figma page Pay-In Flow */
