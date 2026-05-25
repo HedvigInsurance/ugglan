@@ -2,6 +2,13 @@
 set -e
 set -x
 
+# Each Xcode Cloud ci_*.sh runs in a fresh shell, so re-activate the mise
+# shims that ci_post_clone.sh installed (node lives there, not on $PATH).
+export PATH="$HOME/.local/bin:$PATH"
+if command -v mise &> /dev/null; then
+  eval "$(mise activate bash --shims)"
+fi
+
 if [ "${DATADOG_API_KEY+x}" ]; then
 echo "===== upload to datadog phase ====="
 npx @datadog/datadog-ci dsyms upload "${CI_ARCHIVE_PATH}/dSYMs/"
