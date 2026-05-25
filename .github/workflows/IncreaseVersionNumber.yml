@@ -18,6 +18,8 @@ jobs:
           xcode-version: latest-stable
       - name: Post checkout pre
         run: scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Post checkout
         run: scripts/post-checkout.sh
       - name: Bump version
