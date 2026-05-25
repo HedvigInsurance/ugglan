@@ -9,9 +9,9 @@ Hedvig is a new approach to insurance currently available in Sweden, we belive i
 
    `get it from Mac App Store`
 
-2. Install tuist by following this guide
+2. Install mise + tuist
 
-   `https://docs.tuist.io/guides/quick-start/install-tuist`
+   `scripts/install-tuist.sh`
 
 3. Run post-checkout
 
