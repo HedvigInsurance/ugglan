@@ -6,7 +6,8 @@ import hCoreUI
 struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: NavigationRouter
     @State private var hasAgreedToHonestyPledge = false
-    let onConfirm: (_ withAnimations: Bool) -> Void
+    let hasOngoingClaim: Bool
+    let onConfirm: (_ inProgress: Bool, _ withAnimations: Bool) -> Void
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -29,9 +30,22 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 .sectionContainerStyle(.transparent)
                 hSection {
                     VStack(spacing: .padding8) {
-                        continueButtonWithAnimations()
-                        if Environment.current == .staging {
-                            continueButtonWithAnimations(false)
+                        if hasOngoingClaim {
+                            hButton(.large, .primary, content: .init(title: "Start a new claim")) {
+                                onConfirm(false, true)
+                            }
+                            .disabled(!hasAgreedToHonestyPledge)
+                        } else {
+                            continueButtonWithAnimations()
+                                .disabled(!hasAgreedToHonestyPledge)
+                        }
+                        //                        if Environment.current == .staging {
+                        //                            continueButtonWithAnimations(false)
+                        //                        }
+                        if hasOngoingClaim {
+                            hButton(.large, .primaryAlt, content: .init(title: "Continue where you stopped")) {
+                                onConfirm(true, true)
+                            }
                         }
                         cancelButton
                     }
@@ -69,11 +83,11 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         Group {
             if enabled {
                 hContinueButton {
-                    onConfirm(enabled)
+                    onConfirm(false, enabled)
                 }
             } else {
                 hButton(.large, .secondary, content: .init(title: "Without animations")) {
-                    onConfirm(enabled)
+                    onConfirm(false, enabled)
                 }
             }
         }
@@ -90,6 +104,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in })
+        SubmitClaimChatHonestyPledgeScreen(hasOngoingClaim: false, onConfirm: { _, _ in })
     }
 }

@@ -64,7 +64,13 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             fatalError("AudioRecordingStepHandler initialized with non-audioRecording content")
         }
         self.audioRecordingModel = model
+        self.audioFileURL = model.currentAudioUrl
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        if let currentFreeText = model.currentFreeText {
+            self.textInput = currentFreeText
+            self.isTextInputPresented = true
+            self.showTextViewOnAppear = false
+        }
     }
 
     private var uploadedAudioId: String?

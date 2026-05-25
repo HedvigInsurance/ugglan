@@ -78,13 +78,20 @@ enum SubmitClaimChatMessageSender {
     case member
 }
 
-public struct ClaimIntent: Sendable {
+public struct ClaimIntent: Sendable, Equatable {
+    public static func == (lhs: ClaimIntent, rhs: ClaimIntent) -> Bool {
+        lhs.id == rhs.id
+    }
+
     let currentStep: ClaimIntentStep
     let id: String
     let isSkippable: Bool
     let isRegrettable: Bool
+    let previousSteps: [ClaimIntent]
     let progress: Float
     let hint: String?
+    let createdAt: Date?
+    let displayName: String?
 
     public init(
         currentStep: ClaimIntentStep,
@@ -92,7 +99,10 @@ public struct ClaimIntent: Sendable {
         isSkippable: Bool,
         isRegrettable: Bool,
         progress: Float,
-        hint: String? = nil
+        hint: String? = nil,
+        createdAt: Date? = nil,
+        displayName: String? = nil,
+        previousSteps: [ClaimIntent] = []
     ) {
         self.currentStep = currentStep
         self.id = id
@@ -100,6 +110,9 @@ public struct ClaimIntent: Sendable {
         self.isRegrettable = isRegrettable
         self.progress = progress
         self.hint = hint
+        self.createdAt = createdAt
+        self.displayName = displayName
+        self.previousSteps = previousSteps
     }
 }
 
@@ -153,6 +166,7 @@ public struct ClaimIntentStepContentForm: Sendable {
 
     public struct ClaimIntentStepContentFormField: Sendable {
         let defaultValues: [String]
+        let currentValues: [String]
         public let id: String
         let isRequired: Bool
         let maxValue: String?
@@ -173,9 +187,11 @@ public struct ClaimIntentStepContentForm: Sendable {
             suffix: String?,
             searchData: SearchData?,
             title: String,
-            type: ClaimIntentStepContentFormFieldType
+            type: ClaimIntentStepContentFormFieldType,
+            currentValues: [String] = []
         ) {
             self.defaultValues = defaultValues
+            self.currentValues = currentValues
             self.id = id
             self.isRequired = isRequired
             self.maxValue = maxValue
@@ -248,24 +264,49 @@ public struct ClaimIntentStepContentAudioRecording: Sendable {
     let uploadURI: String
     let freeTextMinLength: Int
     let freeTextMaxLength: Int
+    let currentAudioUrl: URL?
+    let currentFreeText: String?
 
-    public init(uploadURI: String, freeTextMinLength: Int, freeTextMaxLength: Int) {
+    public init(
+        uploadURI: String,
+        freeTextMinLength: Int,
+        freeTextMaxLength: Int,
+        currentAudioUrl: URL? = nil,
+        currentFreeText: String? = nil
+    ) {
         self.uploadURI = uploadURI
         self.freeTextMinLength = freeTextMinLength
         self.freeTextMaxLength = freeTextMaxLength
+        self.currentAudioUrl = currentAudioUrl
+        self.currentFreeText = currentFreeText
     }
 }
 
 public struct ClaimIntentStepContentFileUpload: Sendable {
     public let uploadURI: String
+    public let currentFiles: [ClaimIntentStepContentFileUploadFile]
 
-    public init(uploadURI: String) {
+    public init(uploadURI: String, currentFiles: [ClaimIntentStepContentFileUploadFile] = []) {
         self.uploadURI = uploadURI
+        self.currentFiles = currentFiles
+    }
+}
+
+public struct ClaimIntentStepContentFileUploadFile: Sendable {
+    public let url: URL
+    public let contentType: MimeType
+    public let fileName: String
+
+    public init(url: URL, contentType: MimeType, fileName: String) {
+        self.url = url
+        self.contentType = contentType
+        self.fileName = fileName
     }
 }
 
 public struct ClaimIntentStepContentSelect: Sendable {
     let defaultSelectedId: String?
+    let currentSelectedId: String?
     let options: [ClaimIntentContentSelectOption]
     let style: ClaimIntentStepContentSelectStyle
 
@@ -277,9 +318,11 @@ public struct ClaimIntentStepContentSelect: Sendable {
     public init(
         defaultSelectedId: String?,
         options: [ClaimIntentContentSelectOption],
-        style: ClaimIntentStepContentSelectStyle
+        style: ClaimIntentStepContentSelectStyle,
+        currentSelectedId: String? = nil
     ) {
         self.defaultSelectedId = defaultSelectedId
+        self.currentSelectedId = currentSelectedId
         self.options = options
         self.style = style
     }

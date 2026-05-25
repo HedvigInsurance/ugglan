@@ -5,6 +5,7 @@ import hCore
 
 public struct ClaimsState: StateProtocol {
     var loadingStates: [ClaimsAction: LoadingState<String>] = [:]
+    public var claimInProgress: ClaimInProgressModel?
     var activeClaims: [ClaimModel]?
     var historyClaims: [ClaimModel]?
     var files: [String: [File]] = [:]

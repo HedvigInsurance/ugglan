@@ -11,13 +11,13 @@ public struct ClaimsCard: View {
 
     public var body: some View {
         VStack {
-            if vm.activeClaims.isEmpty {
+            if vm.claims.isEmpty {
                 Spacer().frame(height: 40)
-            } else if vm.activeClaims.count == 1, let claim = vm.activeClaims.first {
-                ClaimStatusCard(claim: claim, enableTap: true)
+            } else if vm.claims.count == 1, let claim = vm.claims.first {
+                ClaimStatusCard(claimType: claim, enableTap: true)
                     .padding(.vertical)
             } else {
-                ClaimSection(claims: $vm.activeClaims)
+                ClaimSection(claims: $vm.claims)
                     .padding(.vertical)
             }
         }
@@ -34,19 +34,28 @@ public struct ClaimsCard: View {
 class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
-    private var stateObserver: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     private let refreshOn = 60
-    @Published var activeClaims: [ClaimModel] = []
+    @Published var claims: [ClaimType] = []
 
     init() {
-        stateObserver = store.stateSignal
+        store.stateSignal
             .receive(on: RunLoop.main)
-            .map(\.activeClaims)
-            .removeDuplicates()
-            .sink { [weak self] state in
-                self?.activeClaims = state ?? []
+            .map { state -> [ClaimType] in
+                var combined: [ClaimType] = []
+                if let inProgress = state.claimInProgress {
+                    combined.append(.claimInProgress(model: inProgress))
+                }
+                combined.append(contentsOf: (state.activeClaims ?? []).map { .claim(model: $0) })
+                return combined
             }
-        activeClaims = store.state.activeClaims ?? []
+            .removeDuplicates()
+            .sink { [weak self] claims in
+                withAnimation {
+                    self?.claims = claims
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func stopTimer() {
@@ -65,7 +74,22 @@ class ClaimsViewModel: ObservableObject {
 
     func fetch() {
         store.send(.fetchActiveClaims)
-        // added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
+        store.send(.fetchClaimInProgress)
+        // reset poll window so external fetches (deep links, refresh) don't double up
         configureTimer()
+    }
+}
+
+enum ClaimType: Equatable, Identifiable {
+    case claim(model: ClaimModel)
+    case claimInProgress(model: ClaimInProgressModel)
+
+    var id: String {
+        switch self {
+        case .claim(let model):
+            return model.id
+        case .claimInProgress(let model):
+            return model.title ?? "title"
+        }
     }
 }
