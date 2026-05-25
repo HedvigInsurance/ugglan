@@ -22,13 +22,21 @@ public struct hPagerDots: View {
     }
 
     public var body: some View {
-        HStack {
-            ForEach(0..<totalCount, id: \.self) { index in
-                Circle()
-                    .fill(circleColor(index))
-                    .frame(width: 6, height: 6)
+        GeometryReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(0..<totalCount, id: \.self) { index in
+                        Circle()
+                            .fill(circleColor(index))
+                            .frame(width: 6, height: 6)
+                    }
+                }
+                .padding(.horizontal, .padding8)
+                .frame(minWidth: proxy.size.width)
             }
+            .scrollDisabled(true)
         }
+        .frame(height: 6)
     }
 }
 
@@ -55,14 +63,28 @@ public struct hPagerDotsBinded: View {
     }
 
     public var body: some View {
-        HStack {
-            ForEach(0..<totalCount, id: \.self) { index in
-                Circle()
-                    .fill(circleColor(index))
-                    .frame(width: 6, height: 6)
+        GeometryReader { proxy in
+            ScrollViewReader { scrollProxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(0..<totalCount, id: \.self) { index in
+                            Circle()
+                                .fill(circleColor(index))
+                                .frame(width: 6, height: 6)
+                                .id(index)
+                        }
+                    }
+                    .padding(.horizontal, .padding8)
+                    .frame(minWidth: proxy.size.width)
+                }
+                .scrollDisabled(true)
+                .onChange(of: currentIndex) { newValue in
+                    withAnimation {
+                        scrollProxy.scrollTo(newValue, anchor: .center)
+                    }
+                }
             }
         }
-        .onChange(of: currentIndex) { _ in
-        }
+        .frame(height: 6)
     }
 }

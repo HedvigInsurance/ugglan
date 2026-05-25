@@ -88,6 +88,7 @@ public struct ClaimDetailView: View {
                 })
             )
         )
+        .trackVisibility(as: ClaimDetailView.self)
     }
 
     @ViewBuilder

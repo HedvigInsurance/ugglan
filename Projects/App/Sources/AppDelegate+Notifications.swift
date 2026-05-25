@@ -120,19 +120,15 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
             guard let notificationType = getNotificationType(from: notification.request.content.userInfo) else {
                 return true
             }
-            guard let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription else {
-                return true
-            }
 
             if notificationType != .NEW_MESSAGE { return true }
-            let listToCheck: [String] = [
-                String(describing: HomeScreen.self),
-                .init(describing: ClaimDetailView.self),
-                .init(describing: InboxView.self),
-                .init(describing: ChatScreen.self),
-            ]
-            let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
-            return shouldShow
+            let chatSurfaceOnTop = VisibleScreenTracker.isAnyVisible([
+                HomeScreen.self,
+                ClaimDetailView.self,
+                InboxView.self,
+                ChatScreen.self,
+            ])
+            return !chatSurfaceOnTop
         }()
 
         return shouldShowNotification ? [.badge, .banner, .sound] : []

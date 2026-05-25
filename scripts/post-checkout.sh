@@ -9,8 +9,5 @@ scripts/codegen.sh
 
 tuist generate
 
-scripts/fix-assets-for-swift-6.sh
-
-
 scripts/configure-embed-app-extensions.sh
 

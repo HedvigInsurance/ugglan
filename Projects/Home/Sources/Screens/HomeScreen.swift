@@ -45,6 +45,7 @@ extension HomeScreen {
         }
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
+        .trackVisibility(as: HomeScreen.self)
         .onAppear {
             vm.fetchHomeState()
         }
@@ -167,12 +168,9 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
-                let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeScreen.self)
-                if currentVCDescription == compareToDescirption {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchChatNotifications)
-                }
+                guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(.fetchChatNotifications)
             }
     }
 

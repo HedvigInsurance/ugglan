@@ -31,6 +31,8 @@ jobs:
       - name: Post checkout pre
         if: steps.changes.outputs.has_changes == 'true'
         run: scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Post checkout
         if: steps.changes.outputs.has_changes == 'true'
         run: scripts/post-checkout.sh
