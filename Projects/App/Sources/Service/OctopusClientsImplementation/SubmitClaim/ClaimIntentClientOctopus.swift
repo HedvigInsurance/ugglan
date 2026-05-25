@@ -8,7 +8,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
-        let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(.init()))
+        let mutation = OctopusGraphQL.ClaimIntentStartMutation()
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)

@@ -38,7 +38,7 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.1.1"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.1.2"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -81,7 +81,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.1.1"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.1.2"))
             ]
         case .argumentParser:
             return [
