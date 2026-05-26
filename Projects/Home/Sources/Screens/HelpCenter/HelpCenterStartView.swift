@@ -304,7 +304,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
     }
 }
 
-#Preview{
+#Preview {
     HelpCenterStartView(
         onQuickAction: { _ in
         }
