@@ -249,6 +249,10 @@ class DeepLinkHandler {
             handleHelpCenterTopic(url)
         case .helpCenterQuestion:
             handleHelpCenterQuestion(url)
+        case .puppyGuide:
+            handlePuppyGuideDeeplink()
+        case .puppyGuideArticle:
+            handlePuppyGuideArticleDeeplink(url)
         case .moveContract:
             viewModel?.isMoveContractPresented = true
         case .terminateContract:
@@ -385,6 +389,38 @@ class DeepLinkHandler {
                 if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
                     viewModel?.isFaqPresented = question
                 }
+            }
+        }
+    }
+
+    private func handlePuppyGuideDeeplink() {
+        presentHelpCenterAndPushPuppyGuide { router in
+            router.push(PuppyGuideRoute.list)
+        }
+    }
+
+    private func handlePuppyGuideArticleDeeplink(_ url: URL) {
+        // A missing/empty storyName is allowed — the article shows an empty state with a
+        // way back to the puppy guide list.
+        let storyName = url.getParameter(property: .storyName) ?? ""
+        presentHelpCenterAndPushPuppyGuide { router in
+            router.push(PuppyGuideRoute.article(storyName: storyName))
+        }
+    }
+
+    private func presentHelpCenterAndPushPuppyGuide(_ push: @escaping (NavigationRouter) -> Void) {
+        let wasPresented = viewModel?.homeNavigationVm.isHelpCenterPresented == true
+        if !wasPresented {
+            dismissAndSelectTab(0)
+            viewModel?.homeNavigationVm.isHelpCenterPresented = true
+        }
+        Task { [weak viewModel] in
+            // Give the help center modal time to materialize on cold start; shorter delay when reusing.
+            try? await Task.sleep(seconds: wasPresented ? 0.1 : 0.5)
+            await MainActor.run {
+                guard let router = viewModel?.helpCenterVm.router else { return }
+                router.popToRoot()
+                push(router)
             }
         }
     }
