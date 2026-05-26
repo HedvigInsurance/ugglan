@@ -15,6 +15,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     case helpCenter = "help-center"
     case helpCenterTopic = "help-center/topic"
     case helpCenterQuestion = "help-center/question"
+    case puppyGuide = "puppy-guide"
+    case puppyGuideArticle = "puppy-guide-article"
     case moveContract = "move-contract"
     case changeTier = "change-tier"
     case travelAddon = "travel-addon"
@@ -72,6 +74,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.hcQuestionTitle
         case .helpCenterTopic:
             return L10n.hcTitle
+        case .puppyGuide, .puppyGuideArticle:
+            return L10n.puppyGuideTitle
         case .moveContract:
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
@@ -138,6 +142,7 @@ public enum DeeplinkProperty: String {
     case claimId
     case sourceMessageId
     case id
+    case storyName
 }
 
 extension URL {
