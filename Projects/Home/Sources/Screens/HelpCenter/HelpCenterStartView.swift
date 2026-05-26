@@ -23,7 +23,7 @@ public struct HelpCenterStartView: View {
         hForm {
             VStack(spacing: 0) {
                 hSection {
-                    VStack(alignment: .leading, spacing: 40) {
+                    VStack(alignment: .leading, spacing: 0) {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
@@ -56,14 +56,19 @@ public struct HelpCenterStartView: View {
                                 }
                             }
                             .animation(.smooth, value: puppyGuideAvailable)
+                            .padding(.top, 24)
+                            .padding(.bottom, 48)
                             VStack(alignment: .leading, spacing: .padding8) {
                                 hText(L10n.hcHomeViewQuestion)
                                 hText(L10n.hcHomeViewAnswer)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             .accessibilityElement(children: .combine)
+                            .padding(.bottom, 40)
                             displayQuickActions(from: vm.quickActions)
+                                .padding(.bottom, 40)
                             displayTopics()
+                                .padding(.bottom, 40)
                             if let helpCenterModel = vm.helpCenterModel {
                                 QuestionsItems(
                                     questions: helpCenterModel.commonQuestions,
@@ -299,7 +304,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
     }
 }
 
-#Preview {
+#Preview{
     HelpCenterStartView(
         onQuickAction: { _ in
         }
