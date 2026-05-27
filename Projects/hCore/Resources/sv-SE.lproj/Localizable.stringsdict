@@ -130,6 +130,54 @@
         <string>Dina nuvarande försäkringar</string>
       </dict>
     </dict>
+    <key>ongoing_shop_session_offer_expires_in_days</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Erbjudandet löper ut om %1$li dag</string>
+        <key>other</key>
+        <string>Erbjudandet löper ut om %1$li dagar</string>
+      </dict>
+    </dict>
+    <key>ongoing_shop_session_offer_expires_in_hours</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Erbjudandet löper ut om %1$li timme</string>
+        <key>other</key>
+        <string>Erbjudandet löper ut om %1$li timmar</string>
+      </dict>
+    </dict>
+    <key>ongoing_shop_session_offer_expires_in_minutes</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>Erbjudandet löper ut om %1$li minut</string>
+        <key>other</key>
+        <string>Erbjudandet löper ut om %1$li minuter</string>
+      </dict>
+    </dict>
     <key>payment_screen.free_month_discount_label</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>
