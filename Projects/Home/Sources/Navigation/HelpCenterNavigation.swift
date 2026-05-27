@@ -14,6 +14,10 @@ import hCoreUI
 @MainActor
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
+    // Set by the deep-link handler before/after the help-center modal opens.
+    // Consumed by `HelpCenterNavigation` via .task(id:) so the push runs after
+    // the NavigationStack has mounted and registered its destination modifiers.
+    @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -116,6 +120,12 @@ public struct HelpCenterNavigation<Content: View>: View {
                     PuppyArticleHost(storyName: storyName, router: router)
                         .ignoresSafeArea()
                 }
+            }
+            .task(id: helpCenterVm.pendingPuppyGuideRoute) { [weak helpCenterVm] in
+                guard let helpCenterVm, let route = helpCenterVm.pendingPuppyGuideRoute else { return }
+                helpCenterVm.router.popToRoot()
+                helpCenterVm.router.push(route)
+                helpCenterVm.pendingPuppyGuideRoute = nil
             }
         }
         .ignoresSafeArea()

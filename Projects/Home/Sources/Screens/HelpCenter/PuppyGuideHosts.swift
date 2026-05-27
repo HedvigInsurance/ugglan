@@ -42,12 +42,6 @@ struct PuppyArticleHost: UIViewControllerRepresentable {
             navigateUp: { [weak router] in
                 DispatchQueue.main.async { router?.pop() }
             },
-            onNavigateToList: { [weak router] in
-                DispatchQueue.main.async {
-                    router?.popToRoot()
-                    router?.push(PuppyGuideRoute.list)
-                }
-            },
             swipeBackController: bridge,
             onScrollOffsetChanged: { [bridge] offsetDp in
                 DispatchQueue.main.async {
