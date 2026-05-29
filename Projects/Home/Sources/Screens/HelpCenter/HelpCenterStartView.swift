@@ -8,7 +8,7 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
-    @State private var puppyGuideAvailable: Bool = false
+    @State private var puppyGuideDisplay: PuppyGuideDisplay?
     @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: NavigationRouter
@@ -17,6 +17,15 @@ public struct HelpCenterStartView: View {
         onQuickAction: @escaping (QuickAction) -> Void
     ) {
         self.onQuickAction = onQuickAction
+    }
+
+    private enum PuppyGuideDisplay {
+        case fullCard
+        case quickAction
+    }
+
+    private var showsFullPuppyGuideCard: Bool {
+        puppyGuideDisplay == .fullCard
     }
 
     public var body: some View {
@@ -38,7 +47,7 @@ public struct HelpCenterStartView: View {
                             .padding(.top, 20)
                         } else {
                             ZStack {
-                                if puppyGuideAvailable {
+                                if showsFullPuppyGuideCard {
                                     puppyGuideEntry
                                         .transition(.opacity)
                                 } else {
@@ -55,7 +64,7 @@ public struct HelpCenterStartView: View {
                                     .transition(.opacity)
                                 }
                             }
-                            .animation(.smooth, value: puppyGuideAvailable)
+                            .animation(.smooth, value: showsFullPuppyGuideCard)
                             .padding(.top, 24)
                             .padding(.bottom, 48)
                             VStack(alignment: .leading, spacing: .padding8) {
@@ -65,8 +74,11 @@ public struct HelpCenterStartView: View {
                             }
                             .accessibilityElement(children: .combine)
                             .padding(.bottom, 40)
-                            displayQuickActions(from: vm.quickActions)
-                                .padding(.bottom, 40)
+                            displayQuickActions(
+                                from: vm.quickActions,
+                                showPuppyGuideRow: puppyGuideDisplay == .quickAction
+                            )
+                            .padding(.bottom, 40)
                             displayTopics()
                                 .padding(.bottom, 40)
                             if let helpCenterModel = vm.helpCenterModel {
@@ -107,8 +119,16 @@ public struct HelpCenterStartView: View {
             vm.updateColors()
         }
         .task {
-            puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { available in
-                DispatchQueue.main.async { puppyGuideAvailable = available.boolValue }
+            puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { presentation in
+                let display: PuppyGuideDisplay?
+                if presentation is PuppyGuidePresentation.FullCard {
+                    display = .fullCard
+                } else if presentation is PuppyGuidePresentation.QuickAction {
+                    display = .quickAction
+                } else {
+                    display = nil
+                }
+                DispatchQueue.main.async { puppyGuideDisplay = display }
             }
         }
         .onDisappear {
@@ -153,8 +173,8 @@ public struct HelpCenterStartView: View {
     }
 
     @ViewBuilder
-    func displayQuickActions(from quickActions: [QuickAction]) -> some View {
-        if !quickActions.isEmpty {
+    func displayQuickActions(from quickActions: [QuickAction], showPuppyGuideRow: Bool = false) -> some View {
+        if !quickActions.isEmpty || showPuppyGuideRow {
             VStack(alignment: .leading, spacing: .padding4) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                     .padding(.bottom, .padding4)
@@ -162,6 +182,11 @@ public struct HelpCenterStartView: View {
                 ForEach(quickActions, id: \.displayTitle) { [onQuickAction] quickAction in
                     QuickActionView(quickAction: quickAction) {
                         onQuickAction(quickAction)
+                    }
+                }
+                if showPuppyGuideRow {
+                    PuppyGuideQuickActionRow { [weak router] in
+                        router?.push(PuppyGuideRoute.list)
                     }
                 }
             }

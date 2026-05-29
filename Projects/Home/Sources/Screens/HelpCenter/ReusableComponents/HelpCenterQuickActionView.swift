@@ -33,6 +33,29 @@ struct QuickActionView: View {
     }
 }
 
-#Preview {
+struct PuppyGuideQuickActionRow: View {
+    let onTap: () -> Void
+
+    var body: some View {
+        hSection {
+            hRow {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.puppyGuideTitle)
+
+                    hText(L10n.puppyGuideSubtitle, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                Spacer()
+            }
+            .withChevronAccessory
+            .verticalPadding(.padding12)
+            .onTap(onTap)
+        }
+        .hWithoutHorizontalPadding([.section])
+        .sectionContainerStyle(.opaque)
+    }
+}
+
+#Preview{
     QuickActionView(quickAction: .travelInsurance, onQuickAction: {})
 }
