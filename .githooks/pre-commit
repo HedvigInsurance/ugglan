@@ -3,6 +3,9 @@
 SWIFT_FORMAT_PATH=$(find . -type f -name swift-format | grep -v '.dSYM')
 
 for file_path in $(git diff --name-only --cached --diff-filter=AMRCT | grep ".swift$"); do
+    if [ "$(basename "$file_path")" = "Package.swift" ]; then
+        continue
+    fi
     $SWIFT_FORMAT_PATH -i "${file_path}";
     sed -i '' -e '1,/^import/{/^\/\/.*/d;}' -e '/./,$!d' $file_path
     git add $file_path

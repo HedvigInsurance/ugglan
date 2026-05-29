@@ -27,9 +27,10 @@ public struct ShapeEnvironmentRedraw<Content: View>: View {
     var content: (_ colorScheme: ColorScheme, _ userInterfaceLevel: UIUserInterfaceLevel) -> Content
 
     init(
-        @ViewBuilder _ content: @escaping (
-            _ colorScheme: ColorScheme, _ userInterfaceLevel: UIUserInterfaceLevel
-        ) -> Content
+        @ViewBuilder _ content:
+            @escaping (
+                _ colorScheme: ColorScheme, _ userInterfaceLevel: UIUserInterfaceLevel
+            ) -> Content
     ) {
         self.content = content
     }

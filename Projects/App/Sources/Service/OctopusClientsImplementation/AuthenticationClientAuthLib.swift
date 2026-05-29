@@ -8,7 +8,7 @@ import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
-        return NetworkAuthRepository(
+        NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: {
                 var headers = self?.getHeaders() ?? [:]
