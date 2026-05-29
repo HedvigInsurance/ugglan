@@ -5,6 +5,7 @@ Tuist-managed iOS monorepo. Latest Swift, targeting iOS 16+.
 ## Build & Run
 
 ```bash
+scripts/install-tuist.sh   # One-time: installs mise + tuist (mise is required by swiftgen.sh)
 scripts/post-checkout.sh   # Full setup after fresh clone (generates workspace, codegen, etc.)
 tuist generate              # Regenerate Xcode workspace after module changes
 ```
