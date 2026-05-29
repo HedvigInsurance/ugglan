@@ -12,6 +12,7 @@ public struct HelpCenterStartView: View {
     @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: NavigationRouter
+    @InjectObservableObject var featureFlags: FeatureFlags
 
     public init(
         onQuickAction: @escaping (QuickAction) -> Void
@@ -25,7 +26,11 @@ public struct HelpCenterStartView: View {
     }
 
     private var showsFullPuppyGuideCard: Bool {
-        puppyGuideDisplay == .fullCard
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .fullCard
+    }
+
+    private var showsPuppyGuideQuickActionRow: Bool {
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .quickAction
     }
 
     public var body: some View {
@@ -76,7 +81,7 @@ public struct HelpCenterStartView: View {
                             .padding(.bottom, 40)
                             displayQuickActions(
                                 from: vm.quickActions,
-                                showPuppyGuideRow: puppyGuideDisplay == .quickAction
+                                showPuppyGuideRow: showsPuppyGuideQuickActionRow
                             )
                             .padding(.bottom, 40)
                             displayTopics()

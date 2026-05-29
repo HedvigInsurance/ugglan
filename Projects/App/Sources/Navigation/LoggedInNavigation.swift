@@ -392,6 +392,7 @@ class DeepLinkHandler {
     }
 
     private func handlePuppyGuideDeeplink() {
+        guard featureFlags.isPuppyGuideEnabled else { return }
         viewModel?.helpCenterVm.pendingPuppyGuideRoute = .list
         if viewModel?.homeNavigationVm.isHelpCenterPresented != true {
             dismissAndSelectTab(0)
