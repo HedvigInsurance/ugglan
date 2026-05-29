@@ -644,7 +644,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
-"PUPPY_GUIDE_INFO" = "I Valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.";
+"PUPPY_GUIDE_INFO" = "I valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.";
 "PUPPY_GUIDE_LABEL" = "Utvalda guider";
 "PUPPY_GUIDE_LABEL_READ" = "Läst";
 "PUPPY_GUIDE_RATING_NOT_HELPFUL" = "Inte hjälpsam";
