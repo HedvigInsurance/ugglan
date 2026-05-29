@@ -130,7 +130,6 @@ public struct HelpCenterStartView: View {
                 hPill(text: L10n.puppyGuideLabel, color: .pink)
                     .hFieldSize(.small)
                     .padding(.padding16)
-                    .accessibilityHidden(true)
             }
             VStack(alignment: .leading, spacing: .padding16) {
                 VStack(alignment: .leading, spacing: 0) {
@@ -304,7 +303,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
     }
 }
 
-#Preview {
+#Preview{
     HelpCenterStartView(
         onQuickAction: { _ in
         }
