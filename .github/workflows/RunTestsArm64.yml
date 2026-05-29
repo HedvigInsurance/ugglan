@@ -43,16 +43,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Speeds up repeat runs: SwiftGen binary download + SPM resolution.
-      - name: Cache SwiftGen + tuist build
+      # Small generic cache for the downloaded SwiftGen binary (a tool, not a
+      # build product) so we don't re-download it every run.
+      - name: Cache SwiftGen binary
         uses: actions/cache@v4
         with:
-          path: |
-            build/swiftgen-6.6.3
-            ~/Library/Caches/tuist
-          key: ${{ runner.os }}-tools-${{ hashFiles('.tuist-version') }}
+          path: build/swiftgen-6.6.3
+          key: ${{ runner.os }}-swiftgen-${{ hashFiles('scripts/swiftgen.sh') }}
           restore-keys: |
-            ${{ runner.os }}-tools-
+            ${{ runner.os }}-swiftgen-
+
+      # iOS-specialised cache: persists Xcode DerivedData + the resolved SwiftPM
+      # packages AND restores file modification times. The mtime restore is the
+      # reason to use this over a plain actions/cache on DerivedData — Xcode keys
+      # incremental-build freshness on mtimes, which `git checkout` resets, so a
+      # naive cache yields no compile reuse. Keyed on Package.resolved so it
+      # invalidates only when SPM dependencies actually change.
+      - name: Xcode cache (DerivedData + SwiftPM)
+        uses: irgaly/xcode-cache@v1
+        with:
+          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+          swiftpm-package-resolved-file: Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
       - name: Post-checkout prep (swiftgen, codegen, tuist generate)
         run: |
