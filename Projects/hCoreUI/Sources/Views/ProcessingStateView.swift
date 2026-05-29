@@ -147,21 +147,6 @@ public struct ProcessingStateView: View {
     }
 }
 
-public enum ProcessingState: Equatable {
-    case loading
-    case success
-    case error(errorMessage: String)
-
-    public var isError: Bool {
-        switch self {
-        case .error:
-            return true
-        default:
-            return false
-        }
-    }
-}
-
 private struct AnimationTiming {
     let delay: Float
     let duration: Float

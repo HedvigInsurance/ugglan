@@ -1,12 +1,10 @@
-import Combine
-import PresentableStore
+import CampaignCore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct DiscountsView: View {
     let data: PaymentDiscountsData
-    @PresentableStore var store: CampaignStore
     @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
@@ -45,8 +43,7 @@ struct DiscountsView: View {
         .withHeader(
             title: L10n.ReferralsInfoSheet.headline,
             infoButtonDescription: L10n.ReferralsInfoSheet.body(
-                store.state.paymentDiscountsData?.referralsData.discountPerMember
-                    .formattedAmount ?? ""
+                data.referralsData.discountPerMember.formattedAmount
             )
         )
         .hWithoutHorizontalPadding([.row, .divider])
@@ -181,55 +178,31 @@ struct DiscountsView: View {
 }
 
 public struct PaymentsDiscountsRootView: View {
-    @PresentableStore var store: CampaignStore
     @StateObject var vm = PaymentsDiscountsRootViewModel()
+
+    public init() {}
 
     public var body: some View {
         successView.loading($vm.viewState)
             .hStateViewButtonConfig(
                 .init(
-                    actionButton: .init(buttonAction: {
-                        store.send(.fetchDiscountsData)
+                    actionButton: .init(buttonAction: { [weak vm] in
+                        Task {
+                            await vm?.fetch()
+                        }
                     }),
                     dismissButton: nil
                 )
             )
+            .task { [weak vm] in
+                await vm?.fetch()
+            }
     }
 
+    @ViewBuilder
     private var successView: some View {
-        PresentableStoreLens(
-            CampaignStore.self,
-            getter: { state in
-                state.paymentDiscountsData
-            }
-        ) { paymentDiscountsData in
-            if let paymentDiscountsData {
-                DiscountsView(data: paymentDiscountsData)
-            }
+        if let data = vm.paymentDiscountsData {
+            DiscountsView(data: data)
         }
-    }
-}
-
-@MainActor
-class PaymentsDiscountsRootViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @PresentableStore var store: CampaignStore
-    @Published var loadingCancellable: AnyCancellable?
-
-    init() {
-        loadingCancellable = store.loadingSignal
-            .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                let getAction = action.first(where: { $0.key == .getDiscountsData })
-                switch getAction?.value {
-                case let .error(errorMessage):
-                    self?.viewState = .error(errorMessage: errorMessage)
-                case .loading:
-                    self?.viewState = .loading
-                default:
-                    self?.viewState = .success
-                }
-            }
     }
 }

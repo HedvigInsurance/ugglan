@@ -1,4 +1,3 @@
-import Campaign
 import SwiftUI
 import hCore
 import hCoreUI
