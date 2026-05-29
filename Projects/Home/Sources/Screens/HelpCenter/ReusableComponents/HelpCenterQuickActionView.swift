@@ -56,6 +56,6 @@ struct PuppyGuideQuickActionRow: View {
     }
 }
 
-#Preview{
+#Preview {
     QuickActionView(quickAction: .travelInsurance, onQuickAction: {})
 }
