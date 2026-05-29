@@ -1,5 +1,5 @@
 import Apollo
-import Authentication
+import AuthenticationCore
 import Environment
 import Foundation
 @preconcurrency import HedvigShared

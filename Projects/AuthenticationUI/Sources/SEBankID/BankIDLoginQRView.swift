@@ -1,3 +1,4 @@
+import AuthenticationCore
 import Combine
 import SwiftUI
 import hCore
@@ -255,23 +256,4 @@ class BankIDViewModel: ObservableObject {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return BankIDLoginQRView {}
         .environmentObject(NavigationRouter())
-}
-
-public enum AuthenticationRouterType: Hashable {
-    case emailLogin
-    case otpCodeEntry
-    case error(message: String)
-}
-
-extension AuthenticationRouterType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .emailLogin:
-            return .init(describing: OTPEntryView.self)
-        case .otpCodeEntry:
-            return .init(describing: OTPCodeEntryView.self)
-        case .error:
-            return .init(describing: LoginErrorView.self)
-        }
-    }
 }
