@@ -1,0 +1,96 @@
+name: Run Tests (arm64)
+
+# Evaluation workflow: runs the SAME unit + snapshot test scheme that Xcode Cloud
+# runs ("Ugglan-Workspace" against Ugglan.xcworkspace), but on an Apple Silicon
+# (arm64) GitHub-hosted runner instead of Xcode Cloud's Intel hosts.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: run-tests-arm64-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Unit + snapshot tests on arm64 simulator
+    # macos-15 is Apple Silicon (arm64)
+    runs-on: macos-15
+    timeout-minutes: 90
+    permissions:
+      contents: read
+
+    env:
+      # Pin a fixed snapshot-failure output dir so we can collect it on failure.
+      # The Tuist test action defaults SNAPSHOT_ARTIFACTS to a random /tmp/<uuid>
+      # path; we override it for the whole xcodebuild invocation below.
+      SNAPSHOT_ARTIFACTS: ${{ github.workspace }}/__SnapshotFailures__
+
+    steps:
+      - name: Checkout ugglan
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install mise + Tuist
+        run: |
+          chmod +x scripts/install-tuist.sh
+          scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Speeds up repeat runs: SwiftGen binary download + SPM resolution.
+      - name: Cache SwiftGen + tuist build
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/swiftgen-6.6.3
+            ~/Library/Caches/tuist
+          key: ${{ runner.os }}-tools-${{ hashFiles('.tuist-version') }}
+          restore-keys: |
+            ${{ runner.os }}-tools-
+
+      - name: Post-checkout prep (swiftgen, codegen, tuist generate)
+        run: |
+          chmod +x scripts/post-checkout.sh
+          scripts/post-checkout.sh
+
+      # Same scheme + workspace as the Xcode Cloud "Tests" action. iPhone 16 is an
+      # arm64 simulator on the arm64 runner, CODE_SIGNING_ALLOWED=NO mirrors the
+      # other CI build workflows.
+      - name: Run tests
+        run: |
+          mkdir -p "$SNAPSHOT_ARTIFACTS"
+          xcodebuild test \
+            -workspace Ugglan.xcworkspace \
+            -scheme Ugglan-Workspace \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=latest' \
+            -resultBundlePath "${{ github.workspace }}/TestResults.xcresult" \
+            -enableCodeCoverage YES \
+            CODE_SIGNING_ALLOWED=NO \
+            SNAPSHOT_ARTIFACTS="$SNAPSHOT_ARTIFACTS"
+
+      # Mirrors what ci_scripts/ci_post_xcodebuild.sh-adjacent tooling collects:
+      # the snapshot diff/failure images written to SNAPSHOT_ARTIFACTS, plus the
+      # full result bundle for triage.
+      - name: Upload snapshot failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-failures
+          path: ${{ env.SNAPSHOT_ARTIFACTS }}
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload test result bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ${{ github.workspace }}/TestResults.xcresult
+          if-no-files-found: ignore
+          retention-days: 14
