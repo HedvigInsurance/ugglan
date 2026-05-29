@@ -30,16 +30,17 @@ final class PaymentDetailsDiscountViewModelTests {
                 ]
             )
         )
-
         let mockService = MockCampaignData.createMockCampaignService(
             fetchPaymentDiscountsData: { discountsData }
         )
-        let vm = PaymentsDiscountsRootViewModel()
-        await vm.fetch()
-        #expect(vm.viewState == .success)
-        #expect(vm.paymentDiscountsData == discountsData)
-        #expect(mockService.events.count == 1)
-        #expect(mockService.events.first == .getPaymentDiscountsData)
+
+        await assertDeallocates(PaymentsDiscountsRootViewModel.init) { vm in
+            await vm.fetch()
+            #expect(vm.viewState == .success)
+            #expect(vm.paymentDiscountsData == discountsData)
+            #expect(mockService.events.count == 1)
+            #expect(mockService.events.first == .getPaymentDiscountsData)
+        }
     }
 
     @Test
@@ -47,11 +48,13 @@ final class PaymentDetailsDiscountViewModelTests {
         let mockService = MockCampaignData.createMockCampaignService(
             fetchPaymentDiscountsData: { throw MockCampaignError.failure }
         )
-        let vm = PaymentsDiscountsRootViewModel()
-        await vm.fetch()
-        #expect(vm.viewState == .error(errorMessage: L10n.General.errorBody))
-        #expect(vm.paymentDiscountsData == nil)
-        #expect(mockService.events.count == 1)
-        #expect(mockService.events.first == .getPaymentDiscountsData)
+
+        await assertDeallocates(PaymentsDiscountsRootViewModel.init) { vm in
+            await vm.fetch()
+            #expect(vm.viewState == .error(errorMessage: L10n.General.errorBody))
+            #expect(vm.paymentDiscountsData == nil)
+            #expect(mockService.events.count == 1)
+            #expect(mockService.events.first == .getPaymentDiscountsData)
+        }
     }
 }
