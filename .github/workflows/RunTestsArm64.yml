@@ -31,7 +31,7 @@ jobs:
 
     steps:
       - name: Checkout ugglan
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -48,7 +48,7 @@ jobs:
       # Small generic cache for the downloaded SwiftGen binary (a tool, not a
       # build product) so we don't re-download it every run.
       - name: Cache SwiftGen binary
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: build/swiftgen-6.6.3
           key: ${{ runner.os }}-swiftgen-${{ hashFiles('scripts/swiftgen.sh') }}
@@ -100,7 +100,7 @@ jobs:
       # full result bundle for triage.
       - name: Upload snapshot failures
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: snapshot-failures
           path: ${{ env.SNAPSHOT_ARTIFACTS }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Upload test result bundle
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: ${{ github.workspace }}/TestResults.xcresult
