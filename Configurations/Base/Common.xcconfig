@@ -10,11 +10,6 @@ ALWAYS_SEARCH_USER_PATHS = NO
 // Architectures to build
 ARCHS = $(ARCHS_STANDARD)
 
-// Exclude x86_64 from simulator builds. The HedvigShared KMP framework
-// is produced for arm64-only on Apple Silicon (both locally and on
-// Xcode Cloud); requesting an x86_64 simulator slice fails to link.
-EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64
-
 // Check for Grand Central Dispatch idioms that may lead to poor performance.
 CLANG_ANALYZER_GCD_PERFORMANCE = YES
 
