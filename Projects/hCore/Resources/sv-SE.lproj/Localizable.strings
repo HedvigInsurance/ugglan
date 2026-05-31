@@ -10,6 +10,7 @@
 "A11Y_PAUSE" = "Pausa";
 /* Play action for a video, an audio recording etc. */
 "A11Y_PLAY" = "Spela";
+"A11Y_READ_LABEL_HACK" = "Läst";
 "A11Y_SCROLL_DOWN" = "Skrolla längst ner på sidan";
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "Visa detaljer";
