@@ -46,6 +46,7 @@ final class ContractsTests: XCTestCase {
                     supportsCoOwners: false,
                     supportsTravelCertificate: true,
                     supportsChangeTier: true,
+                    supportsTermination: true,
                     upcomingChangedAgreement: nil,
                     upcomingRenewal: nil,
                     firstName: "first",
