@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 90
     permissions:
       contents: read
+      checks: write
+      pull-requests: write
 
     env:
       # Pin a fixed snapshot-failure output dir so we can collect it on failure.
