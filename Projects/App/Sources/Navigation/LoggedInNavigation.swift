@@ -1066,8 +1066,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func petChipIdAdded() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchMemberState)
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+        Task {
+            await delay(1)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            contractStore.send(.fetchContracts)
+        }
     }
 
     @objc func onOpenMissingPetChipId() {
