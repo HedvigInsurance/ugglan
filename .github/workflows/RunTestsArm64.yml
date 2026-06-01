@@ -86,7 +86,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             SNAPSHOT_ARTIFACTS="$SNAPSHOT_ARTIFACTS"
 
-      - uses: kishikawakatsumi/xcresulttool@v1
+      - uses: slidoapp/xcresulttool@v3.1.1
         if: always()
         with:
           path: ${{ github.workspace }}/TestResults.xcresult
