@@ -5,7 +5,8 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)"
+      "Bash(git commit -m ':*)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }
