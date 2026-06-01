@@ -120,10 +120,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         return editTypes.count == 1 && editTypes.first == .coOwners
     }
 
-    public var canTerminate: Bool {
-        supportsTermination && terminationDate == nil
-    }
-
     public var isTerminated: Bool {
         terminationDate != nil
     }

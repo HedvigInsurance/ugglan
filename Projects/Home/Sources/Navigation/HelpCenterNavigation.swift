@@ -206,7 +206,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .cancellation:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                .filter(\.canTerminate)
+                .filter(\.supportsTermination)
                 .map(\.asTerminationConfirmConfig)
             Task {
                 do {

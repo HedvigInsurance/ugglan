@@ -108,7 +108,7 @@ extension Contract {
             supportsCoOwners: false,
             supportsTravelCertificate: false,
             supportsChangeTier: false,
-            supportsTermination: false,
+            supportsTermination: pendingContract.supportsTermination,
             upcomingChangedAgreement: nil,
             upcomingRenewal: nil,
             firstName: firstName,
