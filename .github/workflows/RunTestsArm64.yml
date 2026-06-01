@@ -86,6 +86,12 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             SNAPSHOT_ARTIFACTS="$SNAPSHOT_ARTIFACTS"
 
+      - uses: tbartelmess/analyze-xcoderesults-action@0.1.0
+        if: always()
+        with:
+          results: "${{ github.workspace }}/TestResults.xcresult"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       # Mirrors what ci_scripts/ci_post_xcodebuild.sh-adjacent tooling collects:
       # the snapshot diff/failure images written to SNAPSHOT_ARTIFACTS, plus the
       # full result bundle for triage.
