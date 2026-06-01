@@ -54,7 +54,7 @@ final class StoreDiscountsTests: XCTestCase {
         await store.sendAsync(.fetchDiscountsData)
         assert(store.loadingState[.getDiscountsData] == nil)
         assert(store.state.paymentDiscountsData == discountsData)
-        assert(mockService.events.count == 1)
+        assert(mockService.events.count == 3)
         assert(mockService.events.first == .getPaymentDiscountsData)
     }
 
