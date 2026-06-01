@@ -91,6 +91,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/TestResults.xcresult
           show-passed-tests: false
+          show-code-coverage: false
 
       # Mirrors what ci_scripts/ci_post_xcodebuild.sh-adjacent tooling collects:
       # the snapshot diff/failure images written to SNAPSHOT_ARTIFACTS, plus the
