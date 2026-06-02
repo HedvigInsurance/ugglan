@@ -67,23 +67,30 @@ extension Dependencies {
 }
 
 @MainActor
+@dynamicMemberLookup
 public class FeatureFlags: ObservableObject {
     public static let shared = FeatureFlags()
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
-    @Published public private(set) var isTerminationFlowEnabled = false  // need rework
-    @Published public private(set) var isUpdateNecessary = false
-    @Published public private(set) var isChatDisabled = false  // need to reintroduce
-    @Published public private(set) var isPaymentScreenEnabled = false
-    @Published public private(set) var isConnectPaymentEnabled = false
-    @Published public private(set) var isHelpCenterEnabled = false
-    @Published public private(set) var isSubmitClaimEnabled = false
-    @Published public private(set) var osVersionTooLow = false
-    @Published public private(set) var emailPreferencesEnabled = false
-    @Published public private(set) var isDemoMode = false
-    @Published public private(set) var isMovingFlowEnabled = false
-    @Published public private(set) var isAddonsRemovalFromMovingFlowEnabled = false
-    @Published public private(set) var isClaimHistoryEnabled = false
+    @Published private var data: FeatureData = .init(
+        isTerminationFlowEnabled: false,
+        isUpdateNecessary: false,
+        isChatDisabled: false,
+        isPaymentScreenEnabled: false,
+        isConnectPaymentEnabled: false,
+        isHelpCenterEnabled: false,
+        isSubmitClaimEnabled: false,
+        osVersionTooLow: false,
+        emailPreferencesEnabled: false,
+        isDemoMode: false,
+        isMovingFlowEnabled: false,
+        isAddonsRemovalFromMovingFlowEnabled: false,
+        isClaimHistoryEnabled: false
+    )
+
+    public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
+        data[keyPath: keyPath]
+    }
 
     private init() {}
 
@@ -100,19 +107,7 @@ public class FeatureFlags: ObservableObject {
                         attributes: ["featureFlags": data]
                     )
                 }
-                self.isTerminationFlowEnabled = data.isTerminationFlowEnabled
-                self.isUpdateNecessary = data.isUpdateNecessary
-                self.isChatDisabled = data.isChatDisabled
-                self.isPaymentScreenEnabled = data.isPaymentScreenEnabled
-                self.isConnectPaymentEnabled = data.isConnectPaymentEnabled
-                self.isHelpCenterEnabled = data.isHelpCenterEnabled
-                self.isSubmitClaimEnabled = data.isSubmitClaimEnabled
-                self.osVersionTooLow = data.osVersionTooLow
-                self.emailPreferencesEnabled = data.emailPreferencesEnabled
-                self.isDemoMode = data.isDemoMode
-                self.isMovingFlowEnabled = data.isMovingFlowEnabled
-                self.isAddonsRemovalFromMovingFlowEnabled = data.isAddonsRemovalFromMovingFlowEnabled
-                self.isClaimHistoryEnabled = data.isClaimHistoryEnabled
+                self.data = data
             }
         self.client = client
         try await client.setup(with: context)
