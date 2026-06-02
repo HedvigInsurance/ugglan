@@ -149,6 +149,7 @@ extension Contract {
         supportsCoOwners: false,
         supportsTravelCertificate: false,
         supportsChangeTier: false,
+        supportsTermination: false,
         upcomingChangedAgreement: nil,
         upcomingRenewal: nil,
         firstName: "Test",
