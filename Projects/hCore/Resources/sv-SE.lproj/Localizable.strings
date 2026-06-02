@@ -494,7 +494,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_NOTE_2" = "Ha kvitton eller annan dokumentation redo för snabbare hjälp";
 "HONESTY_PLEDGE_NOTE_3" = "Vi hör av oss om vi behöver mer information eller fler uppgifter";
 "HONESTY_PLEDGE_TITLE" = "Innan vi börjar";
-"INBOX_NEW_MESSAGE" = "Ny";
+"INBOX_EMPTY_STATE_SUBTITLE" = "Tomt tillstånd undertext";
+"INBOX_EMPTY_STATE_TITLE" = "Tomt tillstånd";
+"INBOX_NEW_MESSAGE" = "Nytt";
 "INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Lorem ipsum dolor sit amet consectetur. Eu adipiscing mauris risus libero. Quis.";
 "INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Lorem ipsum dolor sit amet consectetur. Eu adipiscing mauris risus libero. Quis.";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";

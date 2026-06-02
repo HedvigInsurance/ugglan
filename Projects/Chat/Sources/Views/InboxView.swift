@@ -12,11 +12,22 @@ public struct InboxView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            displayMessages
-                .padding(.top, 8)
+        Group {
+            if vm.isInboxEmpty {
+                StateView(
+                    type: .empty,
+                    title: L10n.inboxEmptyStateTitle,
+                    bodyText: L10n.inboxEmptyStateSubtitle,
+                    formPosition: .center
+                )
+            } else {
+                hForm {
+                    displayMessages
+                        .padding(.top, 8)
+                }
+                .hSetScrollBounce(to: true)
+            }
         }
-        .hSetScrollBounce(to: true)
         .onPullToRefresh {
             await vm.fetchMessages()
         }
@@ -24,6 +35,21 @@ public struct InboxView: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
+                    buttonTitle: vm.isInboxEmpty ? L10n.newMessageButton : L10n.generalRetry,
+                    buttonAction: { [weak vm] in
+                        if vm?.isInboxEmpty == true {
+                            isNewMessageSheetPresented = true
+                        } else {
+                            vm?.configureFetching()
+                        }
+                    }
+                )
+            )
+        )
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonTitle: L10n.generalRetry,
                     buttonAction: { [weak vm] in
                         vm?.configureFetching()
                     }
@@ -38,8 +64,8 @@ public struct InboxView: View {
                         isNewMessageSheetPresented = true
                     } label: {
                         HStack(spacing: 4) {
-                            hText(L10n.inboxNewMessage, style: .body1)  // L10n.Inbox.newMessageButton
                             Image(systemName: "square.and.pencil")
+                            hText(L10n.inboxNewMessage, style: .body1)
                         }
                         .padding(.horizontal, .padding2)
                         .foregroundColor(hTextColor.Opaque.primary)
@@ -189,6 +215,11 @@ class InboxViewModel: ObservableObject {
     private var pollTimerCancellable: AnyCancellable?
     private var chatClosedObserver: NSObjectProtocol?
     @Published var processingState: ProcessingState = .success
+    private var hasFetchedOnce = false
+
+    var isInboxEmpty: Bool {
+        conversations.isEmpty && processingState == .success
+    }
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return true
@@ -228,18 +259,20 @@ class InboxViewModel: ObservableObject {
     @MainActor
     func fetchMessages() async {
         do {
-            if self.conversations.isEmpty {
+            if self.conversations.isEmpty && !hasFetchedOnce {
                 withAnimation {
                     processingState = .loading
                 }
             }
             let conversations = try await service.getConversations()
+            hasFetchedOnce = true
             withAnimation {
                 self.conversations = conversations
                 self.processingState = .success
             }
         } catch {
             if self.conversations.isEmpty {
+                hasFetchedOnce = false
                 withAnimation {
                     pollTimerCancellable?.cancel()
                     processingState = .error(errorMessage: error.localizedDescription)

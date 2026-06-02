@@ -494,6 +494,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_NOTE_2" = "Have receipts or other documentation ready to help us help you faster";
 "HONESTY_PLEDGE_NOTE_3" = "We’ll contact you if we need more information";
 "HONESTY_PLEDGE_TITLE" = "Before we start";
+"INBOX_EMPTY_STATE_SUBTITLE" = "Empty State subtitle";
+"INBOX_EMPTY_STATE_TITLE" = "Empty State";
 "INBOX_NEW_MESSAGE" = "New";
 "INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Lorem ipsum dolor sit amet consectetur. Eu adipiscing mauris risus libero. Quis.";
 "INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Lorem ipsum dolor sit amet consectetur. Eu adipiscing mauris risus libero. Quis.";
