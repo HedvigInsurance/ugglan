@@ -58,5 +58,5 @@ class IosAppBuildConfig: AppBuildConfig {
     var osReleaseVersion: String = UIDevice.current.systemVersion
     var osSdkVersion: Int32 = 0
     var versionCode: Int32 = Int32(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
-    var versionName: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
+    var versionName: String = Bundle.main.appVersion
 }
