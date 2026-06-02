@@ -87,6 +87,9 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isClaimHistoryEnabled: unleashClient.isEnabled(
                 name: "enable_claim_history"
+            ),
+            isNewConversationFromInboxEnabled: unleashClient.isEnabled(
+                name: "enable_new_conversation_from_inbox"
             )
         )
         featureDataPublisher.send(data)
