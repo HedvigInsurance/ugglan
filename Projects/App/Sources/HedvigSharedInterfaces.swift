@@ -52,10 +52,10 @@ class IosAppBuildConfig: AppBuildConfig {
             return false
         #endif
     }()
-    var device: String = "UIDevice.current.model"
+    var device: String = UIDevice.current.model
     var manufacturer: String = "Apple"
-    var model: String = "UIDevice.current.model"
-    var osReleaseVersion: String = "UIDevice.current.systemVersion"
+    var model: String = UIDevice.current.model
+    var osReleaseVersion: String = UIDevice.current.systemVersion
     var osSdkVersion: Int32 = 0
     var versionCode: Int32 = Int32(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
     var versionName: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
