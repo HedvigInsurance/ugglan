@@ -279,7 +279,6 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            viewModel?.selectedTab = 0
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)

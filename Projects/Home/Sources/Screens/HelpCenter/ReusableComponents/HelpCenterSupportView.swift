@@ -1,3 +1,4 @@
+import Chat
 import PresentableStore
 import SwiftUI
 import hCore
@@ -5,6 +6,8 @@ import hCoreUI
 
 struct SupportView: View {
     @ObservedObject var router: NavigationRouter
+    @InjectObservableObject var featureFlags: FeatureFlags
+    @State private var isNewMessageSheetPresented = false
 
     init(
         router: NavigationRouter
@@ -23,6 +26,12 @@ struct SupportView: View {
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerCornerMaskerCorners([.topLeft, .topRight])
+        .detent(
+            presented: $isNewMessageSheetPresented,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            InboxNewMessageSheet()
+        }
     }
 
     private var textView: some View {
@@ -56,10 +65,14 @@ struct SupportView: View {
                         .secondary,
                         content: .init(title: L10n.newMessageButton)
                     ) {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.newConversation
-                        )
+                        if featureFlags.isNewConversationFromInboxEnabled {
+                            isNewMessageSheetPresented = true
+                        } else {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatType.newConversation
+                            )
+                        }
                     }
 
                     if hasSentOrRecievedAtLeastOneMessage {

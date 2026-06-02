@@ -5,7 +5,9 @@ import hCoreUI
 
 public struct InboxView: View {
     @StateObject var vm = InboxViewModel()
+    @InjectObservableObject var featureFlags: FeatureFlags
     @Namespace var animationNamespace
+    @State private var isNewMessageSheetPresented = false
 
     public init() {}
 
@@ -29,6 +31,33 @@ public struct InboxView: View {
             )
         )
         .trackVisibility(as: InboxView.self)
+        .toolbar {
+            if featureFlags.isNewConversationFromInboxEnabled {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isNewMessageSheetPresented = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            hText(L10n.inboxNewMessage, style: .body1)  // L10n.Inbox.newMessageButton
+                            Image(systemName: "square.and.pencil")
+                        }
+                        .padding(.horizontal, .padding2)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                    .accessibilityLabel(L10n.newMessageButton)
+                }
+            }
+        }
+        .detent(
+            presented: $isNewMessageSheetPresented,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            InboxNewMessageSheet()
+                .embededInNavigation(
+                    options: .navigationBarHidden,
+                    tracking: String(describing: InboxNewMessageSheet.self)
+                )
+        }
     }
 
     @ViewBuilder
