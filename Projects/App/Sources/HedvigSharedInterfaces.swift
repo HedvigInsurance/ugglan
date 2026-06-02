@@ -7,7 +7,7 @@ import hGraphQL
 
 class IosDeviceIdFetcher: DeviceIdFetcher {
     func fetch() async throws -> String? {
-        await UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+        await ApolloClient.getDeviceIdentifier()
     }
 }
 
@@ -54,7 +54,7 @@ class IosAppBuildConfig: AppBuildConfig {
     }()
     var device: String = UIDevice.current.model
     var manufacturer: String = "Apple"
-    var model: String = UIDevice.current.model
+    var model: String = UIDevice.modelName
     var osReleaseVersion: String = UIDevice.current.systemVersion
     var osSdkVersion: Int32 = 0
     var versionCode: Int32 = Int32(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
