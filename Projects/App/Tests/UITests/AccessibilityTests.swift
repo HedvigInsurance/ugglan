@@ -16,7 +16,6 @@ class AccessibilityTests: XCTestCase {
         }
     }
 
-
     func testHitRegionIssues() throws {
         let app = XCUIApplication()
         app.launch()
