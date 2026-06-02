@@ -31,6 +31,10 @@ struct SupportView: View {
             presentationStyle: .detent(style: [.height])
         ) {
             InboxNewMessageSheet()
+                .embededInNavigation(
+                    options: .navigationBarHidden,
+                    tracking: String(describing: InboxNewMessageSheet.self)
+                )
         }
     }
 
