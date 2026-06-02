@@ -211,8 +211,6 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
-    @InjectObservableObject private var featureFlags: FeatureFlags
-
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -392,6 +390,7 @@ class DeepLinkHandler {
     }
 
     private func handlePuppyGuideDeeplink() {
+        let featureFlags = Dependencies.featureFlags()
         guard featureFlags.isPuppyGuideEnabled else { return }
         viewModel?.helpCenterVm.pendingPuppyGuideRoute = .list
         if viewModel?.homeNavigationVm.isHelpCenterPresented != true {
