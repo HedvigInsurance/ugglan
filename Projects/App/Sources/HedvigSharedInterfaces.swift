@@ -1,3 +1,4 @@
+import Apollo
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
@@ -52,11 +53,18 @@ class IosAppBuildConfig: AppBuildConfig {
             return false
         #endif
     }()
-    var device: String = UIDevice.current.model
+    var device: String
     var manufacturer: String = "Apple"
-    var model: String = UIDevice.modelName
-    var osReleaseVersion: String = UIDevice.current.systemVersion
+    var model: String
+    var osReleaseVersion: String
     var osSdkVersion: Int32 = 0
     var versionCode: Int32 = Int32(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
     var versionName: String = Bundle.main.appVersion
+
+    @MainActor
+    init() {
+        self.device = UIDevice.current.model
+        self.model = UIDevice.modelName
+        self.osReleaseVersion = UIDevice.current.systemVersion
+    }
 }
