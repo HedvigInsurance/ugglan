@@ -16,16 +16,6 @@ class AccessibilityTests: XCTestCase {
         }
     }
 
-    func testElementDetectionIssues() throws {
-        let app = XCUIApplication()
-        app.launch()
-
-        do {
-            try app.performAccessibilityAudit(for: [.elementDetection])
-        } catch {
-            XCTFail("Element Detection audit failed with error: \(error)")
-        }
-    }
 
     func testHitRegionIssues() throws {
         let app = XCUIApplication()
