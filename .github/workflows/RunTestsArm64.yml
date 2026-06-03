@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Unit + snapshot tests on arm64 simulator
+    name: Build and Test
     # macos-15 is Apple Silicon (arm64)
     runs-on: macos-15
     timeout-minutes: 90
