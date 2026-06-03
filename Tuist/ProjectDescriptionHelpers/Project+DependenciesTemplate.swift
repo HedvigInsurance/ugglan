@@ -1,6 +1,25 @@
 import Foundation
 import ProjectDescription
 
+/// Marker `<repo-root>/.local-umbrella` (gitignored, created by
+/// `scripts/use-local-umbrella.sh`) flips Tuist into "embed-for-Xcode" mode: the umbrella
+/// dependency is dropped and a pre-build script (attached to CoreDependencies) calls
+/// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
+/// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
+/// released SPM package unchanged.
+///
+/// `#filePath` is this file's absolute path at compile time —
+/// `<repo-root>/Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift` —
+/// so walking up three directories always lands on the repo root, regardless of where
+/// Tuist's manifest-evaluation subprocess sets its cwd.
+public var isLocalUmbrellaMode: Bool {
+    let projectRoot = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+    return FileManager.default.fileExists(atPath: projectRoot.appendingPathComponent(".local-umbrella").path)
+}
+
 public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
@@ -12,6 +31,7 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case umbrella
+    case kmpNativeCoroutines
     case tagkit
     case introspect
     case svgkit
@@ -28,7 +48,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { false }
 
-    public var isAppDependency: Bool { self == .datadog }
+    public var isAppDependency: Bool { false }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -60,8 +80,13 @@ public enum ExternalDependencies: CaseIterable {
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.10.0"))]
         case .umbrella:
+            if isLocalUmbrellaMode { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260602115033"))
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.2"))
             ]
         case .tagkit:
             return [
@@ -151,8 +176,18 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogTrace"),
             ]
         case .umbrella:
+            if isLocalUmbrellaMode {
+                // No declared dependency. The CoreDependencies pre-build script
+                // produces HedvigShared.framework in $(BUILT_PRODUCTS_DIR), which the
+                // Swift compiler resolves automatically via the default framework search path.
+                return []
+            }
             return [
                 .package(product: "HedvigShared")
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(product: "KMPNativeCoroutinesAsync")
             ]
         case .tagkit:
             return [
@@ -186,7 +221,8 @@ extension Project {
     public static func dependenciesFramework(
         name: String,
         externalDependencies: [ExternalDependencies],
-        sdks: [String] = []
+        sdks: [String] = [],
+        scripts: [TargetScript] = []
     ) -> Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
@@ -241,6 +277,7 @@ extension Project {
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
+                    scripts: scripts,
                     dependencies: dependencies,
                     settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )

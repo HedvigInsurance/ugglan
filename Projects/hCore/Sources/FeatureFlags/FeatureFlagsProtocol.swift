@@ -21,6 +21,7 @@ public struct FeatureData: Codable, Equatable {
     public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
     public let isClaimHistoryEnabled: Bool
+    public let isPuppyGuideEnabled: Bool
 
     public init(
         isTerminationFlowEnabled: Bool,
@@ -34,7 +35,8 @@ public struct FeatureData: Codable, Equatable {
         isDemoMode: Bool,
         isMovingFlowEnabled: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool,
-        isClaimHistoryEnabled: Bool
+        isClaimHistoryEnabled: Bool,
+        isPuppyGuideEnabled: Bool
     ) {
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
@@ -48,6 +50,7 @@ public struct FeatureData: Codable, Equatable {
         self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
         self.isClaimHistoryEnabled = isClaimHistoryEnabled
+        self.isPuppyGuideEnabled = isPuppyGuideEnabled
     }
 }
 
@@ -81,7 +84,8 @@ public class FeatureFlags: ObservableObject {
         isDemoMode: false,
         isMovingFlowEnabled: false,
         isAddonsRemovalFromMovingFlowEnabled: false,
-        isClaimHistoryEnabled: false
+        isClaimHistoryEnabled: false,
+        isPuppyGuideEnabled: false
     )
 
     public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {

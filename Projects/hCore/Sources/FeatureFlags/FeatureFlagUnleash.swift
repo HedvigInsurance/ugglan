@@ -86,7 +86,8 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isClaimHistoryEnabled: unleashClient.isEnabled(
                 name: "enable_claim_history"
-            )
+            ),
+            isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide")
         )
         featureDataPublisher.send(data)
     }
