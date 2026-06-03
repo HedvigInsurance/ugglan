@@ -11,7 +11,6 @@ public protocol FeatureFlagsClient {
 public struct FeatureData: Codable, Equatable {
     public let isTerminationFlowEnabled: Bool
     public let isUpdateNecessary: Bool
-    public let isChatDisabled: Bool
     public let isPaymentScreenEnabled: Bool
     public let isConnectPaymentEnabled: Bool
     public let isHelpCenterEnabled: Bool
@@ -26,7 +25,6 @@ public struct FeatureData: Codable, Equatable {
     public init(
         isTerminationFlowEnabled: Bool,
         isUpdateNecessary: Bool,
-        isChatDisabled: Bool,
         isPaymentScreenEnabled: Bool,
         isConnectPaymentEnabled: Bool,
         isHelpCenterEnabled: Bool,
@@ -40,7 +38,6 @@ public struct FeatureData: Codable, Equatable {
     ) {
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
-        self.isChatDisabled = isChatDisabled
         self.isPaymentScreenEnabled = isPaymentScreenEnabled
         self.isConnectPaymentEnabled = isConnectPaymentEnabled
         self.isHelpCenterEnabled = isHelpCenterEnabled
@@ -75,7 +72,6 @@ public class FeatureFlags: ObservableObject {
     @Published private var data: FeatureData = .init(
         isTerminationFlowEnabled: false,
         isUpdateNecessary: false,
-        isChatDisabled: false,
         isPaymentScreenEnabled: false,
         isConnectPaymentEnabled: false,
         isHelpCenterEnabled: false,
