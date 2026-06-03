@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Build and Test
+    name: Unit + snapshot tests on arm64 simulator
     # macos-15 is Apple Silicon (arm64)
     runs-on: macos-15
     timeout-minutes: 90
@@ -76,7 +76,7 @@ jobs:
       # Same scheme + workspace as the Xcode Cloud "Tests" action. iPhone 16 is an
       # arm64 simulator on the arm64 runner, CODE_SIGNING_ALLOWED=NO mirrors the
       # other CI build workflows.
-      - name: Run tests
+      - name: Build and Test
         run: |
           mkdir -p "$SNAPSHOT_ARTIFACTS"
           xcodebuild test \
