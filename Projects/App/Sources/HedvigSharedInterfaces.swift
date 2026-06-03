@@ -23,8 +23,8 @@ class IosLanguageStorage: LanguageStorage {
 
     func setLanguageTag(tag: String) {
         let locale: Localization.Locale = (tag == Localization.Locale.sv_SE.lprojCode) ? .sv_SE : .en_SE
-        DispatchQueue.main.async {
-            ApplicationState.setPreferredLocale(locale)
+        Task {
+            await ApplicationState.setPreferredLocale(locale)
             Localization.Locale.currentLocale.send(locale)
         }
     }
@@ -58,7 +58,7 @@ class IosAppBuildConfig: AppBuildConfig {
     var model: String
     var osReleaseVersion: String
     var osSdkVersion: Int32 = 0
-    var versionCode: Int32 = Int32(Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "0") ?? 0
+    var versionCode: Int32 = Bundle.main.buildVersion
     var versionName: String = Bundle.main.appVersion
 
     @MainActor
