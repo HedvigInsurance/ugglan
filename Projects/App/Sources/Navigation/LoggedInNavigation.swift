@@ -420,7 +420,7 @@ class DeepLinkHandler {
                 do {
                     try await Task.sleep(seconds: 0.2)
                     let contractsConfig = contractStore.state.activeContracts
-                        .filter(\.canTerminate)
+                        .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
                 } catch let exception {

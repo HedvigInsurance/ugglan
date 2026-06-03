@@ -10,6 +10,7 @@
 "A11Y_PAUSE" = "Pause";
 /* Play action for a video, an audio recording etc. */
 "A11Y_PLAY" = "Play";
+"A11Y_READ_LABEL_HACK" = "Red";
 "A11Y_SCROLL_DOWN" = "Scroll to bottom";
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "View details";

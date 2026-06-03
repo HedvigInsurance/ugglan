@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
 
-rm -rf **/Derived/*
+# Xcode Cloud / CI runners start with a clean checkout — nuking Derived
+# would only force a redundant regeneration pass, so skip it there.
+if [ -z "$CI" ]; then
+    rm -rf **/Derived/*
+fi
 
 scripts/githooks.sh
 scripts/swiftgen.sh

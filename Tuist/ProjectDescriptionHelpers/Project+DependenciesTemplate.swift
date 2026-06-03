@@ -227,12 +227,12 @@ extension Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Release.xcconfig")
             ),
         ]
@@ -240,12 +240,12 @@ extension Project {
         let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")
             ),
         ]

@@ -65,6 +65,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             supportsCoOwners: false,
             supportsTravelCertificate: false,
             supportsChangeTier: false,
+            supportsTermination: true,
             upcomingChangedAgreement: nil,
             upcomingRenewal: nil,
             firstName: "",
