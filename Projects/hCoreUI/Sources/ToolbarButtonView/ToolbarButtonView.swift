@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public struct ToolbarButtonView: View {
@@ -51,7 +50,7 @@ public struct ToolbarButtonView: View {
                     } else {
                         imageFor(type: type)
                     }
-                    if #unavailable(iOS 26.0), type.showBadge {
+                    if type.showBadge {
                         Circle()
                             .fill(hSignalColor.Red.element)
                             .frame(width: 10, height: 10)
@@ -79,7 +78,6 @@ public struct ToolbarButtonView: View {
 
 public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
-    @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
     let placement: ListToolBarPlacement
 
@@ -136,61 +134,11 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
                         trailing
                     }
                 }
-            // had to do it like this so each item is seperated for iOS 26
-        } else if #available(iOS 26.0, *), types.count > 0 {
-            content
-                .introspect(.viewController, on: .iOS(.v13...)) { @MainActor [weak navVm] vc in
-                    guard let navVm else { return }
-                    if navVm.viewController != vc {
-                        navVm.viewController = vc
-                        setNavigationBarItemsUsingTypes(for: vc)
-                    }
-                }
-                .onChange(of: types) { [weak navVm] _ in
-                    if let vc = navVm?.viewController {
-                        setNavigationBarItemsUsingTypes(for: vc)
-                    }
-                }
         } else {
             content
                 .toolbar {
                     ToolbarTrailingItems(types: types, placement: placement, action: action)
                 }
-        }
-    }
-
-    //used for iOS 26 to have items splited
-    private func setNavigationBarItemsUsingTypes(for vc: UIViewController) {
-        var buttonItems = [UIBarButtonItem]()
-        for (index, type) in types.reversed().enumerated() {
-            let viewToInject = ToolbarButtonView(type: type, placement: placement, action: action)
-            let hostingVc = UIHostingController(rootView: viewToInject.asAnyView)
-            if #available(iOS 26, *) {
-                hostingVc.safeAreaRegions = []
-            }
-            let viewToPlace = hostingVc.view!
-            viewToPlace.backgroundColor = .clear
-            let uiBarButtonItem = UIBarButtonItem(customView: viewToPlace)
-            buttonItems.append(uiBarButtonItem)
-            if #available(iOS 26.0, *) {
-                if type.showBadge {
-                    var badge: UIBarButtonItem.Badge = .string("'")
-                    badge.foregroundColor = UIColor.red
-                    badge.backgroundColor = UIColor.red
-                    badge.font = .systemFont(ofSize: 5)
-                    uiBarButtonItem.badge = badge
-                }
-            }
-            if index < types.count {
-                if #available(iOS 26.0, *) {
-                    buttonItems.append(.fixedSpace())
-                }
-            }
-        }
-        if placement == .leading {
-            vc.navigationItem.setLeftBarButtonItems(buttonItems, animated: false)
-        } else {
-            vc.navigationItem.setRightBarButtonItems(buttonItems, animated: false)
         }
     }
 }
@@ -202,35 +150,43 @@ private struct ToolbarTrailingItems: ToolbarContent {
 
     var body: some ToolbarContent {
         if types.indices.contains(0) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(id: types[0].toolbarItemId, placement: .topBarTrailing) {
                 ToolbarButtonView(type: types[0], placement: placement, action: action, useSpacing: true)
             }
         }
+        if #available(iOS 26.0, *), types.indices.contains(1) {
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+        }
         if types.indices.contains(1) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(id: types[1].toolbarItemId, placement: .topBarTrailing) {
                 ToolbarButtonView(type: types[1], placement: placement, action: action, useSpacing: true)
             }
         }
+        if #available(iOS 26.0, *), types.indices.contains(2) {
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+        }
         if types.indices.contains(2) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(id: types[2].toolbarItemId, placement: .topBarTrailing) {
                 ToolbarButtonView(type: types[2], placement: placement, action: action, useSpacing: true)
             }
         }
+        if #available(iOS 26.0, *), types.indices.contains(3) {
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+        }
         if types.indices.contains(3) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(id: types[3].toolbarItemId, placement: .topBarTrailing) {
                 ToolbarButtonView(type: types[3], placement: placement, action: action, useSpacing: true)
             }
         }
+        if #available(iOS 26.0, *), types.indices.contains(4) {
+            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+        }
         if types.indices.contains(4) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(id: types[4].toolbarItemId, placement: .topBarTrailing) {
                 ToolbarButtonView(type: types[4], placement: placement, action: action, useSpacing: true)
             }
         }
     }
-}
-
-class ToolbarButtonsViewModifierViewModel: ObservableObject {
-    weak var viewController: UIViewController?
 }
 
 extension TimeInterval {

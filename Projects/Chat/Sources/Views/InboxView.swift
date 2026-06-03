@@ -8,7 +8,6 @@ public struct InboxView: View {
     @InjectObservableObject var featureFlags: FeatureFlags
     @Namespace var animationNamespace
     @State private var isNewMessageSheetPresented = false
-
     public init() {}
 
     public var body: some View {
@@ -59,15 +58,16 @@ public struct InboxView: View {
         .trackVisibility(as: InboxView.self)
         .toolbar {
             if featureFlags.isNewConversationFromInboxEnabled {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(id: "chat", placement: .topBarTrailing) {
                     Button {
                         isNewMessageSheetPresented = true
                     } label: {
-                        HStack(spacing: 4) {
+                        HStack(alignment: .bottom, spacing: 4) {
                             Image(systemName: "square.and.pencil")
                             hText(L10n.inboxNewMessage, style: .body1)
                         }
-                        .padding(.horizontal, .padding2)
+                        .padding(.leading, .padding2)
+                        .padding(.trailing, .padding3)
                         .foregroundColor(hTextColor.Opaque.primary)
                     }
                     .accessibilityLabel(L10n.newMessageButton)
