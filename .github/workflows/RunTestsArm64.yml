@@ -1,4 +1,4 @@
-name: Run Tests (arm64)
+name: Run Tests
 
 # Evaluation workflow: runs the SAME unit + snapshot test scheme that Xcode Cloud
 # runs ("Ugglan-Workspace" against Ugglan.xcworkspace), but on an Apple Silicon
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   test:
-    name: Unit + snapshot tests on arm64 simulator
+    name: Run Tests (arm64)
     # macos-15 is Apple Silicon (arm64)
     runs-on: macos-15
     timeout-minutes: 90
@@ -69,9 +69,14 @@ jobs:
           swiftpm-package-resolved-file: Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
       - name: Post-checkout prep (swiftgen, codegen, tuist generate)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/post-checkout.sh
+          # Clean Derived directories to ensure fresh generation in CI
+          rm -rf Projects/*/Sources/Derived
           scripts/post-checkout.sh
+
 
       # Same scheme + workspace as the Xcode Cloud "Tests" action. iPhone 16 is an
       # arm64 simulator on the arm64 runner, CODE_SIGNING_ALLOWED=NO mirrors the
