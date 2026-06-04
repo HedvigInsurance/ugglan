@@ -17,6 +17,7 @@ __MACOSX
 vendor/bundle
 AppleIncRootCertificate.cer
 Dependencies/CoreDependencies/RevealServer.xcframework
+.local-umbrella
 
 ## Various settings
 *.pbxuser

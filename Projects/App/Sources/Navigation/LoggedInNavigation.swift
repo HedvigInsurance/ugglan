@@ -211,8 +211,6 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
-    @InjectObservableObject private var featureFlags: FeatureFlags
-
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -249,6 +247,8 @@ class DeepLinkHandler {
             handleHelpCenterTopic(url)
         case .helpCenterQuestion:
             handleHelpCenterQuestion(url)
+        case .puppyGuide:
+            handlePuppyGuideDeeplink()
         case .moveContract:
             viewModel?.isMoveContractPresented = true
         case .terminateContract:
@@ -389,6 +389,16 @@ class DeepLinkHandler {
         }
     }
 
+    private func handlePuppyGuideDeeplink() {
+        let featureFlags = Dependencies.featureFlags()
+        guard featureFlags.isPuppyGuideEnabled else { return }
+        viewModel?.helpCenterVm.pendingPuppyGuideRoute = .list
+        if viewModel?.homeNavigationVm.isHelpCenterPresented != true {
+            dismissAndSelectTab(0)
+            viewModel?.homeNavigationVm.isHelpCenterPresented = true
+        }
+    }
+
     private func handleTerminateContract(_ url: URL) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -410,7 +420,7 @@ class DeepLinkHandler {
                 do {
                     try await Task.sleep(seconds: 0.2)
                     let contractsConfig = contractStore.state.activeContracts
-                        .filter(\.canTerminate)
+                        .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
                 } catch let exception {
