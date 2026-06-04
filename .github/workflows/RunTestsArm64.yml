@@ -69,12 +69,14 @@ jobs:
           swiftpm-package-resolved-file: Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
       - name: Post-checkout prep (swiftgen, codegen, tuist generate)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           chmod +x scripts/post-checkout.sh
           # Clean Derived directories to ensure fresh generation in CI
           rm -rf Projects/*/Sources/Derived
           scripts/post-checkout.sh
-          
+
 
       # Same scheme + workspace as the Xcode Cloud "Tests" action. iPhone 16 is an
       # arm64 simulator on the arm64 runner, CODE_SIGNING_ALLOWED=NO mirrors the
