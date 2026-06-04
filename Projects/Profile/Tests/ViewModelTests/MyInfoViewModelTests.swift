@@ -17,6 +17,9 @@ final class MyInfoViewModelTests: XCTestCase {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+
         sut = nil
     }
 
