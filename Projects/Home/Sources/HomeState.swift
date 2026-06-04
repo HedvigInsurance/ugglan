@@ -119,9 +119,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             .sink { [weak self] _ in
                 self?.send(.clearMissedCharge)
             }
-        featureFlagsSubscription = FeatureFlags.shared.$isNewConversationFromInboxEnabled
-            .dropFirst()
-            .removeDuplicates()
+        featureFlagsSubscription = FeatureFlags.shared.objectWillChange
             .sink { [weak self] _ in
                 self?.send(.featureFlagsUpdated)
             }
