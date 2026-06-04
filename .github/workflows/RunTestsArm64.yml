@@ -1,4 +1,4 @@
-name: Run Tests (arm64)
+name: Run Tests
 
 # Evaluation workflow: runs the SAME unit + snapshot test scheme that Xcode Cloud
 # runs ("Ugglan-Workspace" against Ugglan.xcworkspace), but on an Apple Silicon
