@@ -157,7 +157,7 @@ public struct InboxView: View {
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else if let timeStamp = conversation.newestMessage?.sentAt {
+        } else if let timeStamp = conversation.newestMessage?.sentAt ?? conversation.createdAt {
             ZStack {
                 hText(" ", style: .body1)
                 hText(timeStamp.displayTimeStamp, style: .label)
@@ -214,7 +214,7 @@ class InboxViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
     private var pollTimerCancellable: AnyCancellable?
     private var chatClosedObserver: NSObjectProtocol?
-    @Published var processingState: ProcessingState = .success
+    @Published var processingState: ProcessingState = .loading
     private var hasFetchedOnce = false
 
     var isInboxEmpty: Bool {

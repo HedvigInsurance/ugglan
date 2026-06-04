@@ -1102,9 +1102,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func claimCreated(notification: Notification) {
         UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-        selectedTab = 0
-        homeNavigationVm.router.popToRoot()
-
+        Task { @MainActor in
+            selectedTab = 0
+            homeNavigationVm.router.popToRoot()
+        }
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.fetchActiveClaims)

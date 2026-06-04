@@ -17,7 +17,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             id: "id1",
             type: .service,
             newestMessage: newestMessage,
-            createdAt: date.addingTimeInterval((-60 * 60 * 24 * 2)).localDateString,
+            createdAt: date.addingTimeInterval(-60 * 60 * 24 * 2),
             statusMessage: "",
             status: .open,
             hasClaim: false,
