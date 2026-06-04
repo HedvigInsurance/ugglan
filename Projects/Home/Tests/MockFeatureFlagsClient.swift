@@ -23,7 +23,6 @@ extension FeatureData {
         FeatureData(
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
-            isChatDisabled: false,
             isPaymentScreenEnabled: false,
             isConnectPaymentEnabled: false,
             isHelpCenterEnabled: false,
@@ -34,7 +33,8 @@ extension FeatureData {
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isClaimHistoryEnabled: false,
-            isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled
+            isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
+            isPuppyGuideEnabled: false
         )
     }
 }
