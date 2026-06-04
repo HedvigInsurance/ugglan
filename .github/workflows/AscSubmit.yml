@@ -12,6 +12,10 @@ on:
         description: "Build number (e.g. 5617)"
         required: true
 
+concurrency:
+  group: asc-submit-${{ github.event.client_payload.build_number || inputs.build_number }}
+  cancel-in-progress: true
+
 jobs:
   submit:
     runs-on: ubuntu-latest

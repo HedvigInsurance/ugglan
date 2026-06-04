@@ -18,6 +18,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         supportsCoOwners: Bool,
         supportsTravelCertificate: Bool,
         supportsChangeTier: Bool,
+        supportsTermination: Bool,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
         firstName: String,
@@ -40,6 +41,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
         self.supportsChangeTier = supportsChangeTier
+        self.supportsTermination = supportsTermination
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -63,6 +65,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let supportsCoInsured: Bool
     public let supportsCoOwners: Bool
     public let supportsTravelCertificate: Bool
+    public let supportsTermination: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
@@ -115,10 +118,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     @MainActor func onlyCoOwners() -> Bool {
         let editTypes: [EditType] = EditType.getTypes(for: self)
         return editTypes.count == 1 && editTypes.first == .coOwners
-    }
-
-    public var canTerminate: Bool {
-        terminationDate == nil
     }
 
     public var isTerminated: Bool {
