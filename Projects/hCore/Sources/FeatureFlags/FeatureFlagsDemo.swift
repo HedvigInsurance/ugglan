@@ -13,7 +13,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
         let data = FeatureData(
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
-            isChatDisabled: false,
             isPaymentScreenEnabled: false,
             isConnectPaymentEnabled: false,
             isHelpCenterEnabled: false,
@@ -24,7 +23,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isClaimHistoryEnabled: false,
-            isNewConversationFromInboxEnabled: false
+            isNewConversationFromInboxEnabled: false,
+            isPuppyGuideEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -33,7 +33,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
         let data = FeatureData(
             isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
-            isChatDisabled: false,
             isPaymentScreenEnabled: false,
             isConnectPaymentEnabled: false,
             isHelpCenterEnabled: false,
@@ -44,7 +43,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isClaimHistoryEnabled: false,
-            isNewConversationFromInboxEnabled: false
+            isNewConversationFromInboxEnabled: false,
+            isPuppyGuideEnabled: false
         )
         featureDataPublisher.send(data)
     }

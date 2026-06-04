@@ -73,7 +73,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         let data = FeatureData(
             isTerminationFlowEnabled: !unleashClient.isEnabled(name: "disable_termination_flow"),
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
-            isChatDisabled: unleashClient.isEnabled(name: "disable_chat"),
             isPaymentScreenEnabled: unleashClient.isEnabled(name: "payment_screen"),
             isConnectPaymentEnabled: unleashClient.getVariant(name: "payment_type").name == "trustly",
             isHelpCenterEnabled: !unleashClient.isEnabled(name: "disable_help_center"),
@@ -90,7 +89,8 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isNewConversationFromInboxEnabled: unleashClient.isEnabled(
                 name: "enable_new_conversation_from_inbox"
-            )
+            ),
+            isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide")
         )
         featureDataPublisher.send(data)
     }
