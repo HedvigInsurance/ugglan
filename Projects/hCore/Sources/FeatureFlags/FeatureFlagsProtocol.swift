@@ -75,7 +75,7 @@ public class FeatureFlags: ObservableObject {
     public static let shared = FeatureFlags()
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
-    @Published private var data: FeatureData = .init(
+    @Published public var data: FeatureData = .init(
         isTerminationFlowEnabled: false,
         isUpdateNecessary: false,
         isPaymentScreenEnabled: false,
