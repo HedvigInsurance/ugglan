@@ -16,4 +16,10 @@ extension Notification.Name {
     public static let petChipIdAdded = Notification.Name("petChipIdAdded")
     public static let openMissingPetChipId = Notification.Name("openMissingPetChipId")
     public static let didChargeOutstandingPayment = Notification.Name("didChargeOutstandingPayment")
+    public static let startClaim = Notification.Name("startClaim")
+}
+
+public enum StartClaimInputType: Equatable {
+    case regular(hasInProgress: Bool)
+    case inProgress
 }

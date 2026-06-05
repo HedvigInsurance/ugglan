@@ -3,3 +3,15 @@ mutation ClaimIntentStart {
     ...ClaimIntentFragment
   }
 }
+
+
+query ClaimIntentStartWithPreviousSteps {
+  currentMember {
+    resumableClaimIntent {
+      ...ClaimIntentFragment
+      previousSteps {
+        ...ClaimIntentStepFragment
+      }
+    }
+  }
+}

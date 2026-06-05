@@ -52,12 +52,14 @@ struct MockData {
         },
         fetchFiles: @escaping FetchFiles = {
             [:]
-        }
+        },
+        fetchClaimInProgress: @escaping FetchClaimInProgress = { nil }
     ) -> MockFetchClaimsService {
         let service = MockFetchClaimsService(
             fetchActive: fetchActive,
             fetchHistory: fetchHistory,
-            fetchFiles: fetchFiles
+            fetchFiles: fetchFiles,
+            fetchClaimInProgress: fetchClaimInProgress
         )
         Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in service })
         return service
@@ -70,27 +72,32 @@ enum ClaimsError: Error {
 
 typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
+typealias FetchClaimInProgress = @Sendable () async throws -> ClaimInProgressModel?
 
 class MockFetchClaimsService: hFetchClaimsClient {
     var events = [Event]()
     var fetchActive: FetchClaims
     var fetchHistory: FetchClaims
     var fetchFiles: FetchFiles
+    var fetchClaimInProgress: FetchClaimInProgress
 
     enum Event {
         case getActive
         case getHistory
         case getFiles
+        case getClaimInProgress
     }
 
     init(
         fetchActive: @escaping FetchClaims,
         fetchHistory: @escaping FetchClaims,
-        fetchFiles: @escaping FetchFiles
+        fetchFiles: @escaping FetchFiles,
+        fetchClaimInProgress: @escaping FetchClaimInProgress = { nil }
     ) {
         self.fetchActive = fetchActive
         self.fetchHistory = fetchHistory
         self.fetchFiles = fetchFiles
+        self.fetchClaimInProgress = fetchClaimInProgress
     }
 
     func getActiveClaims() async throws -> [ClaimModel] {
@@ -109,6 +116,11 @@ class MockFetchClaimsService: hFetchClaimsClient {
         events.append(.getFiles)
         let data = try await fetchFiles()
         return data
+    }
+
+    func getClaimInProgress() async throws -> ClaimInProgressModel? {
+        events.append(.getClaimInProgress)
+        return try await fetchClaimInProgress()
     }
 }
 

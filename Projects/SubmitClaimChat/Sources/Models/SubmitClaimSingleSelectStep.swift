@@ -18,7 +18,7 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     }
 
     private func initializeSelectValues() {
-        selectedOptionId = model.defaultSelectedId
+        selectedOptionId = model.currentSelectedId ?? model.defaultSelectedId
     }
 
     override func executeStep() async throws -> ClaimIntentType {

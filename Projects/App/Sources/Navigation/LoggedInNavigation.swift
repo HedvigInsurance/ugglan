@@ -280,7 +280,9 @@ class DeepLinkHandler {
             }
         case .submitClaim:
             viewModel?.selectedTab = 0
-            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            let hasInProgress = store.state.claimInProgress != nil
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
         case .claimChat:
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
@@ -326,9 +328,9 @@ class DeepLinkHandler {
 
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
-        if let messageId = url.getParameter(property: .sourceMessageId) {
-            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
-        }
+        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let hasInProgress = store.state.claimInProgress != nil
+        viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
     }
 
     private func dismissAndSelectTab(_ tab: Int) {
@@ -724,7 +726,22 @@ struct HomeTab: View {
         .handleEditStakeholders(with: homeNavigationVm.editStakeholdersVm)
         .handleClaimFlow(
             startInput: $homeNavigationVm.claimsAutomationStartInput
-        )
+        ) {
+            Task {
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                await store.sendAsync(.fetchClaimInProgress)
+                if store.state.claimInProgress != nil {
+                    Toasts.shared.displayToastBar(
+                        toast: .init(
+                            type: .info,
+                            text:
+                                "We've saved your answers so you can go back to them later by pressing \"Resume claim\".",
+                            duration: 6
+                        )
+                    )
+                }
+            }
+        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented,
             options: .constant(.alwaysOpenOnTop)
@@ -1018,6 +1035,14 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openMissingPetChipId,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startClaim),
+            name: .startClaim,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
     }
 
     @objc func addonsChanged() {
@@ -1121,6 +1146,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func chatClosed() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.send(.fetchChatNotifications)
+    }
+
+    @objc func startClaim(notification: Notification) {
+        if let type = notification.object as? StartClaimInputType {
+            homeNavigationVm.claimsAutomationStartInput = .init(type: type)
+        }
     }
 
     func handle(notification: Notification) {

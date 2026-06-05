@@ -22,6 +22,13 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             } catch {
                 send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
             }
+        case .fetchClaimInProgress:
+            do {
+                let claimData = try await fetchClaimsClient.getClaimInProgress()
+                await sendAsync(.setClaimInProgress(model: claimData))
+            } catch {
+                send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
+            }
         default:
             break
         }
@@ -34,12 +41,16 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
             newState.loadingStates[action] = .loading
         case .fetchHistoryClaims:
             newState.loadingStates[action] = .loading
+        case .fetchClaimInProgress:
+            break
         case let .setActiveClaims(claims):
             newState.loadingStates.removeValue(forKey: .fetchActiveClaims)
             newState.activeClaims = claims
         case let .setHistoryClaims(claims):
             newState.loadingStates.removeValue(forKey: .fetchHistoryClaims)
             newState.historyClaims = claims
+        case let .setClaimInProgress(model):
+            newState.claimInProgress = model
         case let .setLoadingState(action, state):
             if let state {
                 newState.loadingStates[action] = state

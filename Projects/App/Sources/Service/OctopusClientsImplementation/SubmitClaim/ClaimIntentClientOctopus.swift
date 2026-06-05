@@ -8,13 +8,27 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
-        let mutation = OctopusGraphQL.ClaimIntentStartMutation()
-
         do {
-            let data = try await octopus.client.mutation(mutation: mutation)
+            switch input.type {
+            case .regular:
+                let mutation = OctopusGraphQL.ClaimIntentStartMutation()
+                let data = try await octopus.client.mutation(mutation: mutation)
 
-            let intent = data?.claimIntentStart
-            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+                let intent = data?.claimIntentStart
+                return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+            case .inProgress:
+                let data = try await octopus.client.fetch(
+                    query: OctopusGraphQL.ClaimIntentStartWithPreviousStepsQuery()
+                )
+
+                let intent = data.currentMember.resumableClaimIntent
+                let fragments = data.currentMember.resumableClaimIntent?.previousSteps
+                    .map({ $0.fragments.claimIntentStepFragment })
+                return try handleStep(
+                    intentFragment: intent?.fragments.claimIntentFragment,
+                    previousStepFragments: fragments ?? []
+                )
+            }
         } catch {
             throw try logClaimIntentError(error)
         }
@@ -105,7 +119,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     }
 
     func handleStep(
-        intentFragment: OctopusGraphQL.ClaimIntentFragment?
+        intentFragment: OctopusGraphQL.ClaimIntentFragment?,
+        previousStepFragments: [OctopusGraphQL.ClaimIntentStepFragment] = []
     ) throws -> ClaimIntentType? {
         if let trackingId = intentFragment?.currentStep?.content.__typename {
             log.addUserAction(
@@ -127,6 +142,10 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             intentFragment?.currentStep?.isRegrettable ?? false
 
         if let currentStepFragment = intentFragment?.currentStep?.fragments.claimIntentStepFragment {
+            let createdAtString: String? = intentFragment?.createdAt
+            let createdAt: Date? = createdAtString.flatMap { dateString in
+                dateString.localDateToDate ?? dateString.localDateToIso8601Date
+            }
             return .intent(
                 model: .init(
                     currentStep: try .init(fragment: currentStepFragment),
@@ -134,7 +153,23 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     isSkippable: isSkippable,
                     isRegrettable: isRegrettable,
                     progress: Float(intentFragment?.progress ?? 0),
-                    hint: intentFragment?.currentStep?.hint
+                    hint: intentFragment?.currentStep?.hint,
+                    createdAt: createdAt,
+                    displayName: intentFragment?.displayName,
+                    previousSteps: try previousStepFragments.map { previousStepFragment in
+                        let isSkippable =
+                            previousStepFragment.content.fragments.claimIntentStepContentFragment
+                            .extractIsSkippable()
+                        return .init(
+                            currentStep: try .init(fragment: previousStepFragment),
+                            id: previousStepFragment.id,
+                            isSkippable: isSkippable,
+                            isRegrettable: previousStepFragment.isRegrettable,
+                            progress: 0,
+                            hint: previousStepFragment.hint,
+                            createdAt: nil
+                        )
+                    }
                 )
             )
         } else if let outcome {
@@ -299,7 +334,9 @@ extension ClaimIntentStepContent {
                 model: .init(
                     uploadURI: audioRecording.uploadUri,
                     freeTextMinLength: audioRecording.freeTextMinLength,
-                    freeTextMaxLength: audioRecording.freeTextMaxLength
+                    freeTextMaxLength: audioRecording.freeTextMaxLength,
+                    currentAudioUrl: audioRecording.currentAudioUrl.flatMap { URL(string: $0) },
+                    currentFreeText: audioRecording.currentFreeText
                 )
             )
         } else if let summary = fragment.asClaimIntentStepContentSummary {
@@ -326,13 +363,23 @@ extension ClaimIntentStepContent {
                 model: .init(
                     defaultSelectedId: singleStep.defaultSelectedId,
                     options: singleStep.options.compactMap({ .init(id: $0.id, title: $0.title) }),
-                    style: singleStep.style.asSelectStyle
+                    style: singleStep.style.asSelectStyle,
+                    currentSelectedId: singleStep.currentSelectedId
                 )
             )
         } else if let fileUpload = fragment.asClaimIntentStepContentFileUpload {
             self = .fileUpload(
                 model: .init(
-                    uploadURI: fileUpload.uploadUri
+                    uploadURI: fileUpload.uploadUri,
+                    currentFiles: fileUpload.currentFiles?
+                        .compactMap { file in
+                            guard let url = URL(string: file.url) else { return nil }
+                            return ClaimIntentStepContentFileUploadFile(
+                                url: url,
+                                contentType: .findBy(mimeType: file.contentType),
+                                fileName: file.fileName
+                            )
+                        } ?? []
                 )
             )
         } else if let deflect = fragment.asClaimIntentStepContentDeflection {
@@ -380,7 +427,8 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             suffix: fragment.suffix,
             searchData: searchData,
             title: fragment.title,
-            type: type
+            type: type,
+            currentValues: fragment.currentValues
         )
     }
 }
