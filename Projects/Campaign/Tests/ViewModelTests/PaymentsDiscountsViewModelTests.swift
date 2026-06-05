@@ -1,22 +1,17 @@
-import PresentableStore
 import XCTest
 import hCore
+import hCoreUI
 
 @testable import Campaign
 
 @MainActor
-final class StoreDiscountsTests: XCTestCase {
-    weak var store: CampaignStore?
-
-    override func setUp() async throws {
-        try await super.setUp()
-    }
+final class PaymentsDiscountsViewModelTests: XCTestCase {
+    weak var sut: PaymentsDiscountsViewModel?
 
     override func tearDown() async throws {
         try await super.tearDown()
         Dependencies.shared.remove(for: hCampaignClient.self)
-        globalPresentableStoreContainer.deletePersistanceContainer()
-        assert(store == nil)
+        assert(sut == nil)
     }
 
     func testFetchDiscountsSuccess() async throws {
@@ -49,11 +44,11 @@ final class StoreDiscountsTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             fetchPaymentDiscountsData: { discountsData }
         )
-        let store = CampaignStore()
-        self.store = store
-        await store.sendAsync(.fetchDiscountsData)
-        assert(store.loadingState[.getDiscountsData] == nil)
-        assert(store.state.paymentDiscountsData == discountsData)
+        let vm = PaymentsDiscountsViewModel()
+        sut = vm
+        await vm.fetchDiscountsData()
+        assert(vm.viewState == .success)
+        assert(vm.paymentDiscountsData == discountsData)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentDiscountsData)
     }
@@ -62,12 +57,11 @@ final class StoreDiscountsTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             fetchPaymentDiscountsData: { throw MockCampaignError.failure }
         )
-        let store = CampaignStore()
-        self.store = store
-        await store.sendAsync(.fetchDiscountsData)
-        try await Task.sleep(seconds: 0.1)
-        assert(store.loadingState[.getDiscountsData] != nil)
-        assert(store.state.paymentDiscountsData == nil)
+        let vm = PaymentsDiscountsViewModel()
+        sut = vm
+        await vm.fetchDiscountsData()
+        assert(vm.viewState == .error(errorMessage: L10n.General.errorBody))
+        assert(vm.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentDiscountsData)
     }
