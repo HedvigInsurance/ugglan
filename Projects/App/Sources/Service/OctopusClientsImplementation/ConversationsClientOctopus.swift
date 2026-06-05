@@ -28,7 +28,7 @@ class ConversationsClientOctopus: ConversationsClient {
             } else if $0.isClosed, $1.isOpened {
                 return false
             }
-            return $0.displayTimestamp > $1.displayTimestamp
+            return $0.timestamp > $1.timestamp
         })
         return conversationsSortedByDate
     }

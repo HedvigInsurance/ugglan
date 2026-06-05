@@ -61,7 +61,7 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     }
 
     @MainActor
-    public var displayTimestamp: Date {
+    public var timestamp: Date {
         newestMessage?.sentAt ?? createdAt
     }
 

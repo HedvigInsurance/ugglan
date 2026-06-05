@@ -160,7 +160,7 @@ public struct InboxView: View {
         } else {
             ZStack {
                 hText(" ", style: .body1)
-                hText(conversation.displayTimestamp.displayTimeStamp, style: .label)
+                hText(conversation.timestamp.displayTimeStamp, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .transition(.scale.combined(with: .opacity))
