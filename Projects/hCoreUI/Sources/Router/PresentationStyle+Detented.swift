@@ -249,7 +249,6 @@ public enum Detent: Equatable {
 
             var additionalViewHeight =
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
-            //            if navigationController?.isKind(of: hNavigationController.self) == true && hasNavigationBar {
             if hasNavigationBar {
                 additionalViewHeight += navigationController?.navigationBar.frame.origin.y ?? 0
             }
