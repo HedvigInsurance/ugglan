@@ -5,21 +5,7 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Sources/AppIntents/PendingAppIntentService.swift Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan commit -m ' *)",
-      "Bash(xcodebuild test *)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift)",
-      "Bash(xcodebuild -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build)",
-      "Bash(xcodebuild -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Sources/AppDelegate+DI.swift)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/Home/Sources/Navigation/HomeNavigation.swift)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Sources/AppDelegate.swift)",
-      "Bash(tuist generate *)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Tests/AppIntents/FileClaimAppIntentTests.swift)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan add Projects/App/Resources/en.lproj/AppShortcuts.strings Projects/App/Resources/sv-SE.lproj/AppShortcuts.strings Projects/App/Sources/AppIntents/HedvigAppShortcuts.swift)",
-      "Bash(git -C /Users/sladannimcevic/Hedvig/ugglan log --oneline main..HEAD)",
-      "Bash(git *)"
+      "Bash(git commit -m ':*)"
     ]
   }
 }
