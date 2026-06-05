@@ -1,20 +1,22 @@
-import XCTest
+import Testing
 import hCore
 import hCoreUI
 
 @testable import Campaign
 
 @MainActor
-final class PaymentsDiscountsViewModelTests: XCTestCase {
+@Suite(.serialized)
+final class PaymentsDiscountsViewModelTests {
     weak var sut: PaymentsDiscountsViewModel?
 
-    override func tearDown() async throws {
-        try await super.tearDown()
-        Dependencies.shared.remove(for: hCampaignClient.self)
-        assert(sut == nil)
+    deinit {
+        MainActor.assumeIsolated {
+            Dependencies.shared.remove(for: hCampaignClient.self)
+            assert(sut == nil)
+        }
     }
 
-    func testFetchDiscountsSuccess() async throws {
+    @Test func fetchDiscountsSuccess() async throws {
         let discounts: [Discount] = [
             .init(
                 code: "code",
@@ -47,22 +49,22 @@ final class PaymentsDiscountsViewModelTests: XCTestCase {
         let vm = PaymentsDiscountsViewModel()
         sut = vm
         await vm.fetchDiscountsData()
-        assert(vm.viewState == .success)
-        assert(vm.paymentDiscountsData == discountsData)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getPaymentDiscountsData)
+        #expect(vm.viewState == .success)
+        #expect(vm.paymentDiscountsData == discountsData)
+        #expect(mockService.events.count == 1)
+        #expect(mockService.events.first == .getPaymentDiscountsData)
     }
 
-    func testFetchDiscountsFailure() async throws {
+    @Test func fetchDiscountsFailure() async throws {
         let mockService = MockCampaignData.createMockCampaignService(
             fetchPaymentDiscountsData: { throw MockCampaignError.failure }
         )
         let vm = PaymentsDiscountsViewModel()
         sut = vm
         await vm.fetchDiscountsData()
-        assert(vm.viewState == .error(errorMessage: L10n.General.errorBody))
-        assert(vm.paymentDiscountsData == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getPaymentDiscountsData)
+        #expect(vm.viewState == .error(errorMessage: L10n.General.errorBody))
+        #expect(vm.paymentDiscountsData == nil)
+        #expect(mockService.events.count == 1)
+        #expect(mockService.events.first == .getPaymentDiscountsData)
     }
 }
