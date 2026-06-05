@@ -36,6 +36,8 @@ jobs:
       - name: Post checkout
         if: steps.changes.outputs.has_changes == 'true'
         run: scripts/post-checkout.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build project
         if: steps.changes.outputs.has_changes == 'true'
         run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' CODE_SIGNING_ALLOWED=NO
