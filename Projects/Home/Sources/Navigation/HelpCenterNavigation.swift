@@ -208,14 +208,16 @@ public struct HelpCenterNavigation<Content: View>: View {
                     urlComponent?.scheme = "https"
                 }
                 let schema = urlComponent?.scheme
+                let requiresAuthorization = urlComponent?.queryItems?
+                    .contains(where: { $0.name == "requiresAuthorization" && $0.value == "true" }) ?? false
                 if let finalUrl = urlComponent?.url {
-                    if schema == "https" || schema == "http" {
+                    if (schema == "https" || schema == "http") && !requiresAuthorization {
                         let vc = SFSafariViewController(url: finalUrl)
                         vc.modalPresentationStyle = .pageSheet
                         vc.preferredControlTintColor = .brand(.primaryText())
                         UIApplication.shared.getTopViewController()?.present(vc, animated: true)
                     } else {
-                        Dependencies.urlOpener.open(url)
+                        Task { await Dependencies.urlOpener.open(url) }
                     }
                 }
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:

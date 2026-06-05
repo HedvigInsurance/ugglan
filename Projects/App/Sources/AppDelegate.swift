@@ -89,7 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         if settings.authorizationStatus == .denied {
-            DispatchQueue.main.async { Dependencies.urlOpener.open(settingsUrl) }
+            await Dependencies.urlOpener.open(settingsUrl)
         } else {
             do {
                 let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
