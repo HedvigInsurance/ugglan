@@ -38,7 +38,7 @@ extension Date {
         Dependencies.dateService.displayddMMMyyyyHHmm.string(from: self).lowercased()
     }
 
-    public var displayTimeStamp: String {
+    public var displayTimestamp: String {
         let dateFormatter = DateFormatter()
         if !Calendar.current.isDateInWeek(from: self) {
             dateFormatter.dateFormat = "dd MMMM YYYY"
