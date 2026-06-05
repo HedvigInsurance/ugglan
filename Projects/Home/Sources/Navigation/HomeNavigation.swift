@@ -19,6 +19,8 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
 
+    @Inject private var pendingAppIntentService: PendingAppIntentServiceProtocol
+
     public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
@@ -63,6 +65,16 @@ public class HomeNavigationViewModel: ObservableObject {
                 if let recommended = crossSells.recommended {
                     let store: CrossSellStore = globalPresentableStoreContainer.get()
                     store.send(.setHasSeenRecommendedWith(id: recommended.id))
+                }
+            }
+        }
+
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if let action = self.pendingAppIntentService.consume() {
+                switch action {
+                case .fileNewClaim:
+                    self.claimsAutomationStartInput = .init(sourceMessageId: nil)
                 }
             }
         }
