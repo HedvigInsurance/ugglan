@@ -497,8 +497,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INBOX_EMPTY_STATE_SUBTITLE" = "Inga konversationer än. Starta en genom att skriva ett meddelande";
 "INBOX_EMPTY_STATE_TITLE" = "Din inkorg är tom";
 "INBOX_NEW_MESSAGE" = "Nytt";
-"INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Anmäl något som har hänt med dig eller dina saker";
-"INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Frågor om din försäkring, betalningar och annat";
+"INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Anmäl något som hänt dig eller dina saker";
+"INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Frågor om din försäkring, betalningar eller annat";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Erbjudanden";
 "INSURANCE_ADDONS_SUBHEADING" = "Tillägg";
 "INSURANCE_ADDON_SUBHEADING" = "Tillägg";
