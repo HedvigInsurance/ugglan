@@ -208,8 +208,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                     urlComponent?.scheme = "https"
                 }
                 let schema = urlComponent?.scheme
-                let requiresAuthorization = urlComponent?.queryItems?
-                    .contains(where: { $0.name == "requiresAuthorization" && $0.value == "true" }) ?? false
+                let requiresAuthorization = url.requiresAuthorization
                 if let finalUrl = urlComponent?.url {
                     if (schema == "https" || schema == "http") && !requiresAuthorization {
                         let vc = SFSafariViewController(url: finalUrl)
