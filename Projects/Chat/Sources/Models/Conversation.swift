@@ -7,7 +7,7 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
         id: String,
         type: ConversationType,
         newestMessage: Message?,
-        createdAt: Date?,
+        createdAt: Date,
         statusMessage: String?,
         status: ConversationStatus,
         hasClaim: Bool,
@@ -32,7 +32,7 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     public let id: String
     let type: ConversationType
     public let newestMessage: Message?
-    let createdAt: Date?
+    let createdAt: Date
     let statusMessage: String?
     let status: ConversationStatus
     let hasClaim: Bool
@@ -61,8 +61,8 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     }
 
     @MainActor
-    public var getAnyDate: Date {
-        newestMessage?.sentAt ?? createdAt ?? Date()
+    public var displayTimestamp: Date {
+        newestMessage?.sentAt ?? createdAt
     }
 
     public var isOpened: Bool {

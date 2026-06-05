@@ -28,7 +28,7 @@ class ConversationsClientOctopus: ConversationsClient {
             } else if $0.isClosed, $1.isOpened {
                 return false
             }
-            return $0.getAnyDate > $1.getAnyDate
+            return $0.displayTimestamp > $1.displayTimestamp
         })
         return conversationsSortedByDate
     }
@@ -125,7 +125,7 @@ extension OctopusGraphQL.ConversationFragment {
             id: id,
             type: type,
             newestMessage: newestMessage?.fragments.messageFragment.asMessage(),
-            createdAt: createdAt.localDateToIso8601Date,
+            createdAt: createdAt.localDateToIso8601Date ?? Date(),
             statusMessage: statusMessage,
             status: isOpen ? .open : .closed,
             hasClaim: claim != nil,
@@ -265,7 +265,7 @@ extension Conversation {
             id: fragment.id,
             type: type,
             newestMessage: newestMessage,
-            createdAt: fragment.createdAt.localDateToIso8601Date,
+            createdAt: fragment.createdAt.localDateToIso8601Date ?? Date(),
             statusMessage: fragment.statusMessage,
             status: fragment.isOpen ? .open : .closed,
             hasClaim: fragment.claim != nil,

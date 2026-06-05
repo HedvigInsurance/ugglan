@@ -58,7 +58,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             id: id.uuidString,
             type: .service,
             newestMessage: nil,
-            createdAt: nil,
+            createdAt: Date(),
             statusMessage: "status message",
             status: .open,
             hasClaim: false,

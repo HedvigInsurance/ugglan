@@ -157,10 +157,10 @@ public struct InboxView: View {
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else if let timeStamp = conversation.newestMessage?.sentAt ?? conversation.createdAt {
+        } else  {
             ZStack {
                 hText(" ", style: .body1)
-                hText(timeStamp.displayTimeStamp, style: .label)
+                hText(conversation.displayTimestamp.displayTimeStamp, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .transition(.scale.combined(with: .opacity))
