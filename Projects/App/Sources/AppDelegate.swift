@@ -165,7 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        Main_nativeKt.doInitKoin(
+        Main_nativeKt.doInitDiGraph(
             accessTokenFetcher: IosAccessTokenFetcher(),
             deviceIdFetcher: IosDeviceIdFetcher(),
             featureManager: IosFeatureManager(isFeatureEnabledBlock: { _ in false }),
