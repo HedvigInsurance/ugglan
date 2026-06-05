@@ -1,3 +1,4 @@
+import Combine
 import XCTest
 import hCore
 
@@ -19,6 +20,7 @@ final class FileClaimAppIntentTests: XCTestCase {
 @MainActor
 private final class StubPendingAppIntentService: PendingAppIntentServiceProtocol {
     var stored: [PendingAppIntentAction] = []
+    var storedPublisher: AnyPublisher<Void, Never> { Empty().eraseToAnyPublisher() }
     func store(_ action: PendingAppIntentAction) { stored.append(action) }
     func consume() -> PendingAppIntentAction? { nil }
     func recoverInFlight() {}

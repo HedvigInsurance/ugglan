@@ -10,6 +10,10 @@ public struct HedvigAppShortcuts: AppShortcutsProvider {
                 "Start a \(.applicationName) claim",
                 "Report a claim with \(.applicationName)",
                 "New \(.applicationName) claim",
+                "Start a new insurance claim with \(.applicationName)",
+                "File Claim \(.applicationName)",
+                "Report damage \(.applicationName)",
+                "Report damage with \(.applicationName)",
             ],
             shortTitle: "File Claim",
             systemImageName: "exclamationmark.bubble"

@@ -1,7 +1,7 @@
+import Combine
 import Foundation
 import hCore
 
-@MainActor
 public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
     public static let pendingTTL: TimeInterval = 5 * 60
     public static let inFlightAutoClearAfter: TimeInterval = 5
@@ -16,6 +16,11 @@ public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
     private var inFlightExpiry: Date?
 
     private let clock: () -> Date
+    private let storeSubject = PassthroughSubject<Void, Never>()
+
+    public var storedPublisher: AnyPublisher<Void, Never> {
+        storeSubject.eraseToAnyPublisher()
+    }
 
     public init(clock: @escaping () -> Date = Date.init) {
         self.clock = clock
@@ -23,6 +28,7 @@ public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
 
     public func store(_ action: PendingAppIntentAction) {
         pending = Pending(action: action, timestamp: clock())
+        storeSubject.send(())
     }
 
     public func consume() -> PendingAppIntentAction? {
