@@ -4,7 +4,7 @@
 
 **Goal:** Add a Siri/Shortcuts AppIntent that opens the existing "Start a new claim" flow, including resilient handling of logged-out and token-expiry scenarios.
 
-**Architecture:** A single `FileClaimAppIntent` (App target, `openAppWhenRun = true`) writes a pending action into `PendingAppIntentService`. A dispatcher on `ApplicationState` transition to `.loggedIn` consumes the action and posts a `.startNewClaim` notification — observed by `HomeNavigationViewModel`, which sets `claimsAutomationStartInput`. The existing `forceLogoutHook` is extended to call `recoverInFlight()` before tearing down session state, so the intent survives token expiry across the re-auth boundary.
+**Architecture:** A single `FileClaimAppIntent` (App target, `openAppWhenRun = true`) writes a pending action into `PendingAppIntentService` (protocol in hCore, impl in App). `HomeNavigationViewModel` — which is only instantiated once the user is logged in — uses `@Inject` to access the service and drains any pending action from its `init`, setting `claimsAutomationStartInput` to launch the existing claim flow. This avoids timing/race issues because the VM's `init` is guaranteed to run after the `.loggedIn` state transition. The existing `forceLogoutHook` is extended to call `recoverInFlight()` before tearing down session state, so the intent survives token expiry across the re-auth boundary.
 
 **Tech Stack:** Swift 5.10+, SwiftUI, iOS 16+, Apple AppIntents framework, Tuist project generation, XCTest, Combine, Datadog SDK.
 
@@ -16,11 +16,12 @@
 
 ## File Structure
 
+**New files (hCore target):**
+- `Projects/hCore/Sources/AppIntents/PendingAppIntentAction.swift` — action enum
+- `Projects/hCore/Sources/AppIntents/PendingAppIntentServiceProtocol.swift` — protocol
+
 **New files (App target):**
-- `Projects/App/Sources/AppIntents/PendingAppIntentAction.swift` — action enum
-- `Projects/App/Sources/AppIntents/PendingAppIntentServiceProtocol.swift` — protocol
 - `Projects/App/Sources/AppIntents/PendingAppIntentService.swift` — implementation
-- `Projects/App/Sources/AppIntents/PendingAppIntentDispatcher.swift` — listens to ApplicationState, drains the service, posts the notification
 - `Projects/App/Sources/AppIntents/FileClaimAppIntent.swift` — the intent
 - `Projects/App/Sources/AppIntents/HedvigAppShortcuts.swift` — `AppShortcutsProvider`
 - `Projects/App/Sources/Resources/AppShortcuts.xcstrings` — localized phrase catalog
@@ -32,62 +33,19 @@
 **Modified files:**
 - `Projects/App/Sources/AppDelegate+DI.swift` — register service
 - `Projects/App/Sources/AppDelegate.swift:213-228` — extend `forceLogoutHook` with `recoverInFlight()`
-- `Projects/App/Sources/Navigation/MainNavigation.swift` — instantiate dispatcher; trigger on state transition
-- `Projects/Home/Sources/Navigation/HomeNavigation.swift:22-43` — add observer for `.startNewClaim`
-- `Projects/hCore/Sources/Notifications/` (new) or existing notification names file — declare `Notification.Name.startNewClaim`
+- `Projects/Home/Sources/Navigation/HomeNavigation.swift:19-43` — `@Inject` service + drain on `init`
 
 ---
 
-## Task 1: Add `Notification.Name.startNewClaim`
+## Task 1: Create `PendingAppIntentAction` enum in hCore
 
 **Files:**
-- Find: existing notification name declarations (likely in `Projects/hCore/Sources/` — search before creating)
-- Create or modify: a file extending `Notification.Name`
+- Create: `Projects/hCore/Sources/AppIntents/PendingAppIntentAction.swift`
 
-- [ ] **Step 1: Locate existing notification name declarations**
-
-Run: `grep -rn "extension Notification.Name" /Users/sladannimcevic/Hedvig/ugglan/Projects --include="*.swift" -l`
-
-If `.openChat` is defined somewhere obvious (e.g. `Projects/hCore/Sources/Notifications.swift`), add the new name there. Otherwise create `Projects/hCore/Sources/AppIntentNotifications.swift`.
-
-- [ ] **Step 2: Add the notification name**
-
-Add to the existing file (or create new):
-
-```swift
-import Foundation
-
-extension Notification.Name {
-    public static let startNewClaim = Notification.Name("startNewClaim")
-}
-```
-
-If creating a new file, ensure it's included in the hCore framework target (Tuist `Project.framework` auto-globs `Sources/**/*.swift` so no Project.swift change is needed).
-
-- [ ] **Step 3: Verify build**
-
-Run: `tuist generate && xcodebuild -workspace Hedvig.xcworkspace -scheme hCore -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
-
-Expected: BUILD SUCCEEDED.
-
-- [ ] **Step 4: Commit**
+- [ ] **Step 1: Create the directory**
 
 ```bash
-git add Projects/hCore/Sources/
-git commit -m "feat(hCore): add startNewClaim notification name"
-```
-
----
-
-## Task 2: Create `PendingAppIntentAction` enum
-
-**Files:**
-- Create: `Projects/App/Sources/AppIntents/PendingAppIntentAction.swift`
-
-- [ ] **Step 1: Create the AppIntents directory**
-
-```bash
-mkdir -p /Users/sladannimcevic/Hedvig/ugglan/Projects/App/Sources/AppIntents
+mkdir -p /Users/sladannimcevic/Hedvig/ugglan/Projects/hCore/Sources/AppIntents
 ```
 
 - [ ] **Step 2: Create the action enum**
@@ -100,25 +58,28 @@ public enum PendingAppIntentAction: Equatable, Sendable {
 }
 ```
 
-- [ ] **Step 3: Verify build**
+- [ ] **Step 3: Regenerate workspace + verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+tuist generate
+xcodebuild -workspace Hedvig.xcworkspace -scheme hCore -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add Projects/App/Sources/AppIntents/PendingAppIntentAction.swift
-git commit -m "feat(App): add PendingAppIntentAction enum"
+git add Projects/hCore/Sources/AppIntents/PendingAppIntentAction.swift
+git commit -m "feat(hCore): add PendingAppIntentAction enum"
 ```
 
 ---
 
-## Task 3: Define `PendingAppIntentServiceProtocol`
+## Task 2: Define `PendingAppIntentServiceProtocol` in hCore
 
 **Files:**
-- Create: `Projects/App/Sources/AppIntents/PendingAppIntentServiceProtocol.swift`
+- Create: `Projects/hCore/Sources/AppIntents/PendingAppIntentServiceProtocol.swift`
 
 - [ ] **Step 1: Write the protocol**
 
@@ -135,20 +96,22 @@ public protocol PendingAppIntentServiceProtocol: AnyObject {
 
 - [ ] **Step 2: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme hCore -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add Projects/App/Sources/AppIntents/PendingAppIntentServiceProtocol.swift
-git commit -m "feat(App): add PendingAppIntentServiceProtocol"
+git add Projects/hCore/Sources/AppIntents/PendingAppIntentServiceProtocol.swift
+git commit -m "feat(hCore): add PendingAppIntentServiceProtocol"
 ```
 
 ---
 
-## Task 4: Write failing test — store + consume happy path
+## Task 3: Write failing test — store + consume happy path
 
 **Files:**
 - Create: `Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift`
@@ -164,48 +127,59 @@ mkdir -p /Users/sladannimcevic/Hedvig/ugglan/Projects/App/Tests/AppIntents
 ```swift
 @testable import Ugglan
 import XCTest
+import hCore
 
 @MainActor
 final class PendingAppIntentServiceTests: XCTestCase {
+    private var now: Date!
+
+    override func setUp() {
+        super.setUp()
+        now = Date(timeIntervalSince1970: 1_000_000)
+    }
+
+    private func makeService() -> PendingAppIntentService {
+        PendingAppIntentService(clock: { [weak self] in self?.now ?? Date() })
+    }
+
     func testStoreThenConsumeReturnsAction() {
-        let clock = TestClock(now: Date(timeIntervalSince1970: 1_000_000))
-        let service = PendingAppIntentService(clock: clock.now)
-
+        let service = makeService()
         service.store(.fileNewClaim)
-
         XCTAssertEqual(service.consume(), .fileNewClaim)
     }
 }
-
-private final class TestClock {
-    var now: Date
-    init(now: Date) { self.now = now }
-}
 ```
 
-The host module is `Ugglan` (confirmed from `Projects/App/Project.swift:148`); the test target is `AppTests` (line 171).
+Host module: `Ugglan` (confirmed from `Projects/App/Project.swift:148`); test target: `AppTests` (line 171).
 
 - [ ] **Step 3: Run test — verify it fails**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests/testStoreThenConsumeReturnsAction 2>&1 | tail -30`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests/testStoreThenConsumeReturnsAction 2>&1 | tail -30
+```
 
 Expected: FAIL with "Cannot find 'PendingAppIntentService' in scope".
 
-(If `-only-testing` target name doesn't match, run all tests and check output for the relevant case.)
-
-- [ ] **Step 4: Do not commit yet — implementation is in Task 5**
+- [ ] **Step 4: Do not commit yet — implementation is in Task 4**
 
 ---
 
-## Task 5: Implement `PendingAppIntentService` — store + consume
+## Task 4: Implement `PendingAppIntentService` — store + consume
 
 **Files:**
 - Create: `Projects/App/Sources/AppIntents/PendingAppIntentService.swift`
 
-- [ ] **Step 1: Write minimal implementation**
+- [ ] **Step 1: Create the directory**
+
+```bash
+mkdir -p /Users/sladannimcevic/Hedvig/ugglan/Projects/App/Sources/AppIntents
+```
+
+- [ ] **Step 2: Write the implementation**
 
 ```swift
 import Foundation
+import hCore
 
 @MainActor
 public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
@@ -232,7 +206,6 @@ public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
     }
 
     public func consume() -> PendingAppIntentAction? {
-        // Drop expired in-flight first
         if let expiry = inFlightExpiry, clock() >= expiry {
             inFlight = nil
             inFlightExpiry = nil
@@ -241,7 +214,6 @@ public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
         guard let p = pending else { return nil }
         pending = nil
 
-        // TTL check
         if clock().timeIntervalSince(p.timestamp) > Self.pendingTTL {
             return nil
         }
@@ -260,38 +232,11 @@ public final class PendingAppIntentService: PendingAppIntentServiceProtocol {
 }
 ```
 
-- [ ] **Step 2: Update test to use the real clock injection**
-
-Edit `Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift`:
-
-```swift
-@testable import Ugglan
-import XCTest
-
-@MainActor
-final class PendingAppIntentServiceTests: XCTestCase {
-    private var now: Date!
-
-    override func setUp() {
-        super.setUp()
-        now = Date(timeIntervalSince1970: 1_000_000)
-    }
-
-    private func makeService() -> PendingAppIntentService {
-        PendingAppIntentService(clock: { [weak self] in self?.now ?? Date() })
-    }
-
-    func testStoreThenConsumeReturnsAction() {
-        let service = makeService()
-        service.store(.fileNewClaim)
-        XCTAssertEqual(service.consume(), .fileNewClaim)
-    }
-}
-```
-
 - [ ] **Step 3: Run test — verify it passes**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests/testStoreThenConsumeReturnsAction 2>&1 | tail -20`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests/testStoreThenConsumeReturnsAction 2>&1 | tail -20
+```
 
 Expected: TEST SUCCEEDED.
 
@@ -304,12 +249,12 @@ git commit -m "feat(App): implement PendingAppIntentService store+consume"
 
 ---
 
-## Task 6: Add `consume` returns nil after TTL test + verify
+## Task 5: Cover TTL + nil-consume cases
 
 **Files:**
 - Modify: `Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift`
 
-- [ ] **Step 1: Add failing test for TTL**
+- [ ] **Step 1: Add tests**
 
 Append to `PendingAppIntentServiceTests`:
 
@@ -336,9 +281,11 @@ func testSecondConsumeReturnsNil() {
 
 - [ ] **Step 2: Run tests**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests 2>&1 | tail -30`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests 2>&1 | tail -30
+```
 
-Expected: all 4 tests PASS (implementation already covers these — sanity check).
+Expected: all 4 tests PASS.
 
 - [ ] **Step 3: Commit**
 
@@ -349,7 +296,7 @@ git commit -m "test(App): cover pending-TTL + nil-consume cases"
 
 ---
 
-## Task 7: Add `recoverInFlight` tests + verify
+## Task 6: Cover `recoverInFlight` + in-flight auto-clear
 
 **Files:**
 - Modify: `Projects/App/Tests/AppIntents/PendingAppIntentServiceTests.swift`
@@ -380,10 +327,8 @@ func testRecoverInFlightResetsTTL() {
     service.store(.fileNewClaim)
     XCTAssertEqual(service.consume(), .fileNewClaim)
 
-    // Advance past original TTL
     now = now.addingTimeInterval(PendingAppIntentService.pendingTTL - 1)
     service.recoverInFlight()
-    // Recovered with fresh timestamp; should still be consumable
     now = now.addingTimeInterval(PendingAppIntentService.pendingTTL - 1)
     XCTAssertEqual(service.consume(), .fileNewClaim)
 }
@@ -393,12 +338,9 @@ func testInFlightAutoClearsAfterWindow() {
     service.store(.fileNewClaim)
     XCTAssertEqual(service.consume(), .fileNewClaim)
 
-    // Advance past the in-flight auto-clear window
     now = now.addingTimeInterval(PendingAppIntentService.inFlightAutoClearAfter + 1)
-    // Trigger expiry check by attempting another consume
     _ = service.consume()
 
-    // recoverInFlight should now be a no-op
     service.recoverInFlight()
     XCTAssertNil(service.consume())
 }
@@ -406,7 +348,9 @@ func testInFlightAutoClearsAfterWindow() {
 
 - [ ] **Step 2: Run tests**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests 2>&1 | tail -30`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/PendingAppIntentServiceTests 2>&1 | tail -30
+```
 
 Expected: all 8 tests PASS.
 
@@ -419,18 +363,18 @@ git commit -m "test(App): cover recoverInFlight + auto-clear behavior"
 
 ---
 
-## Task 8: Register the service in DI
+## Task 7: Register the service in DI
 
 **Files:**
 - Modify: `Projects/App/Sources/AppDelegate+DI.swift`
 
 - [ ] **Step 1: Read current DI registrations**
 
-Read `Projects/App/Sources/AppDelegate+DI.swift` and locate the block where module-agnostic clients are registered (around lines 29-38, before the demo/staging branch). The new registration should be placed near the top — alongside `FeatureFlags`, `URLOpener`, `DateService` — since this service is environment-independent.
+Read `Projects/App/Sources/AppDelegate+DI.swift` around lines 29-38 — the registrations of `FeatureFlags`, `URLOpener`, `AuthenticationClient`, `DateService` happen before the demo/staging branch. Add the new registration alongside them since it's environment-independent.
 
 - [ ] **Step 2: Add the registration**
 
-In `AppDelegate+DI.swift`, after the `DateService` registration (around line 38):
+After the `DateService` registration (around line 38):
 
 ```swift
 Dependencies.shared.add(module: Module { () -> PendingAppIntentServiceProtocol in PendingAppIntentService() })
@@ -438,7 +382,9 @@ Dependencies.shared.add(module: Module { () -> PendingAppIntentServiceProtocol i
 
 - [ ] **Step 3: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
@@ -451,160 +397,60 @@ git commit -m "feat(App): register PendingAppIntentService in DI"
 
 ---
 
-## Task 9: Create `PendingAppIntentDispatcher`
-
-The dispatcher consumes the service and posts `.startNewClaim` when ApplicationState becomes `.loggedIn`.
+## Task 8: Drain pending action from `HomeNavigationViewModel.init`
 
 **Files:**
-- Create: `Projects/App/Sources/AppIntents/PendingAppIntentDispatcher.swift`
+- Modify: `Projects/Home/Sources/Navigation/HomeNavigation.swift` (lines 19-43)
 
-- [ ] **Step 1: Write the dispatcher**
+- [ ] **Step 1: Read current init**
+
+Read `Projects/Home/Sources/Navigation/HomeNavigation.swift` lines 18-68 to confirm the existing init structure (notification observers for `.openChat` and `.openCrossSell`).
+
+- [ ] **Step 2: Add `@Inject` property + drain call**
+
+In `HomeNavigationViewModel`, add the injected service as a property, and add a drain call at the end of `init`:
 
 ```swift
-import Foundation
-import hCore
-
 @MainActor
-public final class PendingAppIntentDispatcher {
-    private let service: PendingAppIntentServiceProtocol
-    private let notificationCenter: NotificationCenter
+public class HomeNavigationViewModel: ObservableObject {
+    public static var isChatPresented = false
 
-    public init(
-        service: PendingAppIntentServiceProtocol,
-        notificationCenter: NotificationCenter = .default
-    ) {
-        self.service = service
-        self.notificationCenter = notificationCenter
-    }
+    @Inject private var pendingAppIntentService: PendingAppIntentServiceProtocol
 
-    /// Call when the app reaches a state where the home tab is mounted and ready
-    /// to receive navigation signals (i.e. after `ApplicationState.state == .loggedIn`
-    /// and the root scene has finished launch).
-    public func drainAndDispatch() {
-        guard ApplicationState.currentState == .loggedIn else { return }
-        guard let action = service.consume() else { return }
+    public init() {
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
+            // ... existing body unchanged ...
+        }
 
-        switch action {
-        case .fileNewClaim:
-            log.info("AppIntent dispatch: fileNewClaim", error: nil, attributes: nil)
-            notificationCenter.post(name: .startNewClaim, object: nil)
+        NotificationCenter.default.addObserver(forName: .openCrossSell, object: nil, queue: nil) {
+            // ... existing body unchanged ...
+        }
+
+        // Drain any pending AppIntent action that arrived while we weren't mounted
+        // (cold launch via Siri, or recovered across forced re-auth).
+        Task { @MainActor [weak self] in
+            guard let self else { return }
+            if let action = self.pendingAppIntentService.consume() {
+                switch action {
+                case .fileNewClaim:
+                    self.claimsAutomationStartInput = .init(sourceMessageId: nil)
+                }
+            }
         }
     }
+    // ... rest of class unchanged ...
 }
 ```
 
-- [ ] **Step 2: Verify build**
+The `Task { @MainActor }` wrapper ensures the consume runs on the next runloop tick — guaranteeing `@Published` observers (the SwiftUI views observing `claimsAutomationStartInput`) are attached before the value flips.
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
-
-Expected: BUILD SUCCEEDED.
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add Projects/App/Sources/AppIntents/PendingAppIntentDispatcher.swift
-git commit -m "feat(App): add PendingAppIntentDispatcher"
-```
-
----
-
-## Task 10: Wire dispatcher into `MainNavigationViewModel` state transition
-
-**Files:**
-- Modify: `Projects/App/Sources/Navigation/MainNavigation.swift` (around lines 108-139 — the `state` `didSet`)
-
-- [ ] **Step 1: Read the current didSet block**
-
-Read `Projects/App/Sources/Navigation/MainNavigation.swift` lines 100-150 to see the current `state` `didSet` implementation.
-
-- [ ] **Step 2: Add dispatcher property + invocation**
-
-Inside the `MainNavigationViewModel` class:
-
-```swift
-@Inject private var pendingAppIntentService: PendingAppIntentServiceProtocol
-private lazy var pendingAppIntentDispatcher = PendingAppIntentDispatcher(service: pendingAppIntentService)
-```
-
-In the `state` `didSet`, after the existing handling for the `.loggedIn` case (where `ApplicationContext.shared.setValue(to: true)`, fetches start, etc.), add **after a short delay to let HomeNavigationViewModel finish mounting**:
-
-```swift
-if state == .loggedIn {
-    // ... existing code ...
-
-    Task { @MainActor in
-        // Give HomeNavigationViewModel a moment to instantiate and register
-        // its `.startNewClaim` observer before we post the notification.
-        try? await Task.sleep(nanoseconds: 300_000_000) // 0.3s
-        self.pendingAppIntentDispatcher.drainAndDispatch()
-    }
-}
-```
+`@Inject` is the property wrapper defined in `Projects/hCore/Sources/Dependencies/Dependencies.swift:49`. `hCore` is already imported in this file.
 
 - [ ] **Step 3: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
-
-Expected: BUILD SUCCEEDED.
-
-- [ ] **Step 4: Also drain on cold launch when already logged in**
-
-In `MainNavigationViewModel.init()` (or `viewDidAppear`-equivalent — find the place where `hasLaunchFinished` flips to true), trigger the same drain if `state == .loggedIn`:
-
-```swift
-// in MainNavigationViewModel, after the existing post-launch handling:
-if ApplicationState.currentState == .loggedIn {
-    Task { @MainActor in
-        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s, larger margin on cold launch
-        self.pendingAppIntentDispatcher.drainAndDispatch()
-    }
-}
-```
-
-(If `hasLaunchFinished` is the gate, hook in there instead so the home tab is definitely mounted.)
-
-- [ ] **Step 5: Verify build again**
-
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
-
-Expected: BUILD SUCCEEDED.
-
-- [ ] **Step 6: Commit**
-
 ```bash
-git add Projects/App/Sources/Navigation/MainNavigation.swift
-git commit -m "feat(App): drain pending AppIntent on loggedIn transitions"
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
 ```
-
----
-
-## Task 11: Add `.startNewClaim` observer in `HomeNavigationViewModel`
-
-**Files:**
-- Modify: `Projects/Home/Sources/Navigation/HomeNavigation.swift` (around lines 22-43)
-
-- [ ] **Step 1: Read current observers**
-
-Read `Projects/Home/Sources/Navigation/HomeNavigation.swift` lines 18-68 to see the existing `.openChat` and `.openCrossSell` observer pattern.
-
-- [ ] **Step 2: Add the observer**
-
-Inside `HomeNavigationViewModel.init()`, after the existing `.openCrossSell` observer block (around line 68):
-
-```swift
-NotificationCenter.default.addObserver(forName: .startNewClaim, object: nil, queue: nil) {
-    [weak self] _ in
-    Task { @MainActor in
-        self?.claimsAutomationStartInput = .init(sourceMessageId: nil)
-    }
-}
-```
-
-The existing `deinit` already calls `NotificationCenter.default.removeObserver(self)` so cleanup is handled.
-
-- [ ] **Step 3: Verify build**
-
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
 
 Expected: BUILD SUCCEEDED.
 
@@ -612,15 +458,15 @@ Expected: BUILD SUCCEEDED.
 
 ```bash
 git add Projects/Home/Sources/Navigation/HomeNavigation.swift
-git commit -m "feat(Home): observe startNewClaim notification"
+git commit -m "feat(Home): drain pending AppIntent on VM init"
 ```
 
 ---
 
-## Task 12: Extend `forceLogoutHook` with `recoverInFlight`
+## Task 9: Extend `forceLogoutHook` with `recoverInFlight`
 
 **Files:**
-- Modify: `Projects/App/Sources/AppDelegate.swift:213-228`
+- Modify: `Projects/App/Sources/AppDelegate.swift` (lines 213-228)
 
 - [ ] **Step 1: Read current hook**
 
@@ -633,7 +479,7 @@ Modify the `forceLogoutHook` closure (current lines 213-228) to call `recoverInF
 ```swift
 forceLogoutHook = { [weak self] in
     if ApplicationState.currentState != .notLoggedIn {
-        // Preserve any in-flight AppIntent so it survives forced re-auth
+        // Preserve any in-flight AppIntent so it survives forced re-auth.
         let pendingService: PendingAppIntentServiceProtocol = Dependencies.shared.resolve()
         pendingService.recoverInFlight()
 
@@ -653,13 +499,13 @@ forceLogoutHook = { [weak self] in
 }
 ```
 
-Note: `forceLogoutHook` is annotated `@MainActor`. The `@MainActor` requirement on `PendingAppIntentServiceProtocol` is already satisfied.
-
-`Dependencies.shared.resolve()` is the codebase's imperative DI API — same one used in `AppDelegate+Tracking.swift:37`.
+`Dependencies.shared.resolve()` is the codebase's imperative DI API (definition: `Projects/hCore/Sources/Dependencies/Dependencies.swift:49`; example: `AppDelegate+Tracking.swift:37`).
 
 - [ ] **Step 3: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
@@ -672,7 +518,7 @@ git commit -m "feat(App): recover pending AppIntent before forced logout"
 
 ---
 
-## Task 13: Implement `FileClaimAppIntent`
+## Task 10: Implement `FileClaimAppIntent`
 
 **Files:**
 - Create: `Projects/App/Sources/AppIntents/FileClaimAppIntent.swift`
@@ -704,11 +550,13 @@ public struct FileClaimAppIntent: AppIntent {
 }
 ```
 
-`Dependencies.shared.resolve()` is the codebase's imperative DI API (defined in `Projects/hCore/Sources/Dependencies/Dependencies.swift:49`; example usages in `AppDelegate+Tracking.swift:37`, `LoggedInNavigation.swift:150`).
+`log` is the global Datadog logger declared in `AppDelegate.swift:204`. `Dependencies.shared.resolve()` is the standard imperative DI lookup.
 
 - [ ] **Step 2: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
@@ -721,7 +569,7 @@ git commit -m "feat(App): add FileClaimAppIntent"
 
 ---
 
-## Task 14: Smoke test for `FileClaimAppIntent.perform()`
+## Task 11: Smoke test for `FileClaimAppIntent.perform()`
 
 **Files:**
 - Create: `Projects/App/Tests/AppIntents/FileClaimAppIntentTests.swift`
@@ -731,12 +579,12 @@ git commit -m "feat(App): add FileClaimAppIntent"
 ```swift
 @testable import Ugglan
 import XCTest
+import hCore
 
 @MainActor
 final class FileClaimAppIntentTests: XCTestCase {
     func testPerformStoresFileNewClaim() async throws {
         let stub = StubPendingAppIntentService()
-        // Replace DI binding for the duration of the test.
         Dependencies.shared.add(module: Module { () -> PendingAppIntentServiceProtocol in stub })
 
         let intent = FileClaimAppIntent()
@@ -757,7 +605,9 @@ private final class StubPendingAppIntentService: PendingAppIntentServiceProtocol
 
 - [ ] **Step 2: Run the test**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/FileClaimAppIntentTests 2>&1 | tail -20`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' -only-testing:AppTests/FileClaimAppIntentTests 2>&1 | tail -20
+```
 
 Expected: TEST SUCCEEDED.
 
@@ -770,12 +620,12 @@ git commit -m "test(App): smoke test FileClaimAppIntent.perform"
 
 ---
 
-## Task 15: Create `AppShortcuts.xcstrings`
+## Task 12: Create `AppShortcuts.xcstrings`
 
 **Files:**
 - Create: `Projects/App/Sources/Resources/AppShortcuts.xcstrings`
 
-Markets confirmed: only `sv_SE` and `en_SE` per `Projects/hCore/Sources/Localization.swift:7-10`. Initial localization is EN + SV.
+Markets confirmed: only `sv_SE` and `en_SE` per `Projects/hCore/Sources/Localization.swift:7-10`.
 
 - [ ] **Step 1: Create the directory**
 
@@ -845,19 +695,23 @@ Write `Projects/App/Sources/Resources/AppShortcuts.xcstrings` with this exact JS
 }
 ```
 
-Swedish translations above are a first pass — flag them in the PR for the localization team to review and correct.
+Swedish translations are a first pass — flag them in the PR for the localization team to review.
 
-- [ ] **Step 3: Declare the resource in Tuist**
+- [ ] **Step 3: Confirm Tuist resource declaration**
 
 Read `Projects/App/Project.swift` and find the App target's `resources:` declaration. Confirm it globs `Sources/Resources/**` (or similar). If not, add an explicit resource entry for `AppShortcuts.xcstrings`. Re-run `tuist generate`.
 
-Run: `tuist generate`
+```bash
+tuist generate
+```
 
 Expected: workspace regenerates without errors.
 
 - [ ] **Step 4: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
 Expected: BUILD SUCCEEDED.
 
@@ -870,7 +724,7 @@ git commit -m "feat(App): add AppShortcuts string catalog (EN + SV)"
 
 ---
 
-## Task 16: Implement `HedvigAppShortcuts` provider
+## Task 13: Implement `HedvigAppShortcuts` provider
 
 **Files:**
 - Create: `Projects/App/Sources/AppIntents/HedvigAppShortcuts.swift`
@@ -898,13 +752,13 @@ public struct HedvigAppShortcuts: AppShortcutsProvider {
 }
 ```
 
-`AppShortcut` requires `\(.applicationName)` in every phrase — already satisfied. `LocalizedStringResource` resolution against `AppShortcuts.xcstrings` happens automatically because the catalog's keys match the literal string values.
-
 - [ ] **Step 2: Verify build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -20
+```
 
-Expected: BUILD SUCCEEDED. The Xcode log may contain a one-time note about AppShortcuts metadata being extracted.
+Expected: BUILD SUCCEEDED.
 
 - [ ] **Step 3: Commit**
 
@@ -915,19 +769,23 @@ git commit -m "feat(App): add HedvigAppShortcuts provider"
 
 ---
 
-## Task 17: End-to-end build + run
+## Task 14: End-to-end build + run
 
 **Files:** none
 
 - [ ] **Step 1: Full workspace build**
 
-Run: `xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -30`
+```bash
+xcodebuild -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'generic/platform=iOS Simulator' build 2>&1 | tail -30
+```
 
 Expected: BUILD SUCCEEDED across all targets.
 
 - [ ] **Step 2: Full test pass**
 
-Run: `xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' 2>&1 | tail -30`
+```bash
+xcodebuild test -workspace Hedvig.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 15' 2>&1 | tail -30
+```
 
 Expected: all tests PASS (specifically the new `PendingAppIntentServiceTests` and `FileClaimAppIntentTests`).
 
@@ -938,15 +796,11 @@ Open Xcode, launch the **Ugglan** scheme on an iOS 17 or iOS 18 simulator. Confi
 - Login flow works
 - "Start new claim" button on Home tab still works
 
-If any of these regressed, stop and diagnose before moving to manual Siri verification.
-
 ---
 
-## Task 18: Manual Siri / Shortcuts verification
+## Task 15: Manual Siri / Shortcuts verification
 
 **Files:** none (manual checklist — record outcomes in PR description)
-
-Run on a physical device (Siri requires it) or in the simulator with Shortcuts app where possible.
 
 - [ ] **Cold launch via Siri, logged in:**
   1. Install fresh build, log in, kill the app
@@ -961,7 +815,7 @@ Run on a physical device (Siri requires it) or in the simulator with Shortcuts a
   5. After login, app navigates to claim flow
 
 - [ ] **Token-expiry mid-launch:**
-  1. Trigger token expiry by manipulating the keychain entry or by waiting long enough (consult Authentication team for fastest path)
+  1. Trigger token expiry (consult Authentication team for fastest path)
   2. "Hey Siri, file a claim with Hedvig"
   3. App opens, briefly shows home, then `forceLogoutHook` fires → login screen
   4. Complete login
@@ -969,7 +823,7 @@ Run on a physical device (Siri requires it) or in the simulator with Shortcuts a
 
 - [ ] **Phrases appear in Shortcuts app:**
   1. After fresh install, open Shortcuts app → search "Hedvig"
-  2. Confirm all 4 phrases are listed under the Hedvig section
+  2. Confirm all 4 phrases are listed
 
 - [ ] **Spotlight discoverability:**
   1. Pull down on home screen → search "claim"
@@ -981,7 +835,7 @@ Run on a physical device (Siri requires it) or in the simulator with Shortcuts a
   3. Confirm Swedish phrases appear in Shortcuts app
 
 - [ ] **iOS 17 + iOS 18 sanity:**
-  1. Repeat the "cold launch, logged in" scenario on iOS 17 and iOS 18 simulator/device
+  1. Repeat "cold launch, logged in" on iOS 17 and iOS 18
   2. Confirm no platform-specific regressions
 
 Record the result of each row in the PR description as ✅ / ❌.
@@ -992,7 +846,7 @@ Record the result of each row in the PR description as ✅ / ❌.
 
 Before opening the PR:
 
-- [ ] All 18 tasks completed; all commits on `feature/app-intent-file-claim`
+- [ ] All 15 tasks completed; all commits on `feature/app-intent-file-claim`
 - [ ] No new SwiftLint warnings (`swiftlint` from project root)
 - [ ] swift-format passes (`swift format lint -r Projects/App/Sources/AppIntents`)
 - [ ] No hardcoded user-facing strings outside `AppShortcuts.xcstrings`
@@ -1005,8 +859,5 @@ Before opening the PR:
 
 ## Open Items the Implementer May Need to Resolve
 
-These were identified during planning but require codebase verification at implementation time:
-
-1. **`hasLaunchFinished` flag in `MainNavigationViewModel`** — exact name and observation point per the explorer report (line ~128). Confirm before wiring Task 10 Step 4.
-2. **Tuist resource declaration** — confirm `Projects/App/Project.swift` includes `Sources/Resources/**` in the App target's resources. If not, add it explicitly in Task 15 Step 3.
-3. **Analytics event** — the spec calls for an analytics event when the dispatcher posts `.startNewClaim` (e.g. `claim_flow_opened_via_app_intent`). The codebase does not appear to expose a `track(event:)`-style API today; only the Datadog `log.info(...)` path is in use. Once the analytics convention is clarified, extend `PendingAppIntentDispatcher.drainAndDispatch()` to emit the event.
+1. **Tuist resource declaration** — confirm `Projects/App/Project.swift` includes `Sources/Resources/**` in the App target's resources. If not, add it explicitly in Task 12 Step 3.
+2. **Analytics event** — the spec calls for an analytics event when the claim flow opens via the intent. The codebase doesn't appear to expose a `track(event:)`-style API today; only the Datadog `log.info(...)` path is in use. Once the analytics convention is clarified, emit the event from `HomeNavigationViewModel`'s drain block (Task 8) or from `FileClaimAppIntent.perform()` (Task 10).
