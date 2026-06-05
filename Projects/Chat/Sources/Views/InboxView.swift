@@ -157,7 +157,7 @@ public struct InboxView: View {
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else  {
+        } else {
             ZStack {
                 hText(" ", style: .body1)
                 hText(conversation.displayTimestamp.displayTimeStamp, style: .label)
