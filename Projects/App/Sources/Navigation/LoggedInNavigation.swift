@@ -1146,7 +1146,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
         let schema = urlComponent?.scheme
         if let finalUrl = urlComponent?.url {
-            if schema == "https" || schema == "http" {
+            if (schema == "https" || schema == "http") && !finalUrl.requiresAuthorization {
                 let vc = SFSafariViewController(url: finalUrl)
                 vc.modalPresentationStyle = .pageSheet
                 vc.preferredControlTintColor = .brand(.primaryText())
@@ -1155,7 +1155,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 if Bundle.main.urlSchemes.contains(schema ?? "") {
                     return
                 }
-                Dependencies.urlOpener.open(url)
+                Task { await Dependencies.urlOpener.open(finalUrl) }
             }
         }
     }

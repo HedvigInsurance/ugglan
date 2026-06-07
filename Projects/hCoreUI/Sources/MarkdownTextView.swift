@@ -186,7 +186,7 @@ class CustomTextView: UITextView, UITextViewDelegate {
         if emailMasking.isValid(text: URL.absoluteString) {
             let emailURL = "mailto:" + URL.absoluteString
             if let url = Foundation.URL(string: emailURL) {
-                Dependencies.urlOpener.open(url)
+                Task { await Dependencies.urlOpener.open(url) }
             }
         } else {
             ImpactGenerator.light()

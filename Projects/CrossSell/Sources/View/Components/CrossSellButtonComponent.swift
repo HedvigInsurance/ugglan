@@ -17,7 +17,7 @@ struct CrossSellButtonComponent: View {
                         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
                             Task {
                                 isCrossSellLoading = true
-                                await Dependencies.urlOpener.openWithAuthorizationCode(url)
+                                await Dependencies.urlOpener.open(url)
                                 isCrossSellLoading = false
                                 vm.vc?.dismiss(animated: true)
                             }
