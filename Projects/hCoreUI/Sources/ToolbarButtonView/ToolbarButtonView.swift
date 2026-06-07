@@ -22,6 +22,13 @@ public struct ToolbarButtonView: View {
             return -.padding4
         }
     }
+    private var badgeOffset: CGFloat {
+        if #available(iOS 26.0, *) {
+            return 20 - type.imageSize / 2
+        } else {
+            return -.padding4
+        }
+    }
 
     public init(
         type: ToolbarOptionType,
@@ -54,7 +61,7 @@ public struct ToolbarButtonView: View {
                         Circle()
                             .fill(hSignalColor.Red.element)
                             .frame(width: 10, height: 10)
-                            .offset(x: -.padding4, y: .padding4)
+                            .offset(x: badgeOffset, y: -badgeOffset)
                     }
                 }
             }
