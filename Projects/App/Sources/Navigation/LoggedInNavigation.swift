@@ -279,7 +279,6 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            viewModel?.selectedTab = 0
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
@@ -1102,9 +1101,15 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func claimCreated(notification: Notification) {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        Task { @MainActor in
+            selectedTab = 0
+            homeNavigationVm.router.popToRoot()
+        }
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.fetchActiveClaims)
+
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 askForPushNotification = true

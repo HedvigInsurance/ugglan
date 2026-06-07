@@ -199,6 +199,7 @@ class HomeVM: ObservableObject {
         store.stateSignal
             .map(\.toolbarOptionTypes)
             .receive(on: RunLoop.main)
+            .removeDuplicates()
             .sink(receiveValue: { [weak self] value in
                 withAnimation {
                     self?.toolbarOptionTypes = value
