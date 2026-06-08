@@ -13,7 +13,15 @@ then
     exit 0
 fi
 
-curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/install.sh | sh
+AUTH_ARGS=()
+if [ -n "$GITHUB_TOKEN" ]; then
+    AUTH_ARGS=(-H "Authorization: Bearer $GITHUB_TOKEN")
+fi
+LATEST_TAG=$(curl -sfL "${AUTH_ARGS[@]}" -H "Accept: application/vnd.github+json" \
+    https://api.github.com/repos/lokalise/lokalise-cli-2-go/releases/latest \
+    | grep -m1 '"tag_name"' | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/')
+
+curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/install.sh | sh -s -- "$LATEST_TAG"
 
 mv ./bin/lokalise2 /tmp/lokalise2
 

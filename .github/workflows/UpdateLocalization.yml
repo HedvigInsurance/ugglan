@@ -15,6 +15,7 @@ jobs:
         run: scripts/translations.sh
         env:
           LOKALIZE_TOKEN: ${{ secrets.LOKALIZE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check for changes
         id: changes
         run: |

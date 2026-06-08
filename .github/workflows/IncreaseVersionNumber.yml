@@ -22,6 +22,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Post checkout
         run: scripts/post-checkout.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Bump version
         run: cd Projects/App && xcrun agvtool new-marketing-version ${{ github.event.inputs.versionNumber }}
       - name: Create Pull Request
