@@ -66,7 +66,7 @@ struct SubmitClaimChatMessageView: View {
 extension ClaimIntentStepHandler {
     var maxWidth: CGFloat {
         switch claimIntent.currentStep.content {
-        case .summary, .singleSelect, .deflect, .audioRecording, .form:
+        case .summary, .singleSelect, .deflect, .deflectMessage, .audioRecording, .form:
             return .infinity
         default:
             return 300
@@ -117,6 +117,8 @@ struct ClaimStepView: View {
                 SubmitClaimFileUploadView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
+            } else if let viewModel = viewModel as? SubmitClaimDeflectMessageStep {
+                SubmitClaimDeflectMessageStepView(model: viewModel.deflectMessageModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hSection {
