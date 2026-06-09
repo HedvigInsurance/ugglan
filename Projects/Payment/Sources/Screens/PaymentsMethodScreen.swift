@@ -10,10 +10,12 @@ struct PaymentMethodScreen: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData
+                state
             }
-        ) { paymentChargeData in
-            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod {
+        ) { stateData in
+            if let paymentChargeData = stateData.paymentStatusData,
+                let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod
+            {
                 hForm {
                     PaymentMethodView(
                         data: defaultPayinMethod,
@@ -23,30 +25,32 @@ struct PaymentMethodScreen: View {
                     .hWithoutHorizontalPadding([.row, .divider])
                 }
                 .hFormAttachToBottom {
-                    if defaultPayinMethod.provider == .trustly {
-                        ConnectPaymentBottomView()
-                    } else if defaultPayinMethod.provider == .invoice {
-                        hSection {
-                            InfoCard(
-                                text:
-                                    paymentChargeData.payinMethods.hasMethodInProgress
-                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                                type: .info
-                            )
-                            .buttons(
-                                [
-                                    .init(
-                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
-                                            ? paymentChargeData.status.connectButtonTitle
-                                            : L10n.profilePaymentConnectDirectDebitButton,
-                                        buttonAction: {
-                                            paymentsNavigationVM.connectPaymentVm.set()
-                                        }
-                                    )
-                                ]
-                            )
+                    if stateData.showChangePayinMethod {
+                        if defaultPayinMethod.provider == .trustly {
+                            ConnectPaymentBottomView()
+                        } else if defaultPayinMethod.provider == .invoice {
+                            hSection {
+                                InfoCard(
+                                    text:
+                                        paymentChargeData.payinMethods.hasMethodInProgress
+                                        ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                                    type: .info
+                                )
+                                .buttons(
+                                    [
+                                        .init(
+                                            buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
+                                                ? paymentChargeData.status.connectButtonTitle
+                                                : L10n.profilePaymentConnectDirectDebitButton,
+                                            buttonAction: {
+                                                paymentsNavigationVM.connectPaymentVm.set()
+                                            }
+                                        )
+                                    ]
+                                )
+                            }
+                            .sectionContainerStyle(.transparent)
                         }
-                        .sectionContainerStyle(.transparent)
                     }
                 }
             }
@@ -84,7 +88,9 @@ struct PaymentMethodScreen: View {
                         ],
                         defaultPayoutMethod: nil,
                         payoutMethods: [],
-                        availableMethods: []
+                        availableMethods: [],
+                        missingConnection: nil,
+                        layout: .default
                     )
                 )
             )
@@ -110,7 +116,9 @@ struct PaymentMethodScreen: View {
                         ],
                         defaultPayoutMethod: nil,
                         payoutMethods: [],
-                        availableMethods: []
+                        availableMethods: [],
+                        missingConnection: nil,
+                        layout: .default
                     )
                 )
             )

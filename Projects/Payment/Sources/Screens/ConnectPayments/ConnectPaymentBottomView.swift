@@ -10,10 +10,10 @@ struct ConnectPaymentBottomView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData
+                state
             }
-        ) { statusData in
-            if let statusData, !statusData.status.showConnectPayment {
+        ) { state in
+            if let statusData = state.paymentStatusData, state.showChangePayinMethod {
                 hSection {
                     VStack(spacing: .padding16) {
                         if statusData.payinMethods.hasMethodInProgress {

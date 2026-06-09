@@ -10,6 +10,76 @@ public struct PaymentState: StateProtocol {
     var paymentHistory: [PaymentHistoryListData] = []
     public internal(set) var missedPaymentData: MissedPaymentData?
     public init() {}
+
+    var showsHistory: Bool {
+        switch paymentStatusData?.layout {
+        case .qasa: return false
+        case .mixed, .default: return true
+        case nil: return false
+        }
+    }
+
+    var showsDiscounts: Bool {
+        switch paymentStatusData?.layout {
+        case .qasa: return false
+        case .mixed, .default: return true
+        case nil: return false
+        }
+    }
+
+    var showPayinSection: Bool {
+        guard let paymentStatusData, paymentStatusData.defaultOrFirstDefaultPayinMethod != nil else { return false }
+        switch paymentStatusData.layout {
+        case .qasa: return paymentData != nil
+        case .mixed, .default: return paymentStatusData.hasPayinMethodOrAvailable
+        }
+    }
+
+    var showChangePayinMethod: Bool {
+        guard let paymentStatusData else { return false }
+        switch paymentStatusData.layout {
+        case .qasa: return paymentData != nil
+        case .mixed, .default: return paymentStatusData.hasPayinMethodOrAvailable
+        }
+    }
+
+    var showPayoutSection: Bool {
+        guard let paymentStatusData else { return false }
+        switch paymentStatusData.layout {
+        case .qasa: return paymentStatusData.hasPayoutMethodOrAvailable
+        case .mixed, .default: return paymentStatusData.hasPayoutMethodOrAvailable && showPayinSection
+        }
+    }
+
+    var showNoPaymentsInProgress: Bool {
+        guard let paymentStatusData else { return false }
+        switch paymentStatusData.layout {
+        case .qasa: return false
+        case .mixed, .default: return paymentData == nil
+        }
+    }
+
+    public var showConnectPayment: Bool {
+        guard let paymentStatusData else { return false }
+        if paymentData != nil {
+            switch paymentStatusData.status {
+            case .needsSetup:
+                return true
+            case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
+                return false
+            }
+        }
+        switch paymentStatusData.layout {
+        case .qasa: return false
+        case .mixed, .default:
+            switch paymentStatusData.status {
+            case .needsSetup:
+                return true
+            case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
+                return false
+            }
+        }
+    }
 }
 
 public enum PaymentAction: ActionProtocol {

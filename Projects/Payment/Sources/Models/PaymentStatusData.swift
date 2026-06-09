@@ -9,6 +9,8 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     private let defaultPayoutMethod: PaymentMethodData?
     let payoutMethods: [PaymentMethodData]
     public let availableMethods: [AvailablePaymentMethod]
+    public let missingConnection: MissingPaymentConnection?
+    public let layout: PaymentLayout
 
     public init(
         status: PayinMethodStatus,
@@ -17,7 +19,9 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         payinMethods: [PaymentMethodData],
         defaultPayoutMethod: PaymentMethodData?,
         payoutMethods: [PaymentMethodData],
-        availableMethods: [AvailablePaymentMethod]
+        availableMethods: [AvailablePaymentMethod],
+        missingConnection: MissingPaymentConnection?,
+        layout: PaymentLayout
     ) {
         self.status = status
         self.chargingDay = chargingDay
@@ -26,18 +30,20 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.availableMethods = availableMethods
         self.defaultPayinMethod = defaultPayinMethod
         self.defaultPayoutMethod = defaultPayoutMethod
+        self.missingConnection = missingConnection
+        self.layout = layout
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
         availableMethods.filter((\.supportsPayout))
     }
 
-    var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
+    var hasPayoutMethodOrAvailable: Bool {
+        !availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil
     }
 
-    var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil) && showPayinSection
+    var hasPayinMethodOrAvailable: Bool {
+        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
     public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
@@ -46,6 +52,28 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
 
     public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
         defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
+    }
+}
+
+/// Describes the member's contract mix, which drives the payments screen layout.
+/// - `qasa`: member has only Qasa-landlord agreements (payout-only flow, no history/discounts).
+/// - `mixed`: member has both Qasa-landlord and non-Qasa agreements.
+/// - `default`: member has no Qasa-landlord agreements.
+///
+/// `.mixed` and `.default` currently behave identically across every consumer
+/// (`PaymentState.showsHistory/showsDiscounts/showPayinSection/showPayoutSection`);
+/// the distinction is preserved for the product team's planned per-segment messaging.
+public enum PaymentLayout: Codable, Equatable, Sendable, Hashable {
+    case qasa
+    case mixed
+    case `default`
+
+    public static func from(contractTypes: [TypeOfContract]) -> PaymentLayout {
+        if contractTypes.isEmpty { return .default }
+        let landlordCount = contractTypes.filter { $0 == .seQasaLandlord }.count
+        if landlordCount == contractTypes.count { return .qasa }
+        if landlordCount == 0 { return .default }
+        return .mixed
     }
 }
 
@@ -211,6 +239,13 @@ extension PaymentProvider {
     }
 }
 
+/// Mirrors `OctopusGraphQL.MissingPaymentConnection`. When extending, update the
+/// mapping switch in `PaymentsClientOctopus.PaymentStatusData.init(data:)`.
+public enum MissingPaymentConnection: Codable, Equatable, Sendable, Hashable {
+    case payin
+    case payout
+}
+
 public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case active
     case noNeedToConnect
@@ -225,15 +260,6 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
             return L10n.myPaymentDirectDebitReplaceButton
         case .needsSetup, .unknown, .noNeedToConnect, .contactUs:
             return L10n.myPaymentDirectDebitButton
-        }
-    }
-
-    public var showConnectPayment: Bool {
-        switch self {
-        case .needsSetup:
-            return true
-        case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
-            return false
         }
     }
 }

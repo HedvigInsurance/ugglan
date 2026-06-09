@@ -25,40 +25,37 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentMethodStatus> {
 @MainActor
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentMethodsQuery.Data) {
-        let status: PayinMethodStatus = {
-            if data.currentMember.activeContracts.isEmpty, data.currentMember.pendingContracts.isEmpty {
-                return .noNeedToConnect
-            }
-
-            let missedPaymentsContracts = data.currentMember.activeContracts.filter(\.terminationDueToMissedPayments)
-            if !missedPaymentsContracts.isEmpty {
-                if let date = missedPaymentsContracts.compactMap({ $0.terminationDate?.localDateToDate }).sorted()
-                    .first?
-                    .displayDateDDMMMYYYYFormat
-                {
-                    return .contactUs(date: date)
-                }
-            }
-
-            guard
-                let defaultPayin = data.currentMember.paymentMethods.defaultPayinMethod?.fragments
-                    .memberPaymentMethodFragment
-                    ?? data.currentMember.paymentMethods.payinMethods.first?.fragments.memberPaymentMethodFragment
-            else {
-                return .needsSetup
-            }
-            return defaultPayin.status.asPayinMethodStatus
-        }()
         let paymentMethods = data.currentMember.paymentMethods
+        let missingConnection: MissingPaymentConnection? = {
+            switch paymentMethods.missingConnection {
+            case .case(.payin): return .payin
+            case .case(.payout): return .payout
+            default: return nil
+            }
+        }()
 
-        let payinMethods: [PaymentMethodData] = paymentMethods.payinMethods.map {
+        let defaultPayinFragment =
+            paymentMethods.defaultPayinMethod?.fragments.memberPaymentMethodFragment
+            ?? paymentMethods.payinMethods.first?.fragments.memberPaymentMethodFragment
+
+        let missedPaymentsTerminationDate = data.currentMember.activeContracts
+            .filter(\.terminationDueToMissedPayments)
+            .compactMap { $0.terminationDate?.localDateToDate }
+            .min()?
+            .displayDateDDMMMYYYYFormat
+
+        let status: PayinMethodStatus = {
+            if let date = missedPaymentsTerminationDate { return .contactUs(date: date) }
+            if let defaultPayin = defaultPayinFragment { return defaultPayin.status.asPayinMethodStatus }
+            return missingConnection == .payin ? .needsSetup : .noNeedToConnect
+        }()
+
+        let payinMethods = paymentMethods.payinMethods.map {
             PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
         }
-
-        let payoutMethods: [PaymentMethodData] = paymentMethods.payoutMethods.map {
+        let payoutMethods = paymentMethods.payoutMethods.map {
             PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
         }
-
         let availableMethods: [AvailablePaymentMethod] = paymentMethods.availableMethods.map {
             .init(
                 provider: PaymentProvider.from(graphQL: $0.provider),
@@ -66,12 +63,17 @@ extension PaymentStatusData {
                 supportsPayout: $0.supportsPayout
             )
         }
-
-        let defaultPayinMethod: PaymentMethodData? = paymentMethods.defaultPayinMethod
+        let defaultPayinMethod = paymentMethods.defaultPayinMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+        let defaultPayoutMethod = paymentMethods.defaultPayoutMethod
             .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
 
-        let defaultPayoutMethod: PaymentMethodData? = paymentMethods.defaultPayoutMethod
-            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+        let activeTypes = data.currentMember.activeContracts.map(\.currentAgreement.productVariant.typeOfContract)
+        let pendingTypes = data.currentMember.pendingContracts.map(\.productVariant.typeOfContract)
+        let terminatedTypes = data.currentMember.terminatedContracts
+            .map(\.currentAgreement.productVariant.typeOfContract)
+        let allContractTypes = (activeTypes + pendingTypes + terminatedTypes)
+            .map { TypeOfContract.resolve(for: $0) }
 
         self.init(
             status: status,
@@ -80,7 +82,9 @@ extension PaymentStatusData {
             payinMethods: payinMethods,
             defaultPayoutMethod: defaultPayoutMethod,
             payoutMethods: payoutMethods,
-            availableMethods: availableMethods
+            availableMethods: availableMethods,
+            missingConnection: missingConnection,
+            layout: .from(contractTypes: allContractTypes)
         )
     }
 }

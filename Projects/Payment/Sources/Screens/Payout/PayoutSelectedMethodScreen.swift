@@ -221,7 +221,9 @@ extension PaymentStatusData {
                             .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
                             .init(provider: .swish, supportsPayin: false, supportsPayout: true),
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        ],
+                        missingConnection: .payout,
+                        layout: .default
                     )
                 )
             )
@@ -275,7 +277,9 @@ extension PaymentStatusData {
                             .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
                             .init(provider: .swish, supportsPayin: false, supportsPayout: true),
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        ],
+                        missingConnection: nil,
+                        layout: .default
                     )
                 )
             )
