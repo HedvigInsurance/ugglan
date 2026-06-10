@@ -230,6 +230,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Annat föremål";
 "CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "Om du inte vet exakt datum, fyll i på ett ungefär när det inträffade.";
+"CLAIM_CHAT_DEFLECTION_MESSAGE_QASA_NOT_REPORTED" = "Det första du ska göra är att anmäla skadan till Qasa för att få en första bedömning.\nDärefter anmäler du skadan till försäkringsbolaget där du har din hemförsäkring.\nOmfattas inte skadan av din hemförsäkring kan du anmäla den till oss. Vänligen skicka med beskedet från ditt försäkringsbolag.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Ändra svar";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Ändrar du det här svaret rensas allt du fyllt i efter det. Du behöver gå igenom de stegen igen.";
 "CLAIM_CHAT_EDIT_TITLE" = "Tidigare svar kommer att rensas";
@@ -267,6 +268,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_SUCCESS_MESSAGE" = "Ditt ärende har skickats in";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Bearbetar information, vänligen vänta.";
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
+"CLAIM_CHAT_TRIAGE_PREFLIGHT_QASA_MESSAGE" = "Har du anmält skadan och fått ett besked från din vanliga hemförsäkring?";
 "CLAIM_CHAT_UNKNOWN_STEP" = "";
 "CLAIM_CHAT_USE_AUDIO" = "Spela in med röst";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv i text";
