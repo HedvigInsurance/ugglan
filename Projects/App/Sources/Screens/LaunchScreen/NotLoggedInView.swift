@@ -138,7 +138,7 @@ class NotLoggedViewModel: ObservableObject {
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
             .appending("utm_campaign", value: "se")
-        Dependencies.urlOpener.open(webUrl)
+        Task { await Dependencies.urlOpener.open(webUrl) }
     }
 
     enum ViewState {

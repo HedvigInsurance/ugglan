@@ -40,7 +40,7 @@ public struct UpdateAppScreen: View {
                 .init(
                     buttonTitle: L10n.embarkUpdateAppButton,
                     buttonAction: {
-                        Dependencies.urlOpener.open(Environment.current.appStoreURL)
+                        Task { await Dependencies.urlOpener.open(Environment.current.appStoreURL) }
                         onSelected()
                     }
                 ),

@@ -16,7 +16,7 @@ public class TrustlyWKScriptOpenURLScheme: NSObject, WKScriptMessageHandler {
         {
             let canOpenApplicationUrl = UIApplication.shared.canOpenURL(appUrl)
             if canOpenApplicationUrl {
-                Dependencies.urlOpener.open(appUrl)
+                Task { await Dependencies.urlOpener.open(appUrl) }
             }
             let template = "%@(%@,\"%@\");"
             let js = String(format: template, callback, String(canOpenApplicationUrl), urlscheme)

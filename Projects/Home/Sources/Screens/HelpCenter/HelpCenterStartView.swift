@@ -175,6 +175,7 @@ public struct HelpCenterStartView: View {
         .onTapGesture { [weak router] in
             router?.push(PuppyGuideRoute.list)
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder

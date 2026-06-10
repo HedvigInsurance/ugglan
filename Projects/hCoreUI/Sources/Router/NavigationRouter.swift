@@ -331,6 +331,7 @@ extension View {
                 titleColor: titleColor,
                 alignment: alignment
             )
+            .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             .onTapGesture {
                 onTitleTap?()
             }
@@ -356,10 +357,12 @@ extension View {
                     hText(title, style: .heading1)
                         .foregroundColor(titleViewColor(titleColor))
                         .accessibilityAddTraits(.isHeader)
+                        .animation(nil, value: true)
                     hText(subTitle, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .animation(.easeInOut(duration: 0.2), value: subTitle)
                 }
-                .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
+                .animation(nil, value: true)
             } else {
                 hText(title, style: .heading1)
                     .foregroundColor(titleViewColor(titleColor))

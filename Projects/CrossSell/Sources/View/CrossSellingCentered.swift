@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct CrossSellingCentered: View {
     private let crossSell: CrossSell
-
+    @State private var viewId = UUID().uuidString
     public init(
         crossSell: CrossSell
     ) {
@@ -23,7 +23,12 @@ public struct CrossSellingCentered: View {
             }
             .padding(.bottom, .padding16)
         }
-        .setViewController
+        .task {
+            logStartView(viewId, String(describing: CrossSellingCentered.self))
+        }
+        .onDisappear {
+            logStopView(viewId)
+        }
     }
 }
 

@@ -21,7 +21,7 @@ struct EmailClient {
             return
         }
 
-        Dependencies.urlOpener.open(url)
+        Task { await Dependencies.urlOpener.open(url) }
     }
 }
 

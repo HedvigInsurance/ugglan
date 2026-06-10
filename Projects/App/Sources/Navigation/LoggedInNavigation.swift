@@ -279,7 +279,6 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            viewModel?.selectedTab = 0
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
         case .claimChat:
             handleChatClaimDeeplink(url)
@@ -1102,9 +1101,15 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func claimCreated(notification: Notification) {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        Task { @MainActor in
+            selectedTab = 0
+            homeNavigationVm.router.popToRoot()
+        }
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.fetchActiveClaims)
+
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 askForPushNotification = true
@@ -1146,7 +1151,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
         let schema = urlComponent?.scheme
         if let finalUrl = urlComponent?.url {
-            if schema == "https" || schema == "http" {
+            if (schema == "https" || schema == "http") && !finalUrl.requiresAuthorization {
                 let vc = SFSafariViewController(url: finalUrl)
                 vc.modalPresentationStyle = .pageSheet
                 vc.preferredControlTintColor = .brand(.primaryText())
@@ -1155,7 +1160,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 if Bundle.main.urlSchemes.contains(schema ?? "") {
                     return
                 }
-                Dependencies.urlOpener.open(url)
+                Task { await Dependencies.urlOpener.open(finalUrl) }
             }
         }
     }
