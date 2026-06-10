@@ -39,7 +39,7 @@ final class StorePaymentStatusTests: XCTestCase {
             payoutMethods: [],
             availableMethods: [],
             missingConnection: nil,
-            layout: .default
+            layout: .other
         )
 
         let mockService = MockPaymentData.createMockPaymentService(

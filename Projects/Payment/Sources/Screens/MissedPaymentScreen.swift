@@ -293,7 +293,7 @@ class PaymentOverdueScreenViewModel: ObservableObject {
                 payoutMethods: [],
                 availableMethods: [],
                 missingConnection: nil,
-                layout: .default
+                layout: .other
             )
         )
     )

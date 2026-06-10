@@ -165,7 +165,7 @@ public class hPaymentClientDemo: hPaymentClient {
                 ),
             ],
             missingConnection: nil,
-            layout: .default
+            layout: .other
         )
     }
 

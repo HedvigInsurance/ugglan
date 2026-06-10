@@ -26,13 +26,7 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentMethodStatus> {
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentMethodsQuery.Data) {
         let paymentMethods = data.currentMember.paymentMethods
-        let missingConnection: MissingPaymentConnection? = {
-            switch paymentMethods.missingConnection {
-            case .case(.payin): return .payin
-            case .case(.payout): return .payout
-            default: return nil
-            }
-        }()
+        let missingConnection = Payment.MissingPaymentConnection(graphQL: paymentMethods.missingConnection)
 
         let defaultPayinFragment =
             paymentMethods.defaultPayinMethod?.fragments.memberPaymentMethodFragment
@@ -84,8 +78,18 @@ extension PaymentStatusData {
             payoutMethods: payoutMethods,
             availableMethods: availableMethods,
             missingConnection: missingConnection,
-            layout: .from(contractTypes: allContractTypes)
+            layout: .init(contractTypes: allContractTypes)
         )
+    }
+}
+
+extension Payment.MissingPaymentConnection {
+    init?(graphQL: GraphQLEnum<OctopusGraphQL.MissingPaymentConnection>?) {
+        switch graphQL {
+        case .case(.payin): self = .payin
+        case .case(.payout): self = .payout
+        default: return nil
+        }
     }
 }
 

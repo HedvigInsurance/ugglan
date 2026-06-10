@@ -38,11 +38,11 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         availableMethods.filter((\.supportsPayout))
     }
 
-    var hasPayoutMethodOrAvailable: Bool {
+    var hasAnyPayoutMethod: Bool {
         !availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil
     }
 
-    var hasPayinMethodOrAvailable: Bool {
+    var hasAnyPayinMethod: Bool {
         !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
@@ -53,27 +53,23 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
         defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
     }
+
+    var showsHistoricalSections: Bool {
+        layout != .qasaOnly
+    }
 }
 
 /// Describes the member's contract mix, which drives the payments screen layout.
-/// - `qasa`: member has only Qasa-landlord agreements (payout-only flow, no history/discounts).
-/// - `mixed`: member has both Qasa-landlord and non-Qasa agreements.
-/// - `default`: member has no Qasa-landlord agreements.
-///
-/// `.mixed` and `.default` currently behave identically across every consumer
-/// (`PaymentState.showsHistory/showsDiscounts/showPayinSection/showPayoutSection`);
-/// the distinction is preserved for the product team's planned per-segment messaging.
+/// - `qasaOnly`: member has only Qasa-landlord agreements (payout-only flow, no history/discounts).
+/// - `other`: member has at least one non-Qasa-landlord agreement (or no agreements).
 public enum PaymentLayout: Codable, Equatable, Sendable, Hashable {
-    case qasa
-    case mixed
-    case `default`
+    case qasaOnly
+    case other
 
-    public static func from(contractTypes: [TypeOfContract]) -> PaymentLayout {
-        if contractTypes.isEmpty { return .default }
-        let landlordCount = contractTypes.filter { $0 == .seQasaLandlord }.count
-        if landlordCount == contractTypes.count { return .qasa }
-        if landlordCount == 0 { return .default }
-        return .mixed
+    public init(contractTypes: [TypeOfContract]) {
+        let hasLandlord = contractTypes.contains(.seQasaLandlord)
+        let hasOther = contractTypes.contains(where: { $0 != .seQasaLandlord })
+        self = (hasLandlord && !hasOther) ? .qasaOnly : .other
     }
 }
 
@@ -239,8 +235,6 @@ extension PaymentProvider {
     }
 }
 
-/// Mirrors `OctopusGraphQL.MissingPaymentConnection`. When extending, update the
-/// mapping switch in `PaymentsClientOctopus.PaymentStatusData.init(data:)`.
 public enum MissingPaymentConnection: Codable, Equatable, Sendable, Hashable {
     case payin
     case payout

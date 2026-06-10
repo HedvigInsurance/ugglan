@@ -55,7 +55,7 @@ struct MockPaymentData {
                 payoutMethods: [],
                 availableMethods: [],
                 missingConnection: nil,
-                layout: .default
+                layout: .other
             )
         },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {

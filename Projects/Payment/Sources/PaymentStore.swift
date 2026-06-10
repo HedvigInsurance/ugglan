@@ -11,74 +11,41 @@ public struct PaymentState: StateProtocol {
     public internal(set) var missedPaymentData: MissedPaymentData?
     public init() {}
 
-    var showsHistory: Bool {
-        switch paymentStatusData?.layout {
-        case .qasa: return false
-        case .mixed, .default: return true
-        case nil: return false
-        }
-    }
-
-    var showsDiscounts: Bool {
-        switch paymentStatusData?.layout {
-        case .qasa: return false
-        case .mixed, .default: return true
-        case nil: return false
-        }
-    }
-
-    var showPayinSection: Bool {
-        guard let paymentStatusData, paymentStatusData.defaultOrFirstDefaultPayinMethod != nil else { return false }
-        switch paymentStatusData.layout {
-        case .qasa: return paymentData != nil
-        case .mixed, .default: return paymentStatusData.hasPayinMethodOrAvailable
-        }
-    }
-
-    var showChangePayinMethod: Bool {
+    var showsPayinSection: Bool {
         guard let paymentStatusData else { return false }
         switch paymentStatusData.layout {
-        case .qasa: return paymentData != nil
-        case .mixed, .default: return paymentStatusData.hasPayinMethodOrAvailable
+        case .qasaOnly:
+            return paymentData != nil
+        case .other:
+            return paymentStatusData.defaultOrFirstDefaultPayinMethod != nil
+                && paymentStatusData.hasAnyPayinMethod
         }
     }
 
-    var showPayoutSection: Bool {
+    var showsChangePayinMethod: Bool {
         guard let paymentStatusData else { return false }
         switch paymentStatusData.layout {
-        case .qasa: return paymentStatusData.hasPayoutMethodOrAvailable
-        case .mixed, .default: return paymentStatusData.hasPayoutMethodOrAvailable && showPayinSection
+        case .qasaOnly: return paymentData != nil
+        case .other: return paymentStatusData.hasAnyPayinMethod
         }
     }
 
-    var showNoPaymentsInProgress: Bool {
+    var showsPayoutSection: Bool {
         guard let paymentStatusData else { return false }
         switch paymentStatusData.layout {
-        case .qasa: return false
-        case .mixed, .default: return paymentData == nil
+        case .qasaOnly: return paymentStatusData.hasAnyPayoutMethod
+        case .other: return paymentStatusData.hasAnyPayoutMethod && showsPayinSection
         }
     }
 
-    public var showConnectPayment: Bool {
+    var showsNoPaymentsInProgress: Bool {
         guard let paymentStatusData else { return false }
-        if paymentData != nil {
-            switch paymentStatusData.status {
-            case .needsSetup:
-                return true
-            case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
-                return false
-            }
-        }
-        switch paymentStatusData.layout {
-        case .qasa: return false
-        case .mixed, .default:
-            switch paymentStatusData.status {
-            case .needsSetup:
-                return true
-            case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
-                return false
-            }
-        }
+        return paymentStatusData.layout != .qasaOnly && paymentData == nil
+    }
+
+    public var showsConnectPayment: Bool {
+        guard let paymentStatusData, paymentStatusData.layout != .qasaOnly else { return false }
+        return paymentStatusData.status == .needsSetup
     }
 }
 

@@ -118,7 +118,7 @@ extension PaymentProvider {
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
                         ],
                         missingConnection: .payout,
-                        layout: .default
+                        layout: .other
                     )
                 )
             )

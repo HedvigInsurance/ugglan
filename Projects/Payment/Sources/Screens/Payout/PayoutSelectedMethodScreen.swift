@@ -223,7 +223,7 @@ extension PaymentStatusData {
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
                         ],
                         missingConnection: .payout,
-                        layout: .default
+                        layout: .other
                     )
                 )
             )
@@ -279,7 +279,7 @@ extension PaymentStatusData {
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
                         ],
                         missingConnection: nil,
-                        layout: .default
+                        layout: .other
                     )
                 )
             )
