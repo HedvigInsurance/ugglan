@@ -87,6 +87,7 @@ public enum HomeAction: ActionProtocol {
     case hideImportantMessage(id: String)
     case recommendedProductUpdated
     case clearMissedCharge
+    case featureFlagsUpdated
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -105,6 +106,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     @Inject var homeService: HomeClient
     private var newOfferSubscription: AnyCancellable?
     private var didChargeOutstandingPaymentSubscription: AnyCancellable?
+    private var featureFlagsSubscription: AnyCancellable?
     required init() {
         super.init()
         let store: CrossSellStore = globalPresentableStoreContainer.get()
@@ -116,6 +118,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             .publisher(for: .didChargeOutstandingPayment)
             .sink { [weak self] _ in
                 self?.send(.clearMissedCharge)
+            }
+        featureFlagsSubscription = FeatureFlags.shared.$data
+            .map(\.isNewConversationFromInboxEnabled)
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.send(.featureFlagsUpdated)
             }
     }
 
@@ -222,6 +231,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             setToolbarTypes(&newState)
         case .recommendedProductUpdated:
             setToolbarTypes(&newState)
+        case .featureFlagsUpdated:
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -243,12 +254,10 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             types.append(.firstVet)
         }
 
-        if state.hasSentOrRecievedAtLeastOneMessage {
-            if state.showChatNotification {
-                types.append(.chat(hasUnread: true))
-            } else {
-                types.append(.chat(hasUnread: false))
-            }
+        if state.hasSentOrRecievedAtLeastOneMessage
+            || Dependencies.featureFlags().isNewConversationFromInboxEnabled
+        {
+            types.append(.chat(hasUnread: state.showChatNotification))
         }
 
         state.toolbarOptionTypes = types
