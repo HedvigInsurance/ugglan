@@ -191,13 +191,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         }
         return typeOfContract.pillowType
     }
-
-    public var isNonPayingMember: Bool {
-        if typeOfContract == .seQasaLandlord {
-            return true
-        }
-        return false
-    }
 }
 
 extension TypeOfContract {
