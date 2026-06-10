@@ -202,7 +202,7 @@ struct ChatScreenModifier: ViewModifier {
     @ObservedObject var chatScrollViewDelegate: ChatScrollViewDelegate
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
     @Binding var isTargetedForDropdown: Bool
-
+    @State private var showSubtitle = false
     func body(content: Content) -> some View {
         content
             .dismissKeyboard()
@@ -217,7 +217,7 @@ struct ChatScreenModifier: ViewModifier {
             }
             .configureTitleView(
                 title: conversationVm.title,
-                subTitle: conversationVm.subTitle,
+                subTitle: showSubtitle ? conversationVm.subTitle : " ",
                 onTitleTap: { [weak conversationVm, weak chatNavigationVm] in
                     if let claimId = conversationVm?.claimId {
                         chatNavigationVm?.showClaimDetail(claimId: claimId)
@@ -235,6 +235,10 @@ struct ChatScreenModifier: ViewModifier {
                 Task {
                     await vm.startFetchingNewMessages()
                 }
+            }
+            .task {
+                await delay(0.4)
+                showSubtitle = true
             }
             .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
                 Task {
