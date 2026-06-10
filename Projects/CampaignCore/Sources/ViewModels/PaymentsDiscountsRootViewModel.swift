@@ -21,4 +21,10 @@ public class PaymentsDiscountsRootViewModel: ObservableObject {
             viewState = .error(errorMessage: L10n.General.errorBody)
         }
     }
+
+    public func fetch() {
+        Task {
+            await fetch()
+        }
+    }
 }

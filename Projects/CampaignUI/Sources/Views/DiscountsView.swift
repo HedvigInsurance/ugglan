@@ -187,15 +187,13 @@ public struct PaymentsDiscountsRootView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: { [weak vm] in
-                        Task {
-                            await vm?.fetch()
-                        }
+                        vm?.fetch()
                     }),
                     dismissButton: nil
                 )
             )
             .task { [weak vm] in
-                await vm?.fetch()
+                vm?.fetch()
             }
     }
 

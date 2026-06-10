@@ -7,10 +7,8 @@ public enum ProcessingState: Equatable {
 
     public var isError: Bool {
         switch self {
-        case .error:
-            return true
-        default:
-            return false
+        case .error: true
+        default: false
         }
     }
 }
