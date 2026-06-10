@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import hCoreUI
+import hCore
 
 @main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
@@ -10,7 +10,7 @@ import hCoreUI
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = hNavigationController()
+        window?.rootViewController = UIViewController()
         window?.makeKeyAndVisible()
         return true
     }
