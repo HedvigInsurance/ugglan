@@ -114,6 +114,10 @@ public enum DeepLink: String, Codable, CaseIterable {
         }
     }
 
+    public var url: URL {
+        Environment.current.deepLinkUrl.appendingPathComponent(rawValue)
+    }
+
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }

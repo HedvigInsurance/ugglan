@@ -23,6 +23,7 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isClaimHistoryEnabled: false,
+            isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false
         )
         featureDataPublisher.send(data)
@@ -42,6 +43,7 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isClaimHistoryEnabled: false,
+            isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false
         )
         featureDataPublisher.send(data)

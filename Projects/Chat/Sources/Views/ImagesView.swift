@@ -101,7 +101,7 @@ class ImagesViewModel: ObservableObject {
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
-        Dependencies.urlOpener.open(settingsUrl)
+        Task { await Dependencies.urlOpener.open(settingsUrl) }
     }
 }
 

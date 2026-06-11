@@ -126,7 +126,7 @@ public final class VoiceRecorder: ObservableObject {
             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                 throw VoiceRecorderError.permissionDenied
             }
-            Dependencies.urlOpener.open(settingsUrl)
+            await Dependencies.urlOpener.open(settingsUrl)
             throw VoiceRecorderError.permissionDenied
         case .granted:
             break

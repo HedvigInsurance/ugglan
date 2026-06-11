@@ -6,7 +6,7 @@ query ContractBundle($options: DisplayItemOptions) {
     activeContracts {
 		...ContractFragment
 		currentAgreement {
-			cost {
+			itemCost {
 				...ItemCostFragment
 			}
 			addons {
@@ -17,7 +17,7 @@ query ContractBundle($options: DisplayItemOptions) {
 			}
 		}
 		upcomingChangedAgreement {
-			cost {
+            itemCost {
 				...ItemCostFragment
 			}
 			addons {
@@ -54,7 +54,7 @@ query ContractBundle($options: DisplayItemOptions) {
 			}
 			...AddonPriceFragment
 		}
-		cost {
+        itemCost {
 			...ItemCostFragment
 		}
 		existingAddons {

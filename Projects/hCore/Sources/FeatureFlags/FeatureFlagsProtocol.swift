@@ -21,6 +21,7 @@ public struct FeatureData: Codable, Equatable {
     public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
     public let isClaimHistoryEnabled: Bool
+    public let isNewConversationFromInboxEnabled: Bool
     public let isPuppyGuideEnabled: Bool
 
     public init(
@@ -36,6 +37,7 @@ public struct FeatureData: Codable, Equatable {
         isMovingFlowEnabled: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool,
         isClaimHistoryEnabled: Bool,
+        isNewConversationFromInboxEnabled: Bool,
         isPuppyGuideEnabled: Bool
     ) {
         self.isTerminationFlowEnabled = isTerminationFlowEnabled
@@ -50,6 +52,7 @@ public struct FeatureData: Codable, Equatable {
         self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
         self.isClaimHistoryEnabled = isClaimHistoryEnabled
+        self.isNewConversationFromInboxEnabled = isNewConversationFromInboxEnabled
         self.isPuppyGuideEnabled = isPuppyGuideEnabled
     }
 }
@@ -72,7 +75,7 @@ public class FeatureFlags: ObservableObject {
     public static let shared = FeatureFlags()
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
-    @Published private var data: FeatureData = .init(
+    @Published public var data: FeatureData = .init(
         isTerminationFlowEnabled: false,
         isUpdateNecessary: false,
         isPaymentScreenEnabled: false,
@@ -85,6 +88,7 @@ public class FeatureFlags: ObservableObject {
         isMovingFlowEnabled: false,
         isAddonsRemovalFromMovingFlowEnabled: false,
         isClaimHistoryEnabled: false,
+        isNewConversationFromInboxEnabled: false,
         isPuppyGuideEnabled: false
     )
 

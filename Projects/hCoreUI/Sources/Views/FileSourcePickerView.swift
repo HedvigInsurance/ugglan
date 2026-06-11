@@ -32,7 +32,7 @@ private struct FileSourcePickerView: ViewModifier {
                             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                                 return
                             }
-                            Dependencies.urlOpener.open(settingsUrl)
+                            await Dependencies.urlOpener.open(settingsUrl)
                         case .authorized, .limited:
                             showImagePicker = true
                         @unknown default:

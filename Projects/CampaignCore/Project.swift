@@ -2,8 +2,8 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "Campaign",
+    name: "CampaignCore",
     targets: Set([.framework, .example, .tests]),
-    projects: ["hCore", "hCoreUI", "Forever"],
+    projects: ["hCore"],
     sdks: []
 )
