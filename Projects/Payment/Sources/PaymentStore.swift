@@ -43,13 +43,14 @@ public struct PaymentState: StateProtocol {
         return paymentStatusData.layout != .qasaOnly && paymentData == nil
     }
 
-    public var showsConnectPayment: Bool {
+    var showsConnectPayment: Bool {
         guard let paymentStatusData, paymentStatusData.layout != .qasaOnly else { return false }
         return paymentStatusData.missingConnection == .payin
+            || (paymentData != nil && paymentStatusData.defaultOrFirstDefaultPayinMethod == nil)
     }
 
-    public var showsConnectPayout: Bool {
-        paymentStatusData?.missingConnection == .payout
+    var showsConnectPayout: Bool {
+        paymentStatusData?.missingConnection == .payout && !showsConnectPayment
     }
 }
 

@@ -1,4 +1,3 @@
-import Campaign
 import Foundation
 import hCore
 

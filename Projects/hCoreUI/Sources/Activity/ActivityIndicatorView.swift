@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import hCore
 
 struct LoadingViewWithContent: ViewModifier {
     @Binding var isLoading: Bool

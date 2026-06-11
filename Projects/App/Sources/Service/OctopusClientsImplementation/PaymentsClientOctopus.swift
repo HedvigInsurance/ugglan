@@ -1,3 +1,4 @@
+import CampaignCore
 import Environment
 import Foundation
 import Payment
