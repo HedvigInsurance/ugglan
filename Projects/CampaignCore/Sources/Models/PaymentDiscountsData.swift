@@ -1,10 +1,9 @@
 import Foundation
 import hCore
-import hCoreUI
 
 public struct PaymentDiscountsData: Codable, Equatable, Sendable {
-    let discountsData: [DiscountsDataForInsurance]
-    let referralsData: ReferralsData
+    public let discountsData: [DiscountsDataForInsurance]
+    public let referralsData: ReferralsData
 
     public init(discountsData: [DiscountsDataForInsurance], referralsData: ReferralsData) {
         self.discountsData = discountsData
@@ -14,8 +13,8 @@ public struct PaymentDiscountsData: Codable, Equatable, Sendable {
 
 public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendable {
     public let id: String
-    let displayName: String
-    let info: String?
+    public let displayName: String
+    public let info: String?
     public var discounts: [Discount]
 
     public init(
@@ -79,8 +78,8 @@ public enum DiscountStatus: String, Sendable, Codable, Hashable {
 }
 
 public struct ReferralsData: Equatable, Codable, Sendable {
-    let discountPerMember: MonetaryAmount
-    let referrals: [Referral]
+    public let discountPerMember: MonetaryAmount
+    public let referrals: [Referral]
 
     public init(discountPerMember: MonetaryAmount, referrals: [Referral]) {
         self.discountPerMember = discountPerMember
@@ -90,10 +89,10 @@ public struct ReferralsData: Equatable, Codable, Sendable {
 
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
-    let name: String
-    let code: String?
-    let description: String
-    let activeDiscount: MonetaryAmount?
+    public let name: String
+    public let code: String?
+    public let description: String
+    public let activeDiscount: MonetaryAmount?
 
     public init(
         id: String,

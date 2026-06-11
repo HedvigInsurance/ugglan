@@ -38,7 +38,7 @@ struct InformationScreen: View {
                 hCoreUIAssets.arrowNorthEast.view
             }
             .onTap {
-                Dependencies.urlOpener.open(item.url)
+                Task { await Dependencies.urlOpener.open(item.url) }
             }
         }
     }

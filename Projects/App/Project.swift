@@ -112,7 +112,8 @@ let appDependencies: [TargetDependency] = [
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
         .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),
-        .project(target: "Campaign", path: .relativeToRoot("Projects/Campaign")),
+        .project(target: "CampaignCore", path: .relativeToRoot("Projects/CampaignCore")),
+        .project(target: "CampaignUI", path: .relativeToRoot("Projects/CampaignUI")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(

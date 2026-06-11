@@ -37,7 +37,7 @@ public struct FirstVetView: View {
                                         if let url = URL(
                                             string: partner.url
                                         ) {
-                                            Dependencies.urlOpener.open(url)
+                                            Task { await Dependencies.urlOpener.open(url) }
                                         }
                                     }
                                 )

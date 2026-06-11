@@ -27,7 +27,8 @@ tuist generate              # Regenerate Xcode workspace after module changes
 | App | Main app entry point, navigation hub, deep linking |
 | AuthenticationCore | Auth protocols, service wrapper, shared state (`OTPState`, `SEBankIDState`) |
 | AuthenticationUI | BankID + OTP login views and tracking conformance |
-| Campaign | Marketing campaign display and redemption |
+| CampaignCore | Discounts/referrals models, service protocol, and root ViewModel (UI-free) |
+| CampaignUI | SwiftUI views and navigation for the discounts/referrals screen (built on CampaignCore) |
 | ChangeTier | Insurance plan tier upgrades/downgrades |
 | Chat | Customer support messaging |
 | Claims | Claims list, status tracking, claim details |

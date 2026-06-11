@@ -1,7 +1,7 @@
 import Addons
 import Apollo
 import AuthenticationCore
-import Campaign
+import CampaignCore
 import ChangeTier
 import Chat
 import Claims

@@ -175,7 +175,7 @@ public struct SubmitClaimDeflectScreen: View {
                                     )
                                 ),
                                 {
-                                    Dependencies.urlOpener.open(url)
+                                    Task { await Dependencies.urlOpener.open(url) }
                                 }
                             )
                         }

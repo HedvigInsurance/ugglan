@@ -21,6 +21,7 @@ struct ClaimFlowLauncher: ViewModifier {
             .detent(
                 item: $startInput,
                 presentationStyle: .detent(style: [.height]),
+                options: .constant(.alwaysOpenOnTop),
                 content: { input in
                     SubmitClaimChatHonestyPledgeScreen { withAnimations in
                         disableSubmitChatClaimAnimations = !withAnimations
@@ -36,7 +37,7 @@ struct ClaimFlowLauncher: ViewModifier {
             )
             .modally(
                 item: $submitClaimInput,
-                options: .constant(.withoutGrabber)
+                options: .constant([.withoutGrabber, .alwaysOpenOnTop])
             ) { input in
                 SubmitClaimFlowNavigation(
                     startInput: .init(

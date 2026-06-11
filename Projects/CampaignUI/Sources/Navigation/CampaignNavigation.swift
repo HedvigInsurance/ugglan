@@ -1,5 +1,4 @@
 import Forever
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,10 +13,6 @@ public struct CampaignNavigation: View {
 
     public var body: some View {
         PaymentsDiscountsRootView()
-            .onAppear {
-                let store: CampaignStore = globalPresentableStoreContainer.get()
-                store.send(.fetchDiscountsData)
-            }
             .navigationTitle(L10n.paymentsDiscountsSectionTitle)
             .environmentObject(campaignNavigationVm)
             .routerDestination(for: CampaignRouterAction.self) { _ in

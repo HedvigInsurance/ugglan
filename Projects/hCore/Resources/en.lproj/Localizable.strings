@@ -494,6 +494,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HONESTY_PLEDGE_NOTE_2" = "Have receipts or other documentation ready to help us help you faster";
 "HONESTY_PLEDGE_NOTE_3" = "We’ll contact you if we need more information";
 "HONESTY_PLEDGE_TITLE" = "Before we start";
+"INBOX_EMPTY_STATE_SUBTITLE" = "No conversations yet. Start one by writing a message";
+"INBOX_EMPTY_STATE_TITLE" = "Your inbox is empty";
+"INBOX_NEW_MESSAGE" = "New";
+"INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Make a claim for something that's happened to you or your things";
+"INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Questions about your insurance, payments and more";
 "INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Discounts available";
 "INSURANCE_ADDONS_SUBHEADING" = "Addons";
 "INSURANCE_ADDON_SUBHEADING" = "Addon";
