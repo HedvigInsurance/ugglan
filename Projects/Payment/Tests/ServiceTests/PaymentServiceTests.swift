@@ -86,7 +86,9 @@ final class PaymentServiceTests: XCTestCase {
             ],
             defaultPayoutMethod: nil,
             payoutMethods: [],
-            availableMethods: []
+            availableMethods: [],
+            missingConnection: nil,
+            layout: .other
         )
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
