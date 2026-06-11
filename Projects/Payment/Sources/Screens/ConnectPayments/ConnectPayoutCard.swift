@@ -5,7 +5,6 @@ import hCore
 import hCoreUI
 
 public struct ConnectPayoutCardView: View {
-    @EnvironmentObject var navigationVm: PaymentsNavigationViewModel
     let onTap: @MainActor @Sendable () -> Void
     public init(onTap: @MainActor @Sendable @escaping () -> Void) {
         self.onTap = onTap

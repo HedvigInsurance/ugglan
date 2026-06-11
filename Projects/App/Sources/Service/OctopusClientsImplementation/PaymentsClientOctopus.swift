@@ -29,9 +29,9 @@ extension PaymentStatusData {
         let missingConnection = Payment.MissingPaymentConnection(graphQL: paymentMethods.missingConnection)
 
         let defaultPayinFragment =
-            paymentMethods.payinMethods.first(where: { $0.fragments.memberPaymentMethodFragment.isDefault })?
+            paymentMethods.defaultPayinMethod?.fragments.memberPaymentMethodFragment
+            ?? paymentMethods.payinMethods.first(where: { $0.fragments.memberPaymentMethodFragment.isDefault })?
             .fragments.memberPaymentMethodFragment
-            ?? paymentMethods.defaultPayinMethod?.fragments.memberPaymentMethodFragment
 
         let missedPaymentsTerminationDate = data.currentMember.activeContracts
             .filter(\.terminationDueToMissedPayments)
