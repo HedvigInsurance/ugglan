@@ -6,6 +6,7 @@ let sdkFrameworks: [TargetDependency] = [
     .sdk(name: "SwiftUI", type: .framework, status: .optional),
     .sdk(name: "SceneKit", type: .framework),
     .sdk(name: "AdSupport", type: .framework),
+    .sdk(name: "AppIntents", type: .framework),
 ]
 
 let ugglanConfigurations: [Configuration] = [

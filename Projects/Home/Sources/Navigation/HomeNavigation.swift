@@ -19,6 +19,9 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
 
+    @Inject private var pendingAppIntentService: PendingAppIntentServiceProtocol
+    private var pendingAppIntentCancellables = Set<AnyCancellable>()
+
     public init() {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
@@ -65,6 +68,26 @@ public class HomeNavigationViewModel: ObservableObject {
                 await delay(1)
                 crossSellInfo.logCrossSellEvent()
             }
+        }
+
+        Task { @MainActor [weak self] in
+            self?.consumePendingAppIntentAction()
+        }
+
+        pendingAppIntentService.storedPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.consumePendingAppIntentAction()
+            }
+            .store(in: &pendingAppIntentCancellables)
+    }
+
+    @MainActor
+    private func consumePendingAppIntentAction() {
+        guard let action = pendingAppIntentService.consume() else { return }
+        switch action {
+        case .fileNewClaim:
+            claimsAutomationStartInput = .init(sourceMessageId: nil)
         }
     }
 

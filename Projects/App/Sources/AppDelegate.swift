@@ -212,6 +212,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
+                let pendingService: PendingAppIntentServiceProtocol = Dependencies.shared.resolve()
+                pendingService.recoverInFlight()
+
                 self?.dismissAllVCs()
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
