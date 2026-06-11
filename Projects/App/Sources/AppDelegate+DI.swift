@@ -1,6 +1,6 @@
 import Addons
 import Apollo
-import Authentication
+import AuthenticationCore
 import CampaignCore
 import ChangeTier
 import Chat

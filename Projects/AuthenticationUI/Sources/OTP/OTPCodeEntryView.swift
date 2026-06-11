@@ -1,3 +1,4 @@
+import AuthenticationCore
 import SwiftUI
 import hCore
 import hCoreUI

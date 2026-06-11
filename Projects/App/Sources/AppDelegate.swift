@@ -1,5 +1,5 @@
 import Apollo
-import Authentication
+import AuthenticationCore
 import AutomaticLog
 import Chat
 import Claims
