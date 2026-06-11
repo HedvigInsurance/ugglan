@@ -54,8 +54,7 @@ public struct PaymentsView: View {
                     state
                 }
             ) { state in
-                if let statusData = state.paymentStatusData, state.showsConnectPayment, statusData.payinMethods.isEmpty
-                {
+                if state.showsConnectPayment {
                     ConnectPaymentBottomView()
                 }
             }
@@ -177,11 +176,6 @@ public struct PaymentsView: View {
                         router.push(PaymentsRouterAction.history)
                     }
                 }
-                if paymentState.paymentStatusData?.missingConnection == .payout {
-                    ConnectPayoutCardView { [weak router] in
-                        router?.push(PayoutRouterActions.selectedPayoutMethod)
-                    }
-                }
                 if paymentState.showsPayinSection {
                     hRow {
                         hCoreUIAssets.payments.view
@@ -192,6 +186,12 @@ public struct PaymentsView: View {
                     .withChevronAccessory
                     .onTap {
                         router.push(PaymentsRouterAction.paymentMethod)
+                    }
+                }
+
+                if paymentState.paymentStatusData?.missingConnection == .payout {
+                    ConnectPayoutCardView { [weak router] in
+                        router?.push(PayoutRouterActions.selectedPayoutMethod)
                     }
                 }
 

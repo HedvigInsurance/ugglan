@@ -45,7 +45,7 @@ public struct PaymentState: StateProtocol {
 
     public var showsConnectPayment: Bool {
         guard let paymentStatusData, paymentStatusData.layout != .qasaOnly else { return false }
-        return paymentStatusData.status == .needsSetup
+        return paymentStatusData.missingConnection == .payin
     }
 }
 
