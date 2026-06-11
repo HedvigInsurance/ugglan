@@ -23,7 +23,9 @@ struct HomeBottomScrollView: View {
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
                 case .payout:
-                    missingPayout
+                    ConnectPayoutCardView { [weak navigationVm] in
+                        navigationVm?.isPayoutMethodPresented = true
+                    }
                 case .renewal:
                     RenewalCardView()
                 case let .importantMessage(id):
@@ -45,23 +47,6 @@ struct HomeBottomScrollView: View {
                     }
                 }
             }
-        )
-    }
-
-    private var missingPayout: some View {
-        InfoCard(
-            text: L10n.payoutMissingInfo,
-            type: .attention
-        )
-        .buttons(
-            [
-                .init(
-                    buttonTitle: L10n.payoutAddPayoutMethod,
-                    buttonAction: {
-                        navigationVm.isPayoutMethodPresented = true
-                    }
-                )
-            ]
         )
     }
 }
