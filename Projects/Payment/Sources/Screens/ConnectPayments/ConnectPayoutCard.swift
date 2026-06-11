@@ -19,9 +19,7 @@ public struct ConnectPayoutCardView: View {
             [
                 .init(
                     buttonTitle: L10n.payoutAddPayoutMethod,
-                    buttonAction: { [onTap] in
-                        onTap()
-                    }
+                    buttonAction: onTap
                 )
             ]
         )

@@ -189,7 +189,7 @@ public struct PaymentsView: View {
                     }
                 }
 
-                if paymentState.paymentStatusData?.missingConnection == .payout {
+                if paymentState.showsConnectPayout {
                     ConnectPayoutCardView { [weak router] in
                         router?.push(PayoutRouterActions.selectedPayoutMethod)
                     }

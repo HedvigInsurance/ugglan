@@ -1,4 +1,3 @@
-import Campaign
 import Environment
 import Foundation
 import Payment

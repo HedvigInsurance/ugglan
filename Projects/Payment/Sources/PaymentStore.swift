@@ -47,6 +47,10 @@ public struct PaymentState: StateProtocol {
         guard let paymentStatusData, paymentStatusData.layout != .qasaOnly else { return false }
         return paymentStatusData.missingConnection == .payin
     }
+
+    public var showsConnectPayout: Bool {
+        paymentStatusData?.missingConnection == .payout
+    }
 }
 
 public enum PaymentAction: ActionProtocol {
