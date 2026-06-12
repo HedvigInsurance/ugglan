@@ -1,5 +1,5 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -12,8 +12,8 @@ extension AppDelegate {
     }
 
     private var getContext: [String: String] {
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-        let memberId = profileStore.state.memberDetails?.id
+        let profileStore: ProfileStore = globalAppStateContainer.get()
+        let memberId = profileStore.memberDetails?.id
 
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
@@ -42,10 +42,10 @@ extension AppDelegate {
             }
             .store(in: &cancellables)
 
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = globalAppStateContainer.get()
 
-        profileStore.stateSignal
-            .map { $0.memberDetails?.id }
+        profileStore.$memberDetails
+            .map { $0?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in

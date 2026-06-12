@@ -86,8 +86,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func registerForPushNotifications() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        let store: ProfileStore = globalAppStateContainer.get()
+        store.setPushNotificationStatus(settings.authorizationStatus.rawValue)
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
@@ -99,8 +99,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
             } catch _ {}
             let settings = await UNUserNotificationCenter.current().notificationSettings()
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            let store: ProfileStore = globalAppStateContainer.get()
+            store.setPushNotificationStatus(settings.authorizationStatus.rawValue)
         }
     }
 

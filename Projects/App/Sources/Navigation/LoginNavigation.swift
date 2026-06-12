@@ -19,8 +19,8 @@ struct LoginNavigation: View {
         }
         .detent(presented: $vm.showLanguagePicker, presentationStyle: .detent(style: [.height])) {
             LanguagePickerView {
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.updateLanguage)
+                let store: ProfileStore = globalAppStateContainer.get()
+                Task { await store.updateLanguage() }
                 vm.showLanguagePicker = false
             } onCancel: {
                 vm.showLanguagePicker = false

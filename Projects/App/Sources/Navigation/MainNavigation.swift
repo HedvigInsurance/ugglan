@@ -1,3 +1,4 @@
+import AppStateContainer
 import Authentication
 import Combine
 import Contracts
@@ -117,9 +118,9 @@ class MainNavigationViewModel: ObservableObject {
                     }
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                    await profileStore.sendAsync(.fetchMemberDetails)
-                    await profileStore.sendAsync(.updateLanguage)
+                    let profileStore: ProfileStore = globalAppStateContainer.get()
+                    await profileStore.fetchMemberDetails()
+                    await profileStore.updateLanguage()
                     checkForFeatureFlags()
                     Task {
                         try? await analyticsService.fetchAndSetUserId()

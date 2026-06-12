@@ -1,3 +1,4 @@
+import AppStateContainer
 import Combine
 import Home
 import PresentableStore
@@ -96,7 +97,7 @@ extension MyInfoView {
 @MainActor
 public class MyInfoViewModel: ObservableObject {
     private let profileService = ProfileService()
-    @PresentableStore var profileStore: ProfileStore
+    @AppState var profileStore: ProfileStore
     @PresentableStore var homeStore: HomeStore
     @Published var type: MyInfoViewEditType?
     @Published var currentPhoneInput: String = ""
@@ -111,10 +112,10 @@ public class MyInfoViewModel: ObservableObject {
     @Published var showInfoCard: Bool
 
     init() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        showInfoCard = store.state.memberDetails?.isContactInfoUpdateNeeded ?? false
-        currentPhoneInput = store.state.memberDetails?.phone ?? ""
-        currentEmailInput = store.state.memberDetails?.email ?? ""
+        let store: ProfileStore = globalAppStateContainer.get()
+        showInfoCard = store.memberDetails?.isContactInfoUpdateNeeded ?? false
+        currentPhoneInput = store.memberDetails?.phone ?? ""
+        currentEmailInput = store.memberDetails?.email ?? ""
         $currentPhoneInput
             .delay(for: 0.05, scheduler: RunLoop.main)
             .sink { [weak self] _ in
@@ -128,9 +129,9 @@ public class MyInfoViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        store.stateSignal
+        store.$memberDetails
             .receive(on: RunLoop.main)
-            .map(\.memberDetails?.isContactInfoUpdateNeeded)
+            .map { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()
             .sink { [weak self] state in
                 self?.showInfoCard = state ?? false
@@ -213,8 +214,8 @@ public class MyInfoViewModel: ObservableObject {
         let newPhone = updatedContactData.phone
         let newEmail = updatedContactData.email
 
-        profileStore.send(.setMemberPhone(phone: newPhone))
-        profileStore.send(.setMemberEmail(email: newEmail))
+        profileStore.setMemberPhone(newPhone)
+        profileStore.setMemberEmail(newEmail)
     }
 
     enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
@@ -237,18 +238,16 @@ public class MyInfoViewModel: ObservableObject {
 }
 
 #Preview {
-    let store: ProfileStore = globalPresentableStoreContainer.get()
-    store.send(
-        .setMember(
-            memberData: .init(
-                id: "1",
-                firstName: "Ma",
-                lastName: "",
-                phone: "",
-                email: "sladjann@gmail.com",
-                hasTravelCertificate: true,
-                isContactInfoUpdateNeeded: true
-            )
+    let store: ProfileStore = globalAppStateContainer.get()
+    store.setMember(
+        memberData: .init(
+            id: "1",
+            firstName: "Ma",
+            lastName: "",
+            phone: "",
+            email: "sladjann@gmail.com",
+            hasTravelCertificate: true,
+            isContactInfoUpdateNeeded: true
         )
     )
     return NavigationView {

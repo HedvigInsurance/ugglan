@@ -1,24 +1,20 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct NotificationsCardView: View {
-    @PresentableStore var store: ProfileStore
+    @AppObservedObject var store: ProfileStore
+
     var body: some View {
-        PresentableStoreLens(
-            ProfileStore.self,
-            getter: { state in
-                state
-            }
-        ) { state in
-            if state.shouldShowNotificationCard {
+        Group {
+            if store.shouldShowNotificationCard {
                 InfoCard(text: L10n.profileAllowNotificationsInfoLabel, type: .info)
                     .buttons([
                         .init(
                             buttonTitle: L10n.pushNotificationsAlertActionNotNow,
                             buttonAction: {
-                                store.send(.setPushNotificationsTo(date: Date()))
+                                store.setPushNotificationsTo(date: Date())
                             }
                         ),
                         .init(
@@ -30,7 +26,7 @@ struct NotificationsCardView: View {
                     ])
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .animation(.default, value: store.shouldShowNotificationCard)
     }
 }
 
