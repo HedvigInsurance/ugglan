@@ -53,12 +53,10 @@ struct RemoveAddonScreen: View {
                     }
                 }
                 hSection {
-                    hContinueButton {
-                        Task { [weak vm, weak navigationVm] in
-                            await vm?.getAddonRemoveOfferCost()
-                            guard vm?.addonRemoveOfferCost != nil else { return }
-                            navigationVm?.router.push(RemoveAddonRouterActions.summary)
-                        }
+                    hContinueButton { [weak vm, weak navigationVm] in
+                        await vm?.getAddonRemoveOfferCost()
+                        guard vm?.addonRemoveOfferCost != nil else { return }
+                        navigationVm?.router.push(RemoveAddonRouterActions.summary)
                     }
                     .disabled(!vm.allowToContinue)
                     .hButtonIsLoading(vm.fetchingCostState == .loading)

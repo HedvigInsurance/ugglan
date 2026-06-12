@@ -6,12 +6,12 @@ import hCore
 
 public struct FileView: View {
     let file: File
-    let onTap: () -> Void
+    let onTap: @MainActor () async -> Void
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
     )
 
-    public init(file: File, onTap: @escaping () -> Void) {
+    public init(file: File, onTap: @escaping @MainActor () async -> Void) {
         self.file = file
         self.onTap = onTap
     }
@@ -66,7 +66,9 @@ public struct FileView: View {
             }
         }
         .onTapGesture {
-            onTap()
+            Task {
+                await onTap()
+            }
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)

@@ -42,11 +42,8 @@ public struct DatePickerView: View {
                     .primary,
                     content: .init(
                         title: vm.config.buttonText ?? L10n.generalSaveButton
-                    ),
-                    {
-                        vm.continueAction.execute()
-                    }
-                )
+                    )
+                ) { vm.continueAction.execute() }
                 .hUseButtonTextColor(.negative)
                 .frame(maxWidth: .infinity, alignment: .bottom)
 

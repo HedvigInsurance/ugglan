@@ -86,11 +86,10 @@ struct ContractTable: View {
                                             title: L10n.InsurancesTab.cancelledInsurancesLabel(
                                                 "\(terminatedContracts.count)"
                                             )
-                                        ),
-                                        {
-                                            router.push(ContractsRouterType.terminatedContracts)
-                                        }
-                                    )
+                                        )
+                                    ) {
+                                        router.push(ContractsRouterType.terminatedContracts)
+                                    }
                                     .hCustomButtonView {
                                         hRow {
                                             HStack {

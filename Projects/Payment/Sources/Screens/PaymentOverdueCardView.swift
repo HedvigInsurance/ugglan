@@ -49,11 +49,8 @@ struct MissedPaymentCardView: View {
         hButton(
             .small,
             .primary,
-            content: .init(title: L10n.paymentsPaymentOverdueButton),
-            {
-                onReviewPayment()
-            }
-        )
+            content: .init(title: L10n.paymentsPaymentOverdueButton)
+        ) { onReviewPayment() }
         .hButtonTakeFullWidth(true)
     }
 }

@@ -35,19 +35,15 @@ struct TerminationSummaryScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                content: .init(title: L10n.terminationButton),
-                                { [weak terminationNavigationVm] in
-                                    terminationNavigationVm?.isConfirmTerminationPresented = true
-                                }
-                            )
+                                content: .init(title: L10n.terminationButton)
+                            ) { [weak terminationNavigationVm] in
+                                terminationNavigationVm?.isConfirmTerminationPresented = true
+                            }
                             hButton(
                                 .large,
                                 .ghost,
-                                content: .init(title: L10n.terminationKeepInsuranceButton),
-                                { [weak terminationNavigationVm] in
-                                    terminationNavigationVm?.router.dismiss()
-                                }
-                            )
+                                content: .init(title: L10n.terminationKeepInsuranceButton)
+                            ) { [weak terminationNavigationVm] in terminationNavigationVm?.router.dismiss() }
                         }
                     }
                 }

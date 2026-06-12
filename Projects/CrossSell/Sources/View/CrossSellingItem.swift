@@ -58,12 +58,11 @@ struct CrossSellingItem: View {
                         hButton(
                             .small,
                             discountAvailable ? .primaryAlt : .secondary,
-                            content: .init(title: crossSell.buttonTitle),
-                            {
-                                fieldIsClicked.toggle()
-                                openExternal()
-                            }
-                        )
+                            content: .init(title: crossSell.buttonTitle)
+                        ) {
+                            fieldIsClicked.toggle()
+                            openExternal()
+                        }
                         .disabled(isCrossSellLoading)
                         .hButtonIsLoading(isCrossSellLoading)
                         .animation(.default, value: isCrossSellLoading)

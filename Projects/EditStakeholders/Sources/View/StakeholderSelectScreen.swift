@@ -109,16 +109,15 @@ struct StakeholderSelectScreen: View {
                 .secondary,
                 content: .init(
                     title: L10n.generalAddNew
-                ),
-                {
-                    editStakeholdersNavigation.stakeholderInputModel = .init(
-                        actionType: .add,
-                        stakeholderModel: .init(),
-                        title: editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType.addButtonTitle,
-                        contractId: contractId
-                    )
-                }
-            )
+                )
+            ) {
+                editStakeholdersNavigation.stakeholderInputModel = .init(
+                    actionType: .add,
+                    stakeholderModel: .init(),
+                    title: editStakeholdersNavigation.stakeholderViewModel.config.stakeholderType.addButtonTitle,
+                    contractId: contractId
+                )
+            }
             .disabled(vm.isLoading)
             .hButtonDontShowLoadingWhenDisabled(true)
             .padding(.top, -12)

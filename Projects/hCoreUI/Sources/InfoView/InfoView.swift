@@ -68,35 +68,20 @@ public struct InfoViewHolder: View {
     }
 }
 
-public struct ExtraButtonModel {
-    let text: String
-    let style: hButtonConfigurationType
-    let action: () -> Void
-
-    public init(text: String, style: hButtonConfigurationType, action: @escaping () -> Void) {
-        self.text = text
-        self.style = style
-        self.action = action
-    }
-}
-
 public struct InfoView: View {
     let title: String?
     let description: String?
     let closeButtonTitle: String
-    let extraButton: ExtraButtonModel?
     @StateObject private var vm = InfoViewModel()
 
     public init(
         title: String?,
         description: String?,
         closeButtonTitle: String = L10n.generalCloseButton,
-        extraButton: ExtraButtonModel? = nil
     ) {
         self.title = title
         self.description = description
         self.closeButtonTitle = closeButtonTitle
-        self.extraButton = extraButton
     }
 
     public var body: some View {
@@ -121,35 +106,11 @@ public struct InfoView: View {
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
-                if let button = extraButton {
-                    if button.style != .alert {
-                        hButton(
-                            .large,
-                            .primary,
-                            content: .init(title: button.text),
-                            {
-                                button.action()
-                            }
-                        )
-                    } else {
-                        hButton(
-                            .large,
-                            .alert,
-                            content: .init(title: button.text),
-                            {
-                                button.action()
-                            }
-                        )
-                    }
-                }
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: closeButtonTitle),
-                    {
-                        vm.vc?.dismiss(animated: true)
-                    }
-                )
+                    content: .init(title: closeButtonTitle)
+                ) { vm.vc?.dismiss(animated: true) }
             }
             .padding(.horizontal, .padding24)
         }

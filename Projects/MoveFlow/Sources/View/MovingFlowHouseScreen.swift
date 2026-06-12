@@ -42,11 +42,8 @@ struct MovingFlowHouseScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.saveAndContinueButtonLabel),
-                    {
-                        continuePressed()
-                    }
-                )
+                    content: .init(title: L10n.saveAndContinueButtonLabel)
+                ) { continuePressed() }
             }
         }
         .hFormTitle(
@@ -159,11 +156,8 @@ struct MovingFlowHouseScreen: View {
                                 image: hCoreUIAssets.plusSmall.view,
                                 alignment: .leading
                             )
-                        ),
-                        {
-                            addExtraBuilding()
-                        }
-                    )
+                        )
+                    ) { addExtraBuilding() }
                     .hButtonDontShowLoadingWhenDisabled(true)
                     .hUseLightMode
                     .padding(.top, .padding8)

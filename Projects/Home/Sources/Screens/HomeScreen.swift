@@ -98,11 +98,8 @@ extension HomeScreen {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: L10n.HomeTab.claimButtonText),
-                {
-                    navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-                }
-            )
+                content: .init(title: L10n.HomeTab.claimButtonText)
+            ) { navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil) }
         }
     }
 
@@ -116,11 +113,8 @@ extension HomeScreen {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: L10n.HomeTab.getHelp),
-                { [weak navigationVm] in
-                    navigationVm?.isHelpCenterPresented = true
-                }
-            )
+                content: .init(title: L10n.HomeTab.getHelp)
+            ) { [weak navigationVm] in navigationVm?.isHelpCenterPresented = true }
         }
     }
 }

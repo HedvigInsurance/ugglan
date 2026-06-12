@@ -91,11 +91,8 @@ public struct StateView: View {
                     hButton(
                         .medium,
                         .primary,
-                        content: .init(title: button.buttonTitle ?? type.buttonText),
-                        {
-                            button.buttonAction()
-                        }
-                    )
+                        content: .init(title: button.buttonTitle ?? type.buttonText)
+                    ) { button.buttonAction() }
                 }
                 if let contentAttachedView {
                     contentAttachedView
@@ -118,11 +115,8 @@ public struct StateView: View {
                     hButton(
                         .large,
                         actionButton.buttonStyle ?? .primary,
-                        content: .init(title: actionButton.buttonTitle ?? ""),
-                        {
-                            actionButton.buttonAction()
-                        }
-                    )
+                        content: .init(title: actionButton.buttonTitle ?? "")
+                    ) { actionButton.buttonAction() }
                 }
                 if let dismissButton = buttonConfig?.dismissButton {
                     hButton(
@@ -131,11 +125,8 @@ public struct StateView: View {
                         content: .init(
                             title: dismissButton.buttonTitle
                                 ?? (type == .success ? L10n.generalCloseButton : L10n.openChat)
-                        ),
-                        {
-                            dismissButton.buttonAction()
-                        }
-                    )
+                        )
+                    ) { dismissButton.buttonAction() }
                 }
             }
         }

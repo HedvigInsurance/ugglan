@@ -22,16 +22,13 @@ struct ConfirmChangesView: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.contractAddCoinsuredConfirmChanges),
-                    {
-                        editStakeholdersNavigation.showProgressScreenWithSuccess = true
-                        Task {
-                            await intentViewModel.performStakeholderChanges(
-                                commitId: intent.id
-                            )
-                        }
-                    }
-                )
+                    content: .init(title: L10n.contractAddCoinsuredConfirmChanges)
+                ) {
+                    editStakeholdersNavigation.showProgressScreenWithSuccess = true
+                    await intentViewModel.performStakeholderChanges(
+                        commitId: intent.id
+                    )
+                }
                 .hButtonIsLoading(intentViewModel.isLoading)
             }
         }

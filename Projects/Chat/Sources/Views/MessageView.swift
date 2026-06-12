@@ -70,10 +70,7 @@ struct MessageView: View {
                         .large,
                         .secondary,
                         content: .init(title: action.buttonTitle)
-                    ) {
-                        NotificationCenter.default
-                            .post(name: .openDeepLink, object: action.url)
-                    }
+                    ) { NotificationCenter.default.post(name: .openDeepLink, object: action.url) }
                     .padding(.horizontal, -message.horizontalPadding)
                     .padding(.bottom, .padding4)
                 }

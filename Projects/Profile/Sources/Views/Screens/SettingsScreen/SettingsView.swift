@@ -78,18 +78,17 @@ struct SettingsView: View {
                         .ghost,
                         content: .init(
                             title: L10n.SettingsScreen.deleteAccountButton
-                        ),
-                        {
-                            if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                                if hasAlreadyRequested {
-                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                                } else {
-                                    profileNavigationVm.isDeleteAccountPresented = memberDetails
-                                }
+                        )
+                    ) {
+                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                            if hasAlreadyRequested {
+                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                            } else {
+                                profileNavigationVm.isDeleteAccountPresented = memberDetails
                             }
                         }
-                    )
+                    }
                     .hUseButtonTextColor(.red)
                 }
                 .sectionContainerStyle(.transparent)
