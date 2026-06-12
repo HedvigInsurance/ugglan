@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import SwiftUI
 
 @MainActor
 public protocol AppStore: ObservableObject {
@@ -106,11 +107,22 @@ public final class AppStateContainer {
 @MainActor
 public var globalAppStateContainer = AppStateContainer()
 
-@propertyWrapper
 @MainActor
-public struct AppState<S: AppStore> {
-    public var wrappedValue: S { globalAppStateContainer.get() }
-    public init() {}
+@propertyWrapper
+public struct AppState<T: AppStore>: DynamicProperty {
+    @StateObject private var stateObject: T
+
+    public init() {
+        _stateObject = StateObject(wrappedValue: globalAppStateContainer.get())
+    }
+
+    public var wrappedValue: T {
+        stateObject
+    }
+
+    public var projectedValue: ObservedObject<T>.Wrapper {
+        $stateObject
+    }
 }
 
 @attached(

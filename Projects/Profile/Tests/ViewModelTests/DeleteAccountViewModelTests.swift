@@ -1,3 +1,4 @@
+import AppStateContainer
 import PresentableStore
 import XCTest
 import hCore
@@ -25,6 +26,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
         sut = nil
     }
 
@@ -40,28 +42,26 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
         let claimsStore = ClaimsStore()
         self.claimsStore = claimsStore
-        await claimsStore.sendAsync(
-            .setActiveClaims(claims: [
-                .init(
-                    id: "id",
-                    status: .beingHandled,
-                    outcome: .none,
-                    submittedAt: nil,
-                    signedAudioURL: nil,
-                    memberFreeText: nil,
-                    payoutAmount: nil,
-                    targetFileUploadUri: "",
-                    claimType: "claimType",
-                    productVariant: nil,
-                    conversation: nil,
-                    appealInstructionsUrl: nil,
-                    isUploadingFilesEnabled: true,
-                    showClaimClosedFlow: true,
-                    infoText: nil,
-                    displayItems: []
-                )
-            ])
-        )
+        claimsStore.activeClaims = [
+            .init(
+                id: "id",
+                status: .beingHandled,
+                outcome: .none,
+                submittedAt: nil,
+                signedAudioURL: nil,
+                memberFreeText: nil,
+                payoutAmount: nil,
+                targetFileUploadUri: "",
+                claimType: "claimType",
+                productVariant: nil,
+                conversation: nil,
+                appealInstructionsUrl: nil,
+                isUploadingFilesEnabled: true,
+                showClaimClosedFlow: true,
+                infoText: nil,
+                displayItems: []
+            )
+        ]
 
         let contractStore = ContractStore()
         self.contractStore = contractStore

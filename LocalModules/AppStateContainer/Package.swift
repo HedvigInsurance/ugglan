@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "AppStateContainer",
-    platforms: [.macOS(.v10_15), .iOS(.v13), .tvOS(.v13), .watchOS(.v6), .macCatalyst(.v13)],
+    platforms: [.macOS(.v10_15), .iOS(.v16), .tvOS(.v16), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         .library(
             name: "AppStateContainer",
