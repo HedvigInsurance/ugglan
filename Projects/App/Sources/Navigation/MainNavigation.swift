@@ -116,8 +116,8 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = false
                     }
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    await contractStore.sendAsync(.fetchContracts)
+                    let contractStore: ContractStore = globalAppStateContainer.get()
+                    await contractStore.fetchContracts()
                     let profileStore: ProfileStore = globalAppStateContainer.get()
                     await profileStore.fetchMemberDetails()
                     await profileStore.updateLanguage()

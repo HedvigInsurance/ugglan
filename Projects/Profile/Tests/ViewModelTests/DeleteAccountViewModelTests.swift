@@ -65,51 +65,49 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
         let contractStore = ContractStore()
         self.contractStore = contractStore
-        await contractStore.sendAsync(
-            .setActiveContracts(contracts: [
-                .init(
-                    id: "contractId",
-                    currentAgreement: .init(
-                        id: "id",
-                        certificateUrl: nil,
-                        agreementDate: .init(activeFrom: nil, activeTo: nil),
-                        basePremium: .init(amount: "220", currency: "SEK"),
-                        itemCost: nil,
-                        displayItems: [],
-                        productVariant: .init(
-                            termsVersion: "",
-                            typeOfContract: "",
-                            perils: [],
-                            insurableLimits: [],
-                            documents: [],
-                            displayName: "",
-                            displayNameTier: "standard",
-                            tierDescription: "tier description"
-                        ),
-                        addonVariant: []
+        contractStore.activeContracts = [
+            .init(
+                id: "contractId",
+                currentAgreement: .init(
+                    id: "id",
+                    certificateUrl: nil,
+                    agreementDate: .init(activeFrom: nil, activeTo: nil),
+                    basePremium: .init(amount: "220", currency: "SEK"),
+                    itemCost: nil,
+                    displayItems: [],
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        displayName: "",
+                        displayNameTier: "standard",
+                        tierDescription: "tier description"
                     ),
-                    exposureDisplayName: "display name",
-                    exposureDisplayNameShort: "exposure display name short",
-                    masterInceptionDate: "2024-04-17",
-                    terminationDate: nil,
-                    supportsAddressChange: true,
-                    supportsCoInsured: true,
-                    supportsCoOwners: false,
-                    supportsTravelCertificate: true,
-                    supportsChangeTier: true,
-                    supportsTermination: true,
-                    upcomingChangedAgreement: nil,
-                    upcomingRenewal: nil,
-                    firstName: "first name",
-                    lastName: "last name",
-                    ssn: nil,
-                    typeOfContract: .seApartmentBrf,
-                    coInsured: [],
-                    coOwners: [],
-                    missingPetChipId: false,
-                )
-            ])
-        )
+                    addonVariant: []
+                ),
+                exposureDisplayName: "display name",
+                exposureDisplayNameShort: "exposure display name short",
+                masterInceptionDate: "2024-04-17",
+                terminationDate: nil,
+                supportsAddressChange: true,
+                supportsCoInsured: true,
+                supportsCoOwners: false,
+                supportsTravelCertificate: true,
+                supportsChangeTier: true,
+                supportsTermination: true,
+                upcomingChangedAgreement: nil,
+                upcomingRenewal: nil,
+                firstName: "first name",
+                lastName: "last name",
+                ssn: nil,
+                typeOfContract: .seApartmentBrf,
+                coInsured: [],
+                coOwners: [],
+                missingPetChipId: false,
+            )
+        ]
 
         let model = DeleteAccountViewModel(
             claimsStore: claimsStore,

@@ -1,3 +1,4 @@
+import AppStateContainer
 import ChangeTier
 import Chat
 import Contracts
@@ -20,7 +21,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     public let router = NavigationRouter()
@@ -190,8 +191,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         ) { dismissType in
             switch dismissType {
             case .done:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
+                let contractStore: ContractStore = globalAppStateContainer.get()
+                Task { await contractStore.fetchContracts() }
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             case .chat:
@@ -199,8 +200,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             case let .openFeedback(url):
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
+                let contractStore: ContractStore = globalAppStateContainer.get()
+                Task { await contractStore.fetchContracts() }
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -237,8 +238,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+            let contractStore: ContractStore = globalAppStateContainer.get()
+            let contractsConfig: [TerminationConfirmConfig] = contractStore.activeContracts
                 .filter(\.supportsTermination)
                 .map(\.asTerminationConfirmConfig)
             Task {
@@ -251,8 +252,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .editCoInsured: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coInsured)
         case .editCoOwners: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coOwner)
         case .upgradeCoverage:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+            let contractStore: ContractStore = globalAppStateContainer.get()
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.activeContracts
                 .filter(\.supportsChangeTier)
                 .map {
                     .init(

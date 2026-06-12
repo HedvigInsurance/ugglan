@@ -1,10 +1,10 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCoreUI
 
 struct Contracts: View {
-    @PresentableStore var store: ContractStore
+    @AppObservedObject var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
 
@@ -12,10 +12,6 @@ struct Contracts: View {
         showTerminated: Bool
     ) {
         self.showTerminated = showTerminated
-    }
-
-    func fetch() {
-        store.send(.fetchContracts)
     }
 
     var body: some View {
@@ -26,13 +22,13 @@ struct Contracts: View {
         }
         .hSetScrollBounce(to: true)
         .onReceive(pollTimer) { _ in
-            fetch()
+            Task { await store.fetchContracts() }
         }
-        .onAppear {
-            fetch()
+        .task {
+            await store.fetchContracts()
         }
         .onPullToRefresh {
-            await store.sendAsync(.fetchContracts)
+            await store.fetchContracts()
         }
     }
 }

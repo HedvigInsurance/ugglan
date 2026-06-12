@@ -1,7 +1,7 @@
 import Addons
+import AppStateContainer
 import Contracts
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -92,7 +92,7 @@ public struct TravelCertificatesListScreen: View {
         if let banner = vm.addonBanner {
             AddonCardView(
                 openAddon: {
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contractStore: ContractStore = globalAppStateContainer.get()
                     let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
                         addonSource: .travelCertificates,

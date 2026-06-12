@@ -1,4 +1,5 @@
 import Addons
+import AppStateContainer
 import ChangeTier
 import Contracts
 import CrossSell
@@ -66,8 +67,8 @@ struct LoggedInPresentations: ViewModifier {
                 dismissType in
                 switch dismissType {
                 case .done:
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.fetchContracts)
+                    let contractStore: ContractStore = globalAppStateContainer.get()
+                    Task { await contractStore.fetchContracts() }
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
                     homeStore.send(.fetchQuickActions)
                 case .chat:

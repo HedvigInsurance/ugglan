@@ -109,10 +109,10 @@ extension HomeScreen {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = globalAppStateContainer.get()
         let showHelpCenter =
-            !contractStore.state.activeContracts.allSatisfy(\.isNonPayingMember)
-            || contractStore.state.activeContracts.count == 0
+            !contractStore.activeContracts.allSatisfy(\.isNonPayingMember)
+            || contractStore.activeContracts.count == 0
         if showHelpCenter, featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,
@@ -162,8 +162,8 @@ class HomeVM: ObservableObject {
         }
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         Task { await crossSellStore.fetchRecommendedCrossSellId() }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+        let contractStore: ContractStore = globalAppStateContainer.get()
+        Task { await contractStore.fetchContracts() }
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()

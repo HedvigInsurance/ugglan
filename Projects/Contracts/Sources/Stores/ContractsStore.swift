@@ -1,43 +1,75 @@
-import Apollo
+import Addons
+import AppStateContainer
+import EditStakeholders
 import Foundation
-import PresentableStore
 import hCore
 
-public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var fetchContractsService: FetchContractsClient
-    override public func effects(
-        _: @escaping () -> ContractState,
-        _ action: ContractAction
-    ) async {
-        switch action {
-        case .fetchContracts:
-            do {
-                let data = try await fetchContractsService.getContracts()
-                await sendAsync(.setActiveContracts(contracts: data.activeContracts))
-                await sendAsync(.setTerminatedContracts(contracts: data.terminatedContracts))
-                await sendAsync(.setPendingContracts(contracts: data.pendingContracts))
-            } catch {
-                setError(error.localizedDescription, for: .fetchContracts)
-            }
-        default:
-            break
+@MainActor
+@PersistableStore
+public final class ContractStore: AppStore {
+    @Inject private var fetchContractsService: FetchContractsClient
+
+    @Published public private(set) var activeContracts: [Contract] = []
+    @Published public private(set) var terminatedContracts: [Contract] = []
+    @Published public private(set) var pendingContracts: [Contract] = []
+
+    @Transient @Published public private(set) var fetchContractsError: String?
+    @Transient @Published public private(set) var isFetchingContracts: Bool = false
+
+    public init() {}
+
+    public func fetchContracts() async {
+        isFetchingContracts = true
+        do {
+            let data = try await fetchContractsService.getContracts()
+            activeContracts = data.activeContracts
+            terminatedContracts = data.terminatedContracts
+            pendingContracts = data.pendingContracts
+            fetchContractsError = nil
+        } catch {
+            fetchContractsError = error.localizedDescription
         }
+        isFetchingContracts = false
     }
 
-    override public func reduce(_ state: ContractState, _ action: ContractAction) async -> ContractState {
-        var newState = state
-        switch action {
-        case .fetchContracts:
-            setLoading(for: .fetchContracts)
-        case let .setActiveContracts(contracts):
-            newState.activeContracts = contracts
-        case let .setTerminatedContracts(contracts):
-            newState.terminatedContracts = contracts
-        case let .setPendingContracts(contracts):
-            removeLoading(for: .fetchContracts)
-            newState.pendingContracts = contracts
-        }
+    public var hasActiveContracts: Bool {
+        !activeContracts.isEmpty
+    }
 
-        return newState
+    public var allStakeholders: [Stakeholder] {
+        let stakeholders = activeContracts.flatMap { contract in
+            (contract.coInsured + contract.coOwners).filter { !$0.hasMissingData }
+        }
+        return Set(stakeholders).sorted(by: { $0.id > $1.id })
+    }
+
+    public func contractForId(_ id: String) -> Contract? {
+        let all = activeContracts + terminatedContracts + pendingContracts
+        return all.first(where: { $0.id == id })
+    }
+
+    public func fetchAllStakeholdersNotInContract(
+        contractId: String,
+        stakeholderType: StakeholderType
+    ) -> [Stakeholder] {
+        guard let contract = contractForId(contractId) else { return [] }
+        let contractStakeholders =
+            switch stakeholderType {
+            case .coInsured: Set(contract.coInsured)
+            case .coOwner: Set(contract.coOwners)
+            }
+        return allStakeholders.filter { !contractStakeholders.contains($0) }
+    }
+
+    public func getAddonContractInfosFor(contractIds ids: [String]) -> [AddonContractInfo] {
+        ids
+            .compactMap { contractForId($0) }
+            .map(\.asAddonContractInfo)
+    }
+}
+
+extension ContractStore: ExistingStakeholders {
+    public func get(contractId: String, stakeholderType: StakeholderType) -> [Stakeholder] {
+        fetchAllStakeholdersNotInContract(contractId: contractId, stakeholderType: stakeholderType)
     }
 }

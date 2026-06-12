@@ -1,8 +1,8 @@
 import Addons
+import AppStateContainer
 import Contracts
 import EditStakeholders
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,7 +19,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
     public var editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }
 
