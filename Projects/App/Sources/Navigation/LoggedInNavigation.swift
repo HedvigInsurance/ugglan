@@ -294,14 +294,12 @@ class DeepLinkHandler {
 
     private func handleManualCharge() {
         Task { [weak viewModel] in
-            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-            await paymentStore.sendAsync(.getMissedPayment)
+            let paymentStore: PaymentStore = globalAppStateContainer.get()
+            await paymentStore.getMissedPayment()
 
-            // if we have error after fetching missed payment
-            if case .error = paymentStore.loadingState[.getMissedPayment] {
+            if paymentStore.loadMissedPaymentError != nil {
                 Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
-                // if we have missedPaymentData
-            } else if let missedPaymentData = paymentStore.state.missedPaymentData {
+            } else if let missedPaymentData = paymentStore.missedPaymentData {
                 viewModel?.missedPaymentData = missedPaymentData
             } else {
                 Toasts.shared.displayToastBar(
@@ -1034,8 +1032,8 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     func showPayout() {
         Task { [weak self] in
-            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-            await paymentStore.sendAsync(.fetchPaymentStatus)
+            let paymentStore: PaymentStore = globalAppStateContainer.get()
+            await paymentStore.fetchPaymentStatus()
             self?.homeNavigationVm.isPayoutMethodPresented = true
         }
     }

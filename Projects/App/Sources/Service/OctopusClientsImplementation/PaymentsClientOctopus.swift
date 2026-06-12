@@ -1,8 +1,8 @@
+import AppStateContainer
 import CampaignCore
 import Environment
 import Foundation
 import Payment
-import PresentableStore
 import hCore
 import hGraphQL
 
@@ -447,8 +447,8 @@ extension PaymentHistoryListData {
         var nextPayment: PaymentData?
         for item in data.pastCharges.enumerated() {
             if item.offset == 0 {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                nextPayment = store.state.ongoingPaymentData.first ?? store.state.paymentData
+                let store: PaymentStore = globalAppStateContainer.get()
+                nextPayment = store.ongoingPaymentData.first ?? store.paymentData
             }
             let paymentData = PaymentData(
                 with: item.element.fragments.memberChargeFragment,

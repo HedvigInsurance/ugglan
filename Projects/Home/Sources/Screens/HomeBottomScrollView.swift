@@ -4,7 +4,6 @@ import Combine
 import Contracts
 import EditStakeholders
 import Payment
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -105,7 +104,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handlePayments() {
-        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
         let homeStore: HomeStore = globalAppStateContainer.get()
         homeStore.$memberContractState
             .receive(on: RunLoop.main)
@@ -118,10 +117,8 @@ class HomeBottomScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        let needsPaymentSetupPublisher = paymentStore.stateSignal
-            .map { $0.paymentStatusData }
+        let needsPaymentSetupPublisher = paymentStore.$paymentStatusData
             .removeDuplicates()
-            .prepend()
         let memberStatePublisher = homeStore.$memberContractState
             .removeDuplicates()
 

@@ -1,11 +1,11 @@
+import AppStateContainer
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct PaymentsView: View {
-    @PresentableStore var store: PaymentStore
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
     @StateObject var vm = PaymentsViewModel()
@@ -16,17 +16,21 @@ public struct PaymentsView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.load)
-                        store.send(.fetchPaymentStatus)
-                        store.send(.getMissedPayment)
+                        Task {
+                            async let load: () = store.load()
+                            async let fetchStatus: () = store.fetchPaymentStatus()
+                            async let missedPayment: () = store.getMissedPayment()
+                            _ = await (load, fetchStatus, missedPayment)
+                        }
                     }),
                     dismissButton: nil
                 )
             )
             .task {
-                store.send(.load)
-                store.send(.fetchPaymentStatus)
-                store.send(.getMissedPayment)
+                async let load: () = store.load()
+                async let fetchStatus: () = store.fetchPaymentStatus()
+                async let missedPayment: () = store.getMissedPayment()
+                _ = await (load, fetchStatus, missedPayment)
             }
     }
 
@@ -34,15 +38,8 @@ public struct PaymentsView: View {
         hForm {
             VStack(spacing: .padding8) {
                 payments
-                PresentableStoreLens(
-                    PaymentStore.self,
-                    getter: { state in
-                        state.paymentStatusData
-                    }
-                ) { paymentStatusData in
-                    if let paymentStatusData {
-                        PaymentsMenuView(paymentStatusData: paymentStatusData)
-                    }
+                if let paymentStatusData = store.paymentStatusData {
+                    PaymentsMenuView(paymentStatusData: paymentStatusData)
                 }
             }
             .padding(.vertical, .padding8)
@@ -50,66 +47,52 @@ public struct PaymentsView: View {
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentStatusData
-                }
-            ) { statusData in
-                if let statusData, statusData.payinMethods.isEmpty {
-                    ConnectPaymentBottomView()
-                }
+            if let statusData = store.paymentStatusData, statusData.payinMethods.isEmpty {
+                ConnectPaymentBottomView()
             }
         }
         .onPullToRefresh {
-            async let fetchStatus: () = store.send(.fetchPaymentStatus)
-            async let load: () = store.sendAsync(.load)
-            async let missedPayment: () = store.sendAsync(.getMissedPayment)
+            async let fetchStatus: () = store.fetchPaymentStatus()
+            async let load: () = store.load()
+            async let missedPayment: () = store.getMissedPayment()
             _ = await (fetchStatus, load, missedPayment)
         }
     }
 
     private var payments: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state
+        VStack(spacing: .padding8) {
+            if let missedPaymentData = store.missedPaymentData {
+                MissedPaymentCardView(
+                    amountDue: missedPaymentData.paymentData.payment.net,
+                    onReviewPayment: {
+                        router.push(missedPaymentData)
+                    }
+                )
+                .padding(.bottom, .padding8)
             }
-        ) { [weak paymentNavigationVm] state in
-            VStack(spacing: .padding8) {
-                if let missedPaymentData = state.missedPaymentData {
-                    MissedPaymentCardView(
-                        amountDue: missedPaymentData.paymentData.payment.net,
-                        onReviewPayment: {
-                            router.push(missedPaymentData)
-                        }
-                    )
-                    .padding(.bottom, .padding8)
+            if !store.ongoingPaymentData.isEmpty {
+                ForEach(store.ongoingPaymentData, id: \.id) { paymentData in
+                    PaymentView(paymentData: paymentData)
                 }
-                if !state.ongoingPaymentData.isEmpty {
-                    ForEach(state.ongoingPaymentData, id: \.id) { paymentData in
-                        PaymentView(paymentData: paymentData)
-                    }
-                }
-                if let upcomingPayment = state.paymentData {
-                    PaymentView(paymentData: upcomingPayment)
-                }
+            }
+            if let upcomingPayment = store.paymentData {
+                PaymentView(paymentData: upcomingPayment)
+            }
 
-                if state.ongoingPaymentData.isEmpty, state.paymentData == nil {
-                    VStack(spacing: 16) {
-                        hCoreUIAssets.infoFilledSmall.view
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(hSignalColor.Blue.element)
-                        hText(L10n.paymentsNoPaymentsInProgress)
-                    }
-                    .padding(.vertical, .padding32)
+            if store.ongoingPaymentData.isEmpty, store.paymentData == nil {
+                VStack(spacing: 16) {
+                    hCoreUIAssets.infoFilledSmall.view
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.Blue.element)
+                    hText(L10n.paymentsNoPaymentsInProgress)
                 }
+                .padding(.vertical, .padding32)
+            }
 
-                hSection {
-                    ConnectPaymentCardView()
-                        .environmentObject(paymentNavigationVm!.connectPaymentVm)
-                }
+            hSection {
+                ConnectPaymentCardView()
+                    .environmentObject(paymentNavigationVm.connectPaymentVm)
             }
         }
     }
@@ -209,24 +192,23 @@ public struct PaymentsView: View {
 @MainActor
 public class PaymentsViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
-    @PresentableStore var store: PaymentStore
-    @Published var loadingCancellable: AnyCancellable?
+    @AppState private var store: PaymentStore
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
-        loadingCancellable = store.loadingSignal
+        store.$isFetchingPaymentStatus
+            .combineLatest(store.$fetchPaymentStatusError)
             .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                let getAction = action.first(where: { $0.key == .getPaymentStatus })
-                switch getAction?.value {
-                case let .error(errorMessage):
-                    self?.viewState = .error(errorMessage: errorMessage)
-                case .loading:
+            .sink { [weak self] isLoading, error in
+                if isLoading {
                     self?.viewState = .loading
-                default:
+                } else if let error {
+                    self?.viewState = .error(errorMessage: error)
+                } else {
                     self?.viewState = .success
                 }
             }
+            .store(in: &cancellables)
     }
 }
 

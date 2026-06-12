@@ -1,14 +1,13 @@
-import Apollo
+import AppStateContainer
 import Combine
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct PaymentHistoryView: View {
     @EnvironmentObject var router: NavigationRouter
-    @PresentableStore var store: PaymentStore
+    @AppObservedObject var store: PaymentStore
     @StateObject var vm = PaymentsHistoryViewModel()
 
     public var body: some View {
@@ -16,23 +15,19 @@ public struct PaymentHistoryView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.getHistory)
+                        Task { await store.getHistory() }
                     }),
                     dismissButton: nil
                 )
             )
             .task {
-                await store.sendAsync(.getHistory)
+                await store.getHistory()
             }
     }
 
     private var successView: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentHistory
-            }
-        ) { history in
+        let history = store.paymentHistory
+        return Group {
             if history.isEmpty {
                 VStack(spacing: .padding16) {
                     hCoreUIAssets.infoFilled.view
@@ -104,11 +99,11 @@ public struct PaymentHistoryView: View {
                 .hSetScrollBounce(to: true)
                 .sectionContainerStyle(.transparent)
                 .onPullToRefresh {
-                    await store.sendAsync(.getHistory)
+                    await store.getHistory()
                 }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .animation(.default, value: history)
     }
 
     @hColorBuilder
@@ -124,24 +119,23 @@ public struct PaymentHistoryView: View {
 @MainActor
 public class PaymentsHistoryViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
-    @PresentableStore var store: PaymentStore
-    @Published var loadingCancellable: AnyCancellable?
+    @AppState private var store: PaymentStore
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
-        loadingCancellable = store.loadingSignal
+        store.$isLoadingHistory
+            .combineLatest(store.$loadHistoryError)
             .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                let getAction = action.first(where: { $0.key == .getHistory })
-                switch getAction?.value {
-                case let .error(errorMessage):
-                    self?.viewState = .error(errorMessage: errorMessage)
-                case .loading:
+            .sink { [weak self] isLoading, error in
+                if isLoading {
                     self?.viewState = .loading
-                default:
+                } else if let error {
+                    self?.viewState = .error(errorMessage: error)
+                } else {
                     self?.viewState = .success
                 }
             }
+            .store(in: &cancellables)
     }
 }
 

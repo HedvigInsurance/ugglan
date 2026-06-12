@@ -1,22 +1,16 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ConnectPaymentCardView: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
     public init() {}
     public var body: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData
-            }
-        ) { paymentStatusData in
-            if let status = paymentStatusData?.status {
-                getStatusInfoView(from: status)
-            }
+        if let status = store.paymentStatusData?.status {
+            getStatusInfoView(from: status)
         }
     }
 
