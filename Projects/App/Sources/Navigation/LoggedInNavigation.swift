@@ -1022,10 +1022,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func addonsChanged() {
         Task {
-            let store: CrossSellStore = globalPresentableStoreContainer.get()
+            let store: CrossSellStore = globalAppStateContainer.get()
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             _ = await (
-                store.sendAsync(.fetchAddonBanners),
+                store.fetchAddonBanners(),
                 contractStore.sendAsync(.fetchContracts)
             )
         }
@@ -1063,11 +1063,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func tierChanged() {
-        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             await (
-                crossSellStore.sendAsync(.fetchAddonBanners),
+                crossSellStore.fetchAddonBanners(),
                 contractStore.sendAsync(.fetchContracts)
             )
         }

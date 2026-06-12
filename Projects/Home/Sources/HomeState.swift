@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Combine
 import CrossSell
 import Foundation
@@ -30,7 +31,7 @@ public struct HomeState: StateProtocol {
     public var quickActions: [QuickAction] = []
     public var helpCenterFAQModel: HelpCenterFAQModel?
     public var toolbarOptionTypes: [ToolbarOptionType] = []
-    @Transient(defaultValue: []) var hidenImportantMessages = [String]()
+    @hCore.Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
         contracts.filter { $0.upcomingRenewal != nil }
     }
@@ -109,8 +110,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     private var featureFlagsSubscription: AnyCancellable?
     required init() {
         super.init()
-        let store: CrossSellStore = globalPresentableStoreContainer.get()
-        newOfferSubscription = store.stateSignal.map(\.hasNewOffer).removeDuplicates()
+        let store: CrossSellStore = globalAppStateContainer.get()
+        newOfferSubscription = store.$hasNewOffer.removeDuplicates()
             .sink { [weak self] _ in
                 self?.send(.recommendedProductUpdated)
             }
@@ -242,9 +243,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
-        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
 
-        if crossSellStore.state.hasNewOffer {
+        if crossSellStore.hasNewOffer {
             types.append(.crossSell(hasNewOffer: true))
         } else {
             types.append(.crossSell(hasNewOffer: false))
