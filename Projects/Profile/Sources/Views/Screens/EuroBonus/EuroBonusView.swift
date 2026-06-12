@@ -43,11 +43,10 @@ public struct EuroBonusView: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: L10n.SasIntegration.connectEurobonus),
-                            {
-                                euroBonusNavigationVm.isChangeEuroBonusPresented = true
-                            }
-                        )
+                            content: .init(title: L10n.SasIntegration.connectEurobonus)
+                        ) {
+                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
+                        }
                         .padding(.vertical, .padding16)
                     }
                 } else {
@@ -55,11 +54,10 @@ public struct EuroBonusView: View {
                         hButton(
                             .large,
                             .ghost,
-                            content: .init(title: L10n.SasIntegration.changeEurobonusNumber),
-                            {
-                                euroBonusNavigationVm.isChangeEuroBonusPresented = true
-                            }
-                        )
+                            content: .init(title: L10n.SasIntegration.changeEurobonusNumber)
+                        ) {
+                            euroBonusNavigationVm.isChangeEuroBonusPresented = true
+                        }
                         .padding(.vertical, .padding16)
                     }
                 }

@@ -72,18 +72,14 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                     onConfirm(enabled)
                 }
             } else {
-                hButton(.large, .secondary, content: .init(title: "Without animations")) {
-                    onConfirm(enabled)
-                }
+                hButton(.large, .secondary, content: .init(title: "Without animations")) { onConfirm(enabled) }
             }
         }
         .disabled(!hasAgreedToHonestyPledge)
     }
 
     private var cancelButton: some View {
-        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) {
-            router.dismiss()
-        }
+        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { router.dismiss() }
     }
 }
 

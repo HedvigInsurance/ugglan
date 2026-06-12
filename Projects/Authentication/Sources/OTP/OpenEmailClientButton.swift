@@ -136,29 +136,23 @@ public struct OpenEmailClientButton: View {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
-                {
-                    if hasAcceptedAlert {
-                        sheetPresented = true
-                    } else {
-                        hasPressedButton?()
-                    }
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton)
+            ) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
                 }
-            )
+            }
 
         case .primary:
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
-                {
-                    if hasAcceptedAlert {
-                        sheetPresented = true
-                    } else {
-                        hasPressedButton?()
-                    }
+            hButton(.large, .primary, content: .init(title: buttonText ?? L10n.Login.openEmailAppButton)) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
                 }
-            )
+            }
         }
     }
 }

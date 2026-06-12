@@ -64,11 +64,10 @@ struct ParnerButtonView: View {
                     hButton(
                         .medium,
                         overrideColorSchema ? .secondaryAlt : .primary,
-                        content: .init(title: model.buttonText ?? ""),
-                        {
-                            Task { await Dependencies.urlOpener.open(url) }
-                        }
-                    )
+                        content: .init(title: model.buttonText ?? "")
+                    ) {
+                        await Dependencies.urlOpener.open(url)
+                    }
                     .colorScheme(overrideColorSchema ? .light : colorSchema)
                     .hButtonTakeFullWidth(true)
                 }
@@ -78,11 +77,10 @@ struct ParnerButtonView: View {
                     hButton(
                         .medium,
                         getPhoneNumberButtonType(),
-                        content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
-                        {
-                            Task { await Dependencies.urlOpener.open(url) }
-                        }
-                    )
+                        content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber))
+                    ) {
+                        await Dependencies.urlOpener.open(url)
+                    }
                     .colorScheme(overrideColorSchema ? getPhoneNumberSchema() : colorSchema)
                     .hButtonTakeFullWidth(true)
                 }

@@ -56,20 +56,18 @@ public struct DeleteAccountView: View {
                             hButton(
                                 .large,
                                 .alert,
-                                content: .init(title: L10n.profileDeleteAccountConfirmDeletion),
-                                {
-                                    profileNavigationVm.isDeleteAccountRequestedPresented = memberDetails
-                                }
-                            )
+                                content: .init(title: L10n.profileDeleteAccountConfirmDeletion)
+                            ) {
+                                profileNavigationVm.isDeleteAccountRequestedPresented = memberDetails
+                            }
                         }
                         hButton(
                             .large,
                             .ghost,
-                            content: .init(title: vm.dismissButtonTitle),
-                            {
-                                router.dismiss()
-                            }
-                        )
+                            content: .init(title: vm.dismissButtonTitle)
+                        ) {
+                            router.dismiss()
+                        }
                     }
                     .padding(.vertical, .padding16)
                 }

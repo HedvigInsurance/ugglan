@@ -44,11 +44,8 @@ public struct InboxNewMessageSheet: View {
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: L10n.generalCloseButton),
-                    {
-                        dismiss()
-                    }
-                )
+                    content: .init(title: L10n.generalCloseButton)
+                ) { dismiss() }
             }
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)

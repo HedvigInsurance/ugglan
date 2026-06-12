@@ -63,17 +63,16 @@ struct StakeholderProcessingScreen: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: L10n.generalDoneButton),
-                {
-                    editStakeholdersNavigation.showProgressScreenWithSuccess = false
-                    editStakeholdersNavigation.showProgressScreenWithoutSuccess = false
-                    editStakeholdersNavigation.editStakeholderConfig = nil
-                    editStakeholdersViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
-                    EditStakeholdersViewModel.updatedStakeholderForContractId.send(
-                        intentViewModel.contractId
-                    )
-                }
-            )
+                content: .init(title: L10n.generalDoneButton)
+            ) {
+                editStakeholdersNavigation.showProgressScreenWithSuccess = false
+                editStakeholdersNavigation.showProgressScreenWithoutSuccess = false
+                editStakeholdersNavigation.editStakeholderConfig = nil
+                editStakeholdersViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
+                EditStakeholdersViewModel.updatedStakeholderForContractId.send(
+                    intentViewModel.contractId
+                )
+            }
         }
         .sectionContainerStyle(.transparent)
     }

@@ -35,9 +35,7 @@ struct ChangeTierDeflectView: View {
     }
 
     var iUnderstandButton: some View {
-        hButton(.large, .primary, content: .init(title: L10n.terminationFlowIUnderstandText)) {
-            router.dismiss()
-        }
+        hButton(.large, .primary, content: .init(title: L10n.terminationFlowIUnderstandText)) { router.dismiss() }
     }
 }
 

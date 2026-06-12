@@ -44,11 +44,7 @@ struct StartDateScreen: View {
                             type: .info
                         )
                         .accessibilitySortPriority(2)
-                        hContinueButton {
-                            Task {
-                                await submit()
-                            }
-                        }
+                        hContinueButton { await submit() }
                     }
                 }
             }

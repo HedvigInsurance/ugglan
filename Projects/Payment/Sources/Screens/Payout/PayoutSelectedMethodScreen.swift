@@ -71,12 +71,11 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton),
-                    { [weak router, weak paymentsNavigationVm] in
-                        router?.dismiss()
-                        paymentsNavigationVm?.connectPaymentVm.set()
-                    }
-                )
+                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton)
+                ) { [weak router, weak paymentsNavigationVm] in
+                    router?.dismiss()
+                    paymentsNavigationVm?.connectPaymentVm.set()
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -127,11 +126,10 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: title),
-                    { [weak router] in
-                        router?.push(PayoutRouterActions.changePayoutMethod)
-                    }
-                )
+                    content: .init(title: title)
+                ) { [weak router] in
+                    router?.push(PayoutRouterActions.changePayoutMethod)
+                }
             }
             .sectionContainerStyle(.transparent)
         }

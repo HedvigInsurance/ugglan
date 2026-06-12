@@ -149,13 +149,10 @@ private struct StakeholderActionButton: View {
         hButton(
             .large,
             style,
-            content: .init(title: title),
-            {
-                Task {
-                    await onTap()
-                }
-            }
-        )
+            content: .init(title: title)
+        ) {
+            await onTap()
+        }
         .transition(.opacity.animation(.easeOut))
         .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
     }

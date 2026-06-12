@@ -61,11 +61,8 @@ public struct ProfileView: View {
                         .ghost,
                         content: .init(
                             title: L10n.logoutButton
-                        ),
-                        {
-                            showLogoutAlert = true
-                        }
-                    )
+                        )
+                    ) { showLogoutAlert = true }
                     .hUseButtonTextColor(.red)
                     .foregroundColor(hSignalColor.Red.element)
                     .alert(isPresented: $showLogoutAlert) {

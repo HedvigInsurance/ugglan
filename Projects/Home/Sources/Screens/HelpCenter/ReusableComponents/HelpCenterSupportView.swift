@@ -84,9 +84,7 @@ struct SupportView: View {
                             .medium,
                             .primary,
                             content: .init(title: L10n.hcChatGoToInbox)
-                        ) {
-                            router.push(HelpCenterNavigationRouterType.inbox)
-                        }
+                        ) { router.push(HelpCenterNavigationRouterType.inbox) }
                     }
                 }
                 .hButtonTakeFullWidth(true)

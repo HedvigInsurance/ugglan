@@ -87,27 +87,23 @@ struct AskForPushNotifications: View {
         hButton(
             .medium,
             .primary,
-            content: .init(title: L10n.claimsActivateNotificationsCta),
-            {
-                Task {
-                    await UIApplication.shared.appDelegate.registerForPushNotifications()
-                    onActionExecuted()
-                }
-            }
-        )
+            content: .init(title: L10n.claimsActivateNotificationsCta)
+        ) {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+            onActionExecuted()
+        }
     }
 
     var closeButton: some View {
         hButton(
             .large,
             .ghost,
-            content: .init(title: L10n.claimsActivateNotificationsDismiss),
-            {
-                onActionExecuted()
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: nil))
-            }
-        )
+            content: .init(title: L10n.claimsActivateNotificationsDismiss)
+        ) {
+            onActionExecuted()
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: nil))
+        }
     }
 }
 

@@ -12,21 +12,18 @@ struct CrossSellButtonComponent: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: crossSell.buttonText ?? L10n.crossSellButton),
-                    {
-                        if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-                            Task {
-                                isCrossSellLoading = true
-                                await Dependencies.urlOpener.open(url)
-                                isCrossSellLoading = false
-                                dismiss()
-                            }
-                        } else {
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                            dismiss()
-                        }
+                    content: .init(title: crossSell.buttonText ?? L10n.crossSellButton)
+                ) {
+                    if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
+                        isCrossSellLoading = true
+                        await Dependencies.urlOpener.open(url)
+                        isCrossSellLoading = false
+                        dismiss()
+                    } else {
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                        dismiss()
                     }
-                )
+                }
                 .disabled(isCrossSellLoading)
                 .hButtonIsLoading(isCrossSellLoading)
                 .animation(.default, value: isCrossSellLoading)
