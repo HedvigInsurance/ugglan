@@ -98,7 +98,7 @@ extension MyInfoView {
 public class MyInfoViewModel: ObservableObject {
     private let profileService = ProfileService()
     @AppState var profileStore: ProfileStore
-    @PresentableStore var homeStore: HomeStore
+    @AppState var homeStore: HomeStore
     @Published var type: MyInfoViewEditType?
     @Published var currentPhoneInput: String = ""
     @Published var phoneError: String?
@@ -166,7 +166,7 @@ public class MyInfoViewModel: ObservableObject {
                 viewState = .success
             }
             Toasts.success()
-            homeStore.send(.fetchMemberState)
+            Task { await homeStore.fetchMemberState() }
         } catch {
             if let error = error as? MyInfoSaveError {
                 switch error {

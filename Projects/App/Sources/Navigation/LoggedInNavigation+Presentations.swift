@@ -69,8 +69,8 @@ struct LoggedInPresentations: ViewModifier {
                 case .done:
                     let contractStore: ContractStore = globalAppStateContainer.get()
                     Task { await contractStore.fetchContracts() }
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.fetchQuickActions)
+                    let homeStore: HomeStore = globalAppStateContainer.get()
+                    Task { await homeStore.fetchQuickActions() }
                 case .chat:
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                         NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)

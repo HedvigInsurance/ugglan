@@ -28,8 +28,8 @@ struct HomeBottomScrollView: View {
                 case .renewal:
                     RenewalCardView()
                 case let .importantMessage(id):
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    if let importantMessage = store.state.getImportantMessage(with: id) {
+                    let store: HomeStore = globalAppStateContainer.get()
+                    if let importantMessage = store.getImportantMessage(with: id) {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
                 case .missingCoInsured(let type):
@@ -106,10 +106,8 @@ class HomeBottomScrollViewModel: ObservableObject {
 
     private func handlePayments() {
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal
-            .map(\.memberContractState)
-            .prepend()
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        homeStore.$memberContractState
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
@@ -120,20 +118,12 @@ class HomeBottomScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        switch homeStore.state.memberContractState {
-        case .terminated:
-            handleItem(.terminated, with: true)
-        default:
-            handleItem(.terminated, with: false)
-        }
         let needsPaymentSetupPublisher = paymentStore.stateSignal
             .map { $0.paymentStatusData }
             .removeDuplicates()
             .prepend()
-        let memberStatePublisher = homeStore.stateSignal
-            .map(\.memberContractState)
+        let memberStatePublisher = homeStore.$memberContractState
             .removeDuplicates()
-            .prepend()
 
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
@@ -141,11 +131,6 @@ class HomeBottomScrollViewModel: ObservableObject {
                 self?.setConnectPayments(for: memberState, status: paymentStatus)
             })
             .store(in: &cancellables)
-
-        setConnectPayments(
-            for: homeStore.state.memberContractState,
-            status: paymentStore.state.paymentStatusData
-        )
     }
 
     private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
@@ -163,9 +148,10 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleImportantMessages() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal
-            .map { $0.getImportantMessageToShow() }
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        homeStore.$importantMessages
+            .combineLatest(homeStore.$hidenImportantMessages)
+            .map { _, _ in homeStore.getImportantMessageToShow() }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] importantMessages in
@@ -190,23 +176,18 @@ class HomeBottomScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        let itemsToShow = homeStore.state.getImportantMessageToShow()
-        for importantMessage in itemsToShow {
-            handleItem(.importantMessage(message: importantMessage.id), with: true)
-        }
     }
 
     private func handleRenewalCardView() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal
-            .map { $0.upcomingRenewalContracts.count > 0 }
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        homeStore.$contracts
+            .map { $0.contains(where: { $0.upcomingRenewal != nil }) }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.renewal, with: show)
             })
             .store(in: &cancellables)
-        handleItem(.renewal, with: homeStore.state.upcomingRenewalContracts.count > 0)
     }
 
     private func handleMissingCoInsured() {
@@ -234,9 +215,8 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     func handleTerminatedMessage() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .map(\.memberContractState)
+        let store: HomeStore = globalAppStateContainer.get()
+        store.$memberContractState
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
@@ -247,26 +227,17 @@ class HomeBottomScrollViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-        switch store.state.memberContractState {
-        case .terminated:
-            handleItem(.terminated, with: true)
-        default:
-            handleItem(.terminated, with: false)
-        }
     }
 
     func handleUpdateContactInfo() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .compactMap { $0.memberInfo?.isContactInfoUpdateNeeded }
+        let store: HomeStore = globalAppStateContainer.get()
+        store.$memberInfo
+            .compactMap { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
                 self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
             })
             .store(in: &cancellables)
-
-        let isContactInfoUpdateNeeded = store.state.memberInfo?.isContactInfoUpdateNeeded ?? false
-        handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
     }
 
     private func handleMissingPetChipIds() {
