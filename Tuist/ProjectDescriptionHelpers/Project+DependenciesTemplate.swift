@@ -38,6 +38,7 @@ public enum ExternalDependencies: CaseIterable {
     case unleashProxyClientSwift
     case argumentParser
     case presentableStore
+    case appStateContainer
     case environment
     case logger
     case automaticLog
@@ -115,6 +116,10 @@ public enum ExternalDependencies: CaseIterable {
         case .presentableStore:
             return [
                 .package(path: .relativeToRoot("LocalModules/PresentableStore"))
+            ]
+        case .appStateContainer:
+            return [
+                .package(path: .relativeToRoot("LocalModules/AppStateContainer"))
             ]
         case .environment:
             return [
@@ -205,6 +210,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ArgumentParser")]
         case .presentableStore:
             return [.package(product: "PresentableStore")]
+        case .appStateContainer:
+            return [.package(product: "AppStateContainer")]
         case .environment:
             return [.package(product: "Environment")]
         case .logger:

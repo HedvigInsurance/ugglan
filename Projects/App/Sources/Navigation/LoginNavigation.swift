@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Authentication
 import Market
 import PresentableStore
@@ -58,8 +59,8 @@ struct LoginNavigation: View {
     }
 
     private func handleDemoModeActivation() async {
-        let store: UgglanStore = globalPresentableStoreContainer.get()
-        await store.sendAsync(.setIsDemoMode(to: true))
+        let store: UgglanStore = globalAppStateContainer.get()
+        store.isDemoMode = true
         DI.initAndRegisterClient()
     }
 }
