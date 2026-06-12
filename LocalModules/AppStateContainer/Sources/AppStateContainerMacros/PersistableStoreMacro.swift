@@ -19,6 +19,8 @@ public struct PersistableStoreMacro: ExtensionMacro {
         }
 
         let persisted = persistedProperties(in: classDecl, context: context)
+        let accessModifier = accessLevelModifier(for: classDecl)
+        let memberPrefix = accessModifier.isEmpty ? "" : "\(accessModifier) "
 
         let snapshotFields =
             persisted
@@ -39,11 +41,11 @@ public struct PersistableStoreMacro: ExtensionMacro {
 
         let source: String = """
             extension \(type.trimmedDescription): PersistableAppStore {
-                struct Snapshot: Codable, Sendable {\(snapshotBody)}
-                var snapshot: Snapshot {
+                \(memberPrefix)struct Snapshot: Codable, Sendable {\(snapshotBody)}
+                \(memberPrefix)var snapshot: Snapshot {
                     \(snapshotInit)
                 }
-                func apply(snapshot: Snapshot) {\(applyBody)}
+                \(memberPrefix)func apply(snapshot: Snapshot) {\(applyBody)}
             }
             """
 
@@ -90,6 +92,20 @@ public struct PersistableStoreMacro: ExtensionMacro {
             guard let attribute = element.as(AttributeSyntax.self) else { return false }
             return attribute.attributeName.trimmedDescription == name
         }
+    }
+
+    private static func accessLevelModifier(for classDecl: ClassDeclSyntax) -> String {
+        for modifier in classDecl.modifiers {
+            switch modifier.name.tokenKind {
+            case .keyword(.public), .keyword(.open):
+                return "public"
+            case .keyword(.package):
+                return "package"
+            default:
+                continue
+            }
+        }
+        return ""
     }
 }
 
