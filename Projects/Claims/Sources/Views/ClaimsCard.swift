@@ -4,7 +4,7 @@ import hCore
 
 @MainActor
 public struct ClaimsCard: View {
-    @AppState var store: ClaimsStore
+    @AppObservedObject var store: ClaimsStore
 
     public init() {}
 
