@@ -13,7 +13,7 @@ struct ConnectPaymentBottomView: View {
                 state.paymentStatusData
             }
         ) { statusData in
-            if let statusData, !statusData.status.showConnectPayment {
+            if let statusData {
                 hSection {
                     VStack(spacing: .padding16) {
                         if statusData.payinMethods.hasMethodInProgress {
