@@ -249,7 +249,7 @@ struct ContractTable: View {
 
     @ViewBuilder
     private var movingToANewHomeView: some View {
-        if !store.activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty,
+        if !store.activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty,
             featureFlags.isMovingFlowEnabled
         {
             hSection {
