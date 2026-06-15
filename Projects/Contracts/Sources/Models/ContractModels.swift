@@ -191,13 +191,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         }
         return typeOfContract.pillowType
     }
-
-    public var isNonPayingMember: Bool {
-        if typeOfContract == .seQasaShortTermRental || typeOfContract == .seQasaLongTermRental {
-            return true
-        }
-        return false
-    }
 }
 
 extension TypeOfContract {
@@ -206,53 +199,6 @@ extension TypeOfContract {
         case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
             return true
         default:
-            return false
-        }
-    }
-}
-
-extension TypeOfContract {
-    var isHomeInsurance: Bool {
-        switch self {
-        case .seHouse, .seHouseBas, .seHouseMax:
-            return true
-        case .seApartmentBrf, .seApartmentBrfBas, .seApartmentBrfMax:
-            return true
-        case .seApartmentRent, .seApartmentRentBas, .seApartmentRentMax:
-            return true
-        case .seApartmentStudentBrf:
-            return true
-        case .seApartmentStudentRent:
-            return true
-        case .seAccident:
-            return false
-        case .seAccidentStudent:
-            return false
-        case .seCarTraffic, .seCarHalf, .seCarFull, .seCarTrialFull, .seCarTrialHalf, .seCarDecommisioned:
-            return false
-        case .seGroupApartmentBrf:
-            return true
-        case .seGroupApartmentRent:
-            return true
-        case .seQasaShortTermRental:
-            return true
-        case .seQasaLongTermRental:
-            return true
-        case .seDogBasic:
-            return false
-        case .seDogStandard:
-            return false
-        case .seDogPremium:
-            return false
-        case .seCatBasic:
-            return false
-        case .seCatStandard:
-            return false
-        case .seCatPremium:
-            return false
-        case .seVacationHome:
-            return false
-        case .unknown:
             return false
         }
     }
