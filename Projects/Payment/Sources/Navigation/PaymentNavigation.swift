@@ -1,4 +1,4 @@
-import Campaign
+import CampaignUI
 import Combine
 import PresentableStore
 import SwiftUI

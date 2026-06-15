@@ -4,8 +4,8 @@ import hCoreUI
 
 struct CrossSellButtonComponent: View {
     let crossSell: CrossSell
-    @EnvironmentObject private var vm: ViewControllerModel
     @State private var isCrossSellLoading = false
+    @Environment(\.dismiss) var dismiss
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
@@ -19,11 +19,11 @@ struct CrossSellButtonComponent: View {
                                 isCrossSellLoading = true
                                 await Dependencies.urlOpener.open(url)
                                 isCrossSellLoading = false
-                                vm.vc?.dismiss(animated: true)
+                                dismiss()
                             }
                         } else {
                             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                            vm.vc?.dismiss(animated: true)
+                            dismiss()
                         }
                     }
                 )

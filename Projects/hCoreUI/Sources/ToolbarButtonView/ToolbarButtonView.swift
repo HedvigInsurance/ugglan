@@ -22,11 +22,20 @@ public struct ToolbarButtonView: View {
             return -.padding4
         }
     }
-    private var badgeOffset: CGFloat {
+
+    private var badgeAlignment: Alignment {
         if #available(iOS 26.0, *) {
-            return 20 - type.imageSize / 2
+            return .center
         } else {
-            return -.padding4
+            return .topTrailing
+        }
+    }
+
+    private var badgeOffset: CGSize {
+        if #available(iOS 26.0, *) {
+            return .init(width: 10, height: -8)
+        } else {
+            return .init(width: -.padding4, height: .padding4)
         }
     }
 
@@ -50,7 +59,7 @@ public struct ToolbarButtonView: View {
                 }
                 action(type)
             }) {
-                ZStack(alignment: .topTrailing) {
+                ZStack(alignment: badgeAlignment) {
                     if type.shouldAnimate {
                         imageFor(type: type)
                             .rotate()
@@ -61,7 +70,12 @@ public struct ToolbarButtonView: View {
                         Circle()
                             .fill(hSignalColor.Red.element)
                             .frame(width: 10, height: 10)
-                            .offset(x: badgeOffset, y: -badgeOffset)
+                            .background {
+                                Circle()
+                                    .fill(hBackgroundColor.primary)
+                                    .frame(width: 12, height: 12)
+                            }
+                            .offset(badgeOffset)
                     }
                 }
             }

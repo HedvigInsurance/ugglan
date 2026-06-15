@@ -1,6 +1,6 @@
 import hCore
 
-@testable import Campaign
+@testable import CampaignCore
 
 @MainActor
 struct MockCampaignData {

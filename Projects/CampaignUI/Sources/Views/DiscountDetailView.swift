@@ -1,4 +1,4 @@
-import PresentableStore
+import CampaignCore
 import SwiftUI
 import hCore
 import hCoreUI
