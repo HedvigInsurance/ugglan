@@ -38,16 +38,14 @@ public struct PaymentsView: View {
         hForm {
             VStack(spacing: .padding8) {
                 payments
-                if let paymentStatusData = store.paymentStatusData {
-                    PaymentsMenuView(paymentStatusData: paymentStatusData)
-                }
+                PaymentsMenuView()
             }
             .padding(.vertical, .padding8)
             .hButtonIsLoading(false)
         }
         .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
-            if let statusData = store.paymentStatusData, statusData.payinMethods.isEmpty {
+            if store.showsConnectPayment {
                 ConnectPaymentBottomView()
             }
         }
@@ -79,7 +77,7 @@ public struct PaymentsView: View {
                 PaymentView(paymentData: upcomingPayment)
             }
 
-            if store.ongoingPaymentData.isEmpty, store.paymentData == nil {
+            if store.ongoingPaymentData.isEmpty, store.showsNoPaymentsInProgress {
                 VStack(spacing: 16) {
                     hCoreUIAssets.infoFilledSmall.view
                         .resizable()
@@ -89,10 +87,11 @@ public struct PaymentsView: View {
                 }
                 .padding(.vertical, .padding32)
             }
-
-            hSection {
-                ConnectPaymentCardView()
-                    .environmentObject(paymentNavigationVm.connectPaymentVm)
+            if store.showsConnectPayment {
+                hSection {
+                    ConnectPaymentCardView()
+                        .environmentObject(paymentNavigationVm.connectPaymentVm)
+                }
             }
         }
     }
@@ -132,32 +131,35 @@ public struct PaymentsView: View {
     }
 
     private struct PaymentsMenuView: View {
+        @AppObservedObject var store: PaymentStore
         @EnvironmentObject var router: NavigationRouter
-        let paymentStatusData: PaymentStatusData
 
         var body: some View {
+            let showsHistoricalSections = store.paymentStatusData?.showsHistoricalSections ?? false
             hSection {
-                hRow {
-                    hCoreUIAssets.campaign.view
-                        .foregroundColor(hSignalColor.Green.element)
-                    hText(L10n.paymentsDiscountsSectionTitle)
-                    Spacer()
+                if showsHistoricalSections {
+                    hRow {
+                        hCoreUIAssets.campaign.view
+                            .foregroundColor(hSignalColor.Green.element)
+                        hText(L10n.paymentsDiscountsSectionTitle)
+                        Spacer()
+                    }
+                    .withChevronAccessory
+                    .onTap {
+                        router.push(PaymentsRouterAction.discounts)
+                    }
+                    hRow {
+                        hCoreUIAssets.clock.view
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        hText(L10n.paymentsPaymentHistoryButtonLabel)
+                        Spacer()
+                    }
+                    .withChevronAccessory
+                    .onTap {
+                        router.push(PaymentsRouterAction.history)
+                    }
                 }
-                .withChevronAccessory
-                .onTap {
-                    router.push(PaymentsRouterAction.discounts)
-                }
-                hRow {
-                    hCoreUIAssets.clock.view
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    hText(L10n.paymentsPaymentHistoryButtonLabel)
-                    Spacer()
-                }
-                .withChevronAccessory
-                .onTap {
-                    router.push(PaymentsRouterAction.history)
-                }
-                if paymentStatusData.showPayinSection {
+                if store.showsPayinSection {
                     hRow {
                         hCoreUIAssets.payments.view
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -170,7 +172,13 @@ public struct PaymentsView: View {
                     }
                 }
 
-                if paymentStatusData.showPayoutSection {
+                if store.showsConnectPayout {
+                    ConnectPayoutCardView { [weak router] in
+                        router?.push(PayoutRouterActions.selectedPayoutMethod)
+                    }
+                }
+
+                if store.showsPayoutSection {
                     hRow {
                         hCoreUIAssets.paymentOutlined.view
                             .foregroundColor(hTextColor.Opaque.primary)

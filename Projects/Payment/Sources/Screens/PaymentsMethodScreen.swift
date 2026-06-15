@@ -9,7 +9,8 @@ struct PaymentMethodScreen: View {
 
     var body: some View {
         if let paymentChargeData = store.paymentStatusData,
-            let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod
+            let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod,
+            store.showsChangePayinMethod
         {
             hForm {
                 PaymentMethodView(
@@ -78,7 +79,9 @@ struct PaymentMethodScreen: View {
                 ],
                 defaultPayoutMethod: nil,
                 payoutMethods: [],
-                availableMethods: []
+                availableMethods: [],
+                missingConnection: nil,
+                layout: .other
             )
             await delay(2)
             store.paymentStatusData = .init(
@@ -100,7 +103,9 @@ struct PaymentMethodScreen: View {
                 ],
                 defaultPayoutMethod: nil,
                 payoutMethods: [],
-                availableMethods: []
+                availableMethods: [],
+                missingConnection: nil,
+                layout: .other
             )
         }
 }
