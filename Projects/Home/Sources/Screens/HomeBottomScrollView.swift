@@ -23,7 +23,9 @@ struct HomeBottomScrollView: View {
                     ConnectPaymentCardView()
                         .environmentObject(navigationVm.connectPaymentVm)
                 case .payout:
-                    missingPayout
+                    ConnectPayoutCardView { [weak navigationVm] in
+                        navigationVm?.isPayoutMethodPresented = true
+                    }
                 case .renewal:
                     RenewalCardView()
                 case let .importantMessage(id):
@@ -45,23 +47,6 @@ struct HomeBottomScrollView: View {
                     }
                 }
             }
-        )
-    }
-
-    private var missingPayout: some View {
-        InfoCard(
-            text: L10n.payoutMissingInfo,
-            type: .attention
-        )
-        .buttons(
-            [
-                .init(
-                    buttonTitle: L10n.payoutAddPayoutMethod,
-                    buttonAction: {
-                        navigationVm.isPayoutMethodPresented = true
-                    }
-                )
-            ]
         )
     }
 }
@@ -148,8 +133,8 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
-        let missingPayin = status?.status.showConnectPayment ?? false
-        let missingPayout = status?.defaultOrFirstDefaultPayoutMethod == nil && status?.availableMethods.count ?? 0 > 0
+        let missingPayin = status?.missingConnection == .payin
+        let missingPayout = status?.missingConnection == .payout
         handleItem(
             .payment,
             with: missingPayin
