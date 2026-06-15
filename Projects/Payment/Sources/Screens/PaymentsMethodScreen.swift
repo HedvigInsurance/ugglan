@@ -10,10 +10,13 @@ struct PaymentMethodScreen: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData
+                state
             }
-        ) { paymentChargeData in
-            if let paymentChargeData, let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod {
+        ) { paymentState in
+            if let paymentChargeData = paymentState.paymentStatusData,
+                let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod,
+                paymentState.showsChangePayinMethod
+            {
                 hForm {
                     PaymentMethodView(
                         data: defaultPayinMethod,
@@ -84,7 +87,9 @@ struct PaymentMethodScreen: View {
                         ],
                         defaultPayoutMethod: nil,
                         payoutMethods: [],
-                        availableMethods: []
+                        availableMethods: [],
+                        missingConnection: nil,
+                        layout: .other
                     )
                 )
             )
@@ -110,7 +115,9 @@ struct PaymentMethodScreen: View {
                         ],
                         defaultPayoutMethod: nil,
                         payoutMethods: [],
-                        availableMethods: []
+                        availableMethods: [],
+                        missingConnection: nil,
+                        layout: .other
                     )
                 )
             )
