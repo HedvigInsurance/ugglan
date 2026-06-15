@@ -19,13 +19,29 @@ query PaymentMethods {
                 supportsPayout
             }
             chargingDay
+            missingConnection
         }
 		activeContracts {
 			terminationDueToMissedPayments
 			terminationDate
+            currentAgreement {
+                productVariant {
+                    typeOfContract
+                }
+            }
 		}
+        terminatedContracts {
+            currentAgreement {
+                productVariant {
+                    typeOfContract
+                }
+            }
+        }
 		pendingContracts {
 			id
+            productVariant {
+                typeOfContract
+            }
 		}
     }
 }

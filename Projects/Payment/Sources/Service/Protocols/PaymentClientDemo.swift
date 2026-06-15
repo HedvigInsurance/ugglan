@@ -162,7 +162,9 @@ public class hPaymentClientDemo: hPaymentClient {
                     supportsPayin: true,
                     supportsPayout: true
                 ),
-            ]
+            ],
+            missingConnection: nil,
+            layout: .other
         )
     }
 
