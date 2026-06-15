@@ -496,14 +496,7 @@ struct LoggedInNavigation: View {
         TabView(selection: $vm.selectedTab) {
             homeTab
             contractsTab
-
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            if !store.state.activeContracts.allSatisfy(\.isNonPayingMember)
-                || store.state.activeContracts.isEmpty
-            {
-                foreverTab
-            }
-
+            foreverTab
             if features.isPaymentScreenEnabled {
                 paymentsTab
             }
