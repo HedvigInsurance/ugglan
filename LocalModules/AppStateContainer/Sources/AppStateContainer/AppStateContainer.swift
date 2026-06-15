@@ -71,21 +71,22 @@ public final class AppStateContainer {
 
     private func observe<S: PersistableAppStore>(_ store: S) {
         let key = ObjectIdentifier(S.self)
+        let url = Self.url(for: S.self)
         persistenceCancellables[key] = store.objectWillChange
             .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
             .sink { [weak store] _ in
                 guard let store else { return }
                 let snapshot = store.snapshot
                 Task.detached(priority: .background) {
-                    Self.persist(snapshot, for: S.self)
+                    Self.persist(snapshot, to: url)
                 }
             }
     }
 
-    private nonisolated static func persist<S: PersistableAppStore>(_ snapshot: S.Snapshot, for _: S.Type) {
+    private nonisolated static func persist<Snapshot: Encodable & Sendable>(_ snapshot: Snapshot, to url: URL) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        try? data.write(to: url(for: S.self))
+        try? data.write(to: url)
     }
 
     nonisolated static var directory: URL {
