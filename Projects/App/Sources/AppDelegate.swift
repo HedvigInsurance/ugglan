@@ -13,7 +13,6 @@ import Foundation
 @preconcurrency import HedvigShared
 import MoveFlow
 import Payment
-import PresentableStore
 import Profile
 import SwiftUI
 import TerminateContracts
@@ -38,12 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
-        // remove all persisted state
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        // remove all persisted state and drop in-memory store instances
         globalAppStateContainer.clearPersistence()
-
-        // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
         globalAppStateContainer = AppStateContainer()
 
         DI.initAndRegisterClient()
@@ -134,14 +129,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
     }
 
-    func setupPresentableStoreLogger() {
-        globalPresentableStoreContainer.logger = { message in
-            Task { @MainActor in
-                log.info(message)
-            }
-        }
-    }
-
     func setupSession() async {
         urlSessionTaskDeleage = {
             InterceptingURLSessionClient()
@@ -210,7 +197,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 log.info(message, error: nil, attributes: nil)
             }
         }
-        setupPresentableStoreLogger()
         log.info("Starting app")
 
         forceLogoutHook = { [weak self] in

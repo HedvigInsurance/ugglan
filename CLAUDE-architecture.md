@@ -25,29 +25,45 @@ public class SomeViewModel: ObservableObject {
 
 Navigation ViewModels hold both a router and `@Published` navigation state, passed down as `@ObservedObject`.
 
-## PresentableStore (Legacy — Do Not Use for New Features)
+## AppStore (Shared App-Wide State)
 
-State/Action/Store pattern. Document only for reading existing code.
+For state that needs to be shared across views and survive view lifecycles — typically modelling a feature domain (claims, contracts, payments) rather than a single screen's state. Backed by the `AppStateContainer` module.
 
-- **State** conforms to `StateProtocol`
-- **Action** conforms to `ActionProtocol`
-- **Store** extends `StateStore<State, Action>`
+- Conform to `AppStore` (which inherits from `ObservableObject`)
+- Mark the class `@MainActor` and apply the `@PersistableStore` macro to opt into on-disk persistence
+- State as `@Published` properties; mark anything that should NOT be persisted with `@Transient` (errors, loading flags, etc.)
 
 ```swift
-public final class SomeStore: StateStore<SomeState, SomeAction> {
-    @Inject var client: SomeClientProtocol
+@MainActor
+@PersistableStore
+public final class SomeStore: AppStore {
+    @Inject private var client: SomeClientProtocol
 
-    override public func effects(_ getState: @escaping () -> SomeState, _ action: SomeAction) async {
-        // Side effects: API calls, async work. Dispatch results via send() / sendAsync().
-    }
+    @Published public internal(set) var items: [Item] = []
 
-    override public func reduce(_ state: SomeState, _ action: SomeAction) async -> SomeState {
-        // Pure state mutations. Return new state.
+    @Transient @Published public private(set) var isFetching: Bool = false
+    @Transient @Published public private(set) var fetchError: String?
+
+    public init() {}
+
+    public func fetchItems() async {
+        isFetching = true
+        do {
+            items = try await client.getItems()
+            fetchError = nil
+        } catch {
+            fetchError = error.localizedDescription
+        }
+        isFetching = false
     }
 }
 ```
 
-Legacy store access: `let store: SomeStore = globalPresentableStoreContainer.get()`
+Reading a store from a SwiftUI view: `@AppObservedObject var store: SomeStore` (acts like `@StateObject`, but resolves the shared instance from `globalAppStateContainer`).
+
+Reading a store from a ViewModel or non-View context: `@AppState private var store: SomeStore` (non-observing accessor) or `let store: SomeStore = globalAppStateContainer.get()`.
+
+Persistence is opt-in via `@PersistableStore`: the macro synthesises a `Snapshot` type from non-`@Transient` `@Published` properties and writes a debounced JSON blob to Application Support. Call `globalAppStateContainer.clearPersistence()` to wipe (e.g. on logout) and `globalAppStateContainer.reset()` to drop in-memory store instances.
 
 ## Navigation
 

@@ -5,16 +5,15 @@ Handles cross-selling of additional insurance products and addon banners. Fetche
 ## Key Files
 - `Sources/Service/CrossSellClient.swift` — `CrossSellClient` protocol; defines `getCrossSell` and `getAddonBanners`
 - `Sources/Service/CrossSellService.swift` — Service wrapper using `@Inject` to resolve the client
-- `Sources/Store/CrossSellStore.swift` — PresentableStore managing cross-sell and addon banner state
+- `Sources/Store/CrossSellStore.swift` — `AppStore` managing cross-sell and addon banner state; async methods `fetchCrossSell`, `fetchAddonBanners`, `fetchRecommendedCrossSellId`
 - `Sources/Models/CrossSellModels.swift` — `CrossSells` and `CrossSell` data models
-- `Sources/View/CrossSellingView.swift` — Main view using `PresentableStoreLens` to render cross-sell items
+- `Sources/View/CrossSellingView.swift` — Main view; observes the store via `@AppObservedObject`
 - `Sources/View/Components/` — UI components: banner, button, pillow, stack, discount progress
 
 ## Dependencies
-- hCore, hCoreUI, Addons
+- hCore, hCoreUI, AppStateContainer, Addons
 
 ## Gotchas
-- Uses **PresentableStore** (legacy pattern) via `CrossSellStore` and `@PresentableStore` property wrapper
 - `CrossSellSource` enum controls context-dependent fetching (home, closedClaim, insurances, etc.)
-- Tracks "new recommended" cross-sell state by comparing product IDs across fetches
+- Tracks "new recommended" cross-sell state by comparing product IDs across fetches; the last-seen ID is persisted in `UserDefaults` (not the `@PersistableStore` snapshot)
 - Demo client at `Sources/Service/CrossSellClientDemo.swift`

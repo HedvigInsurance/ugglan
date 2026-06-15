@@ -1,5 +1,4 @@
 import AppStateContainer
-import PresentableStore
 import XCTest
 import hCore
 
@@ -25,7 +24,6 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
         globalAppStateContainer.clearPersistence()
         sut = nil
     }
