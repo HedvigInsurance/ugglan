@@ -9,7 +9,7 @@ import hCore
 public final class ContractStore: AppStore {
     @Inject private var fetchContractsService: FetchContractsClient
 
-    @Published public private(set) var activeContracts: [Contract] = []
+    @Published public internal(set) var activeContracts: [Contract] = []
     @Published public private(set) var terminatedContracts: [Contract] = []
     @Published public private(set) var pendingContracts: [Contract] = []
 
