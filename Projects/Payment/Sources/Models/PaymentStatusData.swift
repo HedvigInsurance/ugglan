@@ -9,6 +9,8 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     private let defaultPayoutMethod: PaymentMethodData?
     let payoutMethods: [PaymentMethodData]
     public let availableMethods: [AvailablePaymentMethod]
+    public let missingConnection: MissingPaymentConnection?
+    public let layout: PaymentLayout
 
     public init(
         status: PayinMethodStatus,
@@ -17,7 +19,9 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         payinMethods: [PaymentMethodData],
         defaultPayoutMethod: PaymentMethodData?,
         payoutMethods: [PaymentMethodData],
-        availableMethods: [AvailablePaymentMethod]
+        availableMethods: [AvailablePaymentMethod],
+        missingConnection: MissingPaymentConnection?,
+        layout: PaymentLayout
     ) {
         self.status = status
         self.chargingDay = chargingDay
@@ -26,18 +30,20 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.availableMethods = availableMethods
         self.defaultPayinMethod = defaultPayinMethod
         self.defaultPayoutMethod = defaultPayoutMethod
+        self.missingConnection = missingConnection
+        self.layout = layout
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
         availableMethods.filter((\.supportsPayout))
     }
 
-    var showPayinSection: Bool {
-        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
+    var hasAnyPayoutMethod: Bool {
+        !availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil
     }
 
-    var showPayoutSection: Bool {
-        (!availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil) && showPayinSection
+    var hasAnyPayinMethod: Bool {
+        !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
     public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
@@ -46,6 +52,24 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
 
     public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
         defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
+    }
+
+    var showsHistoricalSections: Bool {
+        layout != .qasaOnly
+    }
+}
+
+/// Describes the member's contract mix, which drives the payments screen layout.
+/// - `qasaOnly`: member has only Qasa-landlord agreements (payout-only flow, no history/discounts).
+/// - `other`: member has at least one non-Qasa-landlord agreement (or no agreements).
+public enum PaymentLayout: Codable, Equatable, Sendable, Hashable {
+    case qasaOnly
+    case other
+
+    public init(contractTypes: [TypeOfContract]) {
+        let hasLandlord = contractTypes.contains(.seQasaLandlord)
+        let hasOther = contractTypes.contains(where: { $0 != .seQasaLandlord })
+        self = (hasLandlord && !hasOther) ? .qasaOnly : .other
     }
 }
 
@@ -211,6 +235,11 @@ extension PaymentProvider {
     }
 }
 
+public enum MissingPaymentConnection: Codable, Equatable, Sendable, Hashable {
+    case payin
+    case payout
+}
+
 public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case active
     case noNeedToConnect
@@ -225,15 +254,6 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
             return L10n.myPaymentDirectDebitReplaceButton
         case .needsSetup, .unknown, .noNeedToConnect, .contactUs:
             return L10n.myPaymentDirectDebitButton
-        }
-    }
-
-    public var showConnectPayment: Bool {
-        switch self {
-        case .needsSetup:
-            return true
-        case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
-            return false
         }
     }
 }

@@ -8,7 +8,7 @@ struct ConnectPaymentBottomView: View {
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     var body: some View {
-        if let statusData = store.paymentStatusData, !statusData.status.showConnectPayment {
+        if let statusData = store.paymentStatusData {
             hSection {
                 VStack(spacing: .padding16) {
                     if statusData.payinMethods.hasMethodInProgress {

@@ -31,7 +31,7 @@ public struct ConnectPaymentCardView: View {
                     )
                 ]
             )
-        } else if case .needsSetup = status {
+        } else if status == .needsSetup || store.showsConnectPayment {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.body,
                 type: .attention

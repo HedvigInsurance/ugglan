@@ -109,11 +109,7 @@ extension HomeScreen {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        let contractStore: ContractStore = globalAppStateContainer.get()
-        let showHelpCenter =
-            !contractStore.activeContracts.allSatisfy(\.isNonPayingMember)
-            || contractStore.activeContracts.count == 0
-        if showHelpCenter, featureFlags.isHelpCenterEnabled {
+        if featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,
                 .secondary,
