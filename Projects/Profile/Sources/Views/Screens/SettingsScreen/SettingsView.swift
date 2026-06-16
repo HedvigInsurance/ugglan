@@ -39,8 +39,10 @@ struct SettingsView: View {
                         .environmentObject(profileNavigationVm)
                 }
                 .accessibilityAddTraits(.isButton)
-                NotificationsCardView()
-                    .padding(.vertical, .padding16)
+                if store.shouldShowNotificationCard {
+                    NotificationsCardView()
+                        .padding(.vertical, .padding16)
+                }
             }
             .padding(.top, .padding8)
         }

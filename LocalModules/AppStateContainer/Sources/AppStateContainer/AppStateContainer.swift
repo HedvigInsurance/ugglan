@@ -111,17 +111,17 @@ public var globalAppStateContainer = AppStateContainer()
 @MainActor
 @propertyWrapper
 public struct AppObservedObject<T: AppStore>: DynamicProperty {
-    @StateObject private var stateObject: T
+    @ObservedObject private var observedObject: T
     public init() {
-        _stateObject = StateObject(wrappedValue: globalAppStateContainer.get())
+        _observedObject = ObservedObject(wrappedValue: globalAppStateContainer.get())
     }
 
     public var wrappedValue: T {
-        stateObject
+        observedObject
     }
 
     public var projectedValue: ObservedObject<T>.Wrapper {
-        $stateObject
+        $observedObject
     }
 }
 

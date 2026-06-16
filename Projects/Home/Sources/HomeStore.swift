@@ -157,10 +157,6 @@ public final class HomeStore: AppStore {
         hasMissedCharge = false
     }
 
-    public func getImportantMessageToShow() -> [ImportantMessage] {
-        importantMessages.filter { !hidenImportantMessages.contains($0.id) }
-    }
-
     public func getImportantMessage(with id: String) -> ImportantMessage? {
         importantMessages.first(where: { $0.id == id })
     }

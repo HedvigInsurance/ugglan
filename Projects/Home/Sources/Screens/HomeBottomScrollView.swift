@@ -133,7 +133,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         let homeStore: HomeStore = globalAppStateContainer.get()
         homeStore.$importantMessages
             .combineLatest(homeStore.$hidenImportantMessages)
-            .map { _, _ in homeStore.getImportantMessageToShow() }
+            .map { messages, hidden in messages.filter { !hidden.contains($0.id) } }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] importantMessages in

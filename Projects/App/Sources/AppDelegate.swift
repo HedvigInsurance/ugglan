@@ -39,27 +39,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // remove all persisted state and drop in-memory store instances
         globalAppStateContainer.clearPersistence()
+        globalAppStateContainer.reset()
         globalAppStateContainer = AppStateContainer()
 
         DI.initAndRegisterClient()
     }
 
-    func logout() {
+    // Async so callers can await `clearData()` completion before recreating
+    // logged-in view models. Recreating them before the container reset would
+    // capture the about-to-be-discarded stores in nav VM property initializers.
+    func logout() async {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
-        let ugglanStore: UgglanStore = globalAppStateContainer.get()
-        ugglanStore.isDemoMode = false
-        Task { @MainActor in
+        Task {
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
-                await ApolloClient.deleteToken()
-                clearData()
-            } catch _ {
-                await ApolloClient.deleteToken()
-                clearData()
-            }
+            } catch _ {}
         }
+        await ApolloClient.deleteToken()
+
+        clearData()
     }
 
     func applicationWillTerminate(_: UIApplication) {
@@ -205,7 +205,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
-                    self?.logout()
 
                     let toast = ToastBar(
                         type: .neutral,
