@@ -11,17 +11,17 @@ public struct ConnectPaymentCardView: View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
-                state.paymentStatusData
+                state
             }
-        ) { paymentStatusData in
-            if let status = paymentStatusData?.status {
-                getStatusInfoView(from: status)
+        ) { state in
+            if let status = state.paymentStatusData?.status {
+                getStatusInfoView(from: status, state: state)
             }
         }
     }
 
     @ViewBuilder
-    func getStatusInfoView(from status: PayinMethodStatus) -> some View {
+    func getStatusInfoView(from status: PayinMethodStatus, state: PaymentState) -> some View {
         if case let .contactUs(date) = status {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
@@ -37,7 +37,7 @@ public struct ConnectPaymentCardView: View {
                     )
                 ]
             )
-        } else if case .needsSetup = status {
+        } else if status == .needsSetup || state.showsConnectPayment {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.body,
                 type: .attention

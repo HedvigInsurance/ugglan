@@ -452,9 +452,10 @@ final class SubmitClaimChatViewModel: ObservableObject {
         stepHeights[handler.id] = 0
         let previousStepId = allSteps.filter({ !($0 is SubmitClaimTaskStep) }).last?.id ?? ""
 
-        if case .deflect = claimIntent.currentStep.content {
+        switch claimIntent.currentStep.content {
+        case .deflect, .deflectMessage:
             self.progress = nil
-        } else {
+        default:
             self.progress = claimIntent.progress
         }
         Task { @MainActor in
