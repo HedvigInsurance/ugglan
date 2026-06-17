@@ -121,7 +121,7 @@ public struct AppObservedObject<T: AppStore>: DynamicProperty {
     }
 
     public var projectedValue: ObservedObject<T>.Wrapper {
-        stateObject
+        $stateObject
     }
 }
 
