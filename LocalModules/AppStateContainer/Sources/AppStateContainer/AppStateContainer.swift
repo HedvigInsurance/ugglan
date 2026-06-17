@@ -50,6 +50,9 @@ public final class AppStateContainer {
 
     public func clearPersistence() {
         try? FileManager.default.removeItem(at: Self.directory)
+        // Also wipe the old PresentableStore directory so logged-out users don't keep
+        // pre-migration snapshots on disk after `restore` has already drained them.
+        try? FileManager.default.removeItem(at: Self.legacyDirectory)
     }
 
     private func attachPersistence<S: AppStore>(_ store: S) {
@@ -98,10 +101,13 @@ public final class AppStateContainer {
         directory.appendingPathComponent(String(describing: S.self))
     }
 
-    nonisolated static func legacyURL<S: PersistableAppStore>(for _: S.Type) -> URL {
+    nonisolated static var legacyDirectory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("PresentableStore")
-            .appendingPathComponent(String(describing: S.self))
+    }
+
+    nonisolated static func legacyURL<S: PersistableAppStore>(for _: S.Type) -> URL {
+        legacyDirectory.appendingPathComponent(String(describing: S.self))
     }
 }
 
