@@ -34,10 +34,8 @@ public struct ProfileView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    //                    RenewalCardView(showCoInsured: false)
-                    if store.shouldShowNotificationCard {
-                        NotificationsCardView()
-                    }
+                    RenewalCardView(showCoInsured: false)
+                    NotificationsCardView()
                     LogoutButton()
                 }
             }
