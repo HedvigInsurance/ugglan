@@ -1,4 +1,5 @@
 import Apollo
+import AutomaticLog
 import Environment
 import Foundation
 import Kingfisher
@@ -11,12 +12,12 @@ public class hClaimFileUploadService {
 
     public init() {}
 
+    @Log
     public func upload(
         endPoint: String,
         files: [File],
         withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
-        log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
         do {
             return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
         } catch {
@@ -25,12 +26,12 @@ public class hClaimFileUploadService {
         }
     }
 
+    @Log
     public func uploadClaimsChatFile(
         endPoint: String,
         files: [File],
         withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [String] {
-        log.info("hClaimFileUploadService: upload claims chat file", error: nil, attributes: nil)
         do {
             return try await client.uploadClaimsChatFile(endPoint: endPoint, files: files, withProgress: withProgress)
         } catch {
