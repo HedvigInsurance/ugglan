@@ -71,12 +71,11 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             return
         }
         let data = FeatureData(
-            isTerminationFlowEnabled: unleashClient.isEnabled(name: "termination_flow"),
+            isTerminationFlowEnabled: !unleashClient.isEnabled(name: "disable_termination_flow"),
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
-            isChatDisabled: unleashClient.isEnabled(name: "disable_chat"),
             isPaymentScreenEnabled: unleashClient.isEnabled(name: "payment_screen"),
             isConnectPaymentEnabled: unleashClient.getVariant(name: "payment_type").name == "trustly",
-            isHelpCenterEnabled: unleashClient.isEnabled(name: "help_center"),
+            isHelpCenterEnabled: !unleashClient.isEnabled(name: "disable_help_center"),
             isSubmitClaimEnabled: true,
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),
             emailPreferencesEnabled: true,
@@ -87,7 +86,11 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isClaimHistoryEnabled: unleashClient.isEnabled(
                 name: "enable_claim_history"
-            )
+            ),
+            isNewConversationFromInboxEnabled: unleashClient.isEnabled(
+                name: "enable_new_conversation_from_inbox"
+            ),
+            isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide")
         )
         featureDataPublisher.send(data)
     }

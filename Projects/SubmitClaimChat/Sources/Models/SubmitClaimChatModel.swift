@@ -150,6 +150,15 @@ public enum ClaimIntentStepContent: Sendable {
     case summary(model: ClaimIntentStepContentSummary)
     case singleSelect(model: ClaimIntentStepContentSelect)
     case deflect(model: Deflection)
+    case deflectMessage(model: ClaimIntentStepContentDeflectionMessage)
+}
+
+public struct ClaimIntentStepContentDeflectionMessage: Sendable {
+    public let message: String
+
+    public init(message: String) {
+        self.message = message
+    }
 }
 
 public enum ClaimIntentStepOutcome: Sendable, Hashable {

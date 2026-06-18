@@ -1,4 +1,3 @@
-import Campaign
 import Foundation
 import hCore
 
@@ -163,7 +162,9 @@ public class hPaymentClientDemo: hPaymentClient {
                     supportsPayin: true,
                     supportsPayout: true
                 ),
-            ]
+            ],
+            missingConnection: nil,
+            layout: .other
         )
     }
 

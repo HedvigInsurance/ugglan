@@ -110,11 +110,7 @@ extension HomeScreen {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let showHelpCenter =
-            !contractStore.state.activeContracts.allSatisfy(\.isNonPayingMember)
-            || contractStore.state.activeContracts.count == 0
-        if showHelpCenter, featureFlags.isHelpCenterEnabled {
+        if featureFlags.isHelpCenterEnabled {
             hButton(
                 .large,
                 .secondary,
@@ -201,6 +197,7 @@ class HomeVM: ObservableObject {
         store.stateSignal
             .map(\.toolbarOptionTypes)
             .receive(on: RunLoop.main)
+            .removeDuplicates()
             .sink(receiveValue: { [weak self] value in
                 withAnimation {
                     self?.toolbarOptionTypes = value

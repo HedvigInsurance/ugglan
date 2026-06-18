@@ -36,7 +36,8 @@ struct MockData {
     }
 }
 
-typealias GetTier = @MainActor (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
+typealias GetTier =
+    @MainActor (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
     ChangeTier.ChangeTierIntentModel
 typealias CommitTier = @MainActor (String) async throws(ChangeTier.ChangeTierError) -> Void
 typealias CompareProductVariants = @MainActor ([String]) async throws -> ProductVariantComparison

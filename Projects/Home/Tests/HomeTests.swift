@@ -12,6 +12,7 @@ final class HomeTests: XCTestCase {
         try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         sut = nil
     }
 
@@ -103,6 +104,44 @@ final class HomeTests: XCTestCase {
                 == lastMessagesState.hasSentOrRecievedAtLeastOneMessage
         )
         assert(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
+    }
+
+    func testToolbarShowsChatIconWhenNewConversationFromInboxFlagIsOn() async throws {
+        let mockClient = MockFeatureFlagsClient()
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
+
+        try await FeatureFlags.shared.setup(with: [:])
+        mockClient.send(.allOff(isNewConversationFromInboxEnabled: true))
+
+        await waitUntil(description: "Flag propagates to FeatureFlags singleton") {
+            FeatureFlags.shared.isNewConversationFromInboxEnabled == true
+        }
+
+        let mockService = MockData.createMockHomeService(
+            fetchLatestMessageState: {
+                MessageState(
+                    hasNewMessages: false,
+                    hasSentOrRecievedAtLeastOneMessage: false,
+                    lastMessageTimeStamp: nil
+                )
+            }
+        )
+        sut = mockService
+
+        let store = HomeStore()
+        store.send(.fetchChatNotifications)
+
+        await waitUntil(description: "Toolbar contains chat icon under flag-ON") {
+            store.state.toolbarOptionTypes.contains(.chat(hasUnread: false))
+        }
+
+        XCTAssertTrue(store.state.toolbarOptionTypes.contains(.chat(hasUnread: false)))
+
+        mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
+        await waitUntil(description: "Flag resets") {
+            FeatureFlags.shared.isNewConversationFromInboxEnabled == false
+        }
+        Dependencies.shared.remove(for: FeatureFlagsClient.self)
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {

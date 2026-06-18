@@ -211,8 +211,6 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
-    @InjectObservableObject private var featureFlags: FeatureFlags
-
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -249,6 +247,8 @@ class DeepLinkHandler {
             handleHelpCenterTopic(url)
         case .helpCenterQuestion:
             handleHelpCenterQuestion(url)
+        case .puppyGuide:
+            handlePuppyGuideDeeplink()
         case .moveContract:
             viewModel?.isMoveContractPresented = true
         case .terminateContract:
@@ -279,7 +279,6 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            viewModel?.selectedTab = 0
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             let hasInProgress = store.state.claimInProgress != nil
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
@@ -391,6 +390,16 @@ class DeepLinkHandler {
         }
     }
 
+    private func handlePuppyGuideDeeplink() {
+        let featureFlags = Dependencies.featureFlags()
+        guard featureFlags.isPuppyGuideEnabled else { return }
+        viewModel?.helpCenterVm.pendingPuppyGuideRoute = .list
+        if viewModel?.homeNavigationVm.isHelpCenterPresented != true {
+            dismissAndSelectTab(0)
+            viewModel?.homeNavigationVm.isHelpCenterPresented = true
+        }
+    }
+
     private func handleTerminateContract(_ url: URL) {
         guard let viewModel = viewModel else { return }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -412,7 +421,7 @@ class DeepLinkHandler {
                 do {
                     try await Task.sleep(seconds: 0.2)
                     let contractsConfig = contractStore.state.activeContracts
-                        .filter(\.canTerminate)
+                        .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
                 } catch let exception {
@@ -488,14 +497,7 @@ struct LoggedInNavigation: View {
         TabView(selection: $vm.selectedTab) {
             homeTab
             contractsTab
-
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            if !store.state.activeContracts.allSatisfy(\.isNonPayingMember)
-                || store.state.activeContracts.isEmpty
-            {
-                foreverTab
-            }
-
+            foreverTab
             if features.isPaymentScreenEnabled {
                 paymentsTab
             }
@@ -1091,8 +1093,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func petChipIdAdded() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchMemberState)
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+        Task {
+            await delay(1)
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            contractStore.send(.fetchContracts)
+        }
     }
 
     @objc func onOpenMissingPetChipId() {
@@ -1114,9 +1119,15 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func claimCreated(notification: Notification) {
+        UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+        Task { @MainActor in
+            selectedTab = 0
+            homeNavigationVm.router.popToRoot()
+        }
         Task { @MainActor in
             let store: ClaimsStore = globalPresentableStoreContainer.get()
             store.send(.fetchActiveClaims)
+
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 askForPushNotification = true
@@ -1164,7 +1175,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
         let schema = urlComponent?.scheme
         if let finalUrl = urlComponent?.url {
-            if schema == "https" || schema == "http" {
+            if (schema == "https" || schema == "http") && !finalUrl.requiresAuthorization {
                 let vc = SFSafariViewController(url: finalUrl)
                 vc.modalPresentationStyle = .pageSheet
                 vc.preferredControlTintColor = .brand(.primaryText())
@@ -1173,7 +1184,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 if Bundle.main.urlSchemes.contains(schema ?? "") {
                     return
                 }
-                Dependencies.urlOpener.open(url)
+                Task { await Dependencies.urlOpener.open(finalUrl) }
             }
         }
     }

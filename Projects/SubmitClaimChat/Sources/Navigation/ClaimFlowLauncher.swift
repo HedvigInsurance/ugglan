@@ -23,6 +23,7 @@ struct ClaimFlowLauncher: ViewModifier {
             .detent(
                 item: $startInputDetent,
                 presentationStyle: .detent(style: [.height]),
+                options: .constant(.alwaysOpenOnTop),
                 content: { input in
                     let hasClaimInProgress: Bool = {
                         switch input.type {
@@ -48,7 +49,7 @@ struct ClaimFlowLauncher: ViewModifier {
             )
             .modally(
                 item: $submitClaimInput,
-                options: .constant(.withoutGrabber)
+                options: .constant([.withoutGrabber, .alwaysOpenOnTop])
             ) { input in
                 SubmitClaimFlowNavigation(
                     startInput: .init(

@@ -66,7 +66,7 @@ struct ParnerButtonView: View {
                         overrideColorSchema ? .secondaryAlt : .primary,
                         content: .init(title: model.buttonText ?? ""),
                         {
-                            Dependencies.urlOpener.open(url)
+                            Task { await Dependencies.urlOpener.open(url) }
                         }
                     )
                     .colorScheme(overrideColorSchema ? .light : colorSchema)
@@ -80,7 +80,7 @@ struct ParnerButtonView: View {
                         getPhoneNumberButtonType(),
                         content: .init(title: L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber)),
                         {
-                            Dependencies.urlOpener.open(url)
+                            Task { await Dependencies.urlOpener.open(url) }
                         }
                     )
                     .colorScheme(overrideColorSchema ? getPhoneNumberSchema() : colorSchema)

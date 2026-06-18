@@ -1,4 +1,5 @@
 import Combine
+@preconcurrency import HedvigShared
 import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -7,8 +8,11 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel()
+    @State private var puppyGuideDisplay: PuppyGuideDisplay?
+    @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: NavigationRouter
+    @InjectObservableObject var featureFlags: FeatureFlags
 
     public init(
         onQuickAction: @escaping (QuickAction) -> Void
@@ -16,11 +20,24 @@ public struct HelpCenterStartView: View {
         self.onQuickAction = onQuickAction
     }
 
+    private enum PuppyGuideDisplay {
+        case fullCard
+        case quickAction
+    }
+
+    private var showsFullPuppyGuideCard: Bool {
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .fullCard
+    }
+
+    private var showsPuppyGuideQuickActionRow: Bool {
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .quickAction
+    }
+
     public var body: some View {
         hForm {
             VStack(spacing: 0) {
                 hSection {
-                    VStack(alignment: .leading, spacing: 40) {
+                    VStack(alignment: .leading, spacing: 0) {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
@@ -34,24 +51,41 @@ public struct HelpCenterStartView: View {
                             }
                             .padding(.top, 20)
                         } else {
-                            HStack {
-                                Spacer()
-                                hCoreUIAssets.bigPillowBlack.view
-                                    .resizable()
-                                    .frame(width: 160, height: 160)
-                                    .padding(.bottom, 26)
-                                    .padding(.top, 39)
-                                Spacer()
+                            ZStack {
+                                if showsFullPuppyGuideCard {
+                                    puppyGuideEntry
+                                        .transition(.opacity)
+                                } else {
+                                    HStack {
+                                        Spacer()
+                                        hCoreUIAssets.bigPillowBlack.view
+                                            .resizable()
+                                            .frame(width: 160, height: 160)
+                                            .padding(.bottom, 26)
+                                            .padding(.top, 39)
+                                        Spacer()
+                                    }
+                                    .accessibilityHidden(true)
+                                    .transition(.opacity)
+                                }
                             }
-                            .accessibilityHidden(true)
+                            .animation(.smooth, value: showsFullPuppyGuideCard)
+                            .padding(.top, 24)
+                            .padding(.bottom, 48)
                             VStack(alignment: .leading, spacing: .padding8) {
                                 hText(L10n.hcHomeViewQuestion)
                                 hText(L10n.hcHomeViewAnswer)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             .accessibilityElement(children: .combine)
-                            displayQuickActions(from: vm.quickActions)
+                            .padding(.bottom, 40)
+                            displayQuickActions(
+                                from: vm.quickActions,
+                                showPuppyGuideRow: showsPuppyGuideQuickActionRow
+                            )
+                            .padding(.bottom, 40)
                             displayTopics()
+                                .padding(.bottom, 40)
                             if let helpCenterModel = vm.helpCenterModel {
                                 QuestionsItems(
                                     questions: helpCenterModel.commonQuestions,
@@ -89,11 +123,64 @@ public struct HelpCenterStartView: View {
             vc.definesPresentationContext = true
             vm.updateColors()
         }
+        .task {
+            puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { presentation in
+                let display: PuppyGuideDisplay?
+                if presentation is PuppyGuidePresentation.FullCard {
+                    display = .fullCard
+                } else if presentation is PuppyGuidePresentation.QuickAction {
+                    display = .quickAction
+                } else {
+                    display = nil
+                }
+                DispatchQueue.main.async { puppyGuideDisplay = display }
+            }
+        }
+        .onDisappear {
+            puppyGuideCancellable?.cancel()
+            puppyGuideCancellable = nil
+        }
+    }
+
+    private var puppyGuideEntry: some View {
+        CardView {
+            ZStack(alignment: .topLeading) {
+                hCoreUIAssets.hundarBadarPet.view
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 182)
+                    .clipped()
+                    .accessibilityHidden(true)
+                hPill(text: L10n.puppyGuideLabel, color: .pink)
+                    .hFieldSize(.small)
+                    .padding(.padding16)
+            }
+            VStack(alignment: .leading, spacing: .padding16) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.puppyGuideTitle)
+                    hText(L10n.puppyGuideSubtitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
+                    router?.push(PuppyGuideRoute.list)
+                }
+                .hButtonWithBorder
+                .hButtonTakeFullWidth(true)
+            }
+            .padding(.padding16)
+        }
+        .hWithoutHorizontalPadding([.section])
+        .onTapGesture { [weak router] in
+            router?.push(PuppyGuideRoute.list)
+        }
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder
-    func displayQuickActions(from quickActions: [QuickAction]) -> some View {
-        if !quickActions.isEmpty {
+    func displayQuickActions(from quickActions: [QuickAction], showPuppyGuideRow: Bool = false) -> some View {
+        if !quickActions.isEmpty || showPuppyGuideRow {
             VStack(alignment: .leading, spacing: .padding4) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                     .padding(.bottom, .padding4)
@@ -101,6 +188,11 @@ public struct HelpCenterStartView: View {
                 ForEach(quickActions, id: \.displayTitle) { [onQuickAction] quickAction in
                     QuickActionView(quickAction: quickAction) {
                         onQuickAction(quickAction)
+                    }
+                }
+                if showPuppyGuideRow {
+                    PuppyGuideQuickActionRow { [weak router] in
+                        router?.push(PuppyGuideRoute.list)
                     }
                 }
             }

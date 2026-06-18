@@ -218,7 +218,7 @@ extension ClaimModel {
                 id: "",
                 type: .claim,
                 newestMessage: nil,
-                createdAt: nil,
+                createdAt: Date(),
                 statusMessage: nil,
                 status: .open,
                 hasClaim: true,

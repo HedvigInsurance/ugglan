@@ -99,6 +99,9 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         currentSelectedId
         style
     }
+    ... on ClaimIntentStepContentDeflectionMessage {
+        message
+    }
 }
 
 fragment DeflectFragment on ClaimIntentStepContentDeflection {

@@ -53,7 +53,9 @@ extension AppDelegate {
                         ],
                         sampleRate: 100
                     )
-                )
+                ),
+                trackBackgroundEvents: true,
+                trackMemoryWarnings: false
             )
         )
 

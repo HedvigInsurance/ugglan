@@ -18,6 +18,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         supportsCoOwners: Bool,
         supportsTravelCertificate: Bool,
         supportsChangeTier: Bool,
+        supportsTermination: Bool,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
         firstName: String,
@@ -40,6 +41,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
         self.supportsChangeTier = supportsChangeTier
+        self.supportsTermination = supportsTermination
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -63,6 +65,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let supportsCoInsured: Bool
     public let supportsCoOwners: Bool
     public let supportsTravelCertificate: Bool
+    public let supportsTermination: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
@@ -115,10 +118,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     @MainActor func onlyCoOwners() -> Bool {
         let editTypes: [EditType] = EditType.getTypes(for: self)
         return editTypes.count == 1 && editTypes.first == .coOwners
-    }
-
-    public var canTerminate: Bool {
-        terminationDate == nil
     }
 
     public var isTerminated: Bool {
@@ -192,13 +191,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         }
         return typeOfContract.pillowType
     }
-
-    public var isNonPayingMember: Bool {
-        if typeOfContract == .seQasaShortTermRental || typeOfContract == .seQasaLongTermRental {
-            return true
-        }
-        return false
-    }
 }
 
 extension TypeOfContract {
@@ -207,53 +199,6 @@ extension TypeOfContract {
         case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
             return true
         default:
-            return false
-        }
-    }
-}
-
-extension TypeOfContract {
-    var isHomeInsurance: Bool {
-        switch self {
-        case .seHouse, .seHouseBas, .seHouseMax:
-            return true
-        case .seApartmentBrf, .seApartmentBrfBas, .seApartmentBrfMax:
-            return true
-        case .seApartmentRent, .seApartmentRentBas, .seApartmentRentMax:
-            return true
-        case .seApartmentStudentBrf:
-            return true
-        case .seApartmentStudentRent:
-            return true
-        case .seAccident:
-            return false
-        case .seAccidentStudent:
-            return false
-        case .seCarTraffic, .seCarHalf, .seCarFull, .seCarTrialFull, .seCarTrialHalf, .seCarDecommisioned:
-            return false
-        case .seGroupApartmentBrf:
-            return true
-        case .seGroupApartmentRent:
-            return true
-        case .seQasaShortTermRental:
-            return true
-        case .seQasaLongTermRental:
-            return true
-        case .seDogBasic:
-            return false
-        case .seDogStandard:
-            return false
-        case .seDogPremium:
-            return false
-        case .seCatBasic:
-            return false
-        case .seCatStandard:
-            return false
-        case .seCatPremium:
-            return false
-        case .seVacationHome:
-            return false
-        case .unknown:
             return false
         }
     }

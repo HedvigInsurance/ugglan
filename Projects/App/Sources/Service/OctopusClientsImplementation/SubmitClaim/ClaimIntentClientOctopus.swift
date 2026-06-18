@@ -400,6 +400,8 @@ extension ClaimIntentStepContent {
                         buttonTitle: deflect.buttonTitle
                     )
             )
+        } else if let deflectMessage = fragment.asClaimIntentStepContentDeflectionMessage {
+            self = .deflectMessage(model: .init(message: deflectMessage.message))
         } else {
             throw ClaimIntentError.unknownStep
         }

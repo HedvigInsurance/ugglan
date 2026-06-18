@@ -1,13 +1,9 @@
 import Foundation
-import Market
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ImpersonationSettings: View {
-    @PresentableStore var marketStore: MarketStore
-
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
@@ -17,12 +13,9 @@ struct ImpersonationSettings: View {
                             hText(locale.rawValue)
                         }
                         .onTap {
-                            Task {
-                                Localization.Locale.currentLocale.send(locale)
-                                await marketStore.sendAsync(.selectLanguage(language: locale.rawValue))
-                                ApplicationState.preserveState(.loggedIn)
-                                ApplicationState.state = .loggedIn
-                            }
+                            Localization.Locale.currentLocale.send(locale)
+                            ApplicationState.preserveState(.loggedIn)
+                            ApplicationState.state = .loggedIn
                         }
                     }
                 }

@@ -3,8 +3,7 @@ import SwiftUI
 
 @MainActor
 public protocol URLOpener {
-    func open(_ url: URL)
-    func openWithAuthorizationCode(_ url: URL) async
+    func open(_ url: URL) async
 }
 
 extension Dependencies {

@@ -14,6 +14,10 @@ import hCoreUI
 @MainActor
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
+    // Set by the deep-link handler before/after the help-center modal opens.
+    // Consumed by `HelpCenterNavigation` via .task(id:) so the push runs after
+    // the NavigationStack has mounted and registered its destination modifiers.
+    @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -40,6 +44,18 @@ public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
     }
 
     case inbox
+}
+
+public enum PuppyGuideRoute: Hashable, TrackingViewNameProtocol {
+    case list
+    case article(storyName: String)
+
+    public var nameForTracking: String {
+        switch self {
+        case .list: return "PuppyGuideList"
+        case .article: return "PuppyGuideArticle"
+        }
+    }
 }
 
 private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
@@ -94,6 +110,22 @@ public struct HelpCenterNavigation<Content: View>: View {
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
                     .navigationTitle(L10n.chatConversationInbox)
+            }
+            .routerDestination(for: PuppyGuideRoute.self) { [router = helpCenterVm.router] route in
+                switch route {
+                case .list:
+                    PuppyGuideListHost(router: router)
+                        .ignoresSafeArea()
+                case let .article(storyName):
+                    PuppyArticleHost(storyName: storyName, router: router)
+                        .ignoresSafeArea()
+                }
+            }
+            .task(id: helpCenterVm.pendingPuppyGuideRoute) { [weak helpCenterVm] in
+                guard let helpCenterVm, let route = helpCenterVm.pendingPuppyGuideRoute else { return }
+                helpCenterVm.router.popToRoot()
+                helpCenterVm.router.push(route)
+                helpCenterVm.pendingPuppyGuideRoute = nil
             }
         }
         .ignoresSafeArea()
@@ -176,14 +208,15 @@ public struct HelpCenterNavigation<Content: View>: View {
                     urlComponent?.scheme = "https"
                 }
                 let schema = urlComponent?.scheme
+                let requiresAuthorization = url.requiresAuthorization
                 if let finalUrl = urlComponent?.url {
-                    if schema == "https" || schema == "http" {
+                    if (schema == "https" || schema == "http") && !requiresAuthorization {
                         let vc = SFSafariViewController(url: finalUrl)
                         vc.modalPresentationStyle = .pageSheet
                         vc.preferredControlTintColor = .brand(.primaryText())
                         UIApplication.shared.getTopViewController()?.present(vc, animated: true)
                     } else {
-                        Dependencies.urlOpener.open(url)
+                        Task { await Dependencies.urlOpener.open(url) }
                     }
                 }
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
@@ -206,7 +239,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .cancellation:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                .filter(\.canTerminate)
+                .filter(\.supportsTermination)
                 .map(\.asTerminationConfirmConfig)
             Task {
                 do {

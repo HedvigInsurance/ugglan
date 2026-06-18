@@ -5,6 +5,7 @@ Tuist-managed iOS monorepo. Latest Swift, targeting iOS 16+.
 ## Build & Run
 
 ```bash
+scripts/install-tuist.sh   # One-time: installs mise + tuist (mise is required by swiftgen.sh)
 scripts/post-checkout.sh   # Full setup after fresh clone (generates workspace, codegen, etc.)
 tuist generate              # Regenerate Xcode workspace after module changes
 ```
@@ -25,7 +26,8 @@ tuist generate              # Regenerate Xcode workspace after module changes
 | Addons | Insurance addon discovery and purchase |
 | App | Main app entry point, navigation hub, deep linking |
 | Authentication | Login, logout, auth token management |
-| Campaign | Marketing campaign display and redemption |
+| CampaignCore | Discounts/referrals models, service protocol, and root ViewModel (UI-free) |
+| CampaignUI | SwiftUI views and navigation for the discounts/referrals screen (built on CampaignCore) |
 | ChangeTier | Insurance plan tier upgrades/downgrades |
 | Chat | Customer support messaging |
 | Claims | Claims list, status tracking, claim details |

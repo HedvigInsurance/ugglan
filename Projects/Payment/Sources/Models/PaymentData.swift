@@ -1,4 +1,4 @@
-import Campaign
+import CampaignCore
 import Foundation
 import hCore
 import hCoreUI

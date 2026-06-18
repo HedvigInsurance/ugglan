@@ -112,7 +112,7 @@ private class DirectDebitWebview: UIView {
                 if isLoading {
                     didFailToLoadWebViewSignal.send(true)
                     if let url {
-                        Dependencies.urlOpener.open(url)
+                        Task { await Dependencies.urlOpener.open(url) }
                     } else {
                         self?.showErrorAlert = true
                     }
