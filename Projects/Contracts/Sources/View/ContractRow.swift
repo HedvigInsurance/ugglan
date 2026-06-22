@@ -6,38 +6,16 @@ import hCoreUI
 
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
-    let image: Image?
-    let terminationMessage: String?
-    let contractDisplayName: String
-    let contractExposureName: String
-    let activeFrom: String?
-    let activeInFuture: Bool?
-    let masterInceptionDate: String?
-    let tierDisplayName: String?
+    let contract: Contract
     let onClick: (() -> Void)?
     var onBottomContentHeightChange: ((CGFloat) -> Void)?
 
     public init(
-        image: Image?,
-        terminationMessage: String?,
-        contractDisplayName: String,
-        contractExposureName: String,
-        activeFrom: String? = nil,
-        activeInFuture: Bool? = nil,
-        masterInceptionDate: String? = nil,
-        tierDisplayName: String?,
+        contract: Contract,
         onClick: (() -> Void)? = nil,
         onBottomContentHeightChange: ((CGFloat) -> Void)? = nil
     ) {
-        self.image = image
-        self.terminationMessage = terminationMessage
-        self.contractDisplayName = contractDisplayName
-        self.contractExposureName = contractExposureName
-        self.activeFrom = activeFrom
-        self.activeInFuture = activeInFuture
-        self.masterInceptionDate = masterInceptionDate
-        self.tierDisplayName = tierDisplayName
-
+        self.contract = contract
         self.onClick = onClick
         self.onBottomContentHeightChange = onBottomContentHeightChange
     }
@@ -50,14 +28,7 @@ public struct ContractRow: View {
         }
         .buttonStyle(
             ContractRowButtonStyle(
-                image: image,
-                contractDisplayName: contractDisplayName,
-                contractExposureName: contractExposureName,
-                terminationMessage: terminationMessage,
-                activeFrom: activeFrom,
-                activeInFuture: activeInFuture,
-                masterInceptionDate: masterInceptionDate,
-                tierDisplayName: tierDisplayName,
+                contract: contract,
                 onBottomContentHeightChange: onBottomContentHeightChange
             )
         )
@@ -74,37 +45,41 @@ public struct ContractRow: View {
 }
 
 private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
-    let image: Image?
-    let contractDisplayName: String
-    let contractExposureName: String
+    let contract: Contract
     var onBottomContentHeightChange: ((CGFloat) -> Void)?
     let tagsToShow: [(text: String, type: PillType)]
     @Environment(\.contractRowContentTruncate) var contractRowContentTruncate
     @State private var contractRowContentTruncateInternal: Bool = false
 
+    private var image: Image? { contract.pillowType?.bgImage }
+    private var contractDisplayName: String { contract.currentAgreement?.productVariant.displayName ?? "" }
+    private var contractExposureName: String { contract.exposureDisplayName }
+
     public init(
-        image: Image?,
-        contractDisplayName: String,
-        contractExposureName: String,
-        terminationMessage: String? = nil,
-        activeFrom: String? = nil,
-        activeInFuture: Bool? = nil,
-        masterInceptionDate: String? = nil,
-        tierDisplayName: String?,
+        contract: Contract,
         onBottomContentHeightChange: ((CGFloat) -> Void)? = nil
     ) {
-        self.image = image
-        self.contractDisplayName = contractDisplayName
-        self.contractExposureName = contractExposureName
+        self.contract = contract
         self.onBottomContentHeightChange = onBottomContentHeightChange
 
         var tagsToShow = [(text: String, type: PillType)]()
-        if let tierDisplayName {
+        if let tierDisplayName = contract.currentAgreement?.productVariant.displayNameTier {
             tagsToShow.append((tierDisplayName, .tier))
         }
-        if let terminationMessage {
+        if contract.active {
+            tagsToShow.append((L10n.dashboardInsuranceStatusActive, .text))
+        } else if contract.activeInFuture {
+            tagsToShow.append(
+                (
+                    L10n.contractStatusActiveInFuture(
+                        contract.masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ), .text
+                )
+            )
+        }
+        if let terminationMessage = contract.terminationMessage {
             tagsToShow.append((terminationMessage, .text))
-        } else if let activeFrom {
+        } else if let activeFrom = contract.upcomingChangedAgreement?.agreementDate.activeFrom {
             tagsToShow.append(
                 (
                     L10n.dashboardInsuranceStatusActiveUpdateDate(
@@ -112,18 +87,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     ), .text
                 )
             )
-        } else if activeInFuture ?? false {
-            tagsToShow.append(
-                (
-                    L10n.contractStatusActiveInFuture(
-                        masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                    ), .text
-                )
-            )
-        } else if masterInceptionDate == nil {
+        } else if contract.masterInceptionDate == nil {
             tagsToShow.append((L10n.contractStatusPending, .text))
-        } else {
-            tagsToShow.append((L10n.dashboardInsuranceStatusActive, .text))
         }
         self.tagsToShow = tagsToShow
     }
@@ -266,13 +231,48 @@ private struct StatusPill: View {
 }
 
 #Preview {
-    hSection {
-        ContractRow(
-            image: hCoreUIAssets.pillowHome.view,
-            terminationMessage: "Active",
-            contractDisplayName: "Insurance",
-            contractExposureName: "Address ∙ Coverage",
-            tierDisplayName: "tier display name"
-        )
+    let variant = ProductVariant(
+        termsVersion: "",
+        typeOfContract: TypeOfContract.seApartmentRent.rawValue,
+        perils: [],
+        insurableLimits: [],
+        documents: [],
+        displayName: "Insurance",
+        displayNameTier: "tier display name",
+        tierDescription: nil
+    )
+    let agreement = Agreement(
+        id: "agreementId",
+        basePremium: .sek(200),
+        itemCost: nil,
+        displayItems: [],
+        productVariant: variant,
+        addonVariant: []
+    )
+    let contract = Contract(
+        id: "contractId",
+        currentAgreement: agreement,
+        exposureDisplayName: "Address ∙ Coverage",
+        exposureDisplayNameShort: "",
+        masterInceptionDate: "2024-01-01",
+        terminationDate: nil,
+        supportsAddressChange: false,
+        supportsCoInsured: false,
+        supportsCoOwners: false,
+        supportsTravelCertificate: false,
+        supportsChangeTier: false,
+        supportsTermination: false,
+        upcomingChangedAgreement: nil,
+        upcomingRenewal: nil,
+        firstName: "",
+        lastName: "",
+        ssn: nil,
+        typeOfContract: .seApartmentRent,
+        coInsured: [],
+        coOwners: [],
+        missingPetChipId: false
+    )
+    return hSection {
+        ContractRow(contract: contract)
     }
 }
