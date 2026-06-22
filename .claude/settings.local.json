@@ -5,8 +5,7 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)",
-      "Bash(perl -0pi -e 's/isCrossSellLoading/isLoading/g' Projects/CrossSell/Sources/View/Components/CrossSellButtonComponent.swift)"
+      "Bash(git commit -m ':*)"
     ]
   }
 }
