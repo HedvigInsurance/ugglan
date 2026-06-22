@@ -26,7 +26,7 @@ extension TypeOfContract {
         case .seGroupApartmentRent:
             return .rental
         case .seQasaLandlord:
-            return .rental
+            return .home
         case .seDogBasic:
             return .dog
         case .seDogStandard:
