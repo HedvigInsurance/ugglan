@@ -5,9 +5,7 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)",
-      "Bash(tuist generate *)",
-      "Bash(xcodebuild build *)"
+      "Bash(git commit -m ':*)"
     ]
   }
 }
