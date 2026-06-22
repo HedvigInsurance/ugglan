@@ -13,22 +13,24 @@ public struct CrossSellingModal: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            if let recommended = crossSells.recommended {
-                CrossSellBannerComponent(crossSell: recommended)
+            if case let .insurance(insurance) = crossSells.recommended {
+                CrossSellBannerComponent(crossSell: insurance)
             }
             hForm {
                 VStack(spacing: .padding48) {
                     if let recommended = crossSells.recommended {
                         CrossSellPillowComponent(crossSell: recommended)
                         VStack(spacing: .padding16) {
-                            CrossSellDiscountProgressComponent(crossSell: recommended)
+                            if case let .insurance(insurance) = recommended {
+                                CrossSellDiscountProgressComponent(crossSell: insurance)
+                            }
                             CrossSellButtonComponent(crossSell: recommended)
                         }
                     }
                     CrossSellStackComponent(
                         crossSells: crossSells.others,
                         discountAvailable: crossSells.discountAvailable,
-                        withHeader: crossSells.recommended != nil
+                        withHeader: crossSells.hasRecommendation
                     )
                 }
                 .padding(.bottom, .padding16)

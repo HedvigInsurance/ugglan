@@ -27,14 +27,16 @@ class CrossSellClientOctopus: CrossSellClient {
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
         }
-        let recommendedCrossSell: CrossSell? = {
-            if let crossSellFragment = crossSells.currentMember.crossSellV2.recommendedCrossSell {
-                return CrossSell(crossSellFragment)
+        let recommendedCrossSell: RecommendedCrossSell? = {
+            if let crossSellFragment = crossSells.currentMember.crossSellV2.recommendedCrossSell,
+                let crossSell = CrossSell(crossSellFragment)
+            {
+                return .insurance(crossSell)
             }
+            // TODO: map addon recommendations once the backend exposes them in `recommendedCrossSell`.
             return nil
         }()
         let discountAvailable = crossSells.currentMember.crossSellV2.discountAvailable
-
         return .init(recommended: recommendedCrossSell, others: otherCrossSells, discountAvailable: discountAvailable)
     }
 
