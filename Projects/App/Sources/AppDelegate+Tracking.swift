@@ -104,12 +104,6 @@ extension AppDelegate {
         }
 
         FirebaseApp.configure()
-
-        let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
-        eventTrackingClient.trackEvent(
-            name: "smoke_test",
-            parameters: ["env": Environment.current.datadogName]
-        )
     }
 }
 
