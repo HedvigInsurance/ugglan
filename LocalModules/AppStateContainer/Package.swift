@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "AppStateContainer",
-    platforms: [.macOS(.v10_15), .iOS(.v16), .tvOS(.v16), .watchOS(.v6), .macCatalyst(.v13)],
+    platforms: [.macOS(.v11), .iOS(.v16), .tvOS(.v16), .watchOS(.v6), .macCatalyst(.v13)],
     products: [
         .library(
             name: "AppStateContainer",
@@ -25,5 +25,13 @@ let package = Package(
             ]
         ),
         .target(name: "AppStateContainer", dependencies: ["AppStateContainerMacros"]),
+        .testTarget(
+            name: "AppStateContainerMacrosTests",
+            dependencies: [
+                "AppStateContainerMacros",
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
     ]
 )

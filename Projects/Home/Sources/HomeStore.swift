@@ -52,7 +52,7 @@ public final class HomeStore: AppStore {
     @Transient @Published public private(set) var fetchFAQError: String?
     @Transient @Published public private(set) var fetchMemberStateError: String?
 
-    private var cancellables = Set<AnyCancellable>()
+    @Transient private var cancellables = Set<AnyCancellable>()
 
     public var upcomingRenewalContracts: [HomeContract] {
         contracts.filter { $0.upcomingRenewal != nil }
