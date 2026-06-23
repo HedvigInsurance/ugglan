@@ -1,4 +1,5 @@
 import Addons
+import AppStateContainer
 import ChangeTier
 import Chat
 import Claims
@@ -631,7 +632,7 @@ struct LoggedInNavigation: View {
                     with: vm.travelCertificateNavigationVm.editStakeholdersVm
                 )
             case .deleteAccount:
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let claimsStore: ClaimsStore = globalAppStateContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
                     claimsStore: claimsStore,
@@ -831,12 +832,12 @@ struct HomeTab: View {
             .navigationTitle(L10n.claimsYourClaim)
             .onDeinit {
                 Task {
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    let claimsStore: ClaimsStore = globalAppStateContainer.get()
                     if claim?.showClaimClosedFlow ?? false, let claim = claim {
                         NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         try await service.acknowledgeClosedStatus(for: claim.id)
-                        claimsStore.send(.fetchActiveClaims)
+                        await claimsStore.fetchActiveClaims()
                     }
                 }
             }
@@ -1100,8 +1101,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             homeNavigationVm.router.popToRoot()
         }
         Task { @MainActor in
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            store.send(.fetchActiveClaims)
+            let store: ClaimsStore = globalAppStateContainer.get()
+            await store.fetchActiveClaims()
 
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {

@@ -9,14 +9,6 @@ public class DeleteAccountViewModel: ObservableObject {
     let claimsStore: ClaimsStore
     let contractsStore: ContractStore
 
-    private var activeClaimsSignal: AnyPublisher<Bool, Never> {
-        claimsStore.stateSignal.map(\.hasActiveClaims).eraseToAnyPublisher()
-    }
-
-    private var activeContractsSignal: AnyPublisher<Bool, Never> {
-        contractsStore.stateSignal.map(\.hasActiveContracts).eraseToAnyPublisher()
-    }
-
     @Published var hasActiveClaims: Bool = false
     @Published var hasActiveContracts: Bool = false
     private var cancellables = Set<AnyCancellable>()
@@ -28,20 +20,21 @@ public class DeleteAccountViewModel: ObservableObject {
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
 
-        hasActiveClaims = self.claimsStore.state.hasActiveClaims
+        hasActiveClaims = self.claimsStore.hasActiveClaims
         hasActiveContracts = self.contractsStore.state.hasActiveContracts
 
-        activeClaimsSignal
+        claimsStore.$activeClaims
             .receive(on: RunLoop.main)
-            .sink { value in
-                self.hasActiveClaims = value
+            .sink { [weak self] _ in
+                self?.hasActiveClaims = claimsStore.hasActiveClaims
             }
             .store(in: &cancellables)
 
-        activeContractsSignal
+        contractsStore.stateSignal
+            .map(\.hasActiveContracts)
             .receive(on: RunLoop.main)
-            .sink { value in
-                self.hasActiveContracts = value
+            .sink { [weak self] value in
+                self?.hasActiveContracts = value
             }
             .store(in: &cancellables)
     }
