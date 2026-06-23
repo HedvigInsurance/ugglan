@@ -14,10 +14,7 @@ public final class ClaimsStore: AppStore {
     public init() {}
 
     public var hasActiveClaims: Bool {
-        guard !activeClaims.isEmpty else { return false }
-        return activeClaims.contains {
-            $0.status == .beingHandled || $0.status == .reopened || $0.status == .submitted
-        }
+        activeClaims.map(\.status).contains { $0 != .closed }
     }
 
     public func getClaimFor(id: String) -> ClaimModel? {
