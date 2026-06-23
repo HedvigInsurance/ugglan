@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Authentication
 import AutomaticLog
 import Chat
@@ -39,9 +40,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // remove all persisted state
         globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
 
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
+        globalAppStateContainer = AppStateContainer()
 
         DI.initAndRegisterClient()
     }
@@ -49,8 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout() {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-        ugglanStore.send(.setIsDemoMode(to: false))
+        let ugglanStore: UgglanStore = globalAppStateContainer.get()
+        ugglanStore.isDemoMode = false
         Task { @MainActor in
             let authenticationService = AuthenticationService()
             do {
@@ -104,8 +107,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleURL(url: URL) {
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            let store: UgglanStore = globalPresentableStoreContainer.get()
-            store.send(.setIsDemoMode(to: false))
+            let store: UgglanStore = globalAppStateContainer.get()
+            store.isDemoMode = false
             Task {
                 await setupSession()
                 await impersonate.impersonate(with: url)
