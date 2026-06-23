@@ -19,8 +19,10 @@ struct CrossSellButtonComponent: View {
                 .hButtonIsLoading(isLoading)
                 .animation(.default, value: isLoading)
                 .accessibilityHint(L10n.crossSellButton)
-                hText(buttonDescription, style: .finePrint)
-                    .foregroundColor(hTextColor.Translucent.secondary)
+                if let buttonDescription {
+                    hText(buttonDescription, style: .finePrint)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                }
             }
         }
         .sectionContainerStyle(.transparent)
@@ -33,10 +35,10 @@ struct CrossSellButtonComponent: View {
         }
     }
 
-    private var buttonDescription: String {
+    private var buttonDescription: String? {
         switch crossSell {
         case let .insurance(insurance): return insurance.buttonDescription
-        case let .addon(addon): return addon.description
+        case .addon: return nil
         }
     }
 
