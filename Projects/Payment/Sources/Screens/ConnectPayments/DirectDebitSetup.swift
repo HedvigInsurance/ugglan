@@ -154,7 +154,7 @@ private class DirectDebitWebview: UIView {
         vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
         let directDebitResult = DirectDebitResult(
             type: type,
-            action: { [weak self, weak router] in
+            action: { [weak router] in
                 router?.dismiss()
             }
         )

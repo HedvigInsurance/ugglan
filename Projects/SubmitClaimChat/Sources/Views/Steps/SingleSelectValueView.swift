@@ -49,7 +49,9 @@ struct SingleSelectValueView: View {
                         .fill(hSurfaceColor.Opaque.primary)
                         .modifier(Shimmer())
                 }
-                .onFailureImage(hCoreUIAssets.helipadBig.image)
+                .onFailureView {
+                    hCoreUIAssets.helipadBig.view
+                }
                 .resizable()
                 .fade(duration: 0.1)
                 .aspectRatio(contentMode: .fit)
