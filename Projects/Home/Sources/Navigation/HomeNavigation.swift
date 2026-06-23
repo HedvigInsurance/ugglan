@@ -1,3 +1,4 @@
+import AppStateContainer
 import Combine
 import Contracts
 import CrossSell
@@ -59,8 +60,8 @@ public class HomeNavigationViewModel: ObservableObject {
                 }
 
                 if let recommended = crossSells.recommended {
-                    let store: CrossSellStore = globalPresentableStoreContainer.get()
-                    store.send(.setHasSeenRecommendedWith(id: recommended.id))
+                    let store: CrossSellStore = globalAppStateContainer.get()
+                    store.setHasSeenRecommendedWith(id: recommended.id)
                 }
                 await delay(1)
                 crossSellInfo.logCrossSellEvent()

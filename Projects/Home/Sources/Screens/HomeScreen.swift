@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Chat
 import Claims
 import Combine
@@ -155,8 +156,8 @@ class HomeVM: ObservableObject {
         if store.state.hasMissedCharge {
             store.send(.fetchMissedCharge)
         }
-        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
-        crossSellStore.send(.fetchRecommendedCrossSellId)
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+        Task { await crossSellStore.fetchRecommendedCrossSellId() }
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
