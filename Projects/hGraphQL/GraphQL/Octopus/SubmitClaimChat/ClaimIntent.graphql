@@ -89,6 +89,9 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         defaultSelectedId
         style
     }
+    ... on ClaimIntentStepContentDeflectionMessage {
+        message
+    }
 }
 
 fragment DeflectFragment on ClaimIntentStepContentDeflection {
