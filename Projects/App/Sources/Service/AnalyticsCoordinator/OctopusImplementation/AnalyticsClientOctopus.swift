@@ -1,4 +1,5 @@
 import Apollo
+import AutomaticLog
 import Combine
 import DatadogCore
 import SwiftUI
@@ -26,8 +27,8 @@ class AnalyticsService {
         }
     }
 
+    @Log
     func setWith(userId: String) {
-        log.info("AnalyticsService: setWith", error: nil, attributes: nil)
         client.setWith(userId: userId)
     }
 

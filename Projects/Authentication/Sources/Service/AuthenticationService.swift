@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -7,38 +8,38 @@ public class AuthenticationService {
 
     public init() {}
 
+    @Log
     func submit(otpState: OTPState) async throws -> String {
-        log.info("AuthenticationService: submit", error: nil, attributes: nil)
-        return try await client.submit(otpState: otpState)
+        try await client.submit(otpState: otpState)
     }
 
+    @Log
     func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
-        log.info("AuthenticationService: start", error: nil, attributes: nil)
-        return try await client.start(with: otpState)
+        try await client.start(with: otpState)
     }
 
+    @Log
     func resend(otp otpState: OTPState) async throws {
-        log.info("AuthenticationService: resend", error: nil, attributes: nil)
         try await client.resend(otp: otpState)
     }
 
+    @Log
     func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
-        log.info("AuthenticationService: startSeBankId", error: nil, attributes: nil)
-        return try await client.startSeBankId(updateStatusTo: updateStatusTo)
+        try await client.startSeBankId(updateStatusTo: updateStatusTo)
     }
 
+    @Log
     public func logout() async throws {
-        log.info("AuthenticationService: logout", error: nil, attributes: nil)
         try await client.logout()
     }
 
+    @Log
     public func exchange(code: String) async throws {
-        log.info("AuthenticationService: exchange code", error: nil, attributes: nil)
         try await client.exchange(code: code)
     }
 
+    @Log
     public func exchange(refreshToken: String) async throws {
-        log.info("AuthenticationService: exchange refresh token", error: nil, attributes: nil)
         try await client.exchange(refreshToken: refreshToken)
     }
 

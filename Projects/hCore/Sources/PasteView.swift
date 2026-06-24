@@ -4,12 +4,14 @@ import SwiftUI
 
 class _PasteView: UIView {
     var onPaste: () -> Void
+    private lazy var editMenuInteraction = UIEditMenuInteraction(delegate: self)
 
     init(
         onPaste: @escaping () -> Void
     ) {
         self.onPaste = onPaste
         super.init(frame: .zero)
+        addInteraction(editMenuInteraction)
     }
 
     @available(*, unavailable)
@@ -34,6 +36,23 @@ class _PasteView: UIView {
 
     override var canBecomeFirstResponder: Bool {
         true
+    }
+
+    func presentEditMenu() {
+        let configuration = UIEditMenuConfiguration(
+            identifier: nil,
+            sourcePoint: CGPoint(x: bounds.midX, y: bounds.midY)
+        )
+        editMenuInteraction.presentEditMenu(with: configuration)
+    }
+}
+
+extension _PasteView: @preconcurrency UIEditMenuInteractionDelegate {
+    func editMenuInteraction(
+        _ interaction: UIEditMenuInteraction,
+        targetRectFor configuration: UIEditMenuConfiguration
+    ) -> CGRect {
+        bounds
     }
 }
 
@@ -84,10 +103,8 @@ public struct PasteView: UIViewRepresentable {
         view.addGestureRecognizer(context.coordinator.longPressGesture)
         context.coordinator.longGestureDidBeginPublisher
             .sink { _ in
-                let menu = UIMenuController.shared
-                guard !menu.isMenuVisible else { return }
                 view.becomeFirstResponder()
-                menu.showMenu(from: view, rect: view.bounds)
+                view.presentEditMenu()
             }
             .store(in: &context.coordinator.cancellables)
         return view
