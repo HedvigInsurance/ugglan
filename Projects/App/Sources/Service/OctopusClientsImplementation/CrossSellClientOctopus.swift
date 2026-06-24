@@ -8,7 +8,7 @@ class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
     @Inject private var addonClient: AddonsClient
 
-    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+    func getCrossSell(source: CrossSellSource, contractId: String?) async throws -> CrossSells {
         let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
             if let flowSource = source.asGraphQLFlowSource {
                 return .some(GraphQLEnum<OctopusGraphQL.FlowSource>(flowSource))
@@ -16,10 +16,17 @@ class CrossSellClientOctopus: CrossSellClient {
             return
                 .null
         }()
+        let contractIdInput: GraphQLNullable<OctopusGraphQL.ID> = {
+            if let contractId {
+                return .some(contractId)
+            }
+            return .null
+        }()
         let crossSellsInput = OctopusGraphQL.CrossSellInput(
             userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(source.asGraphQLUserFlow),
             flowSource: flowSource,
-            experiments: []
+            experiments: [],
+            contractId: contractIdInput
         )
 
         let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
@@ -28,12 +35,16 @@ class CrossSellClientOctopus: CrossSellClient {
             CrossSell($0.fragments.crossSellFragment)
         }
         let recommendedCrossSell: RecommendedCrossSell? = {
+            // Addon recommendations take priority: the backend returns at most one of them and only
+            // for the contract in `input.contractId`, so a present addon is the single recommendation.
+            if let addon = crossSells.currentMember.crossSellV2.recommendedAddon {
+                return .addon(AddonCrossSell(addon))
+            }
             if let crossSellFragment = crossSells.currentMember.crossSellV2.recommendedCrossSell,
                 let crossSell = CrossSell(crossSellFragment)
             {
                 return .insurance(crossSell)
             }
-            // TODO: map addon recommendations once the backend exposes them in `recommendedCrossSell`.
             return nil
         }()
         let discountAvailable = crossSells.currentMember.crossSellV2.discountAvailable
@@ -75,6 +86,19 @@ extension CrossSell {
             leftImage: URL(string: data.backgroundPillowImages?.leftImage.src),
             rightImage: URL(string: data.backgroundPillowImages?.rightImage.src),
             numberOfEligibleContracts: data.numberOfEligibleContracts
+        )
+    }
+}
+
+extension AddonCrossSell {
+    init(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSellV2.RecommendedAddon) {
+        self.init(
+            id: data.id,
+            title: data.title,
+            description: data.description,
+            buttonText: data.buttonTitle,
+            deepLink: data.deepLink,
+            imageUrl: URL(string: data.pillowImageLarge.src)
         )
     }
 }

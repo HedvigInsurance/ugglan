@@ -10,7 +10,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         switch action {
         case .fetchCrossSell:
             do {
-                let crossSells = try await crossSellService.getCrossSell(source: .insurances)
+                let crossSells = try await crossSellService.getCrossSell(source: .insurances, contractId: nil)
                 send(.setCrossSells(crossSells: crossSells))
             } catch {
                 setError(error.localizedDescription, for: .fetchCrossSell)
@@ -25,7 +25,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
             }
         case .fetchRecommendedCrossSellId:
             do {
-                let crossSellsV2 = try await crossSellService.getCrossSell(source: .home)
+                let crossSellsV2 = try await crossSellService.getCrossSell(source: .home, contractId: nil)
                 let recommendedProductId = crossSellsV2.recommended?.id
                 let lastSeenRecommendedProductId = state.lastSeenRecommendedProductId
                 if recommendedProductId != nil, recommendedProductId != lastSeenRecommendedProductId {

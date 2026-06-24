@@ -190,6 +190,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
 
         return .changeTierIntentModel(
             changeTierIntentModel: .init(
+                contractId: "Id",
                 displayName: "display name",
                 activationDate: Date(),
                 tiers: [

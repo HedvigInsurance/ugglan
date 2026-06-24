@@ -65,18 +65,18 @@ struct CrossSellPillowComponent: View {
                         .fade(duration: 0)
                         .resizable()
                     ZStack {
-                        hCoreUIAssets.pillowHome.view
-                            .renderingMode(.template)
-                            .resizable()
-                            .foregroundColor(hSurfaceColor.Opaque.secondary)
-                            .frame(width: .padding56, height: .padding56)
+                        Circle()
+                            .foregroundColor(hFillColor.Opaque.negative)
+                            .frame(width: 30, height: 30)
                             .overlay {
-                                hCoreUIAssets.plus.view
-                                    .resizable()
-                                    .frame(width: 32, height: 32)
+                                Circle()
+                                    .stroke(hBorderColor.primary, lineWidth: 1)
                             }
+                        hCoreUIAssets.plus.view
+                            .resizable()
+                            .frame(width: 20, height: 20)
                     }
-                    .offset(x: 10, y: -10)
+                    .offset(x: -5, y: 4)
                 }
                 .frame(width: mainImageSize, height: mainImageSize)
                 VStack {

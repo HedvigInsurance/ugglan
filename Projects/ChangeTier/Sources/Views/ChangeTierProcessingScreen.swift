@@ -24,7 +24,7 @@ struct ChangeTierProcessingView: View {
             if vm?.viewState == .success {
                 NotificationCenter.default.post(
                     name: .openCrossSell,
-                    object: CrossSellInfo(type: .changeTier)
+                    object: CrossSellInfo(type: .changeTier, contractId: vm?.contractId)
                 )
             }
         }
