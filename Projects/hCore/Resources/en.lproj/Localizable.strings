@@ -403,6 +403,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "EMBARK_UPDATE_APP_BODY" = "Your app is out of date and needs to be updated before you can proceed.";
 "EMBARK_UPDATE_APP_BUTTON" = "Update now";
 "EMBARK_UPDATE_APP_TITLE" = "Update app";
+"EMPLOYMENT_TYPE_CONTRACT_EMPLOYED" = "Contract Employed";
+"EMPLOYMENT_TYPE_HOURLY_EMPLOYED" = "Hourly Employed";
+"EMPLOYMENT_TYPE_PERMANENT_EMPLOYED" = "Permanent Employed";
+"EMPLOYMENT_TYPE_PROBATIONARY_EMPLOYED" = "Probationary Employed";
+"EMPLOYMENT_TYPE_SELF_EMPLOYED" = "Self Employed";
+"EMPLOYMENT_TYPE_UNEMPLOYED" = "Unemployed";
 "FIELD_EXTRA_BUIDLINGS_ATTEFALL_LABEL" = "Attefall";
 "FIELD_EXTRA_BUIDLINGS_BARN_LABEL" = "Barn";
 "FIELD_EXTRA_BUIDLINGS_BOATHOUSE_LABEL" = "Boathouse";

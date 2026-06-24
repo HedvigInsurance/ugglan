@@ -403,6 +403,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "EMBARK_UPDATE_APP_BODY" = "Din app är inaktuell och måste uppdateras innan du kan fortsätta.";
 "EMBARK_UPDATE_APP_BUTTON" = "Uppdatera nu";
 "EMBARK_UPDATE_APP_TITLE" = "Uppdatera appen";
+"EMPLOYMENT_TYPE_CONTRACT_EMPLOYED" = "Kontraktsanställd";
+"EMPLOYMENT_TYPE_HOURLY_EMPLOYED" = "Timanställd";
+"EMPLOYMENT_TYPE_PERMANENT_EMPLOYED" = "Heltidsanställd";
+"EMPLOYMENT_TYPE_PROBATIONARY_EMPLOYED" = "Provanställd";
+"EMPLOYMENT_TYPE_SELF_EMPLOYED" = "Egenföretagare";
+"EMPLOYMENT_TYPE_UNEMPLOYED" = "Arbetslös";
 "FIELD_EXTRA_BUIDLINGS_ATTEFALL_LABEL" = "Attefall";
 "FIELD_EXTRA_BUIDLINGS_BARN_LABEL" = "Lada";
 "FIELD_EXTRA_BUIDLINGS_BOATHOUSE_LABEL" = "Båthus";
