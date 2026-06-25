@@ -25,7 +25,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         isPartnerClaim: Bool = false,
         handlerEmail: String? = nil,
         exposureDisplayName: String? = nil,
-        externalId: String? = nil
+        externalId: String? = nil,
+        contractId: String? = nil
     ) {
         self.id = id
         self.status = status
@@ -47,6 +48,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.handlerEmail = handlerEmail
         self.exposureDisplayName = exposureDisplayName
         self.externalId = externalId
+        self.contractId = contractId
     }
 
     public let claimType: String
@@ -69,6 +71,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let handlerEmail: String?
     public let exposureDisplayName: String?
     public let externalId: String?
+    public let contractId: String?
     public var statusParagraph: String? {
         if isPartnerClaim {
             if status == .closed {
@@ -178,6 +181,7 @@ extension ClaimModel {
         let additionalInfo = ClaimCrossSellAdditionalInfo.fromClaim(self)
         return .init(
             type: .closedClaim,
+            contractId: contractId,
             additionalInfo: additionalInfo
         )
     }
