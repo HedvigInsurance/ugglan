@@ -53,7 +53,13 @@ class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
+    func confirmMoveIntent(
+        intentId: String,
+        currentHomeQuoteId: String,
+        removedAddons: [String]
+    ) async throws
+        -> String
+    {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
             homeQuoteId: GraphQLNullable(optionalValue: currentHomeQuoteId),
@@ -69,6 +75,10 @@ class MoveFlowClientOctopus: MoveFlowClient {
         if let userError = data?.moveIntentCommit.userError {
             throw MovingFlowError.serverError(message: userError.message ?? "")
         }
+        guard let newContractId = data?.moveIntentCommit.newContractId else {
+            throw MovingFlowError.serverError(message: L10n.somethingWentWrong)
+        }
+        return newContractId
     }
 
     private func apartmentInput(addressInputModel: AddressInputModel) -> OctopusGraphQL.MoveToApartmentInput? {
