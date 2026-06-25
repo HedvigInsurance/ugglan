@@ -108,16 +108,14 @@ extension HomeScreen {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        if featureFlags.isHelpCenterEnabled {
-            hButton(
-                .large,
-                .secondary,
-                content: .init(title: L10n.HomeTab.getHelp),
-                { [weak navigationVm] in
-                    navigationVm?.isHelpCenterPresented = true
-                }
-            )
-        }
+        hButton(
+            .large,
+            .secondary,
+            content: .init(title: L10n.HomeTab.getHelp),
+            { [weak navigationVm] in
+                navigationVm?.isHelpCenterPresented = true
+            }
+        )
     }
 }
 

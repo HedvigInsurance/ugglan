@@ -490,15 +490,12 @@ struct LoggedInNavigation: View {
     @StateObject private var router = NavigationRouter()
     @StateObject private var foreverRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
-    @InjectObservableObject private var features: FeatureFlags
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             homeTab
             contractsTab
             foreverTab
-            if features.isPaymentScreenEnabled {
-                paymentsTab
-            }
+            paymentsTab
             profileTab
         }
         .onChange(of: vm.selectedTab) { newTab in

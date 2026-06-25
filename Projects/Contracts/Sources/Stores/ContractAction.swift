@@ -37,7 +37,7 @@ extension EditType {
             editTypes.append(.removeAddons)
         }
 
-        if Dependencies.featureFlags().isTerminationFlowEnabled, contract.supportsTermination {
+        if contract.supportsTermination {
             editTypes.append(.cancellation)
         }
 
