@@ -137,8 +137,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .scaleEffect(1.32)
+                            .frame(minWidth: 400, minHeight: 400)
                             .blur(radius: 20)
+                            .overlay {
+                                Color.black.opacity(0.25)
+                                    .blendMode(.overlay)
+                            }
                     )
             }
         } else {
@@ -268,11 +272,26 @@ private struct StatusPill: View {
 #Preview {
     hSection {
         ContractRow(
-            image: hCoreUIAssets.pillowHome.view,
+            image: hCoreUIAssets.bigPillowHomeowner.view,
+            terminationMessage: "Active",
+            contractDisplayName: "Insurance",
+            contractExposureName: "Address ∙ Coverage",
+            tierDisplayName: "tier display name"
+        )
+        ContractRow(
+            image: hCoreUIAssets.bigPillowRental.view,
+            terminationMessage: "Active",
+            contractDisplayName: "Insurance",
+            contractExposureName: "Address ∙ Coverage",
+            tierDisplayName: "tier display name"
+        )
+        ContractRow(
+            image: hCoreUIAssets.bigPillowAccident.view,
             terminationMessage: "Active",
             contractDisplayName: "Insurance",
             contractExposureName: "Address ∙ Coverage",
             tierDisplayName: "tier display name"
         )
     }
+    .fixedSize(horizontal: false, vertical: true)
 }
