@@ -9,49 +9,34 @@ public protocol FeatureFlagsClient {
 }
 
 public struct FeatureData: Codable, Equatable {
-    public let isTerminationFlowEnabled: Bool
     public let isUpdateNecessary: Bool
-    public let isPaymentScreenEnabled: Bool
     public let isConnectPaymentEnabled: Bool
-    public let isHelpCenterEnabled: Bool
     public let isSubmitClaimEnabled: Bool
     public let osVersionTooLow: Bool
     public let emailPreferencesEnabled: Bool
     public let isDemoMode: Bool
-    public let isMovingFlowEnabled: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
-    public let isClaimHistoryEnabled: Bool
     public let isNewConversationFromInboxEnabled: Bool
     public let isPuppyGuideEnabled: Bool
 
     public init(
-        isTerminationFlowEnabled: Bool,
         isUpdateNecessary: Bool,
-        isPaymentScreenEnabled: Bool,
         isConnectPaymentEnabled: Bool,
-        isHelpCenterEnabled: Bool,
         isSubmitClaimEnabled: Bool,
         osVersionTooLow: Bool,
         emailPreferencesEnabled: Bool,
         isDemoMode: Bool,
-        isMovingFlowEnabled: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool,
-        isClaimHistoryEnabled: Bool,
         isNewConversationFromInboxEnabled: Bool,
         isPuppyGuideEnabled: Bool
     ) {
-        self.isTerminationFlowEnabled = isTerminationFlowEnabled
         self.isUpdateNecessary = isUpdateNecessary
-        self.isPaymentScreenEnabled = isPaymentScreenEnabled
         self.isConnectPaymentEnabled = isConnectPaymentEnabled
-        self.isHelpCenterEnabled = isHelpCenterEnabled
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
         self.osVersionTooLow = osVersionTooLow
         self.emailPreferencesEnabled = emailPreferencesEnabled
         self.isDemoMode = isDemoMode
-        self.isMovingFlowEnabled = isMovingFlowEnabled
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
-        self.isClaimHistoryEnabled = isClaimHistoryEnabled
         self.isNewConversationFromInboxEnabled = isNewConversationFromInboxEnabled
         self.isPuppyGuideEnabled = isPuppyGuideEnabled
     }
@@ -76,18 +61,13 @@ public class FeatureFlags: ObservableObject {
     private var client: FeatureFlagsClient?
     private var featureDataCancellable: AnyCancellable?
     @Published public var data: FeatureData = .init(
-        isTerminationFlowEnabled: false,
         isUpdateNecessary: false,
-        isPaymentScreenEnabled: false,
         isConnectPaymentEnabled: false,
-        isHelpCenterEnabled: false,
         isSubmitClaimEnabled: false,
         osVersionTooLow: false,
         emailPreferencesEnabled: false,
         isDemoMode: false,
-        isMovingFlowEnabled: false,
         isAddonsRemovalFromMovingFlowEnabled: false,
-        isClaimHistoryEnabled: false,
         isNewConversationFromInboxEnabled: false,
         isPuppyGuideEnabled: false
     )

@@ -28,7 +28,6 @@ struct ContractTable: View {
         }
         return didMemberExpandCards
     }
-    @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -261,9 +260,7 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty,
-                featureFlags.isMovingFlowEnabled
-            {
+            if !activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
                         .buttons([

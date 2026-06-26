@@ -108,7 +108,7 @@ extension HomeScreen {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        if featureFlags.isHelpCenterEnabled {
+        if !featureFlags.isDemoMode {
             hButton(
                 .large,
                 .secondary,

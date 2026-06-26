@@ -102,7 +102,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .scaleEffect(1.32)
+                            .frame(minWidth: 400, minHeight: 400)
                             .blur(radius: 20)
                     )
             }

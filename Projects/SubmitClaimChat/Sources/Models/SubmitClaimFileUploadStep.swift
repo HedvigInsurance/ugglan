@@ -202,7 +202,7 @@ public class FilesUploadViewModel: ObservableObject {
                 fileGridViewModel.options.remove(.delete)
                 return alreadyUploadedFiles
             }
-        } catch let ex {
+        } catch {
             delayTimer?.cancel()
             delayTimer = nil
             isLoading = false

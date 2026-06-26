@@ -1,4 +1,5 @@
 import Apollo
+import AutomaticLog
 import Chat
 import Environment
 import Foundation
@@ -11,12 +12,12 @@ import hGraphQL
 class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
+    @Log
     func upload(
         files: [File],
         withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
-        log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
-        return try await client.upload(files: files, withProgress: withProgress)
+        try await client.upload(files: files, withProgress: withProgress)
     }
 }
 

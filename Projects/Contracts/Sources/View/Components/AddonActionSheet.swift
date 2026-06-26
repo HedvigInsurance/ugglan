@@ -8,6 +8,14 @@ struct AddonActionSheet: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     private let router = NavigationRouter()
     @State private var selectedOption: AddonAction.AddonActionType?
+
+    init(addonAction: AddonAction, contractsNavigationVm: ContractsNavigationViewModel) {
+        self.contractsNavigationVm = contractsNavigationVm
+        self.addonAction = addonAction
+        if addonAction.types.count == 1 {
+            selectedOption = addonAction.types.first
+        }
+    }
     var body: some View {
         hForm {
             hSection {
@@ -29,11 +37,6 @@ struct AddonActionSheet: View {
             options: [.navigationBarHidden],
             tracking: self
         )
-        .onAppear {
-            if addonAction.types.count == 1 {
-                selectedOption = addonAction.types.first
-            }
-        }
     }
 
     private var titleView: some View {
