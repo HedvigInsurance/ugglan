@@ -125,7 +125,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     }
 
     @MainActor
-    public var terminatedToday: Bool {
+    private var terminatedToday: Bool {
         if terminationDate == Date().localDateString {
             return true
         }
@@ -133,7 +133,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     }
 
     @MainActor
-    public var terminatedInPast: Bool {
+    private var terminatedInPast: Bool {
         if let terminationDate = terminationDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate
         {
@@ -169,12 +169,26 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     }
 
     @MainActor
-    public var activeInFuture: Bool {
+    var activeInFuture: Bool {
         if let inceptionDate = masterInceptionDate?.localDateToDate,
             let localDate = Date().localDateString.localDateToDate,
             inceptionDate.daysBetween(start: localDate) > 0
         {
             return true
+        }
+        return false
+    }
+
+    @MainActor
+    var active: Bool {
+        if let inceptionDate = masterInceptionDate?.localDateToDate,
+            let localDate = Date().localDateString.localDateToDate
+        {
+            if let terminatesOn = terminationDate?.localDateToDate, terminatesOn.daysBetween(start: localDate) < 0 {
+                return false
+            } else if inceptionDate.daysBetween(start: localDate) <= 0 {
+                return true
+            }
         }
         return false
     }
