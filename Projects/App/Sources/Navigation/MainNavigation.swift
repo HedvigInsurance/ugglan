@@ -250,7 +250,7 @@ class MainNavigationViewModel: ObservableObject {
                 try await self?.appDelegate.setupFeatureFlags()
             } catch let exception {
                 log.info("Failed loading unleash experiments \(exception)")
-                try await Task.sleep(nanoseconds: 1_000_000_000)
+                try await Task.sleep(seconds: 1)
                 try Task.checkCancellation()
                 self?.checkForFeatureFlags()
             }

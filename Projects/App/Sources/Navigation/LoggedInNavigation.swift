@@ -594,7 +594,7 @@ struct LoggedInNavigation: View {
     private func fetchContracts() {
         // delay since we don't have a terms version right after the insurance is created
         Task {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            try? await Task.sleep(seconds: 1)
             let store: ContractStore = globalAppStateContainer.get()
             await store.fetchContracts()
         }
