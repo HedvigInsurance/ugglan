@@ -118,7 +118,7 @@ public struct AutomaticLog: BodyMacro {
         }
 
         let dictElements = metadata.parameterNames
-            .map { "\"\($0)\": AutomaticLog.redactedDescription(\($0), name: \"\($0)\")" }
+            .map { "\"\($0)\": AutomaticLog.redactedDescription(\($0) as Any, name: \"\($0)\")" }
             .joined(separator: ", ")
 
         let logSetupCode = """
@@ -161,7 +161,7 @@ public struct AutomaticLog: BodyMacro {
         let successLog: String
         if logOutput {
             successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult))")
+                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
                 """
         } else {
             successLog = """
@@ -209,7 +209,7 @@ public struct AutomaticLog: BodyMacro {
         let successLog: String
         if logOutput {
             successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult))")
+                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
                 """
         } else {
             successLog = """
