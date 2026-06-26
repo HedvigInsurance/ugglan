@@ -21,18 +21,13 @@ final class MockFeatureFlagsClient: FeatureFlagsClient, @unchecked Sendable {
 extension FeatureData {
     static func allOff(isNewConversationFromInboxEnabled: Bool = false) -> FeatureData {
         FeatureData(
-            isTerminationFlowEnabled: false,
             isUpdateNecessary: false,
-            isPaymentScreenEnabled: false,
             isConnectPaymentEnabled: false,
-            isHelpCenterEnabled: false,
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
             isDemoMode: true,
-            isMovingFlowEnabled: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
-            isClaimHistoryEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
             isPuppyGuideEnabled: false
         )
