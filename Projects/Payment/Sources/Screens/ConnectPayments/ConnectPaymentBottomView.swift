@@ -22,11 +22,8 @@ struct ConnectPaymentBottomView: View {
                         hButton(
                             .large,
                             .secondary,
-                            content: .init(title: statusData.status.connectButtonTitle),
-                            { [weak paymentNavigationVm] in
-                                paymentNavigationVm?.connectPaymentVm.set()
-                            }
-                        )
+                            content: .init(title: statusData.status.connectButtonTitle)
+                        ) { [weak paymentNavigationVm] in paymentNavigationVm?.connectPaymentVm.set() }
                     }
                 }
                 .sectionContainerStyle(.transparent)

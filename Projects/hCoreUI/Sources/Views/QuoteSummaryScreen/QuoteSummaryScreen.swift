@@ -188,11 +188,10 @@ private struct ContractCardView: View {
             .ghost,
             content: .init(
                 title: L10n.ClaimStatus.ClaimDetails.button
-            ),
-            {
-                vm.isShowDetailsPresented = contract
-            }
-        )
+            )
+        ) {
+            vm.isShowDetailsPresented = contract
+        }
         .hWithTransition(.scale)
         .hButtonWithBorder
     }
@@ -241,11 +240,8 @@ private struct PriceSummarySection: View {
                         .primary,
                         content: .init(
                             title: L10n.changeAddressAcceptOffer
-                        ),
-                        { [weak vm] in
-                            vm?.isConfirmChangesPresented = true
-                        }
-                    )
+                        )
+                    ) { [weak vm] in vm?.isConfirmChangesPresented = true }
 
                     hCancelButton {
                         isCancelAlertPresented = true

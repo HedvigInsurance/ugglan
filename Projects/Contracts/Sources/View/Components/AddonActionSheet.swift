@@ -83,10 +83,8 @@ struct AddonActionSheet: View {
     }
 
     private func actionButton(for type: AddonAction.AddonActionType) -> some View {
-        hButton(.large, .primary, content: .init(title: type.title)) {
-            executeAction(for: type)
-        }
-        .hButtonIsLoading(isLoading)
+        hButton(.large, .primary, content: .init(title: type.title)) { executeAction(for: type) }
+            .hButtonIsLoading(isLoading)
     }
 
     private var isLoading: Bool {
@@ -109,9 +107,7 @@ struct AddonActionSheet: View {
     }
 
     private var cancelButton: some View {
-        hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) {
-            router.dismiss()
-        }
+        hButton(.large, .secondary, content: .init(title: L10n.generalCloseButton)) { router.dismiss() }
     }
 
     private func executeAction(for type: AddonAction.AddonActionType?) {

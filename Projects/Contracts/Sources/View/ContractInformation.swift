@@ -84,21 +84,20 @@ struct ContractInformationView: View {
                                 hButton(
                                     .large,
                                     .secondary,
-                                    content: .init(title: vm.getButtonText(contract)),
-                                    {
-                                        if contract.onlyCoInsured() {
-                                            let contract: StakeholdersConfig = .init(
-                                                contract: contract,
-                                                stakeholderType: .coInsured,
-                                                fromInfoCard: false
-                                            )
+                                    content: .init(title: vm.getButtonText(contract))
+                                ) {
+                                    if contract.onlyCoInsured() {
+                                        let contract: StakeholdersConfig = .init(
+                                            contract: contract,
+                                            stakeholderType: .coInsured,
+                                            fromInfoCard: false
+                                        )
 
-                                            contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
-                                        } else {
-                                            contractsNavigationVm.changeYourInformationContract = contract
-                                        }
+                                        contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
+                                    } else {
+                                        contractsNavigationVm.changeYourInformationContract = contract
                                     }
-                                )
+                                }
                             }
                             moveAddressButton(contract: contract)
                         }
@@ -351,11 +350,8 @@ struct ContractInformationView: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: L10n.InsuranceDetails.moveButton),
-                {
-                    contractsNavigationVm.isChangeAddressPresented = true
-                }
-            )
+                content: .init(title: L10n.InsuranceDetails.moveButton)
+            ) { contractsNavigationVm.isChangeAddressPresented = true }
         }
     }
 }

@@ -39,13 +39,8 @@ struct InsuranceEvidenceProcessingScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                content: .init(title: L10n.Certificates.download),
-                                {
-                                    Task { [weak vm] in
-                                        await vm?.presentShare()
-                                    }
-                                }
-                            )
+                                content: .init(title: L10n.Certificates.download)
+                            ) { [weak vm] in await vm?.presentShare() }
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )

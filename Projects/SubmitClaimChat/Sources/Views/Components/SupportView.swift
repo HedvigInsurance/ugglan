@@ -21,12 +21,11 @@ struct SupportView: View {
                 hButton(
                     .medium,
                     .primary,
-                    content: .init(title: L10n.CrossSell.Info.faqChatButton),
-                    {
-                        router.dismiss()
-                        openChat()
-                    }
-                )
+                    content: .init(title: L10n.CrossSell.Info.faqChatButton)
+                ) {
+                    router.dismiss()
+                    openChat()
+                }
             }
             .fixedSize(horizontal: false, vertical: true)
             .padding(.top, .padding32)

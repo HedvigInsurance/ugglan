@@ -144,11 +144,8 @@ struct MissedPaymentScreen: View {
         hButton(
             .medium,
             .ghost,
-            content: .init(title: L10n.paymentsPaymentOverdueDetailsViewDetails),
-            { [weak router] in
-                router?.push(missedPaymentdata.paymentData)
-            }
-        )
+            content: .init(title: L10n.paymentsPaymentOverdueDetailsViewDetails)
+        ) { [weak router] in router?.push(missedPaymentdata.paymentData) }
         .hButtonTakeFullWidth(true)
         .hButtonWithBorder
     }
@@ -207,11 +204,8 @@ struct MissedPaymentScreen: View {
             .primary,
             content: .init(
                 title: L10n.paymentsPaymentOverdueDetailsPay(missedPaymentdata.paymentData.payment.net.formattedAmount)
-            ),
-            { [weak vm] in
-                vm?.chargeOutstandingPayment()
-            }
-        )
+            )
+        ) { [weak vm] in vm?.chargeOutstandingPayment() }
         .hButtonTakeFullWidth(true)
         .hButtonIsLoading(vm.processingState == .loading)
     }

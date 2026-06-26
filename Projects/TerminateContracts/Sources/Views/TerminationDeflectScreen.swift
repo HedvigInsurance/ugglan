@@ -62,9 +62,7 @@ struct TerminationDeflectScreen: View {
                 .large,
                 .primary,
                 content: .init(title: content.primaryButtonTitle)
-            ) {
-                handlePrimaryAction()
-            }
+            ) { handlePrimaryAction() }
 
             if content.canContinueTermination {
                 hButton(
