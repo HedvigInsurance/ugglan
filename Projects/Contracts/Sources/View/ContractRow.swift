@@ -137,7 +137,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .scaleEffect(1.32)
+                            .frame(minWidth: 400, minHeight: 400)
                             .blur(radius: 20)
                     )
             }
@@ -267,12 +267,29 @@ private struct StatusPill: View {
 
 #Preview {
     hSection {
-        ContractRow(
-            image: hCoreUIAssets.pillowHome.view,
-            terminationMessage: "Active",
-            contractDisplayName: "Insurance",
-            contractExposureName: "Address ∙ Coverage",
-            tierDisplayName: "tier display name"
-        )
+        VStack(spacing: .padding8) {
+            ContractRow(
+                image: hCoreUIAssets.bigPillowHomeowner.view,
+                terminationMessage: "Active",
+                contractDisplayName: "Insurance",
+                contractExposureName: "Address ∙ Coverage",
+                tierDisplayName: "tier display name"
+            )
+            ContractRow(
+                image: hCoreUIAssets.bigPillowRental.view,
+                terminationMessage: "Active",
+                contractDisplayName: "Insurance",
+                contractExposureName: "Address ∙ Coverage",
+                tierDisplayName: "tier display name"
+            )
+            ContractRow(
+                image: hCoreUIAssets.bigPillowAccident.view,
+                terminationMessage: "Active",
+                contractDisplayName: "Insurance",
+                contractExposureName: "Address ∙ Coverage",
+                tierDisplayName: "tier display name"
+            )
+        }
     }
+    .fixedSize(horizontal: false, vertical: true)
 }
