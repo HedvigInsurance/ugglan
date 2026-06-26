@@ -7,7 +7,6 @@ import hGraphQL
 
 class HomeClientOctopus: HomeClient {
     @Inject private var octopus: hOctopus
-    @Inject private var featureFlags: FeatureFlags
 
     func getImportantMessages() async throws -> [ImportantMessage] {
         let data =
@@ -77,7 +76,7 @@ class HomeClientOctopus: HomeClient {
             contractAction.append(.upgradeCoverage)
         }
 
-        if actions.isCancelInsuranceEnabled, featureFlags.isTerminationFlowEnabled {
+        if actions.isCancelInsuranceEnabled {
             contractAction.append(.cancellation)
         }
 
@@ -85,7 +84,7 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
 
-        if actions.isMovingEnabled, featureFlags.isMovingFlowEnabled {
+        if actions.isMovingEnabled {
             quickActions.append(.changeAddress)
         }
 
