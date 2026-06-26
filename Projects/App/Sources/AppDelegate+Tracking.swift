@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Authentication
 import DatadogCore
 import DatadogCrashReporting
@@ -6,7 +7,6 @@ import DatadogLogs
 import DatadogRUM
 import DatadogTrace
 import Environment
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -32,8 +32,8 @@ extension AppDelegate {
             with: configuration,
             trackingConsent: .granted
         )
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        if let userId = store.state.memberDetails?.id {
+        let store: ProfileStore = globalAppStateContainer.get()
+        if let userId = store.memberDetails?.id {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)
         }

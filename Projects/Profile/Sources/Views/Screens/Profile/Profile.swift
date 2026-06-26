@@ -1,12 +1,12 @@
 import Apollo
+import AppStateContainer
 import Home
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ProfileView: View {
-    @PresentableStore var store: ProfileStore
+    @AppObservedObject var store: ProfileStore
     @State private var showLogoutAlert = false
 
     private var logoutAlert: SwiftUI.Alert {
@@ -23,33 +23,26 @@ public struct ProfileView: View {
 
     public var body: some View {
         hForm {
-            PresentableStoreLens(
-                ProfileStore.self,
-                getter: { state in
-                    state
+            hSection {
+                ProfileRow(row: .myInfo)
+                certificatesView
+                if store.partnerData?.shouldShowEuroBonus ?? false {
+                    let number = store.partnerData?.sas?.eurobonusNumber ?? ""
+                    let hasEntereNumber = !number.isEmpty
+                    ProfileRow(
+                        row: .eurobonus(hasEnteredNumber: hasEntereNumber)
+                    )
                 }
-            ) { stateData in
-                hSection {
-                    ProfileRow(row: .myInfo)
-                    certificatesView(for: stateData)
-                    if store.state.partnerData?.shouldShowEuroBonus ?? false {
-                        let number = store.state.partnerData?.sas?.eurobonusNumber ?? ""
-                        let hasEntereNumber = !number.isEmpty
-                        ProfileRow(
-                            row: .eurobonus(hasEnteredNumber: hasEntereNumber)
-                        )
-                    }
-                    if Dependencies.featureFlags().isClaimHistoryEnabled {
-                        ProfileRow(row: .claimHistory)
-                    }
-                    ProfileRow(row: .information)
-                    ProfileRow(row: .settings)
-                        .hWithoutDivider
+                if Dependencies.featureFlags().isClaimHistoryEnabled {
+                    ProfileRow(row: .claimHistory)
                 }
-                .sectionContainerStyle(.transparent)
-                .padding(.top, .padding16)
-                .hWithoutHorizontalPadding([.row, .divider])
+                ProfileRow(row: .information)
+                ProfileRow(row: .settings)
+                    .hWithoutDivider
             }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, .padding16)
+            .hWithoutHorizontalPadding([.row, .divider])
         }
         .hFormAttachToBottom {
             hSection {
@@ -75,23 +68,23 @@ public struct ProfileView: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .onAppear {
-            store.send(.fetchProfileState)
+        .task {
+            await store.fetchProfileState()
         }
         .hSetScrollBounce(to: true)
         .onPullToRefresh {
-            await store.sendAsync(.fetchProfileState)
+            await store.fetchProfileState()
         }
         .navigationTitle(L10n.profileTitle)
     }
 
     @ViewBuilder
-    private func certificatesView(for stateData: ProfileState) -> some View {
-        if stateData.showTravelCertificate, stateData.canCreateInsuranceEvidence {
+    private var certificatesView: some View {
+        if store.showTravelCertificate, store.canCreateInsuranceEvidence {
             ProfileRow(row: .certificates)
-        } else if store.state.showTravelCertificate {
+        } else if store.showTravelCertificate {
             ProfileRow(row: .travelCertificate)
-        } else if stateData.canCreateInsuranceEvidence {
+        } else if store.canCreateInsuranceEvidence {
             ProfileRow(row: .insuranceEvidence)
         }
     }

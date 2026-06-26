@@ -1,5 +1,5 @@
+import AppStateContainer
 import Home
-import PresentableStore
 import XCTest
 import hCore
 
@@ -15,7 +15,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
         Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
         Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
@@ -44,19 +44,17 @@ final class MyInfoViewModelTests: XCTestCase {
         email: String = email
     ) async -> ProfileStore {
         let store = ProfileStore()
-        globalPresentableStoreContainer.initialize(store)
+        globalAppStateContainer.register(store)
         self.store = store
-        await store.sendAsync(
-            .setMemberDetails(
-                details: .init(
-                    id: "memberId",
-                    firstName: "first name",
-                    lastName: "last name",
-                    phone: phone,
-                    email: email,
-                    hasTravelCertificate: true,
-                    isContactInfoUpdateNeeded: false
-                )
+        store.setMemberDetails(
+            .init(
+                id: "memberId",
+                firstName: "first name",
+                lastName: "last name",
+                phone: phone,
+                email: email,
+                hasTravelCertificate: true,
+                isContactInfoUpdateNeeded: false
             )
         )
         return store
@@ -76,8 +74,8 @@ final class MyInfoViewModelTests: XCTestCase {
         await delay(0.1)
 
         XCTAssertTrue(success)
-        XCTAssertEqual(store.state.memberDetails?.phone, newPhone)
-        XCTAssertEqual(store.state.memberDetails?.email, email)
+        XCTAssertEqual(store.memberDetails?.phone, newPhone)
+        XCTAssertEqual(store.memberDetails?.email, email)
         XCTAssertNil(model.phoneError)
         XCTAssertNil(model.emailError)
         XCTAssertTrue(mockService.events.contains(.memberUpdate))
@@ -97,7 +95,7 @@ final class MyInfoViewModelTests: XCTestCase {
         XCTAssertEqual(model.phoneError, MyInfoSaveError.phoneNumberEmpty.localizedDescription)
         XCTAssertNil(model.emailError)
         XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.state.memberDetails?.phone, phone)
+        XCTAssertEqual(store.memberDetails?.phone, phone)
     }
 
     // MARK: - Email Update Success
@@ -114,8 +112,8 @@ final class MyInfoViewModelTests: XCTestCase {
         await delay(0.1)
 
         XCTAssertTrue(success)
-        XCTAssertEqual(store.state.memberDetails?.email, newEmail)
-        XCTAssertEqual(store.state.memberDetails?.phone, phone)
+        XCTAssertEqual(store.memberDetails?.email, newEmail)
+        XCTAssertEqual(store.memberDetails?.phone, phone)
         XCTAssertNil(model.phoneError)
         XCTAssertNil(model.emailError)
         XCTAssertTrue(mockService.events.contains(.memberUpdate))
@@ -135,7 +133,7 @@ final class MyInfoViewModelTests: XCTestCase {
         XCTAssertEqual(model.emailError, MyInfoSaveError.emailEmpty.localizedDescription)
         XCTAssertNil(model.phoneError)
         XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.state.memberDetails?.email, email)
+        XCTAssertEqual(store.memberDetails?.email, email)
     }
 
     func testSave_withMalformedEmail_failsWithEmailMalformedError() async throws {
@@ -151,7 +149,7 @@ final class MyInfoViewModelTests: XCTestCase {
         XCTAssertEqual(model.emailError, MyInfoSaveError.emailMalformed.localizedDescription)
         XCTAssertNil(model.phoneError)
         XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.state.memberDetails?.email, email)
+        XCTAssertEqual(store.memberDetails?.email, email)
     }
 
     // MARK: - API Failure
@@ -170,7 +168,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         XCTAssertFalse(success)
         XCTAssertTrue(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.state.memberDetails?.phone, phone)
-        XCTAssertEqual(store.state.memberDetails?.email, email)
+        XCTAssertEqual(store.memberDetails?.phone, phone)
+        XCTAssertEqual(store.memberDetails?.email, email)
     }
 }

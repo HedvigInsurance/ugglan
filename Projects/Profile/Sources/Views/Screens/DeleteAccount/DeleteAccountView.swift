@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -11,8 +11,8 @@ public struct DeleteAccountView: View {
     public init(
         vm: DeleteAccountViewModel
     ) {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        self.memberDetails = store.state.memberDetails
+        let store: ProfileStore = globalAppStateContainer.get()
+        self.memberDetails = store.memberDetails
         self.vm = vm
     }
 

@@ -1,32 +1,26 @@
 import Apollo
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCoreUI
 
 public struct CertificatesScreen: View {
+    @AppObservedObject var store: ProfileStore
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
     public var body: some View {
         hForm {
-            PresentableStoreLens(
-                ProfileStore.self,
-                getter: { state in
-                    state
+            hSection {
+                if store.showTravelCertificate {
+                    ProfileRow(row: .travelCertificate)
                 }
-            ) { stateData in
-                hSection {
-                    if stateData.showTravelCertificate {
-                        ProfileRow(row: .travelCertificate)
-                    }
-                    if stateData.canCreateInsuranceEvidence {
-                        ProfileRow(row: .insuranceEvidence)
-                    }
+                if store.canCreateInsuranceEvidence {
+                    ProfileRow(row: .insuranceEvidence)
                 }
-                .sectionContainerStyle(.transparent)
-                .padding(.top, .padding16)
-                .hWithoutHorizontalPadding([.row, .divider])
-                .environmentObject(profileNavigationVm)
             }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, .padding16)
+            .hWithoutHorizontalPadding([.row, .divider])
+            .environmentObject(profileNavigationVm)
         }
     }
 }
