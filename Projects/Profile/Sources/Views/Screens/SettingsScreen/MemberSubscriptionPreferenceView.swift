@@ -45,10 +45,10 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
     var profileService = ProfileService()
     var profileNavigationViewModel: ProfileNavigationViewModel?
+    let store: ProfileStore = globalAppStateContainer.get()
     init() {}
 
     func setMemberId() {
-        let store: ProfileStore = globalAppStateContainer.get()
         memberId = store.memberDetails?.id ?? ""
         updateUnsubscibed()
     }

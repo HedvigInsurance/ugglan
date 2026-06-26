@@ -10,6 +10,7 @@ struct InformationScreen: View {
     @State var showSubmitBugAlert = false
     @State var hasPressedSubmitBugOk = false
     @StateObject private var vm = InformationViewModel()
+    let store: ProfileStore = globalAppStateContainer.get()
 
     var body: some View {
         hForm {
@@ -77,7 +78,6 @@ struct InformationScreen: View {
     }
 
     private var submitBugButton: some View {
-        let store: ProfileStore = globalAppStateContainer.get()
         let memberId = store.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
         let deviceId = vm.deviceId ?? "N/A"
