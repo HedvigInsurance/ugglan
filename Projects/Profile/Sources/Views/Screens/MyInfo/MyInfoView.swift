@@ -68,12 +68,10 @@ public struct MyInfoView: View {
 
     private var buttonView: some View {
         VStack(spacing: .padding8) {
-            hSaveButton(.primary) {
-                Task { [weak vm, weak router] in
-                    let success = await vm?.save() ?? false
-                    if success && presentationMode == .sheet {
-                        router?.dismiss()
-                    }
+            hSaveButton(.primary) { [weak vm, weak router] in
+                let success = await vm?.save() ?? false
+                if success && presentationMode == .sheet {
+                    router?.dismiss()
                 }
             }
             .hButtonIsLoading(vm.viewState == .loading)

@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -10,14 +11,14 @@ public class FetchClaimDetailsService {
         self.id = id
     }
 
+    @Log
     public func get() async throws -> ClaimModel {
-        log.info("\(FetchClaimDetailsService.self): get for \(id)", error: nil, attributes: nil)
-        return try await client.get(for: id)
+        try await client.get(for: id)
     }
 
+    @Log
     public func getPartnerClaim() async throws -> ClaimModel {
-        log.info("\(FetchClaimDetailsService.self): getPartnerClaim for \(id)", error: nil, attributes: nil)
-        return try await client.getPartnerClaim(for: id)
+        try await client.getPartnerClaim(for: id)
     }
 
     public func getWithPartnerFallback() async throws -> ClaimModel {
@@ -28,14 +29,14 @@ public class FetchClaimDetailsService {
         }
     }
 
+    @Log
     public func getFiles() async throws -> [File] {
-        log.info("\(FetchClaimDetailsService.self): getFiles for \(id)", error: nil, attributes: nil)
-        return try await client.getFiles(for: id)
+        try await client.getFiles(for: id)
     }
 
+    @Log
     public func acknowledgeClosedStatus(for id: String) async throws {
-        log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(id)", error: nil, attributes: nil)
-        return try await client.acknowledgeClosedStatus(for: id)
+        try await client.acknowledgeClosedStatus(for: id)
     }
 }
 

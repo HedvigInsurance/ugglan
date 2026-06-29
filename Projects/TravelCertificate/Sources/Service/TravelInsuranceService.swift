@@ -1,34 +1,28 @@
 import Addons
+import AutomaticLog
 import Foundation
-//
-//  TravelInsuranceService.swift
-//  TravelCertificate
-//
-//  Created by Sladan Nimcevic on 2025-03-11.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import hCore
 
 @MainActor
 public class TravelInsuranceService {
     @Inject var service: TravelInsuranceClient
 
+    @Log
     public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
-        log.info("TravelInsuranceService: getSpecifications", error: nil, attributes: nil)
-        return try await service.getSpecifications()
+        try await service.getSpecifications()
     }
 
+    @Log
     public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
-        log.info("TravelInsuranceClient: submitForm", error: nil, attributes: ["data": dto])
-        return try await service.submitForm(dto: dto)
+        try await service.submitForm(dto: dto)
     }
 
+    @Log
     public func getList(
         source: AddonSource
     ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?
     ) {
-        log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
-        return try await service.getList(source: source)
+        try await service.getList(source: source)
     }
 }

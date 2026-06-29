@@ -68,15 +68,19 @@ public struct OpenEmailClientButton: View {
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
         emailClients = {
-            let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
-            let gmailURLString = addEmailUrlComponents(baseUrl: "googlegmail:///co?")
-            let outlookURLString = addEmailUrlComponents(baseUrl: "ms-outlook://compose?")
+            let appleURLString = options == nil ? "message://" : addEmailUrlComponents(baseUrl: "mailto:?")
+            let gmailURLString =
+                options == nil ? "googlegmail://" : addEmailUrlComponents(baseUrl: "googlegmail:///co?")
+            let outlookURLString =
+                options == nil ? "ms-outlook://" : addEmailUrlComponents(baseUrl: "ms-outlook://compose?")
 
-            return [
+            let candidates = [
                 EmailClient(url: URL(string: appleURLString), displayName: "Apple Mail"),
                 EmailClient(url: URL(string: gmailURLString), displayName: "Gmail"),
                 EmailClient(url: URL(string: outlookURLString), displayName: "Outlook"),
             ]
+
+            return candidates.filter { $0.isInstalled }
         }()
     }
 
@@ -118,10 +122,9 @@ public struct OpenEmailClientButton: View {
             ActionSheet(
                 title: Text(L10n.Login.openEmailAppButton),
                 buttons: [
-                    emailClients.compactMap { $0.isInstalled ? $0 : nil }
-                        .map { emailClient in
-                            .default(Text(emailClient.displayName)) { emailClient.open() }
-                        },
+                    emailClients.map { emailClient in
+                        .default(Text(emailClient.displayName)) { emailClient.open() }
+                    },
                     [.cancel()],
                 ]
                 .flatMap { $0 }
@@ -136,29 +139,23 @@ public struct OpenEmailClientButton: View {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
-                {
-                    if hasAcceptedAlert {
-                        sheetPresented = true
-                    } else {
-                        hasPressedButton?()
-                    }
+                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton)
+            ) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
                 }
-            )
+            }
 
         case .primary:
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: buttonText ?? L10n.Login.openEmailAppButton),
-                {
-                    if hasAcceptedAlert {
-                        sheetPresented = true
-                    } else {
-                        hasPressedButton?()
-                    }
+            hButton(.large, .primary, content: .init(title: buttonText ?? L10n.Login.openEmailAppButton)) {
+                if hasAcceptedAlert {
+                    sheetPresented = true
+                } else {
+                    hasPressedButton?()
                 }
-            )
+            }
         }
     }
 }

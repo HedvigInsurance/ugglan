@@ -140,24 +140,21 @@ struct PHPAssetPreview: View {
                     hButton(
                         .medium,
                         .secondaryAlt,
-                        content: .init(title: L10n.chatUploadPresend),
-                        {
-                            Task {
-                                withAnimation {
-                                    loading = true
-                                }
-                                do {
-                                    if let file = try? await asset.getFile() {
-                                        onSend(.init(type: .file(file: file)))
-                                    }
-                                }
-                                withAnimation {
-                                    loading = false
-                                    selected = false
-                                }
+                        content: .init(title: L10n.chatUploadPresend)
+                    ) {
+                        withAnimation {
+                            loading = true
+                        }
+                        do {
+                            if let file = try? await asset.getFile() {
+                                onSend(.init(type: .file(file: file)))
                             }
                         }
-                    )
+                        withAnimation {
+                            loading = false
+                            selected = false
+                        }
+                    }
                     .hCustomButtonView {
                         if loading {
                             ProgressView()

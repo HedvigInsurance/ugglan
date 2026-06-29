@@ -215,12 +215,6 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         } else {
             return 26
         }
-        switch self {
-        case .travelCertificate, .insuranceEvidence:
-            return 40
-        case .crossSell, .firstVet, .chat:
-            return 40
-        }
     }
 
     @MainActor

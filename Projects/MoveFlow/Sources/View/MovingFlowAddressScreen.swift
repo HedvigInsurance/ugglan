@@ -82,11 +82,8 @@ struct MovingFlowAddressScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: vm.continueButtonTitle),
-                    {
-                        continuePressed()
-                    }
-                )
+                    content: .init(title: vm.continueButtonTitle)
+                ) { continuePressed() }
             }
         }
     }

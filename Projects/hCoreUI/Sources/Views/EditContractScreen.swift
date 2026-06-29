@@ -50,14 +50,13 @@ public struct EditContractScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton),
-                            { [weak router] in
-                                if let selectedType {
-                                    router?.dismiss()
-                                    onSelectedType(selectedType)
-                                }
+                            content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton)
+                        ) { [weak router] in
+                            if let selectedType {
+                                router?.dismiss()
+                                onSelectedType(selectedType)
                             }
-                        )
+                        }
                         .disabled(selectedType == nil)
                         .accessibilityHint(
                             selectedType != nil
@@ -87,9 +86,7 @@ public struct EditContractScreen: View {
     return hForm {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
             .environmentObject(NavigationRouter())
-        hButton(.large, .primary, content: .init(title: "test")) {
-            showBottomSheet = true
-        }
+        hButton(.large, .primary, content: .init(title: "test")) { showBottomSheet = true }
     }
     .hFormContentPosition(.bottom)
     .detent(presented: $showBottomSheet) {

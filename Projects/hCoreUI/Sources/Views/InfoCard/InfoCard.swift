@@ -95,22 +95,16 @@ public struct InfoCard: View {
         hButton(
             .small,
             .secondary,
-            content: .init(title: config.buttonTitle),
-            {
-                config.buttonAction()
-            }
-        )
+            content: .init(title: config.buttonTitle)
+        ) { config.buttonAction() }
     }
 
     func secondaryAltButton(_ config: InfoCardButtonConfig) -> some View {
         hButton(
             .small,
             .secondaryAlt,
-            content: .init(title: config.buttonTitle),
-            {
-                config.buttonAction()
-            }
-        )
+            content: .init(title: config.buttonTitle)
+        ) { config.buttonAction() }
     }
 }
 

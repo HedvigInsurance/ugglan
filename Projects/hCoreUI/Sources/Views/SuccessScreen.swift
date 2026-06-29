@@ -75,9 +75,8 @@ public struct SuccessScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: L10n.Certificates.download),
-                            {}
-                        )
+                            content: .init(title: L10n.Certificates.download)
+                        ) {}
 
                         hCloseButton {}
                     }

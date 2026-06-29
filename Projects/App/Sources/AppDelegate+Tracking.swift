@@ -59,7 +59,7 @@ extension AppDelegate {
             )
         )
 
-        URLSessionInstrumentation.enable(
+        URLSessionInstrumentation.enableDurationBreakdown(
             with: .init(
                 delegateClass: InterceptingURLSessionClient.self
             )

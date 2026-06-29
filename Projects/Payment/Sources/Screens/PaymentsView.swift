@@ -186,9 +186,7 @@ public struct PaymentsView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { [weak router] in
-                        router?.push(PaymentsRouterAction.payoutMethod)
-                    }
+                    .onTap { [weak router] in router?.push(PaymentsRouterAction.payoutMethod) }
                 }
             }
             .sectionContainerStyle(.transparent)

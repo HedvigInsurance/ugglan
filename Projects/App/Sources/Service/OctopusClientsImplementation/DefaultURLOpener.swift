@@ -1,12 +1,13 @@
 import Authentication
+import AutomaticLog
 import UIKit
 import hCore
 
 class DefaultURLOpener: URLOpener {
     @Inject private var authorizationCodeClient: AuthorizationCodeClient
 
+    @Log
     public func open(_ url: URL) async {
-        log.info("Opening URL: \(url.absoluteString)", error: nil, attributes: nil)
         let urlToOpen = url.requiresAuthorization ? await urlWithAuthorizationCode(url) : url
         await UIApplication.shared.open(urlToOpen)
     }

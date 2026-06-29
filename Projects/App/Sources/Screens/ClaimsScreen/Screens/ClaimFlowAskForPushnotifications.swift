@@ -87,14 +87,11 @@ struct AskForPushNotifications: View {
         hButton(
             .medium,
             .primary,
-            content: .init(title: L10n.claimsActivateNotificationsCta),
-            {
-                Task {
-                    await UIApplication.shared.appDelegate.registerForPushNotifications()
-                    onActionExecuted()
-                }
-            }
-        )
+            content: .init(title: L10n.claimsActivateNotificationsCta)
+        ) {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+            onActionExecuted()
+        }
     }
 
     var closeButton: some View {

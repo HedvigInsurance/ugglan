@@ -90,22 +90,18 @@ public struct BankIDLoginQRView: View {
                                             image: hCoreUIAssets.bankID.view,
                                             alignment: .leading
                                         )
-                                    ),
-                                    {
-                                        vm.openBankId()
-                                    }
-                                )
+                                    )
+                                ) { vm.openBankId() }
                             }
 
                             hButton(
                                 .large,
                                 .ghost,
-                                content: .init(title: L10n.BankidMissingLogin.emailButton),
-                                {
-                                    router.push(AuthenticationRouterType.emailLogin)
-                                    vm.cancelLogin()
-                                }
-                            )
+                                content: .init(title: L10n.BankidMissingLogin.emailButton)
+                            ) {
+                                router.push(AuthenticationRouterType.emailLogin)
+                                vm.cancelLogin()
+                            }
                         }
                         .padding(.bottom, .padding16)
                     }

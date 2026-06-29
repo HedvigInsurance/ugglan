@@ -66,11 +66,8 @@ public struct InfoScreen: View {
                 hButton(
                     .large,
                     .ghost,
-                    content: .init(title: dismissButtonTitle),
-                    {
-                        onClickButton()
-                    }
-                )
+                    content: .init(title: dismissButtonTitle)
+                ) { onClickButton() }
             }
             .sectionContainerStyle(.transparent)
         }

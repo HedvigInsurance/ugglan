@@ -111,11 +111,8 @@ public struct TravelCertificatesListScreen: View {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: L10n.TravelCertificate.createNewCertificate),
-                {
-                    createNewPressed()
-                }
-            )
+                content: .init(title: L10n.TravelCertificate.createNewCertificate)
+            ) { createNewPressed() }
             .hButtonIsLoading(vm.isCreateNewLoading)
         }
     }

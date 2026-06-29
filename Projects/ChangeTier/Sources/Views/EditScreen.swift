@@ -149,11 +149,10 @@ struct EditScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.generalConfirm),
-                    {
-                        confirm()
-                    }
-                )
+                    content: .init(title: L10n.generalConfirm)
+                ) {
+                    confirm()
+                }
                 .accessibilityHint(hint)
                 hCancelButton {
                     dismissEdit()
