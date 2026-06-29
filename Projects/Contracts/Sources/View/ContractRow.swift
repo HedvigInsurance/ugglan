@@ -95,17 +95,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
     @ViewBuilder var background: some View {
         if let image {
-            HStack(alignment: .center, spacing: 0) {
-                Rectangle()
-                    .foregroundColor(.clear)
-                    .background(
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(minWidth: 400, minHeight: 400)
-                            .blur(radius: 20)
-                    )
-            }
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(minWidth: 400, minHeight: 400)
+                .blur(radius: 20, opaque: true)
+                .clipped()
         } else {
             hFillColor.Opaque.tertiary
         }
