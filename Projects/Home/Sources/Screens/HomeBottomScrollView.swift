@@ -55,6 +55,8 @@ struct HomeBottomScrollView: View {
 @MainActor
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
+    private let contractStore: ContractStore = globalAppStateContainer.get()
+
     private var localItems = Set<InfoCardView>() {
         didSet {
             withAnimation {
@@ -176,7 +178,6 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoInsured() {
-        let contractStore: ContractStore = globalAppStateContainer.get()
         contractStore.$activeContracts
             .map(\.hasMissingCoInsured)
             .removeDuplicates()
@@ -188,7 +189,6 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoOwners() {
-        let contractStore: ContractStore = globalAppStateContainer.get()
         contractStore.$activeContracts
             .map(\.hasMissingCoOwners)
             .removeDuplicates()
@@ -226,7 +226,6 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingPetChipIds() {
-        let contractStore: ContractStore = globalAppStateContainer.get()
         contractStore.$activeContracts
             .map { $0.contains { $0.missingPetChipId } }
             .removeDuplicates()
