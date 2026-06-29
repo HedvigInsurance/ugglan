@@ -47,7 +47,7 @@ extension HomeScreen {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .trackVisibility(as: HomeScreen.self)
-        .onAppear {
+        .task {
             vm.fetchHomeState()
         }
     }
@@ -100,8 +100,8 @@ extension HomeScreen {
                 .large,
                 .primary,
                 content: .init(title: L10n.HomeTab.claimButtonText),
-                {
-                    navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+                { [weak navigationVm] in
+                    navigationVm?.claimsAutomationStartInput = .init(sourceMessageId: nil)
                 }
             )
         }

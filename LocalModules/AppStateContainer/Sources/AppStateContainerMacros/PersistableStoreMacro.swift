@@ -59,13 +59,28 @@ public struct PersistableStoreMacro: ExtensionMacro {
         var result: [(name: String, type: String)] = []
 
         for member in classDecl.memberBlock.members {
+            guard let variable = member.decl.as(VariableDeclSyntax.self) else { continue }
+
+            // Persist stored `var` state only. `let`, `static`/`class`, and `lazy`
+            // properties cannot be assigned back from a decoded snapshot, so skip them.
+            guard variable.bindingSpecifier.tokenKind == .keyword(.var) else { continue }
             guard
-                let variable = member.decl.as(VariableDeclSyntax.self),
-                hasAttribute(variable, named: "Published"),
-                !hasAttribute(variable, named: "Transient")
+                !hasModifier(variable, .static),
+                !hasModifier(variable, .class),
+                !hasModifier(variable, .lazy)
+            else { continue }
+
+            // `@Transient` opts a property out of persistence; `@Inject` marks a DI
+            // service that is not Codable. Everything else is persisted by default.
+            guard
+                !hasAttribute(variable, named: "Transient"),
+                !hasAttribute(variable, named: "Inject")
             else { continue }
 
             for binding in variable.bindings {
+                // Computed properties have no stored value to snapshot.
+                guard !isComputed(binding) else { continue }
+
                 guard
                     let identifier = binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
                 else { continue }
@@ -91,6 +106,22 @@ public struct PersistableStoreMacro: ExtensionMacro {
         variable.attributes.contains { element in
             guard let attribute = element.as(AttributeSyntax.self) else { return false }
             return attribute.attributeName.trimmedDescription == name
+        }
+    }
+
+    private static func hasModifier(_ variable: VariableDeclSyntax, _ keyword: Keyword) -> Bool {
+        variable.modifiers.contains { $0.name.tokenKind == .keyword(keyword) }
+    }
+
+    private static func isComputed(_ binding: PatternBindingSyntax) -> Bool {
+        guard let accessorBlock = binding.accessorBlock else { return false }
+        switch accessorBlock.accessors {
+        case .getter:
+            // `var x: Int { 5 }` — getter shorthand.
+            return true
+        case .accessors(let accessors):
+            // A `get` accessor means computed; `willSet`/`didSet` only are still stored.
+            return accessors.contains { $0.accessorSpecifier.tokenKind == .keyword(.get) }
         }
     }
 

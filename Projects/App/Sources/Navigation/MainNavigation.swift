@@ -130,9 +130,19 @@ class MainNavigationViewModel: ObservableObject {
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
-                    loggedInVm = .init()
-                    appDelegate.logout()
                     analyticsService = AnalyticsService()
+                    // Recreate loggedInVm only AFTER clearData() has reset the
+                    // container — otherwise the new loggedInVm's nav VMs (e.g.
+                    // HomeNavigationViewModel.editStakeholdersVm) would
+                    // eagerly fetch and pin the about-to-be-discarded stores
+                    // via their property initializers' globalAppStateContainer.get(...).
+                    // Run in a detached Task so the view switch happens immediately
+                    // while the auth network logout completes in the background.
+                    Task { [weak self] in
+                        guard let self else { return }
+                        await self.appDelegate.logout()
+                        self.loggedInVm = .init()
+                    }
                 default:
                     break
                 }
