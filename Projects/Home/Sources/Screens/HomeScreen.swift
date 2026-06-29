@@ -7,7 +7,6 @@ import Contracts
 import CrossSell
 import Foundation
 import Payment
-import PresentableStore
 import SafariServices
 import SwiftUI
 import hCore
@@ -157,8 +156,8 @@ class HomeVM: ObservableObject {
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         Task { await crossSellStore.fetchRecommendedCrossSellId() }
         Task { await contractStore.fetchContracts() }
-        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-        paymentStore.send(.fetchPaymentStatus)
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        Task { await paymentStore.fetchPaymentStatus() }
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
