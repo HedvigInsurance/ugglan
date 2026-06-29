@@ -31,6 +31,7 @@ import hCoreUI
 @MainActor
 class PushNotificationHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     func handle(_ notification: Notification) {
         guard let object = notification.object as? PushNotificationType else { return }
@@ -115,8 +116,7 @@ class PushNotificationHandler {
     }
 
     func handleChangeTier(contractId: String?) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.isChangeTierPresented = .init(
                     source: .changeTier,
@@ -130,7 +130,7 @@ class PushNotificationHandler {
                 )
             }
         } else {
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.activeContracts
                 .filter(\.supportsChangeTier)
                 .map {
                     .init(
@@ -155,10 +155,8 @@ class PushNotificationHandler {
                 .filter({ $0.addonType == type })
                 .first
             {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
                 let addonContracts = addonBanner.contractIds.compactMap {
-                    contractStore.state.contractForId($0)
+                    contractStore.contractForId($0)
                 }
 
                 guard !addonContracts.isEmpty else {
@@ -212,6 +210,7 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -317,8 +316,7 @@ class DeepLinkHandler {
 
     private func handleMissingPetChipIds(_ url: URL) {
         Task { [weak viewModel] in
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
+            await contractStore.fetchContracts()
             let contractId = url.getParameter(property: .contractId)
             viewModel?.openMissingPetChipId(contractId: contractId)
         }
@@ -340,8 +338,7 @@ class DeepLinkHandler {
         dismissAndSelectTab(1)
         let contractId = url.getParameter(property: .contractId)
 
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
                 viewModel?.contractsNavigationVm.contractsRouter.push(contract)
@@ -401,9 +398,8 @@ class DeepLinkHandler {
 
     private func handleTerminateContract(_ url: URL) {
         guard let viewModel = viewModel else { return }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let contractId = url.getParameter(property: .contractId)
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             Task { [weak viewModel] in
                 do {
                     try await Task.sleep(seconds: 0.2)
@@ -419,7 +415,7 @@ class DeepLinkHandler {
             Task { [weak viewModel] in
                 do {
                     try await Task.sleep(seconds: 0.2)
-                    let contractsConfig = contractStore.state.activeContracts
+                    let contractsConfig = contractStore.activeContracts
                         .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
@@ -464,10 +460,9 @@ class DeepLinkHandler {
 
     private func handleEditStakeholder(url: URL, type: StakeholderType) {
         guard let viewModel = viewModel else { return }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             if let contractId = url.getParameter(property: .contractId),
-                let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+                let contract: Contracts.Contract = contractStore.contractForId(contractId)
             {
                 let contractConfig: StakeholdersConfig = .init(
                     contract: contract,
@@ -491,6 +486,7 @@ struct LoggedInNavigation: View {
     @StateObject private var router = NavigationRouter()
     @StateObject private var foreverRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     @InjectObservableObject private var features: FeatureFlags
     var body: some View {
         TabView(selection: $vm.selectedTab) {
@@ -569,8 +565,7 @@ struct LoggedInNavigation: View {
             case let .termination(terminateAction):
                 switch terminateAction {
                 case .done:
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.fetchContracts)
+                    Task { await contractStore.fetchContracts() }
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
                     homeStore.send(.fetchQuickActions)
                 case .chat:
@@ -592,10 +587,10 @@ struct LoggedInNavigation: View {
     }
 
     private func fetchContracts() {
-        // added delay since we don't have a terms version at the place right after the insurance has been created
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            store.send(.fetchContracts)
+        // delay since we don't have a terms version right after the insurance is created
+        Task {
+            try? await Task.sleep(seconds: 1)
+            await contractStore.fetchContracts()
         }
     }
 
@@ -633,10 +628,9 @@ struct LoggedInNavigation: View {
                 )
             case .deleteAccount:
                 let claimsStore: ClaimsStore = globalAppStateContainer.get()
-                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
                     claimsStore: claimsStore,
-                    contractsStore: contractsStore
+                    contractsStore: contractStore
                 )
 
                 DeleteAccountView(
@@ -685,11 +679,11 @@ struct LoggedInNavigation: View {
 }
 
 struct HandleMoving: View {
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
         MovingFlowNavigation(
             onMoved: {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
+                Task { await contractStore.fetchContracts() }
             }
         )
     }
@@ -896,6 +890,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isReviewContactInfoPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
@@ -917,9 +912,8 @@ class LoggedInNavigationViewModel: ObservableObject {
         EditStakeholdersViewModel.updatedStakeholderForContractId
             .receive(on: RunLoop.main)
             .delay(for: 1.5, scheduler: RunLoop.main)
-            .sink { _ in
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
+            .sink { [weak self] _ in
+                Task { await self?.contractStore.fetchContracts() }
 
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
@@ -1016,10 +1010,9 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func addonsChanged() {
         Task {
             let store: CrossSellStore = globalAppStateContainer.get()
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
             _ = await (
                 store.fetchAddonBanners(),
-                contractStore.sendAsync(.fetchContracts)
+                contractStore.fetchContracts()
             )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
@@ -1035,8 +1028,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func openChangeTier(notification: Notification) {
         let contractId = notification.object as? String
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             isChangeTierPresented = .init(
                 source: .betterCoverage,
                 contracts: [
@@ -1057,11 +1049,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func tierChanged() {
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             await (
                 crossSellStore.fetchAddonBanners(),
-                contractStore.sendAsync(.fetchContracts)
+                contractStore.fetchContracts()
             )
         }
     }
@@ -1071,8 +1062,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         homeStore.send(.fetchMemberState)
         Task {
             await delay(1)
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            contractStore.send(.fetchContracts)
+            await contractStore.fetchContracts()
         }
     }
 
@@ -1081,8 +1071,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func openMissingPetChipId(contractId: String? = nil) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
+        var contracts = contractStore.activeContracts.filter(\.missingPetChipId)
 
         if let contractId {
             contracts = contracts.filter { $0.id == contractId }
@@ -1135,8 +1124,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func openUrl(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+        Task { await contractStore.fetchContracts() }
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchQuickActions)
         var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)

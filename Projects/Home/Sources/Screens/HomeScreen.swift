@@ -129,6 +129,7 @@ class HomeVM: ObservableObject {
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+    let contractStore: ContractStore = globalAppStateContainer.get()
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -158,8 +159,7 @@ class HomeVM: ObservableObject {
         }
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         Task { await crossSellStore.fetchRecommendedCrossSellId() }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
+        Task { await contractStore.fetchContracts() }
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()

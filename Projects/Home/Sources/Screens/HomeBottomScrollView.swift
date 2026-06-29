@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Combine
 import Contracts
 import EditStakeholders
@@ -54,6 +55,8 @@ struct HomeBottomScrollView: View {
 @MainActor
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
+    private let contractStore: ContractStore = globalAppStateContainer.get()
+
     private var localItems = Set<InfoCardView>() {
         didSet {
             withAnimation {
@@ -194,10 +197,8 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoInsured() {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.stateSignal
-            .map(\.activeContracts.hasMissingCoInsured)
-            .prepend(contractStore.state.activeContracts.hasMissingCoInsured)
+        contractStore.$activeContracts
+            .map(\.hasMissingCoInsured)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
@@ -207,10 +208,8 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoOwners() {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.stateSignal
-            .map(\.activeContracts.hasMissingCoOwners)
-            .prepend(contractStore.state.activeContracts.hasMissingCoOwners)
+        contractStore.$activeContracts
+            .map(\.hasMissingCoOwners)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
@@ -256,10 +255,8 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleMissingPetChipIds() {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.stateSignal
-            .map { $0.activeContracts.contains { $0.missingPetChipId } }
-            .prepend(contractStore.state.activeContracts.contains { $0.missingPetChipId })
+        contractStore.$activeContracts
+            .map { $0.contains { $0.missingPetChipId } }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in

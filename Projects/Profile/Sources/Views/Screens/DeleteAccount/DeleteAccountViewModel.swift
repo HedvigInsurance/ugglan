@@ -21,7 +21,7 @@ public class DeleteAccountViewModel: ObservableObject {
         self.contractsStore = contractsStore
 
         hasActiveClaims = self.claimsStore.hasActiveClaims
-        hasActiveContracts = self.contractsStore.state.hasActiveContracts
+        hasActiveContracts = self.contractsStore.hasActiveContracts
 
         claimsStore.$activeClaims
             .receive(on: RunLoop.main)
@@ -30,8 +30,8 @@ public class DeleteAccountViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        contractsStore.stateSignal
-            .map(\.hasActiveContracts)
+        contractsStore.$activeContracts
+            .map { !$0.isEmpty }
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 self?.hasActiveContracts = value

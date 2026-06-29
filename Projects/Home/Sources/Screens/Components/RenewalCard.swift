@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Contracts
 import Foundation
 import PresentableStore
@@ -7,6 +8,7 @@ import hCore
 import hCoreUI
 
 public struct RenewalCardView: View {
+    @AppObservedObject private var contractStore: ContractStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     @State private var document: hPDFDocument?
@@ -49,12 +51,8 @@ public struct RenewalCardView: View {
                 state.upcomingRenewalContracts
             }
         ) { upcomingRenewalContracts in
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.activeContracts
-                }
-            ) { contracts in
+            Group {
+                let contracts = contractStore.activeContracts
                 if let contract = contracts.first(where: {
                     if $0.upcomingChangedAgreement == nil {
                         return false

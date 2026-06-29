@@ -1,6 +1,6 @@
+import AppStateContainer
 import EditStakeholders
 import Foundation
-import PresentableStore
 import TerminateContracts
 import hCore
 import hCoreUI
@@ -400,7 +400,7 @@ extension StakeholdersConfig {
         stakeholderType: StakeholderType,
         fromInfoCard: Bool
     ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: ContractStore = globalAppStateContainer.get()
 
         let (stakeholders, numberOfMissingStakeholders, numberOfMissingStakeholdersWithoutTermination) =
             switch stakeholderType {
@@ -419,7 +419,7 @@ extension StakeholdersConfig {
             numberOfMissingStakeholdersWithoutTermination: numberOfMissingStakeholdersWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
             exposureDisplayName: contract.exposureDisplayName,
-            preSelectedStakeholders: store.state.fetchAllStakeholdersNotInContract(
+            preSelectedStakeholders: store.fetchAllStakeholdersNotInContract(
                 contractId: contract.id,
                 stakeholderType: stakeholderType
             ),

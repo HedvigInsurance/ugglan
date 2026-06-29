@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 
 @testable import Contracts
@@ -9,6 +9,7 @@ final class ContractStoreTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
+        globalAppStateContainer.clearPersistence()
     }
 
     @MainActor
@@ -17,7 +18,7 @@ final class ContractStoreTests: XCTestCase {
         await waitUntil(description: "Store deinit") {
             self.store == nil
         }
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
     }
 
     func testFetchContractsSuccess() async {
@@ -26,10 +27,11 @@ final class ContractStoreTests: XCTestCase {
         )
         let store = ContractStore()
         self.store = store
-        await store.sendAsync(.fetchContracts)
-        assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
-        assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
-        assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
+        await store.fetchContracts()
+        assert(store.activeContracts == ContractsStack.getDefault.activeContracts)
+        assert(store.pendingContracts == ContractsStack.getDefault.pendingContracts)
+        assert(store.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
+        assert(store.fetchContractsError == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getContracts)
     }
@@ -41,35 +43,14 @@ final class ContractStoreTests: XCTestCase {
 
         let store = ContractStore()
         self.store = store
-        await store.sendAsync(.fetchContracts)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchContracts] != nil
-        }
+        await store.fetchContracts()
 
-        assert(store.state.activeContracts.isEmpty)
-        assert(store.state.pendingContracts.isEmpty)
-        assert(store.state.terminatedContracts.isEmpty)
+        assert(store.activeContracts.isEmpty)
+        assert(store.pendingContracts.isEmpty)
+        assert(store.terminatedContracts.isEmpty)
+        assert(store.fetchContractsError != nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getContracts)
-    }
-
-    func testFetchSuccess() async throws {
-        let mockService = MockData.createMockContractsService(
-            fetchContracts: { ContractsStack.getDefault }
-        )
-        let store = ContractStore()
-        self.store = store
-        await store.sendAsync(.fetchContracts)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchContracts] == nil
-        }
-
-        try await Task.sleep(seconds: 0.03)
-        assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
-        assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
-        assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.contains(.getContracts))
     }
 }
 

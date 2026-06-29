@@ -93,6 +93,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }
