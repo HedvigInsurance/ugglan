@@ -1,4 +1,4 @@
-import Authentication
+import AuthenticationCore
 import AutomaticLog
 import UIKit
 import hCore

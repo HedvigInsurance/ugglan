@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-@testable import Authentication
+@testable import AuthenticationCore
 
 @MainActor
 struct MockData {
@@ -30,7 +30,6 @@ struct MockData {
             exchangeCode: exchangeCode,
             exchangeToken: exchangeToken
         )
-        Dependencies.shared.add(module: Module { () -> AuthenticationClient in service })
         return service
     }
 }
@@ -39,10 +38,10 @@ enum AuthenticationError: Error {
     case otpInputError
 }
 
-typealias Submit = (Authentication.OTPState) async throws -> String
-typealias Start = (Authentication.OTPState) async throws -> (URL, URL, String?)
-typealias Resend = (Authentication.OTPState) async throws -> Void
-typealias StartSeBankId = (@escaping (Authentication.ObserveStatusResponseType) -> Void) async throws -> Void
+typealias Submit = (AuthenticationCore.OTPState) async throws -> String
+typealias Start = (AuthenticationCore.OTPState) async throws -> (URL, URL, String?)
+typealias Resend = (AuthenticationCore.OTPState) async throws -> Void
+typealias StartSeBankId = (@escaping (AuthenticationCore.ObserveStatusResponseType) -> Void) async throws -> Void
 typealias Logout = () async throws -> Void
 typealias ExchangeCode = (String) async throws -> Void
 typealias ExchangeToken = (String) async throws -> Void
@@ -86,26 +85,26 @@ class MockAuthenticationService: AuthenticationClient {
         self.exchangeToken = exchangeToken
     }
 
-    func submit(otpState: Authentication.OTPState) async throws -> String {
+    func submit(otpState: AuthenticationCore.OTPState) async throws -> String {
         events.append(.submit)
         let data = try await submitAuth(otpState)
         return data
     }
 
     func start(
-        with otpState: Authentication.OTPState
+        with otpState: AuthenticationCore.OTPState
     ) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         events.append(.start)
         let data = try await startAuth(otpState)
         return data
     }
 
-    func resend(otp otpState: Authentication.OTPState) async throws {
+    func resend(otp otpState: AuthenticationCore.OTPState) async throws {
         events.append(.resend)
         try await resendAuth(otpState)
     }
 
-    func startSeBankId(updateStatusTo: @escaping (Authentication.ObserveStatusResponseType) -> Void) async throws {
+    func startSeBankId(updateStatusTo: @escaping (AuthenticationCore.ObserveStatusResponseType) -> Void) async throws {
         events.append(.startSeBankId)
         try await startSeBankIdAuth(updateStatusTo)
     }

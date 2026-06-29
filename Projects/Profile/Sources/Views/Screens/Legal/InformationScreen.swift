@@ -1,5 +1,6 @@
 import Apollo
-import Authentication
+import AuthenticationCore
+import AuthenticationUI
 import Environment
 import PresentableStore
 import SwiftUI
