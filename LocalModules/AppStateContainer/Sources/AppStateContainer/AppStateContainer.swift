@@ -50,6 +50,9 @@ public final class AppStateContainer {
 
     public func clearPersistence() {
         try? FileManager.default.removeItem(at: Self.directory)
+        // Also wipe the old PresentableStore directory so logged-out users don't keep
+        // pre-migration snapshots on disk after `restore` has already drained them.
+        try? FileManager.default.removeItem(at: Self.legacyDirectory)
     }
 
     private func attachPersistence<S: AppStore>(_ store: S) {
@@ -71,21 +74,22 @@ public final class AppStateContainer {
 
     private func observe<S: PersistableAppStore>(_ store: S) {
         let key = ObjectIdentifier(S.self)
+        let url = Self.url(for: S.self)
         persistenceCancellables[key] = store.objectWillChange
             .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
             .sink { [weak store] _ in
                 guard let store else { return }
                 let snapshot = store.snapshot
                 Task.detached(priority: .background) {
-                    Self.persist(snapshot, for: S.self)
+                    Self.persist(snapshot, to: url)
                 }
             }
     }
 
-    private nonisolated static func persist<S: PersistableAppStore>(_ snapshot: S.Snapshot, for _: S.Type) {
+    private nonisolated static func persist<Snapshot: Encodable & Sendable>(_ snapshot: Snapshot, to url: URL) {
         guard let data = try? JSONEncoder().encode(snapshot) else { return }
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        try? data.write(to: url(for: S.self))
+        try? data.write(to: url)
     }
 
     nonisolated static var directory: URL {
@@ -97,10 +101,13 @@ public final class AppStateContainer {
         directory.appendingPathComponent(String(describing: S.self))
     }
 
-    nonisolated static func legacyURL<S: PersistableAppStore>(for _: S.Type) -> URL {
+    nonisolated static var legacyDirectory: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("PresentableStore")
-            .appendingPathComponent(String(describing: S.self))
+    }
+
+    nonisolated static func legacyURL<S: PersistableAppStore>(for _: S.Type) -> URL {
+        legacyDirectory.appendingPathComponent(String(describing: S.self))
     }
 }
 
