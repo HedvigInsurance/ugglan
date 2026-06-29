@@ -13,6 +13,7 @@ public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
     var redirectAction: (_ action: RedirectAction) -> Void
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     public init(
         contractsNavigationVm: ContractsNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content,
@@ -144,7 +145,6 @@ public struct ContractsNavigation<Content: View>: View {
             redirectAction(.termination(action: dismissType))
             switch dismissType {
             case .done, .chat, .openFeedback:
-                let contractStore: ContractStore = globalAppStateContainer.get()
                 Task { await contractStore.fetchContracts() }
                 contractsNavigationVm.contractsRouter.popToRoot()
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:

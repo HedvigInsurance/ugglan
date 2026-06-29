@@ -92,9 +92,7 @@ public final class HomeStore: AppStore {
     }
 
     public func fetchMissedCharge() async {
-        do {
-            hasMissedCharge = try await homeService.getHasMissedCharge()
-        } catch {}
+        hasMissedCharge = (try? await homeService.getHasMissedCharge()) ?? false
     }
 
     public func fetchImportantMessages() async {
