@@ -27,7 +27,6 @@ struct ContractTable: View {
         }
         return didMemberExpandCards
     }
-    @InjectObservableObject private var featureFlags: FeatureFlags
 
     private var contractsToShow: [Contract] {
         if showTerminated {
@@ -154,23 +153,11 @@ struct ContractTable: View {
                                 let peek = (bottomContentHeights[c.id] ?? 0)
                                 return sum - (height - peek)
                             }
-                    ContractRow(
-                        image: contract.pillowType?.bgImage,
-                        terminationMessage: contract.terminationMessage,
-                        contractDisplayName: contract.currentAgreement?.productVariant.displayName
-                            ?? "",
-                        contractExposureName: contract.exposureDisplayName,
-                        activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-                        activeInFuture: contract.activeInFuture,
-                        masterInceptionDate: contract.masterInceptionDate,
-                        tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
-                        onClick: {
-                            router.push(contract)
-                        },
-                        onBottomContentHeightChange: { height in
-                            bottomContentHeights[contract.id] = height
-                        }
-                    )
+                    ContractRow(contract: contract) {
+                        router.push(contract)
+                    } onBottomContentHeightChange: { height in
+                        bottomContentHeights[contract.id] = height
+                    }
                     .contractCardTruncate(to: !isExpanded)
                     .background(
                         GeometryReader { geo in
@@ -249,9 +236,7 @@ struct ContractTable: View {
 
     @ViewBuilder
     private var movingToANewHomeView: some View {
-        if !store.activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty,
-            featureFlags.isMovingFlowEnabled
-        {
+        if !store.activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty {
             hSection {
                 InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
                     .buttons([
