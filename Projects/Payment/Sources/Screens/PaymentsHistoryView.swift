@@ -120,22 +120,17 @@ public struct PaymentHistoryView: View {
 public class PaymentsHistoryViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @AppState private var store: PaymentStore
-    private var cancellables = Set<AnyCancellable>()
 
     init() {
         store.$isLoadingHistory
             .combineLatest(store.$loadHistoryError)
             .receive(on: RunLoop.main)
-            .sink { [weak self] isLoading, error in
-                if isLoading {
-                    self?.viewState = .loading
-                } else if let error {
-                    self?.viewState = .error(errorMessage: error)
-                } else {
-                    self?.viewState = .success
-                }
+            .map { isLoading, error in
+                if isLoading { return .loading }
+                if let error { return .error(errorMessage: error) }
+                return .success
             }
-            .store(in: &cancellables)
+            .assign(to: &$viewState)
     }
 }
 

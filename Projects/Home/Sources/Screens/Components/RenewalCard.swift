@@ -49,11 +49,7 @@ public struct RenewalCardView: View {
         Group {
             let contracts = contractStore.activeContracts
             if let contract = contracts.first(where: {
-                if $0.upcomingChangedAgreement == nil {
-                    return false
-                } else {
-                    return !$0.coInsured.isEmpty
-                }
+                $0.upcomingChangedAgreement != nil && !$0.coInsured.isEmpty
             }), showCoInsured ?? false {
                 InfoCard(
                     text: L10n.contractCoinsuredUpdateInFuture(
