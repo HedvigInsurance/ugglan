@@ -28,7 +28,6 @@ struct ContractTable: View {
         }
         return didMemberExpandCards
     }
-    @InjectObservableObject private var featureFlags: FeatureFlags
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -86,11 +85,10 @@ struct ContractTable: View {
                                             title: L10n.InsurancesTab.cancelledInsurancesLabel(
                                                 "\(terminatedContracts.count)"
                                             )
-                                        ),
-                                        {
-                                            router.push(ContractsRouterType.terminatedContracts)
-                                        }
-                                    )
+                                        )
+                                    ) {
+                                        router.push(ContractsRouterType.terminatedContracts)
+                                    }
                                     .hCustomButtonView {
                                         hRow {
                                             HStack {
@@ -168,15 +166,7 @@ struct ContractTable: View {
                                     return sum - (height - peek)
                                 }
                         ContractRow(
-                            image: contract.pillowType?.bgImage,
-                            terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
-                                ?? "",
-                            contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-                            activeInFuture: contract.activeInFuture,
-                            masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
+                            contract: contract,
                             onClick: {
                                 router.push(contract)
                             },
@@ -269,9 +259,7 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty,
-                featureFlags.isMovingFlowEnabled
-            {
+            if !activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
                         .buttons([

@@ -14,11 +14,10 @@ struct ActionView: View {
             hButton(
                 .medium,
                 .secondary,
-                content: .init(title: action.buttonTitle),
-                {
-                    NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-                }
-            )
+                content: .init(title: action.buttonTitle)
+            ) {
+                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+            }
             .hButtonTakeFullWidth(true)
         }
     }

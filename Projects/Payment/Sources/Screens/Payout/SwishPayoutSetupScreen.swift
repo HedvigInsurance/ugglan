@@ -65,10 +65,8 @@ struct SwishPayoutSetupScreen: View {
             .primary,
             content: .init(title: L10n.generalSaveButton)
         ) { [weak vm, onSuccess] in
-            Task {
-                if let success = await vm?.save(), success {
-                    onSuccess?()
-                }
+            if let success = await vm?.save(), success {
+                onSuccess?()
             }
         }
         .hButtonIsLoading(vm.isLoading)

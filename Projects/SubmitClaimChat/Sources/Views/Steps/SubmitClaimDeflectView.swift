@@ -173,11 +173,10 @@ public struct SubmitClaimDeflectScreen: View {
                                         image: hCoreUIAssets.arrowNorthEast.view,
                                         alignment: .trailing
                                     )
-                                ),
-                                {
-                                    Task { await Dependencies.urlOpener.open(url) }
-                                }
-                            )
+                                )
+                            ) {
+                                await Dependencies.urlOpener.open(url)
+                            }
                         }
                         .sectionContainerStyle(.transparent)
                     }

@@ -37,12 +37,10 @@ public struct PaymentsView: View {
                 PresentableStoreLens(
                     PaymentStore.self,
                     getter: { state in
-                        state.paymentStatusData
+                        state
                     }
-                ) { paymentStatusData in
-                    if let paymentStatusData {
-                        PaymentsMenuView(paymentStatusData: paymentStatusData)
-                    }
+                ) { paymentState in
+                    PaymentsMenuView(paymentState: paymentState)
                 }
             }
             .padding(.vertical, .padding8)
@@ -53,10 +51,10 @@ public struct PaymentsView: View {
             PresentableStoreLens(
                 PaymentStore.self,
                 getter: { state in
-                    state.paymentStatusData
+                    state
                 }
-            ) { statusData in
-                if let statusData, statusData.payinMethods.isEmpty {
+            ) { state in
+                if state.showsConnectPayment {
                     ConnectPaymentBottomView()
                 }
             }
@@ -95,7 +93,7 @@ public struct PaymentsView: View {
                     PaymentView(paymentData: upcomingPayment)
                 }
 
-                if state.ongoingPaymentData.isEmpty, state.paymentData == nil {
+                if state.ongoingPaymentData.isEmpty, state.showsNoPaymentsInProgress {
                     VStack(spacing: 16) {
                         hCoreUIAssets.infoFilledSmall.view
                             .resizable()
@@ -105,10 +103,11 @@ public struct PaymentsView: View {
                     }
                     .padding(.vertical, .padding32)
                 }
-
-                hSection {
-                    ConnectPaymentCardView()
-                        .environmentObject(paymentNavigationVm!.connectPaymentVm)
+                if state.showsConnectPayment {
+                    hSection {
+                        ConnectPaymentCardView()
+                            .environmentObject(paymentNavigationVm!.connectPaymentVm)
+                    }
                 }
             }
         }
@@ -150,31 +149,34 @@ public struct PaymentsView: View {
 
     private struct PaymentsMenuView: View {
         @EnvironmentObject var router: NavigationRouter
-        let paymentStatusData: PaymentStatusData
+        let paymentState: PaymentState
 
         var body: some View {
+            let showsHistoricalSections = paymentState.paymentStatusData?.showsHistoricalSections ?? false
             hSection {
-                hRow {
-                    hCoreUIAssets.campaign.view
-                        .foregroundColor(hSignalColor.Green.element)
-                    hText(L10n.paymentsDiscountsSectionTitle)
-                    Spacer()
+                if showsHistoricalSections {
+                    hRow {
+                        hCoreUIAssets.campaign.view
+                            .foregroundColor(hSignalColor.Green.element)
+                        hText(L10n.paymentsDiscountsSectionTitle)
+                        Spacer()
+                    }
+                    .withChevronAccessory
+                    .onTap {
+                        router.push(PaymentsRouterAction.discounts)
+                    }
+                    hRow {
+                        hCoreUIAssets.clock.view
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        hText(L10n.paymentsPaymentHistoryButtonLabel)
+                        Spacer()
+                    }
+                    .withChevronAccessory
+                    .onTap {
+                        router.push(PaymentsRouterAction.history)
+                    }
                 }
-                .withChevronAccessory
-                .onTap {
-                    router.push(PaymentsRouterAction.discounts)
-                }
-                hRow {
-                    hCoreUIAssets.clock.view
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    hText(L10n.paymentsPaymentHistoryButtonLabel)
-                    Spacer()
-                }
-                .withChevronAccessory
-                .onTap {
-                    router.push(PaymentsRouterAction.history)
-                }
-                if paymentStatusData.showPayinSection {
+                if paymentState.showsPayinSection {
                     hRow {
                         hCoreUIAssets.payments.view
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -187,7 +189,13 @@ public struct PaymentsView: View {
                     }
                 }
 
-                if paymentStatusData.showPayoutSection {
+                if paymentState.showsConnectPayout {
+                    ConnectPayoutCardView { [weak router] in
+                        router?.push(PayoutRouterActions.selectedPayoutMethod)
+                    }
+                }
+
+                if paymentState.showsPayoutSection {
                     hRow {
                         hCoreUIAssets.paymentOutlined.view
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -195,9 +203,7 @@ public struct PaymentsView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { [weak router] in
-                        router?.push(PaymentsRouterAction.payoutMethod)
-                    }
+                    .onTap { [weak router] in router?.push(PaymentsRouterAction.payoutMethod) }
                 }
             }
             .sectionContainerStyle(.transparent)

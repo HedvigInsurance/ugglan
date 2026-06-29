@@ -272,11 +272,8 @@ public struct ChangeTierLandingScreen: View {
                     .ghost,
                     content: .init(
                         title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
-                    ),
-                    { [weak changeTierNavigationVm] in
-                        changeTierNavigationVm?.isCompareTiersPresented = true
-                    }
-                )
+                    )
+                ) { [weak changeTierNavigationVm] in changeTierNavigationVm?.isCompareTiersPresented = true }
             }
         }
         .sectionContainerStyle(.transparent)

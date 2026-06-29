@@ -98,29 +98,19 @@ extension HomeScreen {
             hButton(
                 .large,
                 .primary,
-                content: .init(title: L10n.HomeTab.claimButtonText),
-                {
-                    navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
-                }
-            )
+                content: .init(title: L10n.HomeTab.claimButtonText)
+            ) { navigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil) }
         }
     }
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let showHelpCenter =
-            !contractStore.state.activeContracts.allSatisfy(\.isNonPayingMember)
-            || contractStore.state.activeContracts.count == 0
-        if showHelpCenter, featureFlags.isHelpCenterEnabled {
+        if !featureFlags.isDemoMode {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: L10n.HomeTab.getHelp),
-                { [weak navigationVm] in
-                    navigationVm?.isHelpCenterPresented = true
-                }
-            )
+                content: .init(title: L10n.HomeTab.getHelp)
+            ) { [weak navigationVm] in navigationVm?.isHelpCenterPresented = true }
         }
     }
 }

@@ -71,12 +71,11 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton),
-                    { [weak router, weak paymentsNavigationVm] in
-                        router?.dismiss()
-                        paymentsNavigationVm?.connectPaymentVm.set()
-                    }
-                )
+                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton)
+                ) { [weak router, weak paymentsNavigationVm] in
+                    router?.dismiss()
+                    paymentsNavigationVm?.connectPaymentVm.set()
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -127,11 +126,10 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: title),
-                    { [weak router] in
-                        router?.push(PayoutRouterActions.changePayoutMethod)
-                    }
-                )
+                    content: .init(title: title)
+                ) { [weak router] in
+                    router?.push(PayoutRouterActions.changePayoutMethod)
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -221,7 +219,9 @@ extension PaymentStatusData {
                             .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
                             .init(provider: .swish, supportsPayin: false, supportsPayout: true),
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        ],
+                        missingConnection: .payout,
+                        layout: .other
                     )
                 )
             )
@@ -275,7 +275,9 @@ extension PaymentStatusData {
                             .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
                             .init(provider: .swish, supportsPayin: false, supportsPayout: true),
                             .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        ],
+                        missingConnection: nil,
+                        layout: .other
                     )
                 )
             )

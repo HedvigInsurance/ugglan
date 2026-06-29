@@ -57,11 +57,8 @@ struct SubmitClaimFileUploadView: View {
         hButton(
             .large,
             .secondary,
-            content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-            { [weak viewModel] in
-                viewModel?.showFileSourcePicker = true
-            }
-        )
+            content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
+        ) { [weak viewModel] in viewModel?.showFileSourcePicker = true }
     }
 
     @ViewBuilder
@@ -72,9 +69,7 @@ struct SubmitClaimFileUploadView: View {
             content: .init(
                 title: L10n.claimChatFileUploadSendButton
             )
-        ) {
-            viewModel.submitResponse()
-        }
+        ) { viewModel.submitResponse() }
         .animation(nil, value: fileUploadVm.hasFiles)
         .overlay {
             if fileUploadVm.isLoading {
@@ -101,9 +96,7 @@ struct SubmitClaimFileUploadView: View {
             content: .init(
                 title: L10n.ClaimStatusDetail.addFiles
             )
-        ) {
-            viewModel.showFileSourcePicker = true
-        }
+        ) { viewModel.showFileSourcePicker = true }
     }
 }
 
@@ -218,12 +211,10 @@ struct SubmitClaimFileUploadResultView: View {
                 FileView(file: file) {
                     switch file.source {
                     case let .localFile(results):
-                        Task { @MainActor in
-                            if let data = try? await results?.itemProvider.getData().data {
-                                self.fileModel = .init(
-                                    type: .data(data: data, name: file.name, mimeType: file.mimeType)
-                                )
-                            }
+                        if let data = try? await results?.itemProvider.getData().data {
+                            self.fileModel = .init(
+                                type: .data(data: data, name: file.name, mimeType: file.mimeType)
+                            )
                         }
                     case let .url(url, mimeType):
                         fileModel = .init(type: .url(url: url, name: file.name, mimeType: mimeType))

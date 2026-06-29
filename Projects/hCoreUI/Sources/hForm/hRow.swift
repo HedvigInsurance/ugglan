@@ -175,12 +175,14 @@ extension View {
 }
 
 extension hRow {
-    internal func wrapInButton(_ onTap: @escaping () -> Void) -> some View {
+    internal func wrapInButton(_ onTap: @escaping @MainActor () async -> Void) -> some View {
         Button(
             action: {
-                onTap()
                 let generator = UIImpactFeedbackGenerator(style: .light)
                 generator.impactOccurred()
+                Task {
+                    await onTap()
+                }
             },
             label: {
                 self
@@ -189,16 +191,16 @@ extension hRow {
         .buttonStyle(RowButtonStyle())
     }
 
-    public func onTap(_ onTap: @escaping () -> Void) -> some View where Accessory == EmptyView {
+    public func onTap(_ onTap: @escaping @MainActor () async -> Void) -> some View where Accessory == EmptyView {
         withChevronAccessory.wrapInButton(onTap)
     }
 
-    public func onTap(_ onTap: @escaping () -> Void) -> some View {
+    public func onTap(_ onTap: @escaping @MainActor () async -> Void) -> some View {
         wrapInButton(onTap)
     }
 
     /// Attaches onTap handler only if passed boolean is true
-    @ViewBuilder public func onTap(if: Bool, _ onTap: @escaping () -> Void) -> some View {
+    @ViewBuilder public func onTap(if: Bool, _ onTap: @escaping @MainActor () async -> Void) -> some View {
         if `if` {
             wrapInButton(onTap)
         } else {

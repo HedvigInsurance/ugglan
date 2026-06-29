@@ -114,9 +114,7 @@ struct SubmitClaimSummaryBottomView: View {
                 .large,
                 .primary,
                 content: .init(title: L10n.claimChatSubmitClaim)
-            ) {
-                viewModel.submitResponse()
-            }
+            ) { viewModel.submitResponse() }
         }
         .sectionContainerStyle(.transparent)
     }

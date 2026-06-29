@@ -21,11 +21,8 @@ struct ClaimStatusCard: View {
                         hButton(
                             .medium,
                             .secondary,
-                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
-                            {
-                                homeRouter.push(claim)
-                            }
-                        )
+                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button)
+                        ) { homeRouter.push(claim) }
                         .hButtonTakeFullWidth(true)
                     }
                 }

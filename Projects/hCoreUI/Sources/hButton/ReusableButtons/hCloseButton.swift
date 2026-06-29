@@ -2,12 +2,12 @@ import SwiftUI
 import hCore
 
 public struct hCloseButton: View {
-    let action: () -> Void
+    let action: @MainActor () async -> Void
     let type: hButtonConfigurationType
 
     public init(
         _ type: hButtonConfigurationType = .ghost,
-        _ action: @escaping () -> Void,
+        _ action: @escaping @MainActor () async -> Void
     ) {
         self.action = action
         self.type = type
@@ -17,8 +17,7 @@ public struct hCloseButton: View {
         hButton(
             .large,
             type,
-            content: .init(title: L10n.generalCloseButton),
-            { action() }
-        )
+            content: .init(title: L10n.generalCloseButton)
+        ) { await action() }
     }
 }

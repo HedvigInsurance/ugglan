@@ -2,10 +2,10 @@ import SwiftUI
 import hCore
 
 public struct hContinueButton: View {
-    let action: () -> Void
+    let action: @MainActor () async -> Void
 
     public init(
-        _ action: @escaping () -> Void
+        _ action: @escaping @MainActor () async -> Void
     ) {
         self.action = action
     }
@@ -14,8 +14,7 @@ public struct hContinueButton: View {
         hButton(
             .large,
             .primary,
-            content: .init(title: L10n.generalContinueButton),
-            { action() }
-        )
+            content: .init(title: L10n.generalContinueButton)
+        ) { await action() }
     }
 }

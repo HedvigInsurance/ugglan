@@ -307,11 +307,8 @@ public struct ClaimDetailView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
-                                { [weak vm] in
-                                    vm?.showFileSourcePicker = true
-                                }
-                            )
+                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
+                            ) { [weak vm] in vm?.showFileSourcePicker = true }
                         }
                     }
                     .sectionContainerStyle(.transparent)

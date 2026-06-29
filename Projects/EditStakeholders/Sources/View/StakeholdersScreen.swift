@@ -80,20 +80,19 @@ struct StakeholdersScreen: View {
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: vm.config.stakeholderType.addButtonTitle),
-                    {
-                        if !vm.hasExistingStakeholders {
-                            editStakeholdersNavigation.stakeholderInputModel = .init(
-                                actionType: .add,
-                                stakeholderModel: Stakeholder(),
-                                title: vm.config.stakeholderType.addButtonTitle,
-                                contractId: vm.config.contractId
-                            )
-                        } else {
-                            editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
-                        }
+                    content: .init(title: vm.config.stakeholderType.addButtonTitle)
+                ) {
+                    if !vm.hasExistingStakeholders {
+                        editStakeholdersNavigation.stakeholderInputModel = .init(
+                            actionType: .add,
+                            stakeholderModel: Stakeholder(),
+                            title: vm.config.stakeholderType.addButtonTitle,
+                            contractId: vm.config.contractId
+                        )
+                    } else {
+                        editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
                     }
-                )
+                }
             }
             .hWithoutHorizontalPadding([.row])
         }

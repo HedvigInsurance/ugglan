@@ -13,7 +13,7 @@ struct ConnectPaymentBottomView: View {
                 state.paymentStatusData
             }
         ) { statusData in
-            if let statusData, !statusData.status.showConnectPayment {
+            if let statusData {
                 hSection {
                     VStack(spacing: .padding16) {
                         if statusData.payinMethods.hasMethodInProgress {
@@ -22,11 +22,8 @@ struct ConnectPaymentBottomView: View {
                         hButton(
                             .large,
                             .secondary,
-                            content: .init(title: statusData.status.connectButtonTitle),
-                            { [weak paymentNavigationVm] in
-                                paymentNavigationVm?.connectPaymentVm.set()
-                            }
-                        )
+                            content: .init(title: statusData.status.connectButtonTitle)
+                        ) { [weak paymentNavigationVm] in paymentNavigationVm?.connectPaymentVm.set() }
                     }
                 }
                 .sectionContainerStyle(.transparent)
