@@ -5,7 +5,6 @@ import hCoreUI
 
 struct Contracts: View {
     @AppObservedObject var store: ContractStore
-    let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
 
     init(
@@ -21,11 +20,11 @@ struct Contracts: View {
                 .padding(.bottom, .padding16)
         }
         .hSetScrollBounce(to: true)
-        .onReceive(pollTimer) { _ in
-            Task { await store.fetchContracts() }
-        }
         .task {
-            await store.fetchContracts()
+            while !Task.isCancelled {
+                await store.fetchContracts()
+                try? await Task.sleep(seconds: 60)
+            }
         }
         .onPullToRefresh {
             await store.fetchContracts()

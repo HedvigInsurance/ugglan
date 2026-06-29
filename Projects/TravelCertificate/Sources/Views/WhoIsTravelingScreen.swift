@@ -74,10 +74,10 @@ class WhoIsTravelingViewModel: ObservableObject {
     @Published var isLoading = false
     let contract: Contracts.Contract?
     let router: NavigationRouter
+    let contractStore: ContractStore = globalAppStateContainer.get()
     init(specification: TravelInsuranceContractSpecification, router: NavigationRouter) {
         self.specification = specification
         self.router = router
-        let contractStore: ContractStore = globalAppStateContainer.get()
         contract = contractStore.contractForId(specification.contractId)
         let insuranceHolder = Stakeholder(
             firstName: contract?.firstName,

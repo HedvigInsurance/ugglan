@@ -102,6 +102,7 @@ class MainNavigationViewModel: ObservableObject {
     var loggedInVm = LoggedInNavigationViewModel()
     private var pushNotificationCancellable: AnyCancellable?
     private var deepLinkCancellable: AnyCancellable?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -115,7 +116,6 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = false
                     }
-                    let contractStore: ContractStore = globalAppStateContainer.get()
                     await contractStore.fetchContracts()
                     let profileStore: ProfileStore = globalAppStateContainer.get()
                     await profileStore.fetchMemberDetails()
@@ -259,7 +259,7 @@ class MainNavigationViewModel: ObservableObject {
                 try await self?.appDelegate.setupFeatureFlags()
             } catch let exception {
                 log.info("Failed loading unleash experiments \(exception)")
-                try await Task.sleep(nanoseconds: 1_000_000_000)
+                try await Task.sleep(seconds: 1)
                 try Task.checkCancellation()
                 self?.checkForFeatureFlags()
             }

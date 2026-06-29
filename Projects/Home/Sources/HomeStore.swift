@@ -92,9 +92,7 @@ public final class HomeStore: AppStore {
     }
 
     public func fetchMissedCharge() async {
-        do {
-            hasMissedCharge = try await homeService.getHasMissedCharge()
-        } catch {}
+        hasMissedCharge = (try? await homeService.getHasMissedCharge()) ?? false
     }
 
     public func fetchImportantMessages() async {
@@ -155,6 +153,10 @@ public final class HomeStore: AppStore {
 
     public func clearMissedCharge() {
         hasMissedCharge = false
+    }
+
+    public func getImportantMessageToShow() -> [ImportantMessage] {
+        importantMessages.filter { !hidenImportantMessages.contains($0.id) }
     }
 
     public func getImportantMessage(with id: String) -> ImportantMessage? {

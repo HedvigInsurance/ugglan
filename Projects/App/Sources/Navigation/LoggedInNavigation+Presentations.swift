@@ -24,6 +24,7 @@ extension View {
 
 struct LoggedInPresentations: ViewModifier {
     @ObservedObject var vm: LoggedInNavigationViewModel
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     func body(content: Content) -> some View {
         content
@@ -66,7 +67,6 @@ struct LoggedInPresentations: ViewModifier {
                 dismissType in
                 switch dismissType {
                 case .done:
-                    let contractStore: ContractStore = globalAppStateContainer.get()
                     Task { await contractStore.fetchContracts() }
                     let homeStore: HomeStore = globalAppStateContainer.get()
                     Task { await homeStore.fetchQuickActions() }
