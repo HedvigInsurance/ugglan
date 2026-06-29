@@ -1,39 +1,30 @@
-import Apollo
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct FutureSectionInfoView: View {
+    @AppObservedObject var store: HomeStore
     var body: some View {
-        PresentableStoreLens(
-            HomeStore.self,
-            getter: { state in
-                state.futureStatus
-            }
-        ) { futureStatus in
-            switch futureStatus {
-            case let .activeInFuture(inceptionDate):
-                InfoCard(
-                    text:
-                        L10n.HomeTab.activeInFutureInfo(inceptionDate),
-                    type: .info
-                )
-            case .pendingSwitchable:
-                InfoCard(
-                    text: L10n.HomeTab.pendingSwitchableInfo,
-                    type: .info
-                )
-            case .pendingNonswitchable:
-                InfoCard(
-                    text:
-                        L10n.HomeTab.pendingNonswitchableInfo,
-                    type: .info
-                )
-            case .none:
-                EmptyView()
-            }
+        switch store.futureStatus {
+        case let .activeInFuture(inceptionDate):
+            InfoCard(
+                text: L10n.HomeTab.activeInFutureInfo(inceptionDate),
+                type: .info
+            )
+        case .pendingSwitchable:
+            InfoCard(
+                text: L10n.HomeTab.pendingSwitchableInfo,
+                type: .info
+            )
+        case .pendingNonswitchable:
+            InfoCard(
+                text: L10n.HomeTab.pendingNonswitchableInfo,
+                type: .info
+            )
+        case .none:
+            EmptyView()
         }
     }
 }
@@ -43,16 +34,10 @@ struct FutureSectionInfoView: View {
     return VStack {
         FutureSectionInfoView()
             .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
+                let store: HomeStore = globalAppStateContainer.get()
                 let contract = HomeContract(upcomingRenewal: nil, displayName: "name")
-
-                store.send(
-                    .setMemberContractState(
-                        state: .future,
-                        contracts: [contract]
-                    )
-                )
-                store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+                store.setMemberContractState(.future, contracts: [contract])
+                store.setFutureStatus(.activeInFuture(inceptionDate: "2023-11-23"))
             }
     }
 }
@@ -62,14 +47,9 @@ struct FutureSectionInfoView: View {
     return VStack {
         FutureSectionInfoView()
             .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .future,
-                        contracts: []
-                    )
-                )
-                store.send(.setFutureStatus(status: .pendingSwitchable))
+                let store: HomeStore = globalAppStateContainer.get()
+                store.setMemberContractState(.future, contracts: [])
+                store.setFutureStatus(.pendingSwitchable)
             }
     }
 }
@@ -79,14 +59,9 @@ struct FutureSectionInfoView: View {
     return VStack {
         FutureSectionInfoView()
             .onAppear {
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setMemberContractState(
-                        state: .future,
-                        contracts: []
-                    )
-                )
-                store.send(.setFutureStatus(status: .pendingNonswitchable))
+                let store: HomeStore = globalAppStateContainer.get()
+                store.setMemberContractState(.future, contracts: [])
+                store.setFutureStatus(.pendingNonswitchable)
             }
     }
 }

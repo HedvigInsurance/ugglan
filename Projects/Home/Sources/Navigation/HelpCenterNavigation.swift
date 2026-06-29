@@ -4,7 +4,6 @@ import Chat
 import Contracts
 import EditStakeholders
 import Payment
-import PresentableStore
 import SafariServices
 import SubmitClaimChat
 import SwiftUI
@@ -78,7 +77,7 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
 
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
-    @PresentableStore private var store: HomeStore
+    @AppObservedObject private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
@@ -135,7 +134,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
             presentationStyle: .detent(style: [.large])
         ) {
-            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
                 .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
                 .embededInNavigation(
@@ -193,16 +192,16 @@ public struct HelpCenterNavigation<Content: View>: View {
             switch dismissType {
             case .done:
                 Task { await contractStore.fetchContracts() }
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             case let .openFeedback(url):
                 Task { await contractStore.fetchContracts() }
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 if urlComponent?.scheme == nil {
                     urlComponent?.scheme = "https"

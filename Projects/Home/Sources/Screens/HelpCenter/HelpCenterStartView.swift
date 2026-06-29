@@ -1,6 +1,6 @@
+import AppStateContainer
 import Combine
 @preconcurrency import HedvigShared
-import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -234,7 +234,6 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     @Published var helpCenterModel: HelpCenterFAQModel?
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
-
     // search part
     @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
@@ -252,28 +251,23 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .map(\.quickActions)
+        let store: HomeStore = globalAppStateContainer.get()
+        store.$quickActions
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
                 self?.quickActions = quickActions
             }
             .store(in: &cancellables)
-        quickActions = store.state.quickActions
-        store.stateSignal
-            .map(\.helpCenterFAQModel)
+        store.$helpCenterFAQModel
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self, weak store] helpCenterFaqModel in
                 self?.helpCenterModel = helpCenterFaqModel
-                self?.allQuestions = store?.state.getAllFAQ() ?? []
+                self?.allQuestions = store?.getAllFAQ() ?? []
             }
             .store(in: &cancellables)
-        helpCenterModel = store.state.helpCenterFAQModel
-        allQuestions = store.state.getAllFAQ() ?? []
-        store.send(.fetchFAQ)
+        Task { await store.fetchFAQ() }
     }
 
     func startSearch(for inputText: String) {

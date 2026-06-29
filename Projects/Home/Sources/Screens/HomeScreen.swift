@@ -15,6 +15,7 @@ import hCoreUI
 
 public struct HomeScreen: View {
     @StateObject var vm = HomeVM()
+    @AppObservedObject var homeStore: HomeStore
     @InjectObservableObject var featureFlags: FeatureFlags
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
@@ -27,7 +28,7 @@ extension HomeScreen {
             centralContent
         }
         .setHomeNavigationBars(
-            with: $vm.toolbarOptionTypes,
+            with: $homeStore.toolbarOptionTypes,
             action: { [weak navigationVm] type in
                 switch type {
                 case .crossSell:
@@ -127,35 +128,31 @@ class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
-    @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     let contractStore: ContractStore = globalAppStateContainer.get()
 
     init() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        memberContractState = store.state.memberContractState
-        store.stateSignal
-            .map(\.memberContractState)
+        let store: HomeStore = globalAppStateContainer.get()
+        memberContractState = store.memberContractState
+        store.$memberContractState
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberContractState = value
             })
             .store(in: &cancellables)
 
-        toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
-        observeToolbarOptionTypes()
-        store.send(.fetchMissedCharge)
+        Task { await store.fetchMissedCharge() }
     }
 
     func fetchHomeState() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.send(.fetchMemberState)
-        store.send(.fetchImportantMessages)
-        store.send(.fetchQuickActions)
-        store.send(.fetchChatNotifications)
-        if store.state.hasMissedCharge {
-            store.send(.fetchMissedCharge)
+        let store: HomeStore = globalAppStateContainer.get()
+        Task { await store.fetchMemberState() }
+        Task { await store.fetchImportantMessages() }
+        Task { await store.fetchQuickActions() }
+        Task { await store.fetchChatNotifications() }
+        if store.hasMissedCharge {
+            Task { await store.fetchMissedCharge() }
         }
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         Task { await crossSellStore.fetchRecommendedCrossSellId() }
@@ -166,8 +163,8 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                store.send(.fetchChatNotifications)
+                let store: HomeStore = globalAppStateContainer.get()
+                Task { await store.fetchChatNotifications() }
             }
     }
 
@@ -191,20 +188,6 @@ class HomeVM: ObservableObject {
         }
     }
 
-    private func observeToolbarOptionTypes() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.stateSignal
-            .map(\.toolbarOptionTypes)
-            .receive(on: RunLoop.main)
-            .removeDuplicates()
-            .sink(receiveValue: { [weak self] value in
-                withAnimation {
-                    self?.toolbarOptionTypes = value
-                }
-            })
-            .store(in: &cancellables)
-    }
-
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -225,14 +208,9 @@ class HomeVM: ObservableObject {
 
     return HomeScreen()
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
-                )
-            )
-            store.send(.setFutureStatus(status: .none))
+            let store: HomeStore = globalAppStateContainer.get()
+            store.setMemberContractState(.active, contracts: [])
+            store.setFutureStatus(.none)
         }
 }
 
@@ -242,14 +220,9 @@ class HomeVM: ObservableObject {
     return HomeScreen()
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .future,
-                    contracts: []
-                )
-            )
-            store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+            let store: HomeStore = globalAppStateContainer.get()
+            store.setMemberContractState(.future, contracts: [])
+            store.setFutureStatus(.activeInFuture(inceptionDate: "2023-11-23"))
         }
 }
 
@@ -258,14 +231,9 @@ class HomeVM: ObservableObject {
 
     return HomeScreen()
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
-                )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
+            let store: HomeStore = globalAppStateContainer.get()
+            store.setMemberContractState(.terminated, contracts: [])
+            store.setFutureStatus(.pendingSwitchable)
         }
 }
 
@@ -274,14 +242,9 @@ class HomeVM: ObservableObject {
 
     return HomeScreen()
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
-                )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
+            let store: HomeStore = globalAppStateContainer.get()
+            store.setMemberContractState(.terminated, contracts: [])
+            store.setFutureStatus(.pendingSwitchable)
         }
 }
 
@@ -291,14 +254,9 @@ class HomeVM: ObservableObject {
     return HomeScreen()
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
-                )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
+            let store: HomeStore = globalAppStateContainer.get()
+            store.setMemberContractState(.active, contracts: [])
+            store.setFutureStatus(.pendingSwitchable)
         }
 }
 

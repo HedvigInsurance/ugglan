@@ -337,7 +337,6 @@ class DeepLinkHandler {
     private func handleContractDeeplink(_ url: URL) {
         dismissAndSelectTab(1)
         let contractId = url.getParameter(property: .contractId)
-
         if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
@@ -359,11 +358,11 @@ class DeepLinkHandler {
     private func handleHelpCenterTopic(_ url: URL) {
         if let id = url.getParameter(property: .id) {
             Task { [weak viewModel] in
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.helpCenterFAQModel == nil {
-                    await store.sendAsync(.fetchFAQ)
+                let store: HomeStore = globalAppStateContainer.get()
+                if store.helpCenterFAQModel == nil {
+                    await store.fetchFAQ()
                 }
-                if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                if let helpCenterFAQModel = store.helpCenterFAQModel,
                     let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
                 {
                     viewModel?.isFaqTopicPresented = topic
@@ -375,11 +374,11 @@ class DeepLinkHandler {
     private func handleHelpCenterQuestion(_ url: URL) {
         if let id = url.getParameter(property: .id) {
             Task { [weak viewModel] in
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
-                    await store.sendAsync(.fetchFAQ)
+                let store: HomeStore = globalAppStateContainer.get()
+                if store.getAllFAQ()?.first(where: { $0.id == id }) == nil {
+                    await store.fetchFAQ()
                 }
-                if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
+                if let question = store.getAllFAQ()?.first(where: { $0.id == id }) {
                     viewModel?.isFaqPresented = question
                 }
             }
@@ -566,8 +565,8 @@ struct LoggedInNavigation: View {
                 switch terminateAction {
                 case .done:
                     Task { await contractStore.fetchContracts() }
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.fetchQuickActions)
+                    let homeStore: HomeStore = globalAppStateContainer.get()
+                    Task { await homeStore.fetchQuickActions() }
                 case .chat:
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
@@ -589,7 +588,7 @@ struct LoggedInNavigation: View {
     private func fetchContracts() {
         // delay since we don't have a terms version right after the insurance is created
         Task {
-            try? await Task.sleep(seconds: 1)
+            await delay(1)
             await contractStore.fetchContracts()
         }
     }
@@ -758,8 +757,8 @@ struct HomeTab: View {
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             presentationStyle: .detent(style: [.large])
         ) {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+            let store: HomeStore = globalAppStateContainer.get()
+            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
                 .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -914,15 +913,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             .delay(for: 1.5, scheduler: RunLoop.main)
             .sink { [weak self] _ in
                 Task { await self?.contractStore.fetchContracts() }
-
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
             }
             .store(in: &cancellables)
 
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal
-            .map { $0.hasMissedCharge }
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        homeStore.$hasMissedCharge
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] hasMissedCharge in
@@ -1058,8 +1055,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func petChipIdAdded() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchMemberState)
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        Task { await homeStore.fetchMemberState() }
         Task {
             await delay(1)
             await contractStore.fetchContracts()
@@ -1107,8 +1104,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func chatClosed() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.send(.fetchChatNotifications)
+        let store: HomeStore = globalAppStateContainer.get()
+        Task { await store.fetchChatNotifications() }
     }
 
     func handle(notification: Notification) {
@@ -1125,8 +1122,8 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     func openUrl(url: URL) {
         Task { await contractStore.fetchContracts() }
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchQuickActions)
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        Task { await homeStore.fetchQuickActions() }
         var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
         if urlComponent?.scheme == nil {
             urlComponent?.scheme = "https"
