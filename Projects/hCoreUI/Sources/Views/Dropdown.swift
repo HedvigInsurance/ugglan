@@ -3,7 +3,7 @@ import SwiftUI
 public struct DropdownView: View {
     private var value: String
     private var placeHolder: String
-    private var onTap: () -> Void
+    private var onTap: @MainActor () async -> Void
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hBackgroundOption) var backgroundOption
     @Binding var error: String?
@@ -11,7 +11,7 @@ public struct DropdownView: View {
         value: String,
         placeHolder: String,
         error: Binding<String?>? = nil,
-        onTap: @escaping () -> Void
+        onTap: @escaping @MainActor () async -> Void
     ) {
         self.value = value
         self.placeHolder = placeHolder
@@ -25,9 +25,7 @@ public struct DropdownView: View {
                 value: value,
                 placeholder: placeHolder,
                 error: $error,
-                onTap: {
-                    onTap()
-                }
+                onTap: { await onTap() }
             )
             .hFieldTrailingView {
                 Group {

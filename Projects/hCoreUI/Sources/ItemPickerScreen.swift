@@ -213,11 +213,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title: config.buttonText),
-                        {
-                            sendSelectedItems
-                        }
-                    )
+                        content: .init(title: config.buttonText)
+                    ) { sendSelectedItems }
                     .hButtonIsLoading(isLoading)
                     .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                     .accessibilityHint(accessibilityText)

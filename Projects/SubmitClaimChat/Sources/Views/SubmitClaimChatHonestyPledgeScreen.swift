@@ -39,9 +39,9 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                             continueButtonWithAnimations()
                                 .disabled(!hasAgreedToHonestyPledge)
                         }
-                        //                        if Environment.current == .staging {
-                        //                            continueButtonWithAnimations(false)
-                        //                        }
+                        if Environment.current == .staging {
+                            continueButtonWithAnimations(false)
+                        }
                         if hasOngoingClaim {
                             hButton(.large, .primaryAlt, content: .init(title: "Continue where you stopped")) {
                                 onConfirm(true, true)
@@ -86,18 +86,14 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                     onConfirm(false, enabled)
                 }
             } else {
-                hButton(.large, .secondary, content: .init(title: "Without animations")) {
-                    onConfirm(false, enabled)
-                }
+                hButton(.large, .secondary, content: .init(title: "Without animations")) { onConfirm(false, enabled) }
             }
         }
         .disabled(!hasAgreedToHonestyPledge)
     }
 
     private var cancelButton: some View {
-        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) {
-            router.dismiss()
-        }
+        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { router.dismiss() }
     }
 }
 

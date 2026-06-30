@@ -1,5 +1,5 @@
 import Apollo
-import Authentication
+import AuthenticationCore
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
@@ -136,9 +136,6 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                     case _ as LoginStatusResultException:
                         throw AuthenticationError.loginFailure(message: nil)
                     case let completed as LoginStatusResultCompleted:
-                        log.info(
-                            "LOGIN AUTH FINISHED"
-                        )
                         try await exchange(code: completed.authorizationCode.code)
                         updateStatusTo(.completed)
                         return
@@ -236,7 +233,6 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         )
         switch data {
         case let success as AuthTokenResultSuccess:
-            log.info("Refresh was sucessfull")
             let accessTokenDto: AuthorizationTokenDto = .init(
                 accessToken: success.accessToken.token,
                 accessTokenExpiryIn: Int(success.accessToken.expiryInSeconds),

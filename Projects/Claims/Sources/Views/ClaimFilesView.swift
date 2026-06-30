@@ -53,23 +53,15 @@ public struct ClaimFilesView: View {
                             hButton(
                                 .large,
                                 .secondary,
-                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles),
-                                { [weak vm] in
-                                    vm?.showFileSourcePicker = true
-                                }
-                            )
+                                content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
+                            ) { [weak vm] in vm?.showFileSourcePicker = true }
                             .disabled(vm.isLoading)
 
                             hButton(
                                 .large,
                                 .primary,
-                                content: .init(title: L10n.fileUploadUploadFiles),
-                                {
-                                    Task {
-                                        await vm.uploadFiles()
-                                    }
-                                }
-                            )
+                                content: .init(title: L10n.fileUploadUploadFiles)
+                            ) { await vm.uploadFiles() }
                             .hButtonIsLoading(vm.isLoading)
                             .disabled(vm.fileGridViewModel.files.isEmpty)
                         }

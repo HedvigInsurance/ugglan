@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 import hCore
 
@@ -10,7 +10,7 @@ final class HomeTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         sut = nil
@@ -129,13 +129,13 @@ final class HomeTests: XCTestCase {
         sut = mockService
 
         let store = HomeStore()
-        store.send(.fetchChatNotifications)
+        await store.fetchChatNotifications()
 
         await waitUntil(description: "Toolbar contains chat icon under flag-ON") {
-            store.state.toolbarOptionTypes.contains(.chat(hasUnread: false))
+            store.toolbarOptionTypes.contains(.chat(hasUnread: false))
         }
 
-        XCTAssertTrue(store.state.toolbarOptionTypes.contains(.chat(hasUnread: false)))
+        XCTAssertTrue(store.toolbarOptionTypes.contains(.chat(hasUnread: false)))
 
         mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
         await waitUntil(description: "Flag resets") {
@@ -147,7 +147,7 @@ final class HomeTests: XCTestCase {
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
         for i in 1...50 {
             try await iteratedStoreTest(iteration: i)
-            globalPresentableStoreContainer.deletePersistanceContainer()
+            globalAppStateContainer.clearPersistence()
         }
     }
 
@@ -202,36 +202,37 @@ final class HomeTests: XCTestCase {
             }
         )
         let store = HomeStore()
-        let storeInitialLatestConversationTimeStamp = store.state.latestConversationTimeStamp
-        store.send(.fetchMemberState)
-        store.send(.fetchImportantMessages)
-        store.send(.fetchQuickActions)
-        store.send(.fetchChatNotifications)
+        let storeInitialLatestConversationTimeStamp = store.latestConversationTimeStamp
+        async let m: () = store.fetchMemberState()
+        async let i: () = store.fetchImportantMessages()
+        async let q: () = store.fetchQuickActions()
+        async let c: () = store.fetchChatNotifications()
+        _ = await (m, i, q, c)
 
         await waitUntil(description: "Check home state") {
-            store.state.memberContractState == memberState.contractState
-                && store.state.futureStatus == memberState.futureState && store.state.contracts == memberState.contracts
-                && store.state.importantMessages == importantMessages && store.state.quickActions.count == 2
-                && store.state.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2)
-                && store.state.hidenImportantMessages.count == 0 && store.state.upcomingRenewalContracts == []
-                && store.state.showChatNotification == messageState.hasNewMessages
-                && store.state.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage
-                && (store.state.latestConversationTimeStamp == messageState.lastMessageTimeStamp
-                    || store.state.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp)
+            store.memberContractState == memberState.contractState
+                && store.futureStatus == memberState.futureState && store.contracts == memberState.contracts
+                && store.importantMessages == importantMessages && store.quickActions.count == 2
+                && store.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2)
+                && store.hidenImportantMessages.count == 0 && store.upcomingRenewalContracts == []
+                && store.showChatNotification == messageState.hasNewMessages
+                && store.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage
+                && (store.latestConversationTimeStamp == messageState.lastMessageTimeStamp
+                    || store.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp)
         }
-        assert(store.state.memberContractState == memberState.contractState)
-        assert(store.state.futureStatus == memberState.futureState)
-        assert(store.state.contracts == memberState.contracts)
-        assert(store.state.importantMessages == importantMessages)
-        assert(store.state.quickActions.count == 2)
-        assert(store.state.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2))
-        assert(store.state.hidenImportantMessages.count == 0)
-        assert(store.state.upcomingRenewalContracts == [])
-        assert(store.state.showChatNotification == messageState.hasNewMessages)
-        assert(store.state.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage)
+        assert(store.memberContractState == memberState.contractState)
+        assert(store.futureStatus == memberState.futureState)
+        assert(store.contracts == memberState.contracts)
+        assert(store.importantMessages == importantMessages)
+        assert(store.quickActions.count == 2)
+        assert(store.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2))
+        assert(store.hidenImportantMessages.count == 0)
+        assert(store.upcomingRenewalContracts == [])
+        assert(store.showChatNotification == messageState.hasNewMessages)
+        assert(store.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage)
         assert(
-            store.state.latestConversationTimeStamp == messageState.lastMessageTimeStamp
-                || store.state.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp
+            store.latestConversationTimeStamp == messageState.lastMessageTimeStamp
+                || store.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp
         )
     }
 }

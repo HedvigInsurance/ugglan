@@ -1,7 +1,7 @@
 import Apollo
+import AppStateContainer
 import Combine
 import Foundation
-import PresentableStore
 import SafariServices
 import SwiftUI
 import WebKit
@@ -10,7 +10,7 @@ import hCoreUI
 
 private class DirectDebitWebview: UIView {
     var paymentService = hPaymentService()
-    @PresentableStore var paymentStore: PaymentStore
+    @AppState var paymentStore: PaymentStore
     private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()
     let vc = UIViewController()
@@ -135,7 +135,7 @@ private class DirectDebitWebview: UIView {
             .filter { $0 }
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                self?.paymentStore.send(.fetchPaymentStatus)
+                Task { [weak self] in await self?.paymentStore.fetchPaymentStatus() }
                 self?.router.dismiss()
             }
             .store(in: &cancellables)
@@ -154,13 +154,13 @@ private class DirectDebitWebview: UIView {
         vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
         let directDebitResult = DirectDebitResult(
             type: type,
-            action: { [weak self, weak router] in
+            action: { [weak router] in
                 router?.dismiss()
             }
         )
 
         if type == .success {
-            paymentStore.send(.fetchPaymentStatus)
+            Task { await paymentStore.fetchPaymentStatus() }
         }
 
         let debitResultHostingView = UIHostingController(rootView: directDebitResult)
@@ -254,9 +254,9 @@ public struct DirectDebitSetup: View {
             if let setupType {
                 return setupType
             }
-            let store: PaymentStore = globalPresentableStoreContainer.get()
+            let store: PaymentStore = globalAppStateContainer.get()
             let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
-                .contains(store.state.paymentStatusData?.status ?? .active)
+                .contains(store.paymentStatusData?.status ?? .active)
             return hasAlreadyConnected ? .replacement : .initial
         }()
         showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled

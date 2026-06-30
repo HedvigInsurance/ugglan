@@ -1,17 +1,13 @@
 import Apollo
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SettingsView: View {
-    @PresentableStore var store: ProfileStore
+    @AppObservedObject var store: ProfileStore
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
-
-    init() {
-        store.send(.fetchMemberDetails)
-    }
 
     var body: some View {
         hForm {
@@ -24,28 +20,21 @@ struct SettingsView: View {
                             profileNavigationVm.isLanguagePickerPresented = true
                         }
                     )
-                    PresentableStoreLens(
-                        ProfileStore.self,
-                        getter: { state in
-                            state
-                        }
-                    ) { _ in
-                        hFloatingField(
-                            value: store.state.pushNotificationCurrentStatus() == .authorized
-                                ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
-                            placeholder: L10n.pushNotificationsAlertTitle,
-                            onTap: {
-                                if store.state.pushNotificationCurrentStatus() == .authorized {
-                                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                                        return
-                                    }
-                                    Task { await Dependencies.urlOpener.open(settingsUrl) }
-                                } else {
-                                    NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
+                    hFloatingField(
+                        value: store.pushNotificationCurrentStatus() == .authorized
+                            ? L10n.profileNotificationsStatusOn : L10n.profileNotificationsStatusOff,
+                        placeholder: L10n.pushNotificationsAlertTitle,
+                        onTap: {
+                            if store.pushNotificationCurrentStatus() == .authorized {
+                                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                                    return
                                 }
+                                Task { await Dependencies.urlOpener.open(settingsUrl) }
+                            } else {
+                                NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
                             }
-                        )
-                    }
+                        }
+                    )
                     MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
                         .environmentObject(profileNavigationVm)
                 }
@@ -57,43 +46,41 @@ struct SettingsView: View {
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
-            PresentableStoreLens(
-                ProfileStore.self,
-                getter: { state in
-                    state.memberDetails
-                        ?? MemberDetails(
-                            id: "",
-                            firstName: "",
-                            lastName: "",
-                            phone: "",
-                            email: "",
-                            hasTravelCertificate: false,
-                            isContactInfoUpdateNeeded: false
-                        )
-                }
-            ) { memberDetails in
-                hSection {
-                    hButton(
-                        .large,
-                        .ghost,
-                        content: .init(
-                            title: L10n.SettingsScreen.deleteAccountButton
-                        ),
-                        {
-                            if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                                let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                                if hasAlreadyRequested {
-                                    profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                                } else {
-                                    profileNavigationVm.isDeleteAccountPresented = memberDetails
-                                }
+            let memberDetails =
+                store.memberDetails
+                ?? MemberDetails(
+                    id: "",
+                    firstName: "",
+                    lastName: "",
+                    phone: "",
+                    email: "",
+                    hasTravelCertificate: false,
+                    isContactInfoUpdateNeeded: false
+                )
+            hSection {
+                hButton(
+                    .large,
+                    .ghost,
+                    content: .init(
+                        title: L10n.SettingsScreen.deleteAccountButton
+                    ),
+                    {
+                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                            if hasAlreadyRequested {
+                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                            } else {
+                                profileNavigationVm.isDeleteAccountPresented = memberDetails
                             }
                         }
-                    )
-                    .hUseButtonTextColor(.red)
-                }
-                .sectionContainerStyle(.transparent)
+                    }
+                )
+                .hUseButtonTextColor(.red)
             }
+            .sectionContainerStyle(.transparent)
+        }
+        .task {
+            await store.fetchMemberDetails()
         }
     }
 }

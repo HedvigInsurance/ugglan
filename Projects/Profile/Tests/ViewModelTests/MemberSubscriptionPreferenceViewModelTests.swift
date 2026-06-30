@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 import hCore
 
@@ -11,7 +11,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
     override func setUp() async throws {
         UserDefaults.standard.removeObject(forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey)
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
         sut = nil
     }
 

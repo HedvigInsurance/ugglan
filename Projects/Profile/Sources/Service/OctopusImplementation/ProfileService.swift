@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -5,41 +6,41 @@ import hCore
 class ProfileService {
     @Inject var client: ProfileClient
 
+    @Log
     func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool
     ) {
-        log.info("ProfileService: getProfileState", error: nil, attributes: nil)
-        return try await client.getProfileState()
+        try await client.getProfileState()
     }
 
+    @Log
     func getMemberDetails() async throws -> MemberDetails {
-        log.info("ProfileService: getMemberDetails", error: nil, attributes: nil)
-        return try await client.getMemberDetails()
+        try await client.getMemberDetails()
     }
 
+    @Log
     func postDeleteRequest() async throws {
-        log.info("ProfileService: postDeleteRequest", error: nil, attributes: nil)
-        return try await client.postDeleteRequest()
+        try await client.postDeleteRequest()
     }
 
+    @Log
     func updateLanguage() async throws {
-        log.info("ProfileService: updateLanguage", error: nil, attributes: nil)
-        return try await client.updateLanguage()
+        try await client.updateLanguage()
     }
 
+    @Log
     func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
-        log.info("ProfileService: update", error: nil, attributes: nil)
-        return try await client.update(email: email ?? "", phone: phone ?? "")
+        try await client.update(email: email ?? "", phone: phone ?? "")
     }
 
+    @Log
     func update(eurobonus: String) async throws -> PartnerData {
-        log.info("ProfileService: update(eurobonus)", error: nil, attributes: nil)
-        return try await client.update(eurobonus: eurobonus)
+        try await client.update(eurobonus: eurobonus)
     }
 
+    @Log
     func updateSubscriptionPreference(to subscribed: Bool) async throws {
-        log.info("ProfileService: updateSubscriptionPreference", error: nil, attributes: nil)
-        return try await client.updateSubscriptionPreference(to: subscribed)
+        try await client.updateSubscriptionPreference(to: subscribed)
     }
 }

@@ -63,17 +63,16 @@ struct StakeholderProcessingScreen: View {
             hButton(
                 .large,
                 .ghost,
-                content: .init(title: L10n.generalDoneButton),
-                {
-                    editStakeholdersNavigation.showProgressScreenWithSuccess = false
-                    editStakeholdersNavigation.showProgressScreenWithoutSuccess = false
-                    editStakeholdersNavigation.editStakeholderConfig = nil
-                    editStakeholdersViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
-                    EditStakeholdersViewModel.updatedStakeholderForContractId.send(
-                        intentViewModel.contractId
-                    )
-                }
-            )
+                content: .init(title: L10n.generalDoneButton)
+            ) {
+                editStakeholdersNavigation.showProgressScreenWithSuccess = false
+                editStakeholdersNavigation.showProgressScreenWithoutSuccess = false
+                editStakeholdersNavigation.editStakeholderConfig = nil
+                editStakeholdersViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
+                EditStakeholdersViewModel.updatedStakeholderForContractId.send(
+                    intentViewModel.contractId
+                )
+            }
         }
         .sectionContainerStyle(.transparent)
     }
@@ -87,7 +86,7 @@ extension StakeholderProcessingScreen: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { DateService() })
-    struct MockExistingStakeholders: ExistingStakeholders {
+    class MockExistingStakeholders: ExistingStakeholders {
         func get(contractId: String, stakeholderType: StakeholderType) -> [Stakeholder] { [] }
     }
     return StakeholderProcessingScreen(

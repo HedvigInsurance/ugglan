@@ -1,8 +1,8 @@
 import Addons
+import AppStateContainer
 import ChangeTier
 import EditStakeholders
 import Foundation
-import PresentableStore
 import SafariServices
 import SwiftUI
 import TerminateContracts
@@ -13,6 +13,7 @@ public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
     var redirectAction: (_ action: RedirectAction) -> Void
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     public init(
         contractsNavigationVm: ContractsNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content,
@@ -144,8 +145,7 @@ public struct ContractsNavigation<Content: View>: View {
             redirectAction(.termination(action: dismissType))
             switch dismissType {
             case .done, .chat, .openFeedback:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
+                Task { await contractStore.fetchContracts() }
                 contractsNavigationVm.contractsRouter.popToRoot()
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
                 break
@@ -174,7 +174,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isActiveTab = false
 
     public var editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 
     public init() {}

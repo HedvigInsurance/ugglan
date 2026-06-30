@@ -2,9 +2,13 @@ name: CreateRelease
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["App Store Connect Submit"]
+    types: [completed]
 
 jobs:
   deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: macos-latest
 
     steps:

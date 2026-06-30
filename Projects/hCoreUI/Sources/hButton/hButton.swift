@@ -5,7 +5,7 @@ public struct hButton: View {
     private let size: hButtonSize
     private let type: hButtonConfigurationType
     private let content: hButtonContent
-    private let action: () -> Void
+    private let action: @MainActor () async -> Void
     @Environment(\.hWithTransition) private var withTransition
     @Environment(\.hCustomButtonView) private var customButtonView
 
@@ -13,7 +13,7 @@ public struct hButton: View {
         _ size: hButtonSize,
         _ type: hButtonConfigurationType,
         content: hButtonContent,
-        _ action: @escaping () -> Void
+        _ action: @escaping @MainActor () async -> Void
     ) {
         self.type = type
         self.size = size
@@ -22,9 +22,7 @@ public struct hButton: View {
     }
 
     public var body: some View {
-        _hButton(action: {
-            action()
-        }) {
+        _hButton(action: action) {
             customButtonView
                 ?? AnyView(
                     mainContent
@@ -95,10 +93,10 @@ public enum hButtonSize: CaseIterable {
 struct _hButton<Content: View>: View {
     @Environment(\.hButtonIsLoading) var isLoading
     var content: () -> Content
-    var action: () -> Void
+    var action: @MainActor () async -> Void
 
     init(
-        action: @escaping () -> Void,
+        action: @escaping @MainActor () async -> Void,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.action = action
@@ -109,7 +107,7 @@ struct _hButton<Content: View>: View {
         SwiftUI.Button(action: {
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
-            action()
+            Task { await action() }
         }) {
             content()
         }
@@ -229,12 +227,7 @@ struct hButton_Previews: PreviewProvider {
         let buttons = VStack(alignment: .leading) {
             ForEach(hButtonSize.allCases, id: \.self) { size in
                 ForEach(hButtonConfigurationType.allCases, id: \.self) { type in
-                    hButton(
-                        size,
-                        type,
-                        content: .init(title: "TEXT"),
-                        {}
-                    )
+                    hButton(size, type, content: .init(title: "TEXT")) {}
                 }
             }
         }

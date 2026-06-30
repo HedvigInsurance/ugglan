@@ -1,4 +1,5 @@
 import Addons
+import AppStateContainer
 import ChangeTier
 import Chat
 import Claims
@@ -14,7 +15,6 @@ import InsuranceEvidence
 import Market
 import MoveFlow
 import Payment
-import PresentableStore
 import Profile
 import SafariServices
 import SubmitClaimChat
@@ -30,6 +30,7 @@ import hCoreUI
 @MainActor
 class PushNotificationHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     func handle(_ notification: Notification) {
         guard let object = notification.object as? PushNotificationType else { return }
@@ -114,8 +115,7 @@ class PushNotificationHandler {
     }
 
     func handleChangeTier(contractId: String?) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.isChangeTierPresented = .init(
                     source: .changeTier,
@@ -129,7 +129,7 @@ class PushNotificationHandler {
                 )
             }
         } else {
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.activeContracts
                 .filter(\.supportsChangeTier)
                 .map {
                     .init(
@@ -154,10 +154,8 @@ class PushNotificationHandler {
                 .filter({ $0.addonType == type })
                 .first
             {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
                 let addonContracts = addonBanner.contractIds.compactMap {
-                    contractStore.state.contractForId($0)
+                    contractStore.contractForId($0)
                 }
 
                 guard !addonContracts.isEmpty else {
@@ -211,6 +209,7 @@ class PushNotificationHandler {
 @MainActor
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -279,8 +278,8 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            let hasInProgress = store.state.claimInProgress != nil
+            let store: ClaimsStore = globalAppStateContainer.get()
+            let hasInProgress = store.claimInProgress != nil
             viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
         case .claimChat:
             handleChatClaimDeeplink(url)
@@ -295,14 +294,12 @@ class DeepLinkHandler {
 
     private func handleManualCharge() {
         Task { [weak viewModel] in
-            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-            await paymentStore.sendAsync(.getMissedPayment)
+            let paymentStore: PaymentStore = globalAppStateContainer.get()
+            await paymentStore.getMissedPayment()
 
-            // if we have error after fetching missed payment
-            if case .error = paymentStore.loadingState[.getMissedPayment] {
+            if paymentStore.loadMissedPaymentError != nil {
                 Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
-                // if we have missedPaymentData
-            } else if let missedPaymentData = paymentStore.state.missedPaymentData {
+            } else if let missedPaymentData = paymentStore.missedPaymentData {
                 viewModel?.missedPaymentData = missedPaymentData
             } else {
                 Toasts.shared.displayToastBar(
@@ -318,8 +315,7 @@ class DeepLinkHandler {
 
     private func handleMissingPetChipIds(_ url: URL) {
         Task { [weak viewModel] in
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
+            await contractStore.fetchContracts()
             let contractId = url.getParameter(property: .contractId)
             viewModel?.openMissingPetChipId(contractId: contractId)
         }
@@ -327,8 +323,8 @@ class DeepLinkHandler {
 
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
-        let hasInProgress = store.state.claimInProgress != nil
+        let store: ClaimsStore = globalAppStateContainer.get()
+        let hasInProgress = store.claimInProgress != nil
         viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
     }
 
@@ -340,9 +336,7 @@ class DeepLinkHandler {
     private func handleContractDeeplink(_ url: URL) {
         dismissAndSelectTab(1)
         let contractId = url.getParameter(property: .contractId)
-
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
                 viewModel?.contractsNavigationVm.contractsRouter.push(contract)
@@ -363,11 +357,11 @@ class DeepLinkHandler {
     private func handleHelpCenterTopic(_ url: URL) {
         if let id = url.getParameter(property: .id) {
             Task { [weak viewModel] in
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.helpCenterFAQModel == nil {
-                    await store.sendAsync(.fetchFAQ)
+                let store: HomeStore = globalAppStateContainer.get()
+                if store.helpCenterFAQModel == nil {
+                    await store.fetchFAQ()
                 }
-                if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                if let helpCenterFAQModel = store.helpCenterFAQModel,
                     let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
                 {
                     viewModel?.isFaqTopicPresented = topic
@@ -379,11 +373,11 @@ class DeepLinkHandler {
     private func handleHelpCenterQuestion(_ url: URL) {
         if let id = url.getParameter(property: .id) {
             Task { [weak viewModel] in
-                let store: HomeStore = globalPresentableStoreContainer.get()
-                if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
-                    await store.sendAsync(.fetchFAQ)
+                let store: HomeStore = globalAppStateContainer.get()
+                if store.getAllFAQ()?.first(where: { $0.id == id }) == nil {
+                    await store.fetchFAQ()
                 }
-                if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
+                if let question = store.getAllFAQ()?.first(where: { $0.id == id }) {
                     viewModel?.isFaqPresented = question
                 }
             }
@@ -402,9 +396,8 @@ class DeepLinkHandler {
 
     private func handleTerminateContract(_ url: URL) {
         guard let viewModel = viewModel else { return }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         let contractId = url.getParameter(property: .contractId)
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             Task { [weak viewModel] in
                 do {
                     try await Task.sleep(seconds: 0.2)
@@ -420,7 +413,7 @@ class DeepLinkHandler {
             Task { [weak viewModel] in
                 do {
                     try await Task.sleep(seconds: 0.2)
-                    let contractsConfig = contractStore.state.activeContracts
+                    let contractsConfig = contractStore.activeContracts
                         .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
@@ -465,10 +458,9 @@ class DeepLinkHandler {
 
     private func handleEditStakeholder(url: URL, type: StakeholderType) {
         guard let viewModel = viewModel else { return }
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task {
             if let contractId = url.getParameter(property: .contractId),
-                let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+                let contract: Contracts.Contract = contractStore.contractForId(contractId)
             {
                 let contractConfig: StakeholdersConfig = .init(
                     contract: contract,
@@ -492,15 +484,13 @@ struct LoggedInNavigation: View {
     @StateObject private var router = NavigationRouter()
     @StateObject private var foreverRouter = NavigationRouter()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
-    @InjectObservableObject private var features: FeatureFlags
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             homeTab
             contractsTab
             foreverTab
-            if features.isPaymentScreenEnabled {
-                paymentsTab
-            }
+            paymentsTab
             profileTab
         }
         .onChange(of: vm.selectedTab) { newTab in
@@ -570,10 +560,9 @@ struct LoggedInNavigation: View {
             case let .termination(terminateAction):
                 switch terminateAction {
                 case .done:
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.fetchContracts)
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.fetchQuickActions)
+                    Task { await contractStore.fetchContracts() }
+                    let homeStore: HomeStore = globalAppStateContainer.get()
+                    Task { await homeStore.fetchQuickActions() }
                 case .chat:
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
@@ -593,10 +582,10 @@ struct LoggedInNavigation: View {
     }
 
     private func fetchContracts() {
-        // added delay since we don't have a terms version at the place right after the insurance has been created
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            let store: ContractStore = globalPresentableStoreContainer.get()
-            store.send(.fetchContracts)
+        // delay since we don't have a terms version right after the insurance is created
+        Task {
+            await delay(1)
+            await contractStore.fetchContracts()
         }
     }
 
@@ -633,11 +622,10 @@ struct LoggedInNavigation: View {
                     with: vm.travelCertificateNavigationVm.editStakeholdersVm
                 )
             case .deleteAccount:
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+                let claimsStore: ClaimsStore = globalAppStateContainer.get()
                 let model = DeleteAccountViewModel(
                     claimsStore: claimsStore,
-                    contractsStore: contractsStore
+                    contractsStore: contractStore
                 )
 
                 DeleteAccountView(
@@ -650,8 +638,8 @@ struct LoggedInNavigation: View {
                     // show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.updateLanguage)
+                    let store: ProfileStore = globalAppStateContainer.get()
+                    Task { await store.updateLanguage() }
                     // show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak mainNavigationVm, weak vm] in
@@ -686,11 +674,11 @@ struct LoggedInNavigation: View {
 }
 
 struct HandleMoving: View {
+    private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
         MovingFlowNavigation(
             onMoved: {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
+                Task { await contractStore.fetchContracts() }
             }
         )
     }
@@ -720,9 +708,9 @@ struct HomeTab: View {
             startInput: $homeNavigationVm.claimsAutomationStartInput
         ) {
             Task {
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                await store.sendAsync(.fetchClaimInProgress)
-                if store.state.claimInProgress != nil {
+                let store: ClaimsStore = globalAppStateContainer.get()
+                await store.fetchClaimInProgress()
+                if store.claimInProgress != nil {
                     Toasts.shared.displayToastBar(
                         toast: .init(
                             type: .info,
@@ -780,8 +768,8 @@ struct HomeTab: View {
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             presentationStyle: .detent(style: [.large])
         ) {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+            let store: HomeStore = globalAppStateContainer.get()
+            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
                 .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
@@ -848,12 +836,12 @@ struct HomeTab: View {
             .navigationTitle(L10n.claimsYourClaim)
             .onDeinit {
                 Task {
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    let claimsStore: ClaimsStore = globalAppStateContainer.get()
                     if claim?.showClaimClosedFlow ?? false, let claim = claim {
                         NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
                         try await service.acknowledgeClosedStatus(for: claim.id)
-                        claimsStore.send(.fetchActiveClaims)
+                        await claimsStore.fetchActiveClaims()
                     }
                 }
             }
@@ -912,6 +900,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isReviewContactInfoPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController? {
@@ -933,18 +922,15 @@ class LoggedInNavigationViewModel: ObservableObject {
         EditStakeholdersViewModel.updatedStakeholderForContractId
             .receive(on: RunLoop.main)
             .delay(for: 1.5, scheduler: RunLoop.main)
-            .sink { _ in
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+            .sink { [weak self] _ in
+                Task { await self?.contractStore.fetchContracts() }
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
             }
             .store(in: &cancellables)
 
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal
-            .map { $0.hasMissedCharge }
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        homeStore.$hasMissedCharge
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] hasMissedCharge in
@@ -1039,11 +1025,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func addonsChanged() {
         Task {
-            let store: CrossSellStore = globalPresentableStoreContainer.get()
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let store: CrossSellStore = globalAppStateContainer.get()
             _ = await (
-                store.sendAsync(.fetchAddonBanners),
-                contractStore.sendAsync(.fetchContracts)
+                store.fetchAddonBanners(),
+                contractStore.fetchContracts()
             )
         }
         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .addon))
@@ -1051,16 +1036,15 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     func showPayout() {
         Task { [weak self] in
-            let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
-            await paymentStore.sendAsync(.fetchPaymentStatus)
+            let paymentStore: PaymentStore = globalAppStateContainer.get()
+            await paymentStore.fetchPaymentStatus()
             self?.homeNavigationVm.isPayoutMethodPresented = true
         }
     }
 
     @objc func openChangeTier(notification: Notification) {
         let contractId = notification.object as? String
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             isChangeTierPresented = .init(
                 source: .betterCoverage,
                 contracts: [
@@ -1080,23 +1064,21 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func tierChanged() {
-        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         Task {
             await (
-                crossSellStore.sendAsync(.fetchAddonBanners),
-                contractStore.sendAsync(.fetchContracts)
+                crossSellStore.fetchAddonBanners(),
+                contractStore.fetchContracts()
             )
         }
     }
 
     @objc func petChipIdAdded() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchMemberState)
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        Task { await homeStore.fetchMemberState() }
         Task {
             await delay(1)
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            contractStore.send(.fetchContracts)
+            await contractStore.fetchContracts()
         }
     }
 
@@ -1105,8 +1087,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func openMissingPetChipId(contractId: String? = nil) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        var contracts = contractStore.state.activeContracts.filter(\.missingPetChipId)
+        var contracts = contractStore.activeContracts.filter(\.missingPetChipId)
 
         if let contractId {
             contracts = contracts.filter { $0.id == contractId }
@@ -1125,11 +1106,11 @@ class LoggedInNavigationViewModel: ObservableObject {
             homeNavigationVm.router.popToRoot()
         }
         Task { @MainActor in
-            let store: ClaimsStore = globalPresentableStoreContainer.get()
-            store.send(.fetchActiveClaims)
+            let store: ClaimsStore = globalAppStateContainer.get()
+            await store.fetchActiveClaims()
 
-            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
+            let profileStore: ProfileStore = globalAppStateContainer.get()
+            if profileStore.pushNotificationCurrentStatus() != .authorized {
                 askForPushNotification = true
             }
         }
@@ -1142,8 +1123,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func chatClosed() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        store.send(.fetchChatNotifications)
+        let store: HomeStore = globalAppStateContainer.get()
+        Task { await store.fetchChatNotifications() }
     }
 
     @objc func startClaim(notification: Notification) {
@@ -1165,10 +1146,9 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     func openUrl(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchQuickActions)
+        Task { await contractStore.fetchContracts() }
+        let homeStore: HomeStore = globalAppStateContainer.get()
+        Task { await homeStore.fetchQuickActions() }
         var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
         if urlComponent?.scheme == nil {
             urlComponent?.scheme = "https"

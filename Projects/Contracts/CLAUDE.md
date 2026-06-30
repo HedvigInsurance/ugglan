@@ -4,9 +4,9 @@ Displays active, pending, and terminated insurance contracts with details on cov
 
 ## Architecture
 
-- **Pattern**: Legacy Store. Uses `ContractStore` (extends `LoadingStateStore`) managed via `PresentableStore`. Navigation coordinated by `ContractsNavigationViewModel`.
+- **Pattern**: `ContractStore` is an `@PersistableStore`-backed `AppStore` exposing `activeContracts`, `terminatedContracts`, and `pendingContracts` as `@Published` arrays, plus helpers (`contractForId`, `allStakeholders`, `getAddonContractInfosFor`). Navigation coordinated by `ContractsNavigationViewModel`.
 - **Key services**: `FetchContractsClient` protocol for fetching active/pending/terminated contracts and addon banners. `FetchContractsClientDemo` provides sample data.
-- **Data flow**: `ContractStore` holds `ContractState` with three contract lists. Views use `@PresentableStore` to access state and send actions. `ContractsNavigationViewModel` manages navigation state and coordinates modal/detent presentations.
+- **Data flow**: Views observe the store via `@AppObservedObject`. `Contracts.swift` triggers `await store.fetchContracts()` on appear, on pull-to-refresh, and on a 60-second polling timer. `ContractStore` conforms to `ExistingStakeholders` so it can be injected into `EditStakeholdersViewModel`. `ContractsNavigationViewModel` manages navigation state and coordinates modal/detent presentations.
 
 ## Key Files
 
@@ -14,13 +14,13 @@ Displays active, pending, and terminated insurance contracts with details on cov
 - **Navigation**: `ContractsNavigation.swift` — orchestrates routes, detents, and modals for detail, termination, tier changes, stakeholder edits, addon management
 - **ViewModels**: `ContractsNavigationViewModel` (router + published modals), `ContractDetailsViewModel` (observes store for contract deletion), `ContractTableViewModel` (loading state + addon banners)
 - **Service**: `Service/Protocols/ContractsClient.swift`, `Service/DemoImplementation/ContractsClientDemo.swift`
-- **Models**: `Models/ContractModels.swift` — `Contract`, `Agreement`, `ContractRenewal`, `AddonsInfo`, `ExistingAddon`, `AvailableAddon`
+- **Models**: `Models/ContractModels.swift` — `Contract`, `Agreement`, `ContractRenewal`, `AddonsInfo`, `ExistingAddon`, `AvailableAddon`. `Models/EditType+Contract.swift` — `EditType.getTypes(for:)` factory + `Contract.supportsAddonRemoval`.
 - **View**: `ContractDetail.swift` (tabbed: Overview/Coverage/Details), `ContractTable.swift` (list with stacked card UI), `ContractRow.swift`, `ContractInformation.swift`, `ContractCoverage.swift`, `ContractDocuments.swift`
-- **Store**: `ContractsStore.swift`, `ContractState.swift`, `ContractAction.swift`
+- **Store**: `Stores/ContractsStore.swift`
 
 ## Dependencies
 
-- Imports: hCore, hCoreUI, PresentableStore, Addons, TerminateContracts, EditStakeholders, ChangeTier, CrossSell, Apollo
+- Imports: hCore, hCoreUI, AppStateContainer, Addons, TerminateContracts, EditStakeholders, ChangeTier, CrossSell, Apollo
 - Depended on by: Home (contract data for navigation, renewal cards), App (insurances tab)
 
 ## Navigation

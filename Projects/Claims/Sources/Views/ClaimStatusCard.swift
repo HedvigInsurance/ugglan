@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct ClaimStatusCard: View {
-    var claimType: ClaimType
+    var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
     @EnvironmentObject var homeRouter: NavigationRouter
 

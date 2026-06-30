@@ -3,7 +3,7 @@
 The SubmitClaimChat module implements the current chat-based claims submission flow. It presents a guided, multi-step claim intent experience rendered as a chat conversation, where the backend drives the flow by returning the next step after each user response. Steps include forms, single-select options, audio recordings, file uploads, summaries, tasks, and deflection screens.
 
 ## Architecture
-- **ViewModel pattern**: The core ViewModel is `SubmitClaimChatViewModel` (`@MainActor final class: ObservableObject`), which manages step progression, scroll coordination, and error handling. Each step type has a dedicated `ClaimIntentStepHandler` subclass (factory pattern via `ClaimIntentStepHandlerFactory`). No `PresentableStore` is used in this module.
+- **ViewModel pattern**: The core ViewModel is `SubmitClaimChatViewModel` (`@MainActor final class: ObservableObject`), which manages step progression, scroll coordination, and error handling. Each step type has a dedicated `ClaimIntentStepHandler` subclass (factory pattern via `ClaimIntentStepHandlerFactory`). No `AppStore` is used in this module.
 - **Key services**:
   - `ClaimIntentClient` -- protocol defining all claim intent API operations (start, submit audio/file/form/select/summary/task, skip, regret, search).
   - `ClaimIntentService` -- thin wrapper around `ClaimIntentClient` that uses `@Inject` for the client.

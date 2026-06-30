@@ -1,7 +1,8 @@
 import Apollo
-import Authentication
+import AppStateContainer
+import AuthenticationCore
+import AuthenticationUI
 import Market
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -18,8 +19,8 @@ struct LoginNavigation: View {
         }
         .detent(presented: $vm.showLanguagePicker, presentationStyle: .detent(style: [.height])) {
             LanguagePickerView {
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.updateLanguage)
+                let store: ProfileStore = globalAppStateContainer.get()
+                Task { await store.updateLanguage() }
                 vm.showLanguagePicker = false
             } onCancel: {
                 vm.showLanguagePicker = false
@@ -58,8 +59,8 @@ struct LoginNavigation: View {
     }
 
     private func handleDemoModeActivation() async {
-        let store: UgglanStore = globalPresentableStoreContainer.get()
-        await store.sendAsync(.setIsDemoMode(to: true))
+        let store: UgglanStore = globalAppStateContainer.get()
+        store.isDemoMode = true
         DI.initAndRegisterClient()
     }
 }

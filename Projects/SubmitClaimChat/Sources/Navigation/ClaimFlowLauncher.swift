@@ -36,6 +36,7 @@ struct ClaimFlowLauncher: ViewModifier {
                     SubmitClaimChatHonestyPledgeScreen(hasOngoingClaim: hasClaimInProgress) {
                         inProgress,
                         withAnimations in
+                        startInputDetent = nil
                         disableSubmitChatClaimAnimations = !withAnimations
                         submitClaimInput = inProgress ? .init(type: .inProgress) : startInput
                         startInput = nil

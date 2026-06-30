@@ -1,5 +1,5 @@
+import AppStateContainer
 import Claims
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -87,14 +87,11 @@ struct AskForPushNotifications: View {
         hButton(
             .medium,
             .primary,
-            content: .init(title: L10n.claimsActivateNotificationsCta),
-            {
-                Task {
-                    await UIApplication.shared.appDelegate.registerForPushNotifications()
-                    onActionExecuted()
-                }
-            }
-        )
+            content: .init(title: L10n.claimsActivateNotificationsCta)
+        ) {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+            onActionExecuted()
+        }
     }
 
     var closeButton: some View {
@@ -104,8 +101,8 @@ struct AskForPushNotifications: View {
             content: .init(title: L10n.claimsActivateNotificationsDismiss),
             {
                 onActionExecuted()
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: nil))
+                let store: ProfileStore = globalAppStateContainer.get()
+                store.setPushNotificationStatus(nil)
             }
         )
     }

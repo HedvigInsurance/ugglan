@@ -1,27 +1,21 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ConnectPaymentCardView: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
     public init() {}
     public var body: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state
-            }
-        ) { state in
-            if let status = state.paymentStatusData?.status {
-                getStatusInfoView(from: status, state: state)
-            }
+        if let status = store.paymentStatusData?.status {
+            getStatusInfoView(from: status)
         }
     }
 
     @ViewBuilder
-    func getStatusInfoView(from status: PayinMethodStatus, state: PaymentState) -> some View {
+    func getStatusInfoView(from status: PayinMethodStatus) -> some View {
         if case let .contactUs(date) = status {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
@@ -37,7 +31,7 @@ public struct ConnectPaymentCardView: View {
                     )
                 ]
             )
-        } else if status == .needsSetup || state.showsConnectPayment {
+        } else if status == .needsSetup || store.showsConnectPayment {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.body,
                 type: .attention

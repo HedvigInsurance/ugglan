@@ -9,3 +9,7 @@
 
 // Apply common settings specific to iOS
 #include "iOS-Base.xcconfig"
+
+// No global accent color is defined in any asset catalog; clear the default
+// ("AccentColor") to silence actool's "not present in any asset catalogs" warning.
+ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME =

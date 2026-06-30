@@ -1,6 +1,6 @@
+import AppStateContainer
 import Combine
 import Foundation
-import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -22,8 +22,8 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 }
 
 public struct ContractDetail: View {
-    @PresentableStore var store: ContractStore
-    @StateObject private var vm: ContractDetailsViewModel
+    @AppObservedObject var store: ContractStore
+    @EnvironmentObject var navigationRouter: NavigationRouter
     var id: String
 
     @StateObject var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
@@ -34,25 +34,14 @@ public struct ContractDetail: View {
         id: String
     ) {
         self.id = id
-        _vm = .init(wrappedValue: .init(id: id))
     }
 
     public var body: some View {
-        if let contract = store.state.contractForId(id) {
+        if let contract = store.contractForId(id) {
             hForm {
                 VStack(spacing: 0) {
                     hSection {
-                        ContractRow(
-                            image: contract.pillowType?.bgImage,
-                            terminationMessage: contract.terminationMessage,
-                            contractDisplayName: contract.currentAgreement?.productVariant.displayName
-                                ?? "",
-                            contractExposureName: contract.exposureDisplayName,
-                            activeFrom: contract.upcomingChangedAgreement?.agreementDate.activeFrom,
-                            activeInFuture: contract.activeInFuture,
-                            masterInceptionDate: contract.masterInceptionDate,
-                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
-                        )
+                        ContractRow(contract: contract)
                     }
                     decommissionedInfoView
                     ScrollableSegmentedView(
@@ -78,16 +67,17 @@ public struct ContractDetail: View {
                 .padding(.top, .padding8)
                 Spacer(minLength: 0)
             }
-            .presentableStoreLensAnimation(.default)
-            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-                vm?.vc = vc
-            }
+        } else {
+            EmptyView()
+                .onAppear { [weak navigationRouter] in
+                    navigationRouter?.popToRoot()
+                }
         }
     }
 
     @ViewBuilder
     private var decommissionedInfoView: some View {
-        if let contract = store.state.contractForId(id) {
+        if let contract = store.contractForId(id) {
             if (TypeOfContract.isDecommisioned(
                 for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
             )) {
@@ -99,30 +89,5 @@ public struct ContractDetail: View {
                 Spacing(height: Float(.padding16))
             }
         }
-    }
-}
-
-@MainActor
-class ContractDetailsViewModel: ObservableObject {
-    private let id: String
-    @PresentableStore var store: ContractStore
-    weak var vc: UIViewController?
-    var observeContractStateCancellable: AnyCancellable?
-    init(id: String) {
-        self.id = id
-        observeContractState()
-    }
-
-    private func observeContractState() {
-        let id = self.id
-        observeContractStateCancellable = store.stateSignal
-            .map { $0.contractForId(id)?.id }
-            .eraseToAnyPublisher()
-            .removeDuplicates()
-            .sink { [weak self] value in
-                if value == nil {
-                    self?.vc?.navigationController?.popToRootViewController(animated: true)
-                }
-            }
     }
 }

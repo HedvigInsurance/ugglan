@@ -1,8 +1,8 @@
 import Addons
+import AppStateContainer
 import Contracts
 import EditStakeholders
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -11,21 +11,31 @@ import hCoreUI
 public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
-    @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
+    @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel? {
+        willSet {
+            createNewRouter.popToRoot()
+        }
+    }
     @Published var isAddonPresented: ChangeAddonInput?
     @Published var isInfoViewPresented = false
+    let createNewRouter = NavigationRouter()
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
     public var editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
     var id: String?
     let specification: [TravelInsuranceContractSpecification]
+
+    init(specification: [TravelInsuranceContractSpecification]) {
+        self.id = UUID().uuidString
+        self.specification = specification
+    }
 }
 
 enum TravelCertificateRouterActions: Hashable {
@@ -66,7 +76,6 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
 public struct TravelCertificateNavigation: View {
     @ObservedObject var vm: TravelCertificateNavigationViewModel
     @StateObject var router = NavigationRouter()
-    @StateObject var createNewRouter = NavigationRouter()
 
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool
@@ -156,7 +165,7 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
                 .embededInNavigation(
-                    router: createNewRouter,
+                    router: vm.createNewRouter,
                     options: .extendedNavigationWidth,
                     tracking: specificationModel.specification.count > 1
                         ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
@@ -189,7 +198,7 @@ public struct TravelCertificateNavigation: View {
         for specifications: [TravelInsuranceContractSpecification]
     ) -> some View {
         TravelCertificateSelectInsuranceScreen(
-            router: createNewRouter,
+            router: vm.createNewRouter,
             specifications: specifications
         )
     }
@@ -205,7 +214,7 @@ public struct TravelCertificateNavigation: View {
     private func showWhoIsTravelingScreen(
         specification: TravelInsuranceContractSpecification
     ) -> some View {
-        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification, router: createNewRouter)
+        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification, router: vm.createNewRouter)
         return WhoIsTravelingScreen(
             vm: vm.whoIsTravelingViewModel!,
             travelCertificateNavigationVm: vm

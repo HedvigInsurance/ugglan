@@ -1,65 +1,81 @@
-import Apollo
-import PresentableStore
-import SwiftUI
+import AppStateContainer
+import Foundation
 import hCore
 
-public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var fetchClaimsClient: hFetchClaimsClient
+@MainActor
+@PersistableStore
+public final class ClaimsStore: AppStore {
+    @Inject private var fetchClaimsClient: hFetchClaimsClient
 
-    override public func effects(_: @escaping () -> ClaimsState, _ action: ClaimsAction) async {
-        switch action {
-        case .fetchActiveClaims:
-            do {
-                let claimData = try await fetchClaimsClient.getActiveClaims()
-                await sendAsync(.setActiveClaims(claims: claimData))
-            } catch {
-                send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-            }
-        case .fetchHistoryClaims:
-            do {
-                let claimData = try await fetchClaimsClient.getHistoryClaims()
-                await sendAsync(.setHistoryClaims(claims: claimData))
-            } catch {
-                send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-            }
-        case .fetchClaimInProgress:
-            do {
-                let claimData = try await fetchClaimsClient.getClaimInProgress()
-                await sendAsync(.setClaimInProgress(model: claimData))
-            } catch {
-                send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
-            }
-        default:
-            break
+    @Published public internal(set) var activeClaims: [ClaimModel] = [] {
+        didSet {
+            setAllActiveClaims()
+        }
+    }
+    @Published public internal(set) var historyClaims: [ClaimModel] = []
+    @Published public internal(set) var files: [String: [File]] = [:]
+    @Published public var claimInProgress: ClaimInProgressModel? {
+        didSet {
+            setAllActiveClaims()
+        }
+    }
+    @Published var allActiveClaims: [ActiveClaimType] = []
+
+    public init() {}
+
+    public var hasActiveClaims: Bool {
+        activeClaims.map(\.status).contains { $0 != .closed }
+    }
+
+    public func getClaimFor(id: String) -> ClaimModel? {
+        activeClaims.first(where: { $0.id == id })
+    }
+
+    public func fetchActiveClaims() async {
+        do {
+            activeClaims = try await fetchClaimsClient.getActiveClaims()
+        } catch {
         }
     }
 
-    override public func reduce(_ state: ClaimsState, _ action: ClaimsAction) async -> ClaimsState {
-        var newState = state
-        switch action {
-        case .fetchActiveClaims:
-            newState.loadingStates[action] = .loading
-        case .fetchHistoryClaims:
-            newState.loadingStates[action] = .loading
-        case .fetchClaimInProgress:
-            break
-        case let .setActiveClaims(claims):
-            newState.loadingStates.removeValue(forKey: .fetchActiveClaims)
-            newState.activeClaims = claims
-        case let .setHistoryClaims(claims):
-            newState.loadingStates.removeValue(forKey: .fetchHistoryClaims)
-            newState.historyClaims = claims
-        case let .setClaimInProgress(model):
-            newState.claimInProgress = model
-        case let .setLoadingState(action, state):
-            if let state {
-                newState.loadingStates[action] = state
-            } else {
-                newState.loadingStates.removeValue(forKey: action)
-            }
-        case let .setFilesForClaim(claimId, files):
-            newState.files[claimId] = files
+    public func fetchHistoryClaims() async {
+        do {
+            historyClaims = try await fetchClaimsClient.getHistoryClaims()
+        } catch {
         }
-        return newState
+    }
+
+    public func setFiles(_ files: [File], for claimId: String) {
+        self.files[claimId] = files
+    }
+
+    public func fetchClaimInProgress() async {
+        do {
+            claimInProgress = try await fetchClaimsClient.getClaimInProgress()
+        } catch {
+        }
+    }
+
+    private func setAllActiveClaims() {
+        var claims = [ActiveClaimType]()
+        if let claimInProgress {
+            claims.append(.claimInProgress(model: claimInProgress))
+        }
+        claims.append(contentsOf: activeClaims.map({ .claim(model: $0) }))
+        self.allActiveClaims = claims
+    }
+
+    enum ActiveClaimType: Equatable, Identifiable, Codable {
+        case claim(model: ClaimModel)
+        case claimInProgress(model: ClaimInProgressModel)
+
+        var id: String {
+            switch self {
+            case .claim(let model):
+                return model.id
+            case .claimInProgress(let model):
+                return model.title ?? "title"
+            }
+        }
     }
 }

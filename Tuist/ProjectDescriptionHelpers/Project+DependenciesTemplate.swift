@@ -37,7 +37,7 @@ public enum ExternalDependencies: CaseIterable {
     case svgkit
     case unleashProxyClientSwift
     case argumentParser
-    case presentableStore
+    case appStateContainer
     case environment
     case logger
     case automaticLog
@@ -112,9 +112,9 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.7.1")))
             ]
-        case .presentableStore:
+        case .appStateContainer:
             return [
-                .package(path: .relativeToRoot("LocalModules/PresentableStore"))
+                .package(path: .relativeToRoot("LocalModules/AppStateContainer"))
             ]
         case .environment:
             return [
@@ -203,8 +203,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ApolloIosCodegen")]
         case .argumentParser:
             return [.package(product: "ArgumentParser")]
-        case .presentableStore:
-            return [.package(product: "PresentableStore")]
+        case .appStateContainer:
+            return [.package(product: "AppStateContainer")]
         case .environment:
             return [.package(product: "Environment")]
         case .logger:

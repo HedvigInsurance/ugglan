@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 
 @testable import Payment
@@ -9,7 +9,7 @@ final class StoreMissedPaymentTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
     }
 
     override func tearDown() async throws {
@@ -48,10 +48,9 @@ final class StoreMissedPaymentTests: XCTestCase {
         )
         let store = PaymentStore()
         self.store = store
-        await store.sendAsync(.getMissedPayment)
-        try await Task.sleep(seconds: 0.3)
-        XCTAssertNil(store.loadingState[.getMissedPayment])
-        assert(store.state.missedPaymentData == missedPaymentData)
+        await store.getMissedPayment()
+        XCTAssertNil(store.loadMissedPaymentError)
+        assert(store.missedPaymentData == missedPaymentData)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getMissedPaymentData)
     }
@@ -62,10 +61,9 @@ final class StoreMissedPaymentTests: XCTestCase {
         )
         let store = PaymentStore()
         self.store = store
-        await store.sendAsync(.getMissedPayment)
-        try await Task.sleep(seconds: 0.3)
-        XCTAssertNil(store.loadingState[.getMissedPayment])
-        assert(store.state.missedPaymentData == nil)
+        await store.getMissedPayment()
+        XCTAssertNil(store.loadMissedPaymentError)
+        assert(store.missedPaymentData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getMissedPaymentData)
     }
@@ -76,10 +74,9 @@ final class StoreMissedPaymentTests: XCTestCase {
         )
         let store = PaymentStore()
         self.store = store
-        await store.sendAsync(.getMissedPayment)
-        try await Task.sleep(seconds: 0.3)
-        assert(store.loadingState[.getMissedPayment] != nil)
-        assert(store.state.missedPaymentData == nil)
+        await store.getMissedPayment()
+        assert(store.loadMissedPaymentError != nil)
+        assert(store.missedPaymentData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getMissedPaymentData)
     }

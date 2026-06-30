@@ -1,9 +1,8 @@
-import Authentication
+import AuthenticationUI
 import Combine
 import Environment
 import Foundation
 import Market
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -59,19 +58,13 @@ struct NotLoggedInView: View {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title: L10n.bankidLoginTitle),
-                        {
-                            vm.showLogin = true
-                        }
-                    )
+                        content: .init(title: L10n.bankidLoginTitle)
+                    ) { vm.showLogin = true }
                     hButton(
                         .large,
                         .ghost,
-                        content: .init(title: L10n.marketingGetHedvig),
-                        {
-                            vm.onOnBoardPressed()
-                        }
-                    )
+                        content: .init(title: L10n.marketingGetHedvig)
+                    ) { vm.onOnBoardPressed() }
                     .accessibilityAddTraits(.isLink)
                 }
             }
