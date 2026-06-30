@@ -1,7 +1,7 @@
+import AppStateContainer
 import Contracts
 import EditStakeholders
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -74,11 +74,11 @@ class WhoIsTravelingViewModel: ObservableObject {
     @Published var isLoading = false
     let contract: Contracts.Contract?
     let router: NavigationRouter
+    let contractStore: ContractStore = globalAppStateContainer.get()
     init(specification: TravelInsuranceContractSpecification, router: NavigationRouter) {
         self.specification = specification
         self.router = router
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contract = contractStore.state.contractForId(specification.contractId)
+        contract = contractStore.contractForId(specification.contractId)
         let insuranceHolder = Stakeholder(
             firstName: contract?.firstName,
             lastName: contract?.lastName,

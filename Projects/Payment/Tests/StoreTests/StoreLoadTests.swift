@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 
 @testable import Payment
@@ -9,7 +9,7 @@ final class StoreLoadTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
     }
 
     override func tearDown() async throws {
@@ -60,10 +60,10 @@ final class StoreLoadTests: XCTestCase {
         )
         let store = PaymentStore()
         self.store = store
-        await store.sendAsync(.load)
-        try await Task.sleep(seconds: 0.1)
-        assert(store.state.ongoingPaymentData == paymentData.ongoing)
-        assert(store.state.paymentData == paymentData.upcoming)
+        await store.load()
+        assert(store.ongoingPaymentData == paymentData.ongoing)
+        assert(store.paymentData == paymentData.upcoming)
+        assert(store.loadPaymentDataError == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
     }
@@ -74,10 +74,10 @@ final class StoreLoadTests: XCTestCase {
         )
         let store = PaymentStore()
         self.store = store
-        await store.sendAsync(.load)
-        XCTAssertNotNil(store.loadingState[.getPaymentData])
-        assert(store.state.paymentData == nil)
-        assert(store.state.ongoingPaymentData.isEmpty)
+        await store.load()
+        XCTAssertNotNil(store.loadPaymentDataError)
+        assert(store.paymentData == nil)
+        assert(store.ongoingPaymentData.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
     }

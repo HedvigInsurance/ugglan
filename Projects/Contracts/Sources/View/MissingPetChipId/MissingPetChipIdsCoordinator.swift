@@ -1,5 +1,5 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import UIKit
 import hCore
@@ -129,7 +129,7 @@ private struct SelectContractInput: Identifiable & Equatable {
 
 @MainActor
 class AddMissingPetChipIdViewModel: ObservableObject {
-    @PresentableStore private var contractStore: ContractStore
+    @AppState private var contractStore: ContractStore
     private let service = PetChipIdService()
     let router = NavigationRouter()
 
@@ -156,7 +156,7 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                     petChipId: petChipIdMasking.unmaskedValue(text: petChipId),
                     for: contract.id
                 )
-                await contractStore.sendAsync(.fetchContracts)
+                await contractStore.fetchContracts()
                 NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
                 Toasts.success()
                 dismiss()

@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -29,7 +29,7 @@ extension View {
 
 struct MissedPaymentScreen: View {
     let missedPaymentdata: MissedPaymentData
-    @PresentableStore var paymentStore: PaymentStore
+    @AppObservedObject var paymentStore: PaymentStore
     @StateObject private var vm = PaymentOverdueScreenViewModel()
     @EnvironmentObject var router: NavigationRouter
     let onSuccess: () -> Void
@@ -99,8 +99,8 @@ struct MissedPaymentScreen: View {
             .withDismissButton()
             .embededInNavigation(tracking: String(describing: SuccessScreen.self))
             .onDeinit {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(.setMissedPaymentData(data: nil))
+                let store: PaymentStore = globalAppStateContainer.get()
+                store.setMissedPaymentData(nil)
                 Task { @MainActor in
                     onSuccess()
                 }
@@ -225,7 +225,7 @@ struct MissedPaymentScreen: View {
     }
 
     private var showInfoMesaage: Bool {
-        if case .contactUs = paymentStore.state.paymentStatusData?.status { return true }
+        if case .contactUs = paymentStore.paymentStatusData?.status { return true }
         return false
     }
 }
@@ -275,21 +275,17 @@ class PaymentOverdueScreenViewModel: ObservableObject {
         addedToThePayment: nil
     )
 
-    let store: PaymentStore = globalPresentableStoreContainer.get()
-    store.send(
-        .setPaymentStatus(
-            data: .init(
-                status: .contactUs(date: "22. maj 2026."),
-                chargingDay: 27,
-                defaultPayinMethod: nil,
-                payinMethods: [],
-                defaultPayoutMethod: nil,
-                payoutMethods: [],
-                availableMethods: [],
-                missingConnection: nil,
-                layout: .other
-            )
-        )
+    let store: PaymentStore = globalAppStateContainer.get()
+    store.paymentStatusData = .init(
+        status: .contactUs(date: "22. maj 2026."),
+        chargingDay: 27,
+        defaultPayinMethod: nil,
+        payinMethods: [],
+        defaultPayoutMethod: nil,
+        payoutMethods: [],
+        availableMethods: [],
+        missingConnection: nil,
+        layout: .other
     )
     return MissedPaymentScreen(
         missedPaymentdata: .init(

@@ -1,5 +1,5 @@
+import AppStateContainer
 import Claims
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -98,12 +98,13 @@ struct AskForPushNotifications: View {
         hButton(
             .large,
             .ghost,
-            content: .init(title: L10n.claimsActivateNotificationsDismiss)
-        ) {
-            onActionExecuted()
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: nil))
-        }
+            content: .init(title: L10n.claimsActivateNotificationsDismiss),
+            {
+                onActionExecuted()
+                let store: ProfileStore = globalAppStateContainer.get()
+                store.setPushNotificationStatus(nil)
+            }
+        )
     }
 }
 

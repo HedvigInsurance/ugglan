@@ -14,7 +14,7 @@ tuist generate              # Regenerate Xcode workspace after module changes
 
 ## Documentation
 
-- **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, legacy PresentableStore, navigation, service layer, DI, GraphQL
+- **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, AppStateContainer stores, navigation, service layer, DI, GraphQL
 - **[CLAUDE-testing.md](CLAUDE-testing.md)** — XCTest patterns, MockData, memory leak detection, test naming
 - **[CLAUDE-accessibility.md](CLAUDE-accessibility.md)** — VoiceOver, dynamic type, contrast, CI rules, auto-fix
 - Per-module docs at `Projects/<Module>/CLAUDE.md` — architecture, key files, dependencies, gotchas
@@ -111,12 +111,12 @@ After writing/modifying feature code, invoke `@test-agent` for test generation a
 
 ## Don'ts
 
-1. **Do NOT use PresentableStore (State/Action/Store) for new features** — use ViewModels with `@Inject` services
+1. **Prefer ViewModels over stores for new features** — reach for an `AppStore` (in `AppStateContainer`) only when state genuinely needs to be shared across views and survive view lifecycles
 2. **Do NOT use `@Observable`** — use `@MainActor class VM: ObservableObject` with `@Published`
 3. **Do NOT use raw SwiftUI `NavigationStack` / `NavigationLink`** — use `hNavigationStack` with `NavigationRouter` (new) or `RouterHost` with `Router` (legacy)
 4. **Do NOT use raw SwiftUI `Form`/`Section`/`Text`/`Button`** — use `hForm`/`hSection`/`hText`/`hButton`
 5. **Do NOT use TCA / ComposableArchitecture**
-6. **Do NOT omit `@MainActor`** on ViewModels, Store subclasses, and service protocols
+6. **Do NOT omit `@MainActor`** on ViewModels, `AppStore` types, and service protocols
 7. **Do NOT hardcode user-facing strings** — use `L10n.X.Y.z`
 8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple** (OctopusImplementation goes in `Projects/App/Sources/Service/OctopusClientsImplementation/`)
 9. **Do NOT skip `TrackingViewNameProtocol`** on navigation enums

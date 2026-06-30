@@ -1,6 +1,6 @@
+import AppStateContainer
 import Combine
 import Kingfisher
-import PresentableStore
 import SwiftUI
 import hCore
 
@@ -87,7 +87,7 @@ public class ChatMessageViewModel: ObservableObject {
         // skip if have message that are in process of sending
         if sendingMessagesIds.isEmpty {
             do {
-                let store: ChatStore = globalPresentableStoreContainer.get()
+                let store: ChatStore = globalAppStateContainer.get()
                 let chatData = try await chatService.getNewMessages()
                 withAnimation {
                     responseIsBeingGenerated = chatData.responseIsBeingGenerated
@@ -103,7 +103,7 @@ public class ChatMessageViewModel: ObservableObject {
 
                     if hasNext == nil {
                         if let conversationId = conversationVm.conversationId,
-                            let failedMessages = store.state.failedMessages[conversationId]
+                            let failedMessages = store.failedMessages[conversationId]
                         {
                             self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
                             addedMessagesIds.append(contentsOf: failedMessages.compactMap(\.id))
@@ -135,8 +135,8 @@ public class ChatMessageViewModel: ObservableObject {
             sendingMessagesIds.append(message.id)
             do {
                 let sentMessage = try await chatService.send(message: message)
-                let store: ChatStore = globalPresentableStoreContainer.get()
-                store.send(.clearFailedMessage(conversationId: conversationVm.conversationId ?? "", message: message))
+                let store: ChatStore = globalAppStateContainer.get()
+                store.clearFailedMessage(conversationId: conversationVm.conversationId ?? "", message: message)
                 await handleSuccessAdding(for: sentMessage, to: message)
                 haveSentAMessage = true
             } catch let ex {
@@ -161,9 +161,9 @@ public class ChatMessageViewModel: ObservableObject {
     }
 
     private func handleAddingLocal(for message: Message) {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        if !store.state.askedForPushNotificationsPermission {
-            store.send(.checkPushNotificationStatus)
+        let store: ChatStore = globalAppStateContainer.get()
+        if !store.askedForPushNotificationsPermission {
+            store.checkPushNotificationStatus()
             Task { @MainActor in
                 await chatNavigationVm?.checkForPushNotificationStatus()
             }
@@ -236,18 +236,20 @@ public class ChatMessageViewModel: ObservableObject {
                 break
             default:
                 messages[index] = newMessage
-                let store: ChatStore = globalPresentableStoreContainer.get()
+                let store: ChatStore = globalAppStateContainer.get()
                 switch newMessage.type {
                 case let .file(file):
                     if let newFile = try? await file.getAsData() {
                         let fileMessage = newMessage.copyWith(type: .file(file: newFile))
-                        store.send(
-                            .setFailedMessage(conversationId: conversationVm.conversationId ?? "", message: fileMessage)
+                        store.setFailedMessage(
+                            conversationId: conversationVm.conversationId ?? "",
+                            message: fileMessage
                         )
                     }
                 default:
-                    store.send(
-                        .setFailedMessage(conversationId: conversationVm.conversationId ?? "", message: newMessage)
+                    store.setFailedMessage(
+                        conversationId: conversationVm.conversationId ?? "",
+                        message: newMessage
                     )
                 }
             }
@@ -255,11 +257,11 @@ public class ChatMessageViewModel: ObservableObject {
     }
 
     func deleteFailed(message: Message) {
-        let store: ChatStore = globalPresentableStoreContainer.get()
+        let store: ChatStore = globalAppStateContainer.get()
         withAnimation {
             self.messages.removeAll(where: { $0.id == message.id })
         }
-        store.send(.clearFailedMessage(conversationId: conversationVm.conversationId ?? "", message: message))
+        store.clearFailedMessage(conversationId: conversationVm.conversationId ?? "", message: message)
     }
 }
 

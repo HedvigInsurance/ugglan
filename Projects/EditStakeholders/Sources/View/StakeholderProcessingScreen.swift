@@ -86,7 +86,7 @@ extension StakeholderProcessingScreen: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { DateService() })
-    struct MockExistingStakeholders: ExistingStakeholders {
+    class MockExistingStakeholders: ExistingStakeholders {
         func get(contractId: String, stakeholderType: StakeholderType) -> [Stakeholder] { [] }
     }
     return StakeholderProcessingScreen(

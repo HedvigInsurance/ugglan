@@ -4,10 +4,10 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 
 ## Architecture
 
-Legacy `PresentableStore` for state + reactive data binding, with a mix of `NavigationRouter`-driven new flows and view-level ViewModels for setup screens.
+`PaymentStore` is an `AppStateContainer`-backed `AppStore`; per-flow ViewModels handle setup screens.
 
-- `PaymentStore` extends `LoadingStateStore<PaymentState, PaymentAction, LoadingAction>`. State includes `paymentData`, `ongoingPaymentData`, `paymentStatusData` (payin + payout methods + available providers), `paymentHistory`, and `missedPaymentData`. Effects call `hPaymentClient` and dispatch setters; views observe via `PresentableStoreLens` or `@PresentableStore`.
-- Per-flow ViewModels exist on top of the store: `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `NordeaPayoutSetupViewModel`, `SwishPayoutSetupViewModel`, `PaymentOverdueScreenViewModel`, `PaymentsHistoryViewModel`. None use `@Inject` directly at the top level — service calls go through the store or are dispatched from setup VMs.
+- `PaymentStore` is `@MainActor @PersistableStore final class PaymentStore: AppStore`. `@Published` properties: `paymentData`, `ongoingPaymentData`, `paymentStatusData` (payin + payout methods + available providers), `paymentHistory`, `missedPaymentData`. `@Transient @Published` flags expose per-fetch loading and error state. Async methods: `load()`, `fetchPaymentStatus()`, `getHistory()`, `getMissedPayment()`. Views observe via `@AppObservedObject`.
+- Per-flow ViewModels: `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `NordeaPayoutSetupViewModel`, `SwishPayoutSetupViewModel`, `PaymentOverdueScreenViewModel`, `PaymentsViewModel`, `PaymentsHistoryViewModel`. The list/history VMs derive `viewState` from the store's `isFetchingX`/`fetchXError` publishers; setup VMs (Nordea/Swish/Trustly) call `hPaymentClient` directly and trigger `store.fetchPaymentStatus()` on success.
 - `hPaymentClient` protocol exposes: `getPaymentData`, `getPaymentStatusData`, `getPaymentHistoryData`, `getMissedPaymentData`, `setupPaymentMethod(_:)`, `chargeOutstandingPayment()`. Octopus implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/` (per project convention). Demo implementation is `hPaymentClientDemo` in this module.
 - Setup providers are modeled by `PaymentProvider` (Trustly, Adyen, Kivra for payin; Nordea, Swish for payout). Each provider decides its own detent presentation style and the screen to show.
 
@@ -54,7 +54,7 @@ Legacy `PresentableStore` for state + reactive data binding, with a mix of `Navi
 
 ## Dependencies
 
-- Imports: hCore, hCoreUI, Campaign (referral discounts), Contracts, Forever, PresentableStore, Apollo, WebKit (for Trustly setup webview).
+- Imports: hCore, hCoreUI, AppStateContainer, Campaign (referral discounts), Contracts, Forever, Apollo, WebKit (for Trustly setup webview).
 - Project-level dependencies declared in `Project.swift`: hCore, hCoreUI, Contracts, Forever, Campaign.
 - Depended on by: App (main), Home (overdue card, payment status badge).
 
@@ -69,7 +69,7 @@ Legacy `PresentableStore` for state + reactive data binding, with a mix of `Navi
 
 ## Gotchas
 
-- **Legacy `PresentableStore`** is the source of truth; `PresentableStoreLens` is still used throughout (e.g., `PayoutSelectedMethodScreen` reads `state.paymentStatusData` via a lens). Setup screens (Nordea/Swish) maintain their own local state and dispatch to the store on success via `globalPresentableStoreContainer.get()`.
+- **`PaymentStore` is the source of truth.** Setup screens (Nordea/Swish/Trustly) maintain their own local state and trigger `store.fetchPaymentStatus()` on success via `globalAppStateContainer.get()`.
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.
 - **`DirectDebitSetup`** is a UIKit `UIViewRepresentable` wrapping `WKWebView`; uses `TrustlyScriptHandler` for JS↔Swift bridging and Combine-based state synchronization. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.
 - **`ConnectPaymentViewModel`** is held at navigation level so it survives view dismissals; `SetupType` is determined at runtime based on `PaymentProvider`.

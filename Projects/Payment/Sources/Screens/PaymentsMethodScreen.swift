@@ -1,56 +1,50 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PaymentMethodScreen: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var paymentsNavigationVM: PaymentsNavigationViewModel
 
     var body: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state
+        if let paymentChargeData = store.paymentStatusData,
+            let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod,
+            store.showsChangePayinMethod
+        {
+            hForm {
+                PaymentMethodView(
+                    data: defaultPayinMethod,
+                    chargingDay: paymentChargeData.chargingDay,
+                    withDate: true
+                )
+                .hWithoutHorizontalPadding([.row, .divider])
             }
-        ) { paymentState in
-            if let paymentChargeData = paymentState.paymentStatusData,
-                let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod,
-                paymentState.showsChangePayinMethod
-            {
-                hForm {
-                    PaymentMethodView(
-                        data: defaultPayinMethod,
-                        chargingDay: paymentChargeData.chargingDay,
-                        withDate: true
-                    )
-                    .hWithoutHorizontalPadding([.row, .divider])
-                }
-                .hFormAttachToBottom {
-                    if defaultPayinMethod.provider == .trustly {
-                        ConnectPaymentBottomView()
-                    } else if defaultPayinMethod.provider == .invoice {
-                        hSection {
-                            InfoCard(
-                                text:
-                                    paymentChargeData.payinMethods.hasMethodInProgress
-                                    ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                                type: .info
-                            )
-                            .buttons(
-                                [
-                                    .init(
-                                        buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
-                                            ? paymentChargeData.status.connectButtonTitle
-                                            : L10n.profilePaymentConnectDirectDebitButton,
-                                        buttonAction: {
-                                            paymentsNavigationVM.connectPaymentVm.set()
-                                        }
-                                    )
-                                ]
-                            )
-                        }
-                        .sectionContainerStyle(.transparent)
+            .hFormAttachToBottom {
+                if defaultPayinMethod.provider == .trustly {
+                    ConnectPaymentBottomView()
+                } else if defaultPayinMethod.provider == .invoice {
+                    hSection {
+                        InfoCard(
+                            text:
+                                paymentChargeData.payinMethods.hasMethodInProgress
+                                ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+                            type: .info
+                        )
+                        .buttons(
+                            [
+                                .init(
+                                    buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
+                                        ? paymentChargeData.status.connectButtonTitle
+                                        : L10n.profilePaymentConnectDirectDebitButton,
+                                    buttonAction: {
+                                        paymentsNavigationVM.connectPaymentVm.set()
+                                    }
+                                )
+                            ]
+                        )
                     }
+                    .sectionContainerStyle(.transparent)
                 }
             }
         }
@@ -65,61 +59,53 @@ struct PaymentMethodScreen: View {
     return PaymentMethodScreen()
         .environmentObject(PaymentsNavigationViewModel())
         .task {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setPaymentStatus(
-                    data: .init(
+            let store: PaymentStore = globalAppStateContainer.get()
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: 27,
+                defaultPayinMethod: .init(
+                    provider: .invoice,
+                    status: .active,
+                    isDefault: true,
+                    details: .invoice(delivery: .kivra, email: nil)
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .invoice,
                         status: .active,
-                        chargingDay: 27,
-                        defaultPayinMethod: .init(
-                            provider: .invoice,
-                            status: .active,
-                            isDefault: true,
-                            details: .invoice(delivery: .kivra, email: nil)
-                        ),
-                        payinMethods: [
-                            .init(
-                                provider: .invoice,
-                                status: .active,
-                                isDefault: true,
-                                details: .invoice(delivery: .kivra, email: nil)
-                            )
-                        ],
-                        defaultPayoutMethod: nil,
-                        payoutMethods: [],
-                        availableMethods: [],
-                        missingConnection: nil,
-                        layout: .other
+                        isDefault: true,
+                        details: .invoice(delivery: .kivra, email: nil)
                     )
-                )
+                ],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: [],
+                missingConnection: nil,
+                layout: .other
             )
             await delay(2)
-            store.send(
-                .setPaymentStatus(
-                    data: .init(
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: 27,
+                defaultPayinMethod: .init(
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "*****123", bank: "Nordea")
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .trustly,
                         status: .active,
-                        chargingDay: 27,
-                        defaultPayinMethod: .init(
-                            provider: .trustly,
-                            status: .active,
-                            isDefault: true,
-                            details: .bankAccount(account: "*****123", bank: "Nordea")
-                        ),
-                        payinMethods: [
-                            .init(
-                                provider: .trustly,
-                                status: .active,
-                                isDefault: true,
-                                details: .bankAccount(account: "*****123", bank: "Nordea")
-                            )
-                        ],
-                        defaultPayoutMethod: nil,
-                        payoutMethods: [],
-                        availableMethods: [],
-                        missingConnection: nil,
-                        layout: .other
+                        isDefault: true,
+                        details: .bankAccount(account: "*****123", bank: "Nordea")
                     )
-                )
+                ],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: [],
+                missingConnection: nil,
+                layout: .other
             )
         }
 }

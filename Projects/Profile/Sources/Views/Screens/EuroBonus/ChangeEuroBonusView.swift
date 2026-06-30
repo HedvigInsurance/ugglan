@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -31,10 +31,10 @@ private class ChangeEurobonusViewModel: ObservableObject {
     var router: NavigationRouter?
 
     init() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = globalAppStateContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .euroBonus),
-            input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
+            input: store.partnerData?.sas?.eurobonusNumber ?? "",
             title: L10n.SasIntegration.title
         )
 
@@ -51,8 +51,8 @@ private class ChangeEurobonusViewModel: ObservableObject {
             throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
         }
         let data = try await profileService.update(eurobonus: text)
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.setEurobonusNumber(partnerData: data))
+        let store: ProfileStore = globalAppStateContainer.get()
+        store.setEurobonusNumber(partnerData: data)
         router?.push(EuroBonusRouterType.successChangeEuroBonus)
     }
 }

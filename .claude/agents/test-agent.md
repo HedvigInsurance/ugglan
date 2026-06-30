@@ -114,18 +114,26 @@ func testFetchItemsSuccess() async {
 - End with the outcome: `Success`, `Failure`, `Error`
 - CamelCase throughout, no underscores
 
-### Legacy Store Tests
+### AppStore Tests
 
-> Only use this pattern when modifying existing PresentableStore code.
+Reset persistence in setUp; call the store's async methods directly and read its `@Published` properties.
 
 ```swift
 override func setUp() async throws {
     try await super.setUp()
-    globalPresentableStoreContainer.deletePersistanceContainer()
+    globalAppStateContainer.clearPersistence()
+}
+
+func testFetchItemsSuccess() async {
+    let mockService = MockData.createMockSomeService(fetchItems: { expected })
+    sut = mockService
+
+    let store = SomeStore()
+    await store.fetchItems()
+
+    XCTAssertEqual(store.items, expected)
 }
 ```
-
-Use `store.sendAsync(.action)` and `waitUntil(description:closure:)` for async assertions.
 
 ### Verify Tests Compile
 

@@ -1,5 +1,6 @@
 import Addons
 import Apollo
+import AppStateContainer
 import AuthenticationCore
 import CampaignCore
 import ChangeTier
@@ -15,7 +16,6 @@ import Home
 import InsuranceEvidence
 import MoveFlow
 import Payment
-import PresentableStore
 import Profile
 import SubmitClaimChat
 import TerminateContracts
@@ -33,10 +33,10 @@ enum DI {
     static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        let ugglanStore: UgglanStore = globalAppStateContainer.get()
         let dateService = DateService(locale: Localization.Locale.currentLocale.value)
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
-        if ugglanStore.state.isDemoMode {
+        if ugglanStore.isDemoMode {
             let featureFlagsClient = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()
             let fetchClaimsService = FetchClaimsClientDemo()

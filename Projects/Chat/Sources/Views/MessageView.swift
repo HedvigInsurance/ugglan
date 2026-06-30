@@ -1,6 +1,6 @@
+import AppStateContainer
 import Contracts
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -191,8 +191,8 @@ extension URL {
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         let contractIdString = queryItems.first(where: { $0.name == "contractId" })?.value
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?
+        let contractStore: ContractStore = globalAppStateContainer.get()
+        return contractStore.contractForId(contractIdString ?? "")?.currentAgreement?
             .productVariant.displayName
     }
 }

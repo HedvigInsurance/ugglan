@@ -3,7 +3,7 @@
 Main application entry point for the Hedvig iOS app. Manages root navigation (logged-in vs logged-out), dependency injection for all feature modules, deep link routing, push notification handling, and Datadog analytics/tracking setup.
 
 ## Architecture
-- Pattern: Mixed. The root `MainNavigation` uses a SwiftUI `App` with `MainNavigationViewModel` (ObservableObject). Sub-components use `@Inject` for services and `@PresentableStore` for accessing legacy stores. The app-level `UgglanStore` is a legacy `StateStore<UgglanState, UgglanAction>` used solely for demo mode state.
+- Pattern: Mixed. The root `MainNavigation` uses a SwiftUI `App` with `MainNavigationViewModel` (ObservableObject). Sub-components use `@Inject` for services and `@AppObservedObject` / `@AppState` for accessing shared `AppStore` instances. The app-level `UgglanStore` is a minimal `AppStore` holding the `isDemoMode` flag.
 - Key services: `AnalyticsClient` (analytics/user tracking), `NotificationClient` (push token registration). Both have protocol, OctopusImplementation, and DemoImplementation within this module.
 - Data flow: `AppDelegate` performs initial setup (session, Apollo client, Datadog, feature flags). `MainNavigationViewModel` observes `ApplicationState` to switch between logged-in, logged-out, and impersonation states. `LoggedInNavigationViewModel` manages tab selection and all modal presentation state. `DI.initAndRegisterClient()` registers all service implementations (demo or Octopus) into the global `Dependencies` container.
 
@@ -16,7 +16,7 @@ Main application entry point for the Hedvig iOS app. Manages root navigation (lo
 - `Sources/AppDelegate+DI.swift` — `DI` enum with `initServices()`, `initAndRegisterClient()` (registers all service implementations for every module), and `initNetworkClients()`.
 - `Sources/AppDelegate+Notifications.swift` — Push notification registration, `UNUserNotificationCenterDelegate`, `PushNotificationType` enum.
 - `Sources/AppDelegate+Tracking.swift` — Datadog RUM, Trace, Logs, and CrashReporting setup.
-- `Sources/UgglanStore.swift` — Minimal `StateStore` holding `isDemoMode` flag.
+- `Sources/UgglanStore.swift` — Minimal `AppStore` holding `isDemoMode` flag.
 - `Sources/Service/OctopusClientsImplementation/` — Octopus GraphQL implementations for most feature module service protocols.
 - `Sources/Service/AnalyticsCoordinator/` — AnalyticsClient protocol + Octopus/Demo implementations.
 - `Sources/Service/Notifications/` — NotificationClient protocol + Octopus/Demo implementations.

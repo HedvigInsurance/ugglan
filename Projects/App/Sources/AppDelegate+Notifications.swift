@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Chat
 import Claims
 import Contracts
@@ -7,7 +8,6 @@ import Environment
 import Foundation
 import Home
 import Payment
-import PresentableStore
 import Profile
 import SwiftUI
 @preconcurrency import UserNotifications
@@ -40,16 +40,16 @@ extension AppDelegate {
                     .getNotificationSettings { settings in
                         let status = settings.authorizationStatus.rawValue
                         Task {
-                            let store: ProfileStore = await globalPresentableStoreContainer.get()
-                            store.send(.setPushNotificationStatus(status: status))
+                            let store: ProfileStore = await globalAppStateContainer.get()
+                            await store.setPushNotificationStatus(status)
                         }
                     }
             }
         )
         Task {
             let status = await UNUserNotificationCenter.current().notificationSettings()
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: status.authorizationStatus.rawValue))
+            let store: ProfileStore = globalAppStateContainer.get()
+            store.setPushNotificationStatus(status.authorizationStatus.rawValue)
         }
     }
 }

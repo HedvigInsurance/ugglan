@@ -9,7 +9,7 @@ struct AddonViewRow: View {
     let buttonType: hButtonConfigurationType
     let activationDate: String?
     let terminationDate: String?
-    let action: (() -> Void)
+    let action: @MainActor @Sendable () -> Void
 
     init(
         title: String,
@@ -18,7 +18,7 @@ struct AddonViewRow: View {
         buttonType: hButtonConfigurationType,
         activationDate: String? = nil,
         terminationDate: String? = nil,
-        action: @escaping (() -> Void),
+        action: @escaping @MainActor @Sendable () -> Void,
     ) {
         self.title = title
         self.subtitle = subtitle

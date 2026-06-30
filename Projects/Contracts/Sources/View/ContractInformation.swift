@@ -1,26 +1,21 @@
 import Addons
+import AppStateContainer
 import Combine
 import EditStakeholders
 import Foundation
-import PresentableStore
 import SwiftUI
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
 
 struct ContractInformationView: View {
-    @PresentableStore var store: ContractStore
+    @AppObservedObject var store: ContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
     let id: String
     var body: some View {
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                state.contractForId(id)
-            }
-        ) { contract in
-            if let contract {
+        Group {
+            if let contract = store.contractForId(id) {
                 VStack(spacing: .padding16) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
@@ -332,8 +327,9 @@ struct ContractInformationView: View {
         {
             Rectangle()
                 .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        store.send(.fetchContracts)
+                    Task {
+                        await delay(5)
+                        await store.fetchContracts()
                     }
                 }
                 .frame(height: 0)
@@ -343,7 +339,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
-        let contractsThatSupportsMoving = store.state.activeContracts.filter(\.supportsAddressChange)
+        let contractsThatSupportsMoving = store.activeContracts.filter(\.supportsAddressChange)
         if contract.supportsAddressChange,
             contractsThatSupportsMoving.count < 2, !contract.isTerminated
         {
@@ -411,8 +407,8 @@ public struct MissingStakeholderInfoCard: View {
     Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
 
-    let store: ContractStore = globalPresentableStoreContainer.get()
-    store.send(.fetchContracts)
+    let store: ContractStore = globalAppStateContainer.get()
+    Task { await store.fetchContracts() }
 
     return ScrollView { ContractInformationView(id: "contractId") }
         .environmentObject(ContractsNavigationViewModel())
