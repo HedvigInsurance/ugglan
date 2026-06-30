@@ -1,7 +1,7 @@
 import Addons
 import Apollo
 import AppStateContainer
-import Authentication
+import AuthenticationCore
 import CampaignCore
 import ChangeTier
 import Chat

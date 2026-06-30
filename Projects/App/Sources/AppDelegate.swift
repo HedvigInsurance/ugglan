@@ -1,6 +1,6 @@
 import Apollo
 import AppStateContainer
-import Authentication
+import AuthenticationCore
 import AutomaticLog
 import Chat
 import Claims

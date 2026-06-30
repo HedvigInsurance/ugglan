@@ -1,6 +1,6 @@
 import Apollo
 import AppStateContainer
-import Authentication
+import AuthenticationCore
 import DatadogCore
 import DatadogCrashReporting
 import DatadogLogs

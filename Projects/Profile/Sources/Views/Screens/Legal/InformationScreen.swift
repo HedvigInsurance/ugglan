@@ -1,6 +1,7 @@
 import Apollo
 import AppStateContainer
-import Authentication
+import AuthenticationCore
+import AuthenticationUI
 import Environment
 import SwiftUI
 import hCore

@@ -1,4 +1,4 @@
-import Authentication
+import AuthenticationUI
 import Combine
 import Environment
 import Foundation

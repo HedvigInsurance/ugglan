@@ -2,16 +2,14 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "Authentication",
+    name: "AuthenticationCore",
     targets: Set([
         .framework,
         .tests,
         .example,
-        .testing,
     ]),
     projects: [
-        "hCore",
-        "hCoreUI",
+        "hCore"
     ],
     sdks: []
 )

@@ -1,6 +1,7 @@
 import Apollo
 import AppStateContainer
-import Authentication
+import AuthenticationCore
+import AuthenticationUI
 import Market
 import Profile
 import SwiftUI

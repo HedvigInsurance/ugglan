@@ -49,7 +49,9 @@ struct PuppyGuideQuickActionRow: View {
             }
             .withChevronAccessory
             .verticalPadding(.padding12)
-            .onTap(onTap)
+            .onTap {
+                onTap()
+            }
         }
         .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.opaque)
