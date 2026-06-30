@@ -24,7 +24,7 @@ public class ChangeTierViewModel: ObservableObject {
     @Published var currentTotalCost: Premium?
     @Published var newTotalCost: Premium?
     @Published var displayItemList: [QuoteDisplayItem] = []
-
+    @Published var showCompareCoverage: Bool = false
     var currentTier: Tier?
     var currentQuote: Quote?
 
@@ -211,6 +211,9 @@ public class ChangeTierViewModel: ObservableObject {
                     updateDisplayProperties(data)
                     updateSelectedValues(data)
                     updatePremiumAndDeductible()
+                    //show
+                    self.showCompareCoverage =
+                        data.tiers.flatMap(\.quotes).filter({ $0.productVariant?.displayNameTier != nil }).count > 0
 
                     withAnimation {
                         self.viewState = .success

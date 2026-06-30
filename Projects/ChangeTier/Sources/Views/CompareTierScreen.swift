@@ -234,6 +234,7 @@ extension Perils {
         id: "STANDARD",
         name: "Standard",
         level: 2,
+        description: "Standard",
         quotes: [
             .init(
                 id: "quote1",
@@ -261,6 +262,7 @@ extension Perils {
         id: "PREMIUM",
         name: "Premium",
         level: 0,
+        description: "desc1",
         quotes: [
             .init(
                 id: "quote1",
@@ -290,6 +292,7 @@ extension Perils {
                 id: "BAS",
                 name: "Bas",
                 level: 0,
+                description: "desc",
                 quotes: [
                     .init(
                         id: "quote1",
