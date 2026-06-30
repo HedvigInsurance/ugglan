@@ -1,14 +1,28 @@
-import Apollo
+import AppStateContainer
 import Foundation
-import PresentableStore
 import hCore
 
-public struct PaymentState: StateProtocol {
-    public var paymentData: PaymentData?
-    public var ongoingPaymentData: [PaymentData] = []
-    public var paymentStatusData: PaymentStatusData?
-    var paymentHistory: [PaymentHistoryListData] = []
-    public internal(set) var missedPaymentData: MissedPaymentData?
+@MainActor
+@PersistableStore
+public final class PaymentStore: AppStore {
+    @Inject private var paymentService: hPaymentClient
+
+    @Published public internal(set) var paymentData: PaymentData?
+    @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
+    @Published public internal(set) var paymentStatusData: PaymentStatusData?
+    @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
+    @Published public internal(set) var missedPaymentData: MissedPaymentData?
+
+    @Transient @Published public private(set) var isLoadingPaymentData: Bool = false
+    @Transient @Published public private(set) var isFetchingPaymentStatus: Bool = false
+    @Transient @Published public private(set) var isLoadingHistory: Bool = false
+    @Transient @Published public private(set) var isLoadingMissedPayment: Bool = false
+
+    @Transient @Published public private(set) var loadPaymentDataError: String?
+    @Transient @Published public private(set) var fetchPaymentStatusError: String?
+    @Transient @Published public private(set) var loadHistoryError: String?
+    @Transient @Published public private(set) var loadMissedPaymentError: String?
+
     public init() {}
 
     var showsPayinSection: Bool {
@@ -52,94 +66,55 @@ public struct PaymentState: StateProtocol {
     var showsConnectPayout: Bool {
         paymentStatusData?.missingConnection == .payout && !showsConnectPayment
     }
-}
 
-public enum PaymentAction: ActionProtocol {
-    case load
-    case setPaymentData(data: PaymentData?)
-    case setOngoingPaymentData(data: [PaymentData])
-    case fetchPaymentStatus
-    case setPaymentStatus(data: PaymentStatusData)
-    case getHistory
-    case setHistory(to: [PaymentHistoryListData])
-    case getMissedPayment
-    case setMissedPaymentData(data: MissedPaymentData?)
-}
-
-public enum LoadingAction: LoadingProtocol {
-    case getPaymentData
-    case getPaymentStatus
-    case getHistory
-    case getMissedPayment
-}
-
-public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
-    @Inject var paymentService: hPaymentClient
-
-    override public func effects(_: @escaping () -> PaymentState, _ action: PaymentAction) async {
-        switch action {
-        case .load:
-            do {
-                let payment = try await paymentService.getPaymentData()
-                await sendAsync(.setPaymentData(data: payment.upcoming))
-                await sendAsync(.setOngoingPaymentData(data: payment.ongoing))
-            } catch {
-                setError(L10n.General.errorBody, for: .getPaymentData)
-            }
-        case .fetchPaymentStatus:
-            do {
-                let statusData = try await paymentService.getPaymentStatusData()
-                await sendAsync(.setPaymentStatus(data: statusData))
-            } catch {
-                setError(L10n.General.errorBody, for: .getPaymentStatus)
-            }
-        case .getHistory:
-            do {
-                let data = try await paymentService.getPaymentHistoryData()
-                await sendAsync(.setHistory(to: data))
-            } catch {
-                setError(L10n.General.errorBody, for: .getHistory)
-            }
-        case .getMissedPayment:
-            do {
-                let data = try await paymentService.getMissedPaymentData()
-                await sendAsync(.setMissedPaymentData(data: data))
-            } catch {
-                await sendAsync(.setMissedPaymentData(data: nil))
-                setError(L10n.General.errorBody, for: .getMissedPayment)
-            }
-        default:
-            break
+    public func load() async {
+        isLoadingPaymentData = true
+        do {
+            let payment = try await paymentService.getPaymentData()
+            paymentData = payment.upcoming
+            ongoingPaymentData = payment.ongoing
+            loadPaymentDataError = nil
+        } catch {
+            loadPaymentDataError = L10n.General.errorBody
         }
+        isLoadingPaymentData = false
     }
 
-    override public func reduce(_ state: PaymentState, _ action: PaymentAction) async -> PaymentState {
-        var newState = state
-
-        switch action {
-        case .load:
-            setLoading(for: .getPaymentData)
-        case let .setPaymentData(data):
-            removeLoading(for: .getPaymentData)
-            newState.paymentData = data
-        case let .setOngoingPaymentData(data):
-            newState.ongoingPaymentData = data
-        case .fetchPaymentStatus:
-            setLoading(for: .getPaymentStatus)
-        case let .setPaymentStatus(data):
-            removeLoading(for: .getPaymentStatus)
-            newState.paymentStatusData = data
-        case .getHistory:
-            setLoading(for: .getHistory)
-        case let .setHistory(data):
-            removeLoading(for: .getHistory)
-            newState.paymentHistory = data
-        case .getMissedPayment:
-            setLoading(for: .getMissedPayment)
-        case let .setMissedPaymentData(data):
-            newState.missedPaymentData = data
-            removeLoading(for: .getMissedPayment)
+    public func fetchPaymentStatus() async {
+        isFetchingPaymentStatus = true
+        do {
+            paymentStatusData = try await paymentService.getPaymentStatusData()
+            fetchPaymentStatusError = nil
+        } catch {
+            fetchPaymentStatusError = L10n.General.errorBody
         }
-        return newState
+        isFetchingPaymentStatus = false
+    }
+
+    public func getHistory() async {
+        isLoadingHistory = true
+        do {
+            paymentHistory = try await paymentService.getPaymentHistoryData()
+            loadHistoryError = nil
+        } catch {
+            loadHistoryError = L10n.General.errorBody
+        }
+        isLoadingHistory = false
+    }
+
+    public func getMissedPayment() async {
+        isLoadingMissedPayment = true
+        do {
+            missedPaymentData = try await paymentService.getMissedPaymentData()
+            loadMissedPaymentError = nil
+        } catch {
+            missedPaymentData = nil
+            loadMissedPaymentError = L10n.General.errorBody
+        }
+        isLoadingMissedPayment = false
+    }
+
+    public func setMissedPaymentData(_ data: MissedPaymentData?) {
+        missedPaymentData = data
     }
 }

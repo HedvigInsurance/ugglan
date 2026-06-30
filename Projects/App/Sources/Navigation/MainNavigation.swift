@@ -1,3 +1,4 @@
+import AppStateContainer
 import Combine
 import Contracts
 import Forever
@@ -5,7 +6,6 @@ import Home
 import Market
 import MoveFlow
 import Payment
-import PresentableStore
 import Profile
 import SafariServices
 import SwiftUI
@@ -101,6 +101,7 @@ class MainNavigationViewModel: ObservableObject {
     var loggedInVm = LoggedInNavigationViewModel()
     private var pushNotificationCancellable: AnyCancellable?
     private var deepLinkCancellable: AnyCancellable?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -114,11 +115,10 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = false
                     }
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    await contractStore.sendAsync(.fetchContracts)
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                    await profileStore.sendAsync(.fetchMemberDetails)
-                    await profileStore.sendAsync(.updateLanguage)
+                    await contractStore.fetchContracts()
+                    let profileStore: ProfileStore = globalAppStateContainer.get()
+                    await profileStore.fetchMemberDetails()
+                    await profileStore.updateLanguage()
                     checkForFeatureFlags()
                     Task {
                         try? await analyticsService.fetchAndSetUserId()
@@ -129,9 +129,19 @@ class MainNavigationViewModel: ObservableObject {
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
-                    loggedInVm = .init()
-                    appDelegate.logout()
                     analyticsService = AnalyticsService()
+                    // Recreate loggedInVm only AFTER clearData() has reset the
+                    // container — otherwise the new loggedInVm's nav VMs (e.g.
+                    // HomeNavigationViewModel.editStakeholdersVm) would
+                    // eagerly fetch and pin the about-to-be-discarded stores
+                    // via their property initializers' globalAppStateContainer.get(...).
+                    // Run in a detached Task so the view switch happens immediately
+                    // while the auth network logout completes in the background.
+                    Task { [weak self] in
+                        guard let self else { return }
+                        await self.appDelegate.logout()
+                        self.loggedInVm = .init()
+                    }
                 default:
                     break
                 }
@@ -248,7 +258,7 @@ class MainNavigationViewModel: ObservableObject {
                 try await self?.appDelegate.setupFeatureFlags()
             } catch let exception {
                 log.info("Failed loading unleash experiments \(exception)")
-                try await Task.sleep(nanoseconds: 1_000_000_000)
+                try await Task.sleep(seconds: 1)
                 try Task.checkCancellation()
                 self?.checkForFeatureFlags()
             }

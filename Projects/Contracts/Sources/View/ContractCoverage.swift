@@ -1,29 +1,23 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ContractCoverageView: View {
+    @AppObservedObject var store: ContractStore
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     let id: String
 
     var body: some View {
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                state.contractForId(id)
-            }
-        ) { contract in
-            if let contract = contract {
-                CoverageView(
-                    limits: contract.currentAgreement?.productVariant.insurableLimits ?? [],
-                    didTapInsurableLimit: { limit in
-                        contractsNavigationVm.insurableLimit = limit
-                    },
-                    perils: contract.allPerils
-                )
-            }
+        if let contract = store.contractForId(id) {
+            CoverageView(
+                limits: contract.currentAgreement?.productVariant.insurableLimits ?? [],
+                didTapInsurableLimit: { limit in
+                    contractsNavigationVm.insurableLimit = limit
+                },
+                perils: contract.allPerils
+            )
         }
     }
 }

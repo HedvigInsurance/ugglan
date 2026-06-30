@@ -256,7 +256,7 @@ struct FormFieldView: View {
 
     @ViewBuilder
     private var searchField: some View {
-        let presentSearch: () -> Void = { [weak viewModel] in
+        let presentSearch: @MainActor @Sendable () -> Void = { [weak viewModel] in
             viewModel?.searchFieldPresentation = .init(
                 id: field.id,
                 stepId: viewModel?.claimIntent.currentStep.id ?? "",

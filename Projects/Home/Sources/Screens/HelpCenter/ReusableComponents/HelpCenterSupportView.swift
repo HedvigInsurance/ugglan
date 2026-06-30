@@ -1,11 +1,12 @@
+import AppStateContainer
 import Chat
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SupportView: View {
     @ObservedObject var router: NavigationRouter
+    @AppObservedObject private var store: HomeStore
     @InjectObservableObject var featureFlags: FeatureFlags
     @State private var isNewMessageSheetPresented = false
 
@@ -59,39 +60,37 @@ struct SupportView: View {
     }
 
     private var buttonView: some View {
-        PresentableStoreLens(HomeStore.self) { state in
-            state.hasSentOrRecievedAtLeastOneMessage
-        } _: { hasSentOrRecievedAtLeastOneMessage in
-            hRow {
-                HStack(spacing: .padding4) {
-                    hButton(
-                        .medium,
-                        .secondary,
-                        content: .init(title: L10n.newMessageButton)
-                    ) {
-                        if featureFlags.isNewConversationFromInboxEnabled {
-                            isNewMessageSheetPresented = true
-                        } else {
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        }
-                    }
-
-                    if hasSentOrRecievedAtLeastOneMessage {
-                        hButton(
-                            .medium,
-                            .primary,
-                            content: .init(title: L10n.hcChatGoToInbox)
-                        ) { router.push(HelpCenterNavigationRouterType.inbox) }
+        hRow {
+            HStack(spacing: .padding4) {
+                hButton(
+                    .medium,
+                    .secondary,
+                    content: .init(title: L10n.newMessageButton)
+                ) {
+                    if featureFlags.isNewConversationFromInboxEnabled {
+                        isNewMessageSheetPresented = true
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.newConversation
+                        )
                     }
                 }
-                .hButtonTakeFullWidth(true)
+
+                if store.hasSentOrRecievedAtLeastOneMessage {
+                    hButton(
+                        .medium,
+                        .primary,
+                        content: .init(title: L10n.hcChatGoToInbox)
+                    ) {
+                        router.push(HelpCenterNavigationRouterType.inbox)
+                    }
+                }
             }
-            .verticalPadding(0)
+            .hButtonTakeFullWidth(true)
         }
-        .presentableStoreLensAnimation(.default)
+        .verticalPadding(0)
+        .animation(.default, value: store.hasSentOrRecievedAtLeastOneMessage)
     }
 }
 

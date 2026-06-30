@@ -40,7 +40,7 @@ struct DiscountCodeSectionView: View {
 
 private struct DiscountCodeField: View {
     let discountCode: String
-    let onTap: () -> Void
+    let onTap: @MainActor () async -> Void
 
     var body: some View {
         hSection {

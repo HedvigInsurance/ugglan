@@ -1,9 +1,9 @@
+import AppStateContainer
 import ChangeTier
 import Chat
 import Contracts
 import EditStakeholders
 import Payment
-import PresentableStore
 import SafariServices
 import SubmitClaimChat
 import SwiftUI
@@ -20,7 +20,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     public let router = NavigationRouter()
@@ -77,8 +77,9 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
 
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
-    @PresentableStore private var store: HomeStore
+    @AppObservedObject private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     public init(
         helpCenterVm: HelpCenterNavigationViewModel,
@@ -133,7 +134,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
             presentationStyle: .detent(style: [.large])
         ) {
-            FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
                 .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
                 .embededInNavigation(
@@ -190,19 +191,17 @@ public struct HelpCenterNavigation<Content: View>: View {
         ) { dismissType in
             switch dismissType {
             case .done:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+                Task { await contractStore.fetchContracts() }
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             case let .openFeedback(url):
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.fetchQuickActions)
+                Task { await contractStore.fetchContracts() }
+                let homeStore: HomeStore = globalAppStateContainer.get()
+                Task { await homeStore.fetchQuickActions() }
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 if urlComponent?.scheme == nil {
                     urlComponent?.scheme = "https"
@@ -237,8 +236,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+            let contractsConfig: [TerminationConfirmConfig] = contractStore.activeContracts
                 .filter(\.supportsTermination)
                 .map(\.asTerminationConfirmConfig)
             Task {
@@ -251,8 +249,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .editCoInsured: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coInsured)
         case .editCoOwners: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coOwner)
         case .upgradeCoverage:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.activeContracts
                 .filter(\.supportsChangeTier)
                 .map {
                     .init(

@@ -1,12 +1,12 @@
+import AppStateContainer
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ImportantMessageView: View {
     let importantMessage: ImportantMessage
-    @PresentableStore var store: HomeStore
+    @AppObservedObject var store: HomeStore
     @State var showSafariView = false
     @State var urlLink: URL?
     var body: some View {
@@ -18,7 +18,7 @@ struct ImportantMessageView: View {
                             .init(
                                 buttonTitle: L10n.ImportantMessage.hide,
                                 buttonAction: {
-                                    store.send(.hideImportantMessage(id: importantMessage.id))
+                                    store.hideImportantMessage(id: importantMessage.id)
                                 }
                             ),
                             .init(
@@ -40,7 +40,7 @@ struct ImportantMessageView: View {
                             .init(
                                 buttonTitle: L10n.ImportantMessage.hide,
                                 buttonAction: {
-                                    store.send(.hideImportantMessage(id: importantMessage.id))
+                                    store.hideImportantMessage(id: importantMessage.id)
                                 }
                             )
                         ]

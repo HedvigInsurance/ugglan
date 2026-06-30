@@ -269,7 +269,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         fieldId: String,
         query: String
     ) async throws -> FormFieldSearchResult {
-        try await Task.sleep(nanoseconds: 500_000_000)
+        try await Task.sleep(seconds: 0.5)
         let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
             .init(
                 title: "iPhone 15 Pro",

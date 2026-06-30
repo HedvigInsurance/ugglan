@@ -91,27 +91,31 @@ func testFetchItemsSuccess() async {
 }
 ```
 
-## Store Testing (Legacy)
+## Store Testing
 
-> **Note:** PresentableStore is legacy. New code should use ViewModels with `@Inject` services directly. Existing store tests are still valid but new tests should follow the ViewModel pattern above.
+`AppStore` instances are plain `@MainActor` `ObservableObject`s — test them by constructing the store, awaiting the async methods, and reading `@Published` properties directly.
 
-For tests involving `PresentableStore`, reset persistence in setUp:
+Reset persistence in setUp so cross-test state doesn't leak via on-disk snapshots:
 
 ```swift
 override func setUp() async throws {
     try await super.setUp()
-    globalPresentableStoreContainer.deletePersistanceContainer()
+    globalAppStateContainer.clearPersistence()
 }
 ```
 
-Use `store.sendAsync(.action)` and `waitUntil(description:closure:)` to assert async state changes:
+Drive the store via its async methods and assert on the properties:
 
 ```swift
+let mockService = MockData.createMockSomeService(fetchItems: { expectedItems })
+sut = mockService
+
 let store = SomeStore()
-await store.sendAsync(.fetchData)
-try await waitUntil(description: "check state") {
-    store.state.items == expectedItems && mockService.events.count == 1
-}
+await store.fetchItems()
+
+XCTAssertEqual(store.items, expectedItems)
+XCTAssertNil(store.fetchError)
+XCTAssertEqual(mockService.events, [.getItems])
 ```
 
 ## Full Example
@@ -170,7 +174,7 @@ final class MyViewModelTests: XCTestCase {
 
 - **ViewModels**: Inject mock services via DI, call methods, verify state changes and event tracking
 - **Services**: Mock the client protocol, verify returned data and event tracking
-- **Stores (legacy)**: Test actions and resulting state changes via `sendAsync` + `waitUntil`
+- **Stores**: Call the store's async methods directly and assert on its `@Published` properties; reset `globalAppStateContainer.clearPersistence()` in setUp
 - **Not views directly**: UI is not unit tested
 
 ## When to Write Tests
@@ -193,9 +197,9 @@ Test methods use `func test<Subject><Scenario>` — describe what is being teste
 
 ## ViewModel Tests vs Store Tests
 
-| | ViewModel (Primary) | Store (Legacy) |
+| | ViewModel | AppStore |
 |---|---|---|
-| Setup | Register mock via DI, create VM | Register mock via DI, reset persistence, get store |
-| Trigger | `await vm.method()` | `await store.sendAsync(.action)` |
-| Assert | `XCTAssertEqual(vm.property, expected)` | `waitUntil { store.state.property == expected }` |
-| Use for | All new code | Only when modifying existing Store code |
+| Setup | Register mock via DI, create VM | Register mock via DI, `globalAppStateContainer.clearPersistence()`, instantiate store |
+| Trigger | `await vm.method()` | `await store.method()` |
+| Assert | `XCTAssertEqual(vm.property, expected)` | `XCTAssertEqual(store.property, expected)` |
+| Use for | Screen-local state | Shared/persisted state used across screens |
