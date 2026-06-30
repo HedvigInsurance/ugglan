@@ -40,7 +40,7 @@ struct DiscountCodeSectionView: View {
 
 private struct DiscountCodeField: View {
     let discountCode: String
-    let onTap: () -> Void
+    let onTap: @MainActor () async -> Void
 
     var body: some View {
         hSection {
@@ -69,11 +69,8 @@ private struct ActionButtons: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: L10n.ReferralsEmpty.shareCodeButton),
-                            {
-                                onShare(modalPresentationSourceWrapperViewModel)
-                            }
-                        )
+                            content: .init(title: L10n.ReferralsEmpty.shareCodeButton)
+                        ) { onShare(modalPresentationSourceWrapperViewModel) }
                     },
                     vm: modalPresentationSourceWrapperViewModel
                 )
@@ -81,11 +78,8 @@ private struct ActionButtons: View {
                 hButton(
                     .large,
                     .ghost,
-                    content: .init(title: L10n.ReferralsChange.changeCode),
-                    {
-                        onChange()
-                    }
-                )
+                    content: .init(title: L10n.ReferralsChange.changeCode)
+                ) { onChange() }
             }
         }
         .padding(.vertical, .padding16)

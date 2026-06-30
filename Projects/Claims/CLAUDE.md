@@ -3,7 +3,7 @@
 Displays and manages the status of insurance claims after submission. Provides active-claim cards for the home screen, a claim detail view with file uploads and chat access, and a claim history screen for closed/resolved claims.
 
 ## Architecture
-- Pattern: Legacy Store (PresentableStore). `ClaimsStore` is a `StateStore<ClaimsState, ClaimsAction>` with `effects` for async work and `reduce` for state mutations. Views observe the store via `@PresentableStore` or subscribe to `stateSignal` through dedicated ViewModels (`ClaimsViewModel`, `ClaimHistoryViewModel`, `ClaimDetailViewModel`). The ViewModels are `ObservableObject` classes that bridge the store into SwiftUI.
+- Pattern: `ClaimsStore` is an `@PersistableStore`-backed `AppStore` (`AppStateContainer`) exposing `activeClaims`, `historyClaims`, and per-claim `files` as `@Published` properties. Async methods `fetchActiveClaims()` / `fetchHistoryClaims()` call `hFetchClaimsClient` and assign results. Views observe via `@AppObservedObject`; dedicated ViewModels (`ClaimsViewModel`, `ClaimHistoryViewModel`, `ClaimDetailViewModel`) sit on top to host polling timers and view-local state.
 - Key services and protocols:
   - `hFetchClaimsClient` (protocol) -- fetches active and history claim lists. Octopus implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/FetchClaimClientOctopus.swift`. Demo implementation in `Service/DemoImplementation/FetchClaimClientDemo.swift`.
   - `hFetchClaimDetailsClient` (protocol) -- fetches a single claim by ID, its files, and acknowledges closed status. Wrapped by `FetchClaimDetailsService` (a thin logging facade). Octopus implementation in `Projects/App/Sources/Service/OctopusClientsImplementation/FetchClaimDetailsClientOctopus.swift`. Demo in `Service/DemoImplementation/FetchClaimDetailsClientDemo.swift`.
@@ -13,7 +13,7 @@ Displays and manages the status of insurance claims after submission. Provides a
 ## Key Files
 - `Sources/ClaimAction.swift` -- `ClaimsAction` enum (fetch active, fetch history, set claims, set files, loading states) and `ClaimsNavigationAction`.
 - `Sources/ClaimState.swift` -- `ClaimsState` struct holding `activeClaims`, `historyClaims`, `files` dictionary, and `loadingStates`. Exposes `hasActiveClaims` computed property.
-- `Sources/ClaimStore.swift` -- `ClaimsStore` (`StateStore` subclass) with effects and reducer. Injects `hFetchClaimsClient`.
+- `Sources/ClaimStore.swift` -- `ClaimsStore` (`AppStore`). Injects `hFetchClaimsClient`.
 - `Sources/Models/ClaimModel.swift` -- `ClaimModel` (main domain model) with nested `ClaimStatus`, `ClaimOutcome`, and `ClaimDisplayItem` types. Also contains `CrossSellInfo` conversion for post-claim cross-sell.
 - `Sources/Views/ClaimDetailView.swift` -- Full claim detail screen with status card, info section, chat link, member free text, claim details, file upload section, and document/PDF section. Contains `ClaimDetailViewModel` in the same file.
 - `Sources/Views/ClaimFilesView.swift` -- File upload flow with progress indicator and success screen. Contains `ClaimFilesViewModel` and `FileUrlModel`.
@@ -32,7 +32,7 @@ Displays and manages the status of insurance claims after submission. Provides a
 - `Tests/MockData.swift` -- `MockFetchClaimsService` conforming to `hFetchClaimsClient` with injectable closures. Factory method `createMockFetchClaimService` registers the mock into `Dependencies`.
 
 ## Dependencies
-- Imports: hCore (DI, File model, MonetaryAmount, logging), hCoreUI (UI components, Router, hForm, hSection, hRow, hButton, StatusCard, InfoCard, PDFPreview, DocumentPreview, AudioPlayer, TrackPlayerView, InfoCardScrollView), PresentableStore (StateStore, @PresentableStore, globalPresentableStoreContainer), Chat (Conversation model, ChatType), CrossSell (CrossSellInfo), Apollo (imported but not directly used in Sources -- leftover), Kingfisher (image loading in file views), Combine, Photos, SwiftUI.
+- Imports: hCore (DI, File model, MonetaryAmount, logging), hCoreUI (UI components, Router, hForm, hSection, hRow, hButton, StatusCard, InfoCard, PDFPreview, DocumentPreview, AudioPlayer, TrackPlayerView, InfoCardScrollView), AppStateContainer (`AppStore`, `@AppObservedObject`, `globalAppStateContainer`), Chat (Conversation model, ChatType), CrossSell (CrossSellInfo), Kingfisher (image loading in file views), Combine, Photos, SwiftUI.
 - Project-level dependencies declared in `Project.swift`: hCore, hCoreUI, Contracts, Chat, Payment.
 - Dependents (modules that import Claims): App, Home, Profile, SubmitClaimChat.
 

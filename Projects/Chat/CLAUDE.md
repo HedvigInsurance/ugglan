@@ -3,7 +3,7 @@
 The Chat module provides the customer support messaging interface. It includes an inbox view listing all conversations, individual chat screens with real-time message polling, file/image upload and sharing, message retry on failure, and push notification prompting.
 
 ## Architecture
-- **Mixed pattern**: The primary chat UI uses the modern ViewModel pattern (`ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel` -- all `@MainActor class: ObservableObject`). However, there is also a legacy `ChatStore: StateStore<ChatState, ChatAction>` used specifically for persisting failed messages and tracking push notification permission state.
+- **Mixed pattern**: The primary chat UI uses the ViewModel pattern (`ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel` -- all `@MainActor class: ObservableObject`). There is also a small `ChatStore: AppStore` (`AppStateContainer`) used specifically for persisting failed messages per conversation and tracking the push-notification-permission flag.
 - **Key services**:
   - `ChatServiceProtocol` -- abstraction for fetching/sending messages within a conversation. Has two concrete implementations: `ConversationService` (existing conversation by ID) and `NewConversationService` (creates a conversation on first message send).
   - `ConversationClient` -- protocol for the raw API operations (get messages with pagination tokens, send message).
@@ -28,7 +28,7 @@ The Chat module provides the customer support messaging interface. It includes a
 - **Helpers**: `Helpers/Message+Timestamp.swift`, `Helpers/Message+UI.swift`, `Helpers/MessageType+Helpers.swift`, `Helpers/View+Flipped.swift`, `Helpers/WebMetaDataProvider.swift`
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, Contracts (via Project.swift). Also uses PresentableStore at the file level.
+- **Imports**: hCore, hCoreUI, Contracts (via Project.swift). Also uses AppStateContainer at the file level.
 - **Depended on by**: Home (imports Chat for InboxView and ChatType), Claims (imports Chat), App
 
 ## Navigation
@@ -44,5 +44,5 @@ The Chat module provides the customer support messaging interface. It includes a
 - Message polling runs on a 5-second timer. There is no WebSocket or push-based real-time messaging.
 - `NewConversationService` lazily creates a conversation on the server when the user sends the first message, then delegates to a `ConversationService` for subsequent operations.
 - `ChatScrollViewDelegate` accesses private UIKit APIs (via `_sheetInteraction` KVC) to disable sheet dismissal while scrolling -- this is fragile and could break on iOS updates.
-- The `ChatStore` (legacy PresentableStore) is only used for two concerns: tracking failed messages per conversation and whether push notification permission has been requested. Everything else uses the ViewModel pattern.
+- The `ChatStore` is only used for two concerns: tracking failed messages per conversation (persisted) and whether push notification permission has been requested (transient). Everything else uses the ViewModel pattern.
 - `AskForRating` is triggered 2 seconds after the chat screen opens.

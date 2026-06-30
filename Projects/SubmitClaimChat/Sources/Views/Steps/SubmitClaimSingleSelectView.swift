@@ -18,9 +18,7 @@ struct SubmitClaimSingleSelectView: View {
                     .large,
                     .primary,
                     content: .init(title: L10n.generalConfirm)
-                ) {
-                    viewModel.submitResponse()
-                }
+                ) { viewModel.submitResponse() }
                 .opacity(showOptions ? 1 : 0)
                 .animation(.easeInOut, value: showOptions)
                 .disabled(viewModel.selectedOptionId == nil)
@@ -75,9 +73,7 @@ struct SubmitClaimSingleSelectView: View {
                         .medium,
                         .ghost,
                         content: .init(title: option.title)
-                    ) {
-                        selectOption(id: option.id)
-                    }
+                    ) { selectOption(id: option.id) }
                     .hCustomButtonView {
                         hText(option.title, style: .body1)
                             .foregroundColor(pillColor(optionId: option.id).pillTextColor(level: .two))

@@ -3,14 +3,14 @@
 The Home module is the main dashboard of the Hedvig app. It displays the member's contract state (active, future, terminated), important messages, quick actions (e.g. FirstVet, travel insurance), a Help Center with FAQ, and provides the primary entry point for starting a new claim.
 
 ## Architecture
-- **Mixed pattern**: Uses the legacy `PresentableStore` (`HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType>`) for state management and data fetching, but the main screen uses a local `HomeVM: ObservableObject` ViewModel that subscribes to the store's state signal via Combine. The `HomeBottomScrollView` also has its own `HomeBottomScrollViewModel`.
+- **Pattern**: `HomeStore` is an `@PersistableStore`-backed `AppStore` (`AppStateContainer`) with `@Published` properties for member contract state, contracts, important messages, quick actions, FAQ, and chat-notification state. `HomeScreen` reads it via `@AppObservedObject`; a thin `HomeVM` mirrors `memberContractState` so the screen can switch on it without rebuilding when other store fields change. `HomeBottomScrollView` has its own `HomeBottomScrollViewModel` for composing the bottom-card list.
 - **Key services**: `HomeClient` protocol (in `Service/Protocols/HomeClient.swift`) defines all data-fetching methods. `HomeClientDemo` provides the demo implementation. The Octopus (real) implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/HomeClientOctopus.swift`.
-- **Data flow**: `HomeScreen` creates `HomeVM`, which reads from `HomeStore`. On appear, `HomeVM.fetchHomeState()` dispatches multiple actions to `HomeStore` (and to `CrossSellStore`, `ContractStore`, `PaymentStore`). The store's `effects()` calls `HomeClient` methods, then dispatches setter actions that are handled in `reduce()`.
+- **Data flow**: `HomeScreen.onAppear` calls `vm.fetchHomeState()` which kicks off async fetches on `HomeStore`, `CrossSellStore`, `ContractStore`, and `PaymentStore` in parallel. Each store's async method updates its `@Published` properties; views observing those properties re-render automatically. `HomeStore.init()` also subscribes to `CrossSellStore.$hasNewOffer`, `FeatureFlags`, and `.didChargeOutstandingPayment` to keep `toolbarOptionTypes` current.
 - **Navigation**: `HomeNavigationViewModel` is the central navigation coordinator, managing chat presentation, claim submission flow, cross-sell modals, and Help Center. `HelpCenterNavigationViewModel` manages the Help Center sub-navigation with its own `Router`.
 
 ## Key Files
 - **Entry point**: `Screens/HomeScreen.swift` -- `HomeScreen` view and `HomeVM` ViewModel
-- **Store**: `HomeState.swift` -- `HomeState`, `HomeAction`, `HomeStore`, `MemberInfo`, `FutureStatus`
+- **Store**: `HomeStore.swift` -- `HomeStore` (`AppStore`), `MemberInfo`, `FutureStatus`
 - **Navigation**: `Navigation/HomeNavigation.swift` -- `HomeNavigationViewModel`, chat/claim/cross-sell orchestration
 - **Help Center navigation**: `Navigation/HelpCenterNavigation.swift` -- `HelpCenterNavigationViewModel`, `HelpCenterNavigation` view with quick action routing
 - **Service protocol**: `Service/Protocols/HomeClient.swift` -- `HomeClient`, `MemberState`, `MessageState`
@@ -34,7 +34,7 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 - **Navigation style**: Uses legacy `RouterHost + Router` for both the Help Center sub-navigation and the Home toolbar inbox route. Claim flow is launched via `handleClaimFlow` modifier (from SubmitClaimChat) bound to `claimsAutomationStartInput`.
 
 ## Gotchas
-- `HomeVM` is a bridge between the old `PresentableStore` pattern and SwiftUI. It subscribes to `HomeStore.stateSignal` via Combine rather than using `@Inject` services directly. Data fetching is initiated by dispatching actions to multiple stores (`HomeStore`, `CrossSellStore`, `ContractStore`, `PaymentStore`) in `fetchHomeState()`.
+- `HomeVM` mirrors `HomeStore.memberContractState` rather than subscribing to the whole store; it triggers the cross-store fetches in `fetchHomeState()` for Home/CrossSell/Contract/Payment stores.
 - Chat notification polling uses a 10-second `Timer.publish` that checks the top-visible ViewController description string to decide whether to poll -- a fragile heuristic.
 - The Help Center navigation handler (`HelpCenterNavigation`) is complex, managing quick actions that can launch termination flows, change-tier flows, travel certificates, address changes, edit stakeholders, and more -- all via detents and modals from a single view.
-- `openHelpCenter` in `HomeScreen` accesses `ContractStore` directly via `globalPresentableStoreContainer.get()` to check contract state -- mixing global store access into the view layer.
+- `openHelpCenter` in `HomeScreen` reaches into `ContractStore` directly via `globalAppStateContainer.get()` to check contract state -- a global-state read inside the view layer.

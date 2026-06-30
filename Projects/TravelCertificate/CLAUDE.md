@@ -17,7 +17,7 @@ Generates travel insurance certificates. Users select a contract, set travel dat
 - Model: `TravelInsuranceContractSpecification` in `Sources/Models/TravelInsuranceContractSpecification.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, Contracts, EditStakeholders, Addons (for `AddonSource`, `ChangeAddonInput`), PresentableStore
+- Imports: hCore, hCoreUI, Contracts, EditStakeholders, Addons (for `AddonSource`, `ChangeAddonInput`), AppStateContainer
 - Depended on by: Home, Profile, App
 
 ## Navigation
@@ -29,6 +29,6 @@ Generates travel insurance certificates. Users select a contract, set travel dat
 - Entered from Home and Profile modules.
 
 ## Gotchas
-- This module imports `PresentableStore` to access `ContractStore` for providing existing stakeholders to `EditStakeholdersViewModel`. This is a legacy coupling that could be refactored.
+- This module reaches into `globalAppStateContainer` to resolve `ContractStore` and provide existing stakeholders to `EditStakeholdersViewModel`. This cross-module store dependency could be replaced with an explicit injection.
 - `whoIsTravelingViewModel` and `startDateViewModel` on the navigation VM are force-unwrapped when used in navigation destinations.
 - The `TravelInsuranceClient.getList` method returns a tuple including addon banner data, coupling travel certificate listing with addon upsell logic.

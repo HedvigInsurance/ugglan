@@ -44,8 +44,7 @@ struct SetTerminationDateLandingScreen: View {
 
                     hSection {
                         VStack(spacing: .padding16) {
-                            hContinueButton {
-                                [weak terminationNavigationVm] in
+                            hContinueButton { [weak terminationNavigationVm] in
                                 terminationNavigationVm?.router.push(TerminationFlowRouterActions.confirmation)
                             }
                             .disabled(
@@ -94,9 +93,7 @@ struct SetTerminationDateLandingScreen: View {
             value: terminationNavigationVm.selectedDate?.displayDateDDMMMYYYYFormat
                 ?? L10n.terminationFlowDateFieldPlaceholder,
             placeHolder: L10n.terminationFlowDateFieldText,
-            onTap: { [weak terminationNavigationVm] in
-                terminationNavigationVm?.isDatePickerPresented = true
-            }
+            onTap: { [weak terminationNavigationVm] in terminationNavigationVm?.isDatePickerPresented = true }
         )
         .hFieldSize(.medium)
     }

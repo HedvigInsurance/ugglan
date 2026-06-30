@@ -15,6 +15,6 @@ Allows users to request insurance evidence/certificates by entering their email.
 - hCore, hCoreUI
 
 ## Gotchas
-- Uses the modern ViewModel pattern (`@MainActor class: ObservableObject`) with `@Inject` services; no PresentableStore
+- Uses the ViewModel pattern (`@MainActor class: ObservableObject`) with `@Inject` services; no `AppStore` involvement
 - Navigation is managed by `InsuranceEvidenceNavigationViewModel` which owns a `Router` and coordinates between screens
 - Demo client at `Sources/Service/Client/InsuranceEvidenceClientDemo.swift`

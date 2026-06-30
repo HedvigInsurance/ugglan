@@ -113,7 +113,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         ]
 
         Task { @MainActor [weak presentationController] in
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            try? await Task.sleep(seconds: 0.1)
             if let presentationController {
                 Detent.set(
                     self.detents,

@@ -1,5 +1,6 @@
 import Apollo
-import Authentication
+import AppStateContainer
+import AuthenticationCore
 import AutomaticLog
 import Chat
 import Claims
@@ -12,7 +13,6 @@ import Foundation
 @preconcurrency import HedvigShared
 import MoveFlow
 import Payment
-import PresentableStore
 import Profile
 import SwiftUI
 import TerminateContracts
@@ -37,31 +37,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
-        // remove all persisted state
-        globalPresentableStoreContainer.deletePersistanceContainer()
-
-        // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
+        // remove all persisted state and drop in-memory store instances
+        globalAppStateContainer.clearPersistence()
+        globalAppStateContainer.reset()
+        globalAppStateContainer = AppStateContainer()
 
         DI.initAndRegisterClient()
     }
 
-    func logout() {
+    // Async so callers can await `clearData()` completion before recreating
+    // logged-in view models. Recreating them before the container reset would
+    // capture the about-to-be-discarded stores in nav VM property initializers.
+    func logout() async {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-        ugglanStore.send(.setIsDemoMode(to: false))
-        Task { @MainActor in
+        Task {
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
-                await ApolloClient.deleteToken()
-                clearData()
-            } catch _ {
-                await ApolloClient.deleteToken()
-                clearData()
-            }
+            } catch _ {}
         }
+        await ApolloClient.deleteToken()
+
+        clearData()
     }
 
     func applicationWillTerminate(_: UIApplication) {
@@ -83,8 +81,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func registerForPushNotifications() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        let store: ProfileStore = globalAppStateContainer.get()
+        store.setPushNotificationStatus(settings.authorizationStatus.rawValue)
         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
             return
         }
@@ -96,16 +94,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
             } catch _ {}
             let settings = await UNUserNotificationCenter.current().notificationSettings()
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            let store: ProfileStore = globalAppStateContainer.get()
+            store.setPushNotificationStatus(settings.authorizationStatus.rawValue)
         }
     }
 
     func handleURL(url: URL) {
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            let store: UgglanStore = globalPresentableStoreContainer.get()
-            store.send(.setIsDemoMode(to: false))
+            let store: UgglanStore = globalAppStateContainer.get()
+            store.isDemoMode = false
             Task {
                 await setupSession()
                 await impersonate.impersonate(with: url)
@@ -129,14 +127,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             sourceApplication: options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
             annotation: ""
         )
-    }
-
-    func setupPresentableStoreLogger() {
-        globalPresentableStoreContainer.logger = { message in
-            Task { @MainActor in
-                log.info(message)
-            }
-        }
     }
 
     func setupSession() async {
@@ -207,7 +197,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 log.info(message, error: nil, attributes: nil)
             }
         }
-        setupPresentableStoreLogger()
         log.info("Starting app")
 
         forceLogoutHook = { [weak self] in
@@ -216,7 +205,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
-                    self?.logout()
 
                     let toast = ToastBar(
                         type: .neutral,

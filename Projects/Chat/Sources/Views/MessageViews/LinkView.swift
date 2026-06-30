@@ -38,11 +38,10 @@ struct LinkView: View {
                     hButton(
                         .medium,
                         .primaryAlt,
-                        content: .init(title: L10n.ImportantMessage.readMore),
-                        {
-                            NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
-                        }
-                    )
+                        content: .init(title: L10n.ImportantMessage.readMore)
+                    ) {
+                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
+                    }
                     .hButtonTakeFullWidth(true)
                 }
                 .padding([.horizontal, .bottom], .padding16)

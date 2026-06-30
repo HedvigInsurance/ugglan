@@ -3,7 +3,7 @@ import Foundation
 import hCore
 
 @MainActor
-public protocol ExistingStakeholders {
+public protocol ExistingStakeholders: AnyObject {
     func get(contractId: String, stakeholderType: StakeholderType) -> [Stakeholder]
 }
 
@@ -15,7 +15,7 @@ public class EditStakeholdersViewModel: ObservableObject {
     @Published public var editStakeholderModelError: EditStakeholdersErrorWrapper?
     private let service = EditStakeholdersService()
     public static var updatedStakeholderForContractId = PassthroughSubject<String?, Never>()
-    let existingStakeholders: ExistingStakeholders
+    weak var existingStakeholders: ExistingStakeholders?
     var stakeholderType: StakeholderType!
 
     @MainActor
@@ -50,10 +50,11 @@ public class EditStakeholdersViewModel: ObservableObject {
                     .compactMap { contract in
                         StakeholdersConfig(
                             contract: contract,
-                            preSelectedStakeholders: existingStakeholders.get(
-                                contractId: contract.id,
-                                stakeholderType: stakeholderType
-                            ),
+                            preSelectedStakeholders: existingStakeholders?
+                                .get(
+                                    contractId: contract.id,
+                                    stakeholderType: stakeholderType
+                                ) ?? [],
                             fromInfoCard: true,
                             stakeholderType: stakeholderType
                         )
@@ -107,10 +108,11 @@ public class EditStakeholdersViewModel: ObservableObject {
                 try await Task.sleep(seconds: 0.4)
                 let missingContractConfig = StakeholdersConfig(
                     contract: missingContract,
-                    preSelectedStakeholders: existingStakeholders.get(
-                        contractId: missingContract.id,
-                        stakeholderType: stakeholderType
-                    ),
+                    preSelectedStakeholders: existingStakeholders?
+                        .get(
+                            contractId: missingContract.id,
+                            stakeholderType: stakeholderType
+                        ) ?? [],
                     fromInfoCard: false,
                     stakeholderType: stakeholderType,
                 )

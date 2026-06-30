@@ -8,7 +8,7 @@ public struct hFloatingField: View {
     @State private var animate = false
     @Binding var error: String?
     private var value: String
-    private let onTap: () -> Void
+    private let onTap: @MainActor () async -> Void
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
@@ -26,7 +26,7 @@ public struct hFloatingField: View {
         value: String,
         placeholder: String? = nil,
         error: Binding<String?>? = nil,
-        onTap: @escaping () -> Void
+        onTap: @escaping @MainActor () async -> Void
     ) {
         self.placeholder = placeholder ?? ""
         self.onTap = onTap
@@ -61,7 +61,9 @@ public struct hFloatingField: View {
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
             if isEnabled {
-                onTap()
+                Task {
+                    await onTap()
+                }
                 startAnimation()
             }
         }

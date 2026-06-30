@@ -1,61 +1,55 @@
 import Addons
-import PresentableStore
+import AppStateContainer
+import Foundation
 
-public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAction, CrossSellLoadingAction> {
-    let crossSellService = CrossSellService()
-    override public func effects(
-        _: @escaping () -> CrossSellState,
-        _ action: CrossSellAction
-    ) async {
-        switch action {
-        case .fetchCrossSell:
-            do {
-                let crossSells = try await crossSellService.getCrossSell(source: .insurances, contractId: nil)
-                send(.setCrossSells(crossSells: crossSells))
-            } catch {
-                setError(error.localizedDescription, for: .fetchCrossSell)
-            }
-        case .fetchAddonBanners:
-            do {
-                let addonBanners = try await crossSellService.getAddonBanners(source: .crossSell)
-                send(.setAddonBanners(addonBanners: addonBanners))
-            } catch {
-                send(.setAddonBanners(addonBanners: []))
-                setError(error.localizedDescription, for: .fetchAddonBanners)
-            }
-        case .fetchRecommendedCrossSellId:
-            do {
-                let crossSellsV2 = try await crossSellService.getCrossSell(source: .home, contractId: nil)
-                let recommendedProductId = crossSellsV2.recommended?.id
-                let lastSeenRecommendedProductId = state.lastSeenRecommendedProductId
-                if recommendedProductId != nil, recommendedProductId != lastSeenRecommendedProductId {
-                    send(.setHasNewRecommendedCrossSell(hasNew: true))
-                } else {
-                    send(.setHasNewRecommendedCrossSell(hasNew: false))
-                }
-            } catch {}
-        case .setHasSeenRecommendedWith:
-            send(.setHasNewRecommendedCrossSell(hasNew: false))
-        default:
-            break
+@MainActor
+@PersistableStore
+public final class CrossSellStore: AppStore {
+    private let crossSellService = CrossSellService()
+
+    @Published public internal(set) var crossSells: CrossSells?
+    @Published public internal(set) var addonBanners: [AddonBanner] = []
+    @Published public internal(set) var hasNewOffer: Bool = false
+
+    @Transient @Published public internal(set) var fetchCrossSellError: String?
+    @Transient @Published public internal(set) var fetchAddonBannersError: String?
+
+    private static let lastSeenRecommendedKey = "lastSeenRecommendedProductId"
+    private var lastSeenRecommendedProductId: String? {
+        get { UserDefaults.standard.string(forKey: Self.lastSeenRecommendedKey) }
+        set { UserDefaults.standard.set(newValue, forKey: Self.lastSeenRecommendedKey) }
+    }
+
+    public init() {}
+
+    public func fetchCrossSell() async {
+        do {
+            crossSells = try await crossSellService.getCrossSell(source: .insurances, contractId: nil)
+            fetchCrossSellError = nil
+        } catch {
+            fetchCrossSellError = error.localizedDescription
         }
     }
 
-    override public func reduce(_ state: CrossSellState, _ action: CrossSellAction) async -> CrossSellState {
-        var newState = state
-        switch action {
-        case let .setCrossSells(crossSells):
-            newState.crossSells = crossSells
-        case let .setAddonBanners(addonBanners):
-            newState.addonBanners = addonBanners
-        case let .setHasNewRecommendedCrossSell(hasNew):
-            newState.hasNewOffer = hasNew
-        case let .setHasSeenRecommendedWith(id):
-            newState.setLastSeenRecommendedProductId(id)
-        default:
-            break
+    public func fetchAddonBanners() async {
+        do {
+            addonBanners = try await crossSellService.getAddonBanners(source: .crossSell)
+            fetchAddonBannersError = nil
+        } catch {
+            addonBanners = []
+            fetchAddonBannersError = error.localizedDescription
         }
+    }
 
-        return newState
+    public func fetchRecommendedCrossSellId() async {
+        do {
+            let recommended = try await crossSellService.getCrossSell(source: .home, contractId: nil).recommended?.id
+            hasNewOffer = recommended != nil && recommended != lastSeenRecommendedProductId
+        } catch {}
+    }
+
+    public func setHasSeenRecommendedWith(id: String) {
+        lastSeenRecommendedProductId = id
+        hasNewOffer = false
     }
 }

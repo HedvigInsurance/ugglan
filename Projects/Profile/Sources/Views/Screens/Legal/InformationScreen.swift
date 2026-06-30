@@ -1,7 +1,8 @@
 import Apollo
-import Authentication
+import AppStateContainer
+import AuthenticationCore
+import AuthenticationUI
 import Environment
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,6 +11,7 @@ struct InformationScreen: View {
     @State var showSubmitBugAlert = false
     @State var hasPressedSubmitBugOk = false
     @StateObject private var vm = InformationViewModel()
+    let store: ProfileStore = globalAppStateContainer.get()
 
     var body: some View {
         hForm {
@@ -77,8 +79,7 @@ struct InformationScreen: View {
     }
 
     private var submitBugButton: some View {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        let memberId = store.state.memberDetails?.id ?? ""
+        let memberId = store.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
         let deviceId = vm.deviceId ?? "N/A"
         return OpenEmailClientButton(
@@ -145,9 +146,9 @@ extension InformationScreen {
     }
 
     fileprivate var appInfoItems: [AppInfoItem] {
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = globalAppStateContainer.get()
         var appInfoItems = [AppInfoItem]()
-        if let memberId = profileStore.state.memberDetails?.id {
+        if let memberId = profileStore.memberDetails?.id {
             appInfoItems.append(AppInfoItem(title: L10n.profileAboutAppMemberId, subtitle: memberId))
         }
         let appVersion = Bundle.main.appVersion

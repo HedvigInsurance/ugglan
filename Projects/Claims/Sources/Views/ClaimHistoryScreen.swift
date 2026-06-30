@@ -1,11 +1,11 @@
+import AppStateContainer
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ClaimHistoryScreen: View {
-    @ObservedObject var vm = ClaimHistoryViewModel()
+    @AppState var store: ClaimsStore
     var onTap: (ClaimModel) -> Void
 
     public init(
@@ -16,7 +16,7 @@ public struct ClaimHistoryScreen: View {
 
     public var body: some View {
         Group {
-            if vm.historyClaims.isEmpty {
+            if store.historyClaims.isEmpty {
                 StateView(
                     type: .empty,
                     title: L10n.ClaimHistory.EmptyState.title,
@@ -27,14 +27,14 @@ public struct ClaimHistoryScreen: View {
                 claimHistoryView
             }
         }
-        .onAppear {
-            vm.fetch()
+        .task {
+            await store.fetchHistoryClaims()
         }
     }
 
     var claimHistoryView: some View {
         hForm {
-            hSection(vm.historyClaims) { claim in
+            hSection(store.historyClaims) { claim in
                 hRow {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
@@ -62,30 +62,6 @@ public struct ClaimHistoryScreen: View {
     func getSubTitle(for claim: ClaimModel) -> String? {
         guard let formatted = claim.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
         return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
-    }
-}
-
-@MainActor
-class ClaimHistoryViewModel: ObservableObject {
-    @PresentableStore private var store: ClaimsStore
-    private var stateObserver: AnyCancellable?
-    @Published var historyClaims: [ClaimModel] = []
-
-    init() {
-        stateObserver = store.stateSignal
-            .receive(on: RunLoop.main)
-            .map(\.historyClaims)
-            .removeDuplicates()
-            .sink { [weak self] state in
-                withAnimation {
-                    self?.historyClaims = state ?? []
-                }
-            }
-        historyClaims = store.state.historyClaims ?? []
-    }
-
-    func fetch() {
-        store.send(.fetchHistoryClaims)
     }
 }
 

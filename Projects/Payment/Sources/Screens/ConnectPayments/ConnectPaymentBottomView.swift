@@ -1,36 +1,30 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ConnectPaymentBottomView: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     var body: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData
-            }
-        ) { statusData in
-            if let statusData {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        if statusData.payinMethods.hasMethodInProgress {
-                            InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-                        }
-                        hButton(
-                            .large,
-                            .secondary,
-                            content: .init(title: statusData.status.connectButtonTitle),
-                            { [weak paymentNavigationVm] in
-                                paymentNavigationVm?.connectPaymentVm.set()
-                            }
-                        )
+        if let statusData = store.paymentStatusData {
+            hSection {
+                VStack(spacing: .padding16) {
+                    if statusData.payinMethods.hasMethodInProgress {
+                        InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                     }
+                    hButton(
+                        .large,
+                        .secondary,
+                        content: .init(title: statusData.status.connectButtonTitle),
+                        { [weak paymentNavigationVm] in
+                            paymentNavigationVm?.connectPaymentVm.set()
+                        }
+                    )
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
