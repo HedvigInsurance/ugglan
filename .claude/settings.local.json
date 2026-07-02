@@ -5,7 +5,15 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)"
+      "Bash(git commit -m ':*)",
+      "Bash(command -v node)",
+      "Bash(swiftc -o svgshot main.swift)",
+      "Bash(timeout 30 ./svgshot /Users/sladannimcevic/Hedvig/Pillowmaker/public/highlights.svg /tmp/svgshot/highlights.png 1024)",
+      "Bash(./svgshot /Users/sladannimcevic/Hedvig/Pillowmaker/public/highlights.svg /tmp/svgshot/highlights.png 1024)",
+      "Bash(ls -la highlights.png)",
+      "Bash(file highlights.png)",
+      "Bash(sips -Z 1024 Projects/hCoreUI/Resources/Assets.xcassets/PillowHighlights.imageset/pillow-highlights.png)",
+      "Bash(sips -g pixelWidth -g pixelHeight -g hasAlpha Projects/hCoreUI/Resources/Assets.xcassets/PillowHighlights.imageset/pillow-highlights.png)"
     ]
   }
 }

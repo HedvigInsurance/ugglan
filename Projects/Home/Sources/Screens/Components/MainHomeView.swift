@@ -11,8 +11,27 @@ struct MainHomeView: View {
             hText(L10n.HomeTab.welcomeTitleWithoutName, style: .displayXSLong)
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-            ClaimsCard()
+            //            ClaimsCard()
+            PillowView(animatedConfig)
+                .frame(width: 200, height: 200)
+            hCoreUIAssets.bigPillowCar.view
+                .resizable()
+                .frame(width: 200, height: 200)
         }
         .sectionContainerStyle(.transparent)
     }
+
+    /// `.car` with a gentle wave: `speed > 0` makes `PillowView`'s `TimelineView`
+    /// drift the wave phase continuously, and `waveX`/`waveY` set the amplitude.
+    private var animatedConfig: PillowConfiguration {
+        var config = PillowConfiguration.car
+        config.waveX = 0.5
+        config.waveY = 0
+        config.speed = 1.5
+        return config
+    }
+}
+
+#Preview {
+    MainHomeView()
 }
