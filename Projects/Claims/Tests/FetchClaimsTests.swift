@@ -190,6 +190,7 @@ final class FetchClaimsTests: XCTestCase {
 
     func testFetchClaimInProgressSuccess() async throws {
         let expected = ClaimInProgressModel(
+            id: "1",
             createdAt: try XCTUnwrap("2026-05-01".localDateToDate),
             title: "Continue where you stopped"
         )

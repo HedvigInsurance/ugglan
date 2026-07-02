@@ -42,8 +42,15 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             return nil
         }
         return ClaimInProgressModel(
+            id: resumable.id,
             createdAt: createdAt,
             title: resumable.displayName ?? "Continue where you stopped"
+        )
+    }
+
+    func deleteClaimInProgress(id: String) async throws {
+        _ = try await octopus.client.mutation(
+            mutation: OctopusGraphQL.ClaimIntentDeleteDraftMutation(id: id)
         )
     }
 }

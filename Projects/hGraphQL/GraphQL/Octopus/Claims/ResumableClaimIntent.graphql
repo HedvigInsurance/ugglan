@@ -1,6 +1,7 @@
 query ResumableClaimIntent {
     currentMember {
         resumableClaimIntent {
+            id
             createdAt
             displayName
         }

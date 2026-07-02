@@ -86,6 +86,7 @@ class MockFetchClaimsService: hFetchClaimsClient {
         case getHistory
         case getFiles
         case getClaimInProgress
+        case deleteClaimInProgress
     }
 
     init(
@@ -121,6 +122,10 @@ class MockFetchClaimsService: hFetchClaimsClient {
     func getClaimInProgress() async throws -> ClaimInProgressModel? {
         events.append(.getClaimInProgress)
         return try await fetchClaimInProgress()
+    }
+
+    func deleteClaimInProgress(id: String) async throws {
+        events.append(.deleteClaimInProgress)
     }
 }
 

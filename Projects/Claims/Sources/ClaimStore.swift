@@ -55,7 +55,21 @@ public final class ClaimsStore: AppStore {
 
     public func fetchClaimInProgress() async {
         do {
-            claimInProgress = try await fetchClaimsClient.getClaimInProgress()
+            let claimInProgress = try await fetchClaimsClient.getClaimInProgress()
+            withAnimation {
+                self.claimInProgress = claimInProgress
+            }
+        } catch {
+        }
+    }
+
+    public func deleteClaimInProgress() async {
+        guard let id = claimInProgress?.id else { return }
+        do {
+            try await fetchClaimsClient.deleteClaimInProgress(id: id)
+            withAnimation {
+                self.claimInProgress = nil
+            }
         } catch {
         }
     }

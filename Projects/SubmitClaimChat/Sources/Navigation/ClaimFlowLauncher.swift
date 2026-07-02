@@ -17,6 +17,7 @@ struct ClaimFlowLauncher: ViewModifier {
     @State private var submitClaimInput: StartClaimInput?
     @State private var router = NavigationRouter()
     @State var disableSubmitChatClaimAnimations = false
+    @State private var showDraftAlert = false
     let onDeinit: () -> Void
     func body(content: Content) -> some View {
         content
@@ -38,7 +39,7 @@ struct ClaimFlowLauncher: ViewModifier {
                         withAnimations in
                         startInputDetent = nil
                         disableSubmitChatClaimAnimations = !withAnimations
-                        submitClaimInput = inProgress ? .init(type: .inProgress) : startInput
+                        submitClaimInput = inProgress ? .init(type: .inProgress) : input
                         startInput = nil
                     }
                     .navigationTitle(L10n.honestyPledgeHeader)
@@ -71,13 +72,33 @@ struct ClaimFlowLauncher: ViewModifier {
             .onChange(of: startInput) { value in
                 if let value {
                     switch value.type {
-                    case .regular:
-                        startInputDetent = value
+                    case let .regular(hasInProgress):
+                        if hasInProgress {
+                            // A saved draft exists — let the member choose before starting a new claim.
+                            showDraftAlert = true
+                        } else {
+                            startInputDetent = value
+                        }
                     case .inProgress:
                         submitClaimInput = value
                         startInput = nil
                     }
                 }
+            }
+            .alert(
+                "You have a draft claim",  //L10n.claimDraftAlertTitle
+                isPresented: $showDraftAlert
+            ) {
+                Button("Continue draft") {  //L10n.claimDraftAlertContinue
+                    submitClaimInput = .init(type: .inProgress)
+                    startInput = nil
+                }
+                Button("Start new claim", role: .destructive) {  //L10n.claimDraftAlertStartNew
+                    startInputDetent = .init(type: .regular(hasInProgress: false))
+                    startInput = nil
+                }
+            } message: {
+                Text("Starting a new claim will delete your saved draft")  //L10n.claimDraftAlertBody
             }
     }
 }

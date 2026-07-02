@@ -16,6 +16,8 @@ public class FetchClaimsClientDemo: hFetchClaimsClient {
         nil
     }
 
+    public func deleteClaimInProgress(id: String) async throws {}
+
     public func getFiles() async throws -> [String: [File]] {
         let fileArray: [File] = [
             .init(

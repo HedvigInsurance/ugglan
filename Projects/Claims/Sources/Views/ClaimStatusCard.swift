@@ -1,3 +1,4 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -74,8 +75,17 @@ struct ClaimStatusCard: View {
                             }
                             .frame(maxWidth: .infinity)
                         }
-                        hButton(.medium, .secondary, content: .init(title: "Resume claim")) {
-                            NotificationCenter.default.post(name: .startClaim, object: StartClaimInputType.inProgress)
+                        HStack(spacing: .padding8) {
+                            hButton(.medium, .secondary, content: .init(title: "Delete")) {
+                                let store: ClaimsStore = globalAppStateContainer.get()
+                                Task { await store.deleteClaimInProgress() }
+                            }
+                            hButton(.medium, .primary, content: .init(title: "Continue")) {
+                                NotificationCenter.default.post(
+                                    name: .startClaim,
+                                    object: StartClaimInputType.inProgress
+                                )
+                            }
                         }
                         .hButtonTakeFullWidth(true)
                     }
@@ -270,7 +280,7 @@ extension ClaimModel {
                     enableTap: true
                 )
                 ClaimStatusCard(
-                    claimType: .claimInProgress(model: .init(createdAt: Date(), title: "TITLE")),
+                    claimType: .claimInProgress(model: .init(id: "1", createdAt: Date(), title: "TITLE")),
                     enableTap: true
                 )
             }
