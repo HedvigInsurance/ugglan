@@ -92,6 +92,7 @@ public struct ClaimIntent: Sendable, Equatable {
     let hint: String?
     let createdAt: Date?
     let displayName: String?
+    let resumable: Bool
 
     public init(
         currentStep: ClaimIntentStep,
@@ -102,6 +103,7 @@ public struct ClaimIntent: Sendable, Equatable {
         hint: String? = nil,
         createdAt: Date? = nil,
         displayName: String? = nil,
+        resumable: Bool = false,
         previousSteps: [ClaimIntent] = []
     ) {
         self.currentStep = currentStep
@@ -112,6 +114,7 @@ public struct ClaimIntent: Sendable, Equatable {
         self.hint = hint
         self.createdAt = createdAt
         self.displayName = displayName
+        self.resumable = resumable
         self.previousSteps = previousSteps
     }
 }

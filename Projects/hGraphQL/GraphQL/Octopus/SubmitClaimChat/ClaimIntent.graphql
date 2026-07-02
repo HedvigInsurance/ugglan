@@ -15,6 +15,7 @@ fragment ClaimIntentFragment on ClaimIntent {
         ...ClaimFragment
     }
     displayName
+    resumable
 }
 
 fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {

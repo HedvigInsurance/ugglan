@@ -156,6 +156,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                     hint: intentFragment?.currentStep?.hint,
                     createdAt: createdAt,
                     displayName: intentFragment?.displayName,
+                    resumable: intentFragment?.resumable ?? false,
                     previousSteps: try previousStepFragments.map { previousStepFragment in
                         let isSkippable =
                             previousStepFragment.content.fragments.claimIntentStepContentFragment

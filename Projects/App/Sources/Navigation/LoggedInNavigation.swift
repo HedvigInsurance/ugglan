@@ -710,16 +710,6 @@ struct HomeTab: View {
             Task {
                 let store: ClaimsStore = globalAppStateContainer.get()
                 await store.fetchClaimInProgress()
-                if store.claimInProgress != nil {
-                    Toasts.shared.displayToastBar(
-                        toast: .init(
-                            type: .info,
-                            text:
-                                "We've saved your answers so you can go back to them later by pressing \"Resume claim\".",
-                            duration: 6
-                        )
-                    )
-                }
             }
         }
         .modally(
