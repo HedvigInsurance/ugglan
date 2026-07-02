@@ -4,4 +4,6 @@ import Foundation
 public protocol hFetchClaimsClient {
     func getActiveClaims() async throws -> [ClaimModel]
     func getHistoryClaims() async throws -> [ClaimModel]
+    func getClaimInProgress() async throws -> ClaimInProgressModel?
+    func deleteClaimInProgress(id: String) async throws
 }

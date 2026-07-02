@@ -36,7 +36,7 @@ struct SubmitClaimFlowNavigation: View {
     public var body: some View {
         hNavigationStack(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
-                .navigationTitle(L10n.claimChatTitle)
+                .navigationTitle(viewModel.title)
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
@@ -53,10 +53,16 @@ struct SubmitClaimFlowNavigation: View {
                         SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
                             viewModel?.openChat()
                         }
-                        .addDismissClaimChatFlow()
+                        .withDismissButton()
                     }
                 )
-                .addDismissClaimChatFlow()
+                .withDismissButton(
+                    withAlert: viewModel.currentStep?.claimIntent.resumable ?? false,
+                    title: "Leave claim?",  //L10n.claimChatLeaveTitle
+                    message: "Your claim is automatically saved for 7 days.",  //L10n.claimChatLeaveBody
+                    confirmButtonTitle: "Yes, leave",  //L10n.claimChatLeaveConfirm
+                    cancelButtonTitle: "No"  //L10n.General.no
+                )
         }
         .environmentObject(viewModel)
         .environmentObject(viewModel.scrollCoordinator)

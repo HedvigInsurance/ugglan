@@ -20,7 +20,15 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
             fatalError("TextStepHandler initialized with non-single select content")
         }
         self.model = model
-        fileUploadVm = .init(model: .init(uploadUri: model.uploadURI))
+        let resumedUploads: [FileModel] = model.currentFiles.map { file in
+            FileModel(
+                fileId: file.url.absoluteString,
+                signedUrl: file.url.absoluteString,
+                mimeType: file.contentType.mime,
+                name: file.fileName
+            )
+        }
+        fileUploadVm = .init(model: .init(uploadUri: model.uploadURI, uploads: resumedUploads))
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
     }
 

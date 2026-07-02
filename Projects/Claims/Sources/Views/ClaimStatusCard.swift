@@ -1,38 +1,125 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ClaimStatusCard: View {
-    var claim: ClaimModel
+    var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
-
     @EnvironmentObject var homeRouter: NavigationRouter
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
-        StatusCard(
-            onSelected: nil,
-            mainContent: ClaimPills(claim: claim),
-            title: claim.claimType,
-            subTitle: getSubTitle,
-            bottomComponent: {
-                VStack(spacing: .padding16) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
-                    if enableTap {
-                        hButton(
-                            .medium,
-                            .secondary,
-                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button)
-                        ) { homeRouter.push(claim) }
+        switch claimType {
+        case let .claim(claim):
+            StatusCard(
+                onSelected: nil,
+                mainContent: ClaimPills(claim: claim),
+                title: claim.claimType,
+                subTitle: claim.getSubTitle,
+                bottomComponent: {
+                    VStack(spacing: .padding16) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                        if enableTap {
+                            hButton(
+                                .medium,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
+                                {
+                                    homeRouter.push(claim)
+                                }
+                            )
+                            .hButtonTakeFullWidth(true)
+                        }
+                    }
+                }
+            )
+        case let .claimInProgress(model):
+            StatusCard(
+                onSelected: nil,
+                mainContent: hPill(
+                    text: "Draft",
+                    color: .amber,
+                )
+                .hFieldSize(.small),
+                title: model.title ?? "Insurance case",
+                subTitle: model.createdAt.getSubTitle,
+                bottomComponent: {
+                    VStack(spacing: .padding16) {
+                        HStack(alignment: .top, spacing: .padding6) {
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText("Started", style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText("Being handled", style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText("Closed", style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        HStack(spacing: .padding8) {
+                            hButton(.medium, .secondary, content: .init(title: "Delete")) {
+                                showDeleteConfirmation = true
+                            }
+                            hButton(.medium, .primary, content: .init(title: "Continue")) {
+                                NotificationCenter.default.post(
+                                    name: .startClaim,
+                                    object: StartClaimInputType.inProgress
+                                )
+                            }
+                        }
                         .hButtonTakeFullWidth(true)
                     }
                 }
+            )
+            .alert(
+                "Delete draft?",  //L10n.claimDraftDeleteTitle
+                isPresented: $showDeleteConfirmation
+            ) {
+                Button("Cancel", role: .cancel) {}  //L10n.General.cancelButton
+                Button("Delete", role: .destructive) {  //L10n.claimDraftDeleteConfirm
+                    let store: ClaimsStore = globalAppStateContainer.get()
+                    Task { await store.deleteClaimInProgress() }
+                }
+            } message: {
+                Text("Your saved draft will be permanently deleted.")  //L10n.claimDraftDeleteBody
             }
-        )
+        }
     }
+}
 
-    var getSubTitle: String? {
-        guard let formatted = claim.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
+@MainActor
+extension ClaimModel {
+    fileprivate var getSubTitle: String? {
+        guard let formatted = self.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
         return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
+    }
+}
+
+@MainActor
+extension Date {
+    fileprivate var getSubTitle: String {
+        let formatted = self.displayDateDDMMMYYYYFormat
+        return "Started" + " " + formatted
     }
 }
 
@@ -174,19 +261,40 @@ extension ClaimModel {
     return hForm {
         hSection {
             VStack(spacing: .padding8) {
-                ClaimStatusCard(claim: .previewData(status: .beingHandled), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .reopened), enableTap: true)
                 ClaimStatusCard(
-                    claim: .previewData(
-                        status: .closed,
-                        outcome: .paid,
-                        payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                    claimType: .claim(model: .previewData(status: .beingHandled)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .reopened)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(
+                        model: .previewData(
+                            status: .closed,
+                            outcome: .paid,
+                            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                        )
                     ),
                     enableTap: true
                 )
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .notCompensated)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .notCovered)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .unresponsive)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claimInProgress(model: .init(id: "1", createdAt: Date(), title: "TITLE")),
+                    enableTap: true
+                )
             }
         }
         .sectionContainerStyle(.transparent)

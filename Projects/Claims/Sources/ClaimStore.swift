@@ -8,9 +8,19 @@ import hCore
 public final class ClaimsStore: AppStore {
     @Inject private var fetchClaimsClient: hFetchClaimsClient
 
-    @Published public internal(set) var activeClaims: [ClaimModel] = []
+    @Published public internal(set) var activeClaims: [ClaimModel] = [] {
+        didSet {
+            setAllActiveClaims()
+        }
+    }
     @Published public internal(set) var historyClaims: [ClaimModel] = []
     @Published public internal(set) var files: [String: [File]] = [:]
+    @Published public var claimInProgress: ClaimInProgressModel? {
+        didSet {
+            setAllActiveClaims()
+        }
+    }
+    @Published var allActiveClaims: [ActiveClaimType] = []
 
     public init() {}
 
@@ -41,5 +51,49 @@ public final class ClaimsStore: AppStore {
 
     public func setFiles(_ files: [File], for claimId: String) {
         self.files[claimId] = files
+    }
+
+    public func fetchClaimInProgress() async {
+        do {
+            let claimInProgress = try await fetchClaimsClient.getClaimInProgress()
+            withAnimation {
+                self.claimInProgress = claimInProgress
+            }
+        } catch {
+        }
+    }
+
+    public func deleteClaimInProgress() async {
+        guard let id = claimInProgress?.id else { return }
+        do {
+            try await fetchClaimsClient.deleteClaimInProgress(id: id)
+            withAnimation {
+                self.claimInProgress = nil
+            }
+        } catch {
+        }
+    }
+
+    private func setAllActiveClaims() {
+        var claims = [ActiveClaimType]()
+        if let claimInProgress {
+            claims.append(.claimInProgress(model: claimInProgress))
+        }
+        claims.append(contentsOf: activeClaims.map({ .claim(model: $0) }))
+        self.allActiveClaims = claims
+    }
+
+    enum ActiveClaimType: Equatable, Identifiable, Codable {
+        case claim(model: ClaimModel)
+        case claimInProgress(model: ClaimInProgressModel)
+
+        var id: String {
+            switch self {
+            case .claim(let model):
+                return model.id
+            case .claimInProgress(let model):
+                return model.title ?? "title"
+            }
+        }
     }
 }

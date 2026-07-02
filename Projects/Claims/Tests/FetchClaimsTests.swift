@@ -188,6 +188,48 @@ final class FetchClaimsTests: XCTestCase {
         XCTAssertEqual(respondedClaims.first(where: { $0.isPartnerClaim })?.claimType, "Car damage")
     }
 
+    func testFetchClaimInProgressSuccess() async throws {
+        let expected = ClaimInProgressModel(
+            id: "1",
+            createdAt: try XCTUnwrap("2026-05-01".localDateToDate),
+            title: "Continue where you stopped"
+        )
+
+        let mockService = MockData.createMockFetchClaimService(
+            fetchClaimInProgress: { expected }
+        )
+        sut = mockService
+
+        let response = try await mockService.getClaimInProgress()
+        XCTAssertEqual(response, expected)
+        XCTAssertTrue(mockService.events.contains(.getClaimInProgress))
+    }
+
+    func testFetchClaimInProgressReturnsNilWhenNoDraft() async throws {
+        let mockService = MockData.createMockFetchClaimService(
+            fetchClaimInProgress: { nil }
+        )
+        sut = mockService
+
+        let response = try await mockService.getClaimInProgress()
+        XCTAssertNil(response)
+        XCTAssertTrue(mockService.events.contains(.getClaimInProgress))
+    }
+
+    func testFetchClaimInProgressPropagatesError() async {
+        let mockService = MockData.createMockFetchClaimService(
+            fetchClaimInProgress: { throw ClaimsError.error }
+        )
+        sut = mockService
+
+        do {
+            _ = try await mockService.getClaimInProgress()
+            XCTFail("Expected error to be thrown")
+        } catch {
+            XCTAssertTrue(error is ClaimsError)
+        }
+    }
+
     func testPartnerClaimModelProperties() async {
         let partnerClaim = ClaimModel(
             id: "partner-1",
