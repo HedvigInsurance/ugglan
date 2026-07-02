@@ -101,7 +101,6 @@ class MainNavigationViewModel: ObservableObject {
     var loggedInVm = LoggedInNavigationViewModel()
     private var pushNotificationCancellable: AnyCancellable?
     private var deepLinkCancellable: AnyCancellable?
-    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -115,6 +114,7 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = false
                     }
+                    let contractStore: ContractStore = globalAppStateContainer.get()
                     await contractStore.fetchContracts()
                     let profileStore: ProfileStore = globalAppStateContainer.get()
                     await profileStore.fetchMemberDetails()
