@@ -7,6 +7,7 @@ struct ClaimStatusCard: View {
     var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
     @EnvironmentObject var homeRouter: NavigationRouter
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
         switch claimType {
@@ -77,8 +78,7 @@ struct ClaimStatusCard: View {
                         }
                         HStack(spacing: .padding8) {
                             hButton(.medium, .secondary, content: .init(title: "Delete")) {
-                                let store: ClaimsStore = globalAppStateContainer.get()
-                                Task { await store.deleteClaimInProgress() }
+                                showDeleteConfirmation = true
                             }
                             hButton(.medium, .primary, content: .init(title: "Continue")) {
                                 NotificationCenter.default.post(
@@ -91,6 +91,18 @@ struct ClaimStatusCard: View {
                     }
                 }
             )
+            .alert(
+                "Delete draft?",  //L10n.claimDraftDeleteTitle
+                isPresented: $showDeleteConfirmation
+            ) {
+                Button("Cancel", role: .cancel) {}  //L10n.General.cancelButton
+                Button("Delete", role: .destructive) {  //L10n.claimDraftDeleteConfirm
+                    let store: ClaimsStore = globalAppStateContainer.get()
+                    Task { await store.deleteClaimInProgress() }
+                }
+            } message: {
+                Text("Your saved draft will be permanently deleted.")  //L10n.claimDraftDeleteBody
+            }
         }
     }
 }
