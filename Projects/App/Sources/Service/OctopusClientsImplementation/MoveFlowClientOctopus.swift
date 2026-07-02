@@ -327,6 +327,7 @@ extension ChangeTierIntentModel {
                     id: firstQuote.tierName,
                     name: firstQuote.productVariant.displayNameTier ?? firstQuote.tierName,
                     level: firstQuote.tierLevel,
+                    description: nil,
                     quotes: quotes,
                     exposureName: firstQuote.exposureName
                 )

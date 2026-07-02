@@ -9,6 +9,7 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
         id
         tierName
         tierLevel
+        tierDescription
         deductible {
           amount {
             ...MoneyFragment
@@ -69,6 +70,7 @@ fragment ChangeTierDeductibleFromAgreementFragment on ChangeTierDeductibleFromAg
         }
         tierName
         tierLevel
+        tierDescription
         displayItems {
           displayTitle
           displaySubtitle

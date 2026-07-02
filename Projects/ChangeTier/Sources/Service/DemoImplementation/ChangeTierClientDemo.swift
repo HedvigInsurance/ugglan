@@ -165,6 +165,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
             id: "STANDARD",
             name: "Standard",
             level: 2,
+            description: "desc1",
             quotes: [
                 .init(
                     id: "quote1",
@@ -197,6 +198,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         id: "id",
                         name: "Bas",
                         level: 0,
+                        description: "desc1",
                         quotes: quotes,
                         exposureName: "Bellmansgatan 19A"
                     ),
@@ -205,6 +207,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         id: "id3",
                         name: "Premium",
                         level: 0,
+                        description: "desc1",
                         quotes: quotes,
                         exposureName: "Bellmansgatan 19A"
                     ),
@@ -213,6 +216,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     id: "id",
                     name: "Max",
                     level: 3,
+                    description: "desc1",
                     quotes: quotes,
                     exposureName: ""
                 ),
