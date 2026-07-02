@@ -1,5 +1,6 @@
 import AppStateContainer
 import Foundation
+import SwiftUI
 import hCore
 
 @MainActor
@@ -33,7 +34,10 @@ public final class ClaimsStore: AppStore {
 
     public func fetchActiveClaims() async {
         do {
-            activeClaims = try await fetchClaimsClient.getActiveClaims()
+            let activeClaims = try await fetchClaimsClient.getActiveClaims()
+            withAnimation {
+                self.activeClaims = activeClaims
+            }
         } catch {
         }
     }
