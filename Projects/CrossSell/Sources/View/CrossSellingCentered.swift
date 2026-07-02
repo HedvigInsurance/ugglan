@@ -3,10 +3,10 @@ import hCore
 import hCoreUI
 
 public struct CrossSellingCentered: View {
-    private let crossSell: CrossSell
+    private let crossSell: RecommendedCrossSell
     @State private var viewId = UUID().uuidString
     public init(
-        crossSell: CrossSell
+        crossSell: RecommendedCrossSell
     ) {
         self.crossSell = crossSell
     }
@@ -14,10 +14,16 @@ public struct CrossSellingCentered: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellBannerComponent(crossSell: crossSell)
+                if case let .insurance(insurance) = crossSell {
+                    CrossSellBannerComponent(crossSell: insurance)
+                } else {
+                    Spacing(height: 48)
+                }
                 CrossSellPillowComponent(crossSell: crossSell)
                 VStack(spacing: .padding16) {
-                    CrossSellDiscountProgressComponent(crossSell: crossSell)
+                    if case let .insurance(insurance) = crossSell {
+                        CrossSellDiscountProgressComponent(crossSell: insurance)
+                    }
                     CrossSellButtonComponent(crossSell: crossSell)
                 }
             }
@@ -35,14 +41,16 @@ public struct CrossSellingCentered: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
     return CrossSellingCentered(
-        crossSell: .init(
-            id: "id",
-            title: "Accident Insurance",
-            description: "Help when you need it the most",
-            buttonTitle: "Save 50%",
-            imageUrl: nil,
-            buttonDescription: "buttonDescription",
-            numberOfEligibleContracts: 1
+        crossSell: .insurance(
+            .init(
+                id: "id",
+                title: "Accident Insurance",
+                description: "Help when you need it the most",
+                buttonTitle: "Save 50%",
+                imageUrl: nil,
+                buttonDescription: "buttonDescription",
+                numberOfEligibleContracts: 1
+            )
         )
     )
 }

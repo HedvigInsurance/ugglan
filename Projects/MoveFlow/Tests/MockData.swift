@@ -26,6 +26,7 @@ struct MockData {
             )
         },
         moveIntentConfirm: @escaping MoveIntentConfirm = { _, _, _ in
+            "newContractId"
         },
         getMoveIntentCost: @escaping GetMoveIntentCost = { _ in
             .init(totalCost: .init(gross: .sek(1000), net: .sek(800)), quoteCosts: [])
@@ -44,7 +45,7 @@ struct MockData {
 
 typealias SubmitMoveIntent = () async throws -> MoveConfigurationModel
 typealias MoveIntentRequest = (RequestMoveIntentInput) async throws -> MoveQuotesModel
-typealias MoveIntentConfirm = (String, String, [String]) async throws -> Void
+typealias MoveIntentConfirm = (String, String, [String]) async throws -> String
 typealias GetMoveIntentCost = (GetMoveIntentCostInput) async throws -> hCore.IntentCost
 
 @MainActor
@@ -91,9 +92,9 @@ class MockMoveFlowService: MoveFlowClient {
         intentId: String,
         currentHomeQuoteId homeQuoteId: String,
         removedAddons: [String]
-    ) async throws {
+    ) async throws -> String {
         events.append(.confirmMoveIntent)
-        try await moveIntentConfirm(intentId, homeQuoteId, removedAddons)
+        return try await moveIntentConfirm(intentId, homeQuoteId, removedAddons)
     }
 
     func getMoveIntentCost(input: MoveFlow.GetMoveIntentCostInput) async throws -> hCore.IntentCost {

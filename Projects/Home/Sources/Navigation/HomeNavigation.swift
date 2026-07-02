@@ -48,12 +48,12 @@ public class HomeNavigationViewModel: ObservableObject {
 
             Task { @MainActor in
                 let crossSells = try await crossSellInfo.getCrossSell()
-                if let recommended = crossSells.recommended {
-                    if crossSells.others.isEmpty {
-                        self?.navBarItems.isNewOfferPresentedCenter = recommended
-                    } else {
-                        self?.navBarItems.isNewOfferPresentedModal = crossSells
-                    }
+                // The centered presentation only supports an insurance cross-sell today;
+                // addon recommendations fall back to the detent until their UI is wired up.
+                if let recommendedInsurance = crossSells.recommended, crossSells.others.isEmpty {
+                    self?.navBarItems.isNewOfferPresentedCenter = recommendedInsurance
+                } else if crossSells.recommended != nil {
+                    self?.navBarItems.isNewOfferPresentedModal = crossSells
                 } else {
                     self?.navBarItems.isNewOfferPresentedDetent = crossSells
                 }
@@ -82,7 +82,7 @@ public class HomeNavigationViewModel: ObservableObject {
     public struct NavBarItems {
         public var isFirstVetPresented = false
         public var isNewOfferPresentedModal: CrossSells?
-        public var isNewOfferPresentedCenter: CrossSell?
+        public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?
     }
 

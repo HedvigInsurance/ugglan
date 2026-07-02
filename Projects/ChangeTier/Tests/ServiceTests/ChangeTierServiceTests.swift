@@ -60,6 +60,7 @@ final class ChangeTierServiceTests: XCTestCase {
         ]
 
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
             displayName: "displayName",
             activationDate: Date(),
             tiers: tiers,
