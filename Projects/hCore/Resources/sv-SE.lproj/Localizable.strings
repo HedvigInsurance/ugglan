@@ -679,6 +679,21 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_CONFIRMATION_BUTTON" = "Ja, radera";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Försök igen eller skriv ett meddelande till oss direkt i appen";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Det gick inte öppna försäkringsvillkoren";
+"RESUME_CLAIM_CONTINUE_BUTTON" = "Fortsätt";
+"RESUME_CLAIM_DEFAULT_TITLE" = "Försäkringsärende";
+"RESUME_CLAIM_DELETE_BODY" = "Ditt sparade utkast raderas permanent.";
+"RESUME_CLAIM_DELETE_BUTTON" = "Radera";
+"RESUME_CLAIM_DELETE_TITLE" = "Radera utkast?";
+"RESUME_CLAIM_DRAFT" = "Draft";
+"RESUME_CLAIM_DRAFT_ALERT_BODY" = "Om du startar en ny anmälan raderas ditt sparade utkast";
+"RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Fortsätt anmälan";
+"RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Starta ny anmälan";
+"RESUME_CLAIM_DRAFT_ALERT_TITLE" = "Du har en påbörjad anmälan";
+"RESUME_CLAIM_FALLBACK_TITLE" = "Fortsätt där du slutade";
+"RESUME_CLAIM_LEAVE_BODY" = "Din anmälan sparas automatiskt i 7 dagar.";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Ja, lämna";
+"RESUME_CLAIM_LEAVE_TITLE" = "Lämna anmälan?";
+"RESUME_CLAIM_STATED" = "Borjade %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Sök";
@@ -876,6 +891,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 /* button on Summary screen */
 "TIER_FLOW_SHOW_COVERAGE" = "Visa ditt skydd";
 "TIER_FLOW_SUBTITLE" = "Välj din skyddsnivå och självrisk";
+"TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE" = "Välj din skyddsnivå";
 "TIER_FLOW_TITLE" = "Anpassa ditt skydd";
 "TIER_FLOW_TOTAL" = "Totalt";
 "TOAST.NEW_MESSAGE" = "Nytt meddelande";
