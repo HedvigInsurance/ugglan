@@ -18,6 +18,7 @@ struct CrossSellPillowComponent: View {
                     }
                     .fade(duration: 0)
                     .resizable()
+                    .bounceEffect()
                 if let discountText = crossSell.discountText {
                     hText(discountText, style: .label)
                         .padding(.horizontal, .padding6)

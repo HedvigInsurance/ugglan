@@ -159,9 +159,11 @@ extension PillowConfiguration {
 
 // MARK: - Insurance presets
 
+/// Product presets, taken verbatim from the Pillowmaker tool's `presets.ts`
+/// (each an exported `pillowmaker-shape` config with hand-placed mesh points).
+/// The tool's shared `presetDefaults` equal this type's `init` defaults, so
+/// only the per-preset values are spelled out.
 extension PillowConfiguration {
-    /// The `car` product, taken verbatim from its exported `pillowmaker-shape`
-    /// config (explicit hand-placed mesh points).
     public static let car = PillowConfiguration(
         colors: [
             Color(pillowHex: "#B8D7A2"),
@@ -180,18 +182,233 @@ extension PillowConfiguration {
         waveX: 0,
         waveY: 0,
         waveXShift: 0,
-        waveYShift: 0.96,
-        mixing: 0.8,
-        grainMixer: 0.15,
-        grainOverlay: 0.1,
-        highlightGrain: 0.6,
-        highlightStyle: .shiny,
-        contrast: 0.25,
-        scale: 1,
-        rotation: 0,
-        offsetX: 0,
-        offsetY: 0,
-        speed: 0
+        waveYShift: 0.96
+    )
+
+    public static let accident = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#F2D588"),
+            Color(pillowHex: "#6E190C"),
+            Color(pillowHex: "#FF513A"),
+            Color(pillowHex: "#F2D588"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.9448928833007812, y: 0.33698272705078125),
+            CGPoint(x: 0.8172454833984375, y: 0.92388916015625),
+            CGPoint(x: 0.5082168579101562, y: 0.1909637451171875),
+            CGPoint(x: 0.21875, y: 0.2257537841796875),
+        ],
+        waveX: 0.16,
+        waveY: 0.07,
+        waveXShift: 0,
+        waveYShift: 0.96
+    )
+
+    public static let safety = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#8F3EFF"),
+            Color(pillowHex: "#602F4D"),
+            Color(pillowHex: "#BEE1F4"),
+            Color(pillowHex: "#F5D6E9"),
+            Color(pillowHex: "#E89ACA"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.45870208740234375, y: 0),
+            CGPoint(x: 0.8172454833984375, y: 0.92388916015625),
+            CGPoint(x: 0.13764190673828125, y: 0.893524169921875),
+            CGPoint(x: 0.9672088623046875, y: 0.5867767333984375),
+            CGPoint(x: 0.01390838623046875, y: 0.6537094116210938),
+        ],
+        waveX: 0.12,
+        waveY: 0.07,
+        waveXShift: 0,
+        waveYShift: 0.96
+    )
+
+    public static let pet = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#E3BFD5"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#D0ECFB"),
+            Color(pillowHex: "#30577E"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.702667236328125, y: 0.0213623046875),
+            CGPoint(x: 0.9766693115234375, y: 0.47806549072265625),
+            CGPoint(x: 0.22634124755859375, y: 0.9085540771484375),
+            CGPoint(x: 0.20092010498046875, y: 0.05889892578125),
+        ],
+        waveX: 0.17,
+        waveY: 0.07,
+        waveXShift: 0,
+        waveYShift: 0.96
+    )
+
+    public static let dog = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#E3BFD5"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#D0ECFB"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#B1CF9B"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.21285247802734375, y: 0.887237548828125),
+            CGPoint(x: 0.9766693115234375, y: 0.47806549072265625),
+            CGPoint(x: 0.5908737182617188, y: 0.0571136474609375),
+            CGPoint(x: 0.20092010498046875, y: 0.05889892578125),
+            CGPoint(x: 0.11893463134765625, y: 0.31458282470703125),
+        ],
+        waveX: 0.17,
+        waveY: 0.07,
+        waveXShift: 0,
+        waveYShift: 0.96
+    )
+
+    public static let cat = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#E3BFD5"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#D0ECFB"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#D4F5BC"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.226165771484375, y: 0.33614349365234375),
+            CGPoint(x: 0.9730987548828125, y: 0.40558624267578125),
+            CGPoint(x: 0.2626800537109375, y: 0.903350830078125),
+            CGPoint(x: 0.20092010498046875, y: 0.05889892578125),
+            CGPoint(x: 0.520477294921875, y: 0.9024581909179688),
+        ],
+        waveX: 0.04,
+        waveY: 0.07,
+        waveXShift: 0,
+        waveYShift: 0.96
+    )
+
+    public static let student = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#F9CEC8"),
+            Color(pillowHex: "#F2D588"),
+            Color(pillowHex: "#FF7D6C"),
+            Color(pillowHex: "#FFEEEB"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.8878707885742188, y: 0.341400146484375),
+            CGPoint(x: 0.25054168701171875, y: 0.7023239135742188),
+            CGPoint(x: 0.221771240234375, y: 0.05384063720703125),
+            CGPoint(x: 0.908111572265625, y: 0.696258544921875),
+        ],
+        waveX: 0.12,
+        waveY: 0.11,
+        waveXShift: 0.2,
+        waveYShift: 0.1
+    )
+
+    public static let home = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#F0EBAD"),
+            Color(pillowHex: "#602F4D"),
+            Color(pillowHex: "#85D4FF"),
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#1F3E5C"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.30982208251953125, y: 0.8776626586914062),
+            CGPoint(x: 0.12369537353515625, y: 0.5168380737304688),
+            CGPoint(x: 0.9864959716796875, y: 0.6626205444335938),
+            CGPoint(x: 0.7218399047851562, y: 0.03326416015625),
+            CGPoint(x: 0.5131072998046875, y: 0.95654296875),
+            CGPoint(x: 0.9853973388671875, y: 0.3932952880859375),
+        ],
+        waveX: 0.09,
+        waveY: 0,
+        waveXShift: 0,
+        waveYShift: 0.37
+    )
+
+    public static let homeowner = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#D0ECFB"),
+            Color(pillowHex: "#30577E"),
+            Color(pillowHex: "#EB66B8"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.01732635498046875, y: 0.4716644287109375),
+            CGPoint(x: 0.4988555908203125, y: 0.7441787719726562),
+            CGPoint(x: 0.9474868774414062, y: 0.32346343994140625),
+            CGPoint(x: 0.5424118041992188, y: 0),
+        ],
+        waveX: 0,
+        waveY: 0,
+        waveXShift: 0,
+        waveYShift: 0.37
+    )
+
+    public static let rental = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#1F3E5C"),
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#F0EBAD"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.01732635498046875, y: 0.4716644287109375),
+            CGPoint(x: 0.5422515869140625, y: 0),
+            CGPoint(x: 0.5424118041992188, y: 0),
+            CGPoint(x: 0.2468719482421875, y: 0.796295166015625),
+        ],
+        waveX: 0,
+        waveY: 0,
+        waveXShift: 0,
+        waveYShift: 0.37
+    )
+
+    public static let house = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#F0EBAD"),
+            Color(pillowHex: "#602F4D"),
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#1F3E5C"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.30982208251953125, y: 0.8776626586914062),
+            CGPoint(x: 0.0988311767578125, y: 0.27973175048828125),
+            CGPoint(x: 0.9864959716796875, y: 0.6626205444335938),
+            CGPoint(x: 0.6751785278320312, y: 0.01546478271484375),
+            CGPoint(x: 0.9884033203125, y: 0.42704010009765625),
+        ],
+        waveX: 0.09,
+        waveY: 0,
+        waveXShift: 0,
+        waveYShift: 0.37,
+        mixing: 0.85
+    )
+
+    public static let vacationHome = PillowConfiguration(
+        colors: [
+            Color(pillowHex: "#85D4FF"),
+            Color(pillowHex: "#F0EBAD"),
+            Color(pillowHex: "#602F4D"),
+            Color(pillowHex: "#EB66B8"),
+            Color(pillowHex: "#85D4FF"),
+            Color(pillowHex: "#1F3E5C"),
+        ],
+        meshPoints: [
+            CGPoint(x: 0.30982208251953125, y: 0.8776626586914062),
+            CGPoint(x: 0.12368011474609375, y: 0.39662933349609375),
+            CGPoint(x: 0.9936294555664062, y: 0.39166259765625),
+            CGPoint(x: 0.7218399047851562, y: 0.03326416015625),
+            CGPoint(x: 0.5131072998046875, y: 0.95654296875),
+            CGPoint(x: 0.959686279296875, y: 0.6575851440429688),
+        ],
+        waveX: 0.09,
+        waveY: 0,
+        waveXShift: 0,
+        waveYShift: 0.37
     )
 }
 
