@@ -44,7 +44,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         return ClaimInProgressModel(
             id: resumable.id,
             createdAt: createdAt,
-            title: resumable.displayName ?? "Continue where you stopped"
+            title: resumable.displayName ?? L10n.resumeClaimFallbackTitle
         )
     }
 

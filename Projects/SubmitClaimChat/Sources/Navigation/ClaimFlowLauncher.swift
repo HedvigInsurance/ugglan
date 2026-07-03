@@ -78,19 +78,19 @@ struct ClaimFlowLauncher: ViewModifier {
                 }
             }
             .alert(
-                "You have a draft claim",  //L10n.claimDraftAlertTitle
+                L10n.resumeClaimDraftAlertTitle,
                 isPresented: $showDraftAlert
             ) {
-                Button("Continue draft") {  //L10n.claimDraftAlertContinue
+                Button(L10n.resumeClaimDraftAlertContinue) {
                     submitClaimInput = .init(type: .inProgress)
                     startInput = nil
                 }
-                Button("Start new claim", role: .destructive) {  //L10n.claimDraftAlertStartNew
+                Button(L10n.resumeClaimDraftAlertStartNew, role: .destructive) {
                     startInputDetent = .init(type: .regular(hasInProgress: false))
                     startInput = nil
                 }
             } message: {
-                Text("Starting a new claim will delete your saved draft")  //L10n.claimDraftAlertBody
+                Text(L10n.resumeClaimDraftAlertBody)
             }
     }
 }

@@ -58,10 +58,10 @@ struct SubmitClaimFlowNavigation: View {
                 )
                 .withDismissButton(
                     withAlert: viewModel.currentStep?.claimIntent.resumable ?? false,
-                    title: "Leave claim?",  //L10n.claimChatLeaveTitle
-                    message: "Your claim is automatically saved for 7 days.",  //L10n.claimChatLeaveBody
-                    confirmButtonTitle: "Yes, leave",  //L10n.claimChatLeaveConfirm
-                    cancelButtonTitle: "No"  //L10n.General.no
+                    title: L10n.resumeClaimLeaveTitle,
+                    message: L10n.resumeClaimLeaveBody,
+                    confirmButtonTitle: L10n.resumeClaimLeaveConfirm,
+                    cancelButtonTitle: L10n.General.no
                 )
         }
         .environmentObject(viewModel)

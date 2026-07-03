@@ -38,11 +38,11 @@ struct ClaimStatusCard: View {
             StatusCard(
                 onSelected: nil,
                 mainContent: hPill(
-                    text: "Draft",
+                    text: L10n.resumeClaimDraft,
                     color: .amber,
                 )
                 .hFieldSize(.small),
-                title: model.title ?? "Insurance case",
+                title: model.title ?? L10n.resumeClaimDefaultTitle,
                 subTitle: model.createdAt.getSubTitle,
                 bottomComponent: {
                     VStack(spacing: .padding16) {
@@ -52,7 +52,7 @@ struct ClaimStatusCard: View {
                                     .fill(hFillColor.Opaque.disabled)
                                     .frame(height: 4)
                                     .cornerRadius(.cornerRadiusXS)
-                                hText("Started", style: .label)
+                                hText(L10n.Claim.StatusBar.submitted, style: .label)
                                     .foregroundColor(hFillColor.Opaque.disabled)
                             }
                             .frame(maxWidth: .infinity)
@@ -61,7 +61,7 @@ struct ClaimStatusCard: View {
                                     .fill(hFillColor.Opaque.disabled)
                                     .frame(height: 4)
                                     .cornerRadius(.cornerRadiusXS)
-                                hText("Being handled", style: .label)
+                                hText(L10n.Claim.StatusBar.beingHandled, style: .label)
                                     .foregroundColor(hFillColor.Opaque.disabled)
                             }
                             .frame(maxWidth: .infinity)
@@ -71,16 +71,16 @@ struct ClaimStatusCard: View {
                                     .fill(hFillColor.Opaque.disabled)
                                     .frame(height: 4)
                                     .cornerRadius(.cornerRadiusXS)
-                                hText("Closed", style: .label)
+                                hText(L10n.Claim.StatusBar.closed, style: .label)
                                     .foregroundColor(hFillColor.Opaque.disabled)
                             }
                             .frame(maxWidth: .infinity)
                         }
                         HStack(spacing: .padding8) {
-                            hButton(.medium, .secondary, content: .init(title: "Delete")) {
+                            hButton(.medium, .secondary, content: .init(title: L10n.resumeClaimDeleteButton)) {
                                 showDeleteConfirmation = true
                             }
-                            hButton(.medium, .primary, content: .init(title: "Continue")) {
+                            hButton(.medium, .primary, content: .init(title: L10n.resumeClaimContinueButton)) {
                                 NotificationCenter.default.post(
                                     name: .startClaim,
                                     object: StartClaimInputType.inProgress
@@ -92,16 +92,16 @@ struct ClaimStatusCard: View {
                 }
             )
             .alert(
-                "Delete draft?",  //L10n.claimDraftDeleteTitle
+                L10n.resumeClaimDeleteTitle,
                 isPresented: $showDeleteConfirmation
             ) {
-                Button("Cancel", role: .cancel) {}  //L10n.General.cancelButton
-                Button("Delete", role: .destructive) {  //L10n.claimDraftDeleteConfirm
+                Button(L10n.generalCancelButton, role: .cancel) {}
+                Button(L10n.resumeClaimDeleteButton, role: .destructive) {
                     let store: ClaimsStore = globalAppStateContainer.get()
                     Task { await store.deleteClaimInProgress() }
                 }
             } message: {
-                Text("Your saved draft will be permanently deleted.")  //L10n.claimDraftDeleteBody
+                Text(L10n.resumeClaimDeleteBody)
             }
         }
     }
@@ -119,7 +119,7 @@ extension ClaimModel {
 extension Date {
     fileprivate var getSubTitle: String {
         let formatted = self.displayDateDDMMMYYYYFormat
-        return "Started" + " " + formatted
+        return L10n.resumeClaimStated(formatted)
     }
 }
 
