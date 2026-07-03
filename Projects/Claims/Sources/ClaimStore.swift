@@ -1,4 +1,5 @@
 import AppStateContainer
+import Combine
 import Foundation
 import SwiftUI
 import hCore
@@ -21,8 +22,20 @@ public final class ClaimsStore: AppStore {
         }
     }
     @Published var allActiveClaims: [ActiveClaimType] = []
+    @Transient private var cancellables = Set<AnyCancellable>()
 
-    public init() {}
+    public init() {
+        FeatureFlags.shared.$data
+            .map(\.isResumeClaimEnabled)
+            .removeDuplicates()
+            .dropFirst()
+            .sink { [weak self] _ in
+                Task { [weak self] in
+                    await self?.fetchClaimInProgress()
+                }
+            }
+            .store(in: &cancellables)
+    }
 
     public var hasActiveClaims: Bool {
         activeClaims.map(\.status).contains { $0 != .closed }
@@ -54,6 +67,12 @@ public final class ClaimsStore: AppStore {
     }
 
     public func fetchClaimInProgress() async {
+        guard Dependencies.featureFlags().isResumeClaimEnabled else {
+            withAnimation {
+                claimInProgress = nil
+            }
+            return
+        }
         do {
             let claimInProgress = try await fetchClaimsClient.getClaimInProgress()
             withAnimation {
