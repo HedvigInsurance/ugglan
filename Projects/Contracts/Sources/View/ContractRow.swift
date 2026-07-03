@@ -53,7 +53,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
     private var image: Image? { contract.pillowType?.bgImage }
     private var contractDisplayName: String { contract.currentAgreement?.productVariant.displayName ?? "" }
-    private var contractExposureName: String { contract.exposureDisplayName }
+    private var contractExposureName: String {
+        if contract.typeOfContract == .seQasaLandlord {
+            return contract.exposureDisplayNameShort
+        }
+        return contract.exposureDisplayName
+    }
 
     public init(
         contract: Contract,
