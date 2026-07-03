@@ -26,15 +26,7 @@ struct ClaimFlowLauncher: ViewModifier {
                 presentationStyle: .detent(style: [.height]),
                 options: .constant(.alwaysOpenOnTop),
                 content: { input in
-                    let hasClaimInProgress: Bool = {
-                        switch input.type {
-                        case let .regular(hasInProgress):
-                            return hasInProgress
-                        case .inProgress:
-                            return true
-                        }
-                    }()
-                    SubmitClaimChatHonestyPledgeScreen(hasOngoingClaim: hasClaimInProgress) {
+                    SubmitClaimChatHonestyPledgeScreen {
                         inProgress,
                         withAnimations in
                         startInputDetent = nil

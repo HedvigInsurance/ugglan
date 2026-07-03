@@ -75,12 +75,6 @@ extension SubmitClaimFlowNavigation: TrackingViewNameProtocol {
     }
 }
 
-extension View {
-    func addDismissClaimChatFlow() -> some View {
-        withAlertDismiss(message: L10n.Claims.Alert.body)
-    }
-}
-
 extension Deflection: TrackingViewNameProtocol, NavigationTitleProtocol {
     public var navigationTitle: String? {
         title

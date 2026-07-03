@@ -437,8 +437,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
         case let .goToNext(claimIntent):
             handleGoToNextStep(claimIntent: claimIntent)
-        case let .regret(currentClaimIntent, newclaimIntent):
-            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
+        case let .regret(currentClaimIntent, newClaimIntent):
+            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newClaimIntent)
         case let .outcome(model):
             router.push(model)
             withAnimation {
