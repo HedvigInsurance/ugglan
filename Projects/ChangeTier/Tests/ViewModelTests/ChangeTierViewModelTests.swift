@@ -13,6 +13,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         id: "currentTier",
         name: "current tier",
         level: 1,
+        description: nil,
         quotes: [],
         exposureName: nil
     )
@@ -21,6 +22,7 @@ final class ChangeTierViewModelTests: XCTestCase {
             id: "id1",
             name: "standard",
             level: 1,
+            description: nil,
             quotes: [],
             exposureName: "exposureName"
         ),
@@ -28,6 +30,7 @@ final class ChangeTierViewModelTests: XCTestCase {
             id: "id2",
             name: "max",
             level: 2,
+            description: nil,
             quotes: [
                 .init(
                     id: "id1",
