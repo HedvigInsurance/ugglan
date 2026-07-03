@@ -8,6 +8,7 @@ struct ClaimStatusCard: View {
     var enableTap: Bool
     @EnvironmentObject var homeRouter: NavigationRouter
     @State private var showDeleteConfirmation = false
+    @State private var showExpiredAlert = false
 
     var body: some View {
         switch claimType {
@@ -81,10 +82,14 @@ struct ClaimStatusCard: View {
                                 showDeleteConfirmation = true
                             }
                             hButton(.medium, .primary, content: .init(title: L10n.resumeClaimContinueButton)) {
-                                NotificationCenter.default.post(
-                                    name: .startClaim,
-                                    object: StartClaimInputType.inProgress
-                                )
+                                if model.isExpired {
+                                    showExpiredAlert = true
+                                } else {
+                                    NotificationCenter.default.post(
+                                        name: .startClaim,
+                                        object: StartClaimInputType.inProgress
+                                    )
+                                }
                             }
                         }
                         .hButtonTakeFullWidth(true)
@@ -102,6 +107,17 @@ struct ClaimStatusCard: View {
                 }
             } message: {
                 Text(L10n.resumeClaimDeleteBody)
+            }
+            .alert(
+                "Your draft claim has expired",  //L10n.resumeClaimExpiredTitle
+                isPresented: $showExpiredAlert
+            ) {
+                Button(L10n.generalCloseButton, role: .cancel) {
+                    let store: ClaimsStore = globalAppStateContainer.get()
+                    Task { await store.deleteClaimInProgress() }
+                }
+            } message: {
+                Text("Please make a new claim")  //L10n.resumeClaimExpiredBody
             }
         }
     }
@@ -293,6 +309,16 @@ extension ClaimModel {
                 )
                 ClaimStatusCard(
                     claimType: .claimInProgress(model: .init(id: "1", createdAt: Date(), title: "TITLE")),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claimInProgress(
+                        model: .init(
+                            id: "2",
+                            createdAt: Date().addingTimeInterval(-8 * 24 * 60 * 60),
+                            title: "EXPIRED"
+                        )
+                    ),
                     enableTap: true
                 )
             }

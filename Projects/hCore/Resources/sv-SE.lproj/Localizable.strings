@@ -689,6 +689,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Fortsätt anmälan";
 "RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Starta ny anmälan";
 "RESUME_CLAIM_DRAFT_ALERT_TITLE" = "Du har en påbörjad anmälan";
+"RESUME_CLAIM_EXPIRED_BODY" = "Vänligen starta en ny anmälan";
+"RESUME_CLAIM_EXPIRED_TITLE" = "Ditt utkast har gått ut";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Fortsätt där du slutade";
 "RESUME_CLAIM_LEAVE_BODY" = "Din anmälan sparas automatiskt i 7 dagar.";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Ja, lämna";

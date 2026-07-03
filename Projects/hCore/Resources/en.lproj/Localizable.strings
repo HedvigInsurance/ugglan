@@ -689,6 +689,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Continue draft";
 "RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Start new claim";
 "RESUME_CLAIM_DRAFT_ALERT_TITLE" = "You have a draft claim";
+"RESUME_CLAIM_EXPIRED_BODY" = "Please make a new claim";
+"RESUME_CLAIM_EXPIRED_TITLE" = "Please make a new claim";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Continue where you stopped";
 "RESUME_CLAIM_LEAVE_BODY" = "Your claim is automatically saved for 7 days.";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Yes, leave";

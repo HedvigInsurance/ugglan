@@ -10,4 +10,11 @@ public struct ClaimInProgressModel: Codable, Sendable, Equatable, Hashable {
         self.createdAt = createdAt
         self.title = title
     }
+
+    var isExpired: Bool {
+        guard let expiryDate = Calendar.current.date(byAdding: .day, value: 7, to: createdAt) else {
+            return false
+        }
+        return Date() > expiryDate
+    }
 }
