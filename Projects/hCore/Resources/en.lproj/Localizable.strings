@@ -679,6 +679,21 @@ A message is then appended under the image next to the timestamp to indicate tha
 "REMOVE_CONFIRMATION_BUTTON" = "Yes, remove";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Try again or send us a message directly in the app";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Failed to open new insurance terms";
+"RESUME_CLAIM_CONTINUE_BUTTON" = "Continue";
+"RESUME_CLAIM_DEFAULT_TITLE" = "Insurance case";
+"RESUME_CLAIM_DELETE_BODY" = "Your saved draft will be permanently deleted.";
+"RESUME_CLAIM_DELETE_BUTTON" = "Delete";
+"RESUME_CLAIM_DELETE_TITLE" = "Delete draft?";
+"RESUME_CLAIM_DRAFT" = "Draft";
+"RESUME_CLAIM_DRAFT_ALERT_BODY" = "Starting a new claim will delete your saved draft";
+"RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Continue draft";
+"RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Start new claim";
+"RESUME_CLAIM_DRAFT_ALERT_TITLE" = "You have a draft claim";
+"RESUME_CLAIM_FALLBACK_TITLE" = "Continue where you stopped";
+"RESUME_CLAIM_LEAVE_BODY" = "Your claim is automatically saved for 7 days.";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Yes, leave";
+"RESUME_CLAIM_LEAVE_TITLE" = "Leave claim?";
+"RESUME_CLAIM_STATED" = "Started %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Search";
@@ -876,6 +891,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 /* button on Summary screen */
 "TIER_FLOW_SHOW_COVERAGE" = "Show your coverage";
 "TIER_FLOW_SUBTITLE" = "Set your coverage level and deductible";
+"TIER_FLOW_SUBTITLE_WITHOUT_DEDUCTIBLE" = "Set your coverage level";
 "TIER_FLOW_TITLE" = "Customize your coverage";
 "TIER_FLOW_TOTAL" = "Total";
 "TOAST.NEW_MESSAGE" = "New message";
