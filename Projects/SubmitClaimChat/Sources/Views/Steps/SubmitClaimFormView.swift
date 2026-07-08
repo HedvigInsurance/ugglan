@@ -168,6 +168,9 @@ struct FormFieldView: View {
             fieldViewModel.value = text
         }
         .hTextFieldError(fieldViewModel.error)
+        // Restore the section padding stripped by the surrounding form so the
+        // text is inset from the box edge
+        .hWithoutHorizontalPadding(.none)
     }
 
     var phoneNumberView: some View {
