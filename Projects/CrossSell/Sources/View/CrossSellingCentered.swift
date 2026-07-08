@@ -14,11 +14,7 @@ public struct CrossSellingCentered: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                if case let .insurance(insurance) = crossSell {
-                    CrossSellBannerComponent(crossSell: insurance)
-                } else {
-                    Spacing(height: 48)
-                }
+                CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
                 VStack(spacing: .padding16) {
                     if case let .insurance(insurance) = crossSell {

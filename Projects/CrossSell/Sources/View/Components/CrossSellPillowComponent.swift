@@ -88,6 +88,22 @@ struct CrossSellPillowComponent: View {
                     .sectionContainerStyle(.transparent)
                 }
                 .multilineTextAlignment(.center)
+                if !addon.benefits.isEmpty {
+                    VStack(alignment: .leading, spacing: .padding10) {
+                        ForEach(Array(addon.benefits.enumerated()), id: \.offset) { _, benefit in
+                            HStack(alignment: .top, spacing: .padding12) {
+                                hCoreUIAssets.checkmark.view
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .accessibilityHidden(true)
+                                hText(benefit)
+                                Spacer(minLength: 0)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, .padding24)
+                    .padding(.top, .padding16)
+                }
             }
         }
         .accessibilityElement(children: .combine)
@@ -133,10 +149,16 @@ struct CrossSellPillowComponent: View {
         crossSell: .addon(
             .init(
                 id: "id",
-                title: "title",
-                description: "description",
+                title: "Travel Insurance Plus",
+                description: "For a safer trip abroad",
                 buttonText: "button title",
                 deepLink: "https://link.dev.hedvigit.com/travel-addon",
+                banner: "Add extra safety when traveling",
+                benefits: [
+                    "Travel up to 60 days in a row",
+                    "Delayed bags and flights",
+                    "Applies to all co-insured",
+                ],
                 imageUrl: URL(
                     string:
                         "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F832x832%2F0f43046205%2Fhedvig-pillows-pet.png&w=420&q=70&dpl=dpl_5cQgznxvLKNPt4ivb7hDrQ9Gw3di"

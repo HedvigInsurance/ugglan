@@ -17,13 +17,14 @@ final class RecommendedCrossSellTests: XCTestCase {
         )
     }
 
-    private func makeAddon(id: String = "addon-id") -> AddonCrossSell {
+    private func makeAddon(id: String = "addon-id", banner: String? = nil) -> AddonCrossSell {
         .init(
             id: id,
             title: "title",
             description: "description",
             buttonText: "button text",
             deepLink: "https://link.dev.hedvigit.com/travel-addon",
+            banner: banner,
             imageUrl: nil
         )
     }
@@ -35,10 +36,17 @@ final class RecommendedCrossSellTests: XCTestCase {
         assert(recommended.bannerText == "Save 15%")
     }
 
-    func testAddonForwardsIdAndHasNoBannerText() {
-        let recommended: RecommendedCrossSell = .addon(makeAddon(id: "2"))
+    func testAddonForwardsIdAndBannerText() {
+        let recommended: RecommendedCrossSell = .addon(makeAddon(id: "2", banner: "Add extra safety when traveling"))
 
         assert(recommended.id == "2")
+        assert(recommended.bannerText == "Add extra safety when traveling")
+    }
+
+    func testAddonWithoutBannerHasNoBannerText() {
+        let recommended: RecommendedCrossSell = .addon(makeAddon(id: "3"))
+
+        assert(recommended.id == "3")
         assert(recommended.bannerText == nil)
     }
 
