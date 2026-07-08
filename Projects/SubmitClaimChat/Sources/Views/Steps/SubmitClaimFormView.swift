@@ -158,15 +158,16 @@ struct FormFieldView: View {
     }
 
     var textView: some View {
-        hFloatingTextField(
-            masking: .init(type: .none),
-            value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
+        hTextView(
+            selectedValue: fieldViewModel.value,
             placeholder: field.title,
-            suffix: field.suffix,
-            error: $fieldViewModel.error
-        )
+            popupPlaceholder: field.title,
+            minCharacters: field.minValue.flatMap { Int($0) },
+            maxCharacters: field.maxValue.flatMap { Int($0) }
+        ) { text in
+            fieldViewModel.value = text
+        }
+        .hTextFieldError(fieldViewModel.error)
     }
 
     var phoneNumberView: some View {

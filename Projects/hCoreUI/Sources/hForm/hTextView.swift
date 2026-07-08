@@ -6,7 +6,7 @@ public struct hTextView: View {
     private let placeholder: String
     private let popupPlaceholder: String
     private let minCharacters: Int
-    private let maxCharacters: Int
+    private let maxCharacters: Int?
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
@@ -23,7 +23,7 @@ public struct hTextView: View {
         placeholder: String,
         popupPlaceholder: String,
         minCharacters: Int? = 0,
-        maxCharacters: Int,
+        maxCharacters: Int?,
         enabled: Bool = true,
         showOnAppear: Binding<Bool> = .constant(false),
         color: UIColor = UIColor { trait in
@@ -67,9 +67,9 @@ public struct hTextView: View {
                         .accessibilityLabel(placeholder)
                         .padding(.leading, -4)
                         .frame(height: height)
-                        .padding(.bottom, enabled ? 0 : .padding12)
+                        .padding(.bottom, enabled && maxCharacters != nil ? 0 : .padding12)
                         .accessibilityFocused($isFocused)
-                        if enabled {
+                        if enabled, let maxCharacters {
                             HStack(spacing: .padding4) {
                                 Spacer()
                                 hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
@@ -204,7 +204,7 @@ private struct FreeTextInputView: View {
     fileprivate let title: String
     fileprivate let placeholder: String
     fileprivate let minCharacters: Int
-    fileprivate let maxCharacters: Int
+    fileprivate let maxCharacters: Int?
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
@@ -220,7 +220,7 @@ private struct FreeTextInputView: View {
         title: String,
         placeholder: String,
         minCharacters: Int,
-        maxCharacters: Int,
+        maxCharacters: Int?,
         height: Binding<CGFloat>,
         color: UIColor
     ) {
@@ -280,18 +280,20 @@ private struct FreeTextInputView: View {
                     }
                     .sectionContainerStyle(.transparent)
                     Spacer()
-                    hSection {
-                        HStack {
-                            Spacer()
-                            HStack(spacing: .padding4) {
+                    if let maxCharacters {
+                        hSection {
+                            HStack {
                                 Spacer()
-                                hText("\(value.count)/\(maxCharacters)", style: .label)
-                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                                HStack(spacing: .padding4) {
+                                    Spacer()
+                                    hText("\(value.count)/\(maxCharacters)", style: .label)
+                                        .foregroundColor(hTextColor.Opaque.tertiary)
+                                }
                             }
+                            .padding(.bottom, .padding8)
                         }
-                        .padding(.bottom, .padding8)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
                 }
             }
             .sectionContainerStyle(.opaque)

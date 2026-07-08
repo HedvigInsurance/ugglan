@@ -164,9 +164,30 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     return false
                 }
 
-                let delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
-                vc.transitioningDelegate = delegate
-                vc.modalPresentationStyle = .custom
+                // Keep a strong reference until presentation has started, since
+                // transitioningDelegate is weak.
+                var delegate: (any UIViewControllerTransitioningDelegate)?
+                if #available(iOS 26.0, *), case let .detent(style) = presentationStyle {
+                    // Use the native sheet on iOS 26 instead of the custom presentation
+                    // controller, which relies on private API and opens at the wrong height.
+                    vc.modalPresentationStyle = .pageSheet
+                    vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
+                    if let sheet = vc.sheetPresentationController {
+                        sheet.prefersGrabberVisible = !options.contains(.withoutGrabber)
+                        sheet.prefersPageSizing = false
+                        // Lay out the content before presenting so height detents resolve
+                        // from the real scroll view content size instead of zero.
+                        if let bounds = vcToPresent?.view.bounds {
+                            vc.view.frame = bounds
+                            vc.view.layoutIfNeeded()
+                        }
+                        Detent.set(style, on: sheet, viewController: vc, unanimated: true)
+                    }
+                } else {
+                    delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
+                    vc.transitioningDelegate = delegate
+                    vc.modalPresentationStyle = .custom
+                }
                 vc.view.accessibilityViewIsModal = true
                 vc.onDeinit = {
                     Task { @MainActor in
@@ -187,6 +208,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         vc,
                         animated: true,
                         completion: { [weak vc] in
+                            _ = delegate
+                            delegate = nil
                             Task {
                                 UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
                             }
