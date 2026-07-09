@@ -184,6 +184,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         Detent.set(style, on: sheet, viewController: vc, unanimated: true)
                     }
                 } else {
+                    // Custom presentation from the iOS 12–14 era, before
+                    // UISheetPresentationController (iOS 15) and public custom-height
+                    // detents (iOS 16) existed. Kept for iOS 16–18 where it still
+                    // renders correctly; can be removed once those are dropped.
                     delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                     vc.transitioningDelegate = delegate
                     vc.modalPresentationStyle = .custom
