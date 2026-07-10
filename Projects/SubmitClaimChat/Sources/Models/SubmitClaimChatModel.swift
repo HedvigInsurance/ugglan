@@ -138,6 +138,24 @@ public enum ClaimIntentStepContent: Sendable {
     case singleSelect(model: ClaimIntentStepContentSelect)
     case deflect(model: Deflection)
     case deflectMessage(model: ClaimIntentStepContentDeflectionMessage)
+    case information(model: ClaimIntentStepContentInformation)
+}
+
+public struct ClaimIntentStepContentInformation: Sendable, Equatable {
+    let notice: String
+    let severity: Severity
+    let buttonTitle: String
+
+    public enum Severity: Sendable {
+        case info
+        case critical
+    }
+
+    public init(notice: String, severity: Severity, buttonTitle: String) {
+        self.notice = notice
+        self.severity = severity
+        self.buttonTitle = buttonTitle
+    }
 }
 
 public struct ClaimIntentStepContentDeflectionMessage: Sendable {

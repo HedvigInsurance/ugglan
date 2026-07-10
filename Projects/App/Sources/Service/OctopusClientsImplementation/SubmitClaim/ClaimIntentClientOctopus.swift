@@ -162,6 +162,23 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         }
     }
 
+    func claimIntentSubmitInformation(stepId: String) async throws -> ClaimIntentType? {
+        let input = OctopusGraphQL.ClaimIntentSubmitInformationInput(stepId: stepId)
+        let mutation = OctopusGraphQL.ClaimIntentSubmitInformationMutation(input: input)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitInformation.userError, let message = userError.message {
+                throw ClaimIntentError.error(message: message)
+            }
+
+            let intent = data?.claimIntentSubmitInformation.intent
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+        } catch {
+            throw try logClaimIntentError(error)
+        }
+    }
+
     func claimIntentSkipStep(stepId: String) async throws -> ClaimIntentType? {
         let mutation = OctopusGraphQL.ClaimIntentSkipStepMutation(stepId: stepId)
 
@@ -355,6 +372,14 @@ extension ClaimIntentStepContent {
             )
         } else if let deflectMessage = fragment.asClaimIntentStepContentDeflectionMessage {
             self = .deflectMessage(model: .init(message: deflectMessage.message))
+        } else if let information = fragment.asClaimIntentStepContentInformation {
+            self = .information(
+                model: .init(
+                    notice: information.notice,
+                    severity: information.severity.asSeverity,
+                    buttonTitle: information.buttonTitle
+                )
+            )
         } else {
             throw ClaimIntentError.unknownStep
         }
@@ -422,6 +447,23 @@ extension GraphQLEnum<OctopusGraphQL.ClaimIntentStepContentSelectStyle> {
             }
         case .unknown:
             return .pill
+        }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimIntentStepContentInformationSeverity> {
+    // Unknown severities degrade to .info instead of failing the flow
+    public var asSeverity: ClaimIntentStepContentInformation.Severity {
+        switch self {
+        case .case(let severity):
+            switch severity {
+            case .info:
+                return .info
+            case .critical:
+                return .critical
+            }
+        case .unknown:
+            return .info
         }
     }
 }

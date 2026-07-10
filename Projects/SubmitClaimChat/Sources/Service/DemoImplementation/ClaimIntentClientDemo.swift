@@ -224,6 +224,26 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         )
     }
 
+    public func claimIntentSubmitInformation(stepId: String) async throws -> ClaimIntentType? {
+        .intent(
+            model: .init(
+                currentStep: .init(
+                    content: .form(
+                        model: .init(
+                            fields: []
+                        )
+                    ),
+                    id: "id",
+                    text: ""
+                ),
+                id: "",
+                isSkippable: false,
+                isRegrettable: false,
+                progress: 0
+            )
+        )
+    }
+
     public func claimIntentSkipStep(stepId: String) async throws -> ClaimIntentType? {
         .intent(
             model: .init(

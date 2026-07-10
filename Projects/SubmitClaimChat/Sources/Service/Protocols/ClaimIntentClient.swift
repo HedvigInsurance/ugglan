@@ -18,6 +18,7 @@ public protocol ClaimIntentClient {
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType?
     func claimIntentSubmitSummary(stepId: String) async throws -> ClaimIntentType?
     func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntentType?
+    func claimIntentSubmitInformation(stepId: String) async throws -> ClaimIntentType?
     func claimIntentSkipStep(stepId: String) async throws -> ClaimIntentType?
     func claimIntentRegretStep(stepId: String) async throws -> ClaimIntentType?
     func getNextStep(claimIntentId: String) async throws -> ClaimIntentType?
@@ -87,6 +88,11 @@ class ClaimIntentService {
 
     func claimIntentSubmitSelect(stepId: String, selectedValue: String) async throws -> ClaimIntentType? {
         let data = try await client.claimIntentSubmitSelect(stepId: stepId, selectedValue: selectedValue)
+        return data
+    }
+
+    func claimIntentSubmitInformation(stepId: String) async throws -> ClaimIntentType? {
+        let data = try await client.claimIntentSubmitInformation(stepId: stepId)
         return data
     }
 
