@@ -42,7 +42,7 @@ struct SubmitClaimInformationView: View {
     }
 }
 
-#Preview{
+#Preview {
     let demo = ClaimIntentClientDemo()
     Dependencies.shared.add(module: Module { () -> ClaimIntentClient in demo })
     let criticalStep = SubmitClaimInformationStep(
