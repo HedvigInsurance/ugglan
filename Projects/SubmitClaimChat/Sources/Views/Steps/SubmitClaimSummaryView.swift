@@ -76,7 +76,7 @@ struct SubmitClaimSummaryView: View {
             hButton(
                 .medium,
                 .ghost,
-                content: .init(title: L10n.claimChatShowAllAnswersButton)
+                content: .init(title: L10n.ClaimStatus.showAllAnswers)
             ) {
                 showAllAnswers = true
             }
