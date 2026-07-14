@@ -336,9 +336,10 @@ extension ClaimIntentStepContent {
                             return .init(
                                 title: answer.title,
                                 value: .files(
-                                    files.files.map {
-                                        .init(
-                                            url: URL(string: $0.url)!,
+                                    files.files.compactMap {
+                                        guard let url = URL(string: $0.url) else { return nil }
+                                        return .init(
+                                            url: url,
                                             contentType: .findBy(mimeType: $0.contentType),
                                             fileName: $0.fileName
                                         )
