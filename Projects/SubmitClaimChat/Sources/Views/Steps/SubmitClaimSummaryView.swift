@@ -40,7 +40,7 @@ struct SubmitClaimSummaryView: View {
         }
         .detent(
             presented: $showAllAnswers,
-            presentationStyle: .detent(style: [.large])
+            presentationStyle: .detent(style: [.height])
         ) {
             SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers) {
                 showAllAnswers = false
@@ -139,6 +139,7 @@ struct SubmitClaimSummaryAnswersView: View {
                     }
                 }
                 .padding(.top, .padding32)
+                .padding(.bottom, .padding32)
             }
             .sectionContainerStyle(.transparent)
         }
