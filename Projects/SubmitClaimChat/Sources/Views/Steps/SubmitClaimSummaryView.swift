@@ -20,8 +20,10 @@ struct SubmitClaimSummaryView: View {
                     alignment: .leading,
                     spacing: .padding24
                 ) {
-                    claimDetailsView
-                    showAllAnswersView
+                    VStack(alignment: .leading, spacing: .padding16) {
+                        claimDetailsView
+                        showAllAnswersView
+                    }
                     audioRecordingView
                     uploadedFilesView
                 }
@@ -73,12 +75,13 @@ struct SubmitClaimSummaryView: View {
         if !viewModel.summaryModel.answers.isEmpty {
             hButton(
                 .medium,
-                .secondary,
+                .ghost,
                 content: .init(title: L10n.claimChatShowAllAnswersButton)
             ) {
                 showAllAnswers = true
             }
             .hButtonTakeFullWidth(true)
+            .hButtonWithBorder
         }
     }
 
@@ -119,11 +122,11 @@ struct SubmitClaimSummaryAnswersView: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding24) {
-                    hText(L10n.ClaimStatus.ClaimDetails.title, style: .heading2)
+                    hText(L10n.ClaimStatus.ClaimDetails.title)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .accessibilityAddTraits(.isHeader)
                     ForEach(answers) { answer in
-                        VStack(alignment: .leading, spacing: .padding8) {
+                        VStack(alignment: .leading, spacing: .padding4) {
                             hText(answer.title)
                                 .accessibilityAddTraits(.isHeader)
                             SummaryAnswerValueView(value: answer.value)
@@ -132,7 +135,9 @@ struct SubmitClaimSummaryAnswersView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
+                .padding(.top, .padding16)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.top)
     }
@@ -146,17 +151,11 @@ private struct SummaryAnswerValueView: View {
         case let .text(text):
             hText(text)
                 .frame(maxWidth: .infinity, alignment: .leading)
-        case let .audio(url, transcript):
-            VStack(alignment: .leading, spacing: .padding8) {
-                hSection {
-                    TrackPlayerView(audioPlayer: AudioPlayer(url: url))
-                }
-                .hWithoutHorizontalPadding([.section])
-                if let transcript, !transcript.isEmpty {
-                    hText(transcript)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+        case let .audio(url, _):
+            hSection {
+                TrackPlayerView(audioPlayer: AudioPlayer(url: url))
             }
+            .hWithoutHorizontalPadding([.section])
         case let .files(files):
             SummaryAnswerFilesView(files: files)
         }
