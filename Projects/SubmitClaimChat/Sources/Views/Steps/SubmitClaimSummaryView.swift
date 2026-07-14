@@ -42,7 +42,9 @@ struct SubmitClaimSummaryView: View {
             presented: $showAllAnswers,
             presentationStyle: .detent(style: [.large])
         ) {
-            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers)
+            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers) {
+                showAllAnswers = false
+            }
         }
     }
 
@@ -117,6 +119,7 @@ struct SubmitClaimSummaryView: View {
 
 struct SubmitClaimSummaryAnswersView: View {
     let answers: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer]
+    let onClose: () -> Void
 
     var body: some View {
         hForm {
@@ -135,11 +138,21 @@ struct SubmitClaimSummaryAnswersView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .padding(.top, .padding16)
+                .padding(.top, .padding32)
             }
             .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.top)
+        .hFormAttachToBottom {
+            hSection {
+                hButton(
+                    .large,
+                    .secondary,
+                    content: .init(title: L10n.generalCloseButton)
+                ) { onClose() }
+            }
+            .sectionContainerStyle(.transparent)
+        }
     }
 }
 
