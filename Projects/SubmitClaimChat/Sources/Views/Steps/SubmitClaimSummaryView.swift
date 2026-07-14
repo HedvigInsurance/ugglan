@@ -5,6 +5,13 @@ import hCoreUI
 
 struct SubmitClaimSummaryView: View {
     @ObservedObject var viewModel: SubmitClaimSummaryStep
+    @State private var showAllAnswers = false
+
+    private var claimDetails: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryItem] {
+        viewModel.summaryModel.keyDetails.isEmpty
+            ? viewModel.summaryModel.items
+            : viewModel.summaryModel.keyDetails
+    }
 
     var body: some View {
         hSection {
@@ -13,9 +20,9 @@ struct SubmitClaimSummaryView: View {
                     alignment: .leading,
                     spacing: .padding24
                 ) {
-                    itemView
+                    claimDetailsView
+                    showAllAnswersView
                     audioRecordingView
-                    freeTextsView
                     uploadedFilesView
                 }
             }
@@ -29,16 +36,22 @@ struct SubmitClaimSummaryView: View {
                 .inset(by: 0.5)
                 .stroke(hBorderColor.primary, lineWidth: 1)
         }
+        .detent(
+            presented: $showAllAnswers,
+            presentationStyle: .detent(style: [.large])
+        ) {
+            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers)
+        }
     }
 
     @ViewBuilder
-    var itemView: some View {
-        if viewModel.summaryModel.items.count != 0 {
+    var claimDetailsView: some View {
+        if !claimDetails.isEmpty {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.ClaimStatus.ClaimDetails.title)
                     .accessibilityAddTraits(.isHeader)
                 VStack {
-                    ForEach(viewModel.summaryModel.items, id: \.title) { item in
+                    ForEach(claimDetails, id: \.title) { item in
                         HStack(alignment: .top) {
                             hText(item.title)
                                 .multilineTextAlignment(.leading)
@@ -52,6 +65,20 @@ struct SubmitClaimSummaryView: View {
                     }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    var showAllAnswersView: some View {
+        if !viewModel.summaryModel.answers.isEmpty {
+            hButton(
+                .medium,
+                .secondary,
+                content: .init(title: L10n.claimChatShowAllAnswersButton)
+            ) {
+                showAllAnswers = true
+            }
+            .hButtonTakeFullWidth(true)
         }
     }
 
@@ -83,25 +110,82 @@ struct SubmitClaimSummaryView: View {
             }
         }
     }
+}
 
-    @ViewBuilder
-    var freeTextsView: some View {
-        if !viewModel.summaryModel.freeTexts.isEmpty {
-            VStack(alignment: .leading, spacing: .padding8) {
-                hText(L10n.claimChatOtherTitle)
-                    .accessibilityAddTraits(.isHeader)
-                ForEach(viewModel.summaryModel.freeTexts, id: \.self) { freeText in
-                    HStack {
-                        hText(freeText)
-                        Spacer()
+struct SubmitClaimSummaryAnswersView: View {
+    let answers: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer]
+
+    var body: some View {
+        hForm {
+            hSection {
+                VStack(alignment: .leading, spacing: .padding24) {
+                    hText(L10n.ClaimStatus.ClaimDetails.title, style: .heading2)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .accessibilityAddTraits(.isHeader)
+                    ForEach(answers) { answer in
+                        VStack(alignment: .leading, spacing: .padding8) {
+                            hText(answer.title)
+                                .accessibilityAddTraits(.isHeader)
+                            SummaryAnswerValueView(value: answer.value)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .hPillStyle(color: .grey, colorLevel: .two, withBorder: false)
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel(freeText)
                 }
-                .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
+        .hFormContentPosition(.top)
+    }
+}
+
+private struct SummaryAnswerValueView: View {
+    let value: ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer.Value
+
+    var body: some View {
+        switch value {
+        case let .text(text):
+            hText(text)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        case let .audio(url, transcript):
+            VStack(alignment: .leading, spacing: .padding8) {
+                hSection {
+                    TrackPlayerView(audioPlayer: AudioPlayer(url: url))
+                }
+                .hWithoutHorizontalPadding([.section])
+                if let transcript, !transcript.isEmpty {
+                    hText(transcript)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        case let .files(files):
+            SummaryAnswerFilesView(files: files)
+        }
+    }
+}
+
+private struct SummaryAnswerFilesView: View {
+    @StateObject private var vm: FileGridViewModel
+
+    init(files: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryFileUpload]) {
+        _vm = StateObject(
+            wrappedValue: FileGridViewModel(
+                files: files.map {
+                    .init(
+                        id: $0.url.absoluteString,
+                        size: 0,
+                        mimeType: $0.contentType,
+                        name: $0.fileName,
+                        source: .url(url: $0.url, mimeType: $0.contentType)
+                    )
+                },
+                options: []
+            )
+        )
+    }
+
+    var body: some View {
+        FilesGridView(vm: vm)
+            .hFileGridAlignment(alignment: .leading)
     }
 }
 
@@ -135,20 +219,32 @@ struct SubmitClaimSummaryBottomView: View {
                             .init(title: "Date", value: "2025-11-25"),
                             .init(title: "Location", value: "At home"),
                             .init(title: "Type", value: "Phone"),
-                            .init(title: "Brand", value: "iPhone"),
-                            .init(title: "Model", value: "iPhone 14 Pro"),
-                            .init(title: "Purchase date", value: "2023-11-26"),
                         ],
-                        freeTexts: [
-                            """
-                            It is a long 
-                            text
-                            that goes in more lines
-                            and should take full width
-                            """,
-                            """
-                            One long text that should be shown nicely in the view and take full width of the screen
-                            """,
+                        freeTexts: [],
+                        keyDetails: [
+                            .init(title: "Type of claim", value: "Theft"),
+                            .init(title: "Date", value: "2025-11-25"),
+                            .init(title: "Location", value: "Stockholm"),
+                        ],
+                        answers: [
+                            .init(title: "Was the bike locked?", value: .text("No")),
+                            .init(
+                                title: "Describe what happened",
+                                value: .audio(
+                                    url: URL(string: "https://hedvig.com")!,
+                                    transcript: "I parked my bike and when I came back it was gone."
+                                )
+                            ),
+                            .init(
+                                title: "Any receipts?",
+                                value: .files([
+                                    .init(
+                                        url: URL(string: "https://hedvig.com/receipt.pdf")!,
+                                        contentType: .PDF,
+                                        fileName: "receipt.pdf"
+                                    )
+                                ])
+                            ),
                         ]
                     )
                 ),

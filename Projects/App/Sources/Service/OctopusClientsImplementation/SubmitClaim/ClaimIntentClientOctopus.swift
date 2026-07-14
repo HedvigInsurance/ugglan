@@ -318,7 +318,37 @@ extension ClaimIntentStepContent {
                     items: summary.items.map {
                         .init(title: $0.title, value: $0.value)
                     },
-                    freeTexts: summary.freeTexts
+                    freeTexts: summary.freeTexts,
+                    keyDetails: summary.keyDetails.map {
+                        .init(title: $0.title, value: $0.value)
+                    },
+                    answers: summary.answers.compactMap { answer in
+                        let value = answer.value
+                        if let text = value.asClaimIntentStepContentSummaryAnswerText {
+                            return .init(title: answer.title, value: .text(text.text))
+                        } else if let audio = value.asClaimIntentStepContentSummaryAnswerAudio {
+                            guard let url = URL(string: audio.url) else { return nil }
+                            return .init(
+                                title: answer.title,
+                                value: .audio(url: url, transcript: audio.transcript)
+                            )
+                        } else if let files = value.asClaimIntentStepContentSummaryAnswerFiles {
+                            return .init(
+                                title: answer.title,
+                                value: .files(
+                                    files.files.map {
+                                        .init(
+                                            url: URL(string: $0.url)!,
+                                            contentType: .findBy(mimeType: $0.contentType),
+                                            fileName: $0.fileName
+                                        )
+                                    }
+                                )
+                            )
+                        } else {
+                            return nil
+                        }
+                    }
                 )
             )
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
