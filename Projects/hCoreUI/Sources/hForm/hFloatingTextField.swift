@@ -104,12 +104,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 vm?.onReturnTap = Date()
             }
             if equals == focusValue {
-                textField?.becomeFirstResponder()
+                focusWhenTransitionEnds(textField)
             }
         }
         .onChange(of: equals) { [weak vm] equals in
             if equals == focusValue {
-                vm?.textField?.becomeFirstResponder()
+                focusWhenTransitionEnds(vm?.textField)
             } else if vm?.textField?.isEditing == true {
                 vm?.textField?.resignFirstResponder()
             }
@@ -177,6 +177,20 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .onChange(of: value) { value in
             innerValue = value
+        }
+    }
+
+    private func focusWhenTransitionEnds(_ textField: UITextField?) {
+        guard let textField else { return }
+        // Focusing while the containing sheet is still being presented makes the
+        // keyboard shove the sheet upwards mid-animation. Wait for the transition
+        // so the sheet settles first and the keyboard rises in one clean motion.
+        if let coordinator = textField.viewController?.transitionCoordinator {
+            coordinator.animate(alongsideTransition: nil) { [weak textField] _ in
+                textField?.becomeFirstResponder()
+            }
+        } else {
+            textField.becomeFirstResponder()
         }
     }
 
