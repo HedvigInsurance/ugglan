@@ -154,9 +154,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 let content = getContent()
 
                 let vc = hHostingController(rootView: content)
-                if #available(iOS 26.0, *) {
-                    vc.view.backgroundColor = .clear
-                }
                 var shouldUseBlur: Bool {
                     if case let .detent(style) = presentationStyle {
                         return style.contains(.height)
@@ -170,6 +167,15 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 if #available(iOS 26.0, *), case let .detent(style) = presentationStyle {
                     // Use the native sheet on iOS 26 instead of the custom presentation
                     // controller, which relies on private API and opens at the wrong height.
+                    // Unlike the custom presentation, the native sheet has no blur backdrop
+                    // behind the content, so it needs an opaque background — a clear one
+                    // lets the underlying screen bleed through and makes text unreadable.
+                    vc.view.backgroundColor = UIColor { traits in
+                        hBackgroundColor.primary
+                            .colorFor(traits.userInterfaceStyle == .dark ? .dark : .light, .base)
+                            .color
+                            .uiColor()
+                    }
                     vc.modalPresentationStyle = .pageSheet
                     vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
                     if let sheet = vc.sheetPresentationController {
@@ -188,6 +194,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     // UISheetPresentationController (iOS 15) and public custom-height
                     // detents (iOS 16) existed. Kept for iOS 16–18 where it still
                     // renders correctly; can be removed once those are dropped.
+                    if #available(iOS 26.0, *) {
+                        // The centered modal draws its own backdrop behind the content.
+                        vc.view.backgroundColor = .clear
+                    }
                     delegate = getDelegate(for: vc, shouldUseBlur: shouldUseBlur)
                     vc.transitioningDelegate = delegate
                     vc.modalPresentationStyle = .custom
