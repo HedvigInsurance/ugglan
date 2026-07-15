@@ -92,6 +92,11 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
     ... on ClaimIntentStepContentDeflectionMessage {
         message
     }
+    ... on ClaimIntentStepContentInformation {
+        notice
+        severity
+        buttonTitle
+    }
 }
 
 fragment DeflectFragment on ClaimIntentStepContentDeflection {
