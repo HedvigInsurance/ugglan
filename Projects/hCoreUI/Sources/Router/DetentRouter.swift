@@ -167,27 +167,26 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 if #available(iOS 26.0, *), case let .detent(style) = presentationStyle {
                     // Use the native sheet on iOS 26 instead of the custom presentation
                     // controller, which relies on private API and opens at the wrong height.
-                    // Unlike the custom presentation, the native sheet has no blur backdrop
-                    // behind the content, so it needs an opaque background — a clear one
-                    // lets the underlying screen bleed through and makes text unreadable.
-                    vc.view.backgroundColor = UIColor { traits in
-                        hBackgroundColor.primary
-                            .colorFor(traits.userInterfaceStyle == .dark ? .dark : .light, .base)
-                            .color
-                            .uiColor()
-                    }
+                    // Do NOT set any background on the sheet — neither on vc.view (clear or
+                    // opaque) nor on the SwiftUI content: overriding the system's sheet
+                    // backing breaks the floating entrance animation, making the sheet come
+                    // in left-pinned and slide sideways into place. The default backing is
+                    // already opaque, so content stays readable.
                     vc.modalPresentationStyle = .pageSheet
                     vc.isModalInPresentation = options.contains(.disableDismissOnScroll)
                     if let sheet = vc.sheetPresentationController {
                         sheet.prefersGrabberVisible = !options.contains(.withoutGrabber)
                         sheet.prefersPageSizing = false
-                        // Lay out the content before presenting so height detents resolve
-                        // from the real scroll view content size instead of zero.
-                        if let bounds = vcToPresent?.view.bounds {
-                            vc.view.frame = bounds
-                            vc.view.layoutIfNeeded()
-                        }
                         Detent.set(style, on: sheet, viewController: vc, unanimated: true)
+                    }
+                    // Lay out the content at the presenting size now; SwiftUI commits
+                    // the resulting scroll view content size on the next runloop turn,
+                    // so presenting is deferred below. Otherwise the height detent
+                    // resolves to zero during the transition and the sheet enters
+                    // left-pinned, sliding sideways into place.
+                    if let bounds = vcToPresent?.view.bounds {
+                        vc.view.frame = bounds
+                        vc.view.layoutIfNeeded()
                     }
                 } else {
                     // Custom presentation from the iOS 12–14 era, before
@@ -217,18 +216,29 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }
 
                 presentationViewModel.presentingVC = vc
-                vcToPresent?
-                    .present(
-                        vc,
-                        animated: true,
-                        completion: { [weak vc] in
-                            _ = delegate
-                            delegate = nil
-                            Task {
-                                UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
+                let performPresent = {
+                    vcToPresent?
+                        .present(
+                            vc,
+                            animated: true,
+                            completion: { [weak vc] in
+                                _ = delegate
+                                delegate = nil
+                                Task {
+                                    UIAccessibility.post(notification: .screenChanged, argument: vc?.view)
+                                }
                             }
-                        }
-                    )
+                        )
+                }
+                if #available(iOS 26.0, *), case .detent = presentationStyle {
+                    // Present one runloop turn after the measuring layout above so the
+                    // height detent's first resolution sees the committed content size.
+                    DispatchQueue.main.async {
+                        performPresent()
+                    }
+                } else {
+                    performPresent()
+                }
             }
         } else {
             presentationViewModel.presentingVC?.dismiss(animated: true)

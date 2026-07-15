@@ -199,6 +199,12 @@ extension UIViewController {
     }
 }
 
+/// Remembers the last non-zero height a custom detent resolved to, so early
+/// resolutions that run before layout never collapse the sheet to zero height.
+private final class ResolvedHeightCache: @unchecked Sendable {
+    var value: CGFloat = 0
+}
+
 public enum Detent: Equatable {
     public static func == (lhs: Detent, rhs: Detent) -> Bool {
         switch (lhs, rhs) {
@@ -314,13 +320,26 @@ public enum Detent: Equatable {
                     case .medium:
                         return .medium()
                     case let .custom(name, block):
+                        let lastResolvedHeight = ResolvedHeightCache()
                         return UISheetPresentationController.Detent.custom(
                             identifier: UISheetPresentationController.Detent.Identifier(name)
-                        ) { _ in
-                            if let weakViewController {
-                                return block(weakViewController, weakViewController.view)
+                        ) { context in
+                            guard let weakViewController else { return 0 }
+                            let height = block(weakViewController, weakViewController.view)
+                            if height > 0 {
+                                lastResolvedHeight.value = height
+                                return height
                             }
-                            return 0
+                            if lastResolvedHeight.value > 0 {
+                                return lastResolvedHeight.value
+                            }
+                            // Early resolutions can run before the hosting view has laid
+                            // out, when the scroll view content size is still zero. A
+                            // zero-height detent during the entrance breaks the sheet's
+                            // animation (it opens left-pinned and slides sideways into
+                            // place), so never resolve to zero — the content-size observer
+                            // re-resolves to the real height right after.
+                            return context.maximumDetentValue
                         }
                     }
                 } ?? [.medium()]
