@@ -334,12 +334,17 @@ public enum Detent: Equatable {
                                 return lastResolvedHeight.value
                             }
                             // Early resolutions can run before the hosting view has laid
-                            // out, when the scroll view content size is still zero. A
-                            // zero-height detent during the entrance breaks the sheet's
-                            // animation (it opens left-pinned and slides sideways into
-                            // place), so never resolve to zero — the content-size observer
-                            // re-resolves to the real height right after.
-                            return context.maximumDetentValue
+                            // out, when the scroll view content size is still zero. On the
+                            // iOS 26 native sheet a zero-height detent during the entrance
+                            // breaks the animation (it opens left-pinned and slides
+                            // sideways into place), so never resolve to zero — the
+                            // content-size observer re-resolves to the real height right
+                            // after. The custom presentation on older iOS keeps the
+                            // long-shipped zero fallback.
+                            if #available(iOS 26.0, *) {
+                                return context.maximumDetentValue
+                            }
+                            return 0
                         }
                     }
                 } ?? [.medium()]
