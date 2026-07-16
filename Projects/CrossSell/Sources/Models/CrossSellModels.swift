@@ -40,7 +40,7 @@ public enum RecommendedCrossSell: Codable, Equatable, Hashable, Sendable, Identi
     public var bannerText: String? {
         switch self {
         case let .insurance(insurance): return insurance.bannerText
-        case let .addon(addon): return addon.banner
+        case let .addon(addon): return addon.bannerText
         }
     }
 }
@@ -52,7 +52,7 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
     let buttonText: String
     let deepLink: String
     /// Optional banner text shown above the card; callers fall back to a default when nil.
-    let banner: String?
+    let bannerText: String?
     /// Benefit rows shown as a checkmark list; empty when there are none.
     let benefits: [String]
     let imageUrl: URL?
@@ -63,7 +63,7 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
         description: String,
         buttonText: String,
         deepLink: String,
-        banner: String? = nil,
+        bannerText: String? = nil,
         benefits: [String] = [],
         imageUrl: URL?
     ) {
@@ -72,7 +72,7 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
         self.description = description
         self.buttonText = buttonText
         self.deepLink = deepLink
-        self.banner = banner
+        self.bannerText = bannerText
         self.benefits = benefits
         self.imageUrl = imageUrl
     }

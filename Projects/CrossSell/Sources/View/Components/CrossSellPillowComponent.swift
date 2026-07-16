@@ -90,7 +90,7 @@ struct CrossSellPillowComponent: View {
                 .multilineTextAlignment(.center)
                 if !addon.benefits.isEmpty {
                     VStack(alignment: .leading, spacing: .padding10) {
-                        ForEach(Array(addon.benefits.enumerated()), id: \.offset) { _, benefit in
+                        ForEach(addon.benefits) { benefit in
                             HStack(alignment: .top, spacing: .padding12) {
                                 hCoreUIAssets.checkmark.view
                                     .resizable()
@@ -153,7 +153,7 @@ struct CrossSellPillowComponent: View {
                 description: "For a safer trip abroad",
                 buttonText: "button title",
                 deepLink: "https://link.dev.hedvigit.com/travel-addon",
-                banner: "Add extra safety when traveling",
+                bannerText: "Add extra safety when traveling",
                 benefits: [
                     "Travel up to 60 days in a row",
                     "Delayed bags and flights",

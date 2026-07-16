@@ -96,9 +96,9 @@ extension AddonCrossSell {
             id: data.id,
             title: data.title,
             description: data.description,
-            buttonText: data.buttonTitle,
+            buttonText: data.buttonText,
             deepLink: data.deepLink,
-            banner: data.banner,
+            bannerText: data.bannerText,
             benefits: data.benefits,
             imageUrl: URL(string: data.pillowImageLarge.src)
         )
