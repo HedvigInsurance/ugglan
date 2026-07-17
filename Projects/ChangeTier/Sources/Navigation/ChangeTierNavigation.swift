@@ -293,11 +293,8 @@ public struct ChangeTierNavigation: View {
                 if let changeTierNavigationVm {
                     switch action {
                     case .summary:
-                        ChangeTierSummaryScreen(
-                            changeTierVm: changeTierNavigationVm.vm,
-                            changeTierNavigationVm: changeTierNavigationVm
-                        )
-                        .navigationTitle(L10n.offerUpdateSummaryTitle)
+                        ChangeTierSummaryScreen(changeTierNavigationVm: changeTierNavigationVm)
+                            .navigationTitle(L10n.offerUpdateSummaryTitle)
                     }
                 } else {
                     EmptyView()

@@ -2,41 +2,56 @@ import SwiftUI
 import hCore
 
 public struct QuoteSummaryScreen: View {
-    @ObservedObject var vm: QuoteSummaryViewModel
-    @State var spacingCoverage: CGFloat = 0
-    @State var totalHeight: CGFloat = 0
+    let quoteSummary: QuoteSummary
+    let onDocumentTap: (hPDFDocument) -> Void
+    let onConfirm: () -> Void
+
+    @State private var isConfirmChangesPresented = false
+    @State private var showDetailsContract: QuoteSummary.ContractInfo? = nil
+    @State private var spacingCoverage: CGFloat = 0
+    @State private var totalHeight: CGFloat = 0
 
     public init(
-        vm: QuoteSummaryViewModel
+        quoteSummary: QuoteSummary,
+        onDocumentTap: @escaping (hPDFDocument) -> Void,
+        onConfirm: @escaping () -> Void
     ) {
-        self.vm = vm
+        self.quoteSummary = quoteSummary
+        self.onDocumentTap = onDocumentTap
+        self.onConfirm = onConfirm
     }
 
     public var body: some View {
         ScrollViewReader { proxy in
             hForm {
                 VStack(spacing: .padding16) {
-                    ContractCardView(vm: vm)
-                        .background(
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        spacingCoverage = max(totalHeight - proxy.size.height, 0)
-                                    }
-                                    .onChange(of: proxy.size) { size in
-                                        spacingCoverage = max(totalHeight - size.height, 0)
-                                    }
-                            }
-                        )
+                    ContractCardView(
+                        contracts: quoteSummary.contracts,
+                        showDetailsContract: $showDetailsContract
+                    )
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    spacingCoverage = max(totalHeight - proxy.size.height, 0)
+                                }
+                                .onChange(of: proxy.size) { size in
+                                    spacingCoverage = max(totalHeight - size.height, 0)
+                                }
+                        }
+                    )
                 }
             }
             .hButtonTakeFullWidth(true)
             .hFormAlwaysAttachToBottom {
                 VStack(spacing: .padding8) {
-                    if let noticeInfo = vm.noticeInfo {
+                    if let noticeInfo = quoteSummary.noticeInfo {
                         noticeComponent(info: noticeInfo)
                     }
-                    PriceSummarySection(vm: vm)
+                    PriceSummarySection(
+                        quoteSummary: quoteSummary,
+                        isConfirmChangesPresented: $isConfirmChangesPresented
+                    )
                 }
             }
         }
@@ -52,16 +67,16 @@ public struct QuoteSummaryScreen: View {
             }
         )
         .detent(
-            presented: $vm.isConfirmChangesPresented,
+            presented: $isConfirmChangesPresented,
             options: .constant([.alwaysOpenOnTop])
         ) {
             openConfirmChangesScreen
         }
         .detent(
-            item: $vm.isShowDetailsPresented,
+            item: $showDetailsContract,
             options: .constant([.alwaysOpenOnTop]),
         ) { contract in
-            ContractOverviewScreen(contract: contract)
+            ContractOverviewScreen(contract: contract, onDocumentTap: onDocumentTap)
         }
     }
 
@@ -70,15 +85,15 @@ public struct QuoteSummaryScreen: View {
             ConfirmChangesScreen(
                 title: L10n.confirmChangesTitle,
                 subTitle: L10n.confirmChangesSubtitle(
-                    vm.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
+                    quoteSummary.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
                 ),
                 buttons: .init(
-                    mainButton: .init(buttonAction: { [weak vm] in
-                        vm?.isConfirmChangesPresented = false
-                        vm?.onConfirmClick()
+                    mainButton: .init(buttonAction: {
+                        isConfirmChangesPresented = false
+                        onConfirm()
                     }),
-                    dismissButton: .init(buttonAction: { [weak vm] in
-                        vm?.isConfirmChangesPresented = false
+                    dismissButton: .init(buttonAction: {
+                        isConfirmChangesPresented = false
                     })
                 )
             )
@@ -102,11 +117,12 @@ public struct QuoteSummaryScreen: View {
 }
 
 private struct ContractCardView: View {
-    @ObservedObject var vm: QuoteSummaryViewModel
+    let contracts: [QuoteSummary.ContractInfo]
+    @Binding var showDetailsContract: QuoteSummary.ContractInfo?
 
     var body: some View {
         VStack(spacing: 0) {
-            ForEach(vm.contracts, id: \.id) { contract in
+            ForEach(contracts) { contract in
                 contractInfoView(for: contract)
                     .id(contract.id)
             }
@@ -114,13 +130,7 @@ private struct ContractCardView: View {
     }
 
     @ViewBuilder
-    private func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        contractContent(for: contract)
-    }
-
-    func contractContent(
-        for contract: QuoteSummaryViewModel.ContractInfo
-    ) -> some View {
+    private func contractInfoView(for contract: QuoteSummary.ContractInfo) -> some View {
         hSection {
             StatusCard(
                 mainContent:
@@ -146,9 +156,7 @@ private struct ContractCardView: View {
     }
 
     @ViewBuilder
-    private func pricingSummary(
-        for contract: QuoteSummaryViewModel.ContractInfo
-    ) -> some View {
+    private func pricingSummary(for contract: QuoteSummary.ContractInfo) -> some View {
         VStack(spacing: .padding16) {
             if contract.shouldShowDetails {
                 showDetailsButton(contract)
@@ -182,7 +190,7 @@ private struct ContractCardView: View {
     }
 
     @ViewBuilder
-    private func showDetailsButton(_ contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+    private func showDetailsButton(_ contract: QuoteSummary.ContractInfo) -> some View {
         hButton(
             .medium,
             .ghost,
@@ -190,7 +198,7 @@ private struct ContractCardView: View {
                 title: L10n.ClaimStatus.ClaimDetails.button
             )
         ) {
-            vm.isShowDetailsPresented = contract
+            showDetailsContract = contract
         }
         .hWithTransition(.scale)
         .hButtonWithBorder
@@ -198,13 +206,14 @@ private struct ContractCardView: View {
 }
 
 private struct PriceSummarySection: View {
-    @ObservedObject var vm: QuoteSummaryViewModel
+    let quoteSummary: QuoteSummary
+    @Binding var isConfirmChangesPresented: Bool
     @State private var isCancelAlertPresented = false
 
     var body: some View {
         hSection {
             VStack(spacing: .padding16) {
-                switch vm.totalPrice {
+                switch quoteSummary.totalPrice {
                 case .comparison(let currentPrice, let newPrice):
                     PriceField(
                         viewModel: .init(
@@ -212,7 +221,7 @@ private struct PriceSummarySection: View {
                             newValue: newPrice,
                             title: nil,
                             subTitle: L10n.summaryTotalPriceSubtitle(
-                                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                                quoteSummary.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                         )
                     )
@@ -241,7 +250,7 @@ private struct PriceSummarySection: View {
                         content: .init(
                             title: L10n.changeAddressAcceptOffer
                         )
-                    ) { [weak vm] in vm?.isConfirmChangesPresented = true }
+                    ) { isConfirmChangesPresented = true }
 
                     hCancelButton {
                         isCancelAlertPresented = true
@@ -263,8 +272,8 @@ private struct PriceSummarySection: View {
             .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
             .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
         ]
-        let vm = QuoteSummaryViewModel(
-            contract: [
+        let quoteSummary = QuoteSummary(
+            contracts: [
                 .init(
                     id: "id1",
                     title: "Homeowner",
@@ -273,10 +282,7 @@ private struct PriceSummarySection: View {
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
                     ),
-                    documentSection: .init(
-                        documents: [],
-                        onTap: { document in }
-                    ),
+                    documents: [],
                     displayItems: [
                         .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                         .init(title: "Documents", value: "documents"),
@@ -294,10 +300,7 @@ private struct PriceSummarySection: View {
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
                     ),
-                    documentSection: .init(
-                        documents: documents,
-                        onTap: { document in }
-                    ),
+                    documents: documents,
                     displayItems: [
                         .init(title: "Limits", value: "mockLimits"),
                         .init(title: "Documents", value: "documents"),
@@ -319,10 +322,7 @@ private struct PriceSummarySection: View {
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
                     ),
-                    documentSection: .init(
-                        documents: [],
-                        onTap: { document in }
-                    ),
+                    documents: [],
                     displayItems: [],
                     insuranceLimits: [
                         .init(label: "label", limit: "limit", description: "description"),
@@ -340,10 +340,7 @@ private struct PriceSummarySection: View {
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
                     ),
-                    documentSection: .init(
-                        documents: [],
-                        onTap: { document in }
-                    ),
+                    documents: [],
                     displayItems: [],
                     insuranceLimits: [],
                     typeOfContract: .seAccident,
@@ -360,10 +357,7 @@ private struct PriceSummarySection: View {
                         gross: .init(amount: 599, currency: "SEK"),
                         net: .init(amount: 999, currency: "SEK")
                     ),
-                    documentSection: .init(
-                        documents: [],
-                        onTap: { document in }
-                    ),
+                    documents: [],
                     displayItems: [],
                     insuranceLimits: [],
                     typeOfContract: .seDogStandard,
@@ -371,10 +365,9 @@ private struct PriceSummarySection: View {
                 ),
             ],
             activationDate: "2025-08-24".localDateToDate ?? Date(),
-            totalPrice: .comparison(old: .sek(599), new: .sek(999)),
-            onConfirmClick: {}
+            totalPrice: .comparison(old: .sek(599), new: .sek(999))
         )
 
-        return QuoteSummaryScreen(vm: vm)
+        return QuoteSummaryScreen(quoteSummary: quoteSummary, onDocumentTap: { _ in }) {}
     }
 )

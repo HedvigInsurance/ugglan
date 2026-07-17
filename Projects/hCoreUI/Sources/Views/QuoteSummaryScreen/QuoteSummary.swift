@@ -1,24 +1,31 @@
 import SwiftUI
 import hCore
 
-@MainActor
-public class QuoteSummaryViewModel: ObservableObject, Identifiable {
-    @Published public var contracts: [ContractInfo]
-    @Published public var activationDate: Date?
-    @Published var isConfirmChangesPresented: Bool = false
-    @Published var isShowDetailsPresented: QuoteSummaryViewModel.ContractInfo? = nil
-
-    public var onConfirmClick: () -> Void
+public struct QuoteSummary: Equatable {
+    public let contracts: [ContractInfo]
+    public let activationDate: Date?
     let noticeInfo: String?
     let totalPrice: TotalPrice
 
+    public init(
+        contracts: [ContractInfo],
+        activationDate: Date?,
+        noticeInfo: String? = nil,
+        totalPrice: TotalPrice
+    ) {
+        self.contracts = contracts
+        self.activationDate = activationDate
+        self.noticeInfo = noticeInfo
+        self.totalPrice = totalPrice
+    }
+
     public struct ContractInfo: Identifiable, Equatable {
-        public var id: String
+        public let id: String
         let title: String
         let subtitle: String
         public let premium: Premium?
         let displayItems: [QuoteDisplayItem]
-        let documentSection: DocumentSection
+        let documents: [hPDFDocument]
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
@@ -29,7 +36,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             title: String,
             subtitle: String,
             premium: Premium?,
-            documentSection: DocumentSection,
+            documents: [hPDFDocument],
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
@@ -39,47 +46,16 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.title = title
             self.subtitle = subtitle
             self.premium = premium
-            self.documentSection = documentSection
+            self.documents = documents
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
-            self.shouldShowDetails =
-                !(documentSection.documents.isEmpty && displayItems.isEmpty
-                && insuranceLimits.isEmpty)
+            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
             self.priceBreakdownItems = priceBreakdownItems
         }
-
-        public static func == (lhs: QuoteSummaryViewModel.ContractInfo, rhs: QuoteSummaryViewModel.ContractInfo) -> Bool
-        {
-            lhs.id == rhs.id
-        }
-
-        public struct DocumentSection {
-            public let documents: [hPDFDocument]
-            public let onTap: (_ document: hPDFDocument) -> Void
-
-            public init(documents: [hPDFDocument], onTap: @escaping (_: hPDFDocument) -> Void) {
-                self.documents = documents
-                self.onTap = onTap
-            }
-        }
     }
 
-    public init(
-        contract: [ContractInfo],
-        activationDate: Date?,
-        noticeInfo: String? = nil,
-        totalPrice: TotalPrice,
-        onConfirmClick: (() -> Void)? = nil
-    ) {
-        self.contracts = contract
-        self.activationDate = activationDate
-        self.onConfirmClick = onConfirmClick ?? {}
-        self.noticeInfo = noticeInfo
-        self.totalPrice = totalPrice
-    }
-
-    public enum TotalPrice {
+    public enum TotalPrice: Equatable {
         case comparison(old: MonetaryAmount, new: MonetaryAmount)
         case change(amount: MonetaryAmount)
         case none

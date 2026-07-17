@@ -2,7 +2,8 @@ import SwiftUI
 import hCore
 
 struct ContractOverviewScreen: View {
-    let contract: QuoteSummaryViewModel.ContractInfo
+    let contract: QuoteSummary.ContractInfo
+    let onDocumentTap: (hPDFDocument) -> Void
     @State private var router = NavigationRouter()
     var body: some View {
         hForm {
@@ -60,13 +61,13 @@ struct ContractOverviewScreen: View {
 
     @ViewBuilder
     private var documentSection: some View {
-        let documentItems = contract.documentSection.documents
+        let documentItems = contract.documents
         if !documentItems.isEmpty {
             hSection(documentItems) { document in
                 DocumentRowItemView(
                     document: document,
                     onTap: { document in
-                        contract.documentSection.onTap(document)
+                        onDocumentTap(document)
                     }
                 )
             }
@@ -93,14 +94,11 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                     gross: .init(amount: 599, currency: "SEK"),
                     net: .init(amount: 999, currency: "SEK")
                 ),
-                documentSection: .init(
-                    documents: [
-                        .init(displayName: "Insurance terms", url: "url", type: .generalTerms),
-                        .init(displayName: "Pre sale information", url: "url", type: .generalTerms),
-                        .init(displayName: "Product facts", url: "url", type: .generalTerms),
-                    ],
-                    onTap: { document in }
-                ),
+                documents: [
+                    .init(displayName: "Insurance terms", url: "url", type: .generalTerms),
+                    .init(displayName: "Pre sale information", url: "url", type: .generalTerms),
+                    .init(displayName: "Product facts", url: "url", type: .generalTerms),
+                ],
                 displayItems: [
                     .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
@@ -112,6 +110,7 @@ extension ContractOverviewScreen: TrackingViewNameProtocol {
                 ],
                 typeOfContract: .seApartmentBrf,
                 priceBreakdownItems: [.init(title: "15% bundle discount", value: "-30 kr/mo")]
-            )
+            ),
+        onDocumentTap: { _ in }
     )
 }
