@@ -35,11 +35,12 @@ public enum RecommendedCrossSell: Codable, Equatable, Hashable, Sendable, Identi
         }
     }
 
-    /// Optional banner text; addon recommendations don't carry one, so callers fall back to a default.
+    /// Optional banner text. Both insurance and addon recommendations may omit it,
+    /// in which case callers fall back to a default.
     public var bannerText: String? {
         switch self {
         case let .insurance(insurance): return insurance.bannerText
-        case .addon: return nil
+        case let .addon(addon): return addon.bannerText
         }
     }
 }
@@ -50,6 +51,10 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
     let description: String
     let buttonText: String
     let deepLink: String
+    /// Optional banner text shown above the card; callers fall back to a default when nil.
+    let bannerText: String?
+    /// Benefit rows shown as a checkmark list; empty when there are none.
+    let benefits: [String]
     let imageUrl: URL?
 
     public init(
@@ -58,6 +63,8 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
         description: String,
         buttonText: String,
         deepLink: String,
+        bannerText: String? = nil,
+        benefits: [String] = [],
         imageUrl: URL?
     ) {
         self.id = id
@@ -65,6 +72,8 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
         self.description = description
         self.buttonText = buttonText
         self.deepLink = deepLink
+        self.bannerText = bannerText
+        self.benefits = benefits
         self.imageUrl = imageUrl
     }
 }

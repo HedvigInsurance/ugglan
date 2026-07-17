@@ -13,8 +13,8 @@ public struct CrossSellingModal: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            if case let .insurance(insurance) = crossSells.recommended {
-                CrossSellBannerComponent(crossSell: insurance)
+            if let recommended = crossSells.recommended {
+                CrossSellBannerComponent(crossSell: recommended)
             }
             hForm {
                 VStack(spacing: .padding48) {

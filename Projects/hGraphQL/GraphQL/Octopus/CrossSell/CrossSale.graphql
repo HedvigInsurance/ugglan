@@ -9,8 +9,10 @@ query CrossSell($input: CrossSellInput!) {
 			  id
 			  title
 			  description
-			  buttonTitle
+			  buttonText
 			  deepLink
+			  bannerText
+			  benefits
 			  pillowImageLarge {
 				  ...StoryblokImageAssetFragment
 			  }

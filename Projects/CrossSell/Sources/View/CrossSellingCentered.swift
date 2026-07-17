@@ -13,27 +13,46 @@ public struct CrossSellingCentered: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: .padding48) {
-                if case let .insurance(insurance) = crossSell {
-                    CrossSellBannerComponent(crossSell: insurance)
-                } else {
-                    Spacing(height: 48)
-                }
+            VStack(spacing: 0) {
+                CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
+                    .padding(.top, contentTopPadding)
                 VStack(spacing: .padding16) {
                     if case let .insurance(insurance) = crossSell {
                         CrossSellDiscountProgressComponent(crossSell: insurance)
                     }
                     CrossSellButtonComponent(crossSell: crossSell)
                 }
+                .padding(.top, buttonTopPadding)
             }
-            .padding(.bottom, .padding16)
+            .padding(.bottom, bottomPadding)
         }
         .task {
             logStartView(viewId, String(describing: CrossSellingCentered.self))
         }
         .onDisappear {
             logStopView(viewId)
+        }
+    }
+
+    private var contentTopPadding: CGFloat {
+        switch crossSell {
+        case .insurance: return .padding48
+        case .addon: return .padding32
+        }
+    }
+
+    private var buttonTopPadding: CGFloat {
+        switch crossSell {
+        case .insurance: return .padding48
+        case .addon: return .padding40
+        }
+    }
+
+    private var bottomPadding: CGFloat {
+        switch crossSell {
+        case .insurance: return .padding16
+        case .addon: return .padding32
         }
     }
 }
