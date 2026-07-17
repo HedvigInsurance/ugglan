@@ -703,7 +703,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_LEAVE_BODY" = "Din anmälan sparas automatiskt i 7 dagar.";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Ja, lämna";
 "RESUME_CLAIM_LEAVE_TITLE" = "Lämna anmälan?";
-"RESUME_CLAIM_STATED" = "Borjade %1$@";
+"RESUME_CLAIM_STATED" = "Började %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Sök";
