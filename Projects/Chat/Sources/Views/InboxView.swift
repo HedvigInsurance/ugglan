@@ -5,16 +5,28 @@ import hCoreUI
 
 public struct InboxView: View {
     @StateObject var vm = InboxViewModel()
+    @InjectObservableObject var featureFlags: FeatureFlags
     @Namespace var animationNamespace
-
+    @State private var isNewMessageSheetPresented = false
     public init() {}
 
     public var body: some View {
-        hForm {
-            displayMessages
-                .padding(.top, 8)
+        Group {
+            if vm.isInboxEmpty {
+                StateView(
+                    type: .empty,
+                    title: L10n.inboxEmptyStateTitle,
+                    bodyText: L10n.inboxEmptyStateSubtitle,
+                    formPosition: .center
+                )
+            } else {
+                hForm {
+                    displayMessages
+                        .padding(.top, 8)
+                }
+                .hSetScrollBounce(to: true)
+            }
         }
-        .hSetScrollBounce(to: true)
         .onPullToRefresh {
             await vm.fetchMessages()
         }
@@ -22,12 +34,56 @@ public struct InboxView: View {
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
+                    buttonTitle: vm.isInboxEmpty ? L10n.newMessageButton : L10n.generalRetry,
+                    buttonAction: { [weak vm] in
+                        if vm?.isInboxEmpty == true {
+                            isNewMessageSheetPresented = true
+                        } else {
+                            vm?.configureFetching()
+                        }
+                    }
+                )
+            )
+        )
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonTitle: L10n.generalRetry,
                     buttonAction: { [weak vm] in
                         vm?.configureFetching()
                     }
                 )
             )
         )
+        .trackVisibility(as: InboxView.self)
+        .toolbar {
+            if featureFlags.isNewConversationFromInboxEnabled {
+                ToolbarItem(id: "chat", placement: .topBarTrailing) {
+                    Button {
+                        isNewMessageSheetPresented = true
+                    } label: {
+                        HStack(alignment: .bottom, spacing: 4) {
+                            Image(systemName: "square.and.pencil")
+                            hText(L10n.inboxNewMessage, style: .body1)
+                        }
+                        .padding(.leading, .padding2)
+                        .padding(.trailing, .padding3)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                    .accessibilityLabel(L10n.newMessageButton)
+                }
+            }
+        }
+        .detent(
+            presented: $isNewMessageSheetPresented,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            InboxNewMessageSheet()
+                .embededInNavigation(
+                    options: .navigationBarHidden,
+                    tracking: String(describing: InboxNewMessageSheet.self)
+                )
+        }
     }
 
     @ViewBuilder
@@ -101,10 +157,10 @@ public struct InboxView: View {
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else if let timeStamp = conversation.newestMessage?.sentAt {
+        } else {
             ZStack {
                 hText(" ", style: .body1)
-                hText(timeStamp.displayTimeStamp, style: .label)
+                hText(conversation.timestamp.displayTimestamp, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .transition(.scale.combined(with: .opacity))
@@ -115,10 +171,21 @@ public struct InboxView: View {
     @ViewBuilder
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
-            hText(newestMessage.latestMessageText, style: .label)
-                .lineLimit(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .foregroundColor(getNewestMessageColor(for: conversation))
+            let color = getNewestMessageColor(for: conversation)
+            MarkdownView(
+                config: .init(
+                    text: newestMessage.latestMessageText,
+                    fontStyle: .label,
+                    color: color,
+                    linkColor: color,
+                    linkUnderlineStyle: nil,
+                    isSelectable: false,
+                    maxLines: 1,
+                    disableLinks: true,
+                    onUrlClicked: { _ in
+                    }
+                )
+            )
         }
     }
 
@@ -147,7 +214,12 @@ class InboxViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
     private var pollTimerCancellable: AnyCancellable?
     private var chatClosedObserver: NSObjectProtocol?
-    @Published var processingState: ProcessingState = .success
+    @Published var processingState: ProcessingState = .loading
+    private var hasFetchedOnce = false
+
+    var isInboxEmpty: Bool {
+        conversations.isEmpty && processingState == .success
+    }
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return true
@@ -187,18 +259,20 @@ class InboxViewModel: ObservableObject {
     @MainActor
     func fetchMessages() async {
         do {
-            if self.conversations.isEmpty {
+            if self.conversations.isEmpty && !hasFetchedOnce {
                 withAnimation {
                     processingState = .loading
                 }
             }
             let conversations = try await service.getConversations()
+            hasFetchedOnce = true
             withAnimation {
                 self.conversations = conversations
                 self.processingState = .success
             }
         } catch {
             if self.conversations.isEmpty {
+                hasFetchedOnce = false
                 withAnimation {
                     pollTimerCancellable?.cancel()
                     processingState = .error(errorMessage: error.localizedDescription)

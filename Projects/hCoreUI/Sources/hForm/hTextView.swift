@@ -304,17 +304,12 @@ private struct FreeTextInputView: View {
                         .medium,
                         .secondary,
                         content: .init(title: L10n.generalCancelButton)
-                    ) {
-                        cancelAction.execute()
-                    }
+                    ) { cancelAction.execute() }
                     hButton(
                         .medium,
                         .primary,
-                        content: .init(title: L10n.generalSaveButton),
-                        {
-                            continueAction.execute()
-                        }
-                    )
+                        content: .init(title: L10n.generalSaveButton)
+                    ) { continueAction.execute() }
                 }
                 .padding(.vertical, .padding8)
                 .hButtonTakeFullWidth(true)

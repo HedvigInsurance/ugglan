@@ -55,17 +55,13 @@ struct SubmitClaimVoiceRecordingView: View {
                 .large,
                 .primary,
                 content: .init(title: L10n.claimChatUseAudio)
-            ) {
-                viewModel.isAudioInputPresented = true
-            }
+            ) { viewModel.isAudioInputPresented = true }
 
             hButton(
                 .large,
                 .secondary,
                 content: .init(title: L10n.claimChatUseTextInput)
-            ) {
-                viewModel.isTextInputPresented = true
-            }
+            ) { viewModel.isTextInputPresented = true }
         }
         .transition(.opacity.combined(with: .move(edge: .bottom)))
     }

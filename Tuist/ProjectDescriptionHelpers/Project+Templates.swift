@@ -17,7 +17,7 @@ extension Project {
         dependencies: [String] = ["CoreDependencies"],
         sdks: [String] = []
     ) -> Project {
-        let settings: [String: SettingValue] = ["SWIFT_VERSION": "6.0.2"]
+        let settings: [String: SettingValue] = ["SWIFT_VERSION": swiftVersion]
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
@@ -90,7 +90,6 @@ extension Project {
         var projectTargets: [Target] = []
 
         if targets.contains(.framework) {
-            let sources: SourceFilesList = "Sources/**/*.swift"
             let frameworkTarget = Target.target(
                 name: name,
                 destinations: .iOS,
@@ -98,8 +97,8 @@ extension Project {
                 bundleId: "com.hedvig.\(name)",
                 deploymentTargets: .iOS("16.0"),
                 infoPlist: .default,
-                sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
+                buildableFolders: ["Sources"],
                 dependencies: targetDependencies,
                 settings: .settings(base: [:], configurations: frameworkConfigurations)
             )
@@ -115,7 +114,7 @@ extension Project {
                 bundleId: "com.hedvig.\(name)Testing",
                 deploymentTargets: .iOS("16.0"),
                 infoPlist: .default,
-                sources: "Testing/**/*.swift",
+                buildableFolders: ["Testing"],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
@@ -140,7 +139,7 @@ extension Project {
                 bundleId: "com.hedvig.\(name)Tests",
                 deploymentTargets: .iOS("16.0"),
                 infoPlist: .default,
-                sources: "Tests/**/*.swift",
+                buildableFolders: ["Tests"],
                 dependencies: [
                     [
                         .target(name: "\(name)Example"),

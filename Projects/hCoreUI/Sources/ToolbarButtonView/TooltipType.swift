@@ -89,6 +89,21 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
+    var toolbarItemId: String {
+        switch self {
+        case .crossSell:
+            return "crossSell"
+        case .firstVet:
+            return "firstVet"
+        case .chat:
+            return "chat"
+        case .travelCertificate:
+            return "travelCertificate"
+        case .insuranceEvidence:
+            return "insuranceEvidence"
+        }
+    }
+
     var identifiableId: String {
         tooltipId
     }
@@ -199,12 +214,6 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 40
         } else {
             return 26
-        }
-        switch self {
-        case .travelCertificate, .insuranceEvidence:
-            return 40
-        case .crossSell, .firstVet, .chat:
-            return 40
         }
     }
 

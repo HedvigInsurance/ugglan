@@ -66,7 +66,7 @@ struct SubmitClaimChatMessageView: View {
 extension ClaimIntentStepHandler {
     var maxWidth: CGFloat {
         switch claimIntent.currentStep.content {
-        case .summary, .singleSelect, .deflect, .audioRecording, .form:
+        case .summary, .singleSelect, .deflect, .deflectMessage, .audioRecording, .form, .information:
             return .infinity
         default:
             return 300
@@ -120,13 +120,15 @@ struct ClaimStepView: View {
                 SubmitClaimFileUploadView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimDeflectStep {
                 SubmitClaimDeflectStepView(model: viewModel.deflectModel)
+            } else if let viewModel = viewModel as? SubmitClaimDeflectMessageStep {
+                SubmitClaimDeflectMessageStepView(model: viewModel.deflectMessageModel)
+            } else if let viewModel = viewModel as? SubmitClaimInformationStep {
+                SubmitClaimInformationView(viewModel: viewModel)
             }
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 hSection {
                     hButton(.large, .secondary, content: .init(title: L10n.claimChatSkipStep)) { [weak viewModel] in
-                        Task {
-                            await viewModel?.skip()
-                        }
+                        await viewModel?.skip()
                     }
                     .hButtonIsLoading(false)
                     .accessibilityLabel(L10n.claimChatSkipStep)
@@ -167,6 +169,8 @@ struct ClaimStepResultView: View {
                 SubmitClaimFormResultView(viewModel: viewModel)
             } else if let viewModel = viewModel as? SubmitClaimTaskStep {
                 SubmitClaimTaskResultView(viewModel: viewModel)
+            } else if let viewModel = viewModel as? SubmitClaimInformationStep {
+                SubmitClaimInformationResultView(viewModel: viewModel)
             }
         }
         if viewModel.isRegrettable && viewModel.state.isStepExecuted {

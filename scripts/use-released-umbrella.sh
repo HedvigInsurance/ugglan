@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# Revert from local-umbrella mode back to the published Swift Package pinned in
+# Project+DependenciesTemplate.swift. Run before opening a PR.
+
+set -euo pipefail
+
+UGGLAN_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+# DerivedData must be wiped on every mode switch; mixing artifacts from both modes
+# produces silent signature corruption that iOS rejects on install.
+if pgrep -x Xcode >/dev/null; then
+    echo "error: Xcode is running. Close it before switching modes." >&2
+    exit 1
+fi
+DERIVED_DATA="$HOME/Library/Developer/Xcode/DerivedData"
+if compgen -G "$DERIVED_DATA/Ugglan-*" > /dev/null; then
+    echo "==> Wiping $DERIVED_DATA/Ugglan-*"
+    rm -rf "$DERIVED_DATA"/Ugglan-*
+fi
+
+# Tuist content-hashes manifest source files for caching, but the marker check
+# is a side-effect filesystem read invisible to that hash. Without busting the
+# Manifests cache on every mode switch, `tuist generate` returns the previously
+# evaluated result and silently produces a pbxproj for the wrong mode.
+TUIST_MANIFEST_CACHE="$HOME/.cache/tuist/Manifests"
+if [[ -d "$TUIST_MANIFEST_CACHE" ]]; then
+    echo "==> Busting Tuist manifest cache at $TUIST_MANIFEST_CACHE"
+    rm -rf "$TUIST_MANIFEST_CACHE"
+fi
+
+rm -f "$UGGLAN_ROOT/.local-umbrella"
+( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
+echo "==> Reverted to released umbrella."

@@ -1,6 +1,7 @@
 import Foundation
 import PDFKit
 import SafariServices
+import SnapKit
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore

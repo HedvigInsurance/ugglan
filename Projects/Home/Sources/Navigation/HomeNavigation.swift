@@ -1,10 +1,10 @@
+import AppStateContainer
 import Combine
 import Contracts
 import CrossSell
 import EditStakeholders
 import Foundation
 import Payment
-import PresentableStore
 import SubmitClaimChat
 import SwiftUI
 import hCore
@@ -58,12 +58,12 @@ public class HomeNavigationViewModel: ObservableObject {
                     self?.navBarItems.isNewOfferPresentedDetent = crossSells
                 }
 
-                crossSellInfo.logCrossSellEvent()
-
                 if let recommended = crossSells.recommended {
-                    let store: CrossSellStore = globalPresentableStoreContainer.get()
-                    store.send(.setHasSeenRecommendedWith(id: recommended.id))
+                    let store: CrossSellStore = globalAppStateContainer.get()
+                    store.setHasSeenRecommendedWith(id: recommended.id)
                 }
+                await delay(1)
+                crossSellInfo.logCrossSellEvent()
             }
         }
     }
@@ -92,6 +92,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalPresentableStoreContainer.get(of: ContractStore.self)
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }

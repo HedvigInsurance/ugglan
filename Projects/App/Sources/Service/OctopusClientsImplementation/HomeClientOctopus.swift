@@ -7,7 +7,6 @@ import hGraphQL
 
 class HomeClientOctopus: HomeClient {
     @Inject private var octopus: hOctopus
-    @Inject private var featureFlags: FeatureFlags
 
     func getImportantMessages() async throws -> [ImportantMessage] {
         let data =
@@ -39,11 +38,19 @@ class HomeClientOctopus: HomeClient {
         let futureStatus = data.currentMember.futureStatus
 
         return .init(
-            memberInfo: .init(id: memberId, isContactInfoUpdateNeeded: isContactInfoUpdateNeeded),
+            memberInfo: .init(
+                id: memberId,
+                isContactInfoUpdateNeeded: isContactInfoUpdateNeeded
+            ),
             contracts: contracts,
             contractState: contractState,
             futureState: futureStatus
         )
+    }
+
+    func getHasMissedCharge() async throws -> Bool {
+        let data = try await octopus.client.fetch(query: OctopusGraphQL.MisssedChargeIdQuery())
+        return data.currentMember.missedChargeIdToChargeManually != nil
     }
 
     func getQuickActions() async throws -> [QuickAction] {
@@ -69,7 +76,7 @@ class HomeClientOctopus: HomeClient {
             contractAction.append(.upgradeCoverage)
         }
 
-        if actions.isCancelInsuranceEnabled, featureFlags.isTerminationFlowEnabled {
+        if actions.isCancelInsuranceEnabled {
             contractAction.append(.cancellation)
         }
 
@@ -77,7 +84,7 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
 
-        if actions.isMovingEnabled, featureFlags.isMovingFlowEnabled {
+        if actions.isMovingEnabled {
             quickActions.append(.changeAddress)
         }
 

@@ -1,8 +1,8 @@
+import AppStateContainer
 import Chat
 import Combine
 import Kingfisher
 import Photos
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -56,8 +56,8 @@ public struct ClaimDetailView: View {
         )
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
-                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimStore.send(.fetchActiveClaims)
+                let claimStore: ClaimsStore = globalAppStateContainer.get()
+                Task { await claimStore.fetchActiveClaims() }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     let nav = UIApplication.shared.getTopViewControllerNavigation()
                     nav?.setNavigationBarHidden(false, animated: true)
@@ -88,6 +88,7 @@ public struct ClaimDetailView: View {
                 })
             )
         )
+        .trackVisibility(as: ClaimDetailView.self)
     }
 
     @ViewBuilder
@@ -252,6 +253,7 @@ public struct ClaimDetailView: View {
                 )
             )
         }
+        .accessibilityAddTraits(.isButton)
     }
 
     private var uploadFilesSection: some View {
@@ -305,11 +307,8 @@ public struct ClaimDetailView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton),
-                                { [weak vm] in
-                                    vm?.showFileSourcePicker = true
-                                }
-                            )
+                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
+                            ) { [weak vm] in vm?.showFileSourcePicker = true }
                         }
                     }
                     .sectionContainerStyle(.transparent)
@@ -380,7 +379,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
             id: "",
             type: .claim,
             newestMessage: nil,
-            createdAt: nil,
+            createdAt: Date(),
             statusMessage: nil,
             status: .open,
             hasClaim: true,
@@ -437,7 +436,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 
 @MainActor
 public class ClaimDetailViewModel: ObservableObject {
-    @PresentableStore var store: ClaimsStore
+    @AppState var store: ClaimsStore
     @Published public var document: hPDFDocument? = nil
     @Published private(set) var claim: ClaimModel? {
         didSet {
@@ -468,10 +467,10 @@ public class ClaimDetailViewModel: ObservableObject {
     ) {
         self.claim = claim
         claimDetailsService = .init(id: type.claimId)
-        let store: ClaimsStore = globalPresentableStoreContainer.get()
+        let store: ClaimsStore = globalAppStateContainer.get()
         self.type = type
         let isPartnerClaim = claim?.isPartnerClaim == true || type.isPartnerClaim
-        let files = store.state.files[type.claimId] ?? []
+        let files = store.files[type.claimId] ?? []
         fileGridViewModel = .init(files: files, options: [])
         if !isPartnerClaim {
             Task {
@@ -547,7 +546,7 @@ public class ClaimDetailViewModel: ObservableObject {
         }
         do {
             let files = try await claimDetailsService.getFiles()
-            store.send(.setFilesForClaim(claimId: type.claimId, files: files))
+            store.setFiles(files, for: type.claimId)
             withAnimation { [weak self] in
                 self?.fileGridViewModel.files = files
             }

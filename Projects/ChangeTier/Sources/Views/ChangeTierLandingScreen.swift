@@ -35,7 +35,7 @@ public struct ChangeTierLandingScreen: View {
                 state: $vm.viewState,
                 duration: 6
             )
-            .hCustomSuccessView {
+            .hStateViewCustomSuccessView {
                 succesView
             }
             .hStateViewButtonConfig(errorButtons)
@@ -272,11 +272,8 @@ public struct ChangeTierLandingScreen: View {
                     .ghost,
                     content: .init(
                         title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
-                    ),
-                    { [weak changeTierNavigationVm] in
-                        changeTierNavigationVm?.isCompareTiersPresented = true
-                    }
-                )
+                    )
+                ) { [weak changeTierNavigationVm] in changeTierNavigationVm?.isCompareTiersPresented = true }
             }
         }
         .sectionContainerStyle(.transparent)

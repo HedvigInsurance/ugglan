@@ -8,7 +8,8 @@ public struct StateView: View {
     private let formPosition: ContentPosition?
     private let attachContentToBottom: Bool
     @Environment(\.hStateViewButtonConfig) var buttonConfig
-    @Environment(\.hSuccessBottomAttachedView) var bottomAttachedView
+    @Environment(\.hStateViewBottomAttachedView) var bottomAttachedView
+    @Environment(\.hStateViewContentBottomAttachedView) var contentAttachedView
     @Environment(\.hExtraTopPadding) var extraTopPadding
 
     public init(
@@ -90,11 +91,12 @@ public struct StateView: View {
                     hButton(
                         .medium,
                         .primary,
-                        content: .init(title: button.buttonTitle ?? type.buttonText),
-                        {
-                            button.buttonAction()
-                        }
-                    )
+                        content: .init(title: button.buttonTitle ?? type.buttonText)
+                    ) { button.buttonAction() }
+                }
+                if let contentAttachedView {
+                    contentAttachedView
+                        .padding(.top, .padding16)
                 }
             }
         }
@@ -113,11 +115,8 @@ public struct StateView: View {
                     hButton(
                         .large,
                         actionButton.buttonStyle ?? .primary,
-                        content: .init(title: actionButton.buttonTitle ?? ""),
-                        {
-                            actionButton.buttonAction()
-                        }
-                    )
+                        content: .init(title: actionButton.buttonTitle ?? "")
+                    ) { actionButton.buttonAction() }
                 }
                 if let dismissButton = buttonConfig?.dismissButton {
                     hButton(
@@ -126,11 +125,8 @@ public struct StateView: View {
                         content: .init(
                             title: dismissButton.buttonTitle
                                 ?? (type == .success ? L10n.generalCloseButton : L10n.openChat)
-                        ),
-                        {
-                            dismissButton.buttonAction()
-                        }
-                    )
+                        )
+                    ) { dismissButton.buttonAction() }
                 }
             }
         }
@@ -233,8 +229,12 @@ extension View {
     StateView(
         type: .error,
         title: "title",
-        bodyText: "body"
+        bodyText: "body",
+        formPosition: .center
     )
+    .hStateViewCustomSuccessView {
+        InfoCard(text: "test", type: .attention)
+    }
     .hStateViewButtonConfig(
         .init(
             actionButton: .init(buttonAction: {}),
@@ -242,4 +242,28 @@ extension View {
             dismissButton: nil
         )
     )
+}
+
+extension EnvironmentValues {
+    @Entry public var hStateViewBottomAttachedView: AnyView? = nil
+    @Entry public var hStateViewContentBottomAttachedView: AnyView? = nil
+    @Entry public var hStateViewCustomSuccessView: AnyView? = nil
+}
+
+extension View {
+    public func hStateViewBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hStateViewBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hStateViewContentBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hStateViewContentBottomAttachedView, AnyView(content()))
+    }
+}
+
+extension View {
+    public func hStateViewCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hStateViewCustomSuccessView, AnyView(content()))
+    }
 }

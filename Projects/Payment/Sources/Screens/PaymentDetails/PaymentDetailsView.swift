@@ -1,4 +1,5 @@
-import Campaign
+import CampaignCore
+import CampaignUI
 import SwiftUI
 import hCore
 import hCoreUI
@@ -22,6 +23,12 @@ struct PaymentDetailsView: View {
             }
             .padding(.vertical, .padding8)
         }
+        .configureTitleView(
+            title: data.title,
+            titleColor: data.titleColor,
+            topPadding: 0,
+            alignment: .center
+        )
     }
 
     private var contractsSection: some View {
@@ -150,7 +157,7 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder
     var paymentStatusView: some View {
-        if data.status != .upcoming {
+        if data.status != .upcoming && data.showStatusInfo {
             hSection {
                 PaymentStatusView(status: data.status, provider: data.payinMethod?.provider ?? .unknown) {
                     action in

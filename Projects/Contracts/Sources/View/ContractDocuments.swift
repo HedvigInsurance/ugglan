@@ -1,34 +1,28 @@
+import AppStateContainer
 import Combine
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ContractDocumentsView: View {
+    @AppObservedObject var store: ContractStore
     @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
 
     let id: String
     @State var height: CGFloat = 0
     var body: some View {
-        PresentableStoreLens(
-            ContractStore.self,
-            getter: { state in
-                state.contractForId(id)
-            }
-        ) { contract in
-            if let contract = contract {
-                VStack(alignment: .leading, spacing: .padding8) {
-                    InsuranceTermView(
-                        documents: getDocumentsToDisplay(contract: contract)
-                    ) { document in
-                        contractsNavigationViewModel.document = document
-                    }
+        if let contract = store.contractForId(id) {
+            VStack(alignment: .leading, spacing: .padding8) {
+                InsuranceTermView(
+                    documents: getDocumentsToDisplay(contract: contract)
+                ) { document in
+                    contractsNavigationViewModel.document = document
+                }
 
-                    if let addonVariant = contract.currentAgreement?.addonVariant {
-                        ForEach(addonVariant, id: \.self) { addonVariant in
-                            addonDocumentSection(for: addonVariant)
-                        }
+                if let addonVariant = contract.currentAgreement?.addonVariant {
+                    ForEach(addonVariant, id: \.self) { addonVariant in
+                        addonDocumentSection(for: addonVariant)
                     }
                 }
             }

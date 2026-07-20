@@ -1,7 +1,6 @@
 import Addons
 import Contracts
 import Foundation
-import PresentableStore
 import hCore
 import hCoreUI
 import hGraphQL
@@ -29,9 +28,10 @@ class FetchContractsClientOctopus: FetchContractsClient {
     private func getCost(
         productVariantFragment: OctopusGraphQL.ProductVariantFragment,
         basePremium: OctopusGraphQL.MoneyFragment,
-        costFragment: OctopusGraphQL.ItemCostFragment,
+        costFragment: OctopusGraphQL.ItemCostFragment?,
         addonCostDiscounts: [ItemDiscount]
-    ) -> ItemCost {
+    ) -> ItemCost? {
+        guard let costFragment else { return nil }
         var discounts = [ItemDiscount]()
 
         //add insurance disocunt
@@ -80,7 +80,7 @@ class FetchContractsClientOctopus: FetchContractsClient {
 extension Contract {
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
-        itemCost: ItemCost,
+        itemCost: ItemCost?,
         firstName: String,
         lastName: String,
         ssn: String?,
@@ -108,6 +108,7 @@ extension Contract {
             supportsCoOwners: false,
             supportsTravelCertificate: false,
             supportsChangeTier: false,
+            supportsTermination: pendingContract.supportsTermination,
             upcomingChangedAgreement: nil,
             upcomingRenewal: nil,
             firstName: firstName,
@@ -142,6 +143,7 @@ extension Contract {
             supportsCoOwners: contract.supportsCoOwners,
             supportsTravelCertificate: contract.supportsTravelCertificate,
             supportsChangeTier: contract.supportsChangeTier,
+            supportsTermination: contract.supportsTermination,
             upcomingChangedAgreement: upcomoingAgreement,
             upcomingRenewal: .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             firstName: firstName,
@@ -220,7 +222,7 @@ extension FetchContractsClientOctopus {
                     productVariantFragment: contract.currentAgreement.productVariant.fragments.productVariantFragment,
                     basePremium: contract.currentAgreement.fragments.agreementFragment.basePremium.fragments
                         .moneyFragment,
-                    costFragment: contract.currentAgreement.cost.fragments.itemCostFragment,
+                    costFragment: contract.currentAgreement.itemCost?.fragments.itemCostFragment,
                     addonCostDiscounts: currentAgreementAddonsDiscount
                 ),
                 displayItems: contract.currentAgreement.displayItems.map(makeDisplayItem)
@@ -238,7 +240,7 @@ extension FetchContractsClientOctopus {
                         itemCost: getCost(
                             productVariantFragment: upcomingAgreement.productVariant.fragments.productVariantFragment,
                             basePremium: upcomingAgreement.basePremium.fragments.moneyFragment,
-                            costFragment: upcomingAgreement.cost.fragments.itemCostFragment,
+                            costFragment: upcomingAgreement.itemCost?.fragments.itemCostFragment,
                             addonCostDiscounts: upcomingAgreementAddonsDiscount
                         ),
                         displayItems: upcomingAgreement.displayItems.map(makeDisplayItem)
@@ -321,7 +323,7 @@ extension FetchContractsClientOctopus {
                 itemCost: getCost(
                     productVariantFragment: contract.productVariant.fragments.productVariantFragment,
                     basePremium: contract.basePremium.fragments.moneyFragment,
-                    costFragment: contract.cost.fragments.itemCostFragment,
+                    costFragment: contract.itemCost?.fragments.itemCostFragment,
                     addonCostDiscounts: addonsDiscount
                 ),
                 firstName: data.currentMember.firstName,

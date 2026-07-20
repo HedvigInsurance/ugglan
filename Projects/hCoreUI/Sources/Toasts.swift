@@ -8,6 +8,7 @@ public struct ToastBar {
     let type: NotificationType
     let icon: Image
     let text: String
+    let description: String?
     let action: ToastBarAction?
     let duration: Double
 
@@ -15,12 +16,14 @@ public struct ToastBar {
         type: NotificationType,
         icon: Image? = nil,
         text: String,
+        description: String? = nil,
         duration: Double = 3,
         action: ToastBarAction? = nil
     ) {
         self.type = type
         self.icon = icon ?? type.image
         self.text = text
+        self.description = description
         self.action = action
         self.duration = duration
     }
@@ -50,12 +53,17 @@ public struct ToastBarView: View {
             HStack(spacing: .padding8) {
                 toastModel.icon
                     .resizable()
-                    .foregroundColor(toastModel.type.toastImageColor)
+                    .foregroundColor(toastModel.type.imageColor)
                     .accessibilityHidden(true)
                     .frame(width: 20, height: 20)
-                hText(toastModel.text, style: .label)
-                    .foregroundColor(toastModel.type.textColor)
-
+                VStack(alignment: .leading, spacing: .padding2) {
+                    hText(toastModel.text, style: .label)
+                        .foregroundColor(toastModel.type.textColor)
+                    if let description = toastModel.description {
+                        hText(description, style: .finePrint)
+                            .foregroundColor(toastModel.type.textColor)
+                    }
+                }
                 if let action = toastModel.action {
                     Spacer()
                     hText(action.actionText, style: .label)
@@ -96,6 +104,16 @@ public struct ToastBarView: View {
                 toastModel: .init(
                     type: .neutral,
                     text: "disabled toast bar"
+                )
+            )
+        }
+
+        hSection {
+            ToastBarView(
+                toastModel: .init(
+                    type: .info,
+                    text: "disabled toast bar",
+                    description: "description"
                 )
             )
         }

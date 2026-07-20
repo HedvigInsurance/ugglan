@@ -1,5 +1,4 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -66,11 +65,9 @@ struct NordeaPayoutSetupScreen: View {
             .primary,
             content: .init(title: L10n.generalSaveButton)
         ) { [weak vm, onSuccess] in
-            Task {
-                if let success = await vm?.save() {
-                    if success {
-                        onSuccess?()
-                    }
+            if let success = await vm?.save() {
+                if success {
+                    onSuccess?()
                 }
             }
         }

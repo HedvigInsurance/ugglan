@@ -23,6 +23,7 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
     case seCarTrialFull = "SE_CAR_TRIAL_FULL"
     case seGroupApartmentBrf = "SE_GROUP_APARTMENT_BRF"
     case seGroupApartmentRent = "SE_GROUP_APARTMENT_RENT"
+    case seQasaLandlord = "SE_QASA_LANDLORD"
     case seQasaShortTermRental = "SE_QASA_SHORT_TERM_RENTAL"
     case seQasaLongTermRental = "SE_QASA_LONG_TERM_RENTAL"
     case seDogBasic = "SE_DOG_BASIC"

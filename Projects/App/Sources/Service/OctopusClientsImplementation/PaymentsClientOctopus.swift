@@ -1,8 +1,8 @@
-import Campaign
+import AppStateContainer
+import CampaignCore
 import Environment
 import Foundation
 import Payment
-import PresentableStore
 import hCore
 import hGraphQL
 
@@ -25,40 +25,32 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentMethodStatus> {
 @MainActor
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentMethodsQuery.Data) {
-        let status: PayinMethodStatus = {
-            if data.currentMember.activeContracts.isEmpty, data.currentMember.pendingContracts.isEmpty {
-                return .noNeedToConnect
-            }
-
-            let missedPaymentsContracts = data.currentMember.activeContracts.filter(\.terminationDueToMissedPayments)
-            if !missedPaymentsContracts.isEmpty {
-                if let date = missedPaymentsContracts.compactMap({ $0.terminationDate?.localDateToDate }).sorted()
-                    .first?
-                    .displayDateDDMMMYYYYFormat
-                {
-                    return .contactUs(date: date)
-                }
-            }
-
-            guard
-                let defaultPayin = data.currentMember.paymentMethods.defaultPayinMethod?.fragments
-                    .memberPaymentMethodFragment
-                    ?? data.currentMember.paymentMethods.payinMethods.first?.fragments.memberPaymentMethodFragment
-            else {
-                return .needsSetup
-            }
-            return defaultPayin.status.asPayinMethodStatus
-        }()
         let paymentMethods = data.currentMember.paymentMethods
+        let missingConnection = Payment.MissingPaymentConnection(graphQL: paymentMethods.missingConnection)
 
-        let payinMethods: [PaymentMethodData] = paymentMethods.payinMethods.map {
+        let defaultPayinFragment =
+            paymentMethods.defaultPayinMethod?.fragments.memberPaymentMethodFragment
+            ?? paymentMethods.payinMethods.first(where: { $0.fragments.memberPaymentMethodFragment.isDefault })?
+            .fragments.memberPaymentMethodFragment
+
+        let missedPaymentsTerminationDate = data.currentMember.activeContracts
+            .filter(\.terminationDueToMissedPayments)
+            .compactMap { $0.terminationDate?.localDateToDate }
+            .min()?
+            .displayDateDDMMMYYYYFormat
+
+        let status: PayinMethodStatus = {
+            if let date = missedPaymentsTerminationDate { return .contactUs(date: date) }
+            if let defaultPayin = defaultPayinFragment { return defaultPayin.status.asPayinMethodStatus }
+            return missingConnection == .payin ? .needsSetup : .noNeedToConnect
+        }()
+
+        let payinMethods = paymentMethods.payinMethods.map {
             PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
         }
-
-        let payoutMethods: [PaymentMethodData] = paymentMethods.payoutMethods.map {
+        let payoutMethods = paymentMethods.payoutMethods.map {
             PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
         }
-
         let availableMethods: [AvailablePaymentMethod] = paymentMethods.availableMethods.map {
             .init(
                 provider: PaymentProvider.from(graphQL: $0.provider),
@@ -66,12 +58,17 @@ extension PaymentStatusData {
                 supportsPayout: $0.supportsPayout
             )
         }
-
-        let defaultPayinMethod: PaymentMethodData? = paymentMethods.defaultPayinMethod
+        let defaultPayinMethod = paymentMethods.defaultPayinMethod
+            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+        let defaultPayoutMethod = paymentMethods.defaultPayoutMethod
             .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
 
-        let defaultPayoutMethod: PaymentMethodData? = paymentMethods.defaultPayoutMethod
-            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+        let activeTypes = data.currentMember.activeContracts.map(\.currentAgreement.productVariant.typeOfContract)
+        let pendingTypes = data.currentMember.pendingContracts.map(\.productVariant.typeOfContract)
+        let terminatedTypes = data.currentMember.terminatedContracts
+            .map(\.currentAgreement.productVariant.typeOfContract)
+        let allContractTypes = (activeTypes + pendingTypes + terminatedTypes)
+            .map { TypeOfContract.resolve(for: $0) }
 
         self.init(
             status: status,
@@ -80,8 +77,20 @@ extension PaymentStatusData {
             payinMethods: payinMethods,
             defaultPayoutMethod: defaultPayoutMethod,
             payoutMethods: payoutMethods,
-            availableMethods: availableMethods
+            availableMethods: availableMethods,
+            missingConnection: missingConnection,
+            layout: .init(contractTypes: allContractTypes)
         )
+    }
+}
+
+extension Payment.MissingPaymentConnection {
+    init?(graphQL: GraphQLEnum<OctopusGraphQL.MissingPaymentConnection>?) {
+        switch graphQL {
+        case .case(.payin): self = .payin
+        case .case(.payout): self = .payout
+        default: return nil
+        }
     }
 }
 
@@ -202,6 +211,36 @@ class hPaymentClientOctopus: hPaymentClient {
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
         }
+    }
+
+    func chargeOutstandingPayment() async throws {
+        let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
+        let data = try await octopus.client.mutation(mutation: mutation)
+        if let userError = data?.manuallyChargeMember.userError {
+            throw PaymentError.missingDataError(message: userError.message ?? L10n.General.errorBody)
+        }
+    }
+
+    func getMissedPaymentData() async throws -> Payment.MissedPaymentData? {
+        let query = OctopusGraphQL.MisssedChargeIdQuery()
+        let data = try await octopus.client.fetch(query: query)
+        guard let id = data.currentMember.missedChargeIdToChargeManually else { return nil }
+
+        let (statusData, historyData) = try await (getPaymentStatusData(), getPaymentHistoryData())
+        let paymentMethodData = statusData.defaultOrFirstDefaultPayinMethod
+        let paymentData =
+            historyData
+            .flatMap({ $0.valuesPerMonth })
+            .compactMap({ $0.paymentData })
+            .first(where: { $0.id == id })
+
+        guard let paymentMethodData, var paymentData else { return nil }
+        paymentData.showStatusInfo = false
+
+        return .init(
+            paymentData: paymentData,
+            paymentMethodData: paymentMethodData
+        )
     }
 }
 
@@ -417,8 +456,8 @@ extension PaymentHistoryListData {
         var nextPayment: PaymentData?
         for item in data.pastCharges.enumerated() {
             if item.offset == 0 {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                nextPayment = store.state.ongoingPaymentData.first ?? store.state.paymentData
+                let store: PaymentStore = globalAppStateContainer.get()
+                nextPayment = store.ongoingPaymentData.first ?? store.paymentData
             }
             let paymentData = PaymentData(
                 with: item.element.fragments.memberChargeFragment,
@@ -435,7 +474,7 @@ extension PaymentHistoryListData {
             let history = groupedPaymenthsByYear[year] ?? []
             let paymentHistoryForYear = PaymentHistoryListData(
                 id: String(year),
-                year: String(year),
+                year: year,
                 valuesPerMonth: history
             )
             paymentHistoryList.append(paymentHistoryForYear)

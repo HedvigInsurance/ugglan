@@ -32,15 +32,14 @@ public struct FirstVetView: View {
                                 hButton(
                                     .medium,
                                     .secondaryAlt,
-                                    content: .init(title: L10n.commonClaimButton),
-                                    {
-                                        if let url = URL(
-                                            string: partner.url
-                                        ) {
-                                            Dependencies.urlOpener.open(url)
-                                        }
+                                    content: .init(title: L10n.commonClaimButton)
+                                ) {
+                                    if let url = URL(
+                                        string: partner.url
+                                    ) {
+                                        await Dependencies.urlOpener.open(url)
                                     }
-                                )
+                                }
                                 .hButtonTakeFullWidth(true)
                             }
                         }

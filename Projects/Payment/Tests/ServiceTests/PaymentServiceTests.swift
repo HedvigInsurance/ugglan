@@ -86,7 +86,9 @@ final class PaymentServiceTests: XCTestCase {
             ],
             defaultPayoutMethod: nil,
             payoutMethods: [],
-            availableMethods: []
+            availableMethods: [],
+            missingConnection: nil,
+            layout: .other
         )
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
@@ -101,7 +103,7 @@ final class PaymentServiceTests: XCTestCase {
         let paymentHistoryData: [PaymentHistoryListData] = [
             .init(
                 id: "id",
-                year: "2023",
+                year: 2023,
                 valuesPerMonth: []
             )
         ]
@@ -133,5 +135,76 @@ final class PaymentServiceTests: XCTestCase {
             .trustly
         )
         assert(result == expectedResult)
+    }
+
+    func testFetchMissedPaymentDataSuccess() async throws {
+        let missedPaymentData = MissedPaymentData(
+            paymentData: .init(
+                id: "missed-id",
+                payment: .init(
+                    gross: .init(amount: "230", currency: "SEK"),
+                    net: .init(amount: "230", currency: "SEK"),
+                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                    settlementAdjustment: nil,
+                    date: .init()
+                ),
+                status: .upcoming,
+                contracts: [],
+                referralDiscount: nil,
+                amountPerReferral: .sek(20),
+                payinMethod: nil,
+                addedToThePayment: nil
+            ),
+            paymentMethodData: .init(
+                provider: .trustly,
+                status: .active,
+                isDefault: true,
+                details: .bankAccount(account: "descriptor", bank: "displayName")
+            )
+        )
+
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchMissedPaymentData: { missedPaymentData }
+        )
+        sut = mockService
+
+        let response = try await mockService.getMissedPaymentData()
+        assert(response == missedPaymentData)
+        assert(mockService.events.first == .getMissedPaymentData)
+    }
+
+    func testFetchMissedPaymentDataNil() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchMissedPaymentData: { nil }
+        )
+        sut = mockService
+
+        let response = try await mockService.getMissedPaymentData()
+        XCTAssertNil(response)
+        assert(mockService.events.first == .getMissedPaymentData)
+    }
+
+    func testChargeOutstandingPaymentSuccess() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            chargeOutstandingPayment: {}
+        )
+        sut = mockService
+
+        try await mockService.chargeOutstandingPayment()
+        assert(mockService.events.first == .chargeOutstandingPayment)
+    }
+
+    func testChargeOutstandingPaymentFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            chargeOutstandingPayment: { throw PaymentError.missingDataError(message: "error") }
+        )
+        sut = mockService
+
+        do {
+            try await mockService.chargeOutstandingPayment()
+            XCTFail("Expected chargeOutstandingPayment to throw")
+        } catch {
+            assert(mockService.events.first == .chargeOutstandingPayment)
+        }
     }
 }

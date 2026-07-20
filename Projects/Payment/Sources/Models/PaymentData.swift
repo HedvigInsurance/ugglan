@@ -1,10 +1,10 @@
-import Campaign
+import CampaignCore
 import Foundation
 import hCore
 import hCoreUI
 
 public struct PaymentData: Codable, Equatable, Hashable, Sendable {
-    let id: String
+    public let id: String
     public let payment: PaymentStack
     let status: PaymentStatus
     let contracts: [ContractPaymentDetails]
@@ -13,7 +13,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let payinMethod: PaymentMethodData?
     // had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
-
+    public var showStatusInfo: Bool
     public init(
         id: String,
         payment: PaymentStack,
@@ -22,7 +22,8 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         referralDiscount: Discount?,
         amountPerReferral: MonetaryAmount,
         payinMethod: PaymentMethodData?,
-        addedToThePayment: [PaymentData]?
+        addedToThePayment: [PaymentData]?,
+        showStatusInfo: Bool = true
     ) {
         self.id = id
         self.payment = payment
@@ -32,6 +33,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         self.amountPerReferral = amountPerReferral
         self.payinMethod = payinMethod
         self.addedToThePayment = addedToThePayment
+        self.showStatusInfo = showStatusInfo
     }
 
     public struct PaymentStack: Codable, Equatable, Hashable, Sendable {

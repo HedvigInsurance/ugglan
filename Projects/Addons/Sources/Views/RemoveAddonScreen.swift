@@ -53,12 +53,10 @@ struct RemoveAddonScreen: View {
                     }
                 }
                 hSection {
-                    hContinueButton {
-                        Task { [weak vm, weak navigationVm] in
-                            await vm?.getAddonRemoveOfferCost()
-                            guard vm?.addonRemoveOfferCost != nil else { return }
-                            navigationVm?.router.push(RemoveAddonRouterActions.summary)
-                        }
+                    hContinueButton { [weak vm, weak navigationVm] in
+                        await vm?.getAddonRemoveOfferCost()
+                        guard vm?.addonRemoveOfferCost != nil else { return }
+                        navigationVm?.router.push(RemoveAddonRouterActions.summary)
                     }
                     .disabled(!vm.allowToContinue)
                     .hButtonIsLoading(vm.fetchingCostState == .loading)
@@ -71,7 +69,6 @@ struct RemoveAddonScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    let contractInfo: AddonContractInfo = .init(contractId: "1", displayName: "title", exposureName: "exposure")
     let offer = AddonRemoveOfferWithSelectedItems(offer: testRemoveOffer, preselectedAddons: .init(), cost: nil)
     let navigationViewModel = RemoveAddonNavigationViewModel(offer)
     return RemoveAddonScreen(.init(offer))

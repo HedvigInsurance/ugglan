@@ -1,20 +1,20 @@
 import Apollo
-import Authentication
+import AuthenticationCore
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
+import KMPNativeCoroutinesAsync
 import hCore
 import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
-        return NetworkAuthRepository(
+        NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: {
                 var headers = self?.getHeaders() ?? [:]
                 return headers
-            },
-            httpClientEngine: nil
+            }
         )
     }()
 
@@ -33,12 +33,12 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         if let verifyUrl = otpState.verifyUrl {
             do {
                 try await Task.sleep(seconds: 0.5)
-                let data =
-                    try await networkAuthRepository
-                    .submitOtp(
+                let data = try await asyncFunction(
+                    for: networkAuthRepository.submitOtp(
                         verifyUrl: verifyUrl.absoluteString,
                         otp: otpState.code
                     )
+                )
                 if let data = data as? SubmitOtpResultSuccess {
                     return data.loginAuthorizationCode.code
                 } else {
@@ -56,14 +56,14 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
 
         let email: String? = otpState.input
         do {
-            let data =
-                try await networkAuthRepository
-                .startLoginAttempt(
+            let data = try await asyncFunction(
+                for: networkAuthRepository.startLoginAttempt(
                     loginMethod: .otp,
                     market: .se,
                     personalNumber: personalNumber,
                     email: email
                 )
+            )
             try await Task.sleep(seconds: 0.5)
             if let otpProperties = data as? AuthAttemptResultOtpProperties,
                 let verifyUrl = URL(string: otpProperties.verifyUrl),
@@ -80,7 +80,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
 
     func resend(otp otpState: OTPState) async throws {
         if let resendUrl = otpState.resendUrl {
-            _ = try await networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+            _ = try await asyncFunction(
+                for: networkAuthRepository.resendOtp(resendUrl: resendUrl.absoluteString)
+            )
         } else {
             throw AuthenticationError.resendOtpFailed
         }
@@ -90,11 +92,13 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let authUrl = Environment.current.authUrl
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
-            let data = try await networkAuthRepository.startLoginAttempt(
-                loginMethod: .seBankid,
-                market: .se,
-                personalNumber: nil,
-                email: nil
+            let data = try await asyncFunction(
+                for: networkAuthRepository.startLoginAttempt(
+                    loginMethod: .seBankid,
+                    market: .se,
+                    personalNumber: nil,
+                    email: nil
+                )
             )
 
             AuthenticationService.logAuthResourceStop(
@@ -102,15 +106,13 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
             )
 
-            switch onEnum(of: data) {
-            case let .bankIdProperties(data):
-                updateStatusTo(.started(code: data.autoStartToken))
-                for await status
-                    in networkAuthRepository
-                    .observeLoginStatus(
-                        statusUrl: .init(url: data.statusUrl.url)
-                    )
-                {
+            switch data {
+            case let properties as AuthAttemptResultBankIdProperties:
+                updateStatusTo(.started(code: properties.autoStartToken))
+                let sequence = asyncSequence(
+                    for: networkAuthRepository.observeLoginStatus(statusUrl: .init(url: properties.statusUrl.url))
+                )
+                for try await status in sequence {
                     let key = UUID().uuidString
                     AuthenticationService.logAuthResourceStart(key, authUrl)
 
@@ -119,32 +121,31 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                         HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
                     )
 
-                    switch onEnum(of: status) {
-                    case let .failed(failed):
+                    switch status {
+                    case let failed as LoginStatusResultFailed:
                         let message = failed.localisedMessage
                         log.error(
                             "LOGIN FAILED",
                             error: NSError(domain: message, code: 1000),
                             attributes: [
                                 "message": message,
-                                "statusUrl": data.statusUrl.url,
+                                "statusUrl": properties.statusUrl.url,
                             ]
                         )
                         throw AuthenticationError.loginFailure(message: failed.localisedMessage)
-                    case .exception:
+                    case _ as LoginStatusResultException:
                         throw AuthenticationError.loginFailure(message: nil)
-                    case let .completed(completed):
-                        log.info(
-                            "LOGIN AUTH FINISHED"
-                        )
+                    case let completed as LoginStatusResultCompleted:
                         try await exchange(code: completed.authorizationCode.code)
                         updateStatusTo(.completed)
                         return
-                    case let .pending(pending):
+                    case let pending as LoginStatusResultPending:
                         updateStatusTo(.pending(qrCode: pending.bankIdProperties?.liveQrCodeData))
+                    default:
+                        throw AuthenticationError.loginFailure(message: nil)
                     }
                 }
-            case let .error(error):
+            case let error as AuthAttemptResultError:
                 var localizedMessage = L10n.General.errorBody
                 var logMessage = "Got Error when signing in with BankId"
                 if let result = error as? AuthAttemptResultErrorLocalised {
@@ -168,7 +169,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                     attributes: [:]
                 )
                 throw AuthenticationError.loginFailure(message: localizedMessage)
-            case .otpProperties:
+            case _ as AuthAttemptResultOtpProperties:
+                break
+            default:
                 break
             }
         } catch {
@@ -187,12 +190,16 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     func logout() async throws {
         do {
             if let token = try await ApolloClient.retreiveToken() {
-                let data = try await networkAuthRepository.revoke(token: token.refreshToken)
-                switch onEnum(of: data) {
-                case .error:
+                let data = try await asyncFunction(
+                    for: networkAuthRepository.revoke(token: token.refreshToken)
+                )
+                switch data {
+                case _ as RevokeResultError:
                     throw AuthenticationError.logoutFailure
-                case .success:
+                case _ as RevokeResultSuccess:
                     return
+                default:
+                    throw AuthenticationError.logoutFailure
                 }
             } else {
                 return
@@ -203,7 +210,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     }
 
     func exchange(code: String) async throws {
-        let data = try await networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
+        let data = try await asyncFunction(
+            for: networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
+        )
         if let successResult = data as? AuthTokenResultSuccess {
             let tokenData = AuthorizationTokenDto(
                 accessToken: successResult.accessToken.token,
@@ -219,10 +228,11 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     }
 
     func exchange(refreshToken: String) async throws {
-        let data = try await networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
-        switch onEnum(of: data) {
-        case let .success(success):
-            log.info("Refresh was sucessfull")
+        let data = try await asyncFunction(
+            for: networkAuthRepository.exchange(grant: RefreshTokenGrant(code: refreshToken))
+        )
+        switch data {
+        case let success as AuthTokenResultSuccess:
             let accessTokenDto: AuthorizationTokenDto = .init(
                 accessToken: success.accessToken.token,
                 accessTokenExpiryIn: Int(success.accessToken.expiryInSeconds),
@@ -230,14 +240,20 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
             )
             ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
-        case let .error(error):
+        case let error as AuthTokenResultError:
             log.error("Refreshing failed \(error.errorMessage), forcing logout")
-            switch onEnum(of: error) {
-            case .iOError:
+            switch error {
+            case _ as AuthTokenResultErrorIOError:
                 throw AuthError.networkIssue
-            case .backendErrorResponse, .unknownError:
+            case _ as AuthTokenResultErrorBackendErrorResponse:
+                throw AuthError.refreshFailed
+            case _ as AuthTokenResultErrorUnknownError:
+                throw AuthError.refreshFailed
+            default:
                 throw AuthError.refreshFailed
             }
+        default:
+            throw AuthError.refreshFailed
         }
     }
 }
@@ -274,10 +290,11 @@ extension AuthenticationError: LocalizedError {
 
 extension HedvigShared.AuthTokenResultError {
     var errorMessage: String {
-        switch onEnum(of: self) {
-        case let .backendErrorResponse(error): return error.message
-        case let .iOError(ioError): return ioError.message
-        case let .unknownError(unknownError): return unknownError.message
+        switch self {
+        case let error as AuthTokenResultErrorBackendErrorResponse: return error.message
+        case let ioError as AuthTokenResultErrorIOError: return ioError.message
+        case let unknownError as AuthTokenResultErrorUnknownError: return unknownError.message
+        default: return "Unknown error"
         }
     }
 }

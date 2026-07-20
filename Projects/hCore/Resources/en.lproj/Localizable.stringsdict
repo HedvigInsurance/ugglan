@@ -130,6 +130,54 @@
         <string>Your current insurances</string>
       </dict>
     </dict>
+    <key>ongoing_shop_session_offer_expires_in_days</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>The offer expires in %1$li day</string>
+        <key>other</key>
+        <string>The offer expires in %1$li days</string>
+      </dict>
+    </dict>
+    <key>ongoing_shop_session_offer_expires_in_hours</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>The offer expires in %1$li hour</string>
+        <key>other</key>
+        <string>The offer expires in %1$li hours</string>
+      </dict>
+    </dict>
+    <key>ongoing_shop_session_offer_expires_in_minutes</key>
+    <dict>
+      <key>NSStringLocalizedFormatKey</key>
+      <string>%#@format@</string>
+      <key>format</key>
+      <dict>
+        <key>NSStringFormatSpecTypeKey</key>
+        <string>NSStringPluralRuleType</string>
+        <key>NSStringFormatValueTypeKey</key>
+        <string>li</string>
+        <key>one</key>
+        <string>The offer expires in %1$li minute</string>
+        <key>other</key>
+        <string>The offer expires in %1$li minutes</string>
+      </dict>
+    </dict>
     <key>payment_screen.free_month_discount_label</key>
     <dict>
       <key>NSStringLocalizedFormatKey</key>

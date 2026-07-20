@@ -32,7 +32,7 @@ private struct FileSourcePickerView: ViewModifier {
                             guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                                 return
                             }
-                            Dependencies.urlOpener.open(settingsUrl)
+                            await Dependencies.urlOpener.open(settingsUrl)
                         case .authorized, .limited:
                             showImagePicker = true
                         @unknown default:
@@ -50,7 +50,7 @@ private struct FileSourcePickerView: ViewModifier {
                 Button(L10n.generalCancelButton, role: .cancel) {}
             }
             .sheet(isPresented: $showImagePicker) {
-                ImagePicker { images in
+                ImagePicker(isPresented: $showImagePicker) { images in
                     selectedFiles(images)
                 }
                 .ignoresSafeArea()
@@ -81,10 +81,13 @@ private struct FileSourcePickerView: ViewModifier {
 
 private struct ImagePicker: UIViewControllerRepresentable {
     let filesSelected: (_ files: [File]) -> Void
+    @Binding var isPresented: Bool
 
     public init(
+        isPresented: Binding<Bool>,
         filesSelected: @escaping (_: [File]) -> Void
     ) {
+        self._isPresented = isPresented
         self.filesSelected = filesSelected
     }
 
@@ -142,10 +145,8 @@ private struct ImagePicker: UIViewControllerRepresentable {
                     files.append(file)
                 }
             }
-            picker.dismiss(animated: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                self.parent.filesSelected(files)
-            }
+            self.parent.filesSelected(files)
+            self.parent.isPresented = false
         }
     }
 }

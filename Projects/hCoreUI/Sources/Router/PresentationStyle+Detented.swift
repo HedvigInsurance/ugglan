@@ -113,7 +113,7 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
         ]
 
         Task { @MainActor [weak presentationController] in
-            try? await Task.sleep(nanoseconds: 100_000_000)
+            try? await Task.sleep(seconds: 0.1)
             if let presentationController {
                 Detent.set(
                     self.detents,
@@ -249,7 +249,7 @@ public enum Detent: Equatable {
 
             var additionalViewHeight =
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
-            if navigationController?.isKind(of: hNavigationController.self) == true && hasNavigationBar {
+            if hasNavigationBar {
                 additionalViewHeight += navigationController?.navigationBar.frame.origin.y ?? 0
             }
             var totalHeight: CGFloat =

@@ -1,5 +1,5 @@
 import Addons
-import PresentableStore
+import AppStateContainer
 import XCTest
 
 @testable import CrossSell
@@ -10,7 +10,7 @@ final class CrossSellStoreTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
     }
 
     @MainActor
@@ -27,9 +27,9 @@ final class CrossSellStoreTests: XCTestCase {
         )
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchCrossSell)
+        await store.fetchCrossSell()
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
+            store.fetchCrossSellError == nil && store.crossSells == CrossSell.getDefault
         }
 
         assert(mockService.events.count == 1)
@@ -43,10 +43,10 @@ final class CrossSellStoreTests: XCTestCase {
 
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchCrossSell)
+        await store.fetchCrossSell()
         try await Task.sleep(seconds: 0.5)
-        assert(store.loadingState[.fetchCrossSell] != nil)
-        assert(store.state.crossSells?.others.isEmpty == nil)
+        assert(store.fetchCrossSellError != nil)
+        assert(store.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -57,9 +57,9 @@ final class CrossSellStoreTests: XCTestCase {
         )
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanners)
+        await store.fetchAddonBanners()
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchAddonBanners] == nil && store.state.addonBanners == AddonBanner.getDefault
+            store.fetchAddonBannersError == nil && store.addonBanners == AddonBanner.getDefault
         }
 
         assert(mockService.events.count == 1)
@@ -73,10 +73,10 @@ final class CrossSellStoreTests: XCTestCase {
 
         let store = CrossSellStore()
         self.store = store
-        await store.sendAsync(.fetchAddonBanners)
+        await store.fetchAddonBanners()
         try await Task.sleep(seconds: 0.5)
-        assert(store.loadingState[.fetchAddonBanners] != nil)
-        assert(store.state.crossSells?.others.isEmpty == nil)
+        assert(store.fetchAddonBannersError != nil)
+        assert(store.crossSells?.others.isEmpty == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getAddonBanners)
     }
@@ -106,13 +106,6 @@ extension CrossSell {
         ],
         discountAvailable: true
     )
-}
-
-@MainActor
-extension CrossSellState {
-    fileprivate var isEmpty: Bool {
-        self.crossSells?.recommended == nil && self.crossSells?.others.isEmpty == true
-    }
 }
 
 @MainActor

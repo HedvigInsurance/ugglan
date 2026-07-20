@@ -8,7 +8,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
     @Inject private var octopus: hOctopus
 
     func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
-        let mutation = OctopusGraphQL.ClaimIntentStartMutation(input: GraphQLNullable(.init()))
+        let mutation = OctopusGraphQL.ClaimIntentStartMutation()
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
@@ -156,6 +156,23 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
             }
 
             let intent = data?.claimIntentSubmitTask.intent
+            return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
+        } catch {
+            throw try logClaimIntentError(error)
+        }
+    }
+
+    func claimIntentSubmitInformation(stepId: String) async throws -> ClaimIntentType? {
+        let input = OctopusGraphQL.ClaimIntentSubmitInformationInput(stepId: stepId)
+        let mutation = OctopusGraphQL.ClaimIntentSubmitInformationMutation(input: input)
+
+        do {
+            let data = try await octopus.client.mutation(mutation: mutation)
+            if let userError = data?.claimIntentSubmitInformation.userError, let message = userError.message {
+                throw ClaimIntentError.error(message: message)
+            }
+
+            let intent = data?.claimIntentSubmitInformation.intent
             return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
         } catch {
             throw try logClaimIntentError(error)
@@ -352,6 +369,23 @@ extension ClaimIntentStepContent {
                         }),
                         buttonTitle: deflect.buttonTitle
                     )
+            )
+        } else if let deflectMessage = fragment.asClaimIntentStepContentDeflectionMessage {
+            self = .deflectMessage(model: .init(message: deflectMessage.message))
+        } else if let information = fragment.asClaimIntentStepContentInformation {
+            let severity: ClaimIntentStepContentInformationSeverity
+            switch information.severity.value {
+            case .critical:
+                severity = .critical
+            case .info, .none:
+                severity = .info
+            }
+            self = .information(
+                model: .init(
+                    notice: information.notice,
+                    severity: severity,
+                    buttonTitle: information.buttonTitle
+                )
             )
         } else {
             throw ClaimIntentError.unknownStep

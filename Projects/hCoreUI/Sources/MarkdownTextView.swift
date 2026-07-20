@@ -1,13 +1,10 @@
 import Foundation
 import MarkdownKit
-import SnapKit
 import SwiftUI
 import hCore
 
 public struct MarkdownView: View {
     private let config: CustomTextViewRepresentableConfig
-    @State private var height: CGFloat = 20
-    @State private var width: CGFloat = 0
 
     public init(
         config: CustomTextViewRepresentableConfig
@@ -16,82 +13,52 @@ public struct MarkdownView: View {
     }
 
     public var body: some View {
-        if let maxWidth = config.maxWidth {
-            CustomTextViewRepresentable(
-                config: config,
-                fixedWidth: maxWidth,
-                height: $height,
-                width: $width
-            )
-            .frame(maxWidth: maxWidth)
-            .frame(width: width, height: height)
-        } else {
-            GeometryReader { geo in
-                Color.clear.background(
-                    CustomTextViewRepresentable(
-                        config: config,
-                        fixedWidth: geo.size.width,
-                        height: $height,
-                        width: $width
-                    )
-                )
-            }
-            .frame(height: height)
-        }
+        CustomTextViewRepresentable(config: config)
     }
 }
 
 struct CustomTextViewRepresentable: UIViewRepresentable {
     let config: CustomTextViewRepresentableConfig
-    let fixedWidth: CGFloat
-    @Binding private var height: CGFloat
-    @Binding private var width: CGFloat
     @SwiftUI.Environment(\.colorScheme) var colorScheme
     @Environment(\.hEnvironmentAccessibilityLabel) var accessibilityLabel
     @Environment(\.sizeCategory) var sizeCategory
 
-    init(
-        config: CustomTextViewRepresentableConfig,
-        fixedWidth: CGFloat,
-        height: Binding<CGFloat>,
-        width: Binding<CGFloat>
-    ) {
+    init(config: CustomTextViewRepresentableConfig) {
         self.config = config
-        self.fixedWidth = fixedWidth
-        _height = height
-        _width = width
     }
 
-    func makeUIView(context _: Context) -> UIView {
-        // wrapping the text view with a view to avoid issues with SwiftUI and UITextView
-        let view = UIView(frame: .zero)
-        view.backgroundColor = .clear
-        let textView = CustomTextView(
-            config: config,
-            fixedWidth: fixedWidth,
-            height: $height,
-            width: $width,
-            colorScheme: colorScheme
-        )
-        view.addSubview(textView)
+    func makeUIView(context _: Context) -> CustomTextView {
+        let textView = CustomTextView(config: config, colorScheme: colorScheme)
         textView.accessibilityLabel = accessibilityLabel
         textView.setContent(from: config.text)
-        textView.calculateHeight()
-        textView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        return view
+        return textView
     }
 
-    func updateUIView(_ uiView: UIView, context _: Context) {
-        if let textView = uiView.subviews.first as? CustomTextView {
-            textView.colorScheme = colorScheme
-            textView.setContent(from: config.text)
-            textView.calculateHeight()
-            if let accessibilityLabel {
-                textView.accessibilityLabel = accessibilityLabel
-            }
+    func updateUIView(_ textView: CustomTextView, context _: Context) {
+        textView.colorScheme = colorScheme
+        textView.setContent(from: config.text)
+        if textView.accessibilityLabel != accessibilityLabel {
+            textView.accessibilityLabel = accessibilityLabel
         }
+    }
+
+    func sizeThatFits(
+        _ proposal: ProposedViewSize,
+        uiView: CustomTextView,
+        context _: Context
+    ) -> CGSize? {
+        // SwiftUI probes with `.zero`, `.unspecified`, and `.infinity` during layout discovery.
+        // Reject zero/non-finite proposals so we never ask UITextView to wrap at width 0.
+        let validProposal = proposal.width.flatMap { $0 > 0 && $0.isFinite ? $0 : nil }
+        let width: CGFloat = {
+            switch (validProposal, config.maxWidth) {
+            case let (proposed?, max?): return min(proposed, max)
+            case let (proposed?, nil): return proposed
+            case let (nil, max?): return max
+            case (nil, nil): return UIView.layoutFittingExpandedSize.width
+            }
+        }()
+        return uiView.naturalSize(fittingWidth: width)
     }
 }
 
@@ -107,31 +74,22 @@ extension View {
 
 class CustomTextView: UITextView, UITextViewDelegate {
     let config: CustomTextViewRepresentableConfig
-    let fixedWidth: CGFloat
-    @Binding var height: CGFloat
-    @Binding var width: CGFloat
+    private var lastAppliedText: String?
+    private var lastAppliedColorScheme: ColorScheme?
     var colorScheme: ColorScheme {
         didSet {
+            guard oldValue != colorScheme else { return }
             updateLinkTextAttributes()
         }
     }
     init(
         config: CustomTextViewRepresentableConfig,
-        fixedWidth: CGFloat,
-        height: Binding<CGFloat>,
-        width: Binding<CGFloat>,
         colorScheme: ColorScheme
     ) {
-        _height = height
-        _width = width
         self.config = config
-        self.fixedWidth = fixedWidth
         self.colorScheme = colorScheme
         super.init(frame: .zero, textContainer: nil)
         configureTextView()
-        snp.makeConstraints { make in
-            make.width.equalTo(fixedWidth)
-        }
     }
 
     func configureTextView() {
@@ -142,11 +100,15 @@ class CustomTextView: UITextView, UITextViewDelegate {
         // Always enable isSelectable so links remain tappable
         // Text selection is controlled via selectedTextRange override
         isSelectable = true
-        dataDetectorTypes = [.address, .link, .phoneNumber]
+        dataDetectorTypes = config.disableLinks ? [] : [.address, .link, .phoneNumber]
         accessibilityTraits = .staticText
         updateLinkTextAttributes()
         textContainerInset = .zero
         textContainer.lineFragmentPadding = 0
+        if let maxLines = config.maxLines {
+            textContainer.maximumNumberOfLines = maxLines
+            textContainer.lineBreakMode = .byTruncatingTail
+        }
         contentInset = .zero
         delegate = self
     }
@@ -161,7 +123,36 @@ class CustomTextView: UITextView, UITextViewDelegate {
         self.linkTextAttributes = linkTextAttributes
     }
 
+    /// Smallest size that fits the current attributed text within `fittingWidth`.
+    func naturalSize(fittingWidth: CGFloat) -> CGSize {
+        let constraint = CGSize(width: fittingWidth, height: .greatestFiniteMagnitude)
+        if config.maxLines != nil {
+            // Truncation is only respected by UITextView's own layout pass.
+            return sizeThatFits(constraint)
+        }
+        guard let attributedText, attributedText.length > 0 else {
+            return .zero
+        }
+        // `boundingRect` does one TextKit pass and gives both width and height. UITextView's
+        // text container has zero inset and zero line padding, so its layout matches.
+        let bounding = attributedText.boundingRect(
+            with: constraint,
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
+        return CGSize(
+            width: min(ceil(bounding.width), fittingWidth),
+            height: ceil(bounding.height)
+        )
+    }
+
     func setContent(from text: String) {
+        if lastAppliedText == text && lastAppliedColorScheme == colorScheme {
+            return
+        }
+        lastAppliedText = text
+        lastAppliedColorScheme = colorScheme
+
         let markdownParser = MarkdownParser(
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
@@ -184,35 +175,21 @@ class CustomTextView: UITextView, UITextViewDelegate {
         }
     }
 
-    func calculateHeight() {
-        let newSize = getSize()
-        frame.size = newSize
-        DispatchQueue.main.async { [weak self] in
-            self?.height = newSize.height
-            self?.width = newSize.width
-        }
-    }
-
-    private func getSize() -> CGSize {
-        let newSize = sizeThatFits(
-            CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude)
-        )
-        return newSize
-    }
-
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     func textView(_: UITextView, shouldInteractWith URL: URL, in _: NSRange) -> Bool {
+        if config.disableLinks { return false }
         let emailMasking = Masking(type: .email)
         if emailMasking.isValid(text: URL.absoluteString) {
             let emailURL = "mailto:" + URL.absoluteString
             if let url = Foundation.URL(string: emailURL) {
-                Dependencies.urlOpener.open(url)
+                Task { await Dependencies.urlOpener.open(url) }
             }
         } else {
+            ImpactGenerator.light()
             config.onUrlClicked(URL)
         }
 
@@ -233,6 +210,10 @@ class CustomTextView: UITextView, UITextViewDelegate {
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         guard super.point(inside: point, with: event) else { return false }
+
+        if config.disableLinks {
+            return config.isSelectable
+        }
 
         if config.isSelectable {
             return true
@@ -263,6 +244,8 @@ public struct CustomTextViewRepresentableConfig {
     let maxWidth: CGFloat?
     let textAlignment: NSTextAlignment
     let isSelectable: Bool
+    let maxLines: Int?
+    let disableLinks: Bool
 
     public init(
         text: Markdown,
@@ -273,6 +256,8 @@ public struct CustomTextViewRepresentableConfig {
         maxWidth: CGFloat? = nil,
         textAlignment: NSTextAlignment = .left,
         isSelectable: Bool,
+        maxLines: Int? = nil,
+        disableLinks: Bool = false,
         onUrlClicked: @escaping (_: URL) -> Void
     ) {
         self.text = text
@@ -284,5 +269,7 @@ public struct CustomTextViewRepresentableConfig {
         self.onUrlClicked = onUrlClicked
         self.isSelectable = isSelectable
         self.maxWidth = maxWidth
+        self.maxLines = maxLines
+        self.disableLinks = disableLinks
     }
 }

@@ -220,6 +220,18 @@ enum ClaimIntentStepHandlerFactory {
             handler = SubmitClaimFileUploadStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         case .deflect:
             handler = SubmitClaimDeflectStep(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
+        case .deflectMessage:
+            handler = SubmitClaimDeflectMessageStep(
+                claimIntent: claimIntent,
+                service: service,
+                mainHandler: mainHandler
+            )
+        case .information:
+            handler = SubmitClaimInformationStep(
+                claimIntent: claimIntent,
+                service: service,
+                mainHandler: mainHandler
+            )
         }
         handler.alertVm = alertVm
         return handler

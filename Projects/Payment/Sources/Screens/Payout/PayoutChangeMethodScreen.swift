@@ -1,37 +1,31 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @StateObject private var paymentMethodRouter = NavigationRouter()
     @State private var showConnectPayoutMethod: PaymentProvider?
 
     var body: some View {
         hForm {
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentStatusData
-                }
-            ) { paymentStatusData in
-                if let paymentStatusData {
-                    VStack(spacing: .padding4) {
-                        ForEach(paymentStatusData.availablePayoutMethods, id: \.provider) { method in
-                            hSection {
-                                hRow {
-                                    VStack(alignment: .leading, spacing: .padding4) {
-                                        hText(method.provider.payoutTitle)
-                                        hText(method.provider.payoutSubtitle, style: .label)
-                                            .foregroundColor(hTextColor.Translucent.secondary)
-                                    }
-                                    Spacer()
+            if let paymentStatusData = store.paymentStatusData {
+                VStack(spacing: .padding4) {
+                    ForEach(paymentStatusData.availablePayoutMethods, id: \.provider) { method in
+                        hSection {
+                            hRow {
+                                VStack(alignment: .leading, spacing: .padding4) {
+                                    hText(method.provider.payoutTitle)
+                                    hText(method.provider.payoutSubtitle, style: .label)
+                                        .foregroundColor(hTextColor.Translucent.secondary)
                                 }
-                                .withChevronAccessory
-                                .onTap {
-                                    showConnectPayoutMethod = method.provider
-                                }
+                                Spacer()
+                            }
+                            .withChevronAccessory
+                            .onTap {
+                                showConnectPayoutMethod = method.provider
                             }
                         }
                     }
@@ -44,8 +38,8 @@ struct PayoutChangeMethodScreen: View {
             options: .constant(showConnectPayoutMethod?.options ?? [])
         ) { [weak router, weak paymentMethodRouter] paymentProvider in
             let onSuccess = { [weak paymentMethodRouter] in
-                let store: PaymentStore = globalPresentableStoreContainer.get()
-                store.send(.fetchPaymentStatus)
+                let store: PaymentStore = globalAppStateContainer.get()
+                Task { await store.fetchPaymentStatus() }
                 paymentMethodRouter?.dismiss()
                 router?.pop()
                 Toasts.success()
@@ -102,23 +96,21 @@ extension PaymentProvider {
         .environmentObject(NavigationRouter())
         .environmentObject(PaymentsNavigationViewModel())
         .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setPaymentStatus(
-                    data: .init(
-                        status: .active,
-                        chargingDay: nil,
-                        defaultPayinMethod: nil,
-                        payinMethods: [],
-                        defaultPayoutMethod: nil,
-                        payoutMethods: [],
-                        availableMethods: [
-                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
-                    )
-                )
+            let store: PaymentStore = globalAppStateContainer.get()
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: nil,
+                payinMethods: [],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ],
+                missingConnection: .payout,
+                layout: .other
             )
         }
 }

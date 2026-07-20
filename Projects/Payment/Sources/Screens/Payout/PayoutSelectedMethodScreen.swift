@@ -1,27 +1,21 @@
-import PresentableStore
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct PayoutSelectedMethodScreen: View {
+    @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
 
     public var body: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentStatusData
-            }
-        ) { paymentStatusData in
-            if let paymentStatusData {
-                if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
-                    existingPayoutView(paymentStatusData: paymentStatusData)
-                } else if paymentStatusData.availablePayoutMethods.isEmpty {
-                    missingPayinView
-                } else {
-                    missingPayoutView(paymentStatusData: paymentStatusData)
-                }
+        if let paymentStatusData = store.paymentStatusData {
+            if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
+                existingPayoutView(paymentStatusData: paymentStatusData)
+            } else if paymentStatusData.availablePayoutMethods.isEmpty {
+                missingPayinView
+            } else {
+                missingPayoutView(paymentStatusData: paymentStatusData)
             }
         }
     }
@@ -71,12 +65,11 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton),
-                    { [weak router, weak paymentsNavigationVm] in
-                        router?.dismiss()
-                        paymentsNavigationVm?.connectPaymentVm.set()
-                    }
-                )
+                    content: .init(title: L10n.profilePaymentConnectDirectDebitButton)
+                ) { [weak router, weak paymentsNavigationVm] in
+                    router?.dismiss()
+                    paymentsNavigationVm?.connectPaymentVm.set()
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -127,11 +120,10 @@ public struct PayoutSelectedMethodScreen: View {
                 hButton(
                     .large,
                     .primary,
-                    content: .init(title: title),
-                    { [weak router] in
-                        router?.push(PayoutRouterActions.changePayoutMethod)
-                    }
-                )
+                    content: .init(title: title)
+                ) { [weak router] in
+                    router?.push(PayoutRouterActions.changePayoutMethod)
+                }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -180,50 +172,48 @@ extension PaymentStatusData {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setPaymentStatus(
-                    data: .init(
+            let store: PaymentStore = globalAppStateContainer.get()
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: .init(
+                    provider: .nordea,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .nordea,
                         status: .active,
-                        chargingDay: nil,
-                        defaultPayinMethod: .init(
-                            provider: .nordea,
-                            status: .active,
-                            isDefault: true,
-                            details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                        ),
-                        payinMethods: [
-                            .init(
-                                provider: .nordea,
-                                status: .active,
-                                isDefault: true,
-                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                            )
-                        ],
-                        defaultPayoutMethod: .init(
-                            provider: .nordea,
-                            status: .active,
-                            isDefault: true,
-                            details: .bankAccount(
-                                account: "3300-920123132",
-                                bank: "Nordea LONG NAME LONG LONG LONG LONG l"
-                            )
-                        ),
-                        payoutMethods: [
-                            .init(
-                                provider: .nordea,
-                                status: .active,
-                                isDefault: true,
-                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                            )
-                        ],
-                        availableMethods: [
-                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        isDefault: true,
+                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
                     )
-                )
+                ],
+                defaultPayoutMethod: .init(
+                    provider: .nordea,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(
+                        account: "3300-920123132",
+                        bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                    )
+                ),
+                payoutMethods: [
+                    .init(
+                        provider: .nordea,
+                        status: .active,
+                        isDefault: true,
+                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                    )
+                ],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ],
+                missingConnection: .payout,
+                layout: .other
             )
         }
 }
@@ -237,47 +227,45 @@ extension PaymentStatusData {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setPaymentStatus(
-                    data: .init(
+            let store: PaymentStore = globalAppStateContainer.get()
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: nil,
+                defaultPayinMethod: .init(
+                    provider: .invoice,
+                    status: .active,
+                    isDefault: true,
+                    details: .invoice(delivery: .kivra, email: nil)
+                ),
+                payinMethods: [
+                    .init(
+                        provider: .invoice,
                         status: .active,
-                        chargingDay: nil,
-                        defaultPayinMethod: .init(
-                            provider: .invoice,
-                            status: .active,
-                            isDefault: true,
-                            details: .invoice(delivery: .kivra, email: nil)
-                        ),
-                        payinMethods: [
-                            .init(
-                                provider: .invoice,
-                                status: .active,
-                                isDefault: true,
-                                details: .invoice(delivery: .kivra, email: nil)
-                            )
-                        ],
-                        defaultPayoutMethod: .init(
-                            provider: .trustly,
-                            status: .active,
-                            isDefault: true,
-                            details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
-                        ),
-                        payoutMethods: [
-                            .init(
-                                provider: .trustly,
-                                status: .active,
-                                isDefault: true,
-                                details: .bankAccount(account: "3300-920123132", bank: "Nordea")
-                            )
-                        ],
-                        availableMethods: [
-                            .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .swish, supportsPayin: false, supportsPayout: true),
-                            .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
-                        ]
+                        isDefault: true,
+                        details: .invoice(delivery: .kivra, email: nil)
                     )
-                )
+                ],
+                defaultPayoutMethod: .init(
+                    provider: .trustly,
+                    status: .active,
+                    isDefault: true,
+                    details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
+                ),
+                payoutMethods: [
+                    .init(
+                        provider: .trustly,
+                        status: .active,
+                        isDefault: true,
+                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                    )
+                ],
+                availableMethods: [
+                    .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .swish, supportsPayin: false, supportsPayout: true),
+                    .init(provider: .trustly, supportsPayin: true, supportsPayout: true),
+                ],
+                missingConnection: nil,
+                layout: .other
             )
         }
 }

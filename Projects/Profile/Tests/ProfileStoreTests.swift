@@ -1,4 +1,4 @@
-import PresentableStore
+import AppStateContainer
 import XCTest
 
 @testable import Profile
@@ -10,7 +10,7 @@ final class ProfileStoreTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        globalAppStateContainer.clearPersistence()
     }
 
     override func tearDown() async throws {
@@ -40,11 +40,11 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.fetchProfileState)
-        assert(store.loadingState[.fetchProfileState] == nil)
+        await store.fetchProfileState()
+        assert(store.fetchProfileStateError == nil)
         try await waitUntil(description: "check state") {
-            store.state.memberDetails == memberData && store.state.partnerData == partnerData
-                && store.state.hasTravelCertificates == memberData.isTravelCertificateEnabled
+            store.memberDetails == memberData && store.partnerData == partnerData
+                && store.hasTravelCertificates == memberData.isTravelCertificateEnabled
                 && mockService.events.count == 1 && mockService.events.first == .getProfileState
         }
     }
@@ -56,11 +56,11 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.fetchProfileState)
-        assert(store.loadingState[.fetchProfileState] != nil)
-        assert(store.state.memberDetails == nil)
-        assert(store.state.partnerData == nil)
-        assert(store.state.hasTravelCertificates == false)
+        await store.fetchProfileState()
+        assert(store.fetchProfileStateError != nil)
+        assert(store.memberDetails == nil)
+        assert(store.partnerData == nil)
+        assert(store.hasTravelCertificates == false)
 
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getProfileState)
@@ -83,11 +83,11 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.fetchMemberDetails)
+        await store.fetchMemberDetails()
 
         try await waitUntil(description: "check state") {
-            store.loadingState[.fetchMemberDetails] == nil && store.state.memberDetails == memberData
-                && store.state.hasTravelCertificates == false && mockService.events.count == 1
+            store.fetchMemberDetailsError == nil && store.memberDetails == memberData
+                && store.hasTravelCertificates == false && mockService.events.count == 1
                 && mockService.events.first == .getMemberDetails
         }
     }
@@ -99,10 +99,10 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.fetchMemberDetails)
+        await store.fetchMemberDetails()
         try await waitUntil(description: "check state") {
-            store.loadingState[.fetchMemberDetails] != nil && store.state.memberDetails == nil
-                && store.state.hasTravelCertificates == false && mockService.events.count == 1
+            store.fetchMemberDetailsError != nil && store.memberDetails == nil
+                && store.hasTravelCertificates == false && mockService.events.count == 1
                 && mockService.events.first == .getMemberDetails
         }
     }
@@ -117,9 +117,9 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.updateLanguage)
+        await store.updateLanguage()
         try await waitUntil(description: "check state") {
-            store.loadingState[.updateLanguage] == nil && Localization.Locale.currentLocale.value == .init(locale)
+            store.updateLanguageError == nil && Localization.Locale.currentLocale.value == .init(locale)
                 && mockService.events.count == 1 && mockService.events.first == .updateLanguage
         }
     }
@@ -134,8 +134,8 @@ final class ProfileStoreTests: XCTestCase {
 
         let store = ProfileStore()
         self.store = store
-        await store.sendAsync(.updateLanguage)
-        assert(store.loadingState[.updateLanguage] != nil)
+        await store.updateLanguage()
+        assert(store.updateLanguageError != nil)
         assert(Localization.Locale.currentLocale.value == .init(locale))
 
         assert(mockService.events.count == 1)

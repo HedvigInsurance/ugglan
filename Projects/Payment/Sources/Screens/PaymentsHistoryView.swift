@@ -1,14 +1,13 @@
-import Apollo
+import AppStateContainer
 import Combine
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct PaymentHistoryView: View {
     @EnvironmentObject var router: NavigationRouter
-    @PresentableStore var store: PaymentStore
+    @AppObservedObject var store: PaymentStore
     @StateObject var vm = PaymentsHistoryViewModel()
 
     public var body: some View {
@@ -16,23 +15,19 @@ public struct PaymentHistoryView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        store.send(.getHistory)
+                        Task { await store.getHistory() }
                     }),
                     dismissButton: nil
                 )
             )
             .task {
-                store.send(.getHistory)
+                await store.getHistory()
             }
     }
 
     private var successView: some View {
-        PresentableStoreLens(
-            PaymentStore.self,
-            getter: { state in
-                state.paymentHistory
-            }
-        ) { history in
+        let history = store.paymentHistory
+        return Group {
             if history.isEmpty {
                 VStack(spacing: .padding16) {
                     hCoreUIAssets.infoFilled.view
@@ -91,7 +86,7 @@ public struct PaymentHistoryView: View {
                                 .padding(.horizontal, -16)
                                 .accessibilityElement(children: .combine)
                             }
-                            .withHeader(title: item.year, withoutBottomPadding: true)
+                            .withHeader(title: String(item.year), withoutBottomPadding: true)
                         }
                         if history.flatMap(\.valuesPerMonth).count >= 12 {
                             hSection {
@@ -101,10 +96,14 @@ public struct PaymentHistoryView: View {
                     }
                     .padding(.vertical, .padding16)
                 }
+                .hSetScrollBounce(to: true)
                 .sectionContainerStyle(.transparent)
+                .onPullToRefresh {
+                    await store.getHistory()
+                }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .animation(.default, value: history)
     }
 
     @hColorBuilder
@@ -120,24 +119,18 @@ public struct PaymentHistoryView: View {
 @MainActor
 public class PaymentsHistoryViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
-    @PresentableStore var store: PaymentStore
-    @Published var loadingCancellable: AnyCancellable?
+    @AppState private var store: PaymentStore
 
     init() {
-        loadingCancellable = store.loadingSignal
+        store.$isLoadingHistory
+            .combineLatest(store.$loadHistoryError)
             .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                let getAction = action.first(where: { $0.key == .getHistory })
-                switch getAction?.value {
-                case let .error(errorMessage):
-                    self?.viewState = .error(errorMessage: errorMessage)
-                case .loading:
-                    self?.viewState = .loading
-                default:
-                    self?.viewState = .success
-                }
+            .map { isLoading, error in
+                if isLoading { return .loading }
+                if let error { return .error(errorMessage: error) }
+                return .success
             }
+            .assign(to: &$viewState)
     }
 }
 

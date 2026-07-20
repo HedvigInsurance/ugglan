@@ -41,11 +41,9 @@ struct ChangeAddonScreen: View {
 
                 hSection {
                     hContinueButton { [weak vm, weak navigationVm] in
-                        Task {
-                            await vm?.getAddonOfferCost()
-                            guard vm?.addonOfferCost != nil else { return }
-                            navigationVm?.router.push(ChangeAddonRouterActions.summary)
-                        }
+                        await vm?.getAddonOfferCost()
+                        guard vm?.addonOfferCost != nil else { return }
+                        navigationVm?.router.push(ChangeAddonRouterActions.summary)
                     }
                     .disabled(!vm.allowToContinue)
                     .hButtonIsLoading(vm.fetchingCostState == .loading)
@@ -116,9 +114,7 @@ struct ChangeAddonScreen: View {
             DropdownView(
                 value: vm.selectedAddons.first!.displayDescription,
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
-            ) { [weak navigationVm] in
-                navigationVm?.isSelectableAddonPresented = selectable
-            }
+            ) { [weak navigationVm] in navigationVm?.isSelectableAddonPresented = selectable }
             .disabled(isDropDownDisabled)
             .padding(.top, .padding16)
             .hBackgroundOption(option: isDropDownDisabled ? [.locked] : [])

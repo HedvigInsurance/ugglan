@@ -15,6 +15,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case helpCenter = "help-center"
     case helpCenterTopic = "help-center/topic"
     case helpCenterQuestion = "help-center/question"
+    case puppyGuide = "puppy-guide"
     case moveContract = "move-contract"
     case changeTier = "change-tier"
     case travelAddon = "travel-addon"
@@ -32,6 +33,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case carPlusAddon = "car-plus-addon"
     case missingPetChipId = "pet-id"
     case payout = "payout"
+    case manualCharge = "manual-charge"
 
     public func getDeeplinkTextFor(contractName: String?) -> String {
         switch self {
@@ -71,6 +73,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.hcQuestionTitle
         case .helpCenterTopic:
             return L10n.hcTitle
+        case .puppyGuide:
+            return L10n.puppyGuideTitle
         case .moveContract:
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
@@ -105,7 +109,13 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.chipIdMissingMessage
         case .payout:
             return L10n.payoutPageHeading
+        case .manualCharge:
+            return L10n.paymentsPaymentOverdueTitle
         }
+    }
+
+    public var url: URL {
+        Environment.current.deepLinkUrl.appendingPathComponent(rawValue)
     }
 
     @MainActor

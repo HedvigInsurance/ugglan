@@ -21,11 +21,8 @@ struct ClaimStatusCard: View {
                         hButton(
                             .medium,
                             .secondary,
-                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
-                            {
-                                homeRouter.push(claim)
-                            }
-                        )
+                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button)
+                        ) { homeRouter.push(claim) }
                         .hButtonTakeFullWidth(true)
                     }
                 }
@@ -156,7 +153,7 @@ extension ClaimModel {
                 id: "",
                 type: .claim,
                 newestMessage: nil,
-                createdAt: nil,
+                createdAt: Date(),
                 statusMessage: nil,
                 status: .open,
                 hasClaim: true,

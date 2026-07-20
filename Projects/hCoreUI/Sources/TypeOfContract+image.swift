@@ -25,6 +25,8 @@ extension TypeOfContract {
             return .car
         case .seGroupApartmentRent:
             return .rental
+        case .seQasaLandlord:
+            return .home
         case .seQasaShortTermRental:
             return .rental
         case .seQasaLongTermRental:

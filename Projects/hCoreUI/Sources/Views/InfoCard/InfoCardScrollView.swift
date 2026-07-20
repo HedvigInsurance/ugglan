@@ -138,19 +138,22 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
                 scrollView.stopScrollingAndZooming()
             }
             let indexToScroll: Int = {
-                if velocity.x > 1, activeCard != itemsCount - 1 {
-                    return activeCard + 1
-                } else if velocity.x < -1, activeCard > 0 {
-                    return activeCard - 1
-                } else {
-                    let offset = targetContentOffset.pointee.x
-                    var indexToScroll = Int(offset / cardWidth)
-                    let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
-                    if valueOver > 0.5 {
-                        indexToScroll += 1
+                let rawIndex: Int = {
+                    if velocity.x > 1, activeCard != itemsCount - 1 {
+                        return activeCard + 1
+                    } else if velocity.x < -1, activeCard > 0 {
+                        return activeCard - 1
+                    } else {
+                        let offset = targetContentOffset.pointee.x
+                        var indexToScroll = Int(offset / cardWidth)
+                        let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
+                        if valueOver > 0.5 {
+                            indexToScroll += 1
+                        }
+                        return indexToScroll
                     }
-                    return indexToScroll
-                }
+                }()
+                return max(0, min(rawIndex, itemsCount - 1))
             }()
             withAnimation {
                 self.activeCard = indexToScroll
@@ -179,6 +182,7 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
         if valueOver > 0.5 {
             indexToScroll += 1
         }
+        indexToScroll = max(0, min(indexToScroll, itemsCount - 1))
         withAnimation {
             self.activeCard = indexToScroll
         }

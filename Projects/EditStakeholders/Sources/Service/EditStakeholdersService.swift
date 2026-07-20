@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -5,31 +6,31 @@ import hCore
 public class EditStakeholdersService {
     @Inject var service: EditStakeholdersClient
 
+    @Log
     func commitMidtermChange(commitId: String) async throws {
-        log.info("EditStakeholdersService: commitMidtermChange", error: nil, attributes: nil)
-        return try await service.commitMidtermChange(commitId: commitId)
+        try await service.commitMidtermChange(commitId: commitId)
     }
 
+    @Log
     func fetchPersonalInformation(SSN: String) async throws -> PersonalData? {
-        log.info("EditStakeholdersService: fetchPersonalInformation", error: nil, attributes: nil)
-        return try await service.fetchPersonalInformation(SSN: SSN)
+        try await service.fetchPersonalInformation(SSN: SSN)
     }
 
+    @Log
     func createIntent(
         contractId: String,
         stakeholders: [Stakeholder],
         type: StakeholderType
     ) async throws -> Intent {
-        log.info("EditStakeholdersService: createIntent", error: nil, attributes: nil)
-        return try await service.createIntent(
+        try await service.createIntent(
             contractId: contractId,
             stakeholders: stakeholders,
             type: type
         )
     }
 
+    @Log
     public func fetchContracts() async throws -> [Contract] {
-        log.info("EditStakeholdersService: fetchContracts", error: nil, attributes: nil)
-        return try await service.fetchContracts()
+        try await service.fetchContracts()
     }
 }

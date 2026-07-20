@@ -13,7 +13,7 @@ struct CrossSellingItem: View {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             Task {
                 isCrossSellLoading = true
-                await Dependencies.urlOpener.openWithAuthorizationCode(url)
+                await Dependencies.urlOpener.open(url)
                 isCrossSellLoading = false
             }
         } else {
@@ -58,12 +58,11 @@ struct CrossSellingItem: View {
                         hButton(
                             .small,
                             discountAvailable ? .primaryAlt : .secondary,
-                            content: .init(title: crossSell.buttonTitle),
-                            {
-                                fieldIsClicked.toggle()
-                                openExternal()
-                            }
-                        )
+                            content: .init(title: crossSell.buttonTitle)
+                        ) {
+                            fieldIsClicked.toggle()
+                            openExternal()
+                        }
                         .disabled(isCrossSellLoading)
                         .hButtonIsLoading(isCrossSellLoading)
                         .animation(.default, value: isCrossSellLoading)

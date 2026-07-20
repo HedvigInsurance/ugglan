@@ -44,14 +44,13 @@ struct AddonSelectSubOptionScreen: View {
                     hButton(
                         .large,
                         .primary,
-                        content: .init(title: L10n.addonFlowSelectButton),
-                        {
-                            if let selectedAddon {
-                                changeAddonNavigationVm.changeAddonVm?.selectAddon(addon: selectedAddon)
-                            }
-                            router.dismiss()
+                        content: .init(title: L10n.addonFlowSelectButton)
+                    ) {
+                        if let selectedAddon {
+                            changeAddonNavigationVm.changeAddonVm?.selectAddon(addon: selectedAddon)
                         }
-                    )
+                        router.dismiss()
+                    }
                     .accessibilityHint(L10n.voiceoverOptionSelected + (selectedAddon?.displayDescription ?? ""))
 
                     hCancelButton {

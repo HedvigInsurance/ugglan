@@ -9,9 +9,11 @@ class RemoveAddonNavigationViewModel: ObservableObject {
     let removeAddonVm: RemoveAddonViewModel
     @Published var isProcessingPresented = false
     @Published var document: hPDFDocument?
+    let goDirectlyToSummary: Bool
 
     init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
         self.removeAddonVm = .init(removeOffer)
+        goDirectlyToSummary = removeOffer.cost != nil
     }
 }
 
@@ -34,7 +36,7 @@ public struct RemoveAddonNavigation: View {
             options: [.extendedNavigationWidth],
             tracking: RemoveAddonTrackingType.removeAddonScreen
         ) {
-            if removeAddonNavigationVm.removeAddonVm.addonRemoveOfferCost == nil {
+            if !removeAddonNavigationVm.goDirectlyToSummary {
                 RemoveAddonScreen(removeAddonNavigationVm.removeAddonVm)
                     .withAlertDismiss()
                     .routerDestination(for: RemoveAddonRouterActions.self) { action in
@@ -42,7 +44,6 @@ public struct RemoveAddonNavigation: View {
                         case .summary:
                             RemoveAddonSummaryScreen(removeAddonNavigationVm)
                                 .navigationTitle(L10n.offerUpdateSummaryTitle)
-                                .withAlertDismiss()
                         }
                     }
             } else {

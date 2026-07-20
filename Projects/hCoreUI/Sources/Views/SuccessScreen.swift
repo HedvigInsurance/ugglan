@@ -67,7 +67,7 @@ public struct SuccessScreen: View {
 #Preview("SuccessScreenWithCustomBottom") {
     Localization.Locale.currentLocale.send(.en_SE)
     return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
-        .hSuccessBottomAttachedView {
+        .hStateViewBottomAttachedView {
             hSection {
                 VStack(spacing: .padding16) {
                     InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
@@ -75,9 +75,8 @@ public struct SuccessScreen: View {
                         hButton(
                             .large,
                             .primary,
-                            content: .init(title: L10n.Certificates.download),
-                            {}
-                        )
+                            content: .init(title: L10n.Certificates.download)
+                        ) {}
 
                         hCloseButton {}
                     }
@@ -85,21 +84,4 @@ public struct SuccessScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-}
-
-extension EnvironmentValues {
-    @Entry public var hSuccessBottomAttachedView: AnyView? = nil
-    @Entry public var hCustomSuccessView: AnyView? = nil
-}
-
-extension View {
-    public func hSuccessBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hSuccessBottomAttachedView, AnyView(content()))
-    }
-}
-
-extension View {
-    public func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        environment(\.hCustomSuccessView, AnyView(content()))
-    }
 }

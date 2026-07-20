@@ -1,4 +1,5 @@
 import Apollo
+import AppStateContainer
 import Chat
 import Claims
 import Contracts
@@ -7,7 +8,6 @@ import Environment
 import Foundation
 import Home
 import Payment
-import PresentableStore
 import Profile
 import SwiftUI
 @preconcurrency import UserNotifications
@@ -40,16 +40,16 @@ extension AppDelegate {
                     .getNotificationSettings { settings in
                         let status = settings.authorizationStatus.rawValue
                         Task {
-                            let store: ProfileStore = await globalPresentableStoreContainer.get()
-                            store.send(.setPushNotificationStatus(status: status))
+                            let store: ProfileStore = await globalAppStateContainer.get()
+                            await store.setPushNotificationStatus(status)
                         }
                     }
             }
         )
         Task {
             let status = await UNUserNotificationCenter.current().notificationSettings()
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: status.authorizationStatus.rawValue))
+            let store: ProfileStore = globalAppStateContainer.get()
+            store.setPushNotificationStatus(status.authorizationStatus.rawValue)
         }
     }
 }
@@ -120,19 +120,15 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
             guard let notificationType = getNotificationType(from: notification.request.content.userInfo) else {
                 return true
             }
-            guard let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription else {
-                return true
-            }
 
             if notificationType != .NEW_MESSAGE { return true }
-            let listToCheck: [String] = [
-                String(describing: HomeScreen.self),
-                .init(describing: ClaimDetailView.self),
-                .init(describing: InboxView.self),
-                .init(describing: ChatScreen.self),
-            ]
-            let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
-            return shouldShow
+            let chatSurfaceOnTop = VisibleScreenTracker.isAnyVisible([
+                HomeScreen.self,
+                ClaimDetailView.self,
+                InboxView.self,
+                ChatScreen.self,
+            ])
+            return !chatSurfaceOnTop
         }()
 
         return shouldShowNotification ? [.badge, .banner, .sound] : []

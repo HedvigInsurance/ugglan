@@ -1,5 +1,5 @@
+import AutomaticLog
 import Foundation
-import PresentableStore
 import hCore
 
 @MainActor
@@ -20,8 +20,8 @@ public class ConversationService: ChatServiceProtocol {
         self.conversationId = conversationId
     }
 
+    @Log
     public func getNewMessages() async throws -> ChatData {
-        log.info("\(ConversationService.self) getConversationMessages", error: nil, attributes: [:])
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: nil,
@@ -44,8 +44,8 @@ public class ConversationService: ChatServiceProtocol {
         )
     }
 
+    @Log
     public func getPreviousMessages() async throws -> ChatData {
-        log.info("\(ConversationService.self) getConversationMessages", error: nil, attributes: [:])
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: olderToken,
@@ -79,8 +79,8 @@ public class NewConversationService: ChatServiceProtocol {
         self.id = id
     }
 
+    @Log
     public func getNewMessages() async throws -> ChatData {
-        log.info("\(NewConversationService.self) getConversationMessages", error: nil, attributes: [:])
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
@@ -97,8 +97,8 @@ public class NewConversationService: ChatServiceProtocol {
         )
     }
 
+    @Log
     public func getPreviousMessages() async throws -> ChatData {
-        log.info("\(NewConversationService.self) getConversationMessages", error: nil, attributes: [:])
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
@@ -115,9 +115,8 @@ public class NewConversationService: ChatServiceProtocol {
         )
     }
 
+    @Log
     public func send(message: Message) async throws -> Message {
-        log.info("\(NewConversationService.self) send message", error: nil, attributes: [:])
-
         if conversationService == nil, generatingConversation == false {
             generatingConversation = true
             do {

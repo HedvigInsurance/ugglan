@@ -1,6 +1,25 @@
 import Foundation
 import ProjectDescription
 
+/// Marker `<repo-root>/.local-umbrella` (gitignored, created by
+/// `scripts/use-local-umbrella.sh`) flips Tuist into "embed-for-Xcode" mode: the umbrella
+/// dependency is dropped and a pre-build script (attached to CoreDependencies) calls
+/// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
+/// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
+/// released SPM package unchanged.
+///
+/// `#filePath` is this file's absolute path at compile time —
+/// `<repo-root>/Tuist/ProjectDescriptionHelpers/Project+DependenciesTemplate.swift` —
+/// so walking up three directories always lands on the repo root, regardless of where
+/// Tuist's manifest-evaluation subprocess sets its cwd.
+public var isLocalUmbrellaMode: Bool {
+    let projectRoot = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+        .deletingLastPathComponent()
+    return FileManager.default.fileExists(atPath: projectRoot.appendingPathComponent(".local-umbrella").path)
+}
+
 public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
@@ -12,12 +31,13 @@ public enum ExternalDependencies: CaseIterable {
     case reveal
     case datadog
     case umbrella
+    case kmpNativeCoroutines
     case tagkit
     case introspect
     case svgkit
     case unleashProxyClientSwift
     case argumentParser
-    case presentableStore
+    case appStateContainer
     case environment
     case logger
     case automaticLog
@@ -28,7 +48,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { false }
 
-    public var isAppDependency: Bool { self == .datadog }
+    public var isAppDependency: Bool { false }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -38,7 +58,7 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.1.1"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.1.2"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -60,8 +80,13 @@ public enum ExternalDependencies: CaseIterable {
         case .datadog:
             return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.10.0"))]
         case .umbrella:
+            if isLocalUmbrellaMode { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20250707133019"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260604114947"))
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.2"))
             ]
         case .tagkit:
             return [
@@ -81,15 +106,15 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.1.1"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.1.2"))
             ]
         case .argumentParser:
             return [
                 .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.7.1")))
             ]
-        case .presentableStore:
+        case .appStateContainer:
             return [
-                .package(path: .relativeToRoot("LocalModules/PresentableStore"))
+                .package(path: .relativeToRoot("LocalModules/AppStateContainer"))
             ]
         case .environment:
             return [
@@ -151,8 +176,18 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "DatadogTrace"),
             ]
         case .umbrella:
+            if isLocalUmbrellaMode {
+                // No declared dependency. The CoreDependencies pre-build script
+                // produces HedvigShared.framework in $(BUILT_PRODUCTS_DIR), which the
+                // Swift compiler resolves automatically via the default framework search path.
+                return []
+            }
             return [
                 .package(product: "HedvigShared")
+            ]
+        case .kmpNativeCoroutines:
+            return [
+                .package(product: "KMPNativeCoroutinesAsync")
             ]
         case .tagkit:
             return [
@@ -168,8 +203,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ApolloIosCodegen")]
         case .argumentParser:
             return [.package(product: "ArgumentParser")]
-        case .presentableStore:
-            return [.package(product: "PresentableStore")]
+        case .appStateContainer:
+            return [.package(product: "AppStateContainer")]
         case .environment:
             return [.package(product: "Environment")]
         case .logger:
@@ -186,17 +221,18 @@ extension Project {
     public static func dependenciesFramework(
         name: String,
         externalDependencies: [ExternalDependencies],
-        sdks: [String] = []
+        sdks: [String] = [],
+        scripts: [TargetScript] = []
     ) -> Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Release.xcconfig")
             ),
         ]
@@ -204,12 +240,12 @@ extension Project {
         let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: ["SWIFT_VERSION": "6.0.2"],
+                settings: ["SWIFT_VERSION": swiftVersion],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")
             ),
         ]
@@ -241,6 +277,7 @@ extension Project {
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
+                    scripts: scripts,
                     dependencies: dependencies,
                     settings: .settings(base: [:], configurations: frameworkConfigurations)
                 )

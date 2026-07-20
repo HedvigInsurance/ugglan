@@ -1,4 +1,5 @@
 import Addons
+import AppStateContainer
 import ChangeTier
 import Contracts
 import CrossSell
@@ -8,7 +9,6 @@ import Foundation
 import Home
 import InsuranceEvidence
 import MoveFlow
-import PresentableStore
 import Profile
 import SwiftUI
 import TerminateContracts
@@ -24,6 +24,7 @@ extension View {
 
 struct LoggedInPresentations: ViewModifier {
     @ObservedObject var vm: LoggedInNavigationViewModel
+    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     func body(content: Content) -> some View {
         content
@@ -66,10 +67,9 @@ struct LoggedInPresentations: ViewModifier {
                 dismissType in
                 switch dismissType {
                 case .done:
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    contractStore.send(.fetchContracts)
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.fetchQuickActions)
+                    Task { await contractStore.fetchContracts() }
+                    let homeStore: HomeStore = globalAppStateContainer.get()
+                    Task { await homeStore.fetchQuickActions() }
                 case .chat:
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                         NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)

@@ -12,7 +12,7 @@ let ugglanConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
@@ -21,7 +21,7 @@ let ugglanConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
@@ -33,7 +33,7 @@ let hedvigConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
@@ -41,7 +41,7 @@ let hedvigConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
@@ -52,7 +52,7 @@ let testsConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
@@ -60,7 +60,7 @@ let testsConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
@@ -71,7 +71,7 @@ let notificationConfiguration: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
             "CODE_SIGN_STYLE": "automatic",
         ],
@@ -80,7 +80,7 @@ let notificationConfiguration: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0.2",
+            "SWIFT_VERSION": swiftVersion,
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
             "CODE_SIGN_STYLE": "automatic",
         ],
@@ -106,12 +106,14 @@ let appDependencies: [TargetDependency] = [
         .project(target: "TerminateContracts", path: .relativeToRoot("Projects/TerminateContracts")),
         .project(target: "MoveFlow", path: .relativeToRoot("Projects/MoveFlow")),
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
-        .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
+        .project(target: "AuthenticationCore", path: .relativeToRoot("Projects/AuthenticationCore")),
+        .project(target: "AuthenticationUI", path: .relativeToRoot("Projects/AuthenticationUI")),
         .project(target: "EditStakeholders", path: .relativeToRoot("Projects/EditStakeholders")),
         .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "Addons", path: .relativeToRoot("Projects/Addons")),
         .project(target: "CrossSell", path: .relativeToRoot("Projects/CrossSell")),
-        .project(target: "Campaign", path: .relativeToRoot("Projects/Campaign")),
+        .project(target: "CampaignCore", path: .relativeToRoot("Projects/CampaignCore")),
+        .project(target: "CampaignUI", path: .relativeToRoot("Projects/CampaignUI")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(
@@ -160,8 +162,8 @@ let project = Project(
             bundleId: "com.hedvigForsakring.test.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Test/Info.plist",
-            sources: ["Sources/**", ""],
             resources: ["Resources/**", "Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            buildableFolders: ["Sources"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
@@ -218,7 +220,6 @@ let project = Project(
             bundleId: "com.hedvig.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Production/Info.plist",
-            sources: ["Sources/**"],
             resources: [
                 "Resources/**",
                 .glob(
@@ -227,6 +228,7 @@ let project = Project(
                 ),
                 "Config/PrivacyInfo.xcprivacy",
             ],
+            buildableFolders: ["Sources"],
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: prodAppDependencies,
@@ -257,6 +259,15 @@ let project = Project(
             entitlements: "../NotificationService/Config/Prod/NotificationService.entitlements",
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
+        ),
+        Target.target(
+            name: "Tools",
+            destinations: .iOS,
+            product: .staticLibrary,
+            bundleId: "com.hedvig.tools",
+            deploymentTargets: .iOS("16.0"),
+            sources: ["Tools/Empty.swift"],
+            dependencies: []
         ),
     ],
     schemes: [
@@ -323,6 +334,102 @@ let project = Project(
                 targets: ["Hedvig"]
             ),
             runAction: .runAction(executable: "Hedvig")
+        ),
+        Scheme.scheme(
+            name: "Run Translations",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "translations.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-translations.log"
+                            : > "$LOG"
+                            /usr/bin/osascript -e 'display notification "Running translations.sh — tail /tmp/hedvig-translations.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/translations.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"translations.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'translations.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
+        ),
+        Scheme.scheme(
+            name: "Run Codegen",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "codegen.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-codegen.log"
+                            : > "$LOG"
+                            /usr/bin/osascript -e 'display notification "Running codegen.sh — tail /tmp/hedvig-codegen.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/codegen.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"codegen.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'codegen.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
+        ),
+        Scheme.scheme(
+            name: "Run Post Checkout",
+            shared: true,
+            buildAction: .buildAction(
+                targets: ["Tools"],
+                preActions: [
+                    .executionAction(
+                        title: "post-checkout.sh",
+                        scriptText: #"""
+                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
+                            LOG="/tmp/hedvig-post-checkout.log"
+                            : > "$LOG"
+                            /usr/bin/osascript -e 'display notification "Running post-checkout.sh — tail /tmp/hedvig-post-checkout.log" with title "Hedvig"' &
+                            nohup /bin/zsh -l -c "
+                                [ -f ~/.zshrc ] && source ~/.zshrc
+                                cd '$REPO_ROOT'
+                                ./scripts/post-checkout.sh > '$LOG' 2>&1
+                                S=\$?
+                                if [ \$S -eq 0 ]; then
+                                    /usr/bin/osascript -e 'display notification \"post-checkout.sh done\" with title \"Hedvig\" sound name \"Glass\"'
+                                else
+                                    /usr/bin/osascript -e \"display notification 'post-checkout.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
+                                fi
+                            " >/dev/null 2>&1 &
+                            disown
+                            """#,
+                        target: "Ugglan",
+                        shellPath: "/bin/zsh"
+                    )
+                ]
+            )
         ),
     ],
     additionalFiles: []
