@@ -702,6 +702,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_EXPIRED_TITLE" = "Utkastet finns inte kvar";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Fortsätt";
 "RESUME_CLAIM_LEAVE_BODY" = "Det du fyllt i sparas som ett utkast i 7 dagar.";
+"RESUME_CLAIM_LEAVE_CANCEL" = "Stanna kvar";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Lämna";
 "RESUME_CLAIM_LEAVE_TITLE" = "Vill du lämna anmälan?";
 "RESUME_CLAIM_STATED" = "Påbörjad %1$@";
