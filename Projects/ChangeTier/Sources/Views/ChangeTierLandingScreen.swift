@@ -86,7 +86,7 @@ public struct ChangeTierLandingScreen: View {
                 subTitle: .init(
                     .small,
                     .body2,
-                    L10n.tierFlowSubtitle
+                    vm.canEditDeductible ? L10n.tierFlowSubtitle : L10n.tierFlowSubtitleWithoutDeductible
                 )
             )
             .hFormAttachToBottom {
@@ -266,14 +266,15 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .disabled(!vm.isValid)
-
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(
-                        title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
-                    )
-                ) { [weak changeTierNavigationVm] in changeTierNavigationVm?.isCompareTiersPresented = true }
+                if vm.showCompareCoverage {
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(
+                            title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
+                        )
+                    ) { [weak changeTierNavigationVm] in changeTierNavigationVm?.isCompareTiersPresented = true }
+                }
             }
         }
         .sectionContainerStyle(.transparent)

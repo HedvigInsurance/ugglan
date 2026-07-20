@@ -119,6 +119,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     public let name: String
     let level: Int
+    let description: String?
     public var quotes: [Quote]
     let exposureName: String?
 
@@ -126,12 +127,14 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
         id: String,
         name: String,
         level: Int,
+        description: String?,
         quotes: [Quote],
         exposureName: String?
     ) {
         self.id = id
         self.name = name
         self.level = level
+        self.description = description
         self.quotes = quotes
         self.exposureName = exposureName
     }

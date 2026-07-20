@@ -109,7 +109,7 @@ struct EditScreen: View {
         leftView(
             title: tier.quotes.first?.productVariant?.displayNameTier ?? tier.name,
             premium: tier.getPremiumLabel(),
-            subTitle: tier.quotes.first?.productVariant?.tierDescription
+            subTitle: tier.description
         )
     }
 
