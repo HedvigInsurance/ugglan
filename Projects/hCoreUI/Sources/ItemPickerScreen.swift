@@ -100,11 +100,20 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     }
             } else {
                 Group {
-                    hForm {
-                        content(with: proxy)
-                    }
-                    .hFormAttachToBottom {
-                        bottomContent
+                    if attributes.contains(.alwaysAttachToBottom) {
+                        hForm {
+                            content(with: proxy)
+                        }
+                        .hFormAlwaysAttachToBottom {
+                            bottomContent
+                        }
+                    } else {
+                        hForm {
+                            content(with: proxy)
+                        }
+                        .hFormAttachToBottom {
+                            bottomContent
+                        }
                     }
                 }
             }
@@ -400,6 +409,7 @@ public enum ItemPickerAttribute {
     case singleSelect
     case disableIfNoneSelected
     case attachToBottom
+    case alwaysAttachToBottom
 }
 
 extension EnvironmentValues {
