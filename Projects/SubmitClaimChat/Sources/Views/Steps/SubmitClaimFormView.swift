@@ -34,8 +34,7 @@ struct SubmitClaimFormView: View {
         .detent(
             item: $viewModel.isSelectItemPresented,
             presentationStyle: .detent(
-                style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true
-                    ? [.large] : [.height]
+                style: [.height]
             )
         ) { [weak viewModel] model in
             ItemPickerScreen<SingleSelectValue>(
@@ -72,7 +71,7 @@ struct SubmitClaimFormView: View {
             .hItemPickerAttributes(model.attributes)
             .navigationTitle(model.title)
             .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.itemPicker)
-            .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
+            .hFormContentPosition(.compact)
         }
         .detent(
             item: $viewModel.searchFieldPresentation,
