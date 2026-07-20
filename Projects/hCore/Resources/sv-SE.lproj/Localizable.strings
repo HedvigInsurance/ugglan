@@ -20,6 +20,10 @@
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Aktiv";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "Drulle";
+"ADDON_CAR_CROSS_SELL_BANNER" = "Mer skydd för bilen";
+"ADDON_CAR_CROSS_SELL_BENEFIT_1" = "Drulle: kupé, nycklar, feltankning";
+"ADDON_CAR_CROSS_SELL_BENEFIT_2" = "Hyrbil när din egen bil repareras";
+"ADDON_CAR_CROSS_SELL_BENEFIT_3" = "Självriskreducering vid kollision";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Självriskavdrag";
 "ADDON_CAR_PLUS_DISPLAY_NAME" = "Bil Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Hyrbil";
@@ -60,6 +64,10 @@
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Avsluta %1$@";
 "ADDON_REMOVE_DESCRIPTION" = "Om du avslutar detta tillägg ingår inte det extra skyddet längre i din hemförsäkring.";
 "ADDON_REMOVE_TITLE" = "Avsluta %1$@";
+"ADDON_TRAVEL_CROSS_SELL_BANNER" = "Extra trygghet när du reser";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_1" = "Res upp till 60 dagar i sträck";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_2" = "Försenat flyg och bagage";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_3" = "Gäller för alla medförsäkrade";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Reseskydd Plus";
 "ALERT_CANCEL" = "Avbryt";
 "AUDIO_RECORDER_LISTEN" = "Lyssna";
@@ -689,11 +697,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Fortsätt anmälan";
 "RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Starta ny anmälan";
 "RESUME_CLAIM_DRAFT_ALERT_TITLE" = "Du har en påbörjad anmälan";
+"RESUME_CLAIM_EXPIRED_BODY" = "Vänligen starta en ny anmälan";
+"RESUME_CLAIM_EXPIRED_TITLE" = "Ditt utkast har gått ut";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Fortsätt där du slutade";
 "RESUME_CLAIM_LEAVE_BODY" = "Din anmälan sparas automatiskt i 7 dagar.";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Ja, lämna";
 "RESUME_CLAIM_LEAVE_TITLE" = "Lämna anmälan?";
-"RESUME_CLAIM_STATED" = "Borjade %1$@";
+"RESUME_CLAIM_STATED" = "Började %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Sök";

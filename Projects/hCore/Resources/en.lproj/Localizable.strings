@@ -20,6 +20,10 @@
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Active";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
+"ADDON_CAR_CROSS_SELL_BANNER" = "More for your car insurance";
+"ADDON_CAR_CROSS_SELL_BENEFIT_1" = "All-risk: interior, keys, misfuelling";
+"ADDON_CAR_CROSS_SELL_BENEFIT_2" = "Compensation for rental car";
+"ADDON_CAR_CROSS_SELL_BENEFIT_3" = "Lower deductible for collision";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
 "ADDON_CAR_PLUS_DISPLAY_NAME" = "Car Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
@@ -60,6 +64,10 @@
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Cancel %1$@";
 "ADDON_REMOVE_DESCRIPTION" = "By canceling this extended coverage, your home insurance will no longer include this extra protection.";
 "ADDON_REMOVE_TITLE" = "Cancel %1$@";
+"ADDON_TRAVEL_CROSS_SELL_BANNER" = "Add extra safety when traveling";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_1" = "Travel up to 60 days in a row";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_2" = "Delayed bags and flights";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_3" = "Applies to all co-insured";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Travel Insurance Plus";
 "ALERT_CANCEL" = "Cancel";
 "AUDIO_RECORDER_LISTEN" = "Listen";
@@ -689,6 +697,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Continue draft";
 "RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Start new claim";
 "RESUME_CLAIM_DRAFT_ALERT_TITLE" = "You have a draft claim";
+"RESUME_CLAIM_EXPIRED_BODY" = "Please make a new claim";
+"RESUME_CLAIM_EXPIRED_TITLE" = "Your draft has expired";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Continue where you stopped";
 "RESUME_CLAIM_LEAVE_BODY" = "Your claim is automatically saved for 7 days.";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Yes, leave";
