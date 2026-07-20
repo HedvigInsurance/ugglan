@@ -226,6 +226,12 @@ enum ClaimIntentStepHandlerFactory {
                 service: service,
                 mainHandler: mainHandler
             )
+        case .information:
+            handler = SubmitClaimInformationStep(
+                claimIntent: claimIntent,
+                service: service,
+                mainHandler: mainHandler
+            )
         }
         handler.alertVm = alertVm
         return handler
