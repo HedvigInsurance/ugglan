@@ -86,7 +86,7 @@ public struct ChangeTierLandingScreen: View {
                 subTitle: .init(
                     .small,
                     .body2,
-                    L10n.tierFlowSubtitle
+                    vm.canEditDeductible ? L10n.tierFlowSubtitle : L10n.tierFlowSubtitleWithoutDeductible
                 )
             )
             .hFormAttachToBottom {
