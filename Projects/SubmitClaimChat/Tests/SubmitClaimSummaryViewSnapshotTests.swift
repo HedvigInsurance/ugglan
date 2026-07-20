@@ -102,16 +102,17 @@ final class SubmitClaimSummaryViewSnapshotTests: XCTestCase {
 
         let format = UIGraphicsImageRendererFormat()
         format.scale = 2
-        let image = UIGraphicsImageRenderer(bounds: bounds, format: format).image { _ in
-            hostingController.view.drawHierarchy(in: bounds, afterScreenUpdates: true)
-        }
+        let image = UIGraphicsImageRenderer(bounds: bounds, format: format)
+            .image { _ in
+                hostingController.view.drawHierarchy(in: bounds, afterScreenUpdates: true)
+            }
         let data = try XCTUnwrap(image.pngData(), "PNG encoding failed for \(name)")
 
         let dir =
             ProcessInfo.processInfo.environment["SNAPSHOT_ARTIFACTS"]
             .map { URL(fileURLWithPath: $0) }
             ?? URL(fileURLWithPath: NSTemporaryDirectory())
-                .appendingPathComponent("SubmitClaimSummarySnapshots", isDirectory: true)
+            .appendingPathComponent("SubmitClaimSummarySnapshots", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let url = dir.appendingPathComponent("\(name).png")
         try data.write(to: url)
