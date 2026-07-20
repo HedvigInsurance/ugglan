@@ -1010,7 +1010,6 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .startClaim,
             object: nil
         )
-        NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
     }
 
     @objc func addonsChanged() {

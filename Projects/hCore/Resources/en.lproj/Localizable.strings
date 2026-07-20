@@ -20,6 +20,10 @@
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Active";
 "ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
+"ADDON_CAR_CROSS_SELL_BANNER" = "More for your car insurance";
+"ADDON_CAR_CROSS_SELL_BENEFIT_1" = "All-risk: interior, keys, misfuelling";
+"ADDON_CAR_CROSS_SELL_BENEFIT_2" = "Compensation for rental car";
+"ADDON_CAR_CROSS_SELL_BENEFIT_3" = "Lower deductible for collision";
 "ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
 "ADDON_CAR_PLUS_DISPLAY_NAME" = "Car Plus";
 "ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
@@ -60,6 +64,10 @@
 "ADDON_REMOVE_CONFIRM_BUTTON" = "Cancel %1$@";
 "ADDON_REMOVE_DESCRIPTION" = "By canceling this extended coverage, your home insurance will no longer include this extra protection.";
 "ADDON_REMOVE_TITLE" = "Cancel %1$@";
+"ADDON_TRAVEL_CROSS_SELL_BANNER" = "Add extra safety when traveling";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_1" = "Travel up to 60 days in a row";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_2" = "Delayed bags and flights";
+"ADDON_TRAVEL_CROSS_SELL_BENEFIT_3" = "Applies to all co-insured";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Travel Insurance Plus";
 "ALERT_CANCEL" = "Cancel";
 "AUDIO_RECORDER_LISTEN" = "Listen";
@@ -316,6 +324,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add information about your co-owners";
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add co-owner information for your vacation home";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
+"CONTRACT_DISPLAY_NAME_SE_PAYMENT_PROTECTION" = "Payment Protection";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
 "CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Change information about co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
@@ -680,21 +689,21 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Try again or send us a message directly in the app";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Failed to open new insurance terms";
 "RESUME_CLAIM_CONTINUE_BUTTON" = "Continue";
-"RESUME_CLAIM_DEFAULT_TITLE" = "Insurance case";
-"RESUME_CLAIM_DELETE_BODY" = "Your saved draft will be permanently deleted.";
+"RESUME_CLAIM_DEFAULT_TITLE" = "Claim";
+"RESUME_CLAIM_DELETE_BODY" = "Everything you've filled in so far will be lost.";
 "RESUME_CLAIM_DELETE_BUTTON" = "Delete";
-"RESUME_CLAIM_DELETE_TITLE" = "Delete draft?";
+"RESUME_CLAIM_DELETE_TITLE" = "Delete this draft?";
 "RESUME_CLAIM_DRAFT" = "Draft";
-"RESUME_CLAIM_DRAFT_ALERT_BODY" = "Starting a new claim will delete your saved draft";
-"RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Continue draft";
-"RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "Start new claim";
-"RESUME_CLAIM_DRAFT_ALERT_TITLE" = "You have a draft claim";
-"RESUME_CLAIM_EXPIRED_BODY" = "Please make a new claim";
-"RESUME_CLAIM_EXPIRED_TITLE" = "Please make a new claim";
-"RESUME_CLAIM_FALLBACK_TITLE" = "Continue where you stopped";
-"RESUME_CLAIM_LEAVE_BODY" = "Your claim is automatically saved for 7 days.";
-"RESUME_CLAIM_LEAVE_CONFIRM" = "Yes, leave";
-"RESUME_CLAIM_LEAVE_TITLE" = "Leave claim?";
+"RESUME_CLAIM_DRAFT_ALERT_BODY" = "Starting a new claim will remove your current draft.";
+"RESUME_CLAIM_DRAFT_ALERT_CONTINUE" = "Continue claim";
+"RESUME_CLAIM_DRAFT_ALERT_START_NEW" = "New claim";
+"RESUME_CLAIM_DRAFT_ALERT_TITLE" = "You already have a draft";
+"RESUME_CLAIM_EXPIRED_BODY" = "Drafts are saved for 7 days. You can start a new claim instead.";
+"RESUME_CLAIM_EXPIRED_TITLE" = "This draft has expired";
+"RESUME_CLAIM_FALLBACK_TITLE" = "Continue";
+"RESUME_CLAIM_LEAVE_BODY" = "What you've filled in is saved as a draft for 7 days.";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Leave";
+"RESUME_CLAIM_LEAVE_TITLE" = "Leave this claim?";
 "RESUME_CLAIM_STATED" = "Started %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
 /* Placeholder for search bar in the Help center */
@@ -1018,6 +1027,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status.paid.support_text" = "We got you covered. You should have received the payment by now. \n\nSee your messages here in the app for more details.";
 "claim_status.partner.support_text" = "Our car specialists at Eir handle this claim by email.\n\nYou’ll receive a confirmation by email once it’s been reviewed. If you need to get in touch about your claim, reply in the same email thread.";
+"claim_status.show_all_answers" = "Show all answers";
 /* Figma */
 "claim_status.submitted.support_text" = "We have received your claim and will start reviewing it soon.";
 /* Figma */
