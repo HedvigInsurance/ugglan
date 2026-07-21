@@ -56,6 +56,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 ?? intent.quotes.first?.productVariant.displayName ?? ""
 
             let intentModel: ChangeTierIntentModel = .init(
+                contractId: input.contractId,
                 displayName: displayName,
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,

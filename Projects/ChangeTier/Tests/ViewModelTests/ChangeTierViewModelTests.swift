@@ -74,6 +74,7 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testFetchTiersSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
@@ -111,6 +112,44 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.selectedTier == currentTier)
     }
 
+    func testContractIdFromContractWithSource() async throws {
+        let mockService = MockData.createMockChangeTier()
+        sut = mockService
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contract-123"))
+        )
+        vm = model
+
+        assert(model.contractId == "contract-123")
+    }
+
+    func testContractIdFromExistingIntent() async throws {
+        let mockService = MockData.createMockChangeTier()
+        sut = mockService
+
+        let intent: ChangeTierIntentModel = .init(
+            contractId: "intent-contract-456",
+            displayName: "display name",
+            activationDate: Date(),
+            tiers: tiers,
+            currentTier: currentTier,
+            currentQuote: nil,
+            selectedTier: nil,
+            selectedQuote: nil,
+            canEditTier: true,
+            typeOfContract: .seHouse,
+            relatedAddons: [:]
+        )
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .existingIntent(intent: intent, onSelect: nil)
+        )
+        vm = model
+
+        assert(model.contractId == "intent-contract-456")
+    }
+
     func testAddCampaingCodeViewModelFailure() async throws {
         let mockService = MockData.createMockChangeTier(
             fetchTier: { _ throws(ChangeTierError) in
@@ -142,6 +181,7 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testSetSelectedTierSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
@@ -209,6 +249,7 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testSetSelectedDeductibleSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
             displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,

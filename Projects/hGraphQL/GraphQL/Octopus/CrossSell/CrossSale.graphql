@@ -5,6 +5,18 @@ query CrossSell($input: CrossSellInput!) {
 			  ...CrossSellFragment
 		  }
 		  discountAvailable
+		  recommendedAddon {
+			  id
+			  title
+			  description
+			  buttonText
+			  deepLink
+			  bannerText
+			  benefits
+			  pillowImageLarge {
+				  ...StoryblokImageAssetFragment
+			  }
+		  }
 		  recommendedCrossSell {
 			  bannerText
 			  buttonText

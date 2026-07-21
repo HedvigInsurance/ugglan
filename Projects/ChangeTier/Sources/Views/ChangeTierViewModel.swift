@@ -55,6 +55,14 @@ public class ChangeTierViewModel: ObservableObject {
     var shouldShowOldPrice: Bool {
         dataProvider != nil
     }
+
+    /// Contract that was changed in this flow, forwarded to cross-sell so the backend can return addon recommendations.
+    var contractId: String? {
+        switch changeTierInput {
+        case let .contractWithSource(data): return data.contractId
+        case let .existingIntent(intent, _): return intent.contractId
+        }
+    }
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = showDeductibleField ? currentQuote == selectedQuote : true

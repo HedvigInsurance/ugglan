@@ -28,7 +28,7 @@ struct MovingFlowProcessingScreen: View {
             if movingFlowConfirmVm?.viewState == .success {
                 NotificationCenter.default.post(
                     name: .openCrossSell,
-                    object: CrossSellInfo(type: .movingFlow)
+                    object: CrossSellInfo(type: .movingFlow, contractId: movingFlowConfirmVm?.newContractId)
                 )
             }
         }

@@ -24,7 +24,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
         intentId _: String,
         currentHomeQuoteId _: String,
         removedAddons _: [String]
-    ) async throws {}
+    ) async throws -> String { "newContractId" }
 
     public func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost {
         .init(

@@ -21,14 +21,16 @@ public struct CrossSellingModal: View {
                     if let recommended = crossSells.recommended {
                         CrossSellPillowComponent(crossSell: recommended)
                         VStack(spacing: .padding16) {
-                            CrossSellDiscountProgressComponent(crossSell: recommended)
+                            if case let .insurance(insurance) = recommended {
+                                CrossSellDiscountProgressComponent(crossSell: insurance)
+                            }
                             CrossSellButtonComponent(crossSell: recommended)
                         }
                     }
                     CrossSellStackComponent(
                         crossSells: crossSells.others,
                         discountAvailable: crossSells.discountAvailable,
-                        withHeader: crossSells.recommended != nil
+                        withHeader: crossSells.hasRecommendation
                     )
                 }
                 .padding(.bottom, .padding16)
