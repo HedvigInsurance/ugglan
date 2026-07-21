@@ -249,9 +249,6 @@ public enum Detent: Equatable {
 
             var additionalViewHeight =
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
-            if hasNavigationBar {
-                additionalViewHeight += navigationController?.navigationBar.frame.origin.y ?? 0
-            }
             var totalHeight: CGFloat =
                 scrollView.contentSize.height
                 + (hasNavigationBar ? navigationBarHeight : 0)
