@@ -48,10 +48,23 @@ public final class AppStateContainer {
         persistenceCancellables.removeAll()
     }
 
-    public func clearPersistence() {
-        try? FileManager.default.removeItem(at: Self.directory)
+    public func clearPersistence(preserving preserved: [any AppStore.Type] = []) {
+        let preservedNames = Set(preserved.map { String(describing: $0) })
+        if preservedNames.isEmpty {
+            try? FileManager.default.removeItem(at: Self.directory)
+        } else {
+            let contents =
+                (try? FileManager.default.contentsOfDirectory(
+                    at: Self.directory,
+                    includingPropertiesForKeys: nil
+                )) ?? []
+            for file in contents where !preservedNames.contains(file.lastPathComponent) {
+                try? FileManager.default.removeItem(at: file)
+            }
+        }
         // Also wipe the old PresentableStore directory so logged-out users don't keep
         // pre-migration snapshots on disk after `restore` has already drained them.
+        // Preserved stores are new-directory-only, so no exclusions are needed here.
         try? FileManager.default.removeItem(at: Self.legacyDirectory)
     }
 

@@ -69,6 +69,8 @@ public struct ProfileNavigation<Content: View>: View {
                         )
                     case .information:
                         InformationScreen()
+                    case .devSettings:
+                        DevSettingsView()
                     }
                 }
                 .routerDestination(
@@ -135,6 +137,7 @@ public enum ProfileRouterType: Hashable {
     case claimHistory
     case travelCertificates
     case information
+    case devSettings
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -175,6 +178,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: TravelCertificatesListScreen.self)
         case .information:
             return .init(describing: InformationScreen.self)
+        case .devSettings:
+            return .init(describing: DevSettingsView.self)
         }
     }
 }
@@ -196,6 +201,9 @@ extension ProfileRouterType: NavigationTitleProtocol {
             L10n.TravelCertificate.cardTitle
         case .information:
             L10n.profileInfoLabel
+        case .devSettings:
+            // Ugglan-only screen, intentionally not localized
+            "Dev settings"
         }
     }
 }

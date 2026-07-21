@@ -1,5 +1,6 @@
 import Apollo
 import AppStateContainer
+import Environment
 import Home
 import SwiftUI
 import hCore
@@ -22,8 +23,14 @@ public struct ProfileView: View {
                 }
                 ProfileRow(row: .claimHistory)
                 ProfileRow(row: .information)
-                ProfileRow(row: .settings)
-                    .hWithoutDivider
+                if Environment.current != .production {
+                    ProfileRow(row: .settings)
+                    ProfileRow(row: .devSettings)
+                        .hWithoutDivider
+                } else {
+                    ProfileRow(row: .settings)
+                        .hWithoutDivider
+                }
             }
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
