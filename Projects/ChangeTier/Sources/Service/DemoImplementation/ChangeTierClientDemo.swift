@@ -12,184 +12,22 @@ public class ChangeTierClientDemo: ChangeTierClient {
         ]
 
         let quotes: [Quote] = [
-            .init(
-                id: "id1",
-                quoteAmount: .init(amount: "1000", currency: "SEK"),
-                quotePercentage: 0,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                currentTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                newTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                displayItems: displayItems,
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    perils: [
-                        .init(
-                            id: "id1",
-                            title: "title1",
-                            description: "description1",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id2",
-                            title: "title2",
-                            description: "description2",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id3",
-                            title: "title3",
-                            description: "description3",
-                            color: nil,
-                            covered: []
-                        ),
-                    ],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "Homeowner",
-                    displayNameTier: "Standard",
-                    tierDescription: "Vårt mellanpaket med hög ersättning."
-                ),
-                addons: [],
-                costBreakdown: []
-            ),
-            .init(
-                id: "id2",
-                quoteAmount: .init(amount: "2000", currency: "SEK"),
-                quotePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                currentTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                newTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                displayItems: displayItems,
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    perils: [
-                        .init(
-                            id: "id1",
-                            title: "title1",
-                            description: "description1",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id2",
-                            title: "title2",
-                            description: "description2",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id3",
-                            title: "title3",
-                            description: "description3",
-                            color: nil,
-                            covered: []
-                        ),
-                    ],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "Homeowner",
-                    displayNameTier: "Standard",
-                    tierDescription: "Vårt mellanpaket med hög ersättning."
-                ),
-                addons: [],
-                costBreakdown: []
-            ),
-            .init(
-                id: "id3",
-                quoteAmount: .init(amount: "3000", currency: "SEK"),
-                quotePercentage: 15,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                currentTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                newTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                displayItems: displayItems,
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    perils: [
-                        .init(
-                            id: "id1",
-                            title: "title1",
-                            description: "description1",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id2",
-                            title: "title2",
-                            description: "description2",
-                            color: nil,
-                            covered: []
-                        ),
-                        .init(
-                            id: "id3",
-                            title: "title3",
-                            description: "description3",
-                            color: nil,
-                            covered: []
-                        ),
-                    ],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "Homeowner",
-                    displayNameTier: "Standard",
-                    tierDescription: "Vårt mellanpaket med hög ersättning."
-                ),
-                addons: [],
-                costBreakdown: []
-            ),
+            .demoWithVariant(id: "id1", amount: "1000", percentage: 0, displayItems: displayItems),
+            .demoWithVariant(id: "id2", amount: "2000", percentage: 25, displayItems: displayItems),
+            .demoWithVariant(id: "id3", amount: "3000", percentage: 15, displayItems: displayItems),
         ]
 
-        let selectedTier = Tier(
+        let selectedTier = Tier.demo(
             id: "STANDARD",
             name: "Standard",
             level: 2,
-            quotes: [
-                .init(
-                    id: "quote1",
-                    quoteAmount: .init(amount: "220", currency: "SEK"),
-                    quotePercentage: 0,
-                    subTitle: nil,
-                    currentTotalCost: .init(
-                        gross: .init(amount: "200", currency: "SEK"),
-                        net: .init(amount: "160", currency: "SEK"),
-                    ),
-                    newTotalCost: .init(
-                        gross: .init(amount: "200", currency: "SEK"),
-                        net: .init(amount: "160", currency: "SEK"),
-                    ),
-                    displayItems: [],
-                    productVariant: nil,
-                    addons: [],
-                    costBreakdown: []
-                )
-            ],
+            description: "desc1",
             exposureName: "Standard"
         )
 
         return .changeTierIntentModel(
             changeTierIntentModel: .init(
+                contractId: "Id",
                 displayName: "display name",
                 activationDate: Date(),
                 tiers: [
@@ -197,6 +35,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         id: "id",
                         name: "Bas",
                         level: 0,
+                        description: "desc1",
                         quotes: quotes,
                         exposureName: "Bellmansgatan 19A"
                     ),
@@ -205,6 +44,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         id: "id3",
                         name: "Premium",
                         level: 0,
+                        description: "desc1",
                         quotes: quotes,
                         exposureName: "Bellmansgatan 19A"
                     ),
@@ -213,57 +53,15 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     id: "id",
                     name: "Max",
                     level: 3,
+                    description: "desc1",
                     quotes: quotes,
                     exposureName: ""
                 ),
-                currentQuote: .init(
+                currentQuote: .demoWithVariant(
                     id: "id1",
-                    quoteAmount: .init(amount: "449", currency: "SEK"),
-                    quotePercentage: 25,
-                    subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                    currentTotalCost: .init(
-                        gross: .init(amount: "200", currency: "SEK"),
-                        net: .init(amount: "160", currency: "SEK"),
-                    ),
-                    newTotalCost: .init(
-                        gross: .init(amount: "200", currency: "SEK"),
-                        net: .init(amount: "160", currency: "SEK"),
-                    ),
-                    displayItems: displayItems,
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Standard",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    addons: [],
-                    costBreakdown: []
+                    amount: "449",
+                    percentage: 25,
+                    displayItems: displayItems
                 ),
                 selectedTier: selectedTier,
                 selectedQuote: nil,

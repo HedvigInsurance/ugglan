@@ -34,8 +34,7 @@ struct SubmitClaimFormView: View {
         .detent(
             item: $viewModel.isSelectItemPresented,
             presentationStyle: .detent(
-                style: viewModel.isSelectItemPresented?.attributes.contains(.alwaysAttachToBottom) == true
-                    ? [.large] : [.height]
+                style: [.height]
             )
         ) { [weak viewModel] model in
             ItemPickerScreen<SingleSelectValue>(
@@ -72,7 +71,7 @@ struct SubmitClaimFormView: View {
             .hItemPickerAttributes(model.attributes)
             .navigationTitle(model.title)
             .embededInNavigation(options: .largeNavigationBar, tracking: SubmitClaimModalType.itemPicker)
-            .hFormContentPosition(model.attributes.contains(.alwaysAttachToBottom) ? .bottom : .compact)
+            .hFormContentPosition(.compact)
         }
         .detent(
             item: $viewModel.searchFieldPresentation,
@@ -158,15 +157,20 @@ struct FormFieldView: View {
     }
 
     var textView: some View {
-        hFloatingTextField(
-            masking: .init(type: .none),
-            value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
+        hTextView(
+            selectedValue: fieldViewModel.value,
             placeholder: field.title,
-            suffix: field.suffix,
-            error: $fieldViewModel.error
-        )
+            popupPlaceholder: field.title,
+            minCharacters: field.minValue.flatMap { Int($0) },
+            maxCharacters: field.maxValue.flatMap { Int($0) },
+            floatingPlaceholder: true
+        ) { text in
+            fieldViewModel.value = text
+        }
+        .hTextFieldError(fieldViewModel.error)
+        // Restore the section padding stripped by the surrounding form so the
+        // text is inset from the box edge
+        .hWithoutHorizontalPadding(.none)
     }
 
     var phoneNumberView: some View {
@@ -189,7 +193,7 @@ struct FormFieldView: View {
         ) { [weak viewModel] in
             guard let viewModel else { return }
             if viewModel.state.isEnabled == true {
-                viewModel.dateForPicker = fieldViewModel.values.first?.localDateToDate ?? Date()
+                viewModel.dateForPicker = field.initialPickerDate(selectedValue: fieldViewModel.values.first)
                 viewModel.isDatePickerPresented = .init(
                     id: field.id,
                     continueAction: { [weak viewModel] in

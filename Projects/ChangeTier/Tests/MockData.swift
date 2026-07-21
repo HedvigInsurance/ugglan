@@ -9,6 +9,7 @@ struct MockData {
     static func createMockChangeTier(
         fetchTier: @escaping GetTier = { _ in
             .init(
+                contractId: "contractId",
                 displayName: "display name",
                 activationDate: Date(),
                 tiers: [],

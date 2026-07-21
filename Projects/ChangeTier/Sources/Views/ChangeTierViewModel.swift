@@ -24,7 +24,7 @@ public class ChangeTierViewModel: ObservableObject {
     @Published var currentTotalCost: Premium?
     @Published var newTotalCost: Premium?
     @Published var displayItemList: [QuoteDisplayItem] = []
-
+    @Published var showCompareCoverage: Bool = false
     var currentTier: Tier?
     var currentQuote: Quote?
 
@@ -54,6 +54,14 @@ public class ChangeTierViewModel: ObservableObject {
 
     var shouldShowOldPrice: Bool {
         dataProvider != nil
+    }
+
+    /// Contract that was changed in this flow, forwarded to cross-sell so the backend can return addon recommendations.
+    var contractId: String? {
+        switch changeTierInput {
+        case let .contractWithSource(data): return data.contractId
+        case let .existingIntent(intent, _): return intent.contractId
+        }
     }
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -211,6 +219,9 @@ public class ChangeTierViewModel: ObservableObject {
                     updateDisplayProperties(data)
                     updateSelectedValues(data)
                     updatePremiumAndDeductible()
+                    //show
+                    self.showCompareCoverage =
+                        data.tiers.flatMap(\.quotes).filter({ $0.productVariant?.displayNameTier != nil }).count > 0
 
                     withAnimation {
                         self.viewState = .success

@@ -230,90 +230,11 @@ extension Perils {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
 
-    let standardTier = Tier(
-        id: "STANDARD",
-        name: "Standard",
-        level: 2,
-        quotes: [
-            .init(
-                id: "quote1",
-                quoteAmount: .init(amount: "220", currency: "SEK"),
-                quotePercentage: 0,
-                subTitle: nil,
-                currentTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                newTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                displayItems: [],
-                productVariant: nil,
-                addons: [],
-                costBreakdown: []
-            )
-        ],
-        exposureName: "Standard"
-    )
-
-    let premiumTier = Tier(
-        id: "PREMIUM",
-        name: "Premium",
-        level: 0,
-        quotes: [
-            .init(
-                id: "quote1",
-                quoteAmount: .init(amount: "220", currency: "SEK"),
-                quotePercentage: 0,
-                subTitle: nil,
-                currentTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                newTotalCost: .init(
-                    gross: .init(amount: "200", currency: "SEK"),
-                    net: .init(amount: "160", currency: "SEK"),
-                ),
-                displayItems: [],
-                productVariant: nil,
-                addons: [],
-                costBreakdown: []
-            )
-        ],
-        exposureName: "exposure name"
-    )
-
     let vm: CompareTierViewModel = .init(
         tiers: [
-            .init(
-                id: "BAS",
-                name: "Bas",
-                level: 0,
-                quotes: [
-                    .init(
-                        id: "quote1",
-                        quoteAmount: .init(amount: "220", currency: "SEK"),
-                        quotePercentage: 0,
-                        subTitle: nil,
-                        currentTotalCost: .init(
-                            gross: .init(amount: "200", currency: "SEK"),
-                            net: .init(amount: "160", currency: "SEK"),
-                        ),
-                        newTotalCost: .init(
-                            gross: .init(amount: "200", currency: "SEK"),
-                            net: .init(amount: "160", currency: "SEK"),
-                        ),
-                        displayItems: [],
-                        productVariant: nil,
-                        addons: [],
-                        costBreakdown: []
-                    )
-                ],
-                exposureName: "exposure name"
-            ),
-            standardTier,
-            premiumTier,
+            .demo(id: "BAS", name: "Bas", level: 0, description: "desc", exposureName: "exposure name"),
+            .demo(id: "STANDARD", name: "Standard", level: 2, description: "Standard", exposureName: "Standard"),
+            .demo(id: "PREMIUM", name: "Premium", level: 0, description: "desc1", exposureName: "exposure name"),
         ]
     )
 

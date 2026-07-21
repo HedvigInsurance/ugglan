@@ -95,7 +95,8 @@ extension ClaimModel {
                     .localDateToIso8601Date?
                     .displayDateDDMMMYYYYFormat ?? item.displayValue
                 return .init(displayTitle: item.displayTitle, displayValue: displayValue)
-            }
+            },
+            contractId: claim.contractId
         )
     }
 }

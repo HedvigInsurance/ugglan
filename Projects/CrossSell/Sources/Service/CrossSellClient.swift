@@ -2,7 +2,7 @@ import Addons
 
 @MainActor
 public protocol CrossSellClient: Sendable {
-    func getCrossSell(source: CrossSellSource) async throws -> CrossSells
+    func getCrossSell(source: CrossSellSource, contractId: String?) async throws -> CrossSells
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }
 

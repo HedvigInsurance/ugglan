@@ -48,13 +48,14 @@ public class HomeNavigationViewModel: ObservableObject {
 
             Task { @MainActor in
                 let crossSells = try await crossSellInfo.getCrossSell()
-                if let recommended = crossSells.recommended {
-                    if crossSells.others.isEmpty {
-                        self?.navBarItems.isNewOfferPresentedCenter = recommended
-                    } else {
-                        self?.navBarItems.isNewOfferPresentedModal = crossSells
-                    }
-                } else {
+                // A recommendation (insurance or addon) on its own uses the centered presentation;
+                // combined with other cross-sells it uses the modal, and other-sells-only uses the detent.
+                // A response with nothing to show does not present a sheet at all.
+                if let recommended = crossSells.recommended, crossSells.others.isEmpty {
+                    self?.navBarItems.isNewOfferPresentedCenter = recommended
+                } else if crossSells.recommended != nil {
+                    self?.navBarItems.isNewOfferPresentedModal = crossSells
+                } else if !crossSells.others.isEmpty {
                     self?.navBarItems.isNewOfferPresentedDetent = crossSells
                 }
 
@@ -82,7 +83,7 @@ public class HomeNavigationViewModel: ObservableObject {
     public struct NavBarItems {
         public var isFirstVetPresented = false
         public var isNewOfferPresentedModal: CrossSells?
-        public var isNewOfferPresentedCenter: CrossSell?
+        public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?
     }
 

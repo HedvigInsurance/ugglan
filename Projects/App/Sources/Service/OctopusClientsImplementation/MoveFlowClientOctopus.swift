@@ -46,14 +46,20 @@ class MoveFlowClientOctopus: MoveFlowClient {
 
         let data = try await octopus.client.mutation(mutation: mutation)
         if let moveIntentFragment = data?.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MoveQuotesModel(from: moveIntentFragment)
+            return MoveQuotesModel(from: moveIntentFragment, contractId: input.selectedAddressId)
         } else if let userError = data?.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
+    func confirmMoveIntent(
+        intentId: String,
+        currentHomeQuoteId: String,
+        removedAddons: [String]
+    ) async throws
+        -> String
+    {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
             homeQuoteId: GraphQLNullable(optionalValue: currentHomeQuoteId),
@@ -69,6 +75,10 @@ class MoveFlowClientOctopus: MoveFlowClient {
         if let userError = data?.moveIntentCommit.userError {
             throw MovingFlowError.serverError(message: userError.message ?? "")
         }
+        guard let newContractId = data?.moveIntentCommit.newContractId else {
+            throw MovingFlowError.serverError(message: L10n.somethingWentWrong)
+        }
+        return newContractId
     }
 
     private func apartmentInput(addressInputModel: AddressInputModel) -> OctopusGraphQL.MoveToApartmentInput? {
@@ -150,14 +160,14 @@ extension MoveConfigurationModel {
 
 @MainActor
 extension MoveQuotesModel {
-    init(from data: OctopusGraphQL.MoveIntentFragment) {
+    init(from data: OctopusGraphQL.MoveIntentFragment, contractId: String) {
         let homeQuotes = data.fragments.quoteFragment.homeQuotes
         self.init(
             homeQuotes: data.homeQuotes.compactMap { MovingFlowQuote(from: $0) },
             mtaQuotes: data.fragments.quoteFragment.mtaQuotes.compactMap { MovingFlowQuote(from: $0) },
             changeTierModel: {
                 if !homeQuotes.isEmpty {
-                    return ChangeTierIntentModel.initWith(data: homeQuotes)
+                    return ChangeTierIntentModel.initWith(data: homeQuotes, contractId: contractId)
                 }
                 return nil
             }()
@@ -271,7 +281,7 @@ extension DisplayItem {
 
 @MainActor
 extension ChangeTierIntentModel {
-    static func initWith(data: [OctopusGraphQL.QuoteFragment.HomeQuote]) -> ChangeTierIntentModel {
+    static func initWith(data: [OctopusGraphQL.QuoteFragment.HomeQuote], contractId: String) -> ChangeTierIntentModel {
         let groupedQuotes = data.reduce([(tierName: String, quotes: [OctopusGraphQL.QuoteFragment.HomeQuote])]()) {
             partialResult,
             data in
@@ -327,6 +337,7 @@ extension ChangeTierIntentModel {
                     id: firstQuote.tierName,
                     name: firstQuote.productVariant.displayNameTier ?? firstQuote.tierName,
                     level: firstQuote.tierLevel,
+                    description: nil,
                     quotes: quotes,
                     exposureName: firstQuote.exposureName
                 )
@@ -346,6 +357,7 @@ extension ChangeTierIntentModel {
         }()
 
         let intentModel: ChangeTierIntentModel = .init(
+            contractId: contractId,
             displayName: currentTierAndQuote.deductible?.productVariant?.displayName ?? tiers.first?.quotes
                 .first?
                 .productVariant?

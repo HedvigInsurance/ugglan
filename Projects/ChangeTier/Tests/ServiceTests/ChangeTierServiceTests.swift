@@ -25,6 +25,7 @@ final class ChangeTierServiceTests: XCTestCase {
                 id: "id1",
                 name: "standard",
                 level: 1,
+                description: nil,
                 quotes: [],
                 exposureName: "exposureName"
             ),
@@ -32,6 +33,7 @@ final class ChangeTierServiceTests: XCTestCase {
                 id: "id2",
                 name: "max",
                 level: 2,
+                description: nil,
                 quotes: [
                     .init(
                         id: "id1",
@@ -60,6 +62,7 @@ final class ChangeTierServiceTests: XCTestCase {
         ]
 
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
             displayName: "displayName",
             activationDate: Date(),
             tiers: tiers,

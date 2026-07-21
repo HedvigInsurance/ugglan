@@ -56,6 +56,7 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 ?? intent.quotes.first?.productVariant.displayName ?? ""
 
             let intentModel: ChangeTierIntentModel = .init(
+                contractId: input.contractId,
                 displayName: displayName,
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
@@ -149,8 +150,10 @@ class ChangeTierClientOctopus: ChangeTierClient {
             allTiers.append(
                 .init(
                     id: tierName,
-                    name: allQuotesWithNameX.first?.productVariant.displayNameTier ?? "",
+                    name: allQuotesWithNameX.first?.productVariant.displayNameTier ?? tierName,
                     level: allQuotesWithNameX.first?.tierLevel ?? 0,
+                    description: allQuotesWithNameX.first?.tierDescription
+                        ?? allQuotesWithNameX.first?.productVariant.tierDescription,
                     quotes: allDeductiblesForX,
                     exposureName: currentContract.exposureDisplayName
                 )
@@ -179,8 +182,11 @@ class ChangeTierClientOctopus: ChangeTierClient {
         })
             ?? Tier(
                 id: intent.agreementToChange.tierName ?? "",
-                name: intent.agreementToChange.productVariant.displayNameTier ?? "",
+                name: intent.agreementToChange.productVariant.displayNameTier ?? intent.agreementToChange.tierName
+                    ?? "",
                 level: intent.agreementToChange.tierLevel ?? 0,
+                description: intent.agreementToChange.tierDescription ?? intent.agreementToChange.productVariant
+                    .tierDescription ?? "",
                 quotes: [
                     .init(
                         id: "currentTier",

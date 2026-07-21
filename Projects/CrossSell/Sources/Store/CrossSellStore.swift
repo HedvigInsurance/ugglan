@@ -24,7 +24,7 @@ public final class CrossSellStore: AppStore {
 
     public func fetchCrossSell() async {
         do {
-            crossSells = try await crossSellService.getCrossSell(source: .insurances)
+            crossSells = try await crossSellService.getCrossSell(source: .insurances, contractId: nil)
             fetchCrossSellError = nil
         } catch {
             fetchCrossSellError = error.localizedDescription
@@ -43,7 +43,7 @@ public final class CrossSellStore: AppStore {
 
     public func fetchRecommendedCrossSellId() async {
         do {
-            let recommended = try await crossSellService.getCrossSell(source: .home).recommended?.id
+            let recommended = try await crossSellService.getCrossSell(source: .home, contractId: nil).recommended?.id
             hasNewOffer = recommended != nil && recommended != lastSeenRecommendedProductId
         } catch {}
     }

@@ -3,7 +3,7 @@ import Addons
 public class CrossSellClientDemo: CrossSellClient {
     public init() {}
 
-    public func getCrossSell(source _: CrossSellSource) async throws -> CrossSells {
+    public func getCrossSell(source _: CrossSellSource, contractId _: String?) async throws -> CrossSells {
         let crossSells: [CrossSell] = [
             .init(
                 id: "1",

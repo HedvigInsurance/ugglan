@@ -79,6 +79,7 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Codable, Sendable {
 }
 
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
+    let contractId: String
     let displayName: String
     let activationDate: Date
     public let tiers: [Tier]
@@ -89,8 +90,8 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
     let relatedAddons: [String: [AddonQuote]]
-
     public init(
+        contractId: String,
         displayName: String,
         activationDate: Date,
         tiers: [Tier],
@@ -102,6 +103,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         typeOfContract: TypeOfContract,
         relatedAddons: [String: [AddonQuote]]
     ) {
+        self.contractId = contractId
         self.displayName = displayName
         self.activationDate = activationDate
         self.tiers = tiers
@@ -119,6 +121,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     public let name: String
     let level: Int
+    let description: String?
     public var quotes: [Quote]
     let exposureName: String?
 
@@ -126,12 +129,14 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
         id: String,
         name: String,
         level: Int,
+        description: String?,
         quotes: [Quote],
         exposureName: String?
     ) {
         self.id = id
         self.name = name
         self.level = level
+        self.description = description
         self.quotes = quotes
         self.exposureName = exposureName
     }

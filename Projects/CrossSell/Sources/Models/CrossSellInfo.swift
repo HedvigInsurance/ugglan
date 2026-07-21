@@ -9,15 +9,20 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
 
     public let id: String = UUID().uuidString
     public let type: CrossSellSource
+    /// Contract that was changed in the flow. When set, enables addon recommendations for that contract.
+    public let contractId: String?
     let additionalInfo: (any Encodable & Sendable)?
 
-    public init<T>(type: CrossSellSource, additionalInfo: T) where T: Encodable & Codable & Sendable {
+    public init<T>(type: CrossSellSource, contractId: String? = nil, additionalInfo: T)
+    where T: Encodable & Codable & Sendable {
         self.type = type
+        self.contractId = contractId
         self.additionalInfo = additionalInfo
     }
 
-    public init(type: CrossSellSource) {
+    public init(type: CrossSellSource, contractId: String? = nil) {
         self.type = type
+        self.contractId = contractId
         additionalInfo = nil
     }
 
@@ -39,6 +44,6 @@ public struct CrossSellInfo: Identifiable, Equatable, Sendable {
     }
 
     public func getCrossSell() async throws -> CrossSells {
-        try await CrossSellService().getCrossSell(source: type)
+        try await CrossSellService().getCrossSell(source: type, contractId: contractId)
     }
 }
