@@ -702,7 +702,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_EXPIRED_TITLE" = "This draft has expired";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Continue";
 "RESUME_CLAIM_LEAVE_BODY" = "What you've filled in is saved as a draft for 7 days.";
-"RESUME_CLAIM_LEAVE_CANCEL" = "Keep editing";
+"RESUME_CLAIM_LEAVE_CANCEL" = "Stay";
 "RESUME_CLAIM_LEAVE_CONFIRM" = "Leave";
 "RESUME_CLAIM_LEAVE_TITLE" = "Leave this claim?";
 "RESUME_CLAIM_STATED" = "Started %1$@";
@@ -723,6 +723,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_SCREEN.SUBSCRIBE_TITLE" = "Confirm subscription";
 "SETTINGS_SCREEN.UNSUBSCRIBED_MESSAGE" = "Unsubscribed from receiving offers via email";
 "SETTINGS_SCREEN.UNSUBSCRIBE_DESCRIPTION" = "You will no longer receive offers and campaigns from us";
+"SETTINGS_THEME_DARK" = "Dark";
+"SETTINGS_THEME_LIGHT" = "Light";
+"SETTINGS_THEME_SYSTEM_DEFAULT" = "System default";
+"SETTINGS_THEME_TITLE" = "Theme";
 "SET_TERMINATION_DATE_TEXT" = "Please set termination date for your insurance.";
 "SIMPLE_SIGN_FAILED_MESSAGE" = "Please try again. If this is not your first time getting an Hedvig insurance, please contact us in the chat or email hedvig@hedvig.com to help you.";
 "SIMPLE_SIGN_FAILED_TITLE" = "We couldn't sign you up";

@@ -41,6 +41,9 @@ struct MainNavigation: App {
                         .zIndex(2)
                 }
             }
+            .onAppear {
+                ThemeOption.current.apply(animated: false)
+            }
             .onOpenURL { url in
                 handle(url: url)
             }

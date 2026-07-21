@@ -12,6 +12,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published var isDeleteAccountRequestedPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
+    @Published public var isThemePickerPresented = false
     @Published public var isConfirmEmailPreferencesPresented = false
     @Published public var isCreateInsuranceEvidencePresented = false
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
@@ -108,6 +109,17 @@ public struct ProfileNavigation<Content: View>: View {
                     )
             }
         )
+        .detent(
+            presented: $profileNavigationViewModel.isThemePickerPresented,
+            content: {
+                ThemePickerView()
+                    .navigationTitle(L10n.settingsThemeTitle)
+                    .embededInNavigation(
+                        options: .navigationType(type: .large),
+                        tracking: ProfileDetentType.themePicker
+                    )
+            }
+        )
         .modally(
             presented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented,
             tracking: ProfileRedirectType.deleteRequestLoading(state: .success)
@@ -148,6 +160,8 @@ enum ProfileDetentType: TrackingViewNameProtocol {
             return .init(describing: ProfileView.self)
         case .languagePicker:
             return .init(describing: LanguagePickerView.self)
+        case .themePicker:
+            return .init(describing: ThemePickerView.self)
         case .emailPreferences:
             return .init(describing: EmailPreferencesConfirmView.self)
         }
@@ -155,6 +169,7 @@ enum ProfileDetentType: TrackingViewNameProtocol {
 
     case profile
     case languagePicker
+    case themePicker
     case emailPreferences
 }
 
