@@ -217,6 +217,19 @@ public struct ClaimIntentStepContentForm: Sendable {
             self.title = title
             self.type = type
         }
+
+        /// The date the picker opens with: the saved value if present, otherwise today, clamped to min/max
+        @MainActor
+        func initialPickerDate(selectedValue: String?) -> Date {
+            let date = selectedValue?.localDateToDate ?? Date()
+            if let maxDate = maxValue?.localDateToDate, date > maxDate {
+                return maxDate
+            }
+            if let minDate = minValue?.localDateToDate, date < minDate {
+                return minDate
+            }
+            return date
+        }
     }
 
     public struct SearchData: Sendable {
