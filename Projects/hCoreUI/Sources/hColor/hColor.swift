@@ -135,10 +135,10 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
     }
 }
 
-struct hColorViewModifier<Color: hColor>: ViewModifier {
+struct hColorViewModifier: ViewModifier {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.userInterfaceLevel) var userInterfaceLevel
-    var color: Color?
+    var color: (any hColor)?
     var colorType: ColorType
 
     enum ColorType {
@@ -165,17 +165,19 @@ struct hColorViewModifier<Color: hColor>: ViewModifier {
 }
 
 extension View {
-    public func foregroundColor<Color: hColor>(_ color: Color?) -> some View {
+    /// Takes `any hColor` so mixed-type inline ternaries work,
+    /// e.g. `.foregroundColor(isEmpty ? hTextColor.Translucent.secondary : hTextColor.Opaque.primary)`.
+    public func foregroundColor(_ color: (any hColor)?) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .foregroundColor))
     }
 
-    public func border<Color: hColor>(_ color: Color?, width: CGFloat = 0) -> some View {
+    public func border(_ color: (any hColor)?, width: CGFloat = 0) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .border(width: width)))
     }
 }
 
 extension View {
-    public func tint<Color: hColor>(_ color: Color?) -> some View {
+    public func tint(_ color: (any hColor)?) -> some View {
         modifier(hColorViewModifier(color: color, colorType: .tintColor))
     }
 }

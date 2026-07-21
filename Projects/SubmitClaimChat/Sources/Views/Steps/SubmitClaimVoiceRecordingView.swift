@@ -142,16 +142,14 @@ struct SubmitClaimVoiceRecordingResultView: View {
     }
 
     private var textResultView: some View {
-        HStack {
-            hText(viewModel.textInput)
-                .frame(alignment: .topLeading)
-            Spacer()
-        }
-        .hPillStyle(color: .grey, colorLevel: .two)
-        .hFieldSize(.extraLarge)
-        .transition(.opacity.combined(with: .scale(scale: 0.95)))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(viewModel.textInput)
+        let displayText = viewModel.textInput.isEmpty ? L10n.claimChatSkippedStep : viewModel.textInput
+        return hText(displayText)
+            .foregroundColor(viewModel.textInput.isEmpty ? hTextColor.Translucent.secondary : hTextColor.Opaque.primary)
+            .hPillStyle(color: .grey, colorLevel: .two)
+            .hFieldSize(.extraLarge)
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(displayText)
     }
 
     private func audioResultView(url: URL) -> some View {

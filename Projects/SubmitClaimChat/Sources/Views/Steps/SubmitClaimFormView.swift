@@ -157,15 +157,20 @@ struct FormFieldView: View {
     }
 
     var textView: some View {
-        hFloatingTextField(
-            masking: .init(type: .none),
-            value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
+        hTextView(
+            selectedValue: fieldViewModel.value,
             placeholder: field.title,
-            suffix: field.suffix,
-            error: $fieldViewModel.error
-        )
+            popupPlaceholder: field.title,
+            minCharacters: field.minValue.flatMap { Int($0) },
+            maxCharacters: field.maxValue.flatMap { Int($0) },
+            floatingPlaceholder: true
+        ) { text in
+            fieldViewModel.value = text
+        }
+        .hTextFieldError(fieldViewModel.error)
+        // Restore the section padding stripped by the surrounding form so the
+        // text is inset from the box edge
+        .hWithoutHorizontalPadding(.none)
     }
 
     var phoneNumberView: some View {

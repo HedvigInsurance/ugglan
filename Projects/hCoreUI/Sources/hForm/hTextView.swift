@@ -6,7 +6,7 @@ public struct hTextView: View {
     private let placeholder: String
     private let popupPlaceholder: String
     private let minCharacters: Int
-    private let maxCharacters: Int
+    private let maxCharacters: Int?
     @State private var height: CGFloat = 100
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
@@ -17,15 +17,17 @@ public struct hTextView: View {
     @AccessibilityFocusState var isFocused: Bool
     private let onContinue: (_ text: String) -> Void
     private let enabled: Bool
+    private let floatingPlaceholder: Bool
     private let color: UIColor
     public init(
         selectedValue: String,
         placeholder: String,
         popupPlaceholder: String,
         minCharacters: Int? = 0,
-        maxCharacters: Int,
+        maxCharacters: Int?,
         enabled: Bool = true,
         showOnAppear: Binding<Bool> = .constant(false),
+        floatingPlaceholder: Bool = false,
         color: UIColor = UIColor { trait in
             let style = trait.userInterfaceStyle
             return hSurfaceColor.Opaque.primary.colorFor(style == .dark ? .dark : .light, .base).color.uiColor()
@@ -40,6 +42,7 @@ public struct hTextView: View {
         self.maxCharacters = maxCharacters
         self.enabled = enabled
         self._showOnAppear = showOnAppear
+        self.floatingPlaceholder = floatingPlaceholder
         self.color = color
     }
 
@@ -47,37 +50,43 @@ public struct hTextView: View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topTrailing) {
                 hSection {
-                    VStack(alignment: .trailing, spacing: 4) {
-                        SwiftUITextView(
-                            placeholder: placeholder,
-                            text: $selectedValue,
-                            becomeFirstResponder: false,
-                            disabled: true,
-                            height: $height,
-                            width: $width,
-                            inEdit: .constant(false),
-                            onBeginEditing: {
-                                if enabled {
-                                    ImpactGenerator.soft()
-                                    showFreeTextField()
+                    VStack(alignment: .leading, spacing: 0) {
+                        if floatingPlaceholder, selectedValue != "" {
+                            hText(placeholder, style: .label)
+                                .foregroundColor(hTextColor.Opaque.tertiary)
+                        }
+                        VStack(alignment: .trailing, spacing: 4) {
+                            SwiftUITextView(
+                                placeholder: placeholder,
+                                text: $selectedValue,
+                                becomeFirstResponder: false,
+                                disabled: true,
+                                height: $height,
+                                width: $width,
+                                inEdit: .constant(false),
+                                onBeginEditing: {
+                                    if enabled {
+                                        ImpactGenerator.soft()
+                                        showFreeTextField()
+                                    }
+                                },
+                                color: enabled ? color : nil
+                            )
+                            .accessibilityLabel(placeholder)
+                            .padding(.leading, -4)
+                            .frame(height: height)
+                            .padding(.bottom, enabled && maxCharacters != nil ? 0 : .padding12)
+                            .accessibilityFocused($isFocused)
+                            if enabled, let maxCharacters {
+                                HStack(spacing: .padding4) {
+                                    Spacer()
+                                    hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
+                                        .foregroundColor(hTextColor.Opaque.tertiary)
                                 }
-                            },
-                            color: enabled ? color : nil
-                        )
-                        .accessibilityLabel(placeholder)
-                        .padding(.leading, -4)
-                        .frame(height: height)
-                        .padding(.bottom, enabled ? 0 : .padding12)
-                        .accessibilityFocused($isFocused)
-                        if enabled {
-                            HStack(spacing: .padding4) {
-                                Spacer()
-                                hText("\(selectedValue.count)/\(maxCharacters)", style: .label)
-                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                                .fixedSize()
+                                .padding(.bottom, .padding12)
+                                .accessibilityHidden(true)
                             }
-                            .fixedSize()
-                            .padding(.bottom, .padding12)
-                            .accessibilityHidden(true)
                         }
                     }
                 }
@@ -204,7 +213,7 @@ private struct FreeTextInputView: View {
     fileprivate let title: String
     fileprivate let placeholder: String
     fileprivate let minCharacters: Int
-    fileprivate let maxCharacters: Int
+    fileprivate let maxCharacters: Int?
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
@@ -220,7 +229,7 @@ private struct FreeTextInputView: View {
         title: String,
         placeholder: String,
         minCharacters: Int,
-        maxCharacters: Int,
+        maxCharacters: Int?,
         height: Binding<CGFloat>,
         color: UIColor
     ) {
@@ -280,18 +289,20 @@ private struct FreeTextInputView: View {
                     }
                     .sectionContainerStyle(.transparent)
                     Spacer()
-                    hSection {
-                        HStack {
-                            Spacer()
-                            HStack(spacing: .padding4) {
+                    if let maxCharacters {
+                        hSection {
+                            HStack {
                                 Spacer()
-                                hText("\(value.count)/\(maxCharacters)", style: .label)
-                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                                HStack(spacing: .padding4) {
+                                    Spacer()
+                                    hText("\(value.count)/\(maxCharacters)", style: .label)
+                                        .foregroundColor(hTextColor.Opaque.tertiary)
+                                }
                             }
+                            .padding(.bottom, .padding8)
                         }
-                        .padding(.bottom, .padding8)
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
                 }
             }
             .sectionContainerStyle(.opaque)
