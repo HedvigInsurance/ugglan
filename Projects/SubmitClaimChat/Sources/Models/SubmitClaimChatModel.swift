@@ -17,10 +17,6 @@ struct SingleItemModel: Equatable, Identifiable {
             result.append(.singleSelect)
         }
 
-        if values.count > 5 {
-            result.append(.alwaysAttachToBottom)
-        }
-
         return result
     }
 }
