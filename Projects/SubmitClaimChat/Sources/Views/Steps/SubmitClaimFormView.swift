@@ -163,7 +163,8 @@ struct FormFieldView: View {
             placeholder: field.title,
             popupPlaceholder: field.title,
             minCharacters: field.minValue.flatMap { Int($0) },
-            maxCharacters: field.maxValue.flatMap { Int($0) }
+            maxCharacters: field.maxValue.flatMap { Int($0) },
+            floatingPlaceholder: true
         ) { text in
             fieldViewModel.value = text
         }
