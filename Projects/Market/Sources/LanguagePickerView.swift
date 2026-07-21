@@ -30,7 +30,7 @@ public struct LanguagePickerView: View {
                                         locale.icon
                                             .resizable()
                                             .frame(width: 24, height: 24)
-                                        hText(locale.displayName, style: .heading2)
+                                        hText(locale.displayName, style: .heading1)
                                             .foregroundColor(hTextColor.Opaque.primary)
                                     }
                                     .asAnyView

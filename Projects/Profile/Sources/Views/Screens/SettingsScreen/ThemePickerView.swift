@@ -15,7 +15,7 @@ struct ThemePickerView: View {
                             hRadioField(
                                 id: theme.id,
                                 leftView: {
-                                    hText(theme.displayName, style: .heading2)
+                                    hText(theme.displayName, style: .heading1)
                                         .foregroundColor(hTextColor.Opaque.primary)
                                         .asAnyView
                                 },
