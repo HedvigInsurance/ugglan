@@ -26,12 +26,10 @@ struct ClaimFlowLauncher: ViewModifier {
                 presentationStyle: .detent(style: [.height]),
                 options: .constant(.alwaysOpenOnTop),
                 content: { input in
-                    SubmitClaimChatHonestyPledgeScreen {
-                        inProgress,
-                        withAnimations in
+                    SubmitClaimChatHonestyPledgeScreen { withAnimations in
                         startInputDetent = nil
                         disableSubmitChatClaimAnimations = !withAnimations
-                        submitClaimInput = inProgress ? .init(type: .inProgress) : input
+                        submitClaimInput = input
                         startInput = nil
                     }
                     .navigationTitle(L10n.honestyPledgeHeader)
@@ -61,21 +59,12 @@ struct ClaimFlowLauncher: ViewModifier {
                     onDeinit()
                 }
             }
+            .onAppear {
+                // onChange misses a value set before the view attaches (e.g. cold-start deep link).
+                handleStartInput(startInput)
+            }
             .onChange(of: startInput) { value in
-                if let value {
-                    switch value.type {
-                    case let .regular(hasInProgress):
-                        if hasInProgress {
-                            // A saved draft exists — let the member choose before starting a new claim.
-                            showDraftAlert = true
-                        } else {
-                            startInputDetent = value
-                        }
-                    case .inProgress:
-                        submitClaimInput = value
-                        startInput = nil
-                    }
-                }
+                handleStartInput(value)
             }
             .alert(
                 L10n.resumeClaimDraftAlertTitle,
@@ -92,6 +81,22 @@ struct ClaimFlowLauncher: ViewModifier {
             } message: {
                 Text(L10n.resumeClaimDraftAlertBody)
             }
+    }
+
+    private func handleStartInput(_ value: StartClaimInput?) {
+        guard let value else { return }
+        switch value.type {
+        case let .regular(hasInProgress):
+            if hasInProgress {
+                // A saved draft exists — let the member choose before starting a new claim.
+                showDraftAlert = true
+            } else {
+                startInputDetent = value
+            }
+        case .inProgress:
+            submitClaimInput = value
+            startInput = nil
+        }
     }
 }
 

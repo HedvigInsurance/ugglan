@@ -43,7 +43,7 @@ struct ClaimStatusCard: View {
                     color: .amber,
                 )
                 .hFieldSize(.small),
-                title: model.title ?? L10n.resumeClaimDefaultTitle,
+                title: model.title,
                 subTitle: model.createdAt.getSubTitle,
                 bottomComponent: {
                     VStack(spacing: .padding16) {
@@ -102,8 +102,7 @@ struct ClaimStatusCard: View {
             ) {
                 Button(L10n.generalCancelButton, role: .cancel) {}
                 Button(L10n.resumeClaimDeleteButton, role: .destructive) {
-                    let store: ClaimsStore = globalAppStateContainer.get()
-                    Task { await store.deleteClaimInProgress() }
+                    deleteClaimInProgress()
                 }
             } message: {
                 Text(L10n.resumeClaimDeleteBody)
@@ -113,12 +112,18 @@ struct ClaimStatusCard: View {
                 isPresented: $showExpiredAlert
             ) {
                 Button(L10n.generalCloseButton, role: .cancel) {
-                    let store: ClaimsStore = globalAppStateContainer.get()
-                    Task { await store.deleteClaimInProgress() }
+                    deleteClaimInProgress()
                 }
             } message: {
                 Text("Please make a new claim")  //L10n.resumeClaimExpiredBody
             }
+        }
+    }
+
+    private func deleteClaimInProgress() {
+        let store: ClaimsStore = globalAppStateContainer.get()
+        Task {
+            await store.deleteClaimInProgress()
         }
     }
 }

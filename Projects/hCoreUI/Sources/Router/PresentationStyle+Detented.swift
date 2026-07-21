@@ -247,7 +247,7 @@ public enum Detent: Equatable {
             let additionalNavigationHeight =
                 additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
 
-            var additionalViewHeight =
+            let additionalViewHeight =
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
             var totalHeight: CGFloat =
                 scrollView.contentSize.height

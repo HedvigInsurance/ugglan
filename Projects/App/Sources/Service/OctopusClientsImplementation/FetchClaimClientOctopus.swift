@@ -37,7 +37,7 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
             query: OctopusGraphQL.ResumableClaimIntentQuery()
         )
         guard let resumable = data.currentMember.resumableClaimIntent,
-            let createdAt = resumable.createdAt.localDateToIso8601Date
+            let createdAt = resumable.createdAt.localDateToDate ?? resumable.createdAt.localDateToIso8601Date
         else {
             return nil
         }

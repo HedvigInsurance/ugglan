@@ -6,7 +6,7 @@ import hCoreUI
 struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: NavigationRouter
     @State private var hasAgreedToHonestyPledge = false
-    let onConfirm: (_ inProgress: Bool, _ withAnimations: Bool) -> Void
+    let onConfirm: (_ withAnimations: Bool) -> Void
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -30,7 +30,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 hSection {
                     VStack(spacing: .padding8) {
                         continueButtonWithAnimations()
-                            .disabled(!hasAgreedToHonestyPledge)
                         if Environment.current == .staging {
                             continueButtonWithAnimations(false)
                         }
@@ -70,10 +69,10 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         Group {
             if enabled {
                 hContinueButton {
-                    onConfirm(false, enabled)
+                    onConfirm(enabled)
                 }
             } else {
-                hButton(.large, .secondary, content: .init(title: "Without animations")) { onConfirm(false, enabled) }
+                hButton(.large, .secondary, content: .init(title: "Without animations")) { onConfirm(enabled) }
             }
         }
         .disabled(!hasAgreedToHonestyPledge)
@@ -87,6 +86,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _, _ in })
+        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in })
     }
 }

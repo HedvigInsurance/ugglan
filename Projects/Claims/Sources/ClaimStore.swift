@@ -93,6 +93,12 @@ public final class ClaimsStore: AppStore {
         }
     }
 
+    /// Input type for launching the claim flow, treating an expired draft as no draft.
+    public var startClaimType: StartClaimInputType {
+        let hasResumableDraft = claimInProgress.map { !$0.isExpired } ?? false
+        return .regular(hasInProgress: hasResumableDraft)
+    }
+
     private func setAllActiveClaims() {
         var claims = [ActiveClaimType]()
         if let claimInProgress {
@@ -111,7 +117,7 @@ public final class ClaimsStore: AppStore {
             case .claim(let model):
                 return model.id
             case .claimInProgress(let model):
-                return model.title ?? "title"
+                return model.id
             }
         }
     }

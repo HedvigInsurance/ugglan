@@ -100,10 +100,9 @@ extension HomeScreen {
                 .large,
                 .primary,
                 content: .init(title: L10n.HomeTab.claimButtonText),
-                {
+                { [weak navigationVm] in
                     let store: ClaimsStore = globalAppStateContainer.get()
-                    let hasClaimInProgress = store.claimInProgress != nil
-                    navigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasClaimInProgress))
+                    navigationVm?.claimsAutomationStartInput = .init(type: store.startClaimType)
                 }
             )
         }

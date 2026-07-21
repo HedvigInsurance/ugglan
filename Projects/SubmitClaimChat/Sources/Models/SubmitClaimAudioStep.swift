@@ -75,7 +75,8 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     private var uploadedAudioId: String?
     func uploadAudioRecording() async throws {
-        guard let audioFileURL else {
+        // A resumed step carries a remote currentAudioUrl; only local recordings can be uploaded.
+        guard let audioFileURL, audioFileURL.isFileURL else {
             throw ClaimIntentError.invalidResponse
         }
         state.isEnabled = false

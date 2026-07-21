@@ -279,8 +279,7 @@ class DeepLinkHandler {
             }
         case .submitClaim:
             let store: ClaimsStore = globalAppStateContainer.get()
-            let hasInProgress = store.claimInProgress != nil
-            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
         case .claimChat:
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
@@ -324,8 +323,7 @@ class DeepLinkHandler {
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
         let store: ClaimsStore = globalAppStateContainer.get()
-        let hasInProgress = store.claimInProgress != nil
-        viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: .regular(hasInProgress: hasInProgress))
+        viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
     }
 
     private func dismissAndSelectTab(_ tab: Int) {

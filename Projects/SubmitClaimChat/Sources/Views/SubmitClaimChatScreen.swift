@@ -328,7 +328,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             previousTitle = newTitle
             return newTitle
         } else {
-            return previousTitle ?? ""
+            return previousTitle ?? L10n.claimChatTitle
         }
     }
     var stepHeights: [String: CGFloat] = [:] {
