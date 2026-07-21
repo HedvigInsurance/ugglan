@@ -76,6 +76,9 @@ extension ClaimIntentStepHandler {
     var alignment: Alignment {
         switch claimIntent.currentStep.content {
         case .audioRecording:
+            if (self as? SubmitClaimAudioStep)?.isTextInputPresented == true {
+                return .trailing
+            }
             return .leading
         default:
             if sender == .hedvig {
