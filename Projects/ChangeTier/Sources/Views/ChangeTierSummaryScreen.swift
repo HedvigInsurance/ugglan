@@ -13,9 +13,9 @@ struct ChangeTierSummaryScreen: View {
         QuoteSummaryScreen(
             quoteSummary: changeTierNavigationVm.vm.asQuoteSummary(),
             onDocumentTap: { [weak changeTierNavigationVm] in changeTierNavigationVm?.document = $0 }
-        ) { [weak changeTierNavigationVm] in
-            changeTierNavigationVm?.vm.commitTier()
+        ) { @MainActor [weak changeTierNavigationVm] in
             changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
+            changeTierNavigationVm?.vm.commitTier()
         }
     }
 }
