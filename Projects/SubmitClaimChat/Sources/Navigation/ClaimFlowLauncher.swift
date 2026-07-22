@@ -1,3 +1,4 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -16,8 +17,8 @@ struct ClaimFlowLauncher: ViewModifier {
     @Binding var startInput: StartClaimInput?
     @State private var submitClaimInput: StartClaimInput?
     @State private var router = NavigationRouter()
-    @State var disableSubmitChatClaimAnimations = false
     @State private var showDraftAlert = false
+    @AppState private var devSettingsStore: DevSettingsStore
     let onDeinit: () -> Void
     func body(content: Content) -> some View {
         content
@@ -26,9 +27,8 @@ struct ClaimFlowLauncher: ViewModifier {
                 presentationStyle: .detent(style: [.height]),
                 options: .constant(.alwaysOpenOnTop),
                 content: { input in
-                    SubmitClaimChatHonestyPledgeScreen { withAnimations in
+                    SubmitClaimChatHonestyPledgeScreen {
                         startInputDetent = nil
-                        disableSubmitChatClaimAnimations = !withAnimations
                         submitClaimInput = input
                         startInput = nil
                     }
@@ -53,7 +53,7 @@ struct ClaimFlowLauncher: ViewModifier {
                             )
                         }
                     ),
-                    disableAnimations: disableSubmitChatClaimAnimations
+                    disableAnimations: !devSettingsStore.isSubmitClaimAnimationsEnabled
                 )
                 .onDeinit { [onDeinit] in
                     onDeinit()
@@ -75,11 +75,17 @@ struct ClaimFlowLauncher: ViewModifier {
                     startInput = nil
                 }
                 Button(L10n.resumeClaimDraftAlertStartNew, role: .destructive) {
-                    startInputDetent = .init(type: .regular(hasInProgress: false))
+                    handleStartInput(.init(type: .regular(hasInProgress: false)))
                     startInput = nil
                 }
             } message: {
                 Text(L10n.resumeClaimDraftAlertBody)
+            }
+            .onChange(of: showDraftAlert) { value in
+                if !value {
+                    // Covers cancellation paths that bypass the alert buttons (e.g. Escape key).
+                    startInput = nil
+                }
             }
     }
 
@@ -90,8 +96,12 @@ struct ClaimFlowLauncher: ViewModifier {
             if hasInProgress {
                 // A saved draft exists — let the member choose before starting a new claim.
                 showDraftAlert = true
-            } else {
+            } else if devSettingsStore.isSubmitClaimAnimationsEnabled {
                 startInputDetent = value
+            } else {
+                // Dev setting: with animations off, skip the honesty pledge and open the flow directly.
+                submitClaimInput = value
+                startInput = nil
             }
         case .inProgress:
             submitClaimInput = value

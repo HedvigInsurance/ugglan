@@ -5,6 +5,7 @@ import hCoreUI
 
 enum ProfileRowType {
     case myInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory, information
+    case devSettings
     case eurobonus(hasEnteredNumber: Bool)
 
     var title: String {
@@ -25,6 +26,9 @@ enum ProfileRowType {
             return L10n.Profile.ClaimHistory.title
         case .information:
             return L10n.profileInfoLabel
+        case .devSettings:
+            // Ugglan-only screen, intentionally not localized
+            return "Dev settings"
         }
     }
 
@@ -47,6 +51,8 @@ enum ProfileRowType {
             return hCoreUIAssets.clock.view
         case .information:
             return hCoreUIAssets.infoOutlined.view
+        case .devSettings:
+            return hCoreUIAssets.settings.view
         }
     }
 }

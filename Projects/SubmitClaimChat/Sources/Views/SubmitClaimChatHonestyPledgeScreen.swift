@@ -1,4 +1,3 @@
-import Environment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,7 +5,7 @@ import hCoreUI
 struct SubmitClaimChatHonestyPledgeScreen: View {
     @EnvironmentObject var router: NavigationRouter
     @State private var hasAgreedToHonestyPledge = false
-    let onConfirm: (_ withAnimations: Bool) -> Void
+    let onConfirm: () -> Void
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -29,10 +28,7 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 .sectionContainerStyle(.transparent)
                 hSection {
                     VStack(spacing: .padding8) {
-                        continueButtonWithAnimations()
-                        if Environment.current == .staging {
-                            continueButtonWithAnimations(false)
-                        }
+                        continueButton
                         cancelButton
                     }
                 }
@@ -65,15 +61,9 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func continueButtonWithAnimations(_ enabled: Bool = true) -> some View {
-        Group {
-            if enabled {
-                hContinueButton {
-                    onConfirm(enabled)
-                }
-            } else {
-                hButton(.large, .secondary, content: .init(title: "Without animations")) { onConfirm(enabled) }
-            }
+    private var continueButton: some View {
+        hContinueButton {
+            onConfirm()
         }
         .disabled(!hasAgreedToHonestyPledge)
     }
@@ -86,6 +76,6 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
 #Preview {
     VStack {
         Spacer()
-        SubmitClaimChatHonestyPledgeScreen(onConfirm: { _ in })
+        SubmitClaimChatHonestyPledgeScreen(onConfirm: {})
     }
 }

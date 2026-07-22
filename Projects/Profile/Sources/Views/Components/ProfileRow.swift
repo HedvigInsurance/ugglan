@@ -49,6 +49,8 @@ struct ProfileRow: View {
             router.push(ProfileRouterType.claimHistory)
         case .information:
             router.push(ProfileRouterType.information)
+        case .devSettings:
+            router.push(ProfileRouterType.devSettings)
         }
     }
 }

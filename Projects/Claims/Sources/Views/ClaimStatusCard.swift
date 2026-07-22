@@ -108,14 +108,14 @@ struct ClaimStatusCard: View {
                 Text(L10n.resumeClaimDeleteBody)
             }
             .alert(
-                "Your draft claim has expired",  //L10n.resumeClaimExpiredTitle
+                L10n.resumeClaimExpiredTitle,
                 isPresented: $showExpiredAlert
             ) {
                 Button(L10n.generalCloseButton, role: .cancel) {
                     deleteClaimInProgress()
                 }
             } message: {
-                Text("Please make a new claim")  //L10n.resumeClaimExpiredBody
+                Text(L10n.resumeClaimExpiredBody)
             }
         }
     }

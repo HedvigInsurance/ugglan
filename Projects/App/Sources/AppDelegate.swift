@@ -37,8 +37,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
-        // remove all persisted state and drop in-memory store instances
-        globalAppStateContainer.clearPersistence()
+        // remove all persisted state and drop in-memory store instances;
+        // dev settings intentionally survive logout
+        globalAppStateContainer.clearPersistence(preserving: [DevSettingsStore.self])
         globalAppStateContainer.reset()
         globalAppStateContainer = AppStateContainer()
 
