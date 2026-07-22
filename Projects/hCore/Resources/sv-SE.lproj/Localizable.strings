@@ -723,6 +723,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_SCREEN.SUBSCRIBE_TITLE" = "Bekräfta prenumeration";
 "SETTINGS_SCREEN.UNSUBSCRIBED_MESSAGE" = "Avregistrerad från erbjudanden på mail";
 "SETTINGS_SCREEN.UNSUBSCRIBE_DESCRIPTION" = "Du kommer inte längre få kampanjmail från oss";
+"SETTINGS_THEME_DARK" = "Mörkt";
+"SETTINGS_THEME_LIGHT" = "Ljust";
+"SETTINGS_THEME_SYSTEM_DEFAULT" = "Systemets standardinställning";
+"SETTINGS_THEME_TITLE" = "Tema";
 "SET_TERMINATION_DATE_TEXT" = "Ange slutdatum för din försäkring.";
 "SIMPLE_SIGN_FAILED_MESSAGE" = "";
 "SIMPLE_SIGN_FAILED_TITLE" = "Vi kunde inte registrera dig";
