@@ -3,22 +3,25 @@ import hCore
 import hCoreUI
 
 struct ChangeTierSummaryScreen: View {
-    private let quoteSummaryVm: QuoteSummaryViewModel
+    private let changeTierNavigationVm: ChangeTierNavigationViewModel
 
-    init(
-        changeTierVm: ChangeTierViewModel,
-        changeTierNavigationVm: ChangeTierNavigationViewModel
-    ) {
-        quoteSummaryVm = changeTierVm.asQuoteSummaryViewModel(changeTierNavigationVm: changeTierNavigationVm)
+    init(changeTierNavigationVm: ChangeTierNavigationViewModel) {
+        self.changeTierNavigationVm = changeTierNavigationVm
     }
 
     var body: some View {
-        QuoteSummaryScreen(vm: quoteSummaryVm)
+        QuoteSummaryScreen(
+            quoteSummary: changeTierNavigationVm.vm.asQuoteSummary(),
+            onDocumentTap: { [weak changeTierNavigationVm] in changeTierNavigationVm?.document = $0 }
+        ) { @MainActor [weak changeTierNavigationVm] in
+            changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
+            changeTierNavigationVm?.vm.commitTier()
+        }
     }
 }
 
 extension ChangeTierViewModel {
-    func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
+    func asQuoteSummary() -> QuoteSummary {
         let displayItems: [QuoteDisplayItem] =
             selectedQuote?.displayItems.map { .init(title: $0.title, value: $0.value) } ?? []
         let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
@@ -29,17 +32,12 @@ extension ChangeTierViewModel {
             + (selectedQuote?.addons.flatMap(\.addonVariant.documents) ?? [])
 
         let contracts = [
-            QuoteSummaryViewModel.ContractInfo(
+            QuoteSummary.ContractInfo(
                 id: currentTier?.id ?? "",
                 title: displayName ?? "",
                 subtitle: activationDate,
                 premium: newTotalCost,
-                documentSection: .init(
-                    documents: documents,
-                    onTap: { [weak changeTierNavigationVm] document in
-                        changeTierNavigationVm?.document = document
-                    },
-                ),
+                documents: documents,
                 displayItems: displayItems,
                 insuranceLimits: selectedQuote?.productVariant?.insurableLimits ?? [],
                 typeOfContract: typeOfContract,
@@ -50,17 +48,11 @@ extension ChangeTierViewModel {
 
         let totalPremium = contracts.compactMap(\.premium).sum()
 
-        let vm = QuoteSummaryViewModel(
-            contract: contracts,
+        return QuoteSummary(
+            contracts: contracts,
             activationDate: self.activationDate,
-            totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net),
-            onConfirmClick: { [weak changeTierNavigationVm] in
-                changeTierNavigationVm?.vm.commitTier()
-                changeTierNavigationVm?.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
-            }
+            totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net)
         )
-
-        return vm
     }
 }
 @available(iOS 17.0, *)
@@ -77,7 +69,6 @@ extension ChangeTierViewModel {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
 
     return ChangeTierSummaryScreen(
-        changeTierVm: changeTierVm,
         changeTierNavigationVm: changeTierNavigationVm
     )
 }

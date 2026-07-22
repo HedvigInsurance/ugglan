@@ -8,15 +8,12 @@ import hCoreUI
 
 @MainActor
 class MovingFlowQuoteManager {
-    weak var viewModel: MovingFlowNavigationViewModel?
-
-    func createSummaryViewModel(
-        router: NavigationRouter,
+    func createQuoteSummary(
         moveQuotesModel: MoveQuotesModel?,
         selectedHomeQuote: MovingFlowQuote?,
         totalPremium: Premium,
         removedAddonIds: [String]
-    ) -> QuoteSummaryViewModel {
+    ) -> QuoteSummary {
         let movingFlowQuotes = getQuotes(
             moveQuotesModel: moveQuotesModel,
             selectedHomeQuote: selectedHomeQuote
@@ -26,34 +23,18 @@ class MovingFlowQuoteManager {
             createContractInfo(for: quote, removedAddonIds: removedAddonIds)
         }
 
-        let vm = QuoteSummaryViewModel(
-            contract: contractInfos,
+        return QuoteSummary(
+            contracts: contractInfos,
             activationDate: movingFlowQuotes.first?.startDate,
             noticeInfo: contractInfos.count > 1 ? L10n.changeAddressOtherInsurancesInfoText : nil,
             totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net)
         )
-
-        vm.onConfirmClick = { [weak router, weak viewModel] in
-            Task { [weak viewModel] in
-                guard let viewModel = viewModel,
-                    let movingFlowConfirmViewModel = viewModel.movingFlowConfirmViewModel
-                else { return }
-                router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
-                await movingFlowConfirmViewModel.confirmMoveIntent(
-                    intentId: viewModel.moveConfigurationModel?.id ?? "",
-                    currentHomeQuoteId: viewModel.selectedHomeQuote?.id ?? "",
-                    removedAddons: viewModel.removedAddonIds
-                )
-            }
-        }
-
-        return vm
     }
 
     private func createContractInfo(
         for quote: MovingFlowQuote,
         removedAddonIds: [String]
-    ) -> QuoteSummaryViewModel.ContractInfo {
+    ) -> QuoteSummary.ContractInfo {
         var documents: [hPDFDocument] = quote.documents.map {
             .init(displayName: $0.displayName, url: $0.url, type: .unknown)
         }
@@ -74,17 +55,12 @@ class MovingFlowQuoteManager {
             contentsOf: quote.priceBreakdownItems.map { .init(title: $0.displayTitle, value: $0.displayValue) }
         )
 
-        return QuoteSummaryViewModel.ContractInfo(
+        return QuoteSummary.ContractInfo(
             id: quote.id,
             title: quote.displayName,
             subtitle: quote.exposureName ?? "",
             premium: quote.totalPremium,
-            documentSection: .init(
-                documents: documents,
-                onTap: { [weak viewModel] document in
-                    viewModel?.document = document
-                }
-            ),
+            documents: documents,
             displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
             insuranceLimits: quote.insurableLimits,
             typeOfContract: quote.contractType,
@@ -152,15 +128,13 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
     @Published var houseInformationInputvm = HouseInformationInputModel()
     @Published var selectedHomeQuote: MovingFlowQuote?
     @Published var selectedHomeAddress: MoveAddress?
-    var totalPremium: Premium?
+    var totalPremium: Premium!
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
-    var quoteSummaryViewModel: QuoteSummaryViewModel?
     var removedAddonIds: [String] = []
 
     fileprivate var initialTrackingType: MovingFlowDetentType?
 
     init() {
-        quoteManager.viewModel = self
         initializeData()
     }
 
@@ -199,11 +173,8 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
         }
     }
 
-    func setMovingFlowSummaryViewModel(router: NavigationRouter) {
-        guard let totalPremium else { return }
-        movingFlowConfirmViewModel = .init()
-        quoteSummaryViewModel = quoteManager.createSummaryViewModel(
-            router: router,
+    func createQuoteSummary() -> QuoteSummary {
+        quoteManager.createQuoteSummary(
             moveQuotesModel: moveQuotesModel,
             selectedHomeQuote: selectedHomeQuote,
             totalPremium: totalPremium,
@@ -413,11 +384,7 @@ public struct MovingFlowNavigation: View {
     }
 
     func openConfirmScreen() -> some View {
-        movingFlowNavigationVm.setMovingFlowSummaryViewModel(
-            router: router
-        )
-        let model = movingFlowNavigationVm.quoteSummaryViewModel!
-        return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
+        MovingFlowConfirmScreen(navigationVm: movingFlowNavigationVm, router: router)
             .navigationTitle(L10n.changeAddressSummaryTitle)
     }
 

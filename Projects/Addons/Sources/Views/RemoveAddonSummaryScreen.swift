@@ -3,51 +3,46 @@ import hCore
 import hCoreUI
 
 struct RemoveAddonSummaryScreen: View {
-    let quoteSummaryVm: QuoteSummaryViewModel
+    let removeAddonNavigationVm: RemoveAddonNavigationViewModel
 
     init(_ removeAddonNavigationVm: RemoveAddonNavigationViewModel) {
-        self.quoteSummaryVm = removeAddonNavigationVm.removeAddonVm
-            .asQuoteSummaryViewModel(navigationVm: removeAddonNavigationVm)
+        self.removeAddonNavigationVm = removeAddonNavigationVm
     }
 
     var body: some View {
-        QuoteSummaryScreen(vm: quoteSummaryVm)
+        QuoteSummaryScreen(
+            quoteSummary: removeAddonNavigationVm.removeAddonVm.asQuoteSummary(),
+            onDocumentTap: { [weak removeAddonNavigationVm] in removeAddonNavigationVm?.document = $0 }
+        ) { [weak removeAddonNavigationVm] in
+            removeAddonNavigationVm?.isProcessingPresented = true
+            Task { await removeAddonNavigationVm?.removeAddonVm.confirmRemoval() }
+        }
     }
 }
 
 extension RemoveAddonViewModel {
-    func asQuoteSummaryViewModel(navigationVm: RemoveAddonNavigationViewModel) -> QuoteSummaryViewModel {
+    func asQuoteSummary() -> QuoteSummary {
         let documents = removeOffer.productVariant.documents
 
         let typeOfContract: TypeOfContract? = TypeOfContract(rawValue: removeOffer.productVariant.typeOfContract)
 
-        let contractInfo: QuoteSummaryViewModel.ContractInfo = .init(
+        let contractInfo: QuoteSummary.ContractInfo = .init(
             id: removeOffer.contractInfo.contractId,
             title: removeOffer.contractInfo.displayName,
             subtitle: removeOffer.contractInfo.exposureName,
             premium: getPremium(),
-            documentSection: .init(
-                documents: documents,
-                onTap: { [weak navigationVm] document in
-                    navigationVm?.document = document
-                }
-            ),
+            documents: documents,
             displayItems: [],
             insuranceLimits: [],
             typeOfContract: typeOfContract,
             priceBreakdownItems: getBreakdownDisplayItems()
         )
 
-        let vm = QuoteSummaryViewModel(
-            contract: [contractInfo],
+        return QuoteSummary(
+            contracts: [contractInfo],
             activationDate: removeOffer.activationDate,
             totalPrice: .none
-        ) { [weak self, weak navigationVm] in
-            navigationVm?.isProcessingPresented = true
-            Task { await self?.confirmRemoval() }
-        }
-
-        return vm
+        )
     }
 }
 

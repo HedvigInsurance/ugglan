@@ -3,10 +3,30 @@ import hCore
 import hCoreUI
 
 struct MovingFlowConfirmScreen: View {
-    let quoteSummaryViewModel: QuoteSummaryViewModel
+    let navigationVm: MovingFlowNavigationViewModel
+    let router: NavigationRouter
 
     var body: some View {
-        QuoteSummaryScreen(vm: quoteSummaryViewModel)
+        QuoteSummaryScreen(
+            quoteSummary: navigationVm.createQuoteSummary(),
+            onDocumentTap: { [weak navigationVm] in navigationVm?.document = $0 }
+        ) { [weak navigationVm, weak router] in
+            guard let navigationVm else { return }
+            if navigationVm.movingFlowConfirmViewModel == nil {
+                navigationVm.movingFlowConfirmViewModel = .init()
+            }
+            Task { [weak navigationVm] in
+                guard let navigationVm,
+                    let movingFlowConfirmViewModel = navigationVm.movingFlowConfirmViewModel
+                else { return }
+                router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+                await movingFlowConfirmViewModel.confirmMoveIntent(
+                    intentId: navigationVm.moveConfigurationModel?.id ?? "",
+                    currentHomeQuoteId: navigationVm.selectedHomeQuote?.id ?? "",
+                    removedAddons: navigationVm.removedAddonIds
+                )
+            }
+        }
     }
 }
 
@@ -40,14 +60,14 @@ public class MovingFlowConfirmViewModel: ObservableObject {
 }
 
 #Preview {
-    let model = QuoteSummaryViewModel(
-        contract: [],
+    let quoteSummary = QuoteSummary(
+        contracts: [],
         activationDate: Date(),
         totalPrice: .comparison(
             old: .sek(399),
             new: .sek(399)
         )
-    ) {}
+    )
     Localization.Locale.currentLocale.send(.en_SE)
-    return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
+    return QuoteSummaryScreen(quoteSummary: quoteSummary, onDocumentTap: { _ in }) {}
 }
