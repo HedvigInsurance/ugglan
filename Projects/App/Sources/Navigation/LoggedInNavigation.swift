@@ -278,7 +278,8 @@ class DeepLinkHandler {
                 await viewModel?.handleClaimDetails(claimId: url.getParameter(property: .claimId))
             }
         case .submitClaim:
-            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: nil)
+            let store: ClaimsStore = globalAppStateContainer.get()
+            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
         case .claimChat:
             handleChatClaimDeeplink(url)
         case .missingPetChipId:
@@ -321,9 +322,8 @@ class DeepLinkHandler {
 
     private func handleChatClaimDeeplink(_ url: URL) {
         dismissAndSelectTab(0)
-        if let messageId = url.getParameter(property: .sourceMessageId) {
-            viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(sourceMessageId: messageId)
-        }
+        let store: ClaimsStore = globalAppStateContainer.get()
+        viewModel?.homeNavigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
     }
 
     private func dismissAndSelectTab(_ tab: Int) {
@@ -704,7 +704,12 @@ struct HomeTab: View {
         .handleEditStakeholders(with: homeNavigationVm.editStakeholdersVm)
         .handleClaimFlow(
             startInput: $homeNavigationVm.claimsAutomationStartInput
-        )
+        ) {
+            Task {
+                let store: ClaimsStore = globalAppStateContainer.get()
+                await store.fetchClaimInProgress()
+            }
+        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented,
             options: .constant(.alwaysOpenOnTop)
@@ -996,6 +1001,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .openMissingPetChipId,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startClaim),
+            name: .startClaim,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1100,6 +1112,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     @objc func chatClosed() {
         let store: HomeStore = globalAppStateContainer.get()
         Task { await store.fetchChatNotifications() }
+    }
+
+    @objc func startClaim(notification: Notification) {
+        if let type = notification.object as? StartClaimInputType {
+            homeNavigationVm.claimsAutomationStartInput = .init(type: type)
+        }
     }
 
     func handle(notification: Notification) {

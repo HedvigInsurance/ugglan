@@ -3,15 +3,15 @@ import SwiftUI
 import hCoreUI
 
 struct ClaimSection: View {
-    @Binding var claims: [ClaimModel]
+    @Binding var claims: [ClaimsStore.ActiveClaimType]
     @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
 
     var body: some View {
         InfoCardScrollView(
             items: $claims,
             vm: scrollVM,
-            content: { claim in
-                ClaimStatusCard(claim: claim, enableTap: true)
+            content: { claimType in
+                ClaimStatusCard(claimType: claimType, enableTap: true)
                     .padding(.top)
                     .padding(.bottom, 5)
             }

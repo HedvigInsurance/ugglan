@@ -12,6 +12,12 @@ public class FetchClaimsClientDemo: hFetchClaimsClient {
         []
     }
 
+    public func getClaimInProgress() async throws -> ClaimInProgressModel? {
+        nil
+    }
+
+    public func deleteClaimInProgress(id: String) async throws {}
+
     public func getFiles() async throws -> [String: [File]] {
         let fileArray: [File] = [
             .init(

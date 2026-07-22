@@ -29,7 +29,8 @@ extension FeatureData {
             isDemoMode: true,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
-            isPuppyGuideEnabled: false
+            isPuppyGuideEnabled: false,
+            isResumeClaimEnabled: false
         )
     }
 }

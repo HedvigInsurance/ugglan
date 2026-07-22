@@ -140,7 +140,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         }
     }
 
-    // describe entered values for acacessibility
+    // describe entered values for accessibility
     func accessibilityEditHint() -> String {
         fatalError("accessibilityEditHint must be overridden")
     }
@@ -163,7 +163,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
             switch result {
             case let .intent(model):
-                mainHandler(.regret(currentClaimIntent: claimIntent, newclaimIntent: model))
+                mainHandler(.regret(currentClaimIntent: claimIntent, newClaimIntent: model))
             case .outcome:
                 break
             }
@@ -240,7 +240,7 @@ enum ClaimIntentStepHandlerFactory {
 
 enum SubmitClaimEvent {
     case goToNext(claimIntent: ClaimIntent)
-    case regret(currentClaimIntent: ClaimIntent, newclaimIntent: ClaimIntent)
+    case regret(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent)
     case removeStep(id: String)
     case outcome(model: ClaimIntentStepOutcome)
 }

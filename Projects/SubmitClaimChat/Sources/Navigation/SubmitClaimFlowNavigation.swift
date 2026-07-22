@@ -22,6 +22,7 @@ public struct SubmitClaimChatInput: Equatable, Identifiable {
 
 struct SubmitClaimFlowNavigation: View {
     @StateObject var viewModel: SubmitClaimChatViewModel
+    @InjectObservableObject var featureFlags: FeatureFlags
 
     init(
         startInput: SubmitClaimChatInput,
@@ -36,7 +37,7 @@ struct SubmitClaimFlowNavigation: View {
     public var body: some View {
         hNavigationStack(router: viewModel.router, options: [.extendedNavigationWidth], tracking: self) {
             SubmitClaimChatScreen()
-                .navigationTitle(L10n.claimChatTitle)
+                .navigationTitle(featureFlags.isResumeClaimEnabled ? viewModel.title : L10n.claimChatTitle)
                 .routerDestination(
                     for: ClaimIntentStepOutcome.self,
                     options: [.hidesBottomBarWhenPushed, .hidesBackButton]
@@ -53,25 +54,44 @@ struct SubmitClaimFlowNavigation: View {
                         SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
                             viewModel?.openChat()
                         }
-                        .addDismissClaimChatFlow()
+                        .claimChatDismissButton(
+                            showResumableAlert: false,
+                            isResumeClaimEnabled: featureFlags.isResumeClaimEnabled
+                        )
                     }
                 )
-                .addDismissClaimChatFlow()
+                .claimChatDismissButton(
+                    showResumableAlert: viewModel.currentStep?.claimIntent.resumable ?? false,
+                    isResumeClaimEnabled: featureFlags.isResumeClaimEnabled
+                )
         }
         .environmentObject(viewModel)
         .environmentObject(viewModel.scrollCoordinator)
     }
 }
 
-extension SubmitClaimFlowNavigation: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        .init(describing: SubmitClaimChatScreen.self)
+extension View {
+    /// Flag ON: alert only when the intent is resumable, with resume-draft copy.
+    /// Flag OFF: legacy behavior — always confirm dismissal with the generic claims alert.
+    @ViewBuilder
+    fileprivate func claimChatDismissButton(showResumableAlert: Bool, isResumeClaimEnabled: Bool) -> some View {
+        if isResumeClaimEnabled {
+            withDismissButton(
+                withAlert: showResumableAlert,
+                title: L10n.resumeClaimLeaveTitle,
+                message: L10n.resumeClaimLeaveBody,
+                confirmButtonTitle: L10n.resumeClaimLeaveConfirm,
+                cancelButtonTitle: L10n.resumeClaimLeaveCancel
+            )
+        } else {
+            withAlertDismiss(message: L10n.Claims.Alert.body)
+        }
     }
 }
 
-extension View {
-    func addDismissClaimChatFlow() -> some View {
-        withAlertDismiss(message: L10n.Claims.Alert.body)
+extension SubmitClaimFlowNavigation: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        .init(describing: SubmitClaimChatScreen.self)
     }
 }
 

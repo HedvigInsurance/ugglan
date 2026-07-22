@@ -1,38 +1,146 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ClaimStatusCard: View {
-    var claim: ClaimModel
+    var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
-
     @EnvironmentObject var homeRouter: NavigationRouter
+    @State private var showDeleteConfirmation = false
+    @State private var showExpiredAlert = false
 
     var body: some View {
-        StatusCard(
-            onSelected: nil,
-            mainContent: ClaimPills(claim: claim),
-            title: claim.claimType,
-            subTitle: getSubTitle,
-            bottomComponent: {
-                VStack(spacing: .padding16) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
-                    if enableTap {
-                        hButton(
-                            .medium,
-                            .secondary,
-                            content: .init(title: L10n.ClaimStatus.ClaimDetails.button)
-                        ) { homeRouter.push(claim) }
+        switch claimType {
+        case let .claim(claim):
+            StatusCard(
+                onSelected: nil,
+                mainContent: ClaimPills(claim: claim),
+                title: claim.claimType,
+                subTitle: claim.getSubTitle,
+                bottomComponent: {
+                    VStack(spacing: .padding16) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                        if enableTap {
+                            hButton(
+                                .medium,
+                                .secondary,
+                                content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
+                                {
+                                    homeRouter.push(claim)
+                                }
+                            )
+                            .hButtonTakeFullWidth(true)
+                        }
+                    }
+                }
+            )
+        case let .claimInProgress(model):
+            StatusCard(
+                onSelected: nil,
+                mainContent: hPill(
+                    text: L10n.resumeClaimDraft,
+                    color: .amber,
+                )
+                .hFieldSize(.small),
+                title: model.title,
+                subTitle: model.createdAt.getSubTitle,
+                bottomComponent: {
+                    VStack(spacing: .padding16) {
+                        HStack(alignment: .top, spacing: .padding6) {
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText(L10n.Claim.StatusBar.submitted, style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText(L10n.Claim.StatusBar.beingHandled, style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            VStack {
+                                Rectangle()
+                                    .fill(hFillColor.Opaque.disabled)
+                                    .frame(height: 4)
+                                    .cornerRadius(.cornerRadiusXS)
+                                hText(L10n.Claim.StatusBar.closed, style: .label)
+                                    .foregroundColor(hFillColor.Opaque.disabled)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                        HStack(spacing: .padding8) {
+                            hButton(.medium, .secondary, content: .init(title: L10n.resumeClaimDeleteButton)) {
+                                showDeleteConfirmation = true
+                            }
+                            hButton(.medium, .primary, content: .init(title: L10n.resumeClaimContinueButton)) {
+                                if model.isExpired {
+                                    showExpiredAlert = true
+                                } else {
+                                    NotificationCenter.default.post(
+                                        name: .startClaim,
+                                        object: StartClaimInputType.inProgress
+                                    )
+                                }
+                            }
+                        }
                         .hButtonTakeFullWidth(true)
                     }
                 }
+            )
+            .alert(
+                L10n.resumeClaimDeleteTitle,
+                isPresented: $showDeleteConfirmation
+            ) {
+                Button(L10n.generalCancelButton, role: .cancel) {}
+                Button(L10n.resumeClaimDeleteButton, role: .destructive) {
+                    deleteClaimInProgress()
+                }
+            } message: {
+                Text(L10n.resumeClaimDeleteBody)
             }
-        )
+            .alert(
+                "Your draft claim has expired",  //L10n.resumeClaimExpiredTitle
+                isPresented: $showExpiredAlert
+            ) {
+                Button(L10n.generalCloseButton, role: .cancel) {
+                    deleteClaimInProgress()
+                }
+            } message: {
+                Text("Please make a new claim")  //L10n.resumeClaimExpiredBody
+            }
+        }
     }
 
-    var getSubTitle: String? {
-        guard let formatted = claim.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
+    private func deleteClaimInProgress() {
+        let store: ClaimsStore = globalAppStateContainer.get()
+        Task {
+            await store.deleteClaimInProgress()
+        }
+    }
+}
+
+@MainActor
+extension ClaimModel {
+    fileprivate var getSubTitle: String? {
+        guard let formatted = self.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
         return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
+    }
+}
+
+@MainActor
+extension Date {
+    fileprivate var getSubTitle: String {
+        let formatted = self.displayDateDDMMMYYYYFormat
+        return L10n.resumeClaimStated(formatted)
     }
 }
 
@@ -174,19 +282,50 @@ extension ClaimModel {
     return hForm {
         hSection {
             VStack(spacing: .padding8) {
-                ClaimStatusCard(claim: .previewData(status: .beingHandled), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .reopened), enableTap: true)
                 ClaimStatusCard(
-                    claim: .previewData(
-                        status: .closed,
-                        outcome: .paid,
-                        payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                    claimType: .claim(model: .previewData(status: .beingHandled)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .reopened)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(
+                        model: .previewData(
+                            status: .closed,
+                            outcome: .paid,
+                            payoutAmount: MonetaryAmount(amount: "100", currency: "SEK")
+                        )
                     ),
                     enableTap: true
                 )
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCompensated), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .notCovered), enableTap: true)
-                ClaimStatusCard(claim: .previewData(status: .closed, outcome: .unresponsive), enableTap: true)
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .notCompensated)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .notCovered)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claim(model: .previewData(status: .closed, outcome: .unresponsive)),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claimInProgress(model: .init(id: "1", createdAt: Date(), title: "TITLE")),
+                    enableTap: true
+                )
+                ClaimStatusCard(
+                    claimType: .claimInProgress(
+                        model: .init(
+                            id: "2",
+                            createdAt: Date().addingTimeInterval(-8 * 24 * 60 * 60),
+                            title: "EXPIRED"
+                        )
+                    ),
+                    enableTap: true
+                )
             }
         }
         .sectionContainerStyle(.transparent)

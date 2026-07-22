@@ -31,11 +31,11 @@ public protocol ClaimIntentClient {
 
 public struct StartClaimInput: Equatable, Identifiable {
     public let id: String
-    public let sourceMessageId: String?
+    public let type: StartClaimInputType
 
-    public init(sourceMessageId: String?) {
+    public init(type: StartClaimInputType) {
         self.id = UUID().uuidString
-        self.sourceMessageId = sourceMessageId
+        self.type = type
     }
 }
 

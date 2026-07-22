@@ -6,6 +6,7 @@ query ClaimIntent($claimIntentId: ID!) {
 
 fragment ClaimIntentFragment on ClaimIntent {
     id
+    createdAt
     progress
     currentStep {
         ...ClaimIntentStepFragment
@@ -13,6 +14,8 @@ fragment ClaimIntentFragment on ClaimIntent {
     createdClaim {
         ...ClaimFragment
     }
+    displayName
+    resumable
 }
 
 fragment ClaimIntentOutcomeDeflectionPartnerFragment on ClaimIntentStepContentDeflectionPartner {
@@ -59,10 +62,17 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         uploadUri
         freeTextMaxLength
         freeTextMinLength
+        currentAudioUrl
+        currentFreeText
         isSkippable
     }
     ... on ClaimIntentStepContentFileUpload {
         uploadUri
+        currentFiles {
+            url
+            contentType
+            fileName
+        }
         isSkippable
     }
     ... on ClaimIntentStepContentSummary {
@@ -87,6 +97,7 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
         }
         isSkippable
         defaultSelectedId
+        currentSelectedId
         style
     }
     ... on ClaimIntentStepContentDeflectionMessage {
@@ -137,6 +148,7 @@ fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormFi
         imageUrl
     }
     defaultValues
+    currentValues
     searchData {
         suggestedQuery
         modalTitle

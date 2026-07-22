@@ -31,6 +31,28 @@ class FetchClaimsClientOctopus: hFetchClaimsClient {
         }
         return (claimsHistory + partnerClaimsHistory).sortedBySubmittedAt()
     }
+
+    func getClaimInProgress() async throws -> ClaimInProgressModel? {
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.ResumableClaimIntentQuery()
+        )
+        guard let resumable = data.currentMember.resumableClaimIntent,
+            let createdAt = resumable.createdAt.localDateToDate ?? resumable.createdAt.localDateToIso8601Date
+        else {
+            return nil
+        }
+        return ClaimInProgressModel(
+            id: resumable.id,
+            createdAt: createdAt,
+            title: resumable.displayName ?? L10n.resumeClaimFallbackTitle
+        )
+    }
+
+    func deleteClaimInProgress(id: String) async throws {
+        _ = try await octopus.client.mutation(
+            mutation: OctopusGraphQL.ClaimIntentDeleteDraftMutation(id: id)
+        )
+    }
 }
 
 extension [ClaimModel] {

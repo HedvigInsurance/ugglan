@@ -4,28 +4,32 @@ import hCoreUI
 
 extension View {
     public func handleClaimFlow(
-        startInput: Binding<StartClaimInput?>
+        startInput: Binding<StartClaimInput?>,
+        onViewDeinit: @escaping () -> Void
     ) -> some View {
-        self.modifier(ClaimFlowLauncher(startInput: startInput))
+        self.modifier(ClaimFlowLauncher(startInput: startInput, onDeinit: onViewDeinit))
     }
 }
 
 struct ClaimFlowLauncher: ViewModifier {
+    @State var startInputDetent: StartClaimInput?
     @Binding var startInput: StartClaimInput?
     @State private var submitClaimInput: StartClaimInput?
     @State private var router = NavigationRouter()
     @State var disableSubmitChatClaimAnimations = false
-
+    @State private var showDraftAlert = false
+    let onDeinit: () -> Void
     func body(content: Content) -> some View {
         content
             .detent(
-                item: $startInput,
+                item: $startInputDetent,
                 presentationStyle: .detent(style: [.height]),
                 options: .constant(.alwaysOpenOnTop),
                 content: { input in
                     SubmitClaimChatHonestyPledgeScreen { withAnimations in
+                        startInputDetent = nil
                         disableSubmitChatClaimAnimations = !withAnimations
-                        submitClaimInput = startInput
+                        submitClaimInput = input
                         startInput = nil
                     }
                     .navigationTitle(L10n.honestyPledgeHeader)
@@ -51,7 +55,48 @@ struct ClaimFlowLauncher: ViewModifier {
                     ),
                     disableAnimations: disableSubmitChatClaimAnimations
                 )
+                .onDeinit { [onDeinit] in
+                    onDeinit()
+                }
             }
+            .onAppear {
+                // onChange misses a value set before the view attaches (e.g. cold-start deep link).
+                handleStartInput(startInput)
+            }
+            .onChange(of: startInput) { value in
+                handleStartInput(value)
+            }
+            .alert(
+                L10n.resumeClaimDraftAlertTitle,
+                isPresented: $showDraftAlert
+            ) {
+                Button(L10n.resumeClaimDraftAlertContinue) {
+                    submitClaimInput = .init(type: .inProgress)
+                    startInput = nil
+                }
+                Button(L10n.resumeClaimDraftAlertStartNew, role: .destructive) {
+                    startInputDetent = .init(type: .regular(hasInProgress: false))
+                    startInput = nil
+                }
+            } message: {
+                Text(L10n.resumeClaimDraftAlertBody)
+            }
+    }
+
+    private func handleStartInput(_ value: StartClaimInput?) {
+        guard let value else { return }
+        switch value.type {
+        case let .regular(hasInProgress):
+            if hasInProgress {
+                // A saved draft exists — let the member choose before starting a new claim.
+                showDraftAlert = true
+            } else {
+                startInputDetent = value
+            }
+        case .inProgress:
+            submitClaimInput = value
+            startInput = nil
+        }
     }
 }
 

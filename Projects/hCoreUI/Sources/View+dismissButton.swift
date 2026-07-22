@@ -19,23 +19,54 @@ extension View {
             DismissButton(withAlert: true, message: message)
         )
     }
+
+    /// Dismiss button that shows a confirmation alert only when `withAlert` is `true`,
+    /// and dismisses directly otherwise. Use when the alert should depend on runtime state.
+    /// `title`, `confirmButtonTitle`, and `cancelButtonTitle` fall back to the generic
+    /// "Are you sure?" / "Yes" / "No" copy when not provided.
+    public func withDismissButton(
+        withAlert: Bool,
+        title: String? = nil,
+        message: String? = nil,
+        confirmButtonTitle: String? = nil,
+        cancelButtonTitle: String? = nil
+    ) -> some View {
+        modifier(
+            DismissButton(
+                withAlert: withAlert,
+                title: title,
+                message: message,
+                confirmButtonTitle: confirmButtonTitle,
+                cancelButtonTitle: cancelButtonTitle
+            )
+        )
+    }
 }
 
 private struct DismissButton: ViewModifier {
     let reducedTopSpacing: Int
     let withAlert: Bool
+    let title: String?
     let message: String?
+    let confirmButtonTitle: String?
+    let cancelButtonTitle: String?
     @EnvironmentObject var router: NavigationRouter
     @State var isAlertPresented = false
 
     init(
         withAlert: Bool = false,
+        title: String? = nil,
         message: String? = nil,
+        confirmButtonTitle: String? = nil,
+        cancelButtonTitle: String? = nil,
         reducedTopSpacing: Int = 0,
     ) {
         self.reducedTopSpacing = reducedTopSpacing
         self.withAlert = withAlert
+        self.title = title
         self.message = message
+        self.confirmButtonTitle = confirmButtonTitle
+        self.cancelButtonTitle = cancelButtonTitle
     }
 
     func body(content: Content) -> some View {
@@ -63,7 +94,13 @@ private struct DismissButton: ViewModifier {
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
                     .accessibilityAddTraits(.isButton)
-                    .configureAlert(message: message, isPresented: $isAlertPresented)
+                    .configureAlert(
+                        title: title,
+                        message: message,
+                        confirmButton: confirmButtonTitle,
+                        cancelButton: cancelButtonTitle,
+                        isPresented: $isAlertPresented
+                    )
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
                     .accessibilityAddTraits(.isButton)
@@ -73,8 +110,22 @@ private struct DismissButton: ViewModifier {
 }
 
 extension View {
-    func configureAlert(message: String? = nil, isPresented: Binding<Bool>) -> some View {
-        modifier(DismissAlertPopup(message: message, isPresented: isPresented))
+    func configureAlert(
+        title: String? = nil,
+        message: String? = nil,
+        confirmButton: String? = nil,
+        cancelButton: String? = nil,
+        isPresented: Binding<Bool>
+    ) -> some View {
+        modifier(
+            DismissAlertPopup(
+                title: title ?? L10n.General.areYouSure,
+                message: message,
+                confirmButton: confirmButton ?? L10n.General.yes,
+                cancelButton: cancelButton ?? L10n.General.no,
+                isPresented: isPresented
+            )
+        )
     }
 }
 

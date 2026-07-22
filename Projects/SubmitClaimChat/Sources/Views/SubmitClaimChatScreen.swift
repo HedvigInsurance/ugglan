@@ -291,7 +291,7 @@ extension View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let viewModel = SubmitClaimChatViewModel(
         startInput: .init(
-            input: .init(sourceMessageId: nil),
+            input: .init(type: .regular(hasInProgress: true)),
             openChat: {
             }
         )
@@ -322,7 +322,15 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
     let alertVm = SubmitClaimChatScreenAlertViewModel()
     let scrollCoordinator = ClaimChatScrollCoordinator()
-
+    private var previousTitle: String?
+    var title: String {
+        if let newTitle = currentStep?.claimIntent.displayName {
+            previousTitle = newTitle
+            return newTitle
+        } else {
+            return previousTitle ?? L10n.claimChatTitle
+        }
+    }
     var stepHeights: [String: CGFloat] = [:] {
         didSet {
             recalculateStepHeights()
@@ -429,8 +437,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
         case let .goToNext(claimIntent):
             handleGoToNextStep(claimIntent: claimIntent)
-        case let .regret(currentClaimIntent, newclaimIntent):
-            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newclaimIntent)
+        case let .regret(currentClaimIntent, newClaimIntent):
+            handleRegretStep(currentClaimIntent: currentClaimIntent, newClaimIntent: newClaimIntent)
         case let .outcome(model):
             router.push(model)
             withAnimation {
@@ -442,6 +450,19 @@ final class SubmitClaimChatViewModel: ObservableObject {
     }
 
     private func handleGoToNextStep(claimIntent: ClaimIntent) {
+        let history = claimIntent.previousSteps
+        if !history.isEmpty {
+            for item in history {
+                let handler = createStepHandler(for: item)
+                if handler is SubmitClaimTaskStep { continue }
+                allSteps.append(handler)
+                handler.state.isLoaderAnimating = false
+                handler.state.showInput = false
+                handler.state.showResults = true
+                handler.state.isStepExecuted = true
+                handler.state.animateText = false
+            }
+        }
         let handler = createStepHandler(for: claimIntent)
         if let currentStep = currentStep {
             if currentStep is SubmitClaimTaskStep {

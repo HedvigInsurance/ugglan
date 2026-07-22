@@ -103,7 +103,7 @@ public struct ClaimDetailView: View {
     private func claimCardSection(claim: ClaimModel) -> some View {
         hSection {
             ClaimStatusCard(
-                claim: claim,
+                claimType: .claim(model: claim),
                 enableTap: false
             )
         }

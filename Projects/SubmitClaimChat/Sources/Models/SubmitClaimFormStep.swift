@@ -168,8 +168,9 @@ final class FormStepValue: ObservableObject {
     }
     var lastSearchQuery: String?
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
-        self.value = field.defaultValues.first ?? ""
-        self.values = field.defaultValues
+        let seedValues = field.currentValues.isEmpty ? field.defaultValues : field.currentValues
+        self.value = seedValues.first ?? ""
+        self.values = seedValues
         self.lastSearchQuery = field.searchData?.suggestedQuery
     }
 }
