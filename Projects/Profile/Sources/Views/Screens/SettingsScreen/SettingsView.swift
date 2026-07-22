@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppObservedObject var store: ProfileStore
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    @AppStorage(ThemeOption.storageKey) private var themeRawValue = ThemeOption.system.rawValue
 
     var body: some View {
         hForm {
@@ -18,6 +19,13 @@ struct SettingsView: View {
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
                             profileNavigationVm.isLanguagePickerPresented = true
+                        }
+                    )
+                    hFloatingField(
+                        value: (ThemeOption(rawValue: themeRawValue) ?? .system).displayName,
+                        placeholder: L10n.settingsThemeTitle,
+                        onTap: {
+                            profileNavigationVm.isThemePickerPresented = true
                         }
                     )
                     hFloatingField(

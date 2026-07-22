@@ -81,6 +81,12 @@ struct ClaimFlowLauncher: ViewModifier {
             } message: {
                 Text(L10n.resumeClaimDraftAlertBody)
             }
+            .onChange(of: showDraftAlert) { value in
+                if !value {
+                    // Covers cancellation paths that bypass the alert buttons (e.g. Escape key).
+                    startInput = nil
+                }
+            }
     }
 
     private func handleStartInput(_ value: StartClaimInput?) {
