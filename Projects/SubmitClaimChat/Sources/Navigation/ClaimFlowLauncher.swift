@@ -30,7 +30,6 @@ struct ClaimFlowLauncher: ViewModifier {
                     SubmitClaimChatHonestyPledgeScreen {
                         startInputDetent = nil
                         submitClaimInput = input
-                        startInput = nil
                     }
                     .navigationTitle(L10n.honestyPledgeHeader)
                     .embededInNavigation(
@@ -72,20 +71,12 @@ struct ClaimFlowLauncher: ViewModifier {
             ) {
                 Button(L10n.resumeClaimDraftAlertContinue) {
                     submitClaimInput = .init(type: .inProgress)
-                    startInput = nil
                 }
                 Button(L10n.resumeClaimDraftAlertStartNew, role: .destructive) {
                     handleStartInput(.init(type: .regular(hasInProgress: false)))
-                    startInput = nil
                 }
             } message: {
                 Text(L10n.resumeClaimDraftAlertBody)
-            }
-            .onChange(of: showDraftAlert) { value in
-                if !value {
-                    // Covers cancellation paths that bypass the alert buttons (e.g. Escape key).
-                    startInput = nil
-                }
             }
     }
 
@@ -101,12 +92,11 @@ struct ClaimFlowLauncher: ViewModifier {
             } else {
                 // Dev setting: with animations off, skip the honesty pledge and open the flow directly.
                 submitClaimInput = value
-                startInput = nil
             }
         case .inProgress:
             submitClaimInput = value
-            startInput = nil
         }
+        startInput = nil
     }
 }
 
