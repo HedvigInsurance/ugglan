@@ -3,7 +3,7 @@ import Foundation
 
 @MainActor
 public protocol CrossSellClient: Sendable {
-    func getCrossSell(source: CrossSellSource, contractId: String?) async throws -> CrossSells
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }
 
@@ -12,9 +12,9 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
 
     case home
     case closedClaim(claimId: String)
-    case changeTier
+    case changeTier(contractId: String)
     case addon
-    case movingFlow
+    case movingFlow(contractId: String)
     case insurances
 
     public var rawValue: RawValue {

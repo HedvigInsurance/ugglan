@@ -180,7 +180,6 @@ extension ClaimModel {
     public var asCrossSellInfo: CrossSellInfo {
         .init(
             type: .closedClaim(claimId: id),
-            contractId: contractId,
             additionalInfo: ClaimCrossSellAdditionalInfo(
                 id: id,
                 type: claimType,
