@@ -1,4 +1,7 @@
+import AppStateContainer
+import Combine
 import Contracts
+import CrossSell
 import EditStakeholders
 import Payment
 import SwiftUI
@@ -24,6 +27,7 @@ struct OnboardingNavigation: View {
                 .routerDestination(for: OnboardingStep.self) { step in
                     stepDestination(for: step)
                 }
+                .addStepProgressBar(with: $vm.progress)
         }
         .environmentObject(vm)
         .handleEditStakeholders(with: vm.editStakeholdersVm)
@@ -52,7 +56,9 @@ struct OnboardingNavigation: View {
             case .crossSell: OnboardingCrossSellScreen()
             }
         }
-        .withDismissButton()
+        .withDismissButton {
+            OnboardingNavigationViewModel.setOnboardingToSeen()
+        }
     }
 }
 

@@ -62,6 +62,7 @@ public class OnboardingClientDemo: OnboardingClient {
             isPaymentConnected: false,
             crossSells: [],
             contactInfo: .init(email: "demo@hedvig.com", phone: "0735328847"),
+            foreverData: nil,
             isConnectPaymentEnabled: true
         )
     }
