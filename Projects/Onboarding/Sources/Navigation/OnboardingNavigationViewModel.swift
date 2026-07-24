@@ -1,5 +1,6 @@
 import AppStateContainer
 import Contracts
+import CrossSell
 import EditStakeholders
 import Payment
 import SwiftUI
@@ -80,6 +81,28 @@ extension OnboardingNavigationViewModel {
         steps = steps.map { step in
             guard case let .petChipIds(contracts) = step else { return step }
             return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
+        }
+    }
+}
+
+// MARK: - Cross-sell step
+extension OnboardingNavigationViewModel {
+    /// The cross-sells carried by the `.crossSell` step, if present.
+    var crossSells: [CrossSell] {
+        for step in steps {
+            if case let .crossSell(crossSells) = step { return crossSells }
+        }
+        return []
+    }
+
+    /// Refresh the cross-sells on the `.crossSell` step — they may have changed since the
+    /// step list was computed. Keeps the existing cross-sells on failure or an empty result,
+    /// so the screen never goes blank mid-view.
+    func fetchCrossSells() async {
+        guard let crossSells = try? await onboardingService.getCrossSells(), !crossSells.isEmpty else { return }
+        steps = steps.map { step in
+            guard case .crossSell = step else { return step }
+            return .crossSell(crossSells)
         }
     }
 }

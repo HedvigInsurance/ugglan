@@ -1,4 +1,5 @@
 import Contracts
+import CrossSell
 import EditStakeholders
 import XCTest
 import hCore
@@ -10,6 +11,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertEqual(
@@ -27,6 +29,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             contactInfo: .init(email: "demo@hedvig.com", phone: "0735328847"),
             isConnectPaymentEnabled: true
         )
@@ -37,6 +40,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             foreverData: .init(
                 grossAmount: .init(amount: "100", currency: "SEK"),
                 netAmount: .init(amount: "90", currency: "SEK"),
@@ -56,6 +60,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
@@ -65,6 +70,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: false,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertTrue(steps.contains(.connectPayment(isConnected: false)))
@@ -74,9 +80,20 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: false,
+            crossSells: [],
             isConnectPaymentEnabled: false
         )
         XCTAssertFalse(steps.contains(.connectPayment(isConnected: false)))
+    }
+
+    func testCrossSellStepShownWhenCrossSellsExist() {
+        let steps = OnboardingStepList.compute(
+            contracts: [],
+            isPaymentConnected: true,
+            crossSells: [.mock],
+            isConnectPaymentEnabled: true
+        )
+        XCTAssertEqual(steps.last, .crossSell([.mock]))
     }
 
     func testCoInsuredStepShownWhenContractHasMissingCoInsured() {
@@ -84,6 +101,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertTrue(steps.contains(.coInsured(contracts: [.init(contract: contract)])))
@@ -94,6 +112,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.coInsured(contracts: [])) })
@@ -104,6 +123,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertTrue(steps.contains(.coOwners(contracts: [.init(contract: contract)])))
@@ -114,6 +134,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.coOwners(contracts: [])) })
@@ -124,6 +145,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertTrue(steps.contains(.petChipIds(contracts: [.init(contract: contract)])))
@@ -134,6 +156,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: true,
+            crossSells: [],
             isConnectPaymentEnabled: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.petChipIds(contracts: [])) })
@@ -148,6 +171,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [contract],
             isPaymentConnected: false,
+            crossSells: [.mock],
             isConnectPaymentEnabled: true
         )
         XCTAssertEqual(
@@ -161,6 +185,7 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .coOwners(contracts: [.init(contract: contract)]),
                 .petChipIds(contracts: [.init(contract: contract)]),
                 .connectPayment(isConnected: false),
+                .crossSell([.mock]),
             ]
         )
     }
@@ -197,6 +222,19 @@ extension OnboardingStepComputationTests {
             coInsured: coInsured,
             coOwners: coOwners,
             missingPetChipId: missingPetChipId
+        )
+    }
+}
+
+extension CrossSell {
+    fileprivate static var mock: CrossSell {
+        .init(
+            id: "cross-sell-id",
+            title: "title",
+            description: "description",
+            buttonTitle: "buttonTitle",
+            imageUrl: nil,
+            buttonDescription: "buttonDescription"
         )
     }
 }

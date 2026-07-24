@@ -1,4 +1,5 @@
 import AutomaticLog
+import CrossSell
 import Foundation
 import hCore
 
@@ -16,6 +17,11 @@ public class OnboardingService {
     @Log
     public func updateContactInfo(email: String, phone: String) async throws {
         try await client.updateContactInfo(email: email, phone: phone)
+    }
+
+    @Log
+    public func getCrossSells() async throws -> [CrossSell] {
+        try await client.getCrossSells()
     }
 
     @Log

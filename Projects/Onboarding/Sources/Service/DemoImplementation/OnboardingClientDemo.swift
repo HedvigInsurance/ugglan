@@ -1,3 +1,4 @@
+import CrossSell
 import Foundation
 import hCore
 
@@ -15,6 +16,20 @@ public class OnboardingClientDemo: OnboardingClient {
     public func getIsPaymentConnected() async throws -> Bool {
         await delay(1)
         return false
+    }
+
+    public func getCrossSells() async throws -> [CrossSell] {
+        await delay(1)
+        return [
+            .init(
+                id: "accident",
+                title: "Accident insurance",
+                description: "From 49 kr/mo",
+                buttonTitle: "See price",
+                imageUrl: nil,
+                buttonDescription: ""
+            )
+        ]
     }
 
     static func getSteps() -> [OnboardingStep] {
@@ -45,6 +60,7 @@ public class OnboardingClientDemo: OnboardingClient {
                 )
             ],
             isPaymentConnected: false,
+            crossSells: [],
             contactInfo: .init(email: "demo@hedvig.com", phone: "0735328847"),
             isConnectPaymentEnabled: true
         )
