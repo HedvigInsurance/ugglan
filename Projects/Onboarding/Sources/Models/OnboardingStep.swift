@@ -3,6 +3,7 @@ import hCoreUI
 
 public enum OnboardingStep: Hashable, Sendable {
     case welcome
+    case analyticsConsent
 }
 
 @MainActor
@@ -18,6 +19,7 @@ extension OnboardingStep: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .welcome: "OnboardingWelcome"
+        case .analyticsConsent: "OnboardingAnalyticsConsent"
         }
     }
 }
