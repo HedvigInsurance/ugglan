@@ -26,7 +26,7 @@ struct ConnectPayment: ViewModifier {
 
 @MainActor
 public class ConnectPaymentViewModel: ObservableObject {
-    @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
+    @Published public internal(set) var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
 
     public func set(
@@ -40,13 +40,13 @@ public class ConnectPaymentViewModel: ObservableObject {
     }
 }
 
-struct SetupTypeNavigationModel: Identifiable {
-    let id: String = UUID().uuidString
-    let onSuccess: (() -> Void)?
+public struct SetupTypeNavigationModel: Identifiable {
+    public let id: String = UUID().uuidString
+    public let onSuccess: (() -> Void)?
 }
 
 extension SetupTypeNavigationModel: Equatable {
-    static func == (lhs: SetupTypeNavigationModel, rhs: SetupTypeNavigationModel) -> Bool {
+    public static func == (lhs: SetupTypeNavigationModel, rhs: SetupTypeNavigationModel) -> Bool {
         lhs.id == rhs.id
     }
 }

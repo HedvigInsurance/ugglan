@@ -30,8 +30,10 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
 public enum OnboardingStepList {
     public static func compute(
         contracts: [Contracts.Contract],
+        isPaymentConnected: Bool,
         contactInfo: ContactInfo = .init(email: "", phone: ""),
-        foreverData: ForeverData? = nil
+        foreverData: ForeverData? = nil,
+        isConnectPaymentEnabled: Bool
     ) -> [OnboardingStep] {
         var steps: [OnboardingStep] = [
             .welcome,
@@ -58,6 +60,9 @@ public enum OnboardingStepList {
                     monthlyDiscountPerReferral: foreverData.monthlyDiscountPerReferral.formattedAmount
                 )
             )
+        }
+        if !isPaymentConnected, isConnectPaymentEnabled {
+            steps.append(.connectPayment(isConnected: false))
         }
         return steps
     }

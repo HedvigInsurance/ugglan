@@ -17,4 +17,9 @@ public class OnboardingService {
     public func updateContactInfo(email: String, phone: String) async throws {
         try await client.updateContactInfo(email: email, phone: phone)
     }
+
+    @Log
+    public func getIsPaymentConnected() async throws -> Bool {
+        try await client.getIsPaymentConnected()
+    }
 }

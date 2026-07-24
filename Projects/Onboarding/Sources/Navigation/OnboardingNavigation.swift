@@ -1,5 +1,6 @@
 import Contracts
 import EditStakeholders
+import Payment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -26,6 +27,7 @@ struct OnboardingNavigation: View {
         }
         .environmentObject(vm)
         .handleEditStakeholders(with: vm.editStakeholdersVm)
+        .handleConnectPayment(with: vm.connectPaymentVm)
         .handleMissingChipIds(input: $vm.missingPetChipIdInput)
     }
 
@@ -46,6 +48,7 @@ struct OnboardingNavigation: View {
                     discountCode: discountCode,
                     monthlyDiscountPerReferral: monthlyDiscountPerReferral
                 )
+            case .connectPayment: OnboardingConnectPaymentScreen()
             }
         }
         .withDismissButton()
