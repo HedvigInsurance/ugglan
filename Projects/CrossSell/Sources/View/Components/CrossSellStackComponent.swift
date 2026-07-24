@@ -2,12 +2,12 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CrossSellStackComponent: View {
+public struct CrossSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
     let headerTitle: String
     let discountAvailable: Bool
-    init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool) {
+    public init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool) {
         self.crossSells = crossSells
         self.withHeader = withHeader
         self.discountAvailable = discountAvailable
@@ -19,7 +19,7 @@ struct CrossSellStackComponent: View {
             }
         }()
     }
-    var body: some View {
+    public var body: some View {
         let content = hSection {
             VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
