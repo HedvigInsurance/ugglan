@@ -1,3 +1,5 @@
+import Contracts
+import EditStakeholders
 import SwiftUI
 import hCore
 import hCoreUI
@@ -23,6 +25,8 @@ struct OnboardingNavigation: View {
                 }
         }
         .environmentObject(vm)
+        .handleEditStakeholders(with: vm.editStakeholdersVm)
+        .handleMissingChipIds(input: $vm.missingPetChipIdInput)
     }
 
     @ViewBuilder
@@ -34,6 +38,9 @@ struct OnboardingNavigation: View {
             case let .phoneNumber(phoneNumber, email):
                 OnboardingPhoneScreen(phoneNumber: phoneNumber, email: email)
             case .theme: OnboardingThemeScreen()
+            case .coInsured: OnboardingMissingInfoScreen(type: .coInsured)
+            case .coOwners: OnboardingMissingInfoScreen(type: .coOwner)
+            case .petChipIds: OnboardingMissingInfoScreen(type: .petChipIds)
             }
         }
         .withDismissButton()
