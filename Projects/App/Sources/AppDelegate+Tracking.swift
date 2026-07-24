@@ -8,7 +8,6 @@ import DatadogRUM
 import DatadogTrace
 import Environment
 import FirebaseCore
-import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -105,6 +104,8 @@ extension AppDelegate {
         }
 
         FirebaseApp.configure()
+        let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
+        eventTrackingClient.setCollectionEnabled(AnalyticsConsent.isGiven)
     }
 }
 

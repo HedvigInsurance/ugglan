@@ -36,9 +36,14 @@ struct OnboardingAnalyticsScreen: View {
                     privacyPolicyLink
                     VStack(spacing: .padding8) {
                         hButton(.large, .secondary, content: .init(title: "Allow")) {  // TODO: L10n
+                            AnalyticsConsent.give()
+                            let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
+                            eventTrackingClient.setCollectionEnabled(true)
                             vm.advance(after: .analyticsConsent)
                         }
                         hButton(.large, .secondary, content: .init(title: "Deny")) {  // TODO: L10n
+                            let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
+                            eventTrackingClient.setCollectionEnabled(false)
                             vm.advance(after: .analyticsConsent)
                         }
                     }
