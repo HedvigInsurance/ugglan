@@ -5,6 +5,7 @@ public enum OnboardingStep: Hashable, Sendable {
     case welcome
     case analyticsConsent
     case phoneNumber(phoneNumber: String, email: String)
+    case theme
 }
 
 @MainActor
@@ -22,6 +23,7 @@ extension OnboardingStep: TrackingViewNameProtocol {
         case .welcome: "OnboardingWelcome"
         case .analyticsConsent: "OnboardingAnalyticsConsent"
         case .phoneNumber: "OnboardingPhoneNumber"
+        case .theme: "OnboardingTheme"
         }
     }
 }
