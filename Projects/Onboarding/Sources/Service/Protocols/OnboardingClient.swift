@@ -4,4 +4,5 @@ import Foundation
 public protocol OnboardingClient {
     func getOnboardingSteps() async throws -> [OnboardingStep]
     func updateContactInfo(email: String, phone: String) async throws
+    func getIsPaymentConnected() async throws -> Bool
 }

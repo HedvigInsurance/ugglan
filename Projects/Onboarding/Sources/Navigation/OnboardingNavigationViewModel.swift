@@ -1,6 +1,7 @@
 import AppStateContainer
 import Contracts
 import EditStakeholders
+import Payment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,6 +11,7 @@ class OnboardingNavigationViewModel: ObservableObject {
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
+    let connectPaymentVm = ConnectPaymentViewModel()
     @Published var steps: [OnboardingStep] = [
         .welcome
     ]
@@ -45,6 +47,26 @@ extension OnboardingNavigationViewModel {
             default:
                 return step
             }
+        }
+    }
+}
+
+// MARK: - Connect-payment step
+extension OnboardingNavigationViewModel {
+    /// Refresh the `.connectPayment` step's connected flag — the member may have connected
+    /// payment since the step list was computed. Only ever flips to connected: a stale
+    /// backend read must not revert a connection made during the flow.
+    func fetchPaymentStatus() async {
+        guard let isConnected = try? await onboardingService.getIsPaymentConnected(), isConnected else { return }
+        markPaymentConnected()
+    }
+
+    /// Payment was connected — flip the `connectPayment` step's `isConnected` flag so the
+    /// step's state reflects reality.
+    func markPaymentConnected() {
+        steps = steps.map { step in
+            guard case .connectPayment = step else { return step }
+            return .connectPayment(isConnected: true)
         }
     }
 }
