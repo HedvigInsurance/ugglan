@@ -1,4 +1,5 @@
 import Addons
+import Foundation
 
 @MainActor
 public protocol CrossSellClient: Sendable {
@@ -6,11 +7,24 @@ public protocol CrossSellClient: Sendable {
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }
 
-public enum CrossSellSource: String, Codable, Equatable, Sendable {
+public enum CrossSellSource: Codable, Equatable, Sendable {
+    public typealias RawValue = String
+
     case home
-    case closedClaim
+    case closedClaim(claimId: String)
     case changeTier
     case addon
     case movingFlow
     case insurances
+
+    public var rawValue: RawValue {
+        switch self {
+        case .home: "home"
+        case .closedClaim: "closedClaim"
+        case .changeTier: "changeTier"
+        case .addon: "addon"
+        case .movingFlow: "movingFlow"
+        case .insurances: "insurances"
+        }
+    }
 }

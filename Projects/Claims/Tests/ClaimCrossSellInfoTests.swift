@@ -30,13 +30,13 @@ final class ClaimCrossSellInfoTests: XCTestCase {
         let crossSellInfo = makeClaim(contractId: "contract-123").asCrossSellInfo
 
         assert(crossSellInfo.contractId == "contract-123")
-        assert(crossSellInfo.type == .closedClaim)
+        assert(crossSellInfo.type == .closedClaim(claimId: "id"))
     }
 
     func testAsCrossSellInfoWithoutContractId() {
         let crossSellInfo = makeClaim(contractId: nil).asCrossSellInfo
 
         assert(crossSellInfo.contractId == nil)
-        assert(crossSellInfo.type == .closedClaim)
+        assert(crossSellInfo.type == .closedClaim(claimId: "id"))
     }
 }
