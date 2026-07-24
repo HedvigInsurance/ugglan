@@ -381,17 +381,23 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
     let fileUploads: [ClaimIntentStepContentSummaryFileUpload]
     let items: [ClaimIntentStepContentSummaryItem]
     let freeTexts: [String]
+    let keyDetails: [ClaimIntentStepContentSummaryItem]
+    let answers: [ClaimIntentStepContentSummaryAnswer]
 
     public init(
         audioRecordings: [ClaimIntentStepContentSummaryAudioRecording],
         fileUploads: [ClaimIntentStepContentSummaryFileUpload],
         items: [ClaimIntentStepContentSummaryItem],
-        freeTexts: [String]
+        freeTexts: [String],
+        keyDetails: [ClaimIntentStepContentSummaryItem] = [],
+        answers: [ClaimIntentStepContentSummaryAnswer] = []
     ) {
         self.audioRecordings = audioRecordings
         self.fileUploads = fileUploads
         self.items = items
         self.freeTexts = freeTexts
+        self.keyDetails = keyDetails
+        self.answers = answers
     }
 
     public struct ClaimIntentStepContentSummaryAudioRecording: Sendable {
@@ -421,6 +427,23 @@ public struct ClaimIntentStepContentSummary: Sendable, Identifiable, Equatable {
         public init(title: String, value: String) {
             self.title = title
             self.value = value
+        }
+    }
+
+    public struct ClaimIntentStepContentSummaryAnswer: Sendable, Identifiable {
+        public let id = UUID()
+        let title: String
+        let value: Value
+
+        public init(title: String, value: Value) {
+            self.title = title
+            self.value = value
+        }
+
+        public enum Value: Sendable {
+            case text(String)
+            case audio(url: URL, transcript: String?)
+            case files([ClaimIntentStepContentSummaryFileUpload])
         }
     }
 }

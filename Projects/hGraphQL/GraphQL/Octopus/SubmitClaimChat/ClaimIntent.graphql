@@ -89,6 +89,29 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
             contentType
             fileName
         }
+        keyDetails {
+            title
+            value
+        }
+        answers {
+            title
+            value {
+                ... on ClaimIntentStepContentSummaryAnswerText {
+                    text
+                }
+                ... on ClaimIntentStepContentSummaryAnswerAudio {
+                    url
+                    transcript
+                }
+                ... on ClaimIntentStepContentSummaryAnswerFiles {
+                    files {
+                        url
+                        contentType
+                        fileName
+                    }
+                }
+            }
+        }
     }
     ... on ClaimIntentStepContentSelect {
         options {
