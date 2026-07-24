@@ -163,7 +163,12 @@ let project = Project(
             bundleId: "com.hedvigForsakring.test.app",
             deploymentTargets: .iOS("16.0"),
             infoPlist: "Config/Test/Info.plist",
-            resources: ["Resources/**", "Config/Test/Resources/**", "Config/PrivacyInfo.xcprivacy"],
+            resources: [
+                "Resources/**",
+                "Config/Test/Resources/**",
+                "Config/PrivacyInfo.xcprivacy",
+                "Config/Test/GoogleService-Info.plist",
+            ],
             buildableFolders: ["Sources"],
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
@@ -228,6 +233,7 @@ let project = Project(
                     excluding: ["Config/Production/Resources/AppIcon.icon/**"]
                 ),
                 "Config/PrivacyInfo.xcprivacy",
+                "Config/Production/GoogleService-Info.plist",
             ],
             buildableFolders: ["Sources"],
             entitlements: "Config/Production/Hedvig.entitlements",

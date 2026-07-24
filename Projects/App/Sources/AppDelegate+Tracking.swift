@@ -7,6 +7,8 @@ import DatadogLogs
 import DatadogRUM
 import DatadogTrace
 import Environment
+import FirebaseCore
+import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -36,6 +38,8 @@ extension AppDelegate {
         if let userId = store.memberDetails?.id {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)
+            let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
+            eventTrackingClient.setUserId(userId)
         }
 
         Logs.enable()
@@ -99,6 +103,8 @@ extension AppDelegate {
         AuthenticationService.logAuthResourceStop = { key, url in
             RUMMonitor.shared().stopResource(resourceKey: key, response: url, size: 0, attributes: [:])
         }
+
+        FirebaseApp.configure()
     }
 }
 
