@@ -41,6 +41,11 @@ struct OnboardingNavigation: View {
             case .coInsured: OnboardingMissingInfoScreen(type: .coInsured)
             case .coOwners: OnboardingMissingInfoScreen(type: .coOwner)
             case .petChipIds: OnboardingMissingInfoScreen(type: .petChipIds)
+            case let .inviteFriend(discountCode, monthlyDiscountPerReferral):
+                OnboardingInviteScreen(
+                    discountCode: discountCode,
+                    monthlyDiscountPerReferral: monthlyDiscountPerReferral
+                )
             }
         }
         .withDismissButton()
