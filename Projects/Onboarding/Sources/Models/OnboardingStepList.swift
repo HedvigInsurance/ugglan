@@ -1,4 +1,5 @@
 import Contracts
+import Forever
 import Foundation
 
 public struct ContactInfo: Equatable, Hashable, Sendable {
@@ -29,7 +30,8 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
 public enum OnboardingStepList {
     public static func compute(
         contracts: [Contracts.Contract],
-        contactInfo: ContactInfo = .init(email: "", phone: "")
+        contactInfo: ContactInfo = .init(email: "", phone: ""),
+        foreverData: ForeverData? = nil
     ) -> [OnboardingStep] {
         var steps: [OnboardingStep] = [
             .welcome,
@@ -48,6 +50,14 @@ public enum OnboardingStepList {
         let contractsMissingPetChipId = contracts.filter(\.missingPetChipId).map(OnboardingContract.init)
         if !contractsMissingPetChipId.isEmpty {
             steps.append(.petChipIds(contracts: contractsMissingPetChipId))
+        }
+        if let foreverData {
+            steps.append(
+                .inviteFriend(
+                    discountCode: foreverData.discountCode,
+                    monthlyDiscountPerReferral: foreverData.monthlyDiscountPerReferral.formattedAmount
+                )
+            )
         }
         return steps
     }

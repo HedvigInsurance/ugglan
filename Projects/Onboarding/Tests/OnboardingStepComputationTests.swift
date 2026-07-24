@@ -27,6 +27,28 @@ final class OnboardingStepComputationTests: XCTestCase {
         XCTAssertTrue(steps.contains(.phoneNumber(phoneNumber: "0735328847", email: "demo@hedvig.com")))
     }
 
+    func testInviteFriendStepShownWhenForeverDataExists() {
+        let steps = OnboardingStepList.compute(
+            contracts: [],
+            foreverData: .init(
+                grossAmount: .init(amount: "100", currency: "SEK"),
+                netAmount: .init(amount: "90", currency: "SEK"),
+                otherDiscounts: nil,
+                discountCode: "CODE",
+                monthlyDiscount: .init(amount: "10", currency: "SEK"),
+                referrals: [],
+                referredBy: nil,
+                monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
+            )
+        )
+        XCTAssertTrue(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
+    }
+
+    func testInviteFriendStepHiddenWithoutForeverData() {
+        let steps = OnboardingStepList.compute(contracts: [])
+        XCTAssertFalse(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
+    }
+
     func testCoInsuredStepShownWhenContractHasMissingCoInsured() {
         let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: true)])
         let steps = OnboardingStepList.compute(contracts: [contract])

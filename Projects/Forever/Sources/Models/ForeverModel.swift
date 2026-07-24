@@ -81,10 +81,10 @@ public struct ForeverData: Codable, Equatable, Sendable {
     let netAmount: MonetaryAmount
     let monthlyDiscount: MonetaryAmount
     let otherDiscounts: MonetaryAmount?
-    var discountCode: String
+    public internal(set) var discountCode: String
     let referrals: [Referral]
     let referredBy: Referral?
-    let monthlyDiscountPerReferral: MonetaryAmount
+    public let monthlyDiscountPerReferral: MonetaryAmount
 
     public mutating func updateDiscountCode(_ newValue: String) { discountCode = newValue }
 }
