@@ -2,6 +2,7 @@ import Contracts
 import CrossSell
 import Forever
 import Foundation
+import hCore
 
 public struct ContactInfo: Equatable, Hashable, Sendable {
     public let email: String

@@ -1,4 +1,5 @@
 import AppStateContainer
+import Combine
 import Contracts
 import CrossSell
 import EditStakeholders
@@ -9,27 +10,56 @@ import hCoreUI
 
 @MainActor
 class OnboardingNavigationViewModel: ObservableObject {
+    private static let hasBeenPresentedKey = "onboarding_has_been_presented"
+    public static var hasSeenOnboarding: Bool {
+        UserDefaults.standard.bool(forKey: hasBeenPresentedKey) == true
+    }
+
+    static func setOnboardingToSeen() {
+        UserDefaults.standard.set(true, forKey: OnboardingNavigationViewModel.hasBeenPresentedKey)
+    }
+
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
     let connectPaymentVm = ConnectPaymentViewModel()
+    private var routeCountCancellable: AnyCancellable?
     @Published var steps: [OnboardingStep] = [
         .welcome
     ]
+    {
+        didSet {
+            progress = .init(currentStep: progress.currentStep, totalSteps: steps.count)
+        }
+    }
+    @Published var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
 
     @Published var missingPetChipIdInput: MissingPetChipIdInput?
+
+    private var hasFetchedSteps = false
 
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)
+        routeCountCancellable = router.$routeTypes
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateProgress()
+            }
     }
 
     func advance(after step: OnboardingStep) {
         guard let index = steps.firstIndex(where: { $0.matches(step) }), index + 1 < steps.count else {
             router.dismiss()
+            OnboardingNavigationViewModel.setOnboardingToSeen()
             return
         }
         router.push(steps[index + 1])
+    }
+
+    func updateProgress() {
+        let index = router.routeTypes.count
+        withAnimation { progress = .init(currentStep: index + 1, totalSteps: steps.count) }
     }
 }
 
@@ -52,6 +82,19 @@ extension OnboardingNavigationViewModel {
     }
 }
 
+// MARK: - Pet chip id step
+extension OnboardingNavigationViewModel {
+    /// A pet chip id was added for `contractId` — clear `missingData` on that contract
+    /// in the step, so the screen (which reads its contracts from `steps`) shows the
+    /// added checkmark.
+    func markPetChipIdAdded(contractId: String) {
+        steps = steps.map { step in
+            guard case let .petChipIds(contracts) = step else { return step }
+            return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
+        }
+    }
+}
+
 // MARK: - Connect-payment step
 extension OnboardingNavigationViewModel {
     /// Refresh the `.connectPayment` step's connected flag — the member may have connected
@@ -68,19 +111,6 @@ extension OnboardingNavigationViewModel {
         steps = steps.map { step in
             guard case .connectPayment = step else { return step }
             return .connectPayment(isConnected: true)
-        }
-    }
-}
-
-// MARK: - Pet chip id step
-extension OnboardingNavigationViewModel {
-    /// A pet chip id was added for `contractId` — clear `missingData` on that contract
-    /// in the step, so the screen (which reads its contracts from `steps`) shows the
-    /// added checkmark.
-    func markPetChipIdAdded(contractId: String) {
-        steps = steps.map { step in
-            guard case let .petChipIds(contracts) = step else { return step }
-            return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
         }
     }
 }
