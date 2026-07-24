@@ -8,25 +8,26 @@ class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
     @Inject private var addonClient: AddonsClient
 
-    func getCrossSell(source: CrossSellSource, contractId: String?) async throws -> CrossSells {
-        let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
-            if let flowSource = source.asGraphQLFlowSource {
-                return .some(GraphQLEnum<OctopusGraphQL.FlowSource>(flowSource))
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        let userFlow: GraphQLEnum<OctopusGraphQL.UserFlow> = .case(source.asGraphQLUserFlow)
+        let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> =
+            source.asGraphQLFlowSource.map { .case($0) } ?? .null
+
+        let contractId: GraphQLNullable<OctopusGraphQL.ID> =
+            switch source {
+            case let .changeTier(contractId), let .movingFlow(contractId): .some(contractId)
+            case .home, .closedClaim, .addon, .insurances: .null
             }
-            return
-                .null
-        }()
-        let contractIdInput: GraphQLNullable<OctopusGraphQL.ID> = {
-            if let contractId {
-                return .some(contractId)
-            }
-            return .null
-        }()
+
+        let claimId: GraphQLNullable<OctopusGraphQL.UUID> =
+            if case let .closedClaim(claimId) = source { .some(claimId) } else { .null }
+
         let crossSellsInput = OctopusGraphQL.CrossSellInput(
-            userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(source.asGraphQLUserFlow),
+            userFlow: userFlow,
             flowSource: flowSource,
             experiments: [],
-            contractId: contractIdInput
+            contractId: contractId,
+            claimId: claimId,
         )
 
         let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)

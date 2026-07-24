@@ -21,10 +21,10 @@ struct ChangeTierProcessingView: View {
         )
         .hStateViewButtonConfig(errorButtons)
         .onDeinit { [weak vm] in
-            if vm?.viewState == .success {
+            if let vm, vm.viewState == .success {
                 NotificationCenter.default.post(
                     name: .openCrossSell,
-                    object: CrossSellInfo(type: .changeTier, contractId: vm?.contractId)
+                    object: CrossSellInfo(type: .changeTier(contractId: vm.contractId))
                 )
             }
         }

@@ -61,7 +61,7 @@ class MockCrossSellService: CrossSellClient {
         self.fetchAddonBanners = fetchAddonBanners
     }
 
-    func getCrossSell(source: CrossSellSource, contractId _: String?) async throws -> CrossSells {
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
         events.append(.getCrossSell)
         let data = try await fetchCrossSell(source)
         return data

@@ -57,7 +57,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     /// Contract that was changed in this flow, forwarded to cross-sell so the backend can return addon recommendations.
-    var contractId: String? {
+    var contractId: String {
         switch changeTierInput {
         case let .contractWithSource(data): return data.contractId
         case let .existingIntent(intent, _): return intent.contractId

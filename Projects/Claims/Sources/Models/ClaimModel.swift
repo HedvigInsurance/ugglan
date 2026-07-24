@@ -178,27 +178,21 @@ extension ClaimModel: TrackingViewNameProtocol {
 
 extension ClaimModel {
     public var asCrossSellInfo: CrossSellInfo {
-        let additionalInfo = ClaimCrossSellAdditionalInfo.fromClaim(self)
-        return .init(
-            type: .closedClaim,
-            contractId: contractId,
-            additionalInfo: additionalInfo
+        .init(
+            type: .closedClaim(claimId: id),
+            additionalInfo: ClaimCrossSellAdditionalInfo(
+                id: id,
+                type: claimType,
+                status: status.title,
+                typeOfContract: productVariant?.typeOfContract
+            )
         )
     }
 }
 
-private struct ClaimCrossSellAdditionalInfo: Codable, Equatable {
+struct ClaimCrossSellAdditionalInfo: Codable, Equatable, Sendable {
     let id: String
     let type: String
     let status: String
     let typeOfContract: String?
-
-    static func fromClaim(_ claim: ClaimModel) -> Self {
-        Self(
-            id: claim.id,
-            type: claim.claimType,
-            status: claim.status.title,
-            typeOfContract: claim.productVariant?.typeOfContract
-        )
-    }
 }
