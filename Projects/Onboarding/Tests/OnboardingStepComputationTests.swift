@@ -12,6 +12,7 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .welcome,
                 .analyticsConsent,
                 .phoneNumber(phoneNumber: "", email: ""),
+                .theme,
             ]
         )
     }
