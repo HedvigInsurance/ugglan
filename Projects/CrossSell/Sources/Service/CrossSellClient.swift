@@ -1,5 +1,4 @@
 import Addons
-import Foundation
 
 @MainActor
 public protocol CrossSellClient: Sendable {
