@@ -724,6 +724,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_SCREEN.UNSUBSCRIBED_MESSAGE" = "Avregistrerad från erbjudanden på mail";
 "SETTINGS_SCREEN.UNSUBSCRIBE_DESCRIPTION" = "Du kommer inte längre få kampanjmail från oss";
 "SETTINGS_THEME_DARK" = "Mörkt";
+"SETTINGS_THEME_DIALOG_TITLE" = "Välj tema";
 "SETTINGS_THEME_LIGHT" = "Ljust";
 "SETTINGS_THEME_SYSTEM_DEFAULT" = "Systemets standardinställning";
 "SETTINGS_THEME_TITLE" = "Tema";
