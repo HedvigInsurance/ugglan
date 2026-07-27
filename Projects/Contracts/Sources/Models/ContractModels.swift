@@ -80,30 +80,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         firstName + " " + lastName
     }
 
-    public var nbOfMissingCoInsured: Int {
-        coInsured.filter(\.hasMissingInfo).count
-    }
-
-    public var nbOfMissingCoOwners: Int {
-        coOwners.filter(\.hasMissingInfo).count
-    }
-
-    public var nbOfMissingCoInsuredWithoutTermination: Int {
-        coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
-    }
-
-    public var nbOfMissingCoOwnersWithoutTermination: Int {
-        coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
-    }
-
-    public var showEditCoInsuredInfo: Bool {
-        supportsCoInsured && terminationDate == nil
-    }
-
-    public var showEditCoOwnersInfo: Bool {
-        supportsCoOwners && terminationDate == nil
-    }
-
     @MainActor
     public var showEditInfo: Bool {
         EditType.getTypes(for: self).count > 0 && terminationDate == nil
@@ -204,6 +180,40 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
             }
         }
         return typeOfContract.pillowType
+    }
+}
+//MARK: coInsured + coOwners
+extension Contract {
+    public var nbOfMissingCoInsured: Int {
+        coInsured.filter(\.hasMissingInfo).count
+    }
+
+    public var nbOfMissingCoOwners: Int {
+        coOwners.filter(\.hasMissingInfo).count
+    }
+
+    public var hasMissingCoInsured: Bool {
+        coInsured.filter(\.hasMissingInfo).count > 0
+    }
+
+    public var hasMissingCoOwners: Bool {
+        coOwners.filter(\.hasMissingInfo).count > 0
+    }
+
+    public var nbOfMissingCoInsuredWithoutTermination: Int {
+        coInsured.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
+    }
+
+    public var nbOfMissingCoOwnersWithoutTermination: Int {
+        coOwners.filter { $0.hasMissingInfo && $0.terminatesOn == nil }.count
+    }
+
+    public var showEditCoInsuredInfo: Bool {
+        supportsCoInsured && terminationDate == nil
+    }
+
+    public var showEditCoOwnersInfo: Bool {
+        supportsCoOwners && terminationDate == nil
     }
 }
 

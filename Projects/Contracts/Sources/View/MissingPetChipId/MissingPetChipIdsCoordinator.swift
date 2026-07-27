@@ -157,7 +157,7 @@ class AddMissingPetChipIdViewModel: ObservableObject {
                     for: contract.id
                 )
                 await contractStore.fetchContracts()
-                NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
+                NotificationCenter.default.post(name: .petChipIdAdded, object: contract.id)
                 Toasts.success()
                 dismiss()
             } catch let error as PetChipIdError {

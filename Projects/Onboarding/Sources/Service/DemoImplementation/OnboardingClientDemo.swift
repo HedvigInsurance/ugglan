@@ -1,3 +1,4 @@
+import Contracts
 import Foundation
 import hCore
 
@@ -14,6 +15,31 @@ public class OnboardingClientDemo: OnboardingClient {
 
     static func getSteps() -> [OnboardingStep] {
         OnboardingStepList.compute(
+            contracts: [
+                .init(
+                    id: "id1",
+                    currentAgreement: nil,
+                    exposureDisplayName: "exposure 1",
+                    exposureDisplayNameShort: "exsposure 1 short",
+                    masterInceptionDate: nil,
+                    terminationDate: nil,
+                    supportsAddressChange: true,
+                    supportsCoInsured: true,
+                    supportsCoOwners: true,
+                    supportsTravelCertificate: true,
+                    supportsChangeTier: true,
+                    supportsTermination: true,
+                    upcomingChangedAgreement: nil,
+                    upcomingRenewal: nil,
+                    firstName: "first name",
+                    lastName: "last name",
+                    ssn: "ssn",
+                    typeOfContract: .seHouse,
+                    coInsured: [.init(needsMissingInfo: true)],
+                    coOwners: [.init(needsMissingInfo: true)],
+                    missingPetChipId: true
+                )
+            ],
             contactInfo: .init(phone: "0735328847")
         )
     }
