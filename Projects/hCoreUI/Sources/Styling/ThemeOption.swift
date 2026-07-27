@@ -61,3 +61,24 @@ public enum ThemeOption: String, CaseIterable, Identifiable, Sendable {
         }
     }
 }
+
+@MainActor
+extension ThemeOption {
+    public var image: some View {
+        Group {
+            switch self {
+            case .light:
+                Circle().fill(hBackgroundColor.primary)
+                    .padding(.padding2)
+                    .colorScheme(.light)
+            case .dark:
+                Circle().fill(hBackgroundColor.primary)
+                    .padding(.padding2)
+                    .colorScheme(.dark)
+            case .system:
+                hCoreUIAssets.settings.view.resizable()
+            }
+        }
+        .frame(width: 24, height: 24)
+    }
+}

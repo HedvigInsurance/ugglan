@@ -17,6 +17,7 @@ public enum OnboardingStepList {
             .welcome,
             .analyticsConsent,
             .phoneNumber(phoneNumber: contactInfo.phone),
+            .theme,
         ]
     }
 }

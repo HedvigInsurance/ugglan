@@ -34,6 +34,7 @@ struct OnboardingNavigation: View {
             case .analyticsConsent: OnboardingAnalyticsScreen()
             case let .phoneNumber(phoneNumber):
                 OnboardingPhoneScreen(phoneNumber: phoneNumber)
+            case .theme: OnboardingThemeScreen()
             }
         }
         .withDismissButton {
