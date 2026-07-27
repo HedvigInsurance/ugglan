@@ -10,7 +10,7 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
     public typealias RawValue = String
 
     case home
-    case closedClaim(claimId: String)
+    case closedClaim(claimId: String, contractId: String?)
     case changeTier(contractId: String)
     case addon
     case movingFlow(contractId: String)

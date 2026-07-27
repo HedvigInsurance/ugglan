@@ -179,7 +179,7 @@ extension ClaimModel: TrackingViewNameProtocol {
 extension ClaimModel {
     public var asCrossSellInfo: CrossSellInfo {
         .init(
-            type: .closedClaim(claimId: id),
+            type: .closedClaim(claimId: id, contractId: contractId),
             additionalInfo: ClaimCrossSellAdditionalInfo(
                 id: id,
                 type: claimType,
