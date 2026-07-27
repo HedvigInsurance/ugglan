@@ -19,11 +19,11 @@ struct OnboardingConnectPaymentScreen: View {
             graphic
         }
         .hFormTitle(
-            title: .init(.small, .body1, "Connect payment", alignment: .leading),
+            title: .init(.small, .body1, L10n.onboardingConnectPaymentTitle, alignment: .leading),
             subTitle: .init(
                 .small,
                 .body1,
-                "Add a payment method to activate your insurance",
+                L10n.onboardingConnectPaymentSubtitle,
                 alignment: .leading
             )
         )
@@ -31,7 +31,7 @@ struct OnboardingConnectPaymentScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
-                    hText("Adding a payment method is required to keep your insurance active", style: .finePrint)
+                    hText(L10n.onboardingConnectPaymentFootnote, style: .finePrint)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
@@ -40,7 +40,8 @@ struct OnboardingConnectPaymentScreen: View {
                             vm?.advance(after: .connectPayment(isConnected: true))
                         }
                     } else {
-                        hButton(.large, .primary, content: .init(title: "Connect payment")) { [weak vm] in
+                        hButton(.large, .primary, content: .init(title: L10n.onboardingConnectPaymentTitle)) {
+                            [weak vm] in
                             vm?.connectPaymentVm
                                 .set(onSuccess: { [weak vm] in
                                     vm?.markPaymentConnected()

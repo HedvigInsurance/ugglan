@@ -12,21 +12,21 @@ struct OnboardingCrossSellScreen: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .hFormTitle(
-            title: .init(.small, .body1, "Get bundle discount", alignment: .leading),
+            title: .init(.small, .body1, L10n.onboardingCrossSellTitle, alignment: .leading),
             subTitle: .init(
                 .small,
                 .body1,
-                "You get a 15% bundle discount when you have two or more insurances with us",
+                L10n.onboardingCrossSellSubtitle,
                 alignment: .leading
             )
         )
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
-                hButton(.large, .primary, content: .init(title: "Continue to app")) {  // TODO: L10n
+                hButton(.large, .primary, content: .init(title: L10n.onboardingContinueToAppButton)) {
                     vm.advance(after: .crossSell(vm.crossSells))
                 }
-                .accessibilityLabel("Continue to app")  // TODO: L10n
+                .accessibilityLabel(L10n.onboardingContinueToAppButton)
             }
             .sectionContainerStyle(.transparent)
         }
