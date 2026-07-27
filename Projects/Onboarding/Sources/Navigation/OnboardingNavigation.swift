@@ -31,6 +31,7 @@ struct OnboardingNavigation: View {
         Group {
             switch step {
             case .welcome: OnboardingWelcomeScreen()
+            case .analyticsConsent: OnboardingAnalyticsScreen()
             }
         }
         .withDismissButton {
