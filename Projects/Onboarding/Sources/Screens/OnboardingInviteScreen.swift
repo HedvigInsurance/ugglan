@@ -11,10 +11,9 @@ struct OnboardingInviteScreen: View {
     @State private var namesToDisplay: [String] = []
     private var subtitle: String {
         if !monthlyDiscountPerReferral.isEmpty {
-            // TODO: L10n
-            return "With Hedvig Forever, you get \(monthlyDiscountPerReferral) off for every friend you invite."
+            return L10n.onboardingInviteFriendSubtitle(monthlyDiscountPerReferral)
         }
-        return "With Hedvig Forever, you get a discount off for every friend you invite."  // TODO: L10n
+        return L10n.onboardingInviteFriendSubtitleFallback
     }
 
     var body: some View {
@@ -22,7 +21,7 @@ struct OnboardingInviteScreen: View {
             centerContent
         }
         .hFormTitle(
-            title: .init(.small, .body1, "Invite a friend", alignment: .leading),
+            title: .init(.small, .body1, L10n.onboardingInviteFriendTitle, alignment: .leading),
             subTitle: .init(
                 .small,
                 .body1,
@@ -40,7 +39,7 @@ struct OnboardingInviteScreen: View {
                                 hButton(
                                     .large,
                                     .secondary,
-                                    content: .init(title: "Invite a friend")  // TODO: L10n
+                                    content: .init(title: L10n.onboardingInviteFriendTitle)
                                 ) {
                                     shareCode(code: discountCode)
                                 }

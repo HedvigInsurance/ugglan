@@ -11,9 +11,9 @@ struct OnboardingWelcomeScreen: View {
                 VStack(spacing: .padding16) {
                     logo
                     VStack(spacing: .padding4) {
-                        hText("Welcome to Hedvig", style: .body1)  // TODO: L10n
+                        hText(L10n.onboardingWelcomeTitle, style: .body1)
                             .accessibilityAddTraits(.isHeader)
-                        hText("Follow the steps to get started with your insurance", style: .body1)  // TODO: L10n
+                        hText(L10n.onboardingWelcomeSubtitle, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .multilineTextAlignment(.center)
                     }
@@ -24,7 +24,7 @@ struct OnboardingWelcomeScreen: View {
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
-                hButton(.large, .primary, content: .init(title: "Get started")) {  // TODO: L10n
+                hButton(.large, .primary, content: .init(title: L10n.onboardingWelcomeButton)) {
                     vm.advance(after: .welcome)
                 }
             }

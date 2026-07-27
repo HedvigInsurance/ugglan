@@ -35,11 +35,11 @@ struct OnboardingPhoneScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormTitle(
-            title: .init(.small, .body1, "Phone number", alignment: .leading),
+            title: .init(.small, .body1, L10n.onboardingPhoneTitle, alignment: .leading),
             subTitle: .init(
                 .small,
                 .body1,
-                "Add your phone number so we can reach you if something happens",
+                L10n.onboardingPhoneSubtitle,
                 alignment: .leading
             )
         )
@@ -63,7 +63,7 @@ struct OnboardingPhoneScreen: View {
                         }
                     }
                     .hButtonIsLoading(phoneVm.isLoading)
-                    hButton(.large, .ghost, content: .init(title: "Do this later")) {  // TODO: L10n
+                    hButton(.large, .ghost, content: .init(title: L10n.onboardingDoThisLaterButton)) {
                         UIApplication.dismissKeyboard()
                         vm.advance(after: .phoneNumber(phoneNumber: phoneNumber))
                     }
