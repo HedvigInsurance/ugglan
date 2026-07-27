@@ -1,4 +1,5 @@
 import Contracts
+import CrossSell
 import Foundation
 import hCoreUI
 
@@ -12,6 +13,7 @@ public enum OnboardingStep: Hashable, Sendable {
     case petChipIds(contracts: [OnboardingContract])
     case inviteFriend(discountCode: String, monthlyDiscountPerReferral: String)
     case connectPayment(isConnected: Bool)
+    case crossSell(_ crossSells: [CrossSell])
 }
 
 @MainActor
@@ -35,6 +37,7 @@ extension OnboardingStep: TrackingViewNameProtocol {
         case .petChipIds: "OnboardingPetChipIds"
         case .inviteFriend: "OnboardingInviteFriend"
         case .connectPayment: "OnboardingConnectPayment"
+        case .crossSell: "OnboardingCrossSell"
         }
     }
 }
