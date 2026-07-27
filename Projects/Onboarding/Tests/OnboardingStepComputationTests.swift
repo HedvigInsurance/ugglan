@@ -9,7 +9,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         XCTAssertEqual(
             steps,
             [
-                .welcome
+                .welcome,
+                .analyticsConsent,
             ]
         )
     }
