@@ -77,7 +77,7 @@ class EditStakeholdersClientOctopus: EditStakeholdersClient {
         )
         let data = try await octopus.client.mutation(mutation: mutation)?.midtermChangeIntentCreate
         if let userError = data?.userError {
-            throw EditStakeholdersError.serviceError(message: userError.message ?? L10n.General.errorBody)
+            throw EditStakeholdersError.serviceError(message: userError.message)
         }
         guard let intent = data?.intent else {
             throw EditStakeholdersError.serviceError(message: L10n.General.errorBody)
