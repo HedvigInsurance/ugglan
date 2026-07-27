@@ -213,7 +213,7 @@ struct SubmitClaimSummaryBottomView: View {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let vm = SubmitClaimSummaryStep(
         claimIntent: .init(
