@@ -11,7 +11,7 @@ class EditStakeholdersClientOctopus: EditStakeholdersClient {
         let delayTask = Task {
             try await Task.sleep(seconds: 3)
         }
-        let clientTask = Task { @MainActor in
+        let clientTask = Task { @MainActor () -> String? in
             let data = try await octopus.client.mutation(mutation: mutation)
             if let error = data?.midtermChangeIntentCommit.userError {
                 return error.message
