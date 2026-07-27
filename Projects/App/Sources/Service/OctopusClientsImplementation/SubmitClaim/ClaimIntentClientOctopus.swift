@@ -324,19 +324,19 @@ extension ClaimIntentStepContent {
                     },
                     answers: summary.answers.compactMap { answer in
                         let value = answer.value
-                        if let text = value.asClaimIntentStepContentSummaryAnswerText {
-                            return .init(title: answer.title, value: .text(text.text))
-                        } else if let audio = value.asClaimIntentStepContentSummaryAnswerAudio {
-                            guard let url = URL(string: audio.url) else { return nil }
+                        if let answerText = value.asClaimIntentStepContentSummaryAnswerText {
+                            return .init(title: answer.title, value: .text(answerText.text))
+                        } else if let answerAudio = value.asClaimIntentStepContentSummaryAnswerAudio {
+                            guard let url = URL(string: answerAudio.url) else { return nil }
                             return .init(
                                 title: answer.title,
-                                value: .audio(url: url, transcript: audio.transcript)
+                                value: .audio(url: url, transcript: answerAudio.transcript)
                             )
-                        } else if let files = value.asClaimIntentStepContentSummaryAnswerFiles {
+                        } else if let answerFiles = value.asClaimIntentStepContentSummaryAnswerFiles {
                             return .init(
                                 title: answer.title,
                                 value: .files(
-                                    files.files.compactMap {
+                                    answerFiles.files.compactMap {
                                         guard let url = URL(string: $0.url) else { return nil }
                                         return .init(
                                             url: url,

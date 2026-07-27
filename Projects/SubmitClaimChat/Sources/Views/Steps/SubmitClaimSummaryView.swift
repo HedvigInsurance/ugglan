@@ -42,9 +42,9 @@ struct SubmitClaimSummaryView: View {
             presented: $showAllAnswers,
             presentationStyle: .detent(style: [.height])
         ) {
-            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers) {
-                showAllAnswers = false
-            }
+            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers)
+                .navigationTitle(L10n.ClaimStatus.ClaimDetails.title)
+                .embededInNavigation(tracking: String(describing: SubmitClaimSummaryAnswersView.self))
         }
     }
 
@@ -118,16 +118,13 @@ struct SubmitClaimSummaryView: View {
 }
 
 struct SubmitClaimSummaryAnswersView: View {
+    @Environment(\.dismiss) private var dismiss
     let answers: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer]
-    let onClose: () -> Void
 
     var body: some View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding24) {
-                    hText(L10n.ClaimStatus.ClaimDetails.title)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .accessibilityAddTraits(.isHeader)
                     ForEach(answers) { answer in
                         VStack(alignment: .leading, spacing: .padding4) {
                             hText(answer.title)
@@ -138,19 +135,18 @@ struct SubmitClaimSummaryAnswersView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .padding(.top, .padding32)
                 .padding(.bottom, .padding32)
             }
             .sectionContainerStyle(.transparent)
         }
-        .hFormContentPosition(.top)
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 hButton(
                     .large,
                     .secondary,
                     content: .init(title: L10n.generalCloseButton)
-                ) { onClose() }
+                ) { dismiss() }
             }
             .sectionContainerStyle(.transparent)
         }
@@ -217,7 +213,7 @@ struct SubmitClaimSummaryBottomView: View {
     }
 }
 
-#Preview {
+#Preview{
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     let vm = SubmitClaimSummaryStep(
         claimIntent: .init(

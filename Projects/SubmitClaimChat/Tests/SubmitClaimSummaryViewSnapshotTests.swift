@@ -140,7 +140,9 @@ final class SubmitClaimSummaryViewSnapshotTests: XCTestCase {
     func testShowAllAnswersContent() throws {
         registerDependencies()
         let url = try render(
-            SubmitClaimSummaryAnswersView(answers: summaryModel.answers, onClose: {}),
+            SubmitClaimSummaryAnswersView(answers: summaryModel.answers)
+                .navigationTitle(L10n.ClaimStatus.ClaimDetails.title)
+                .embededInNavigation(tracking: String(describing: SubmitClaimSummaryAnswersView.self)),
             name: "show_all_answers_content",
             height: 720
         )
