@@ -4,6 +4,8 @@ import hCoreUI
 
 struct OnboardingAnalyticsScreen: View {
     @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @AppStorage(AnalyticsConsent.hasConsentedKey) private var consentGiven: Bool?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let privacyPolicyUrl = URL(string: "https://www.hedvig.com/se/personuppgifter")!
 
@@ -36,10 +38,19 @@ struct OnboardingAnalyticsScreen: View {
                     privacyPolicyLink
                     VStack(spacing: .padding8) {
                         hButton(.large, .secondary, content: .init(title: "Allow")) {  // TODO: L10n
-                            vm.advance(after: .analyticsConsent)
+                            AnalyticsConsent.give()
+                            UIAccessibility.post(notification: .announcement, argument: "Analytics allowed")  // TODO: L10n
+                            Task { [weak vm] in
+                                await delay(0.8)
+                                vm?.advance(after: .analyticsConsent)
+                            }
                         }
                         hButton(.large, .secondary, content: .init(title: "Deny")) {  // TODO: L10n
-                            vm.advance(after: .analyticsConsent)
+                            AnalyticsConsent.revoke()
+                            Task { [weak vm] in
+                                await delay(0.8)
+                                vm?.advance(after: .analyticsConsent)
+                            }
                         }
                     }
                 }
@@ -69,6 +80,8 @@ struct OnboardingAnalyticsScreen: View {
                 .resizable()
                 .frame(width: 40, height: 40)
                 .foregroundColor(hSignalColor.Green.element)
+                .scaleEffect(consentGiven == true ? 1 : 0, anchor: .center)
+                .animation(reduceMotion ? .none : .bouncy, value: consentGiven)
                 .offset(x: 12, y: -12)
         }
         .accessibilityHidden(true)

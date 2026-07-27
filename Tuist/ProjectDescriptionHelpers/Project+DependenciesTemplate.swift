@@ -42,13 +42,19 @@ public enum ExternalDependencies: CaseIterable {
     case logger
     case automaticLog
     case rive
+    case firebaseAnalytics
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
 
     public var isResourceBundledDependency: Bool { false }
 
-    public var isAppDependency: Bool { false }
+    public var isAppDependency: Bool {
+        switch self {
+        case .firebaseAnalytics: return true
+        default: return false
+        }
+    }
 
     public var isCoreDependency: Bool {
         !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
@@ -132,6 +138,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.15.0"))
             ]
+        case .firebaseAnalytics:
+            return [
+                .package(url: "https://github.com/firebase/firebase-ios-sdk", .upToNextMajor(from: "12.0.0"))
+            ]
         }
     }
 
@@ -213,6 +223,11 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "AutomaticLog")]
         case .rive:
             return [.package(product: "RiveRuntime")]
+        case .firebaseAnalytics:
+            return [
+                .package(product: "FirebaseAnalytics"),
+                .package(product: "FirebaseCore"),
+            ]
         }
     }
 }
