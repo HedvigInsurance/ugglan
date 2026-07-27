@@ -11,7 +11,15 @@ final class OnboardingStepComputationTests: XCTestCase {
             [
                 .welcome,
                 .analyticsConsent,
+                .phoneNumber(phoneNumber: ""),
             ]
         )
+    }
+
+    func testPhoneNumberStepCarriesContactInfo() {
+        let steps = OnboardingStepList.compute(
+            contactInfo: .init(phone: "0735328847")
+        )
+        XCTAssertTrue(steps.contains(.phoneNumber(phoneNumber: "0735328847")))
     }
 }
