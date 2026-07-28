@@ -15,25 +15,12 @@
 /* Used in scenarios where we want hear something like "Double tap to view details" */
 "A11Y_VIEW_DETAILS" = "View details";
 "ACTIVATE_NOTIFICATIONS_TITLE" = "Get notified";
-"ADDON_ADDED_COVERAGE" = "Added";
-"ADDON_ADD_COVERAGE" = "Add coverage";
 /* https://www.figma.com/design/Zb4sDn7V3fQ5H2sCJ95ZJa/UX-Improvements--Small-Projects-?node-id=2842-4002&m=dev */
 "ADDON_BADGE_ACTIVE" = "Active";
-"ADDON_CAR_ALLRISK_DISPLAY_NAME" = "All-risk";
-"ADDON_CAR_CROSS_SELL_BANNER" = "More for your car insurance";
-"ADDON_CAR_CROSS_SELL_BENEFIT_1" = "All-risk: interior, keys, misfuelling";
-"ADDON_CAR_CROSS_SELL_BENEFIT_2" = "Compensation for rental car";
-"ADDON_CAR_CROSS_SELL_BENEFIT_3" = "Lower deductible for collision";
-"ADDON_CAR_DEDUCTIBLE_REDUCTION_DISPLAY_NAME" = "Lower deductible";
 "ADDON_CAR_PLUS_DISPLAY_NAME" = "Car Plus";
-"ADDON_CAR_RENTAL_CAR_DISPLAY_NAME" = "Rental car";
 "ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_SUBTITLE" = "This addon is active and linked to your insurance.\n\nTo remove it, go to the insurance it’s linked to.";
 "ADDON_FLOW_ALREADY_ACTIVE_EXPLANATION_TITLE" = "The addon is active";
-"ADDON_FLOW_CONFIRMATION_BUTTON" = "Yes, upgrade my coverage";
-"ADDON_FLOW_CONFIRMATION_DESCRIPTION" = "This upgrade will take effect from %1$@ and can only be removed when your insurance is renewed or cancelled.";
-"ADDON_FLOW_CONFIRMATION_TITLE" = "Confirm upgraded coverage";
 "ADDON_FLOW_COVER_BUTTON" = "See what's included";
-"ADDON_FLOW_LEARN_MORE_BUTTON" = "Learn more";
 "ADDON_FLOW_PRICE_LABEL" = "+%@/mo";
 "ADDON_FLOW_SEE_PRICE_BUTTON" = "See your price";
 /* Figma */
@@ -41,59 +28,26 @@
 "ADDON_FLOW_SELECT_DAYS_PLACEHOLDER" = "Maximum travel limit";
 "ADDON_FLOW_SELECT_INSURANCE_SUBTITLE" = "Select the insurance you would like to add coverage for";
 "ADDON_FLOW_SELECT_INSURANCE_TITLE" = "Extend your coverage";
-"ADDON_FLOW_SELECT_SUBOPTION_SUBTITLE" = "Days covered when travelling";
 "ADDON_FLOW_SELECT_SUBOPTION_TITLE" = "Choose your maximum travel limit";
-"ADDON_FLOW_SUBTITLE" = "For extra safety when you are travelling abroad";
 /* Your updates will be effective from tomorrow. */
 "ADDON_FLOW_SUCCESS_SUBTITLE" = "Your extended coverage will be effective from  %@.";
 "ADDON_FLOW_SUCCESS_TITLE" = "Added successfully";
-"ADDON_FLOW_SUMMARY_ACTIVE_FROM" = "Activates %1$@";
-"ADDON_FLOW_SUMMARY_CONFIRM_BUTTON" = "Add and confirm";
-"ADDON_FLOW_SUMMARY_INFO_TEXT" = "The addon is tied to your contract period and can only be removed when your insurance is renewed or cancelled.";
 "ADDON_FLOW_SUMMARY_PRICE_SUBTITLE" = "Added to your total monthly premium";
-"ADDON_FLOW_TITLE" = "Extend your travel coverage";
-"ADDON_FLOW_TITLE_GENERIC" = "Extend your coverage";
-"ADDON_FLOW_TRAVEL_INFORMATION_CARD_TEXT" = "Travel Insurance Plus is our extended travel insurance, for extra coverage on your trip.";
-"ADDON_FLOW_TRAVEL_INFORMATION_DESCRIPTION" = "Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.";
-"ADDON_FLOW_TRAVEL_INFORMATION_TITLE" = "What is Travel Insurance Plus?";
 "ADDON_FLOW_UPDATE_ADDON_DESCRIPTION" = "Select an option";
 "ADDON_FLOW_UPGRADE_ADDON" = "Extend coverage";
 "ADDON_FLOW_UPGRADE_ADDON_DESCRIPTION" = "You can extend the coverage of this addon. It can only be removed when your insurance is renewed or cancelled.";
-"ADDON_LEARN_MORE_LABEL" = "See what's included";
-"ADDON_REMOVE_CANCEL_BUTTON" = "Keep current coverage";
-"ADDON_REMOVE_CONFIRM_BUTTON" = "Cancel %1$@";
-"ADDON_REMOVE_DESCRIPTION" = "By canceling this extended coverage, your home insurance will no longer include this extra protection.";
-"ADDON_REMOVE_TITLE" = "Cancel %1$@";
-"ADDON_TRAVEL_CROSS_SELL_BANNER" = "Add extra safety when traveling";
-"ADDON_TRAVEL_CROSS_SELL_BENEFIT_1" = "Travel up to 60 days in a row";
-"ADDON_TRAVEL_CROSS_SELL_BENEFIT_2" = "Delayed bags and flights";
-"ADDON_TRAVEL_CROSS_SELL_BENEFIT_3" = "Applies to all co-insured";
 "ADDON_TRAVEL_DISPLAY_NAME" = "Travel Insurance Plus";
 "ALERT_CANCEL" = "Cancel";
 "AUDIO_RECORDER_LISTEN" = "Listen";
-"AUDIO_RECORDER_SEND" = "Send";
-"AUDIO_RECORDER_SEND_ERROR_TITLE" = "Could not send recording";
 "AUDIO_RECORDER_START" = "Start";
-"AUDIO_RECORDER_START_OVER" = "Start over";
 "AUDIO_RECORDER_STOP" = "Stop";
 "AUTHENTICATION_BANKID_LOGIN_ERROR" = "We cannot log you in via BankID right now, try again";
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Open the BankID app on your phone or scan the QR-code to login";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Login with BankID";
 "AUTHENTICATION_BANKID_OPEN_BUTTON" = "Open BankID";
 "AUTH_OTP_YOUR_EMAIL" = "your email";
-"AUTOMATED_MESSAGE_ESCALATION_BANNER_TEXT" = "We will get back to you as soon as possible. In the meantime you can close the app.";
-"AUTOMATED_MESSAGE_ESCALATION_BANNER_TITLE" = "Conversation sent to our service team";
 "AUTOMATED_MESSAGE_INFO_CARD_BUTTON" = "Read more";
-"AUTOMATED_MESSAGE_INFO_CARD_TEXT" = "If necessary, you’ll be automatically connected to our service team.";
-"AUTOMATED_MESSAGE_INFO_CARD_TITLE" = "We use AI for faster service";
-"AUTOMATED_MESSAGE_INFO_SHEET_TEXT" = "We use AI to help you as quickly as possible. The answers are generated automatically and may not always be correct.\n\nIf necessary, you’ll be connected to our service team to help you further.\n\nThe details of your insurance are outlined in your insurance letter and terms and conditions.";
-"AUTOMATED_MESSAGE_INFO_SHEET_TITLE" = "AI and automated messages";
-"BANKID_FAILED_MESSAGE" = "Please try again. If you've previously had an insurance with us, please reach out to us in the app or email at hedvig@hedvig.com.";
-"BANKID_FAILED_TITLE" = "Signing with BankID failed";
 "BANKID_LOGIN_TITLE" = "Login";
-"BANKID_ON_ANOTHER_DEVICE" = "BankID on another device";
-"BANKID_USER_CANCEL_MESSAGE" = "Signing with BankID failed, please try again";
-"BANKID_USER_CANCEL_TITLE" = "BankID was cancelled";
 "BANK_PAYOUT_METHOD_CARD_DESCRIPTION" = "Payout to a Swedish bank account";
 "BANK_PAYOUT_METHOD_CARD_TITLE" = "Bank account";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_SUBTITLE_CURRENT_APPLIED_DISCOUNT" = "%1$@ discount";
@@ -101,10 +55,6 @@
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_ONE_INSURANCE" = "1 insurance";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_THREE_OR_MORE" = "3 or more";
 "BUNDLE_DISCOUNT_PROGRESS_SEGMENT_TITLE_TWO_INSURANCES" = "2 insurances";
-"BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE" = "Your bundle discount will be removed if you have fewer than two active insurances.";
-"BUNDLE_DISCOUNT_TERMINATION_ELIGIBILITY_MESSAGE_CRM" = "Your bundle discount will be removed if you have fewer than two active insurances.";
-"BUSINESS_MODEL_CARD_TEXT" = "Hedvig only takes 25%% of your monthly premium to improve the product and experience. The rest, 75%%, goes into a common claims pool. Any money left in that pool by the end of the year is donated to Milkywire.";
-"BUTTON_LOGIN_ALTERNATIVE_METHOD" = "Use alternative login method";
 "CERTIFICATES.CREATE_CERTIFICATE" = "Create certificate";
 "CERTIFICATES.DOWNLOAD" = "Download certificate";
 "CERTIFICATES.EMAIL_SENT" = "Email sent";
@@ -121,7 +71,6 @@
 "CHANGE_ADDRESS_BATHROOMS_LABEL" = "Number of bathrooms";
 "CHANGE_ADDRESS_COVERAGE_INFO_TEXT" = "If you have Standard or Max, Hedvig covers your belongings in your old home for %1$li days after you've moved.";
 "CHANGE_ADDRESS_CO_INSURED_LABEL" = "Insured people";
-"CHANGE_ADDRESS_DETAILS" = "Details";
 "CHANGE_ADDRESS_ENTER_NEW_ADDRESS_TITLE" = "Enter your new address";
 "CHANGE_ADDRESS_EXTRA_BUILDINGS_LABEL" = "Extra buildings";
 "CHANGE_ADDRESS_EXTRA_BUILDINGS_WATER_INPUT_LABEL" = "Connected to water";
@@ -139,7 +88,6 @@
 "CHANGE_ADDRESS_NEW_ADDRESS_LABEL" = "Address";
 "CHANGE_ADDRESS_NEW_LIVING_SPACE_LABEL" = "Size";
 "CHANGE_ADDRESS_NEW_POSTAL_CODE_LABEL" = "Postal code";
-"CHANGE_ADDRESS_NO_FIND" = "Can't find what you're looking for?";
 "CHANGE_ADDRESS_ONLY_YOU" = "Only me";
 "CHANGE_ADDRESS_OTHER_INSURANCES_INFO_TEXT" = "Your other insurance policies are affected when you move to a new address. Your price and coverage may have changed.";
 "CHANGE_ADDRESS_POSTAL_CODE_ERROR" = "Please enter the postal code";
@@ -190,66 +138,31 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CHIP_ID_MISSING_MESSAGE" = "We are missing your pet’s ID-number";
 "CHIP_ID_NO_INSURANCES" = "You’ve already added the ID-number for all your pets";
 "CHIP_ID_TOP_TITLE" = "Update ID-number";
-"CHIP_ID_WRONG_INPUT" = "ID-number needs to be exactly 15 digits";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY" = "Don’t miss out on important information for your claim";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_CTA" = "Enable notifications";
 "CLAIMS_ACTIVATE_NOTIFICATIONS_DISMISS" = "Skip";
-"CLAIMS_CASE" = "Case";
-"CLAIMS_CHECKOUT_COUNT_TITLE" = "How we calculated";
-"CLAIMS_CHECKOUT_NOTICE" = "The money is paid out to the bank account you have linked to us within 1-3 working days";
-"CLAIMS_CHECKOUT_NO_REPAIR_CALCULATION_TEXT" = "The compensation is based on any deductions made due to the age of your phone. You will find the full age deduction table in your full terms and conditions.";
-"CLAIMS_CHECKOUT_PAYOUT_TEXT" = "The payment will be made to the account you have linked as your payment method for your insurance.";
-"CLAIMS_CHECKOUT_REPAIR_CALCULATION_TEXT" = "We base the repair cost on the information available on the manufacturer's website.";
-"CLAIMS_CHECKOUT_REPAIR_INFO_TEXT" = "Based on the information you entered your phone appears to be repairable. Please reach out to a repair shop of your choice to have it fixed.";
-"CLAIMS_CHECKOUT_REPAIR_TITLE" = "Repair cost (%@)";
-"CLAIMS_CHOOSE_BRAND_TITLE" = "Select brand";
-"CLAIMS_CHOOSE_MODEL_TITLE" = "Save your model";
-"CLAIMS_COMPLEMENT_ CLAIM" = "You can easily add photos, files and other details later.";
-"CLAIMS_CONFIRM_NUMBER_TITLE" = "Confirm your phone number";
-"CLAIMS_DAMAGES" = "Damages";
-"CLAIMS_DATE_NOT_SURE_NOTICE_LABEL" = "If you do not know the exact date, enter an approximate date.";
-"CLAIMS_FILE_UPLOAD_INFO" = "Upload documentation that helps us understand your claim. You can upload photos, PDFs, or other files here. Only upload files relevant to your claim.";
 "CLAIMS_FILE_UPLOAD_REMOVE_CANCEL" = "Continue";
 "CLAIMS_FILE_UPLOAD_REMOVE_CONFIRM" = "Yes, delete";
 "CLAIMS_FILE_UPLOAD_REMOVE_SUBTITLE" = "Do you want to remove the file from your claim?";
-"CLAIMS_FILE_UPLOAD_TITLE" = "Upload documents, receipts or photos";
-"CLAIMS_LOCATON_OCCURANCE_TITLE" = "When and where did it happen?";
-"CLAIMS_PAYOUT_HEDVIG_LABEL" = "Hedvig pays out";
-"CLAIMS_PAYOUT_PROGRES_LABEL" = "Making payout...";
-"CLAIMS_PAYOUT_SUCCESS_LABEL" = "The money has been sent and will appear on your account within 1-3 days";
 "CLAIMS_PLEDGE_SLIDE_LABEL" = "I promise";
-"CLAIMS_SELECT_CATEGORY" = "Select a category";
-"CLAIMS_SINGLE_ITEM_DETAILS" = "Fill in details about your item";
-"CLAIMS_SINGLE_ITEM_NOTICE_LABEL" = "If you do not remember the purchase price or purchase date, you do not need to fill in anything.";
-"CLAIMS_SINGLE_ITEM_NOTICE_WITHOUT_PRICE_LABEL" = "If you do not remember, you do not need to fill in anything.";
 "CLAIMS_START_RECORDING_LABEL" = "Start recording";
 "CLAIMS_SUCCESS_LABEL" = "Your claim will now be handled by our service team. Depending on the extent of your claim, the response time varies. If you have any questions, don't hesitate to get in touch here in the app.";
 "CLAIMS_SUCCESS_TITLE" = "Claim submitted";
-"CLAIMS_SUMMARY_DETAIL_INFO" = "Details";
-"CLAIMS_SUMMARY_WHAT_IS_ABOUT" = "Subject of claim";
 "CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR" = "Input text must be at least %1$d characters.";
 "CLAIMS_TEXT_INPUT_PLACEHOLDER" = "Describe your claim";
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "What happened?";
 "CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "What has happened?";
-"CLAIMS_TRIAGING_WHAT_ITEM_TITLE" = "What item is it about?";
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
-"CLAIMS_USE_TEXT_INSTEAD" = "Describe using text";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
-"CLAIM_CHAT_DATE_AND_LOCATION_HINT" = "If you don't know the exact date, enter an approximate date.";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
 "CLAIM_CHAT_EDIT_EXPLANATION" = "Editing this answer will clear everything you’ve filled in after it. You’ll need to go through those steps again.";
 "CLAIM_CHAT_EDIT_TITLE" = "Previous answers will be reset";
 "CLAIM_CHAT_ERROR_MESSAGE" = "Make sure you fill in all the required fields";
-"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_SUBTITLE" = "Start searching for the item relevant to your claim";
-"CLAIM_CHAT_FIELD_SEARCH_EMPTY_STATE_TITLE" = "Fill in more details about your item";
 "CLAIM_CHAT_FIELD_SEARCH_NOTHING_FOUND" = "No results";
-"CLAIM_CHAT_FIELD_SEARCH_PLACEHOLDER" = "Search for your item...";
 "CLAIM_CHAT_FIELD_SEARCH_SUGGESTION" = "Did you mean ";
-"CLAIM_CHAT_FIELD_SEARCH_TITLE" = "Search for your item";
 "CLAIM_CHAT_FILE_TITLE" = "Uploaded files";
-"CLAIM_CHAT_FILE_UPLOAD_HINT" = "You can upload images, PDFs or other files. Only include files that are relevant to your claim.";
 "CLAIM_CHAT_FILE_UPLOAD_SEND_BUTTON" = "Send files";
 "CLAIM_CHAT_FORM_NUMBER_MAX_CHAR" = "Value must be at most %d";
 "CLAIM_CHAT_FORM_NUMBER_MIN_CHAR" = "Value must be at least %d";
@@ -257,43 +170,24 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_FORM_TEXT_MAX_CHAR" = "Value must be at most %d characters long";
 "CLAIM_CHAT_FORM_TEXT_MIN_CHAR" = "Value must be at least %d characters long";
 "CLAIM_CHAT_FREE_TEXT_LABEL" = "Written description";
-"CLAIM_CHAT_GET_NOTIFIED" = "Get notified";
-"CLAIM_CHAT_LOCATION_NAME_DURING_TRAVEL" = "On a trip";
-"CLAIM_CHAT_LOCATION_NAME_OUTSIDE_HOME" = "Outside my home";
-"CLAIM_CHAT_LOCATION_SUBTITLE_AT_HOME" = "In your home or on your property";
-"CLAIM_CHAT_LOCATION_SUBTITLE_DURING_TRAVEL" = "In Sweden or abroad";
-"CLAIM_CHAT_LOCATION_SUBTITLE_OUTSIDE_HOME" = "Storage, shared spaces or in public";
-"CLAIM_CHAT_OTHER_TITLE" = "Other information";
-"CLAIM_CHAT_PHONE_NUMBER_MISSING" = "Please provide phone number in the case we need to contact you";
-"CLAIM_CHAT_PHONE_NUMBER_UPDATE" = "Make sure we have right phone number in the case we need to contact you";
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
-"CLAIM_CHAT_SINGLE_ITEM_DETAILS_HINT" = "If you don't remember the purchase date, you don't need to fill in anything.";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
-"CLAIM_CHAT_SUCCESS_GO_TO_CLAIM" = "Go to claim";
-"CLAIM_CHAT_SUCCESS_MESSAGE" = "Your claim was submitted successfully";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";
-"CLAIM_CHAT_UNKNOWN_STEP" = "Unknown step";
 "CLAIM_CHAT_USE_AUDIO" = "Record with voice";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe using text";
-"CLAIM_DETAILS_DATE_OF_ACCIDENT" = "Date of occurrence";
-"CLAIM_FLOW_CHAT_SUBMIT_CLAIM_BUTTON" = "Submit your claim";
-"CLAIM_TRIAGING_ABOUT_TITILE" = "What insurance is it about?";
-"CLAIM_TRIAGING_NAVIGATION_TITLE" = "What does your claim concern?";
 "COINSURED_EDIT_TITLE" = "Insured people";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Enter manually";
 "COINSURED_SSN_NOT_FOUND" = "SSN not found";
 /* When we send fetch request for the coinsured SSN and get null as an result, we should automatically switch toggle on and show this info at the bottom of the sheet. */
 "COINSURED_WITHOUT_SSN_INFO" = "We were unable to retrieve the information linked to this Social Security number. Please enter it manually.";
 "COMMON_CLAIM_BUTTON" = "Book now";
-"COMMON_CLAIM_EMERGENCY_BUTTON_TITLE" = "How to get help abroad";
 "COMMON_CLAIM_EMERGENCY_TITLE" = "Sick abroad";
 "CONFIRMATION_SCREEN_DOCUMENT_TITLE" = "Documents";
 "CONFIRM_CHANGES_SUBTITLE" = "Please note that your changes will be effective on %@.";
 "CONFIRM_CHANGES_TITLE" = "Confirm changes";
-"CONTACT_INFO_CHANGES_SAVED" = "Changes saved";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE" = "Valid until %1$@";
 "CONTRACTS_TRIAL_TERMINATION_DATE_MESSAGE_TOMORROW" = "Valid until tomorrow";
 "CONTRACT_ADD_ADDITIONAL_COOWNER" = "Add co-owner";
@@ -305,7 +199,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_ADD_COINSURED_NO_SSN" = "Add without personal identity no.";
 "CONTRACT_ADD_COINSURED_PROCESSING" = "Making changes...";
 "CONTRACT_ADD_COINSURED_REVIEW_INFO" = "Please add information for all co-insured in order to proceed.";
-"CONTRACT_ADD_COINSURED_STARTS_FROM" = "Starts from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_LABEL" = "Your insurance will be updated starting from %1$@";
 "CONTRACT_ADD_COINSURED_UPDATED_TITLE" = "Co-insured updated";
 "CONTRACT_ADD_CONISURED_INFO" = "Add info of co-insured";
@@ -324,9 +217,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_COOWNERS_ADD_PERSONAL_INFO" = "You need to add information about your co-owners";
 "CONTRACT_COOWNERS_MISSING_INFO_TEXT" = "Add co-owner information for your vacation home";
 "CONTRACT_COVERAGE_MORE_INFO" = "More information";
-"CONTRACT_DISPLAY_NAME_SE_PAYMENT_PROTECTION" = "Payment Protection";
 "CONTRACT_EDIT_COINSURED" = "Edit co-insured";
-"CONTRACT_EDIT_COINSURED_DESCRIPTION" = "Change information about co-insured";
 "CONTRACT_EDIT_INFO" = "Edit info";
 "CONTRACT_EDIT_INFO_LABEL" = "Edit your insurance";
 "CONTRACT_FIRST_NAME" = "First name";
@@ -342,7 +233,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_SSN_FETCH_INFO" = "Fetch info";
 "CONTRACT_STATUS_ACTIVE_IN_FUTURE" = "To be activated on %1$@";
 "CONTRACT_STATUS_PENDING" = "Waiting for start date";
-"CONTRACT_STATUS_TERMINATED" = "Terminated";
 "CONTRACT_STATUS_TERMINATED_TODAY" = "To be terminated after today";
 "CONTRACT_STATUS_TO_BE_TERMINATED" = "Terminates on %1$@";
 "CONTRACT_TERMINATED_ON" = "Terminated  %1$@";
@@ -356,31 +246,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "In %1$li days your insurance will be renewed. Read your updated insurance certificate here.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Read certificate";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Your insurance will be renewed tomorrow. Read your updated insurance certificate here.";
-"DATA_TABLE_MULTIPLE_OWNERS" = "Multiple owners";
-"DATA_TABLE_VALUE_FALSE" = "No";
-"DATA_TABLE_VALUE_TRUE" = "Yes";
-"DATA_TABLE_WATER_CONNECTED" = "Water connected";
 "DEEP_LINK_CONTRACT" = "Contract";
-/* Figma */
-"DELETE_ACCOUNT.CONFIRMATION_TITLE" = "Are you sure you want to delete your account?";
-/* Figma */
-"DELETE_ACCOUNT.CONFIRM_BUTTON" = "Delete account";
-/* Figma */
-"DELETE_ACCOUNT.DELETED_DATA_DESCRIPTION" = "This will permanently delete your account along with your personal data. Due to local regulations, any data associated with past claims and insurances will be kept for 10 years.";
 "DELETE_ACCOUNT.DELETE_ACCOUNT_DESCRIPTION" = "As an insurance company, Hedvig is obliged to save the insurance contract and related information as long as it is possible to claim insurance compensation. This period can vary depending on the type of insurance, but is at least 10 years after the insurance has ended.\n\nIf you want us to delete the information we are not required by law to save, you can use the button below.\n\n[Here](https://www.hedvig.com/se-en/hedvig/privacy-policy) you can read about how Hedvig handles your personal data.";
 "DELETE_ACCOUNT.DELETE_ACCOUNT_TITLE" = "Important information";
 /* Figma */
-"DELETE_ACCOUNT.ONGOING_CLAIMS_DESCRIPTION" = "We can’t delete your account as long as you have any ongoing claims or active insurances. Need help with any of these? Please, write us a message in the app.";
-/* Figma */
-"DELETE_ACCOUNT.ONGOING_CLAIMS_TITLE" = "You have some unfinished business";
-/* Figma */
-"DELETE_ACCOUNT.PROCESSED_BUTTON" = "Back to profile";
-/* Figma */
-"DELETE_ACCOUNT.PROCESSED_DESCRIPTION" = "You will get an email from us within 30 days to confirm that your account has been deleted";
-/* Figma */
 "DELETE_ACCOUNT.PROCESSED_TITLE" = "We will delete the information that we are not required to store by law.";
-/* Figma */
-"DELETE_ACCOUNT.PROCESSING_FOOTER" = "After sending a request we will delete your data within 30 days and send you an email to confirm the deletion once done. This action is permanent and non-revocable.";
 "DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_DESCRIPTION" = "As we use our app for our claims handling, we recommend that you keep your account active until your claims are solved.";
 "DELETE_ACCOUNT.YOU_HAVE_ACTIVE_CLAIM_TITLE" = "You have an ongoing claim";
 "DELETE_ACCOUNT.YOU_HAVE_ACTIVE_INSURANCE_DESCRIPTION" = "As you have an active insurance policy with us, we cannot delete your account. If you want to terminate your insurance, you can do it [here](https://link.hedvig.com/terminate-contract).";
@@ -388,19 +258,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DEMO_MODE_CANCEL" = "Cancel";
 "DEMO_MODE_START" = "Start demo mode";
 "DETAILS_TABLE_INSURANCE_PREMIUM" = "Price";
-"DISCOUNTS_ACTIVE_FROM" = "Activates %1$@";
-"DISCOUNTS_LABEL_ACTIVE" = "Active";
-"DISCOUNTS_LABEL_PENDING" = "Pending";
 "DISCOUNT_REDEEM_SUCCESS_BUTTON" = "OK";
 "DOCUMENT_PDF_LABEL" = "PDF";
-"DURATION_TITLE" = "Duration";
-"Direct_Debit_Connected" = "%1$@/month - Paying with direct debit";
-"Direct_Debit_Not_Connected" = "%1$@/mnd - Payment not connected";
 "EDIT_COOWNER_SUBTITLE" = "Edit co-owners for your vacation home";
 "EDIT_COOWNER_TITLE" = "Edit co-owners";
 "EMAIL_PLACEHOLDER" = "email@domain.com";
 "EMAIL_ROW_TITLE" = "Email";
-"EMBARK_EXIT_BUTTON" = "Exit";
 "EMBARK_GO_BACK_BUTTON" = "Go back";
 "EMBARK_LOADING" = "Loading...";
 /* Secondary button to re-record audio */
@@ -412,22 +275,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "EMBARK_UPDATE_APP_BODY" = "Your app is out of date and needs to be updated before you can proceed.";
 "EMBARK_UPDATE_APP_BUTTON" = "Update now";
 "EMBARK_UPDATE_APP_TITLE" = "Update app";
-"FIELD_EXTRA_BUIDLINGS_ATTEFALL_LABEL" = "Attefall";
-"FIELD_EXTRA_BUIDLINGS_BARN_LABEL" = "Barn";
-"FIELD_EXTRA_BUIDLINGS_BOATHOUSE_LABEL" = "Boathouse";
-"FIELD_EXTRA_BUIDLINGS_CARPORT_LABEL" = "Carport";
-"FIELD_EXTRA_BUIDLINGS_FRIGGEBOD_LABEL" = "Friggebod";
-"FIELD_EXTRA_BUIDLINGS_GARAGE_LABEL" = "Garage";
-"FIELD_EXTRA_BUIDLINGS_GAZEBO_LABEL" = "Gazebo";
-"FIELD_EXTRA_BUIDLINGS_GREENHOUSE_LABEL" = "Greenhouse";
-"FIELD_EXTRA_BUIDLINGS_GUESTHOUSE_LABEL" = "Guest house";
-"FIELD_EXTRA_BUIDLINGS_OTHER_LABEL" = "Other";
-"FIELD_EXTRA_BUIDLINGS_OUTHOUSE_LABEL" = "Outhouse";
-"FIELD_EXTRA_BUIDLINGS_SAUNA_LABEL" = "Sauna";
-"FIELD_EXTRA_BUIDLINGS_SHED_LABEL" = "Shed";
-"FIELD_EXTRA_BUIDLINGS_STOREHOUSE_LABEL" = "Storehouse";
 "FILE_UPLOAD_IS_UPLOADING" = "Uploading...";
-"FORCE_LOGOUT_MESSAGE_SUBTITLE" = "Log in again";
 "FORCE_LOGOUT_MESSAGE_TITLE" = "You’ve been logged out";
 "FOREVER.REFERRAL.INVITED_YOU" = "Invite from %@";
 "FOREVER_REFERRAL_LIST_LABEL" = "Invited friends";
@@ -448,15 +296,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_ADD_BUTTON" = "Add";
 "GENERAL_ADD_INFO_BUTTON" = "Add info";
 "GENERAL_ADD_NEW" = "Add new";
-"GENERAL_CHANGE_CONFIRMATION_DESCRIPTION" = "Your insurance will be updated starting from %1$@";
 "GENERAL_CONFIRM" = "Confirm";
 "GENERAL_CONTACT_US_TITLE" = "Contact our service team";
-"GENERAL_DOWNLOAD" = "Download";
 "GENERAL_GO_TO" = "Go to %1$@";
-"GENERAL_NOT_SURE" = "Not sure";
 "GENERAL_RETRY" = "Try again";
-"GENERAL_SAVE_CHANGES_BUTTON" = "Save changes";
-"GENERAL_SHOW" = "Show";
 "GENERAL_TODAY" = "Today";
 "GENERAL_TRY_AGAIN" = "Please try again";
 "GENERAL_YESTERDAY" = "Yesterday";
@@ -496,7 +339,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "Change coverage";
 "HC_RELATED_QUESTIONS_TITLE" = "Related questions";
 "HC_TITLE" = "Help and support";
-"HOMETAB_ACCOUNT_DELETION_NOTIFICATION" = "We have received your request for account deletion. You will get an email from us within 30 days to confirm that your account has been deleted. Until then, your account will stay active.";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.";
 "HONESTY_PLEDGE_HEADER" = "Make a claim";
 "HONESTY_PLEDGE_NOTE_1" = "Not sure about what’s covered? Submit your claim anyway";
@@ -508,7 +350,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INBOX_NEW_MESSAGE" = "New";
 "INBOX_NEW_MESSAGE_CLAIM_DESCRIPTION" = "Make a claim for something that's happened to you or your things";
 "INBOX_NEW_MESSAGE_SUPPORT_DESCRIPTION" = "Questions about your insurance, payments and more";
-"INSURANCES_CROSS_SELL_DISCOUNTS_AVAILABLE" = "Discounts available";
 "INSURANCE_ADDONS_SUBHEADING" = "Addons";
 "INSURANCE_ADDON_SUBHEADING" = "Addon";
 "INSURANCE_DETAILS_DECOMMISSION_INFO" = "To return to your previous coverage, register your car as active again with Transportstyrelsen.";
@@ -517,25 +358,16 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.";
 "INSURANCE_EVIDENCE.READ_MORE_TITLE" = "What is a certificate of validity?";
 "INSURANCE_OFFERS_SUBHEADING" = "Offers";
-"INSURELY_BANKID_ENTER_WORDS" = "Enter these words in BankID";
-"INSURELY_BANKID_NO_OPEN_BANKID" = "Continue with BankID to login";
-"KEY_GEAR_ITEM_VIEW_COVERAGE_TABLE_TITLE" = "Your insurance covers";
-"KEY_GEAR_ITEM_VIEW_NON_COVERAGE_TABLE_TITLE" = "Your insurance does not cover";
-"KEY_GEAR_ITEM_VIEW_VALUATION_BODY" = "We first try to repair your %1$@, but if it needs to be replaced (e.g. if it was stolen) you will be compensated **%2$li%%** of the purchase price **%3$@**, i.e **%4$@**.";
-"KEY_GEAR_ITEM_VIEW_VALUATION_PAGE_TITLE" = "Valuation";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?";
 "KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LEGAL_A11Y" = "Accessibility";
-"LEGAL_CATEGORY_LABEL" = "Legal";
 "LEGAL_INFORMATION" = "Legal information";
 "LEGAL_PRIVACY_POLICY" = "Privacy policy";
-"LETTER_TO_EIR_SUBJECT" = "Question regarding claim, Vehicle reg. %1$@";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
 "LOGOUT_ALERT_TITLE" = "Are you sure you want to log out?";
 "LOGOUT_BUTTON" = "Logout";
-"MANAGE_BILLING_METHODS_BUTTON" = "Manage your payment methods";
 "MANUAL_CHARGE_CANCELLATION_WARNING" = "Activate your coverage again by contacting us once your payment has been processed";
 "MANUAL_INPUT_LIST_OTHER" = "Other";
 "MARKETING_GET_HEDVIG" = "Get a price quote";
@@ -544,10 +376,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MONTH_ABBREVIATION_LABEL" = "mo";
 /* Generic error message if we fail to move insurance. */
 "MOVEINTENT_GENERIC_ERROR" = "Something went wrong, please send us a message here in the app for further help.";
-"MOVING_FLOW_ADDON_REMOVE_OPTION" = "No extra coverage";
 "MOVING_FLOW_BODY" = "Which insurance do you want to update the address for?";
-"MOVING_FLOW_SUCCESS_TOAST" = "Address change submitted";
-"MOVING_FLOW_TRAVEL_ADDON_SUMMARY_DESCRIPTION" = "This addon can be removed by [contacting us](https://link.hedvig.com/chat).";
 "MY_DOCUMENTS_INSURANCE_CERTIFICATE" = "Insurance certificate";
 "MY_INFO_EMAIL_EMPTY_ERROR" = "You forgot to enter your email";
 "MY_INFO_EMAIL_MALFORMED_ERROR" = "The entered email address doesn't seem correct";
@@ -559,15 +388,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MY_PAYMENT_TITLE" = "Payments";
 "MY_PAYMENT_UPDATING_MESSAGE" = "You have just added or changed your bank account, your new bank account will appear here after your bank has accepted autogiro. Usually within 2 working days.";
 "NEW_MESSAGE_BUTTON" = "New message";
-/* Description text above bundle selector on offer page. */
-"OFFER_BUNDLE_SELECTOR_DESCRIPTION" = "All insurances cover you and your co-insured. You can upgrade or downgrade your bundle or change your start date in the Hedvig-app.";
-/* Title above bundle selector on offer page. */
-"OFFER_BUNDLE_SELECTOR_TITLE" = "Choose your Hedvig-bundle";
-"OFFER_HOUSE_SUMMARY_DESC" = "Here's a quick overview of the information you've given us about your home.";
-"OFFER_SAVE_START_DATE_ERROR_ALERT_TITLE" = "Couldn't save start date";
-"OFFER_SCREEN_COVERAGE_TITLE" = "The coverage";
-"OFFER_SWITCHER_EXPLANATION_FOOTER" = "When switched on, your Hedvig insurance will automatically start when your current plan with your other insurance company expires.";
-"OFFER_SWITCHER_NO_DATE" = "When current plan expires";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Summary";
 "ONBOARDING_ADDED_LABEL" = "Added";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Add co-insured";
@@ -579,9 +399,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_ANALYTICS_SUBTITLE" = "We use technical tools to see how you use the app, so we can make it better.\n\nProduct analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.";
 "ONBOARDING_ANALYTICS_TITLE" = "Help us make the app better";
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change these settings later";
-"ONBOARDING_CONNECT_DD_BODY" = "We are so happy to have you as a member. To start using your new insurance, you need to:";
-"ONBOARDING_CONNECT_DD_CTA" = "Connect payment - activate Hedvig";
-"ONBOARDING_CONNECT_DD_HEADLINE" = "only two things left to do";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Adding a payment method is required to keep your insurance active";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Add a payment method to activate your insurance";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment";
@@ -607,21 +424,15 @@ A message is then appended under the image next to the timestamp to indicate tha
 "OS_VERSION_TOO_LOW_BODY" = "%@ is not supported. Update to the latest operating system to use the Hedvig app.";
 "OS_VERSION_TOO_LOW_TITLE" = "Your iOS needs to be updated";
 "PAYMENTS_ACCOUNT" = "Account";
-"PAYMENTS_ADD_CAMPAIGN_CODE" = "Add campaign code";
 "PAYMENTS_AMOUNT_TO_PAY" = "Amount to pay";
 "PAYMENTS_AUTOGIRO_LABEL" = "Direct debit";
-"PAYMENTS_CODE_REMOVED" = "Code removed";
-"PAYMENTS_CONFIRM_CODE_REMOVE" = "Yes, remove";
 "PAYMENTS_DISCOUNTS_SECTION_TITLE" = "Discounts";
-"PAYMENTS_DISCOUNT_ADDED" = "Discount added";
 "PAYMENTS_DUE_DESCRIPTION" = "%1$@ each month";
-"PAYMENTS_EXPIRED_DATE" = "Expired %1$@";
 "PAYMENTS_HISTORY_INFO" = "For information about payments older than 12 months, please send us a message here in the app.";
 "PAYMENTS_INVITE_FRIENDS" = "Share your code";
 "PAYMENTS_INVOICE" = "Invoice";
 "PAYMENTS_IN_PROGRESS" = "The payment is being processed. Please note that it may take 1 to 3 banking days for the charge to appear on your account";
 "PAYMENTS_IN_PROGRESS_KIVRA" = "You can find your invoice in the Kivra app";
-"PAYMENTS_MANDATE" = "Mandate";
 "PAYMENTS_MISSED_PAYMENT" = "Your payment for the period %1$@ – %2$@ didn't process as expected. The amount has been added to this payment.";
 "PAYMENTS_NO_HISTORY_DATA" = "There is no record of your payment history";
 "PAYMENTS_NO_PAYMENTS_IN_PROGRESS" = "You have no payments in progress";
@@ -649,14 +460,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PAYMENT_SUCCESSFUL" = "Payment successful";
 "PAYMENTS_PERIOD_DAYS" = "%1$@ days";
 "PAYMENTS_PERIOD_FULL" = "Full period";
-"PAYMENTS_PERIOD_TITLE" = "Period";
 "PAYMENTS_PROCESSING_PAYMENT" = "Processing payment";
-"PAYMENTS_REFERRALS_INFO_TITLE" = "Hedvig Forever";
 "PAYMENTS_REFERRAL_DISCOUNT" = "Referral discount";
-"PAYMENTS_REMOVE_CODE_TITLE" = "Are you sure you want to remove your discount?";
 "PAYMENTS_SUBTOTAL" = "Subtotal";
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
-"PAYMENTS_VALID_UNTIL" = "Valid until %1$@";
 "PAYMENTS_VIEW_PAYMENT" = "View payment";
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
@@ -668,11 +475,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYOUT_NO_PAYOUT_OPTIONS_TITLE" = "No payout method available";
 "PAYOUT_PAGE_HEADING" = "Payout account";
 "PAYOUT_SELECT_PAYOUT_METHOD" = "Choose payout method";
-/* Label that hints the user to slide up in order to reveal more info */
-"PERIL_DETAIL.MORE_INFO" = "More info";
 "PER_MONTH_SHORT" = "/mo";
 "PHONE_NUMBER_ROW_TITLE" = "Phone";
-"PLACEHOLDER_CONTRACT_DISPLAY_NAME_DK_HOME_CONTENTS" = "Placeholder";
 "PRICE_DETAILS_TITLE" = "Price details";
 "PRICE_NEW_PRICE" = "New price";
 "PRICE_PREVIOUS_PRICE" = "Previous price";
@@ -691,37 +495,22 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect direct debit";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
-"PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";
 "PUPPY_GUIDE_LABEL" = "Featured guides";
-"PUPPY_GUIDE_LABEL_READ" = "Read";
-"PUPPY_GUIDE_RATING_NOT_HELPFUL" = "Not helpful";
-"PUPPY_GUIDE_RATING_QUESTION" = "Was this article helpful?";
-"PUPPY_GUIDE_RATING_VERY_HELPFUL" = "Very helpful";
 "PUPPY_GUIDE_SUBTITLE" = "Helpful guides for you and your puppy";
 "PUPPY_GUIDE_TITLE" = "Puppy Guide";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Not now";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_OK" = "Activate";
 "PUSH_NOTIFICATIONS_ALERT_TITLE" = "Notifications";
-"REFERRAL_ADDCOUPON_INPUTPLACEHOLDER" = "Discount code";
 "REFERRAL_PENDING_STATUS_LABEL" = "Pending...";
 "REFERRAL_SMS_MESSAGE" = "Hey! Get Hedvig using my link and we both get %1$@ per month discount on the monthly cost. Follow the link: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inactive";
-"REMOVE_ADDONS_FLOW_NO_ELIGIBLE_INSURANCES" = "None of your insurances have addons you can remove.";
 "REMOVE_ADDON_BUTTON_TITLE" = "Remove addon";
-"REMOVE_ADDON_CONFIRMATION_BUTTON" = "Yes, remove";
-"REMOVE_ADDON_CONFIRMATION_DESCRIPTION" = "This change will take effect from %1$@.";
-"REMOVE_ADDON_CONFIRMATION_TITLE" = "Confirm removing selected addons";
 "REMOVE_ADDON_DESCRIPTION" = "This addon is active and part of your insurance";
 "REMOVE_ADDON_DESCRIPTION_RENEWAL" = "The addon is tied to your contract period and can only be removed when your insurance is renewed or cancelled.";
-"REMOVE_ADDON_OFFER_PAGE_TITLE" = "Remove addon";
-/* Your updates will be effective from tomorrow. */
-"REMOVE_ADDON_SUCCESS_SUBTITLE" = "This change will take effect from %@.";
-"REMOVE_ADDON_SUCCESS_TITLE" = "Removed successfully";
 "REMOVE_CONFIRMATION_BUTTON" = "Yes, remove";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_BODY" = "Try again or send us a message directly in the app";
 "RENEWAL_OPEN_INSURANCE_TERMS_ERROR_TITLE" = "Failed to open new insurance terms";
 "RESUME_CLAIM_CONTINUE_BUTTON" = "Continue";
-"RESUME_CLAIM_DEFAULT_TITLE" = "Claim";
 "RESUME_CLAIM_DELETE_BODY" = "Everything you've filled in so far will be lost.";
 "RESUME_CLAIM_DELETE_BUTTON" = "Delete";
 "RESUME_CLAIM_DELETE_TITLE" = "Delete this draft?";
@@ -741,8 +530,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
 /* Placeholder for search bar in the Help center */
 "SEARCH_PLACEHOLDER" = "Search";
-"SELECT_INSURANCE_TO_REMOVE_ADDON_DESCRIPTION" = "Select the insurance you want to edit";
-"SELECT_INSURANCE_TO_REMOVE_ADDON_TITLE" = "Select insurance";
 "SELF_MANUAL_CHARGE_CHANGES_BEEN_MADE_TITLE" = "Payment can't be charged";
 "SETTINGS_LANGUAGE_TITLE" = "Language";
 "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE" = "Yes, unsubscribe";
@@ -761,78 +548,14 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_THEME_SYSTEM_DEFAULT" = "System default";
 "SETTINGS_THEME_TITLE" = "Theme";
 "SET_TERMINATION_DATE_TEXT" = "Please set termination date for your insurance.";
-"SIMPLE_SIGN_FAILED_MESSAGE" = "Please try again. If this is not your first time getting an Hedvig insurance, please contact us in the chat or email hedvig@hedvig.com to help you.";
-"SIMPLE_SIGN_FAILED_TITLE" = "We couldn't sign you up";
-"SINGLE_ITEM_INFO_BRAND" = "Brand";
-"SUBMIT_CLAIM_ PURCHASE_PRICE_TITLE" = "Fill in your purchase price";
-"SUBMIT_CLAIM_CAR_BUTTON_TITLE" = "Continue";
-"SUBMIT_CLAIM_CAR_REPORT_CLAIM_BUTTON" = "Report your claim";
-"SUBMIT_CLAIM_CAR_REPORT_CLAIM_TEXT" = "We are committed to making the process as swift and seamless as possible for you. The more information you can provide, the quicker we can assist you. Once we have all the necessary details, we will contact you via email.\n\nPlease note that for this matter, you cannot reach us through the app. After reporting the claim, all communication will take place via email.";
-"SUBMIT_CLAIM_CAR_REPORT_CLAIM_TITLE" = "Report your claim";
-"SUBMIT_CLAIM_CAR_TITLE" = "Car claim";
-"SUBMIT_CLAIM_EMERGENCY_FAQ1_LABEL" = "The service is free of charge if you have been in an accident, fallen seriously ill, have acute dental problems, or are in an emergency situation. However, your phone provider may charge a fee for the call, which you may be able to get compensated through your home insurance. Read your terms and conditions for more information about your coverage and deductible.\n\nFor more basic medical advice, call 1177 Vårdguiden at +46 771-11 77 00.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ1_TITLE" = "What does it cost?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ2_LABEL" = "Yes, your home insurance travel coverage has a base deductible. The amount of your deductible is stated in your insurance letter.\nThe deductible is the portion of the claim amount that you must pay yourself for each claim. If your claim costs are lower than the deductible, the insurance cannot cover them. If your claim costs exceed the deductible, the insurance can cover the amount above the deductible, and Hedvig has the right to reclaim the deductible from you if necessary.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ2_TITLE" = "Is there a deductible?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ3_LABEL" = "Hedvig Global Assistance (SOS International) serves as Hedvig's emergency center for acute illnesses, accidents, and emergencies that occur while you are abroad. If you reach out to them, you can receive various forms of support, such as recommendations for the nearest doctor's office, assistance in rebooking flights if necessary, and even obtain a doctor's prescription. If you are traveling and require medical care or assistance, it is essential to contact them as soon as possible.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ3_TITLE" = "Who are Hedvig Global Assistance?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ4_LABEL" = "Contact Hedvig Global Assistance (SOS International) as soon as you can for medical assistance and more information, they can determine what help and compensation you may be entitled to. Remember that you need to see a doctor on site and/or contact Hedvig Global Assistance for the insurance to be valid.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ4_TITLE" = "I am too sick to go to a doctor. What do I do?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ5_LABEL" = "If it is an unexpected and sudden change in your health condition or an accident for which you need medical attention, it is generally considered acute. To provide a more accurate response, we need to examine your particular claim.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ5_TITLE" = "How do I know if it counts as acute or not?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ6_LABEL" = "Contact Hedvig Global Assistance (SOS International) as soon as you can for medical assistance and further information. They can determine if you are eligible for compensation for a new journey home and, if so, assist you in booking it. Remember that approval in advance by SOS International or Hedvig is required for you to be eligible for compensation for the new journey.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ6_TITLE" = "I cannot fly home as planned, what do I do?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ7_LABEL" = "If you do not have our add-on, Travel Insurance Plus, your home insurance will not cover specific activities, excursions, or costs that you were unable to use.\n\nHowever, if you have Travel Insurance Plus as an add-on to your home insurance, you are entitled to compensation for unused activity trips and event costs that you were unable to attend due to a doctor's orders.\n\nIf you have been hospitalized, prescribed indoor bed rest by a doctor at your travel destination, or need to return home early (requires prior approval from SOS International or Hedvig), you are entitled to a fixed compensation of 500 SEK per day for unused travel costs. With Travel Protection Plus, this compensation increases to 1,200 – 2,000 SEK per day.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ7_TITLE" = "I will miss a prebooked activity due to my illness. Is that covered?";
-"SUBMIT_CLAIM_EMERGENCY_FAQ8_LABEL" = "If you have the Travel Protection Plus add-on as a complement to your home insurance, you can receive compensation for a new trip, up to a maximum of 50 000 kr. This applies if you or your travel companion become acutely ill or suffer an accidental injury and are hospitalized or prescribed bed rest indoors at the destination.\n\nThe condition is that the hospital stay or prescribed bed rest exceeds more than half the number of the total travel days, and you must be able to provide a certificate from a qualified doctor at the destination or through a doctor via Hedvig Global Assistance (SOS International). Read your terms and conditions for  more information about your protection.";
-"SUBMIT_CLAIM_EMERGENCY_FAQ8_TITLE" = "Can I get a new trip?";
-"SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_LABEL" = "Get help to find a hospital or guidance to the medical care you need, wherever you are.";
-"SUBMIT_CLAIM_EMERGENCY_GLOBAL_ASSISTANCE_TITLE" = "Global Assistance";
-"SUBMIT_CLAIM_EMERGENCY_INFO_LABEL" = "Always call your local emergency number if you or someone else is in serious danger";
-"SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_LABEL" = "We cover costs due to acute illness, injury and acute dental injury abroad. If you are seriously ill and require emergency medical care, contact Hedvig Global Assistance (SOS International) immediately.";
-"SUBMIT_CLAIM_EMERGENCY_INSURANCE_COVER_TITLE" = "What your insurance covers";
-"SUBMIT_CLAIM_EMERGENCY_TITLE" = "Are you on a trip and need urgent medical care or assistance?";
-"SUBMIT_CLAIM_GLASS_DAMAGE_BUTTON_TITLE" = "See our partners";
-"SUBMIT_CLAIM_GLASS_DAMAGE_HOW_IT_WORKS_LABEL" = "Get started quickly by contacting a workshop. We have established partnerships with Carglass and Ryds Bilglas.\n\nHowever, you are free to select a different workshop of your preference.";
-"SUBMIT_CLAIM_GLASS_DAMAGE_INFO_LABEL" = "You need to contact a car workshop to get further help with your claim";
-"SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_BUTTON" = "Book now";
-"SUBMIT_CLAIM_GLASS_DAMAGE_ONLINE_BOOKING_LABEL" = "Online booking available";
-"SUBMIT_CLAIM_GLASS_DAMAGE_TITLE" = "Glass damage";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL" = "Call %1$@";
-"SUBMIT_CLAIM_GLOBAL_ASSISTANCE_FOOTNOTE" = "Available 24/7 ∙ No charge";
-"SUBMIT_CLAIM_GLOBAL_ASSISTANCE_URL_LABEL" = "Book online";
-"SUBMIT_CLAIM_HOW_IT_WORKS_TITLE" = "How it works";
-"SUBMIT_CLAIM_ID_PROTECTION_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_ID_PROTECTION_TITLE" = "ID Protection";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "We’re here 08–22, Mon–Fri\nand weekends 10–22";
 "SUBMIT_CLAIM_NEED_HELP_TITLE" = "Need help with something else?";
 "SUBMIT_CLAIM_PARTNER_SINGULAR_TITLE" = "Our partner";
 "SUBMIT_CLAIM_PARTNER_TITLE" = "Our partners";
-"SUBMIT_CLAIM_PESTS_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_BUTTON" = "Contact Nomor (Rentokil)";
-"SUBMIT_CLAIM_PESTS_CUSTOMER_SERVICE_LABEL" = "Customer service available Mon–Fri, 7–17";
-"SUBMIT_CLAIM_PESTS_HOW_IT_WORKS_LABEL" = "If your house is affected by pests, you can get compensation for decontamination and repairs. The coverage includes house longhorns, carpenter ants, ants, mice and other household pests.\nThey can also help with dry-rot fungus.";
-"SUBMIT_CLAIM_PESTS_INFO_LABEL" = "You need to get in touch with Nomor to recieve further assistance with your matter.";
-"SUBMIT_CLAIM_PESTS_TITLE" = "Dry-rot fungus and pests";
-"SUBMIT_CLAIM_TOWING_A1" = "You can get help with towing the car if it has been damaged or experienced a breakdown, such as engine failure or a flat tire.";
-"SUBMIT_CLAIM_TOWING_A2" = "As long as the damage is covered by the terms, you only pay the deductible of 1750 SEK directly to Assistancekåren.";
-"SUBMIT_CLAIM_TOWING_A3" = "You are, of course, free to use the towing service that suits you best. However, the process is usually faster and smoother if you contact Assistancekåren directly.";
-"SUBMIT_CLAIM_TOWING_BUTTON_TITLE" = "Read more";
-"SUBMIT_CLAIM_TOWING_HOW_IT_WORKS_LABEL" = "You can contact Assistancekåren by phone using the button above or by calling directly at +46 20 912 912. The deductible of 1750 SEK is to be paid directly to Assistancekåren.\n\nIf you prefer to opt for a different towing service, feel free to select the one that suits you best.\n\nIn case of emergency and need for medical assistance, call 112.";
-"SUBMIT_CLAIM_TOWING_INFO_LABEL" = "You need to contact Assistancekåren directly to receive further assistance";
-"SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_BUTTON" = "Call now";
-"SUBMIT_CLAIM_TOWING_ONLINE_BOOKING_LABEL" = "Available 24/7";
-"SUBMIT_CLAIM_TOWING_Q1" = "What kind of assistance can I receive?";
-"SUBMIT_CLAIM_TOWING_Q2" = "What does towing cost?";
-"SUBMIT_CLAIM_TOWING_Q3" = "Can I use another towing service?";
-"SUBMIT_CLAIM_TOWING_TITLE" = "Towing";
 "SUMMARY_SCREEN_COVERAGE" = "Coverage";
 "SUMMARY_SCREEN_OVERVIEW" = "Overview";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Changes activate %@";
-"SWITCHER_AUTO_CARD_DESCRIPTION" = "After signing, we'll cancel your old insurance and activate your new insurance with Hedvig on the same day as the old one(s) expires.";
-"SWITCHER_AUTO_CARD_TITLE" = "Auto switch";
-"SWITCHER_MANUAL_CARD_DESCRIPTION" = "Your current insurance company does not allow us to terminate your insurance agreement for you. You need to terminate it yourself and then set your start date for your new insurance in the Hedvig app.";
-"SWITCHER_MANUAL_CARD_TITLE" = "Manual switch needed";
 /* Figma page iOS Release 1 */
 "TAB_HOME_TITLE" = "Home";
 /* Figma page iOS Release 1 */
@@ -840,20 +563,15 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TAB_PAYMENTS_TITLE" = "Payments";
 "TAB_PROFILE_TITLE" = "Profile";
 "TAB_REFERRALS_TITLE" = "Forever";
-"TERMINATE_CONTRACT_COMMON_QUESTIONS" = "Common questions";
 "TERMINATE_CONTRACT_TERMINATING_PROGRESS" = "Cancelling...";
 "TERMINATE_CONTRACT_TERMINATION_COMPLETE" = "Your insurance was cancelled before the activation date. You will not be charged anything.";
 "TERMINATION_ADDON_COVERAGE_TITLE" = "Extra coverage";
-"TERMINATION_A_01" = "The total amount of your insurance cost is deducted retrospectively on the 27th of each month, for the current month. Since the withdrawal takes place at the end of each month, this means that money can be withdrawn even though the insurance has been terminated. You only pay for the days the insurance has been active.";
-"TERMINATION_A_02" = "Yes, you can report claims for up to 10 years if they occurred during the time you were insured with Hedvig.";
-"TERMINATION_A_03" = "You can easily sign a new insurance on [hedvig.com](https://www.hedvig.com/)";
 "TERMINATION_BUTTON" = "Cancel insurance";
 "TERMINATION_DATE_TEXT" = "Select termination date";
 "TERMINATION_FLOW_AUTO_CANCEL_ABOUT" = "We’ll send a cancellation confirmation within a few days. If you don’t get it after 5 days, feel free to contact us.";
 "TERMINATION_FLOW_AUTO_CANCEL_DECOM" = "If you’ve decommissioned your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.";
 "TERMINATION_FLOW_AUTO_CANCEL_RECOMMISSION" = "Once your car is registered as active with Transportstyrelsen, your insurance will be updated automatically to your previous coverage.";
 "TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED" = "If you’ve scrapped your car, we’ll cancel your insurance automatically. We get this information directly from Transportstyrelsen.";
-"TERMINATION_FLOW_AUTO_CANCEL_SCRAPPED_MESSAGE" = "Since your car has been scrapped, your insurance will be automatically cancelled.";
 "TERMINATION_FLOW_AUTO_CANCEL_SOLD" = "If you’ve sold your car, we’ll cancel your insurance automatically. We receive this information directly from Transportstyrelsen.";
 "TERMINATION_FLOW_AUTO_CANCEL_TITLE" = "We’ll cancel your insurance automatically";
 "TERMINATION_FLOW_AUTO_DECOM_COSTS_INFO" = "You’ll receive a confirmation email within a few days, where you can see your new price.";
@@ -868,13 +586,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CANCELLATION_TITLE" = "Cancel insurance";
 "TERMINATION_FLOW_CANCEL_INFO_TEXT" = "You can cancel your insurance at any time. You will only be charged for the time you have been an active member. When the insurance is cancelled you can see your last payment under the tab \"Payments\" here in the app.";
 "TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Cancelling your insurance";
-"TERMINATION_FLOW_CAR_BACK_TITLE" = "Your car is back on the road";
 "TERMINATION_FLOW_CONFIRMATION" = "Your insurance will be cancelled directly";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Your insurance will be cancelled on %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Yes, cancel";
-"TERMINATION_FLOW_CONFIRM_INFORMATION" = "Confirm your information";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Select date...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Termination date";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Since this insurance is not active yet it will be cancelled and removed today. You won’t be charged anything.";
@@ -894,13 +610,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "You already have the best coverage and price for this insurance";
 "TERMINATION_OFFER_BUTTON_CHANGE_TIER" = "Change coverage level";
 "TERMINATION_OFFER_BUTTON_UPDATE_ADDRESS" = "Update my address";
-"TERMINATION_OFFER_DESCRIPTION_CHANGE_TIER" = "You can adjust your coverage level to better fit your needs instead of cancelling.";
-"TERMINATION_OFFER_DESCRIPTION_UPDATE_ADDRESS" = "Moving? You can update your address and keep your insurance instead of cancelling.";
-"TERMINATION_OFFER_SKIP" = "No thanks, continue cancellation";
-"TERMINATION_OFFER_TITLE" = "Before you cancel";
-"TERMINATION_Q_01" = "When will the last payment be charged?";
-"TERMINATION_Q_02" = "Can I still file a claim after I cancel my insurance?";
-"TERMINATION_Q_03" = "How do I join Hedvig in the future?";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-5262&mode=design&t=FVhMmBVrcHIW9bWu-4 */
 "TERMINATION_SURVEY_FEEDBACK_HINT" = "Leave a comment";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11701-5952&mode=design&t=FVhMmBVrcHIW9bWu-4 */
@@ -928,7 +637,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#959034027 */
 "TIER_FLOW_LOCKED_INFO_DESCRIPTION" = "You are unable to make changes to this coverage level";
 "TIER_FLOW_PREVIOUS_PRICE" = "Your previous price %1$@";
-"TIER_FLOW_PRICE_LABEL_CURRENCY" = "%@/mo";
 "TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY" = "From %@/mo";
 "TIER_FLOW_PROCESSING" = "Fetching coverage levels...";
 "TIER_FLOW_SELECT_ADDON_SUBTITLE" = "Days covered when travelling";
@@ -949,12 +657,6 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION" = "OK";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "To be able to log in to your bank you need to have the XXX app installed.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "You do not have BankID on this device";
-"Third_Party_Connected" = "%1$@ /month - Paying with third party provider";
-"UPSELL_TRAVEL_ADDON_CONTRACT_QUOTE_TITLE" = "Travel Insurance Plus";
-"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_FIELD_TITLE" = "Maximum travel limit";
-"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_DESCRIPTION" = "Days covered when travelling";
-"UPSELL_TRAVEL_ADDON_OFFER_SELECTABLE_SELECTION_TITLE" = "Choose your maximum travel limit";
-"USER_ERROR_PROTECTED_IDENTITY_KIVRA_BLOCK" = "Sorry, we couldn’t generate a price. Please make sure you have Kivra's digital mailbox and then try again. \n\nYou can get Kivra's digital mailbox here: https://kivra.se/en/private/how-it-works/digital-letters-mailbox.";
 "VOICEOVER_ACCEPTED" = "Is accepted";
 "VOICEOVER_ADD_INFORMATION" = "add information";
 "VOICEOVER_AUDIO_COUNTDOWN" = "Counting down";
@@ -999,10 +701,6 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "VOICEOVER_TIER_COMPARISION_CLICK" = "Click to see what is covered in %@";
 "VOICE_OVER_COPY_CODE" = "Click to copy code";
 "VOICE_OVER_INFO_HELPCENTER" = "Press to proceed to help center";
-"ZIGNSEC_COULDNT_START" = "Couldn't start login, check your personal number.";
-"ZIGNSEC_LOGIN_FAILED" = "Login failed, please try again or contact our customer service.";
-"ZIGNSEC_OPENING_BROWSER" = "Opening Safari to continue login process..";
-"ZIGNSEC_WAITING_FOR_RESPONSE" = "Waiting for response from login provider...";
 "app_info.device_id_label" = "Device ID";
 /* Text on the button which allows member to send us a bug report directly.
 We want members to submit a bug report to us directly instead of writing bad reviews. For this we are adding a new button in the app. */
@@ -1012,14 +710,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "app_info.submit_bug.prefilled_letter_subject" = "Technical Issue Report";
 /* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports.  */
 "app_info.submit_bug.warning" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 1 */
-"app_info_submit_bug_warning_with_chat_link_1" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 2 */
-"app_info_submit_bug_warning_with_chat_link_2" = "write to us";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 3 */
-"app_info_submit_bug_warning_with_chat_link_3" = "here in the app.";
-/* Link to the App Store page for the Hedvig app */
-"app_update_needed.hedvig_app_store_link" = "itms-apps://apple.com/app/id1303668531";
 /* Figma */
 "bankid_missing_login.email_button" = "Log in with email";
 /* Figma */
@@ -1031,7 +721,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim.decision.paid" = "Paid";
 "claim.decision.unresponsive" = "Missing response";
-"claim.location.choose" = "Choose";
 /* Figma */
 "claim.status_bar.being_handled" = "Being handled";
 /* Figma */
@@ -1040,7 +729,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim.status_bar.submitted" = "Submitted";
 "claim_history.empty_state.body" = "Your past claims will appear here automatically once processed.";
 "claim_history.empty_state.title" = "No claims in history";
-"claim_outcome_null" = "Your claim was closed.";
 "claim_outcome_unresponsive_support_text" = "Your claim was closed as we didn’t hear back from you. Please see conversation for more details.";
 /* Figma */
 "claim_status.being_handled.support_text" = "Your claim is being reviewed by one of our insurance specialists. We'll get back to you soon with an update.";
@@ -1053,12 +741,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status.claim_details.info_text" = "Is something missing? Send us a message here in the app.";
 "claim_status.claim_details.submitted" = "Submitted";
 "claim_status.claim_details.title" = "Claim details";
-"claim_status.claim_hide_details.button" = "Hide details";
-/* Figma */
-"claim_status.contact.generic.subtitle" = "Questions?";
-/* Figma */
-"claim_status.contact.generic.title" = "Write us a message";
-"claim_status.missingReceipt.support_text" = "To proceed with your claim we need a receipt for the item(s) you are seeking reimbursement for.";
 /* Figma */
 "claim_status.not_compensated.support_text" = "Your claim was covered but unfortunately the compensation is equal or less than the deductible. Please see conversation for more details.";
 "claim_status.not_covered.support_text" = "Your claim was unfortunately not covered. Please see conversation for more details on the decision.";
@@ -1077,7 +759,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.add_more_files" = "Add more files";
 "claim_status_detail.added_files" = "Added files";
 "claim_status_detail.documents.title" = "Claim documents";
-"claim_status_detail.email_view.body" = "Open email";
 /* Figma */
 "claim_status_detail.info_error.body" = "The claim audio couldn't be downloaded. Please try again to be able to listen to it.";
 /* Figma */
@@ -1086,27 +767,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "claim_status_detail.submitted" = "Submitted";
 "claim_status_detail.submitted_message" = "Your message";
-"claim_status_detail.uploaded_files" = "Uploaded files";
-"claim_status_detail_email" = "Contact the claims team";
 "claims.alert.body" = "If you exit, you'll go back to the start page and your inputted data will be lost.";
-"claims.edit.screen.title" = "Edit info";
-"claims.incident.screen.date.of.incident" = "When did it happen?";
-"claims.incident.screen.header" = "Incident info";
-"claims.incident.screen.location" = "Where did it happen?";
-"claims.item.enter.model.name" = "Enter model name";
-"claims.item.screen.damage.button" = "Type of damage";
-"claims.item.screen.date.of.incident.button" = "Date of incident";
-"claims.item.screen.date.of.purchase.button" = "Date of purchase";
-"claims.item.screen.model.button" = "Model";
-"claims.item.screen.purchase.price.button" = "Purchase price";
-"claims.item.screen.title" = "Item info";
-"claims.location.screen.title" = "Location";
-"claims.payout.age.deductable" = "Deductible";
-"claims.payout.age.deduction" = "Age deduction";
-"claims.payout.button.label" = "Payout %1$@";
-"claims.payout.summary.method" = "Pay out to";
-"claims.payout.summary.title" = "Payout";
-"claims.summary.screen.title" = "Summary";
 "cross_sell.info.faq_chat_button" = "Contact us";
 "cross_sell_get_price" = "Get price";
 /* Figma */
@@ -1124,8 +785,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "general_continue_button" = "Continue";
 "general_done_button" = "Done";
 "general_error" = "Error";
-"general_next_button" = "Next";
-"general_previous_button" = "Previous";
 "general_save_button" = "Save";
 "general_select_button" = "Select";
 /* Figma */
@@ -1133,51 +792,15 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "home.claim_card.pill.reopened" = "Reopened";
 "home_tab.active_in_future_info" = "Your insurance will be activated on %1$@. Visit our Help Center to see our most frequently asked questions.";
-/* Figma page iOS Release 2 */
-"home_tab.chat_hint_text" = "Got questions? Write to us";
 /* Figma page iOS Release 1 */
 "home_tab.claim_button_text" = "Make a claim";
 "home_tab.get_help" = "Help and support";
-/* Figma */
-"home_tab.moving_action_sheet.open_offer_button" = "Go to pending quote";
 "home_tab.pending_nonswitchable_info" = "Don't forget to cancel your previous insurance. Visit our Help Center to see our most frequently asked questions.";
 "home_tab.pending_switchable_info" = "We're currently in the process of reaching out to your previous insurer to transition your insurance to Hedvig. Visit our Help Center to see our most frequently asked questions.";
 /* Figma page iOS Release 1 */
 "home_tab.terminated_body" = "You currently have no active insurance with Hedvig. Please be aware that you can still submit claims for incidents that occurred during the active period of your cancelled insurance.";
 /* The big text in the home screen, presented if we do not have a first name to show */
 "home_tab.welcome_title_without_name" = "Hi, how can we help you?";
-/* Figma */
-"housing_info_list.address_label" = "Address";
-/* Figma */
-"housing_info_list.ancillary_area_label" = "Ancillary area";
-/* Figma */
-"housing_info_list.baths_label" = "Number of baths";
-/* Figma */
-"housing_info_list.construction_year_label" = "Year built";
-/* Figma */
-"housing_info_list.contract_button" = "Show less";
-/* Figma */
-"housing_info_list.expand_button" = "Show more";
-/* Figma */
-"housing_info_list.extra_buildings_subheadline" = "Extra buildings";
-/* Figma */
-"housing_info_list.housing_type_label" = "Housing type";
-/* Figma */
-"housing_info_list.insured_people_label" = "Insured people";
-/* Figma */
-"housing_info_list.insured_people_value_multiple" = "You + %1$li";
-/* Figma */
-"housing_info_list.insured_people_value_single" = "You";
-/* Figma */
-"housing_info_list.living_space_label" = "Living space";
-/* Figma */
-"housing_info_list.postal_code_label" = "Postal code";
-/* Figma */
-"housing_info_list.size_label" = "Size";
-/* Figma */
-"housing_info_list.size_value" = "%1$@ m2";
-/* Figma */
-"housing_info_list.sublet_label" = "Partly subleted";
 "important_message.hide" = "Hide";
 "important_message.read_more" = "Read more";
 /* Figma page iOS Release 1 */
@@ -1200,7 +823,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "insurance_tab.cross_sells.title" = "Discover more coverage";
 "insurances_tab.cancelled_insurances_label" = "Cancelled insurances (%1$@)";
 "insurances_tab.cancelled_insurances_title" = "Cancelled insurances";
-"insurances_tab.contact_us_to_edit_co_insured" = "You need to contact us in the app to edit the amount of co-insured on your insurance";
 /* Figma page iOS Release 1 */
 "insurances_tab.title" = "Insurances";
 "insurances_tab.view_details" = "View details";
@@ -1228,28 +850,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 /* Figma */
 "login.title.check_your_email" = "Check your email.";
 "market_language_screen.choose_language_label" = "Choose language";
-/* Figma page Implementation */
-"market_language_screen.continue_button_text" = "Continue";
-/* Figma page Implementation */
-"market_language_screen.title" = "Welcome to Hedvig.";
 /* Figma */
 "moving_embark_title" = "Change address";
-/* Figma */
-"moving_summary_scroll.Details" = "Details";
-/* Figma page App iOS */
-"nav_bar.skip" = "Skip";
-/* Figma */
-"offer.add_discount_button" = "Add discount code";
-/* Figma */
-"offer.discount_added_toastbar" = "Discount added";
-/* Figma */
-"offer.discount_error_alert_body" = "Make sure you have spelled the code correctly.";
-/* Figma */
-"offer.remove_discount_button" = "Remove discount";
-"offer.remove_discount_error_alert_body" = "Please try again.";
-"offer.remove_discount_error_alert_title" = "Couldn't remove discount";
-"ongoing_shop_session_action_button" = "Continue purchase";
-"ongoing_shop_session_dismiss_offer" = "Dismiss offer";
 /* This text key is to describe the actions for accessibility reasons. */
 "open_chat" = "Write message";
 /* Figma page Pay-In Flow */
@@ -1286,16 +888,11 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "payments_carried_adjustment_info" = "Your balance has been used to adjust this month's payment.";
 "payments_settlement_adjustment" = "Settlement adjustment";
 "payments_settlement_adjustment_info" = "A portion of your balance has been used to adjust this month's payment. The rest will be used to adjust the upcoming month's payment.";
-"profile.appSettingsSection.row.headline" = "Settings";
-"profile.appSettingsSection.row.subheadline" = "Language, theme, information";
-"profile.appSettingsSection.title" = "App Settings";
 "profile.certificates.title" = "Certificates";
 "profile.claim_history.title" = "Claim history";
 "profile_tab.title" = "Profile";
 /* Figma page App iOS */
 "referalls_#invitee_states.invited_you" = "Invited you";
-/* Figma page App iOS */
-"referrals_#active.your.new.price.title" = "Your new price";
 /* Figma page App iOS */
 "referrals_#active_+_toast.text" = "Code copied";
 /* Figma page App iOS */
@@ -1322,14 +919,6 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "sas_integration.title" = "EuroBonus";
 /* Figma */
 "select_insurance.navigation_bar.center_element.title" = "Select insurance";
-/* Figma */
-"settings.alert_change_market_onboarding_description" = "You will have to start over.";
-/* Figma */
-"settings.alert_change_market_onboarding_title" = "Do you want to change country?";
-/* Figma */
-"settings.alert_restart_onboarding_description" = "All the information you’ve entered will be lost.";
-/* Figma */
-"settings.alert_restart_onboarding_title" = "Do you want to start over?";
 "something_went_wrong" = "Something went wrong";
 "travel_certificate.active" = "Active";
 "travel_certificate.card_title" = "Travel certificate";
