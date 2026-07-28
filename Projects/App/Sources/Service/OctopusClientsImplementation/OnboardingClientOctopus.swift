@@ -17,6 +17,6 @@ public class OnboardingClientOctopus: OnboardingClient {
     }
 
     public func updateContactInfo(phone: String) async throws {
-        _ = try await profileClient.update(email: "", phone: phone)
+        try await profileClient.update(phone: phone)
     }
 }

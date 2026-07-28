@@ -9,3 +9,11 @@ mutation MemberUpdateContactInfo($input: MemberUpdateContactInfoInput!) {
     }
   }
 }
+
+mutation MemberUpdatePhoneNumber($input: MemberUpdatePhoneNumberInput!) {
+  memberUpdatePhoneNumber(input: $input) {
+    userError {
+      message
+    }
+  }
+}

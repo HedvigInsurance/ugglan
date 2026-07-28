@@ -217,7 +217,7 @@ class hPaymentClientOctopus: hPaymentClient {
         let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
         let data = try await octopus.client.mutation(mutation: mutation)
         if let userError = data?.manuallyChargeMember.userError {
-            throw PaymentError.missingDataError(message: userError.message ?? L10n.General.errorBody)
+            throw PaymentError.missingDataError(message: userError.message)
         }
     }
 

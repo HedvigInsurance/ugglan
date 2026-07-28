@@ -36,6 +36,7 @@ struct MockData {
         memberUpdate: @escaping MemberUpdate = { email, phone in
             (email, phone)
         },
+        phoneUpdate: @escaping PhoneUpdate = { _ in },
         eurobonusUpdate: @escaping EurobonusUpdate = { eurobonus in
             let partnerData: PartnerData = .init(sas: .init(eligible: true, eurobonusNumber: eurobonus))
             return partnerData
@@ -48,6 +49,7 @@ struct MockData {
             languageUpdate: languageUpdate,
             deleteRequest: deleteRequest,
             memberUpdate: memberUpdate,
+            phoneUpdate: phoneUpdate,
             eurobonusUpdate: eurobonusUpdate,
             subscriptionPreferenceUpdate: subscriptionPreferenceUpdate
         )
@@ -63,6 +65,7 @@ typealias FetchMemberDetails = () async throws -> MemberDetails
 typealias LanguageUpdate = () async throws -> Void
 typealias DeleteRequest = () async throws -> Void
 typealias MemberUpdate = (String, String) async throws -> (email: String, phone: String)
+typealias PhoneUpdate = (String) async throws -> Void
 typealias EurobonusUpdate = (String) async throws -> PartnerData
 typealias SubscriptionPreferenceUpdate = (Bool) async throws -> Void
 
@@ -74,6 +77,7 @@ class MockProfileService: ProfileClient {
     var languageUpdate: LanguageUpdate
     var deleteRequest: DeleteRequest
     var memberUpdate: MemberUpdate
+    var phoneUpdate: PhoneUpdate
     var eurobonusUpdate: EurobonusUpdate
     var subscriptionPreferenceUpdate: SubscriptionPreferenceUpdate
 
@@ -83,6 +87,7 @@ class MockProfileService: ProfileClient {
         case updateLanguage
         case postDeleteRequest
         case memberUpdate
+        case updatePhone
         case updateEurobonus
         case updateSubscriptionPreference
     }
@@ -93,6 +98,7 @@ class MockProfileService: ProfileClient {
         languageUpdate: @escaping LanguageUpdate,
         deleteRequest: @escaping DeleteRequest,
         memberUpdate: @escaping MemberUpdate,
+        phoneUpdate: @escaping PhoneUpdate,
         eurobonusUpdate: @escaping EurobonusUpdate,
         subscriptionPreferenceUpdate: @escaping SubscriptionPreferenceUpdate
     ) {
@@ -101,6 +107,7 @@ class MockProfileService: ProfileClient {
         self.languageUpdate = languageUpdate
         self.deleteRequest = deleteRequest
         self.memberUpdate = memberUpdate
+        self.phoneUpdate = phoneUpdate
         self.eurobonusUpdate = eurobonusUpdate
         self.subscriptionPreferenceUpdate = subscriptionPreferenceUpdate
     }
@@ -134,6 +141,11 @@ class MockProfileService: ProfileClient {
         events.append(.memberUpdate)
         let data = try await memberUpdate(email, phone)
         return data
+    }
+
+    func update(phone: String) async throws {
+        events.append(.updatePhone)
+        try await phoneUpdate(phone)
     }
 
     func update(eurobonus: String) async throws -> Profile.PartnerData {
