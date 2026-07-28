@@ -12,4 +12,9 @@ public class OnboardingService {
     public func getOnboardingSteps() async throws -> [OnboardingStep] {
         try await client.getOnboardingSteps()
     }
+
+    @Log
+    public func updateContactInfo(phone: String) async throws {
+        try await client.updateContactInfo(phone: phone)
+    }
 }

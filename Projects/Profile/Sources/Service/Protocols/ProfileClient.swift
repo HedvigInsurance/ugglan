@@ -10,6 +10,7 @@ public protocol ProfileClient {
     func updateLanguage() async throws
     func postDeleteRequest() async throws
     func update(email: String, phone: String) async throws -> (email: String, phone: String)
+    func update(phone: String) async throws
     func update(eurobonus: String) async throws -> PartnerData
     func updateSubscriptionPreference(to subscribed: Bool) async throws
 }

@@ -10,7 +10,11 @@ public class OnboardingClientDemo: OnboardingClient {
         return OnboardingClientDemo.getSteps()
     }
 
+    public func updateContactInfo(phone: String) async throws {}
+
     static func getSteps() -> [OnboardingStep] {
-        OnboardingStepList.compute()
+        OnboardingStepList.compute(
+            contactInfo: .init(phone: "0735328847")
+        )
     }
 }

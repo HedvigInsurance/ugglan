@@ -32,6 +32,8 @@ struct OnboardingNavigation: View {
             switch step {
             case .welcome: OnboardingWelcomeScreen()
             case .analyticsConsent: OnboardingAnalyticsScreen()
+            case let .phoneNumber(phoneNumber):
+                OnboardingPhoneScreen(phoneNumber: phoneNumber)
             }
         }
         .withDismissButton {
