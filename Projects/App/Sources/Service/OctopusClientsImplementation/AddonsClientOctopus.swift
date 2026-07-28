@@ -79,7 +79,7 @@ class AddonsClientOctopus: AddonsClient {
         let result = response.addonRemoveStart
 
         if let userError = result.asUserError {
-            throw AddonsError.errorMessage(message: userError.message!)
+            throw AddonsError.errorMessage(message: userError.message)
         }
 
         guard let offer = result.asAddonRemoveOffer else {

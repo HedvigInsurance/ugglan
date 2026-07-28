@@ -73,7 +73,7 @@ class MoveFlowClientOctopus: MoveFlowClient {
         try await delayTask.value
 
         if let userError = data?.moveIntentCommit.userError {
-            throw MovingFlowError.serverError(message: userError.message ?? "")
+            throw MovingFlowError.serverError(message: userError.message)
         }
         guard let newContractId = data?.moveIntentCommit.newContractId else {
             throw MovingFlowError.serverError(message: L10n.somethingWentWrong)
