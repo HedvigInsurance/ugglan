@@ -29,9 +29,8 @@ class ChangeTierClientOctopus: ChangeTierClient {
                 query: contractsQuery
             )
 
-            if let error = createIntentResponse?.changeTierDeductibleCreateIntent.userError, let message = error.message
-            {
-                throw ChangeTierError.errorMessage(message: message)
+            if let error = createIntentResponse?.changeTierDeductibleCreateIntent.userError {
+                throw ChangeTierError.errorMessage(message: error.message)
             }
 
             if let deflection = createIntentResponse?.changeTierDeductibleCreateIntent.deflectOutput {

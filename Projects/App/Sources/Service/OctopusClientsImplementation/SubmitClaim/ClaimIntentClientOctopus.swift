@@ -46,8 +46,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
 
-            if let userError = data?.claimIntentSubmitAudio.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitAudio.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitAudio.intent
@@ -67,8 +67,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
 
-            if let userError = data?.claimIntentSubmitFileUpload.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitFileUpload.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitFileUpload.intent
@@ -90,8 +90,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSubmitForm.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitForm.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitForm.intent
@@ -107,8 +107,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSubmitSummary.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitSummary.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitSummary.intent
@@ -187,8 +187,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSubmitTask.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitTask.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitTask.intent
@@ -204,8 +204,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSubmitInformation.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitInformation.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitInformation.intent
@@ -220,8 +220,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSkipStep.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSkipStep.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSkipStep.intent
@@ -236,8 +236,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentRegretStep.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentRegretStep.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentRegretStep.intent
@@ -297,8 +297,8 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
 
         do {
             let data = try await octopus.client.mutation(mutation: mutation)
-            if let userError = data?.claimIntentSubmitSelect.userError, let message = userError.message {
-                throw ClaimIntentError.error(message: message)
+            if let userError = data?.claimIntentSubmitSelect.userError {
+                throw ClaimIntentError.error(message: userError.message)
             }
 
             let intent = data?.claimIntentSubmitSelect.intent
@@ -373,7 +373,38 @@ extension ClaimIntentStepContent {
                     items: summary.items.map {
                         .init(title: $0.title, value: $0.value)
                     },
-                    freeTexts: summary.freeTexts
+                    freeTexts: summary.freeTexts,
+                    keyDetails: summary.keyDetails.map {
+                        .init(title: $0.title, value: $0.value)
+                    },
+                    answers: summary.answers.compactMap { answer in
+                        let value = answer.value
+                        if let answerText = value.asClaimIntentStepContentSummaryAnswerText {
+                            return .init(title: answer.title, value: .text(answerText.text))
+                        } else if let answerAudio = value.asClaimIntentStepContentSummaryAnswerAudio {
+                            guard let url = URL(string: answerAudio.url) else { return nil }
+                            return .init(
+                                title: answer.title,
+                                value: .audio(url: url, transcript: answerAudio.transcript)
+                            )
+                        } else if let answerFiles = value.asClaimIntentStepContentSummaryAnswerFiles {
+                            return .init(
+                                title: answer.title,
+                                value: .files(
+                                    answerFiles.files.compactMap {
+                                        guard let url = URL(string: $0.url) else { return nil }
+                                        return .init(
+                                            url: url,
+                                            contentType: .findBy(mimeType: $0.contentType),
+                                            fileName: $0.fileName
+                                        )
+                                    }
+                                )
+                            )
+                        } else {
+                            return nil
+                        }
+                    }
                 )
             )
         } else if let singleStep = fragment.asClaimIntentStepContentSelect {
