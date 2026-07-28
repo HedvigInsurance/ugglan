@@ -8,13 +8,16 @@ import hCoreUI
 
 public struct MemberInfo: Codable, Equatable, Sendable {
     let id: String
+    let firstName: String
     let isContactInfoUpdateNeeded: Bool
 
     public init(
         id: String,
+        firstName: String,
         isContactInfoUpdateNeeded: Bool
     ) {
         self.id = id
+        self.firstName = firstName
         self.isContactInfoUpdateNeeded = isContactInfoUpdateNeeded
     }
 }
