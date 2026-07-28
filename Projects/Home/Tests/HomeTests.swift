@@ -49,7 +49,7 @@ final class HomeTests: XCTestCase {
 
     func testGetMemberStateSuccess() async {
         let memberState: MemberState = .init(
-            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
+            memberInfo: .init(id: "id", firstName: "Test", isContactInfoUpdateNeeded: false),
             contracts: [
                 .init(
                     upcomingRenewal: nil,
@@ -69,6 +69,25 @@ final class HomeTests: XCTestCase {
         assert(respondedMemberState.contractState == memberState.contractState)
         assert(respondedMemberState.contracts == memberState.contracts)
         assert(respondedMemberState.futureState == memberState.futureState)
+        assert(respondedMemberState.memberInfo == memberState.memberInfo)
+    }
+
+    func testFetchMemberStateFirstNameSuccess() async {
+        let memberState: MemberState = .init(
+            memberInfo: .init(id: "id", firstName: "Victor", isContactInfoUpdateNeeded: false),
+            contracts: [],
+            contractState: .active,
+            futureState: .none
+        )
+        let mockService = MockData.createMockHomeService(
+            fetchMemberState: { memberState }
+        )
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchMemberState()
+
+        XCTAssertEqual(store.memberInfo?.firstName, "Victor")
     }
 
     func testGetQuickActionsSuccess() async {
@@ -164,7 +183,7 @@ final class HomeTests: XCTestCase {
         let randomIndex = Int(arc4random()) % futureStatuses.count
         let futureStatus = futureStatuses[randomIndex]
         let memberState = MemberState(
-            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
+            memberInfo: .init(id: "id", firstName: "Test", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.allCases.randomElement() ?? .active,
             futureState: futureStatus
