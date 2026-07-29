@@ -28,6 +28,14 @@ enum DI {
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
+
+        // Capture a single instance; the Module factory closure runs on every resolve,
+        // and PendingAppIntentService holds in-memory state that must be shared between
+        // FileClaimAppIntent.perform() and HomeNavigationViewModel.
+        let pendingAppIntentService = PendingAppIntentService()
+        Dependencies.shared.add(
+            module: Module { () -> PendingAppIntentServiceProtocol in pendingAppIntentService }
+        )
     }
 
     static func initAndRegisterClient() {
