@@ -10,6 +10,7 @@ public enum OnboardingStep: Hashable, Sendable {
     case coInsured(contracts: [OnboardingContract])
     case coOwners(contracts: [OnboardingContract])
     case petChipIds(contracts: [OnboardingContract])
+    case inviteFriend(discountCode: String, monthlyDiscountPerReferral: String)
 }
 
 @MainActor
@@ -31,6 +32,7 @@ extension OnboardingStep: TrackingViewNameProtocol {
         case .coInsured: "OnboardingCoInsured"
         case .coOwners: "OnboardingCoOwners"
         case .petChipIds: "OnboardingPetChipIds"
+        case .inviteFriend: "OnboardingInviteFriend"
         }
     }
 }
