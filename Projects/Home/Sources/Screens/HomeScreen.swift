@@ -23,8 +23,13 @@ public struct HomeScreen: View {
 
 extension HomeScreen {
     public var body: some View {
-        hForm {
-            centralContent
+        Group {
+            switch vm.memberContractState {
+            case .active:
+                ActiveHomeView()
+            case .terminated, .future, .loading:
+                legacyHomeForm
+            }
         }
         .setHomeNavigationBars(
             with: $homeStore.toolbarOptionTypes,
@@ -41,15 +46,21 @@ extension HomeScreen {
                 }
             }
         )
+        .trackVisibility(as: HomeScreen.self)
+        .task {
+            vm.fetchHomeState()
+        }
+    }
+
+    private var legacyHomeForm: some View {
+        hForm {
+            centralContent
+        }
         .hFormAttachToBottom {
             bottomContent
         }
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
-        .trackVisibility(as: HomeScreen.self)
-        .task {
-            vm.fetchHomeState()
-        }
     }
 
     @ViewBuilder
@@ -193,6 +204,7 @@ class HomeVM: ObservableObject {
 @MainActor private func fetchDependenciesForPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
