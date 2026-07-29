@@ -1,3 +1,5 @@
+import Contracts
+import EditStakeholders
 import SwiftUI
 import hCore
 import hCoreUI
@@ -24,6 +26,8 @@ struct OnboardingNavigation: View {
                 .addStepProgressBar(with: $vm.progress)
         }
         .environmentObject(vm)
+        .handleEditStakeholders(with: vm.editStakeholdersVm)
+        .handleMissingChipIds(input: $vm.missingPetChipIdInput)
     }
 
     @ViewBuilder
@@ -35,6 +39,9 @@ struct OnboardingNavigation: View {
             case let .phoneNumber(phoneNumber):
                 OnboardingPhoneScreen(phoneNumber: phoneNumber)
             case .theme: OnboardingThemeScreen()
+            case .coInsured: OnboardingMissingInfoScreen(type: .coInsured)
+            case .coOwners: OnboardingMissingInfoScreen(type: .coOwner)
+            case .petChipIds: OnboardingMissingInfoScreen(type: .petChipIds)
             }
         }
         .withDismissButton {
