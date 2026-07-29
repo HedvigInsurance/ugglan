@@ -64,7 +64,7 @@ struct OnboardingInviteScreen: View {
         .task {
             namesToDisplay = []
             await delay(0.5)
-            for name in ["Elin", "Hampus", "Li", "Peter"] {
+            for name in ["Elin", "Hampus", "Li"] {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                     namesToDisplay.append(name)
                 }
