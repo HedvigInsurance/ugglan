@@ -6,6 +6,12 @@ struct GreetingView: View {
     let firstName: String?
 
     var body: some View {
+        greeting
+            .padding(.horizontal, .padding16)
+            .padding(.vertical, 140)
+    }
+
+    private var greeting: some View {
         VStack(spacing: 0) {
             if let firstName, !firstName.isEmpty {
                 // TODO: localise
@@ -21,8 +27,6 @@ struct GreetingView: View {
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, .padding16)
-        .padding(.vertical, 140)
     }
 }
 
