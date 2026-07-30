@@ -591,6 +591,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Your insurance will be cancelled on %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Yes, cancel";
+"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Continue cancelling";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Select date...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Termination date";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Since this insurance is not active yet it will be cancelled and removed today. You won’t be charged anything.";

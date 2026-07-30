@@ -18,6 +18,17 @@ class TerminateContractsClientDemo: TerminateContractsClient {
                     title: "I'm moving abroad",
                     feedbackRequired: false,
                     suggestion: nil,
+                    redirection: .init(
+                        title: "Bring Hedvig to your new home",
+                        description:
+                            "Move your insurance to your new home with Hedvig and get 15% off your home insurance the first year.",
+                        type: .updateAddress,
+                        actionText: "See price for new home",
+                        image: .init(
+                            url: "https://hedvig-web.s3.eu-west-1.amazonaws.com/flyttkartonger.png",
+                            overlayText: "15% off"
+                        )
+                    ),
                     subOptions: [
                         .init(
                             id: "subOption1",

@@ -591,6 +591,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Din försäkring kommer att avslutas den %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Ja, avsluta";
+"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Fortsätt avbryta";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Välj datum...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Slutdatum";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.";

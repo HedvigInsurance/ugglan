@@ -101,6 +101,7 @@ extension TerminateContractsClientOctopus {
             title: fragment.title,
             feedbackRequired: fragment.feedbackRequired,
             suggestion: fragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment.asSuggestion,
+            redirection: fragment.redirection?.fragments.terminationSurveyOptionRedirectionFragment.asRedirection,
             subOptions: option.subOptions.map { subOption in
                 let subFragment = subOption.fragments.terminationSurveyOptionFragment
                 return .init(
@@ -109,6 +110,8 @@ extension TerminateContractsClientOctopus {
                     feedbackRequired: subFragment.feedbackRequired,
                     suggestion: subFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
                         .asSuggestion,
+                    redirection: subFragment.redirection?.fragments.terminationSurveyOptionRedirectionFragment
+                        .asRedirection,
                     subOptions: subOption.subOptions.map { subSubOption in
                         let subSubFragment = subSubOption.fragments.terminationSurveyOptionFragment
                         return .init(
@@ -117,6 +120,8 @@ extension TerminateContractsClientOctopus {
                             feedbackRequired: subSubFragment.feedbackRequired,
                             suggestion: subSubFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
                                 .asSuggestion,
+                            redirection: subSubFragment.redirection?.fragments
+                                .terminationSurveyOptionRedirectionFragment.asRedirection,
                             subOptions: subSubOption.subOptions.map { leaf in
                                 let leafFragment = leaf.fragments.terminationSurveyOptionFragment
                                 return .init(
@@ -125,6 +130,8 @@ extension TerminateContractsClientOctopus {
                                     feedbackRequired: leafFragment.feedbackRequired,
                                     suggestion: leafFragment.suggestion?.fragments
                                         .terminationSurveyOptionSuggestionFragment.asSuggestion,
+                                    redirection: leafFragment.redirection?.fragments
+                                        .terminationSurveyOptionRedirectionFragment.asRedirection,
                                     subOptions: []
                                 )
                             }
@@ -170,6 +177,27 @@ extension OctopusGraphQL.TerminationSurveyOptionSuggestionFragment {
             description: description,
             url: url
         )
+    }
+}
+
+extension OctopusGraphQL.TerminationSurveyOptionRedirectionFragment {
+    var asRedirection: TerminationRedirection {
+        .init(
+            title: title,
+            description: description,
+            type: type.asTerminationRedirectionType,
+            actionText: actionText,
+            image: image.map { .init(url: $0.url, overlayText: $0.overlayText) }
+        )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.TerminationFlowSurveyOptionRedirectionType> {
+    var asTerminationRedirectionType: TerminationRedirectionType {
+        switch self {
+        case .case(.updateAddress): return .updateAddress
+        default: return .unknown
+        }
     }
 }
 

@@ -218,6 +218,25 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
         }
     }
 
+    func handleRedirection(_ redirection: TerminationRedirection) {
+        switch redirection.type {
+        case .updateAddress:
+            openMoveFlow()
+        case .unknown:
+            break
+        }
+    }
+
+    func continueCancellation(after route: TerminationSurveyRedirectionRoute) {
+        if !route.option.subOptions.isEmpty {
+            router.push(route.option.subOptions)
+        } else if let suggestion = route.option.suggestion, suggestion.isDeflect || suggestion.isBlocking {
+            handleSuggestion(suggestion)
+        } else {
+            proceedAfterSurvey(optionId: route.option.id, comment: route.comment)
+        }
+    }
+
     func openMoveFlow() {
         Task {
             await redirectHandler.handle(.init(type: .updateAddress, description: "", url: nil))
@@ -347,6 +366,10 @@ struct TerminationFlowNavigation: View {
                 )
                 .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
+                        .withDismissButton()
+                }
+                .routerDestination(for: TerminationSurveyRedirectionRoute.self) { route in
+                    TerminationSurveyRedirectionScreen(route: route)
                         .withDismissButton()
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
@@ -605,6 +628,25 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
 extension [TerminationSurveyOption]: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         "TerminationSurveySubOptions"
+    }
+}
+
+public struct TerminationSurveyRedirectionRoute: Hashable {
+    let option: TerminationSurveyOption
+    let comment: String?
+    let redirection: TerminationRedirection
+
+    init?(option: TerminationSurveyOption, comment: String?) {
+        guard let redirection = option.redirection else { return nil }
+        self.option = option
+        self.comment = comment
+        self.redirection = redirection
+    }
+}
+
+extension TerminationSurveyRedirectionRoute: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        .init(describing: TerminationSurveyRedirectionScreen.self)
     }
 }
 
