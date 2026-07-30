@@ -298,6 +298,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_ADD_NEW" = "Add new";
 "GENERAL_CONFIRM" = "Confirm";
 "GENERAL_CONTACT_US_TITLE" = "Contact our service team";
+"GENERAL_DISABLED" = "Disabled";
+"GENERAL_ENABLED" = "Enabled";
 "GENERAL_GO_TO" = "Go to %1$@";
 "GENERAL_RETRY" = "Try again";
 "GENERAL_TODAY" = "Today";
@@ -547,6 +549,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_THEME_LIGHT" = "Light";
 "SETTINGS_THEME_SYSTEM_DEFAULT" = "System default";
 "SETTINGS_THEME_TITLE" = "Theme";
+"SETTINGS_USAGE_DATA_TITLE" = "Usage data";
 "SET_TERMINATION_DATE_TEXT" = "Please set termination date for your insurance.";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL" = "Call %1$@";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "We’re here 08–22, Mon–Fri\nand weekends 10–22";
