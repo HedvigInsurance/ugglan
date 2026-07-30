@@ -27,6 +27,8 @@ struct GreetingView: View {
         .multilineTextAlignment(.center)
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isHeader)
     }
 }
 
