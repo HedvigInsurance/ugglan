@@ -22,7 +22,10 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
     @Inject private var octopus: hOctopus
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
-        let query = OctopusGraphQL.TerminationSurveyQuery(contractId: contractId)
+        let query = OctopusGraphQL.TerminationSurveyQuery(
+            contractId: contractId,
+            redirectionEnabled: Dependencies.featureFlags().isTerminationRedirectionEnabled
+        )
         let data = try await octopus.client.fetch(query: query)
         return try mapSurveyData(data.terminationSurvey)
     }
