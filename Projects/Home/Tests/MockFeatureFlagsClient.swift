@@ -22,7 +22,6 @@ extension FeatureData {
     static func allOff(isNewConversationFromInboxEnabled: Bool = false) -> FeatureData {
         FeatureData(
             isUpdateNecessary: false,
-            isConnectPaymentEnabled: false,
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,

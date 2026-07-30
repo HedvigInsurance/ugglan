@@ -27,8 +27,7 @@ public class OnboardingClientOctopus: OnboardingClient {
             contactInfo: ContactInfo(phone: memberDetails.phone ?? ""),
             // Non-blocking: a failed referral fetch must not sink onboarding — the invite
             // step just renders without amount and share button.
-            foreverData: try? foreverData,
-            isConnectPaymentEnabled: Dependencies.featureFlags().isConnectPaymentEnabled
+            foreverData: try? foreverData
         )
     }
 

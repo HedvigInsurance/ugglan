@@ -236,7 +236,6 @@ public struct DirectDebitSetup: View {
     }
 
     @State var activeAlert: AlertType?
-    @State var showNotSupported: Bool = false
 
     @StateObject private var ownedRouter = NavigationRouter()
     @ObservedObject private var externalRouter: NavigationRouter
@@ -259,7 +258,6 @@ public struct DirectDebitSetup: View {
                 .contains(store.paymentStatusData?.status ?? .active)
             return hasAlreadyConnected ? .replacement : .initial
         }()
-        showNotSupported = !Dependencies.featureFlags().isConnectPaymentEnabled
         self.setupType = finalSetupType
         self.onSuccess = onSuccess
         self.hasExternalRouter = router != nil
@@ -267,55 +265,22 @@ public struct DirectDebitSetup: View {
     }
 
     public var body: some View {
-        Group {
-            if showNotSupported {
-                GenericErrorView(
-                    title: L10n.moveintentGenericError,
-                    description: nil,
-                    formPosition: .center
-                )
-                .hStateViewButtonConfig(
-                    .init(
-                        actionButtonAttachedToBottom: .init(
-                            buttonTitle: L10n.openChat,
-                            buttonAction: { [weak router] in
-                                router?.dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    NotificationCenter.default.post(
-                                        name: .openChat,
-                                        object: ChatType.newConversation
-                                    )
-                                }
-                            }
-                        ),
-                        dismissButton: .init(
-                            buttonAction: { [weak router] in
-                                router?.dismiss()
-                            }
-                        )
-                    )
-                )
-            } else {
-                DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router) { [onSuccess] in
-                    onSuccess?()
-                }
-                .alert(item: $activeAlert) { alertType in
-                    switch alertType {
-                    case .cancel:
-                        cancelAlert()
-                    case .error:
-                        errorAlert()
-                    }
-                }
+        DirectDebitSetupRepresentable(showErrorAlert: showErrorAlertBinding, router: router) { [onSuccess] in
+            onSuccess?()
+        }
+        .alert(item: $activeAlert) { alertType in
+            switch alertType {
+            case .cancel:
+                cancelAlert()
+            case .error:
+                errorAlert()
             }
         }
         .toolbar {
             ToolbarItem(
                 placement: .topBarLeading
             ) {
-                if !showNotSupported {
-                    dismissButton
-                }
+                dismissButton
             }
         }
         .navigationTitle(
@@ -339,12 +304,8 @@ public struct DirectDebitSetup: View {
         )
         .padding(.horizontal, .padding4)
         .fixedSize()
-        .onTapGesture { [weak router] in
-            if showNotSupported {
-                router?.dismiss()
-            } else {
-                activeAlert = .cancel
-            }
+        .onTapGesture {
+            activeAlert = .cancel
         }
         .accessibilityAddTraits(.isButton)
     }

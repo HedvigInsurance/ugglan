@@ -46,8 +46,7 @@ public class OnboardingClientDemo: OnboardingClient {
                 )
             ],
             isPaymentConnected: false,
-            contactInfo: .init(phone: "0735328847"),
-            isConnectPaymentEnabled: true
+            contactInfo: .init(phone: "0735328847")
         )
     }
 }

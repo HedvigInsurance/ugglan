@@ -10,7 +10,6 @@ public protocol FeatureFlagsClient {
 
 public struct FeatureData: Codable, Equatable {
     public let isUpdateNecessary: Bool
-    public let isConnectPaymentEnabled: Bool
     public let isSubmitClaimEnabled: Bool
     public let osVersionTooLow: Bool
     public let emailPreferencesEnabled: Bool
@@ -22,7 +21,6 @@ public struct FeatureData: Codable, Equatable {
 
     public init(
         isUpdateNecessary: Bool,
-        isConnectPaymentEnabled: Bool,
         isSubmitClaimEnabled: Bool,
         osVersionTooLow: Bool,
         emailPreferencesEnabled: Bool,
@@ -33,7 +31,6 @@ public struct FeatureData: Codable, Equatable {
         isResumeClaimEnabled: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
-        self.isConnectPaymentEnabled = isConnectPaymentEnabled
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
         self.osVersionTooLow = osVersionTooLow
         self.emailPreferencesEnabled = emailPreferencesEnabled
@@ -65,7 +62,6 @@ public class FeatureFlags: ObservableObject {
     private var featureDataCancellable: AnyCancellable?
     @Published public var data: FeatureData = .init(
         isUpdateNecessary: false,
-        isConnectPaymentEnabled: false,
         isSubmitClaimEnabled: false,
         osVersionTooLow: false,
         emailPreferencesEnabled: false,

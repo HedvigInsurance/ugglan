@@ -31,8 +31,7 @@ public enum OnboardingStepList {
         contracts: [Contracts.Contract],
         isPaymentConnected: Bool,
         contactInfo: ContactInfo = .init(phone: ""),
-        foreverData: ForeverData? = nil,
-        isConnectPaymentEnabled: Bool
+        foreverData: ForeverData? = nil
     ) -> [OnboardingStep] {
         var steps: [OnboardingStep] = [
             .welcome,
@@ -60,7 +59,7 @@ public enum OnboardingStepList {
                 )
             )
         }
-        if !isPaymentConnected, isConnectPaymentEnabled {
+        if !isPaymentConnected {
             steps.append(.connectPayment(isConnected: false))
         }
         return steps

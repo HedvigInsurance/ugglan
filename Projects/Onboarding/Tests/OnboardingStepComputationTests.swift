@@ -10,8 +10,7 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testStaticStepsAlwaysPresent() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertEqual(
             steps,
@@ -28,8 +27,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
-            contactInfo: .init(phone: "0735328847"),
-            isConnectPaymentEnabled: true
+            contactInfo: .init(phone: "0735328847")
         )
         XCTAssertTrue(steps.contains(.phoneNumber(phoneNumber: "0735328847")))
     }
@@ -47,8 +45,7 @@ final class OnboardingStepComputationTests: XCTestCase {
                 referrals: [],
                 referredBy: nil,
                 monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
-            ),
-            isConnectPaymentEnabled: true
+            )
         )
         XCTAssertTrue(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
     }
@@ -56,8 +53,7 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testInviteFriendStepHiddenWithoutForeverData() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
     }
@@ -65,27 +61,16 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testPaymentStepShownWhenNotConnected() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: false,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: false
         )
         XCTAssertTrue(steps.contains(.connectPayment(isConnected: false)))
-    }
-
-    func testPaymentStepHiddenWhenFlagDisabled() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: false,
-            isConnectPaymentEnabled: false
-        )
-        XCTAssertFalse(steps.contains(.connectPayment(isConnected: false)))
     }
 
     func testCoInsuredStepShownWhenContractHasMissingCoInsured() {
         let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: true)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertTrue(steps.contains(.coInsured(contracts: [.init(contract: contract)])))
     }
@@ -94,8 +79,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: false)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.coInsured(contracts: [])) })
     }
@@ -104,8 +88,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: true)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertTrue(steps.contains(.coOwners(contracts: [.init(contract: contract)])))
     }
@@ -114,8 +97,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: false)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.coOwners(contracts: [])) })
     }
@@ -124,8 +106,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(missingPetChipId: true)
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertTrue(steps.contains(.petChipIds(contracts: [.init(contract: contract)])))
     }
@@ -134,8 +115,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(missingPetChipId: false)
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: true
         )
         XCTAssertFalse(steps.contains { $0.matches(.petChipIds(contracts: [])) })
     }
@@ -148,8 +128,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         )
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: false,
-            isConnectPaymentEnabled: true
+            isPaymentConnected: false
         )
         XCTAssertEqual(
             steps,
