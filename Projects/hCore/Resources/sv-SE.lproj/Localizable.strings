@@ -339,6 +339,17 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "Ändra skydd";
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
+"HOME_GREETING_SUBTITLE" = "Hur kan vi hjälpa dig?";
+"HOME_GREETING_TITLE" = "Hej {{name}}";
+"HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
+"HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
+"HOME_TODO_MISSING_CHIP_ID_TITLE" = "Chip-ID för husdjur saknas";
+"HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Betalningsmetod saknas";
+"HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Utbetalningsmetod saknas";
+"HOME_TODO_PAYMENT_OVERDUE_TITLE" = "Din betalning är försenad";
+"HOME_TODO_REQUIRES_ACTION_SUBTITLE" = "Kräver åtgärd";
+"HOME_TODO_SECTION_TITLE" = "Att göra";
+"HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE" = "Uppdatera kontaktuppgifter";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig bygger på tillit. Jag lovar att berätta vad som hände precis som det var och bara begära den ersättning jag har rätt till.";
 "HONESTY_PLEDGE_HEADER" = "Anmäl skada";
 "HONESTY_PLEDGE_NOTE_1" = "Osäker på vad som täcks? Skicka in din anmälan oavsett";
@@ -591,6 +602,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Din försäkring kommer att avslutas den %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Ja, avsluta";
+"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Fortsätt avbryta";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Välj datum...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Slutdatum";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.";
