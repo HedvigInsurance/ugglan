@@ -6,31 +6,34 @@ struct SubmitClaimTaskResultView: View {
     @ObservedObject var viewModel: SubmitClaimTaskStep
 
     var body: some View {
-        HStack(spacing: .padding4) {
-            ClaimChatLoadingAnimationView(
-                isLoading: $viewModel.state.isLoaderAnimating
-            )
-            .frame(
-                width: ClaimChatLoadingAnimationView.Constants.animationSize,
-                height: ClaimChatLoadingAnimationView.Constants.animationSize
-            )
-            //Compensate for Rive asset internal padding
-            .padding(.horizontal, -.padding2)
-            if viewModel.taskModel.description != "" {
+        // Completed tasks blank their description; render nothing so a finished processing
+        // step does not leave a stale Hedvig "H" behind (matching the resume path, which
+        // already drops task steps from the rebuilt transcript).
+        if viewModel.taskModel.description != "" {
+            HStack(spacing: .padding4) {
+                ClaimChatLoadingAnimationView(
+                    isLoading: $viewModel.state.isLoaderAnimating
+                )
+                .frame(
+                    width: ClaimChatLoadingAnimationView.Constants.animationSize,
+                    height: ClaimChatLoadingAnimationView.Constants.animationSize
+                )
+                //Compensate for Rive asset internal padding
+                .padding(.horizontal, -.padding2)
                 hText(viewModel.taskModel.description, style: .body1)
                     .modifier(ShimmerTextModifier(isActive: true))
                     .transition(.opacity)
                     .animation(.easeInOut, value: viewModel.taskModel)
             }
+            // Offset to align with chat message content above
+            .padding(.top, -.padding16)
+            // Offset to align with chat message content below
+            .padding(.bottom, -.padding8)
+            .transition(.opacity.animation(.easeOut))
+            .animation(.easeInOut, value: viewModel.taskModel)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(L10n.claimChatTaskContentDescription)
         }
-        // Offset to align with chat message content above
-        .padding(.top, -.padding16)
-        // Offset to align with chat message content below
-        .padding(.bottom, -.padding8)
-        .transition(.opacity.animation(.easeOut))
-        .animation(.easeInOut, value: viewModel.taskModel)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(L10n.claimChatTaskContentDescription)
     }
 }
 
