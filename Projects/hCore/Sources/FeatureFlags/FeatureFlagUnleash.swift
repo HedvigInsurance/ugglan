@@ -83,7 +83,8 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
                 name: "enable_new_conversation_from_inbox"
             ),
             isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide"),
-            isResumeClaimEnabled: unleashClient.isEnabled(name: "enable_claim_intent_resume")
+            isResumeClaimEnabled: unleashClient.isEnabled(name: "enable_claim_intent_resume"),
+            isOnboardingEnabled: !unleashClient.isEnabled(name: "disable_onboarding")
         )
         featureDataPublisher.send(data)
     }

@@ -16,8 +16,9 @@ extension View {
 
 private struct OnboardingFlowLauncher: ViewModifier {
     @State var onboardingStepsWrapper: OnboardingStepsWrapper?
+    @InjectObservableObject var featureFlags: FeatureFlags
 
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         content
             .modally(
                 item: $onboardingStepsWrapper,
@@ -26,12 +27,25 @@ private struct OnboardingFlowLauncher: ViewModifier {
                 OnboardingNavigation(steps: stepsWrapper.steps)
             }
             .task {
-                guard !OnboardingNavigationViewModel.hasSeenOnboarding else { return }
-                let service = OnboardingService()
-                if let steps = try? await service.getOnboardingSteps() {
-                    onboardingStepsWrapper = .init(id: UUID().uuidString, steps: steps)
+                await checkIfShouldPresentOnboarding()
+            }
+            .onChange(of: featureFlags.isOnboardingEnabled) { value in
+                guard value else { return }
+                Task {
+                    await checkIfShouldPresentOnboarding()
                 }
             }
+    }
+
+    private func checkIfShouldPresentOnboarding() async {
+        guard onboardingStepsWrapper == nil,
+            !OnboardingNavigationViewModel.hasSeenOnboarding,
+            featureFlags.isOnboardingEnabled
+        else { return }
+        let service = OnboardingService()
+        if let steps = try? await service.getOnboardingSteps() {
+            onboardingStepsWrapper = .init(id: UUID().uuidString, steps: steps)
+        }
     }
 }
 
