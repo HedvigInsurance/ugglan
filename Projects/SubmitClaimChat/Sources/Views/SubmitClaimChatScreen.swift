@@ -465,7 +465,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
         let handler = createStepHandler(for: claimIntent)
         if let currentStep = currentStep {
-            if currentStep is SubmitClaimTaskStep {
+            if currentStep is SubmitClaimTaskStep && !(handler is SubmitClaimTaskStep) {
                 handler.state.showLoadingAnimation = false
             }
         }
@@ -480,6 +480,13 @@ final class SubmitClaimChatViewModel: ObservableObject {
             self.progress = claimIntent.progress
         }
         Task { @MainActor in
+            if let currentStep = currentStep {
+                if currentStep is SubmitClaimTaskStep && handler is SubmitClaimTaskStep {
+                    allSteps.removeAll { step in
+                        step.id == currentStep.id
+                    }
+                }
+            }
             if !self.allSteps.isEmpty {
                 currentStep = nil
             }
