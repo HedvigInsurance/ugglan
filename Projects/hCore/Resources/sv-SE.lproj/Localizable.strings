@@ -340,7 +340,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
 "HOME_GREETING_SUBTITLE" = "Hur kan vi hjälpa dig?";
-"HOME_GREETING_TITLE" = "Hej {{name}}";
+"HOME_GREETING_TITLE" = "Hej %1$@";
 "HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Chip-ID för husdjur saknas";
