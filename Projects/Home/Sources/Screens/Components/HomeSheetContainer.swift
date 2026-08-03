@@ -64,7 +64,7 @@ struct HomeSheetContainer<Content: View>: View {
         .clipShape(surfaceShape)
         .background {
             surfaceShape
-                .fill(hBackgroundColor.primary)
+                .fill(hFillColor.Translucent.negative)
                 .hShadow(type: .light)
         }
     }
