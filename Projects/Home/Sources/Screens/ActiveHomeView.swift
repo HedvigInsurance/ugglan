@@ -80,9 +80,20 @@ struct ActiveHomeView: View {
         VStack(spacing: .padding40) {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             bannerSection
+            hSection {
+                HomeBottomScrollView(vm: bottomVm)
+            }
+            .sectionContainerStyle(.transparent)
             TodoList(todos: bottomVm.todos)
         }
         .sectionContainerStyle(.transparent)
+    }
+    
+    @ViewBuilder private var bannerSection: some View {
+        if !bottomVm.items.isEmpty {
+            hSection { HomeBottomScrollView(vm: bottomVm) }
+                .sectionContainerStyle(.transparent)
+        }
     }
 }
 
@@ -96,13 +107,6 @@ private struct TopClipShape: Shape {
         return Path(
             CGRect(x: rect.minX, y: rect.minY + inset, width: rect.width, height: rect.height - inset)
         )
-    }
-
-    @ViewBuilder private var bannerSection: some View {
-        if !bottomVm.items.isEmpty {
-            hSection { HomeBottomScrollView(vm: bottomVm) }
-                .sectionContainerStyle(.transparent)
-        }
     }
 }
 

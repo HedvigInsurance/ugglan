@@ -27,7 +27,7 @@ struct HomeSheetContainer: View {
             topTrailingRadius: .cornerRadiusXXXL
         )
     }
-
+    
     private var grabber: some View {
         Capsule()
             .fill(hSurfaceColor.Opaque.secondary)
