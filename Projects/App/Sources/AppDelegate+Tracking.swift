@@ -86,10 +86,10 @@ extension AppDelegate {
             Datadog.verbosityLevel = .debug
         }
         logStartView = { key, name in
-            RUMMonitor.shared().startView(key: key, name: name, attributes: [:])
+            RUMViewTracker.shared.startView(key: key, name: name)
         }
         logStopView = { key in
-            RUMMonitor.shared().stopView(key: key, attributes: [:])
+            RUMViewTracker.shared.stopView(key: key)
         }
 
         AuthenticationService.logAuthResourceStart = { key, url in
@@ -105,6 +105,43 @@ extension AppDelegate {
 struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
     func rumView(for _: UIViewController) -> RUMView? {
         nil
+    }
+}
+
+/// Bridges our `logStartView`/`logStopView` hooks to Datadog RUM while keeping a stack of the
+/// views that are still on screen underneath the active one.
+///
+/// RUM tracks a single active view and `stopView` does not re-activate whatever was showing before.
+/// A detent/modal presented with `.custom`/`.overFullScreen` keeps its presenter on screen, but
+/// UIKit never calls the presenter's `viewWillAppear` when the modal is dismissed — so without this,
+/// stopping the modal's view leaves no active view. When the top view stops, we re-activate the one
+/// it revealed.
+@MainActor
+private final class RUMViewTracker {
+    static let shared = RUMViewTracker()
+
+    private init() {}
+
+    /// Views currently on screen, ordered bottom-to-top. The last element is the frontmost view.
+    private var stack: [(key: String, name: String)] = []
+
+    func startView(key: String, name: String) {
+        stack.removeAll { $0.key == key }
+        stack.append((key: key, name: name))
+        // Always forward to RUM, exactly like a direct `startView` call would.
+        RUMMonitor.shared().startView(key: key, name: name, attributes: [:])
+    }
+
+    func stopView(key: String) {
+        let wasFrontmost = stack.last?.key == key
+        stack.removeAll { $0.key == key }
+        RUMMonitor.shared().stopView(key: key, attributes: [:])
+        // If the frontmost view stopped and nothing new started (e.g. a `.custom`/`.overFullScreen`
+        // modal was dismissed — UIKit never calls the presenter's `viewWillAppear`), re-activate the
+        // view revealed underneath so RUM has an active view again.
+        if wasFrontmost, let revealed = stack.last {
+            RUMMonitor.shared().startView(key: revealed.key, name: revealed.name, attributes: [:])
+        }
     }
 }
 

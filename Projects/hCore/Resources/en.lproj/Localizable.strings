@@ -339,6 +339,17 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "Change coverage";
 "HC_RELATED_QUESTIONS_TITLE" = "Related questions";
 "HC_TITLE" = "Help and support";
+"HOME_GREETING_SUBTITLE" = "How can we help?";
+"HOME_GREETING_TITLE" = "Hi %1$@";
+"HOME_QUOTES_SECTION_TITLE" = "Your quotes";
+"HOME_TODO_ADD_COINSURED_TITLE" = "Add co-insured";
+"HOME_TODO_MISSING_CHIP_ID_TITLE" = "Missing pet chip-ID";
+"HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Missing payment method";
+"HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Missing payout method";
+"HOME_TODO_PAYMENT_OVERDUE_TITLE" = "Your payment is overdue";
+"HOME_TODO_REQUIRES_ACTION_SUBTITLE" = "Requires action";
+"HOME_TODO_SECTION_TITLE" = "To do";
+"HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE" = "Update contact details";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.";
 "HONESTY_PLEDGE_HEADER" = "Make a claim";
 "HONESTY_PLEDGE_NOTE_1" = "Not sure about what’s covered? Submit your claim anyway";
