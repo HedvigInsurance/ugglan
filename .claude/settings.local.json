@@ -5,7 +5,9 @@
       "Bash(xargs sed:*)",
       "Bash(git checkout:*)",
       "Bash(git add:*)",
-      "Bash(git commit -m ':*)"
+      "Bash(git commit -m ':*)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(curl *)"
     ]
   }
 }
