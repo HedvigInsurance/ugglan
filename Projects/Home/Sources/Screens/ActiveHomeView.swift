@@ -104,6 +104,13 @@ private struct TopClipShape: Shape {
                 .sectionContainerStyle(.transparent)
         }
     }
+
+    @ViewBuilder private var bannerSection: some View {
+        if !bottomVm.items.isEmpty {
+            hSection { HomeBottomScrollView(vm: bottomVm) }
+                .sectionContainerStyle(.transparent)
+        }
+    }
 }
 
 @MainActor private func setUpActiveHomeViewPreview() {
