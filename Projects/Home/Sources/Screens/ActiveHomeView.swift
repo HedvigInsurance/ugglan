@@ -80,10 +80,6 @@ struct ActiveHomeView: View {
         VStack(spacing: .padding40) {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             bannerSection
-            hSection {
-                HomeBottomScrollView(vm: bottomVm)
-            }
-            .sectionContainerStyle(.transparent)
             TodoList(todos: bottomVm.todos)
         }
         .sectionContainerStyle(.transparent)
