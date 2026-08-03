@@ -8,6 +8,7 @@ import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
+    @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
@@ -75,9 +76,16 @@ struct ActiveHomeView: View {
     }
 
     private var sheetContent: some View {
-        hSection {
-            ClaimsCard()
-            HomeBottomScrollView()
+        VStack(spacing: .padding40) {
+            hSection {
+                ClaimsCard()
+            }
+            .sectionContainerStyle(.transparent)
+            hSection {
+                HomeBottomScrollView(vm: bottomVm)
+            }
+            .sectionContainerStyle(.transparent)
+            TodoList(todos: bottomVm.todos)
         }
         .sectionContainerStyle(.transparent)
     }
