@@ -22,7 +22,7 @@ struct HomeSheetContainer: View {
     private var surfaceShape: hRoundedRectangle {
         hRoundedRectangle(cornerRadius: .cornerRadiusXXL, corners: [.topLeft, .topRight])
     }
-
+    
     private var grabber: some View {
         Capsule()
             .fill(hSurfaceColor.Opaque.secondary)
