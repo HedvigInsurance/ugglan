@@ -13,11 +13,19 @@ public protocol MoveFlowClient {
     func getMoveIntentCost(input: GetMoveIntentCostInput) async throws -> IntentCost
 }
 
+public enum MovingFlowSource: Hashable, Identifiable {
+    case insurance
+    case termination
+
+    public var id: Self { self }
+}
+
 public struct RequestMoveIntentInput {
     public let intentId: String
     public let addressInputModel: AddressInputModel
     public let houseInformationInputModel: HouseInformationInputModel?
     public let selectedAddressId: String
+    public let source: MovingFlowSource
 }
 
 public struct GetMoveIntentCostInput {

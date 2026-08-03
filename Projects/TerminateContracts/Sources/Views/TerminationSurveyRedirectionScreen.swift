@@ -41,7 +41,8 @@ struct TerminationSurveyRedirectionScreen: View {
                         .secondary,
                         content: .init(title: L10n.terminationFlowContinueCancelling)
                     ) { [weak terminationFlowNavigationViewModel] in
-                        terminationFlowNavigationViewModel?.continueCancellation(after: route)
+                        terminationFlowNavigationViewModel?
+                            .continueSurvey(option: route.option, comment: route.comment)
                     }
                 }
             }
@@ -97,17 +98,7 @@ struct TerminationSurveyRedirectionScreen: View {
         title: "I'm moving",
         feedbackRequired: false,
         suggestion: nil,
-        redirection: .init(
-            title: "Bring Hedvig to your new home",
-            description:
-                "Move your insurance to your new home with Hedvig and get 15% off your home insurance the first year.",
-            type: .updateAddress,
-            actionText: "See price for new home",
-            image: .init(
-                url: "https://hedvig-web.s3.eu-west-1.amazonaws.com/flyttkartonger.png",
-                overlayText: "15% off"
-            )
-        ),
+        redirection: .mock,
         subOptions: []
     )
 

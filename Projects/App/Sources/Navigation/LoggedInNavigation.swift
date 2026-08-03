@@ -249,7 +249,9 @@ class DeepLinkHandler {
         case .puppyGuide:
             handlePuppyGuideDeeplink()
         case .moveContract:
-            viewModel?.isMoveContractPresented = true
+            viewModel?.isMoveContractPresented =
+                url.getParameter(property: .source) == DeepLink.terminateContract.rawValue
+                ? .termination : .insurance
         case .terminateContract:
             handleTerminateContract(url)
         case .conversation:
@@ -673,8 +675,10 @@ struct LoggedInNavigation: View {
 
 struct HandleMoving: View {
     private let contractStore: ContractStore = globalAppStateContainer.get()
+    var source: MovingFlowSource = .insurance
     var body: some View {
         MovingFlowNavigation(
+            source: source,
             onMoved: {
                 Task { await contractStore.fetchContracts() }
             }
@@ -876,7 +880,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     @Published var isTravelInsurancePresented = false
-    @Published var isMoveContractPresented = false
+    @Published var isMoveContractPresented: MovingFlowSource?
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
     @Published var missingPetChipIdInput: MissingPetChipIdInput?

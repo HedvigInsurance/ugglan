@@ -26,10 +26,11 @@ class TerminationRedirectHandler {
         }
     }
 
-    private func handleUpdateAddress() {
+    func handleUpdateAddress() {
         viewModel?.router.dismiss()
         var url = Environment.current.deepLinkUrl
         url.appendPathComponent(DeepLink.moveContract.rawValue)
+        url = url.appending(DeeplinkProperty.source.rawValue, value: DeepLink.terminateContract.rawValue)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             NotificationCenter.default.post(name: .openDeepLink, object: url)
         }
@@ -227,20 +228,20 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
         }
     }
 
-    func continueCancellation(after route: TerminationSurveyRedirectionRoute) {
-        if !route.option.subOptions.isEmpty {
-            router.push(route.option.subOptions)
-        } else if let suggestion = route.option.suggestion, suggestion.isDeflect || suggestion.isBlocking {
+    func continueSurvey(option: TerminationSurveyOption, comment: String?) {
+        if !option.subOptions.isEmpty {
+            router.push(option.subOptions)
+        } else if let suggestion = option.suggestion, suggestion.isDeflect || suggestion.isBlocking {
+            selectedOptionId = option.id
+            selectedComment = comment
             handleSuggestion(suggestion)
         } else {
-            proceedAfterSurvey(optionId: route.option.id, comment: route.comment)
+            proceedAfterSurvey(optionId: option.id, comment: comment)
         }
     }
 
     func openMoveFlow() {
-        Task {
-            await redirectHandler.handle(.init(type: .updateAddress, description: "", url: nil))
-        }
+        redirectHandler.handleUpdateAddress()
     }
 
     // MARK: - Termination Submission
