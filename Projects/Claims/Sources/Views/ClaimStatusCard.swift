@@ -35,6 +35,7 @@ struct ClaimStatusCard: View {
                     }
                 }
             )
+            .hCardBackgroundColor(.light)
         case let .claimInProgress(model):
             StatusCard(
                 onSelected: nil,
@@ -47,36 +48,7 @@ struct ClaimStatusCard: View {
                 subTitle: model.createdAt.getSubTitle,
                 bottomComponent: {
                     VStack(spacing: .padding16) {
-                        HStack(alignment: .top, spacing: .padding6) {
-                            VStack {
-                                Rectangle()
-                                    .fill(hFillColor.Opaque.disabled)
-                                    .frame(height: 4)
-                                    .cornerRadius(.cornerRadiusXS)
-                                hText(L10n.Claim.StatusBar.submitted, style: .label)
-                                    .foregroundColor(hFillColor.Opaque.disabled)
-                            }
-                            .frame(maxWidth: .infinity)
-                            VStack {
-                                Rectangle()
-                                    .fill(hFillColor.Opaque.disabled)
-                                    .frame(height: 4)
-                                    .cornerRadius(.cornerRadiusXS)
-                                hText(L10n.Claim.StatusBar.beingHandled, style: .label)
-                                    .foregroundColor(hFillColor.Opaque.disabled)
-                            }
-                            .frame(maxWidth: .infinity)
-
-                            VStack {
-                                Rectangle()
-                                    .fill(hFillColor.Opaque.disabled)
-                                    .frame(height: 4)
-                                    .cornerRadius(.cornerRadiusXS)
-                                hText(L10n.Claim.StatusBar.closed, style: .label)
-                                    .foregroundColor(hFillColor.Opaque.disabled)
-                            }
-                            .frame(maxWidth: .infinity)
-                        }
+                        ClaimStatusBar(status: .none, outcome: nil)
                         HStack(spacing: .padding8) {
                             hButton(.medium, .secondary, content: .init(title: L10n.resumeClaimDeleteButton)) {
                                 showDeleteConfirmation = true
@@ -96,6 +68,7 @@ struct ClaimStatusCard: View {
                     }
                 }
             )
+            .hCardBackgroundColor(.light)
             .alert(
                 L10n.resumeClaimDeleteTitle,
                 isPresented: $showDeleteConfirmation

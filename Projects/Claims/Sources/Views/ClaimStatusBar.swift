@@ -155,6 +155,9 @@ struct ClaimStatusBar: View {
                 HStack {
                     ClaimStatusBar(status: .closed, outcome: .notCompensated)
                 }
+                HStack {
+                    ClaimStatusBar(status: .none, outcome: nil)
+                }
             }
         }
         .sectionContainerStyle(.transparent)
