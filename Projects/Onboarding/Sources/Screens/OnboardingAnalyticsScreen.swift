@@ -6,7 +6,7 @@ struct OnboardingAnalyticsScreen: View {
     @EnvironmentObject var vm: OnboardingNavigationViewModel
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var consentGiven: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
+    @State private var buttonEnabled = true
     private let privacyPolicyUrl = URL(string: "https://www.hedvig.com/se/personuppgifter")!
 
     var body: some View {
@@ -39,20 +39,25 @@ struct OnboardingAnalyticsScreen: View {
                     VStack(spacing: .padding8) {
                         hButton(.large, .secondary, content: .init(title: "Allow")) {  // TODO: L10n
                             AnalyticsConsent.give()
+                            buttonEnabled = false
                             UIAccessibility.post(notification: .announcement, argument: "Analytics allowed")  // TODO: L10n
-                            Task { [weak vm] in
+                            Task {
                                 await delay(0.8)
-                                vm?.advance(after: .analyticsConsent)
+                                vm.advance(after: .analyticsConsent)
+                                buttonEnabled = true
                             }
                         }
                         hButton(.large, .secondary, content: .init(title: "Deny")) {  // TODO: L10n
                             AnalyticsConsent.revoke()
-                            Task { [weak vm] in
+                            buttonEnabled = false
+                            Task {
                                 await delay(0.8)
-                                vm?.advance(after: .analyticsConsent)
+                                vm.advance(after: .analyticsConsent)
+                                buttonEnabled = true
                             }
                         }
                     }
+                    .disabled(!buttonEnabled)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -76,13 +81,25 @@ struct OnboardingAnalyticsScreen: View {
                         .inset(by: 0.5)
                         .stroke(hBorderColor.secondary, lineWidth: 1)
                 )
-            hCoreUIAssets.checkmarkFilledSmall.view
-                .resizable()
-                .frame(width: 40, height: 40)
-                .foregroundColor(hSignalColor.Green.element)
-                .scaleEffect(consentGiven == true ? 1 : 0, anchor: .center)
-                .animation(reduceMotion ? .none : .bouncy, value: consentGiven)
-                .offset(x: 12, y: -12)
+
+            Group {
+                Image(uiImage: consentGiven == true ? hCoreUIAssets.checkmark.image : hCoreUIAssets.close.image)
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(hTextColor.Opaque.negative)
+                    .padding(.padding4)
+                    .background {
+                        if consentGiven == true {
+                            Circle().fill(hSignalColor.Green.element)
+                        } else {
+                            Circle().fill(hSignalColor.Red.element)
+                        }
+                    }
+                    .opacity(consentGiven != nil ? 1 : 0)
+            }
+            .scaleEffect(consentGiven != nil ? 1 : 0, anchor: .center)
+            .animation(reduceMotion ? .none : .bouncy, value: consentGiven)
+            .offset(x: 8, y: -8)
         }
         .accessibilityHidden(true)
     }
