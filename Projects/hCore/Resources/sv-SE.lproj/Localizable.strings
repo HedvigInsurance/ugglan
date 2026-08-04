@@ -401,6 +401,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "NEW_MESSAGE_BUTTON" = "Nytt meddelande";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Sammanfattning";
 "ONBOARDING_ADDED_LABEL" = "Tillagd";
+"ONBOARDING_ADD_BUTTON" = "Lägg till";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Lägg till medförsäkrade";
 "ONBOARDING_ADD_COOWNERS_TITLE" = "Lägg till medägare";
 "ONBOARDING_ADD_INFO_LATER_LABEL" = "Du kan lägga till informationen senare";
@@ -412,6 +413,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "Du kan ändra inställningarna senare";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Lägg till ett betalsätt för att aktivera din försäkring";
+"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Fortsätt till appen";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15 % paketrabatt när du har två eller fler försäkringar hos oss";
@@ -423,8 +425,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "Det gör det lättare att hjälpa dig om något händer";
 "ONBOARDING_MISSING_INFO_SUBTITLE" = "Så att vi vet vilka som omfattas av din försäkring";
 "ONBOARDING_OPENS_IN_BROWSER_HINT" = "Öppnas i din webbläsare";
+"ONBOARDING_PHONE_SAVE_ERROR" = "Kunde inte spara, försök igen";
 "ONBOARDING_PHONE_SUBTITLE" = "Lägg till ditt telefonnummer så att vi kan nå dig om något händer";
 "ONBOARDING_PHONE_TITLE" = "Telefonnummer";
+"ONBOARDING_SEE_PRICE_BUTTON" = "Se pris";
 "ONBOARDING_THEME_DARK_SUBTITLE" = "Använd mörkt läge";
 "ONBOARDING_THEME_LIGHT_SUBTITLE" = "Använd ljust läge";
 "ONBOARDING_THEME_SUBTITLE" = "Anpassa appens utseende";
@@ -558,6 +562,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_THEME_LIGHT" = "Ljust";
 "SETTINGS_THEME_SYSTEM_DEFAULT" = "Systemets standardinställning";
 "SETTINGS_THEME_TITLE" = "Tema";
+"SETTINGS_USAGE_DATA_DISABLED" = "Inaktiverad";
+"SETTINGS_USAGE_DATA_ENABLED" = "Aktiverad";
+"SETTINGS_USAGE_DATA_TITLE" = "Användningsdata";
 "SET_TERMINATION_DATE_TEXT" = "Ange slutdatum för din försäkring.";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL" = "Ring %1$@";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "Vi finns här vardagar 08–22\noch helger 10–22";
