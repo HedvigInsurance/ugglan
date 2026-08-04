@@ -161,7 +161,8 @@ class HomeVM: ObservableObject {
             Task { await homeStore.fetchMissedCharge() }
         }
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
-        Task { await crossSellStore.fetchRecommendedCrossSellId() }
+        Task { await crossSellStore.fetchHomeCrossSells() }
+        Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         Task { await paymentStore.fetchPaymentStatus() }
