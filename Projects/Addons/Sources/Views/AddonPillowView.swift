@@ -1,4 +1,3 @@
-import Addons
 import SwiftUI
 import hCoreUI
 
