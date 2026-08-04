@@ -24,6 +24,7 @@ final class CrossSellTests: XCTestCase {
                     title: "car",
                     description: "description",
                     buttonTitle: "button title",
+                    webActionURL: "",
                     imageUrl: nil,
                     buttonDescription: "button description"
                 ),
@@ -32,6 +33,7 @@ final class CrossSellTests: XCTestCase {
                     title: "pet",
                     description: "description",
                     buttonTitle: "button title",
+                    webActionURL: "",
                     imageUrl: nil,
                     buttonDescription: "button description"
                 ),
