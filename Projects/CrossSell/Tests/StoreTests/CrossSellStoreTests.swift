@@ -109,6 +109,7 @@ extension CrossSell {
                 title: "car",
                 description: "description",
                 buttonTitle: "button title",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
@@ -117,6 +118,7 @@ extension CrossSell {
                 title: "home",
                 description: "description",
                 buttonTitle: "button title",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
@@ -131,7 +133,7 @@ extension CrossSell {
                 title: "car",
                 description: "description",
                 buttonTitle: "button title",
-                webActionURL: ""
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button description"
             )
@@ -142,7 +144,7 @@ extension CrossSell {
                 title: "home",
                 description: "description",
                 buttonTitle: "button title",
-                webActionURL: ""
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button description"
             )
