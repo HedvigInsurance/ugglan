@@ -101,25 +101,41 @@ struct ActiveHomeView: View {
                 )
             ]
         )
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+        await crossSellStore.fetchHomeCrossSells()
+        await crossSellStore.fetchAddonBanners()
     }
 }
 
 #Preview {
     setUpActiveHomeViewPreview()
 
-    return ActiveHomeView()
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("In tab bar") {
-    setUpActiveHomeViewPreview()
-
     return TabView {
         ActiveHomeView()
             .environmentObject(HomeNavigationViewModel())
             .tabItem {
-                hCoreUIAssets.homeTab.view
+                hCoreUIAssets.homeTabActive.view
                 hText(L10n.tabHomeTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.contractTab.view
+                hText(L10n.tabInsurancesTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.foreverTab.view
+                hText(L10n.tabReferralsTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.paymentsTab.view
+                hText(L10n.tabPaymentsTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.profileTab.view
+                hText(L10n.ProfileTab.title)
             }
     }
 }
