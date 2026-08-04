@@ -401,6 +401,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "NEW_MESSAGE_BUTTON" = "New message";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Summary";
 "ONBOARDING_ADDED_LABEL" = "Added";
+"ONBOARDING_ADD_BUTTON" = "Add";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Add co-insured";
 "ONBOARDING_ADD_COOWNERS_TITLE" = "Add co-owners";
 "ONBOARDING_ADD_INFO_LATER_LABEL" = "You can add this information later";
@@ -412,6 +413,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change these settings later";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Adding a payment method is required to keep your insurance active";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Add a payment method to activate your insurance";
+"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Continue to app";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15% bundle discount when you have two or more insurances with us";
@@ -423,8 +425,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "This makes it easier to help you if something happens";
 "ONBOARDING_MISSING_INFO_SUBTITLE" = "So we know who's covered by your insurance";
 "ONBOARDING_OPENS_IN_BROWSER_HINT" = "Opens in your browser";
+"ONBOARDING_PHONE_SAVE_ERROR" = "Could not save, please try again";
 "ONBOARDING_PHONE_SUBTITLE" = "Add your phone number so we can reach you if something happens";
 "ONBOARDING_PHONE_TITLE" = "Phone number";
+"ONBOARDING_SEE_PRICE_BUTTON" = "See price";
 "ONBOARDING_THEME_DARK_SUBTITLE" = "Set dark mode";
 "ONBOARDING_THEME_LIGHT_SUBTITLE" = "Set light mode";
 "ONBOARDING_THEME_SUBTITLE" = "Customize the look of the app";
@@ -558,6 +562,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SETTINGS_THEME_LIGHT" = "Light";
 "SETTINGS_THEME_SYSTEM_DEFAULT" = "System default";
 "SETTINGS_THEME_TITLE" = "Theme";
+"SETTINGS_USAGE_DATA_DISABLED" = "Disabled";
+"SETTINGS_USAGE_DATA_ENABLED" = "Enabled";
+"SETTINGS_USAGE_DATA_TITLE" = "Usage data";
 "SET_TERMINATION_DATE_TEXT" = "Please set termination date for your insurance.";
 "SUBMIT_CLAIM_GLOBAL_ASSISTANCE_CALL_LABEL" = "Call %1$@";
 "SUBMIT_CLAIM_NEED_HELP_LABEL" = "We’re here 08–22, Mon–Fri\nand weekends 10–22";
