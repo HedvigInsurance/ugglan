@@ -21,7 +21,11 @@ private struct ChangeAddonCoordinator: ViewModifier {
             }
             .detent(item: $deflect) { DeflectView(deflect: $0) }
             .onChange(of: input) { input in
-                guard let input, let contractInfos = input.contractInfos else { return }
+                guard let input else { return }
+                guard let contractInfos = input.contractInfos, let contractInfo = contractInfos.first else {
+                    self.input = nil
+                    return
+                }
 
                 if contractInfos.count > 1 {
                     multipleContractsInput = input
@@ -31,17 +35,15 @@ private struct ChangeAddonCoordinator: ViewModifier {
 
                 Task {
                     do {
-                        if let contractInfo = contractInfos.first {
-                            let data = try await service.getAddonOffer(
-                                contractInfo: contractInfo,
-                                source: input.addonSource
-                            )
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                self.input = nil
-                                switch data {
-                                case .deflect(let deflect): self.deflect = deflect
-                                case .offer(let offer): self.offerInput = .init(offer, input.preselectedAddonTitle)
-                                }
+                        let data = try await service.getAddonOffer(
+                            contractInfo: contractInfo,
+                            source: input.addonSource
+                        )
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            self.input = nil
+                            switch data {
+                            case .deflect(let deflect): self.deflect = deflect
+                            case .offer(let offer): self.offerInput = .init(offer, input.preselectedAddonTitle)
                             }
                         }
                     } catch {
