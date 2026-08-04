@@ -4,7 +4,6 @@ import Contracts
 import CrossSell
 import Payment
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -13,7 +12,6 @@ struct ActiveHomeView: View {
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
-    @State private var handoff = NestedScrollHandoff()
     @State private var greetingHeight: CGFloat = 0
     @State var scrollOffset: CGFloat = 0
     var body: some View {
@@ -30,10 +28,6 @@ struct ActiveHomeView: View {
                             }
                         )
                 }
-                .background {
-                    Color.blue
-                }
-                .opacity(1)
 
                 Section {
                     sheetContent
@@ -44,13 +38,7 @@ struct ActiveHomeView: View {
                         .clipShape(TopClipShape(topInset: max(0, -scrollOffset - greetingHeight)))
                 } header: {
                     hText("HEADER")
-                        .background {
-                            Color.red.opacity(0.2)
-                        }
                 }
-            }
-            .onChange(of: greetingHeight) { value in
-                print("VALUE IS \(value)")
             }
             .background(
                 GeometryReader { proxy in
@@ -69,85 +57,6 @@ struct ActiveHomeView: View {
             if value > 0 { greetingHeight = value }
         }
         .background { heroBackground }
-        .embededInNavigation(tracking: "track")
-
-        //        .background(alignment: .top, content: {
-        //            Section {
-        //                GreetingView(firstName: homeStore.memberInfo?.firstName)
-        //            }
-        //            .background {
-        //                Color.red.opacity(0.5)
-        //            }
-        //            .offset(x: 0, y: scrollOffset < -200 ? -200 : scrollOffset)
-        //            .zIndex(100)
-        //        })
-
-        //        if #available(iOS 18.0, *) {
-        //            ScrollView(showsIndicators: false) {
-        //                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-        //
-        //                    Section {
-        //                        GreetingView(firstName: homeStore.memberInfo?.firstName)
-        //                    }
-        //                    .background {
-        //                        Color.red
-        //                    }
-        //                    .offset(x: 0, y: scrollOffset)
-        //                    .zIndex(100)
-        //
-        //                    Section {
-        //                        sheetContent
-        //                    } header: {
-        //                        hText("HEADER")
-        //                    }
-        //                    .zIndex(80)
-        //                }
-        //
-        //            }
-        //            .onScrollGeometryChange(for: CGFloat.self) { geo in
-        //                geo.contentOffset.y
-        //            } action: { oldValue, newValue in
-        //                scrollOffset = newValue
-        //            }
-        //            .background { heroBackground }
-        //            .onChange(of: scrollOffset) { value in
-        //                print("VALUE IS \(value)")
-        //            }
-        //        } else {
-        //            // Fallback on earlier versions
-        //        }
-
-        //        GeometryReader { proxy in
-        //            let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
-        //            ScrollView(.vertical, showsIndicators: false) {
-        //                VStack(spacing: 0) {
-        //                    GreetingView(firstName: homeStore.memberInfo?.firstName)
-        //                        .onGeometryChange(for: CGFloat.self, of: \.size.height) { greetingHeight = $0 }
-        //                    HomeSheetContainer(
-        //                        bottomInset: proxy.safeAreaInsets.bottom,
-        //                        minHeight: viewportHeight - greetingHeight,
-        //                        maxHeight: viewportHeight,
-        //                        handoff: handoff
-        //                    ) {
-        //                        sheetContent
-        //                    }
-        //                }
-        //            }
-        //            .ignoresSafeArea(edges: .bottom)
-        //            .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-        //                // Never hand this scroll view to setContentScrollView(_:for:) — on iOS 27 that
-        //                // severs hit-testing for everything scrolled: taps and horizontal pans die.
-        //                handoff.connect(outer: scrollView)
-        //                // The sheet's end must never leave the screen bottom. Letting UIKit refuse the
-        //                // overscroll beats clamping offsets from the observer: programmatic scroll writes
-        //                // mid-gesture cancel the horizontal pans inside the sheet on iOS 27.
-        //                scrollView.bounces = false
-        //            }
-        //        }
-        //        .background { heroBackground }
-        //        // The hero runs behind the navigation bar. Once content scrolls under it UIKit swaps in
-        //        // the standard appearance, whose background material would paint a band across the image.
-        //        .toolbarBackground(.hidden, for: .navigationBar)
     }
 
     private var heroBackground: some View {
