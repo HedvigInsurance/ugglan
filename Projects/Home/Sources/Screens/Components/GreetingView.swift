@@ -14,10 +14,9 @@ struct GreetingView: View {
     private var greeting: some View {
         VStack(spacing: 0) {
             if let firstName, !firstName.isEmpty {
-                // TODO: localise
-                hText("Hi \(firstName)", style: .heading2)
+                hText(L10n.homeGreetingTitle(firstName), style: .heading2)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText("How can we help?", style: .heading2)
+                hText(L10n.homeGreetingSubtitle, style: .heading2)
                     .foregroundColor(hTextColor.Translucent.secondary)
             } else {
                 hText(L10n.HomeTab.welcomeTitleWithoutName, style: .heading2)
