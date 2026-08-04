@@ -16,7 +16,7 @@ struct TodoList: View {
 
                         VStack(alignment: .leading) {
                             hText(todo.title)
-                            hText("Requires action").foregroundColor(hSignalColor.Red.text)
+                            hText(L10n.homeTodoRequiresActionSubtitle).foregroundColor(hSignalColor.Red.text)
                         }
                         .accessibilityElement(children: .combine)
                         .hTextStyle(.label)
@@ -28,7 +28,7 @@ struct TodoList: View {
                 .hRowContentAlignment(.center)
                 .hWithoutHorizontalPadding(.divider)
             }
-            .withHeader(title: "To do")
+            .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
         }
     }
@@ -52,16 +52,15 @@ struct TodoList: View {
 enum Todo: Identifiable, Comparable {
     var id: Todo { self }
 
-    // TODO: move to Lokalise
     var title: String {
         switch self {
-        case .paymentOverdue: "Your payment is overdue"
-        case .paymentMethodMissing: "Missing payment method"
-        case .payoutMethodMissing: "Missing payout method"
-        case .petChipIdMissing: "Missing pet chip-ID"
-        case .contactDetailsMissing: "Update contact details"
-        case .dataCollectionPermissionMissing: "Select usage data handling"
-        case .coInsuredMissing: L10n.contractAddCoinsured
+        case .paymentOverdue: L10n.homeTodoPaymentOverdueTitle
+        case .paymentMethodMissing: L10n.homeTodoMissingPaymentMethodTitle
+        case .payoutMethodMissing: L10n.homeTodoMissingPayoutMethodTitle
+        case .petChipIdMissing: L10n.homeTodoMissingChipIdTitle
+        case .contactDetailsMissing: L10n.homeTodoUpdateContactDetailsTitle
+        case .dataCollectionPermissionMissing: "Select usage data handling"  // TODO: move to Lokalise
+        case .coInsuredMissing: L10n.homeTodoAddCoinsuredTitle
         case .coOwnerMissing: L10n.contractAddAdditionalCoowner
         }
     }
