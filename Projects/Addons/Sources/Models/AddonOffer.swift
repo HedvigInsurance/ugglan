@@ -240,8 +240,8 @@ public struct AddonContractInfo: Hashable, Sendable {
 
 public struct AddonBanner: Sendable, Equatable, Codable, Hashable {
     public let contractIds: [String]
-    let displayTitle: String
-    let displayDescription: String
+    public let displayTitle: String
+    public let displayDescription: String
     let badges: [String]
     public let addonType: AddonType
 

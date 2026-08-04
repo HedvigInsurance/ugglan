@@ -1,3 +1,4 @@
+import Addons
 import AppStateContainer
 import Combine
 import Contracts
@@ -72,6 +73,7 @@ public class HomeNavigationViewModel: ObservableObject {
     public var router = NavigationRouter()
 
     @Published public var claimsAutomationStartInput: StartClaimInput?
+    @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isHelpCenterPresented = false
     @Published public var isPayoutMethodPresented = false
 

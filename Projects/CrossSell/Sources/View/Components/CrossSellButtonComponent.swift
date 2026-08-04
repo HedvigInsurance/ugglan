@@ -45,29 +45,20 @@ struct CrossSellButtonComponent: View {
     private func openRecommendation() {
         switch crossSell {
         case let .insurance(insurance):
-            if let urlString = insurance.webActionURL, let url = URL(string: urlString) {
-                Task {
+            Task {
+                if let url = URL(string: insurance.webActionURL) {
                     isLoading = true
                     await Dependencies.urlOpener.open(url)
                     isLoading = false
                     dismiss()
                 }
-            } else {
-                openNewConversation()
             }
         case let .addon(addon):
             if let url = URL(string: addon.deepLink) {
                 NotificationCenter.default.post(name: .openDeepLink, object: url)
-                dismiss()
-            } else {
-                openNewConversation()
             }
+            dismiss()
         }
-    }
-
-    private func openNewConversation() {
-        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-        dismiss()
     }
 }
 
@@ -79,6 +70,7 @@ struct CrossSellButtonComponent: View {
                 title: "title",
                 description: "description",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button"
             )

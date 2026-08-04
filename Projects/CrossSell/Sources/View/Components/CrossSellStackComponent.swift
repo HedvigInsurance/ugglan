@@ -2,24 +2,19 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct CrossSellStackComponent: View {
+public struct CrossSellStackComponent: View {
     let crossSells: [CrossSell]
     let withHeader: Bool
     let headerTitle: String
     let discountAvailable: Bool
-    init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool) {
+    public init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool, headerTitle: String? = nil) {
         self.crossSells = crossSells
         self.withHeader = withHeader
         self.discountAvailable = discountAvailable
-        headerTitle = {
-            if discountAvailable {
-                return L10n.insuranceOffersSubheading
-            } else {
-                return L10n.InsuranceTab.CrossSells.title
-            }
-        }()
+        self.headerTitle =
+            headerTitle ?? (discountAvailable ? L10n.insuranceOffersSubheading : L10n.InsuranceTab.CrossSells.title)
     }
-    var body: some View {
+    public var body: some View {
         let content = hSection {
             VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
@@ -48,6 +43,7 @@ struct CrossSellStackComponent: View {
                 title: "title",
                 description: "long description that goes long way",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button"
             ),
@@ -56,6 +52,7 @@ struct CrossSellStackComponent: View {
                 title: "short btn",
                 description: "short",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button"
             ),
