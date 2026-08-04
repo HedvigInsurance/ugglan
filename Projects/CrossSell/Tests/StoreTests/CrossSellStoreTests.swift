@@ -51,6 +51,23 @@ final class CrossSellStoreTests: XCTestCase {
         assert(mockService.events.first == .getCrossSell)
     }
 
+    func testFetchHomeCrossSellsSuccess() async {
+        let mockService = MockData.createMockCrossSellService(
+            fetchCrossSell: { _ in CrossSell.getDefaultWithRecommendation }
+        )
+        let store = CrossSellStore()
+        self.store = store
+        store.setHasSeenRecommendedWith(id: "previously-seen-id")
+        await store.fetchHomeCrossSells()
+        await waitUntil(description: "loading state") {
+            store.homeCrossSells == CrossSell.getDefaultWithRecommendation
+        }
+
+        assert(store.hasNewOffer == true)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getCrossSell)
+    }
+
     func testFetchAddonBannersDataSuccess() async {
         let mockService = MockData.createMockCrossSellService(
             fetchAddonBanners: { _ in AddonBanner.getDefault }
@@ -103,6 +120,32 @@ extension CrossSell {
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
+        ],
+        discountAvailable: true
+    )
+
+    fileprivate static let getDefaultWithRecommendation: CrossSells = .init(
+        recommended: .insurance(
+            .init(
+                id: "new-recommended-id",
+                title: "car",
+                description: "description",
+                buttonTitle: "button title",
+                webActionURL: ""
+                imageUrl: nil,
+                buttonDescription: "button description"
+            )
+        ),
+        others: [
+            .init(
+                id: "1",
+                title: "home",
+                description: "description",
+                buttonTitle: "button title",
+                webActionURL: ""
+                imageUrl: nil,
+                buttonDescription: "button description"
+            )
         ],
         discountAvailable: true
     )

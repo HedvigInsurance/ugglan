@@ -1,6 +1,7 @@
 import AppStateContainer
 import Claims
 import Contracts
+import CrossSell
 import Payment
 import SwiftUI
 import hCore
@@ -9,6 +10,7 @@ import hCoreUI
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
+    @AppObservedObject private var crossSellStore: CrossSellStore
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
@@ -79,8 +81,10 @@ struct ActiveHomeView: View {
     private var sheetContent: some View {
         VStack(spacing: .padding40) {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
-            bannerSection
+            infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
+            HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
+            HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
         .sectionContainerStyle(.transparent)
     }
@@ -105,7 +109,7 @@ private struct TopClipShape: Shape {
         }
     }
 
-    @ViewBuilder private var bannerSection: some View {
+    @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
                 .sectionContainerStyle(.transparent)
@@ -122,6 +126,7 @@ private struct TopClipShape: Shape {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
 
     let store: HomeStore = globalAppStateContainer.get()
     store.setFutureStatus(.none)
