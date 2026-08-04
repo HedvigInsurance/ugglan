@@ -76,6 +76,8 @@ public class FeatureFlags: ObservableObject {
         isOnboardingEnabled: false
     )
 
+    @Published public var hasFetchedInitialData = false
+
     public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
         data[keyPath: keyPath]
     }
@@ -96,6 +98,7 @@ public class FeatureFlags: ObservableObject {
                     )
                 }
                 self.data = data
+                self.hasFetchedInitialData = true
             }
         self.client = client
         try await client.setup(with: context)
