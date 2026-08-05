@@ -711,6 +711,9 @@ struct HomeTab: View {
             }
         }
         .handleAddons(input: $homeNavigationVm.isAddonPresented)
+        .handleQuickActions(with: homeNavigationVm.quickActionsVm) { redirectType in
+            quickActionRedirect(for: redirectType)
+        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented,
             options: .constant(.alwaysOpenOnTop)
@@ -718,39 +721,8 @@ struct HomeTab: View {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm
             ) { redirectType in
-                switch redirectType {
-                case .moveFlow:
-                    HandleMoving()
-                case .travelInsurance:
-                    TravelCertificateNavigation(
-                        vm: loggedInVm.travelCertificateNavigationVm,
-                        infoButtonPlacement: .leading,
-                        useOwnNavigation: true
-                    )
-                    .handleEditStakeholders(
-                        with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm
-                    )
-                case let .deflect(data):
-                    SubmitClaimDeflectScreen(
-                        model: data,
-                        openChat: {
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        }
-                    )
-                    .navigationTitle(L10n.commonClaimEmergencyTitle)
-                    .withDismissButton()
-                    .embededInNavigation(
-                        options: [.navigationType(type: .large), .extendedNavigationWidth],
-                        tracking: LoggedInNavigationDetentType.submitClaimDeflect
-                    )
-                }
+                quickActionRedirect(for: redirectType)
             }
-            .handleEditStakeholders(
-                with: loggedInVm.helpCenterVm.editStakeholdersVm
-            )
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -817,6 +789,36 @@ struct HomeTab: View {
         ) {
             PayoutNavigation()
                 .environmentObject(loggedInVm.paymentsNavigationVm)
+        }
+    }
+
+    @ViewBuilder
+    private func quickActionRedirect(for redirectType: HelpCenterRedirectType) -> some View {
+        switch redirectType {
+        case .moveFlow: HandleMoving()
+        case .travelInsurance:
+            TravelCertificateNavigation(
+                vm: loggedInVm.travelCertificateNavigationVm,
+                infoButtonPlacement: .leading,
+                useOwnNavigation: true
+            )
+            .handleEditStakeholders(with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm)
+        case let .deflect(data):
+            SubmitClaimDeflectScreen(
+                model: data,
+                openChat: {
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.newConversation
+                    )
+                }
+            )
+            .navigationTitle(L10n.commonClaimEmergencyTitle)
+            .withDismissButton()
+            .embededInNavigation(
+                options: [.navigationType(type: .large), .extendedNavigationWidth],
+                tracking: LoggedInNavigationDetentType.submitClaimDeflect
+            )
         }
     }
 
