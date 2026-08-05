@@ -50,6 +50,7 @@ struct OnboardingNavigation: View {
                     monthlyDiscountPerReferral: monthlyDiscountPerReferral
                 )
             case .connectPayment: OnboardingConnectPaymentScreen()
+            case .crossSell: OnboardingCrossSellScreen()
             }
         }
         .withDismissButton {

@@ -1,4 +1,5 @@
 import Contracts
+import CrossSell
 import Forever
 import Foundation
 import hCore
@@ -30,6 +31,7 @@ public enum OnboardingStepList {
     public static func compute(
         contracts: [Contracts.Contract],
         isPaymentConnected: Bool,
+        crossSells: [CrossSell],
         contactInfo: ContactInfo = .init(phone: ""),
         foreverData: ForeverData? = nil
     ) -> [OnboardingStep] {
@@ -61,6 +63,9 @@ public enum OnboardingStepList {
         }
         if !isPaymentConnected {
             steps.append(.connectPayment(isConnected: false))
+        }
+        if !crossSells.isEmpty {
+            steps.append(.crossSell(crossSells))
         }
         return steps
     }

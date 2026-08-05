@@ -80,10 +80,10 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
-    let title: String
-    let description: String
+    public let title: String
+    public let description: String
     let buttonTitle: String
-    let webActionURL: String?
+    public let webActionURL: String?
     public let imageUrl: URL?
     let bannerText: String?
     let buttonText: String?

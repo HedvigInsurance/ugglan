@@ -1,4 +1,5 @@
 import Contracts
+import CrossSell
 import EditStakeholders
 import XCTest
 import hCore
@@ -10,7 +11,8 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testStaticStepsAlwaysPresent() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertEqual(
             steps,
@@ -27,6 +29,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             contactInfo: .init(phone: "0735328847")
         )
         XCTAssertTrue(steps.contains(.phoneNumber(phoneNumber: "0735328847")))
@@ -36,6 +39,7 @@ final class OnboardingStepComputationTests: XCTestCase {
         let steps = OnboardingStepList.compute(
             contracts: [],
             isPaymentConnected: true,
+            crossSells: [],
             foreverData: .init(
                 grossAmount: .init(amount: "100", currency: "SEK"),
                 netAmount: .init(amount: "90", currency: "SEK"),
@@ -53,7 +57,8 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testInviteFriendStepHiddenWithoutForeverData() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertFalse(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
     }
@@ -61,16 +66,27 @@ final class OnboardingStepComputationTests: XCTestCase {
     func testPaymentStepShownWhenNotConnected() {
         let steps = OnboardingStepList.compute(
             contracts: [],
-            isPaymentConnected: false
+            isPaymentConnected: false,
+            crossSells: []
         )
         XCTAssertTrue(steps.contains(.connectPayment(isConnected: false)))
+    }
+
+    func testCrossSellStepShownWhenCrossSellsExist() {
+        let steps = OnboardingStepList.compute(
+            contracts: [],
+            isPaymentConnected: true,
+            crossSells: [.mock]
+        )
+        XCTAssertEqual(steps.last, .crossSell([.mock]))
     }
 
     func testCoInsuredStepShownWhenContractHasMissingCoInsured() {
         let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: true)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertTrue(steps.contains(.coInsured(contracts: [.init(contract: contract)])))
     }
@@ -79,7 +95,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: false)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertFalse(steps.contains { $0.matches(.coInsured(contracts: [])) })
     }
@@ -88,7 +105,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: true)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertTrue(steps.contains(.coOwners(contracts: [.init(contract: contract)])))
     }
@@ -97,7 +115,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: false)])
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertFalse(steps.contains { $0.matches(.coOwners(contracts: [])) })
     }
@@ -106,7 +125,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(missingPetChipId: true)
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertTrue(steps.contains(.petChipIds(contracts: [.init(contract: contract)])))
     }
@@ -115,7 +135,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         let contract = Self.makeContract(missingPetChipId: false)
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: true
+            isPaymentConnected: true,
+            crossSells: []
         )
         XCTAssertFalse(steps.contains { $0.matches(.petChipIds(contracts: [])) })
     }
@@ -128,7 +149,8 @@ final class OnboardingStepComputationTests: XCTestCase {
         )
         let steps = OnboardingStepList.compute(
             contracts: [contract],
-            isPaymentConnected: false
+            isPaymentConnected: false,
+            crossSells: [.mock]
         )
         XCTAssertEqual(
             steps,
@@ -141,6 +163,7 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .coOwners(contracts: [.init(contract: contract)]),
                 .petChipIds(contracts: [.init(contract: contract)]),
                 .connectPayment(isConnected: false),
+                .crossSell([.mock]),
             ]
         )
     }
@@ -177,6 +200,19 @@ extension OnboardingStepComputationTests {
             coInsured: coInsured,
             coOwners: coOwners,
             missingPetChipId: missingPetChipId
+        )
+    }
+}
+
+extension CrossSell {
+    fileprivate static var mock: CrossSell {
+        .init(
+            id: "cross-sell-id",
+            title: "title",
+            description: "description",
+            buttonTitle: "buttonTitle",
+            imageUrl: nil,
+            buttonDescription: "buttonDescription"
         )
     }
 }
