@@ -5,7 +5,7 @@ import hCoreUI
 public struct AnalyticsConsentScreen: View {
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var consentGiven: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var buttonEnabled = true
+    @State private var handlingConsent = true
     private let showsGraphic: Bool
     private let onConsentSelected: @MainActor (_ given: Bool) async -> Void
     private let privacyPolicyUrl = URL(string: "https://www.hedvig.com/se/personuppgifter")!
@@ -55,7 +55,7 @@ public struct AnalyticsConsentScreen: View {
                             select(given: false)
                         }
                     }
-                    .disabled(!buttonEnabled)
+                    .disabled(!handlingConsent)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -69,10 +69,10 @@ public struct AnalyticsConsentScreen: View {
         } else {
             AnalyticsConsent.revoke()
         }
-        buttonEnabled = false
+        handlingConsent = false
         Task {
             await onConsentSelected(given)
-            buttonEnabled = true
+            handlingConsent = true
         }
     }
 
