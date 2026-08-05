@@ -726,18 +726,6 @@ struct HomeTab: View {
             .environmentObject(homeNavigationVm)
         }
         .detent(
-            presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            presentationStyle: .detent(style: [.large])
-        ) {
-            let store: HomeStore = globalAppStateContainer.get()
-            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
-                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
-                .embededInNavigation(
-                    options: [.navigationType(type: .large), .extendedNavigationWidth],
-                    tracking: LoggedInNavigationDetentType.firstVet
-                )
-        }
-        .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
             presentationStyle: .center,
             options: .constant([.alwaysOpenOnTop])
@@ -844,15 +832,12 @@ enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
         switch self {
         case .submitClaimDeflect:
             return .init(describing: SubmitClaimDeflectScreen.self)
-        case .firstVet:
-            return .init(describing: FirstVetView.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }
     }
 
     case submitClaimDeflect
-    case firstVet
     case error
 }
 
