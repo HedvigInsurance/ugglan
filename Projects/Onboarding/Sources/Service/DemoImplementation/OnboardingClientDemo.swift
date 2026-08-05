@@ -62,7 +62,8 @@ public class OnboardingClientDemo: OnboardingClient {
             ],
             isPaymentConnected: false,
             crossSells: [],
-            contactInfo: .init(phone: "0735328847")
+            contactInfo: .init(phone: "0735328847"),
+            foreverData: nil
         )
     }
 }

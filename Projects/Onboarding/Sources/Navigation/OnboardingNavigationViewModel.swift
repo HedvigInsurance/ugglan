@@ -1,4 +1,5 @@
 import AppStateContainer
+import Combine
 import Contracts
 import CrossSell
 import EditStakeholders
@@ -22,6 +23,7 @@ class OnboardingNavigationViewModel: ObservableObject {
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
     let connectPaymentVm = ConnectPaymentViewModel()
+    private var routeCountCancellable: AnyCancellable?
     @Published var steps: [OnboardingStep] = [
         .welcome
     ]
@@ -37,6 +39,11 @@ class OnboardingNavigationViewModel: ObservableObject {
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)
+        routeCountCancellable = router.$routeTypes
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateProgress()
+            }
     }
 
     func advance(after step: OnboardingStep) {
@@ -73,6 +80,19 @@ extension OnboardingNavigationViewModel {
     }
 }
 
+// MARK: - Pet chip id step
+extension OnboardingNavigationViewModel {
+    /// A pet chip id was added for `contractId` — clear `missingData` on that contract
+    /// in the step, so the screen (which reads its contracts from `steps`) shows the
+    /// added checkmark.
+    func markPetChipIdAdded(contractId: String) {
+        steps = steps.map { step in
+            guard case let .petChipIds(contracts) = step else { return step }
+            return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
+        }
+    }
+}
+
 // MARK: - Connect-payment step
 extension OnboardingNavigationViewModel {
     /// Refresh the `.connectPayment` step's connected flag — the member may have connected
@@ -89,19 +109,6 @@ extension OnboardingNavigationViewModel {
         steps = steps.map { step in
             guard case .connectPayment = step else { return step }
             return .connectPayment(isConnected: true)
-        }
-    }
-}
-
-// MARK: - Pet chip id step
-extension OnboardingNavigationViewModel {
-    /// A pet chip id was added for `contractId` — clear `missingData` on that contract
-    /// in the step, so the screen (which reads its contracts from `steps`) shows the
-    /// added checkmark.
-    func markPetChipIdAdded(contractId: String) {
-        steps = steps.map { step in
-            guard case let .petChipIds(contracts) = step else { return step }
-            return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
         }
     }
 }
