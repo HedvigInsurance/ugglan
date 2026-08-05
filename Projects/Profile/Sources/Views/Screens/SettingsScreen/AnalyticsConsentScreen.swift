@@ -31,15 +31,11 @@ public struct AnalyticsConsentScreen: View {
         }
         .hFormContentPosition(.center)
         .hFormTitle(
-            title: .init(.small, .body1, "Help us make the app better", alignment: .leading),
+            title: .init(.small, .body1, L10n.onboardingAnalyticsTitle, alignment: .leading),
             subTitle: .init(
                 .small,
                 .body1,
-                """
-                We use technical tools to see how you use the app, so we can make it better.
-
-                Product analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.
-                """,
+                L10n.onboardingAnalyticsSubtitle,
                 alignment: .leading
             )
         )
@@ -48,10 +44,10 @@ public struct AnalyticsConsentScreen: View {
                 VStack(spacing: .padding16) {
                     privacyPolicyLink
                     VStack(spacing: .padding8) {
-                        hButton(.large, .secondary, content: .init(title: "Allow")) {
+                        hButton(.large, .secondary, content: .init(title:  L10n.onboardingAnalyticsAllowButton)) {
                             select(given: true)
                         }
-                        hButton(.large, .secondary, content: .init(title: "Deny")) {
+                        hButton(.large, .secondary, content: .init(title:  L10n.onboardingAnalyticsDenyButton)) {
                             select(given: false)
                         }
                     }
@@ -65,7 +61,6 @@ public struct AnalyticsConsentScreen: View {
     private func select(given: Bool) {
         if given {
             AnalyticsConsent.give()
-            UIAccessibility.post(notification: .announcement, argument: "Analytics allowed")  // TODO: L10n
         } else {
             AnalyticsConsent.revoke()
         }

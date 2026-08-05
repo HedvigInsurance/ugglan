@@ -44,16 +44,16 @@ struct OnboardingMissingInfoScreen: View {
 
     private var headerTitle: String {
         switch type {
-        case .coInsured: "Add co-insured"  // TODO: L10n
-        case .coOwner: "Add co-owners"  // TODO: L10n
-        case .petChipIds: "Add your pets ID numbers"  // TODO: L10n
+        case .coInsured: L10n.onboardingAddCoinsuredTitle
+        case .coOwner: L10n.onboardingAddCoownersTitle
+        case .petChipIds: L10n.onboardingAddPetChipIdsTitle
         }
     }
 
     private var subtitle: String {
         switch type {
-        case .coInsured, .coOwner: "So we know who's covered by your insurance"  // TODO: L10n
-        case .petChipIds: "This makes it easier to help you if something happens"  // TODO: L10n
+        case .coInsured, .coOwner: L10n.onboardingMissingInfoSubtitle
+        case .petChipIds: L10n.onboardingMissingInfoPetSubtitle
         }
     }
 
@@ -71,9 +71,9 @@ struct OnboardingMissingInfoScreen: View {
                     if !onboardingContract.missingData {
                         hCoreUIAssets.checkmark.view
                             .foregroundColor(hSignalColor.Green.element)
-                            // TODO: L10n
                             .accessibilityLabel(
-                                "Added" + ", " + onboardingContract.contract.exposureDisplayNameShort
+                                L10n.onboardingAddedLabel + ", "
+                                    + onboardingContract.contract.exposureDisplayNameShort
                             )
                     } else {
                         hButton(.small, .secondary, content: .init(title: L10n.generalAddButton)) {
@@ -99,11 +99,11 @@ struct OnboardingMissingInfoScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
-                    hText("You can add this information later", style: .label)  // TODO: L10n
+                    hText(L10n.onboardingAddInfoLaterLabel, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
                     VStack(spacing: .padding8) {
                         hContinueButton { vm.advance(after: step) }
-                        hButton(.large, .secondary, content: .init(title: "Do this later")) {  // TODO: L10n
+                        hButton(.large, .secondary, content: .init(title: L10n.onboardingDoThisLaterButton)) {
                             vm.advance(after: step)
                         }
                     }
