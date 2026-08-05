@@ -9,6 +9,7 @@ struct SettingsView: View {
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
     @AppStorage(ThemeOption.storageKey) private var themeRawValue = ThemeOption.system.rawValue
+    @AppStorage(AnalyticsConsent.hasConsentedKey) private var analyticsConsentGiven: Bool?
 
     var body: some View {
         hForm {
@@ -45,6 +46,14 @@ struct SettingsView: View {
                     )
                     MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
                         .environmentObject(profileNavigationVm)
+                    hFloatingField(
+                        value: analyticsConsentGiven == true
+                            ? L10n.settingsUsageDataEnabled : L10n.settingsUsageDataDisabled,
+                        placeholder: L10n.settingsUsageDataTitle,
+                        onTap: {
+                            profileNavigationVm.profileRouter.push(ProfileRouterType.usageData)
+                        }
+                    )
                 }
                 .accessibilityAddTraits(.isButton)
                 NotificationsCardView()
