@@ -27,7 +27,8 @@ public struct HomeScreen: View {
                     case .crossSell:
                         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                     case .firstVet:
-                        navigationVm?.navBarItems.isFirstVetPresented = true
+                        navigationVm?.quickActionsVm
+                            .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
                     case .chat:
                         navigationVm?.router.push(HomeRouterAction.inbox)
                     case .travelCertificate, .insuranceEvidence:
