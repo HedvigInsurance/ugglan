@@ -71,6 +71,7 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var router = NavigationRouter()
+    public let quickActionsVm = QuickActionsViewModel()
 
     @Published public var claimsAutomationStartInput: StartClaimInput?
     @Published public var isAddonPresented: ChangeAddonInput?

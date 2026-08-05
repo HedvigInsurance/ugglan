@@ -88,8 +88,18 @@ public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identif
     let quickActions: [QuickAction]
 
     public init(quickActions: [QuickAction]) {
-        id = quickActions.compactMap(\.id).joined(separator: ",")
+        id = quickActions.map(\.id).joined(separator: ",")
         self.quickActions = quickActions
+    }
+}
+
+struct FirstVetPartnersWrapper: Equatable, Identifiable {
+    let id: String
+    let partners: [FirstVetPartner]
+
+    init(partners: [FirstVetPartner]) {
+        id = partners.map(\.id).joined(separator: ",")
+        self.partners = partners
     }
 }
 
