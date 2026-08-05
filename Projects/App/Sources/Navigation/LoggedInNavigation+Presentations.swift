@@ -9,6 +9,7 @@ import Foundation
 import Home
 import InsuranceEvidence
 import MoveFlow
+import Onboarding
 import Profile
 import SwiftUI
 import TerminateContracts
@@ -48,6 +49,7 @@ struct LoggedInPresentations: ViewModifier {
             ) {
                 InsuranceEvidenceNavigation()
             }
+
             .modally(
                 presented: $vm.isMoveContractPresented,
                 options: .constant(.alwaysOpenOnTop)
@@ -63,6 +65,7 @@ struct LoggedInPresentations: ViewModifier {
             }
             .handleAddons(input: $vm.isAddonPresented)
             .handleMissingChipIds(input: $vm.missingPetChipIdInput)
+            .handleOnboarding()
             .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
                 dismissType in
                 switch dismissType {

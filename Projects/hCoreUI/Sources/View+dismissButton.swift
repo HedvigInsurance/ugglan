@@ -4,13 +4,13 @@ import SwiftUI
 import hCore
 
 extension View {
-    public func withDismissButton() -> some View {
+    public func withDismissButton(action: (() -> Void)? = nil) -> some View {
         modifier(
-            DismissButton()
+            DismissButton(action: action)
         )
     }
 
-    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
+    public func withDismissButton(reducedTopSpacing: Int) -> some View {
         modifier(DismissButton(reducedTopSpacing: reducedTopSpacing))
     }
 
@@ -50,6 +50,7 @@ private struct DismissButton: ViewModifier {
     let message: String?
     let confirmButtonTitle: String?
     let cancelButtonTitle: String?
+    let action: (() -> Void)?
     @EnvironmentObject var router: NavigationRouter
     @State var isAlertPresented = false
 
@@ -60,6 +61,7 @@ private struct DismissButton: ViewModifier {
         confirmButtonTitle: String? = nil,
         cancelButtonTitle: String? = nil,
         reducedTopSpacing: Int = 0,
+        action: (() -> Void)? = nil
     ) {
         self.reducedTopSpacing = reducedTopSpacing
         self.withAlert = withAlert
@@ -67,18 +69,21 @@ private struct DismissButton: ViewModifier {
         self.message = message
         self.confirmButtonTitle = confirmButtonTitle
         self.cancelButtonTitle = cancelButtonTitle
+        self.action = action
     }
 
     func body(content: Content) -> some View {
         content
             .toolbar {
                 ToolbarItem(
+                    id: "closeButton",
                     placement: .topBarTrailing
                 ) {
                     Button {
                         if withAlert {
                             isAlertPresented = true
                         } else {
+                            action?()
                             router.dismiss()
                         }
                     } label: {
@@ -99,7 +104,8 @@ private struct DismissButton: ViewModifier {
                         message: message,
                         confirmButton: confirmButtonTitle,
                         cancelButton: cancelButtonTitle,
-                        isPresented: $isAlertPresented
+                        isPresented: $isAlertPresented,
+                        action: action
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                     .accessibilityLabel(L10n.a11YClose)
@@ -115,7 +121,8 @@ extension View {
         message: String? = nil,
         confirmButton: String? = nil,
         cancelButton: String? = nil,
-        isPresented: Binding<Bool>
+        isPresented: Binding<Bool>,
+        action: (() -> Void)? = nil
     ) -> some View {
         modifier(
             DismissAlertPopup(
@@ -134,7 +141,7 @@ private struct DismissAlertPopup: ViewModifier {
     let message: String
     let confirmButton: String
     let cancelButton: String
-
+    let action: (() -> Void)?
     @Binding var isPresented: Bool
     @EnvironmentObject var router: NavigationRouter
 
@@ -143,13 +150,15 @@ private struct DismissAlertPopup: ViewModifier {
         message: String? = L10n.General.progressWillBeLostAlert,
         confirmButton: String = L10n.General.yes,
         cancelButton: String = L10n.General.no,
-        isPresented: Binding<Bool>
+        isPresented: Binding<Bool>,
+        action: (() -> Void)? = nil
     ) {
         self.title = title
         self.message = message ?? L10n.General.progressWillBeLostAlert
         self.confirmButton = confirmButton
         self.cancelButton = cancelButton
         self._isPresented = isPresented
+        self.action = action
     }
     func body(content: Content) -> some View {
         content
@@ -160,6 +169,7 @@ private struct DismissAlertPopup: ViewModifier {
                     }
                     Button(confirmButton, role: .destructive) {
                         router.dismiss()
+                        action?()
                     }
                 }
             } message: {

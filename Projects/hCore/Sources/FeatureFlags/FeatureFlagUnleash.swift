@@ -72,7 +72,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         }
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
-            isConnectPaymentEnabled: unleashClient.getVariant(name: "payment_type").name == "trustly",
             isSubmitClaimEnabled: true,
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),
             emailPreferencesEnabled: true,

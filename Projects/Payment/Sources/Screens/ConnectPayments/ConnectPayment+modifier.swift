@@ -20,33 +20,41 @@ struct ConnectPayment: ViewModifier {
                 DirectDebitSetup(
                     onSuccess: model.onSuccess
                 )
+                .onDeinit {
+                    Task {
+                        await model.onDeinit?()
+                    }
+                }
             }
     }
 }
 
 @MainActor
 public class ConnectPaymentViewModel: ObservableObject {
-    @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
+    @Published public internal(set) var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
 
     public func set(
-        onSuccess: (() -> Void)? = nil
+        onSuccess: (() -> Void)? = nil,
+        onDeinit: (() async -> Void)? = nil
     ) {
         Task { @MainActor [weak self] in
             self?.setupTypeNavigationModel = .init(
-                onSuccess: onSuccess
+                onSuccess: onSuccess,
+                onDeinit: onDeinit
             )
         }
     }
 }
 
-struct SetupTypeNavigationModel: Identifiable {
-    let id: String = UUID().uuidString
-    let onSuccess: (() -> Void)?
+public struct SetupTypeNavigationModel: Identifiable {
+    public let id: String = UUID().uuidString
+    public let onSuccess: (() -> Void)?
+    public let onDeinit: (() async -> Void)?
 }
 
 extension SetupTypeNavigationModel: Equatable {
-    static func == (lhs: SetupTypeNavigationModel, rhs: SetupTypeNavigationModel) -> Bool {
+    public static func == (lhs: SetupTypeNavigationModel, rhs: SetupTypeNavigationModel) -> Bool {
         lhs.id == rhs.id
     }
 }

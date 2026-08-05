@@ -12,7 +12,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
     public func setup(with _: [String: String]) async throws {
         let data = FeatureData(
             isUpdateNecessary: false,
-            isConnectPaymentEnabled: false,
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
@@ -28,7 +27,6 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
     public func updateContext(context _: [String: String]) {
         let data = FeatureData(
             isUpdateNecessary: false,
-            isConnectPaymentEnabled: false,
             isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
