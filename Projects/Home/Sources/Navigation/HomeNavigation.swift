@@ -84,7 +84,6 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var openChatOptions: DetentPresentationOption = []
 
     public struct NavBarItems {
-        public var isFirstVetPresented = false
         public var isNewOfferPresentedModal: CrossSells?
         public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?
