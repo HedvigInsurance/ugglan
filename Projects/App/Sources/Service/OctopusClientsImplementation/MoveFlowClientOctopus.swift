@@ -36,7 +36,8 @@ class MoveFlowClientOctopus: MoveFlowClient {
                     selectedHousingType: input.addressInputModel.selectedHousingType,
                     houseInformationInputModel: input.houseInformationInputModel
                 )
-            )
+            ),
+            source: GraphQLNullable(optionalValue: input.source.asMoveIntentSourceInput)
         )
 
         let mutation = OctopusGraphQL.MoveIntentRequestMutation(
@@ -386,6 +387,17 @@ extension AddonDataModel {
             ),
             addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         )
+    }
+}
+
+extension MovingFlowSource {
+    fileprivate var asMoveIntentSourceInput: GraphQLEnum<OctopusGraphQL.MoveIntentSourceInput> {
+        switch self {
+        case .insurance:
+            return GraphQLEnum<OctopusGraphQL.MoveIntentSourceInput>(.insurance)
+        case .termination:
+            return GraphQLEnum<OctopusGraphQL.MoveIntentSourceInput>(.termination)
+        }
     }
 }
 

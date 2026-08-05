@@ -145,6 +145,7 @@ public enum DeeplinkProperty: String {
     case claimId
     case sourceMessageId
     case id
+    case source
 }
 
 extension URL {

@@ -22,7 +22,10 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
     @Inject private var octopus: hOctopus
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
-        let query = OctopusGraphQL.TerminationSurveyQuery(contractId: contractId)
+        let query = OctopusGraphQL.TerminationSurveyQuery(
+            contractId: contractId,
+            redirectionEnabled: Dependencies.featureFlags().isTerminationRedirectionEnabled
+        )
         let data = try await octopus.client.fetch(query: query)
         return try mapSurveyData(data.terminationSurvey)
     }
@@ -95,38 +98,13 @@ extension TerminateContractsClientOctopus {
     private func mapOption(
         _ option: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey.Option
     ) -> TerminationSurveyOption {
-        let fragment = option.fragments.terminationSurveyOptionFragment
-        return .init(
-            id: fragment.id,
-            title: fragment.title,
-            feedbackRequired: fragment.feedbackRequired,
-            suggestion: fragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment.asSuggestion,
+        option.fragments.terminationSurveyOptionFragment.asOption(
             subOptions: option.subOptions.map { subOption in
-                let subFragment = subOption.fragments.terminationSurveyOptionFragment
-                return .init(
-                    id: subFragment.id,
-                    title: subFragment.title,
-                    feedbackRequired: subFragment.feedbackRequired,
-                    suggestion: subFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
-                        .asSuggestion,
+                subOption.fragments.terminationSurveyOptionFragment.asOption(
                     subOptions: subOption.subOptions.map { subSubOption in
-                        let subSubFragment = subSubOption.fragments.terminationSurveyOptionFragment
-                        return .init(
-                            id: subSubFragment.id,
-                            title: subSubFragment.title,
-                            feedbackRequired: subSubFragment.feedbackRequired,
-                            suggestion: subSubFragment.suggestion?.fragments.terminationSurveyOptionSuggestionFragment
-                                .asSuggestion,
+                        subSubOption.fragments.terminationSurveyOptionFragment.asOption(
                             subOptions: subSubOption.subOptions.map { leaf in
-                                let leafFragment = leaf.fragments.terminationSurveyOptionFragment
-                                return .init(
-                                    id: leafFragment.id,
-                                    title: leafFragment.title,
-                                    feedbackRequired: leafFragment.feedbackRequired,
-                                    suggestion: leafFragment.suggestion?.fragments
-                                        .terminationSurveyOptionSuggestionFragment.asSuggestion,
-                                    subOptions: []
-                                )
+                                leaf.fragments.terminationSurveyOptionFragment.asOption(subOptions: [])
                             }
                         )
                     }
@@ -170,6 +148,40 @@ extension OctopusGraphQL.TerminationSurveyOptionSuggestionFragment {
             description: description,
             url: url
         )
+    }
+}
+
+extension OctopusGraphQL.TerminationSurveyOptionFragment {
+    func asOption(subOptions: [TerminationSurveyOption]) -> TerminationSurveyOption {
+        .init(
+            id: id,
+            title: title,
+            feedbackRequired: feedbackRequired,
+            suggestion: suggestion?.fragments.terminationSurveyOptionSuggestionFragment.asSuggestion,
+            redirection: redirection?.fragments.terminationSurveyOptionRedirectionFragment.asRedirection,
+            subOptions: subOptions
+        )
+    }
+}
+
+extension OctopusGraphQL.TerminationSurveyOptionRedirectionFragment {
+    var asRedirection: TerminationRedirection {
+        .init(
+            title: title,
+            description: description,
+            type: type.asTerminationRedirectionType,
+            actionText: actionText,
+            image: image.map { .init(url: $0.url, overlayText: $0.overlayText) }
+        )
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.TerminationFlowSurveyOptionRedirectionType> {
+    var asTerminationRedirectionType: TerminationRedirectionType {
+        switch self {
+        case .case(.updateAddress): return .updateAddress
+        default: return .unknown
+        }
     }
 }
 

@@ -16,6 +16,7 @@ public struct TerminationSurveyOption: Codable, Equatable, Hashable, Sendable, I
     public let title: String
     public let feedbackRequired: Bool
     public let suggestion: TerminationSuggestion?
+    public let redirection: TerminationRedirection?
     public let subOptions: [TerminationSurveyOption]
 
     public init(
@@ -23,13 +24,52 @@ public struct TerminationSurveyOption: Codable, Equatable, Hashable, Sendable, I
         title: String,
         feedbackRequired: Bool,
         suggestion: TerminationSuggestion?,
+        redirection: TerminationRedirection? = nil,
         subOptions: [TerminationSurveyOption]
     ) {
         self.id = id
         self.title = title
         self.feedbackRequired = feedbackRequired
         self.suggestion = suggestion
+        self.redirection = redirection
         self.subOptions = subOptions
+    }
+}
+
+public struct TerminationRedirection: Codable, Equatable, Hashable, Sendable {
+    public let title: String
+    public let description: String
+    public let type: TerminationRedirectionType
+    public let actionText: String
+    public let image: TerminationRedirectionImage?
+
+    public init(
+        title: String,
+        description: String,
+        type: TerminationRedirectionType,
+        actionText: String,
+        image: TerminationRedirectionImage?
+    ) {
+        self.title = title
+        self.description = description
+        self.type = type
+        self.actionText = actionText
+        self.image = image
+    }
+}
+
+public enum TerminationRedirectionType: String, Codable, Sendable {
+    case updateAddress
+    case unknown
+}
+
+public struct TerminationRedirectionImage: Codable, Equatable, Hashable, Sendable {
+    public let url: String
+    public let overlayText: String?
+
+    public init(url: String, overlayText: String?) {
+        self.url = url
+        self.overlayText = overlayText
     }
 }
 

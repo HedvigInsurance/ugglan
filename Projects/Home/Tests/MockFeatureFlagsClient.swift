@@ -30,7 +30,8 @@ extension FeatureData {
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
             isPuppyGuideEnabled: false,
-            isResumeClaimEnabled: false
+            isResumeClaimEnabled: false,
+            isTerminationRedirectionEnabled: false
         )
     }
 }

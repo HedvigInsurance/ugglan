@@ -131,10 +131,12 @@ public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDat
     var totalPremium: Premium!
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var removedAddonIds: [String] = []
+    let source: MovingFlowSource
 
     fileprivate var initialTrackingType: MovingFlowDetentType?
 
-    init() {
+    init(source: MovingFlowSource = .insurance) {
+        self.source = source
         initializeData()
     }
 
@@ -261,13 +263,15 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 }
 
 public struct MovingFlowNavigation: View {
-    @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
+    @StateObject private var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @StateObject var router = NavigationRouter()
     private let onMoved: () -> Void
 
     public init(
+        source: MovingFlowSource = .insurance,
         onMoved: @escaping () -> Void
     ) {
+        _movingFlowNavigationVm = StateObject(wrappedValue: MovingFlowNavigationViewModel(source: source))
         self.onMoved = onMoved
     }
 

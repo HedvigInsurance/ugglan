@@ -93,18 +93,12 @@ struct TerminationSurveyScreen: View {
 
     func continueClicked() {
         guard let selectedOption = vm.selectedOption else { return }
+        let comment = vm.selectedFeedBackViewModel?.text
 
-        if !selectedOption.subOptions.isEmpty {
-            terminationFlowNavigationViewModel.router.push(selectedOption.subOptions)
-        } else if let suggestion = selectedOption.suggestion, suggestion.isDeflect || suggestion.isBlocking {
-            terminationFlowNavigationViewModel.selectedOptionId = selectedOption.id
-            terminationFlowNavigationViewModel.selectedComment = vm.selectedFeedBackViewModel?.text
-            terminationFlowNavigationViewModel.handleSuggestion(suggestion)
+        if let redirectionRoute = TerminationSurveyRedirectionRoute(option: selectedOption, comment: comment) {
+            terminationFlowNavigationViewModel.router.push(redirectionRoute)
         } else {
-            terminationFlowNavigationViewModel.proceedAfterSurvey(
-                optionId: selectedOption.id,
-                comment: vm.selectedFeedBackViewModel?.text
-            )
+            terminationFlowNavigationViewModel.continueSurvey(option: selectedOption, comment: comment)
         }
     }
 }
