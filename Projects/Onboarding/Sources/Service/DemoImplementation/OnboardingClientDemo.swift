@@ -13,6 +13,11 @@ public class OnboardingClientDemo: OnboardingClient {
 
     public func updateContactInfo(phone: String) async throws {}
 
+    public func getIsPaymentConnected() async throws -> Bool {
+        await delay(1)
+        return false
+    }
+
     static func getSteps() -> [OnboardingStep] {
         OnboardingStepList.compute(
             contracts: [
@@ -40,6 +45,7 @@ public class OnboardingClientDemo: OnboardingClient {
                     missingPetChipId: true
                 )
             ],
+            isPaymentConnected: false,
             contactInfo: .init(phone: "0735328847")
         )
     }
