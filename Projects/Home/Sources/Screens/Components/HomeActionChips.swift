@@ -8,27 +8,36 @@ struct HomeActionChips: View {
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
     @AppState var store: ClaimsStore
     @InjectObservableObject var featureFlags: FeatureFlags
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .padding8) {
-                chip(title: L10n.HomeTab.claimButtonText, style: .filled) { [weak navigationVm] in
-                    navigationVm?.claimsAutomationStartInput = .init(type: store.startClaimType)
-                }
+            if #available(iOS 26.0, *) {
+                GlassEffectContainer { chipsRow }  // TODO: combines glass too much?
+            } else {
+                chipsRow
+            }
+        }
+    }
 
-                if !featureFlags.isDemoMode {
-                    chip(title: L10n.HomeTab.getHelp, style: .light) { [weak navigationVm] in
-                        navigationVm?.isHelpCenterPresented = true
-                    }
-                }
-                // TODO: Lokalise
-                chip(title: "Contact us", style: .light) { [weak navigationVm] in
-                    navigationVm?.router.push(HomeRouterAction.inbox)
+    private var chipsRow: some View {
+        HStack(spacing: .padding8) {
+            chip(label: L10n.HomeTab.claimButtonText, style: .filled) {
+                navigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
+            }
+
+            if !featureFlags.isDemoMode {
+                chip(label: L10n.HomeTab.getHelp, style: .light) {
+                    navigationVm.isHelpCenterPresented = true
                 }
             }
-            .padding(.horizontal, .padding16)
-            .padding(.vertical, .padding8)
+            // TODO: Lokalise
+            chip(label: "Contact us", style: .light) {
+                navigationVm.router.push(HomeRouterAction.inbox)
+            }
         }
+        .padding(.horizontal, .padding16)
+        .padding(.vertical, .padding8)
     }
 
     private enum ChipStyle {
@@ -36,19 +45,37 @@ struct HomeActionChips: View {
         case light
     }
 
-    private func chip(title: String, style: ChipStyle, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            hText(title, style: .body1)
-                .foregroundColor(style == .filled ? hTextColor.Opaque.negative : hTextColor.Opaque.primary)
-                .padding(.horizontal, .padding16)
-                .padding(.vertical, .padding12)
-                .background {
-                    switch style {
-                    case .filled: Capsule().fill(hFillColor.Opaque.primary).hShadow(type: .light)
-                    case .light: Capsule().fill(hBackgroundColor.primary).hShadow(type: .light)
+    @ViewBuilder private func chip(label: String, style: ChipStyle, action: @escaping () -> Void) -> some View {
+        if #available(iOS 26.0, *) {
+            let button = Button(action: action) { chipLable(label, style: style) }
+                .buttonBorderShape(.capsule)
+                .controlSize(.large)
+
+            switch style {
+            case .filled:
+                button.buttonStyle(.glassProminent)
+                    .tint(hFillColor.Opaque.primary.colorFor(colorScheme, .base).color)
+            case .light:
+                button.buttonStyle(.glass)
+            }
+        } else {
+            Button(action: action) {
+                chipLable(label, style: style)
+                    .padding(.horizontal, .padding16)
+                    .padding(.vertical, .padding12)
+                    .background {
+                        switch style {
+                        case .filled: Capsule().fill(hFillColor.Opaque.primary).hShadow(type: .light)
+                        case .light: Capsule().fill(hBackgroundColor.primary).hShadow(type: .light)
+                        }
                     }
-                }
+            }
         }
+    }
+
+    private func chipLable(_ label: String, style: ChipStyle) -> some View {
+        hText(label, style: .body1)
+            .foregroundColor(style == .filled ? hTextColor.Opaque.negative : hTextColor.Opaque.primary)
     }
 }
 
