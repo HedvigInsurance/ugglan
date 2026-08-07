@@ -1,31 +1,30 @@
 import AppStateContainer
 import SwiftUI
 import hCore
+import hCoreUI
 
 @MainActor
 public struct ClaimsCard: View {
-    @AppObservedObject var store: ClaimsStore
+    let allActiveClaims: [ClaimsStore.ActiveClaimType]
 
-    public init() {}
+    public init(allActiveClaims: [ClaimsStore.ActiveClaimType]) {
+        self.allActiveClaims = allActiveClaims
+    }
 
     public var body: some View {
-        VStack {
-            if store.allActiveClaims.isEmpty {
-                Spacer().frame(height: 40)
-            } else if store.allActiveClaims.count == 1, let claim = store.allActiveClaims.first {
-                ClaimStatusCard(claimType: claim, enableTap: true)
-                    .padding(.vertical)
-            } else {
-                ClaimSection(claims: $store.allActiveClaims)
-                    .padding(.vertical)
+        if !allActiveClaims.isEmpty {
+            hSection {
+                VStack {
+                    if allActiveClaims.count == 1, let claim = allActiveClaims.first {
+                        ClaimStatusCard(claimType: claim, enableTap: true)
+                            .padding(.vertical)
+                    } else {
+                        ClaimSection(claims: .constant(allActiveClaims))
+                            .padding(.vertical)
+                    }
+                }
             }
-        }
-        .task {
-            while !Task.isCancelled {
-                await store.fetchActiveClaims()
-                await store.fetchClaimInProgress()
-                try? await Task.sleep(for: .seconds(120))
-            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
