@@ -125,6 +125,7 @@ struct CrossSellPillowComponent: View {
                 title: "title",
                 description: "description",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 discountText: "50%",
                 imageUrl: URL(
                     string:

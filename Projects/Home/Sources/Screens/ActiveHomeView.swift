@@ -1,6 +1,7 @@
 import AppStateContainer
 import Claims
 import Contracts
+import CrossSell
 import Payment
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -10,6 +11,7 @@ import hCoreUI
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
+    @AppObservedObject private var crossSellStore: CrossSellStore
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var handoff = NestedScrollHandoff()
     @State private var greetingHeight: CGFloat = 0
@@ -59,13 +61,15 @@ struct ActiveHomeView: View {
     private var sheetContent: some View {
         VStack(spacing: .padding40) {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
-            bannerSection
+            infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
+            HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
+            HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
         .padding(.top, .padding16)
     }
 
-    @ViewBuilder private var bannerSection: some View {
+    @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
                 .sectionContainerStyle(.transparent)
@@ -82,6 +86,7 @@ struct ActiveHomeView: View {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
 
     let store: HomeStore = globalAppStateContainer.get()
     store.setFutureStatus(.none)
@@ -96,25 +101,41 @@ struct ActiveHomeView: View {
                 )
             ]
         )
+        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+        await crossSellStore.fetchHomeCrossSells()
+        await crossSellStore.fetchAddonBanners()
     }
 }
 
 #Preview {
     setUpActiveHomeViewPreview()
 
-    return ActiveHomeView()
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("In tab bar") {
-    setUpActiveHomeViewPreview()
-
     return TabView {
         ActiveHomeView()
             .environmentObject(HomeNavigationViewModel())
             .tabItem {
-                hCoreUIAssets.homeTab.view
+                hCoreUIAssets.homeTabActive.view
                 hText(L10n.tabHomeTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.contractTab.view
+                hText(L10n.tabInsurancesTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.foreverTab.view
+                hText(L10n.tabReferralsTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.paymentsTab.view
+                hText(L10n.tabPaymentsTitle)
+            }
+        Color.clear
+            .tabItem {
+                hCoreUIAssets.profileTab.view
+                hText(L10n.ProfileTab.title)
             }
     }
 }

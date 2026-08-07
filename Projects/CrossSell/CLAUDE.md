@@ -5,10 +5,10 @@ Handles cross-selling of additional insurance products and addon banners. Fetche
 ## Key Files
 - `Sources/Service/CrossSellClient.swift` — `CrossSellClient` protocol; defines `getCrossSell` and `getAddonBanners`
 - `Sources/Service/CrossSellService.swift` — Service wrapper using `@Inject` to resolve the client
-- `Sources/Store/CrossSellStore.swift` — `AppStore` managing cross-sell and addon banner state; async methods `fetchCrossSell`, `fetchAddonBanners`, `fetchRecommendedCrossSellId`
+- `Sources/Store/CrossSellStore.swift` — `AppStore` managing cross-sell and addon banner state; async methods `fetchCrossSell` (Insurances tab flow, fills `crossSells`), `fetchHomeCrossSells` (`HOME_X_SELL` flow, fills `homeCrossSells` and derives `hasNewOffer`), `fetchAddonBanners`
 - `Sources/Models/CrossSellModels.swift` — `CrossSells` and `CrossSell` data models
 - `Sources/View/CrossSellingView.swift` — Main view; observes the store via `@AppObservedObject`
-- `Sources/View/Components/` — UI components: banner, button, pillow, stack, discount progress
+- `Sources/View/Components/` — UI components: banner, button, pillow, stack, discount progress, and `CrossSellRow` (shared pillow-row shell, also used by Home's addon section)
 
 ## Dependencies
 - hCore, hCoreUI, AppStateContainer, Addons
