@@ -752,7 +752,7 @@ public struct hSignalColor {
         public static var text: some hColor {
             hColorScheme(
                 light: hRedColor.red800,
-                dark: hRedColor.red900
+                dark: hRedColor.red650
             )
         }
     }
