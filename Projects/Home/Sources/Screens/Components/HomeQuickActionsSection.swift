@@ -6,7 +6,6 @@ import hCoreUI
 struct HomeQuickActionsSection: View {
     let quickActions: [QuickAction]
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
-    @State private var rowWidth: CGFloat = 0
 
     var body: some View {
         if !quickActions.isEmpty {
@@ -20,27 +19,18 @@ struct HomeQuickActionsSection: View {
     }
 
     @ViewBuilder private var tiles: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .padding8) {
-                ForEach(quickActions, id: \.displayTitle) { action in
-                    tile(action)
-                        // Before the first measurement a fixed width would collapse the row to nothing.
-                        .frame(width: rowWidth > 0 ? tileWidth : nil)
-                }
+        HStack(spacing: .padding8) {
+            ForEach(quickActions.prefix(3), id: \.displayTitle) { action in
+                tile(action)
+                    .frame(maxWidth: .infinity)
             }
-            // The scroll view clips at its bounds, which the tile shadows fall outside of.
-            .padding(.vertical, .padding8)
-            .padding(.horizontal, .padding16)
+            ForEach(0..<max(0, 3 - quickActions.count), id: \.self) { _ in
+                Color.clear
+                    .frame(maxWidth: .infinity)
+            }
         }
-        .onGeometryChange(for: CGFloat.self, of: \.size.width) { rowWidth = $0 }
-    }
-
-    /// Exactly three tiles per viewport: the row width less the two gaps between them.
-    /// Only meaningful once `rowWidth` is measured -- call sites guard on `rowWidth > 0`.
-    private var tileWidth: CGFloat {
-        let gaps: CGFloat = .padding8 * 2
-        let horizontalPadding: CGFloat = .padding16 * 2
-        return (rowWidth - gaps - horizontalPadding) / 3
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal, .padding16)
     }
 
     private func tile(_ action: QuickAction) -> some View {
@@ -128,6 +118,18 @@ extension QuickAction {
     .environmentObject(HomeNavigationViewModel())
 }
 
+#Preview("Two actions") {
+    Localization.Locale.currentLocale.send(.en_SE)
+
+    return HomeQuickActionsSection(
+        quickActions: [
+            .changeAddress,
+            .travelInsurance,
+        ]
+    )
+    .environmentObject(HomeNavigationViewModel())
+}
+
 #Preview("Three actions - accessibility3") {
     Localization.Locale.currentLocale.send(.en_SE)
 
@@ -140,31 +142,4 @@ extension QuickAction {
     )
     .environmentObject(HomeNavigationViewModel())
     .environment(\.dynamicTypeSize, .accessibility3)
-}
-
-#Preview("Six actions") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(
-        quickActions: [
-            .editInsurance(actions: .init(quickActions: [.editCoInsured, .upgradeCoverage])),
-            .changeAddress,
-            .travelInsurance,
-            .connectPayments,
-            .firstVet(partners: []),
-            .sickAbroad(
-                deflection: .init(
-                    title: "Sick abroad",
-                    content: .init(title: "Sick abroad", description: "Contact our partner"),
-                    partners: [],
-                    infoText: nil,
-                    warningText: nil,
-                    questions: [],
-                    linkOnlyPartners: [],
-                    buttonTitle: "Continue"
-                )
-            ),
-        ]
-    )
-    .environmentObject(HomeNavigationViewModel())
 }
