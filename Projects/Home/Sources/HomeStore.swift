@@ -48,6 +48,7 @@ public final class HomeStore: AppStore {
     @Published public private(set) var latestConversationTimeStamp: Date = Date()
     @Published public private(set) var latestChatTimeStamp: Date = Date()
 
+    @Transient @Published public private(set) var ongoingQuotes: [OngoingQuote] = []
     @Transient @Published public private(set) var hidenImportantMessages: [String] = []
     @Transient @Published public private(set) var isFetchingQuickActions: Bool = false
     @Transient @Published public private(set) var isFetchingFAQ: Bool = false
@@ -114,6 +115,14 @@ public final class HomeStore: AppStore {
             fetchQuickActionsError = L10n.General.errorBody
         }
         isFetchingQuickActions = false
+    }
+
+    public func fetchOngoingQuotes() async {
+        guard Dependencies.featureFlags().isResumingOngoingShopSessionsEnabled else {
+            ongoingQuotes = []
+            return
+        }
+        ongoingQuotes = (try? await homeService.getOngoingQuotes()) ?? []
     }
 
     public func fetchFAQ() async {
