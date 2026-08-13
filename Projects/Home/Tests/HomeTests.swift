@@ -132,6 +132,38 @@ final class HomeTests: XCTestCase {
         XCTAssertFalse(mockService.events.contains(.getOngoingQuotes))
     }
 
+    /// On a cold launch Home fetches before Unleash has answered, so the flag is still off.
+    /// The quotes must arrive when the flag does, without the screen being revisited.
+    func testOngoingQuotesLoadWhenTheFlagArrivesAfterTheFirstFetch() async throws {
+        let mockClient = MockFeatureFlagsClient()
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
+
+        try await FeatureFlags.shared.setup(with: [:])
+        mockClient.send(.allOff(isResumingOngoingShopSessionsEnabled: false))
+        await waitUntil(description: "Flag arrives switched off") {
+            FeatureFlags.shared.isResumingOngoingShopSessionsEnabled == false
+        }
+
+        let quotes = [Self.makeOngoingQuote(id: "1")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchOngoingQuotes()
+        XCTAssertTrue(store.ongoingQuotes.isEmpty)
+
+        mockClient.send(.allOff(isResumingOngoingShopSessionsEnabled: true))
+        await waitUntil(description: "Ongoing quotes are set when the flag turns on") {
+            store.ongoingQuotes == quotes
+        }
+
+        mockClient.send(.allOff())
+        await waitUntil(description: "Ongoing quotes are cleared when the flag turns off") {
+            store.ongoingQuotes.isEmpty
+        }
+        Dependencies.shared.remove(for: FeatureFlagsClient.self)
+    }
+
     func testOngoingQuoteSecondaryTextPrefersPriceOverSubtitle() {
         let withPrice = Self.makeOngoingQuote(
             id: "1",
@@ -233,8 +265,6 @@ final class HomeTests: XCTestCase {
         await waitUntil(description: "Toolbar contains chat icon under flag-ON") {
             store.toolbarOptionTypes.contains(.chat(hasUnread: false))
         }
-
-        XCTAssertTrue(store.toolbarOptionTypes.contains(.chat(hasUnread: false)))
 
         mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
         await waitUntil(description: "Flag resets") {
