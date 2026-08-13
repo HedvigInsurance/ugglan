@@ -20,7 +20,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false,
-            isResumeClaimEnabled: false
+            isResumeClaimEnabled: false,
+            isResumingOngoingShopSessionsEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -36,7 +37,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false,
-            isResumeClaimEnabled: false
+            isResumeClaimEnabled: false,
+            isResumingOngoingShopSessionsEnabled: false
         )
         featureDataPublisher.send(data)
     }
