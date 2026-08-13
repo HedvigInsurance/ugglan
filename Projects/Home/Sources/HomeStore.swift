@@ -80,6 +80,13 @@ public final class HomeStore: AppStore {
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
+
+        FeatureFlags.shared.$data
+            .map(\.isResumingOngoingShopSessionsEnabled)
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] _ in Task { await self?.fetchOngoingQuotes() } }
+            .store(in: &cancellables)
     }
 
     public func fetchMemberState() async {
