@@ -19,7 +19,10 @@ final class MockFeatureFlagsClient: FeatureFlagsClient, @unchecked Sendable {
 }
 
 extension FeatureData {
-    static func allOff(isNewConversationFromInboxEnabled: Bool = false) -> FeatureData {
+    static func allOff(
+        isNewConversationFromInboxEnabled: Bool = false,
+        isResumingOngoingShopSessionsEnabled: Bool = false,
+    ) -> FeatureData {
         FeatureData(
             isUpdateNecessary: false,
             isConnectPaymentEnabled: false,
@@ -30,7 +33,8 @@ extension FeatureData {
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
             isPuppyGuideEnabled: false,
-            isResumeClaimEnabled: false
+            isResumeClaimEnabled: false,
+            isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
         )
     }
 }
