@@ -350,6 +350,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_QUICK_ACTIONS_EDIT_INSURANCE" = "Ändra försäkring";
 "HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
+"HOME_TODO_ADD_COOWNER_TITLE" = "Lägg till medägare";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Chip-ID för husdjur saknas";
 "HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Betalningsmetod saknas";
 "HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Utbetalningsmetod saknas";
