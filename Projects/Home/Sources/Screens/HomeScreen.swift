@@ -7,7 +7,6 @@ import Contracts
 import CrossSell
 import Foundation
 import Payment
-import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
@@ -15,141 +14,44 @@ import hCoreUI
 public struct HomeScreen: View {
     @StateObject var vm = HomeVM()
     @AppObservedObject var homeStore: HomeStore
-    @InjectObservableObject var featureFlags: FeatureFlags
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     public init() {}
-}
 
-extension HomeScreen {
     public var body: some View {
-        Group {
-            switch vm.memberContractState {
-            case .active:
-                ActiveHomeView()
-            case .terminated, .future, .loading:
-                legacyHomeForm
-            }
-        }
-        .setHomeNavigationBars(
-            with: $homeStore.toolbarOptionTypes,
-            action: { [weak navigationVm] type in
-                switch type {
-                case .crossSell:
-                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
-                case .firstVet:
-                    navigationVm?.navBarItems.isFirstVetPresented = true
-                case .chat:
-                    navigationVm?.router.push(HomeRouterAction.inbox)
-                case .travelCertificate, .insuranceEvidence:
-                    break
-                }
-            }
-        )
-        .trackVisibility(as: HomeScreen.self)
-        .task {
-            vm.fetchHomeState()
-        }
-    }
-
-    private var legacyHomeForm: some View {
-        hForm {
-            centralContent
-        }
-        .hFormAttachToBottom {
-            bottomContent
-        }
-        .sectionContainerStyle(.transparent)
-        .hFormContentPosition(.center)
-    }
-
-    @ViewBuilder
-    private var centralContent: some View {
-        switch vm.memberContractState {
-        case .active, .terminated:
-            MainHomeView()
-        case .future:
-            hCoreUIAssets.hedvig.view
-                .resizable()
-                .scaledToFit()
-                .frame(height: 40)
-        case .loading:
-            EmptyView()
-        }
-    }
-
-    private var bottomContent: some View {
-        hSection {
-            VStack(spacing: 0) {
-                switch vm.memberContractState {
-                case .active, .terminated:
-                    VStack(spacing: .padding16) {
-                        HomeBottomScrollView()
-                        VStack(spacing: .padding8) {
-                            startAClaimButton
-                            openHelpCenter
-                        }
+        ActiveHomeView()
+            .setHomeNavigationBars(
+                with: $homeStore.toolbarOptionTypes,
+                action: { [weak navigationVm] type in
+                    switch type {
+                    case .crossSell:
+                        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+                    case .firstVet:
+                        navigationVm?.navBarItems.isFirstVetPresented = true
+                    case .chat:
+                        navigationVm?.router.push(HomeRouterAction.inbox)
+                    case .travelCertificate, .insuranceEvidence:
+                        break
                     }
-                case .future:
-                    VStack(spacing: .padding16) {
-                        HomeBottomScrollView()
-                        FutureSectionInfoView()
-                            .slideUpFadeAppearAnimation()
-                        openHelpCenter
-                    }
-                case .loading:
-                    openHelpCenter
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var startAClaimButton: some View {
-        if featureFlags.isSubmitClaimEnabled {
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.HomeTab.claimButtonText),
-                { [weak navigationVm] in
-                    let store: ClaimsStore = globalAppStateContainer.get()
-                    navigationVm?.claimsAutomationStartInput = .init(type: store.startClaimType)
                 }
             )
-        }
-    }
-
-    @ViewBuilder
-    private var openHelpCenter: some View {
-        if !featureFlags.isDemoMode {
-            hButton(
-                .large,
-                .secondary,
-                content: .init(title: L10n.HomeTab.getHelp)
-            ) { [weak navigationVm] in navigationVm?.isHelpCenterPresented = true }
-        }
+            .trackVisibility(as: HomeScreen.self)
+            .task {
+                vm.fetchHomeState()
+            }
     }
 }
 
 @MainActor
 class HomeVM: ObservableObject {
-    @Published var memberContractState: MemberContractState = .loading
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     let contractStore: ContractStore = globalAppStateContainer.get()
 
     init() {
-        let store: HomeStore = globalAppStateContainer.get()
-        memberContractState = store.memberContractState
-        store.$memberContractState
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] value in
-                self?.memberContractState = value
-            })
-            .store(in: &cancellables)
-
         addObserverForApplicationDidBecomeActive()
+        let store: HomeStore = globalAppStateContainer.get()
         Task { await store.fetchMissedCharge() }
     }
 
@@ -210,63 +112,77 @@ class HomeVM: ObservableObject {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+}
+
+/// The override must land after the demo fetches of `fetchHomeState()`, which would otherwise
+/// overwrite it with the demo client's `.active` state.
+@MainActor private func previewMemberState(_ state: MemberContractState, _ futureStatus: FutureStatus) {
+    Task {
+        let store: HomeStore = globalAppStateContainer.get()
+        await store.fetchMemberState()
+        try? await Task.sleep(seconds: 0.3)
+        store.setMemberContractState(state, contracts: [])
+        store.setFutureStatus(futureStatus)
+    }
 }
 
 #Preview("Active") {
     fetchDependenciesForPreview()
+    previewMemberState(.active, .none)
 
     return HomeScreen()
-        .onAppear {
-            let store: HomeStore = globalAppStateContainer.get()
-            store.setMemberContractState(.active, contracts: [])
-            store.setFutureStatus(.none)
-        }
+        .environmentObject(HomeNavigationViewModel())
 }
 
 #Preview("ActiveInFuture") {
     fetchDependenciesForPreview()
+    ApolloClient.removeDeleteAccountStatus(for: "ID")
+    previewMemberState(.future, .activeInFuture(inceptionDate: "2023-11-23"))
 
     return HomeScreen()
-        .onAppear {
-            ApolloClient.removeDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalAppStateContainer.get()
-            store.setMemberContractState(.future, contracts: [])
-            store.setFutureStatus(.activeInFuture(inceptionDate: "2023-11-23"))
-        }
+        .environmentObject(HomeNavigationViewModel())
 }
 
-#Preview("TerminatedToday") {
+#Preview("PendingSwitchable") {
     fetchDependenciesForPreview()
+    previewMemberState(.future, .pendingSwitchable)
 
     return HomeScreen()
-        .onAppear {
-            let store: HomeStore = globalAppStateContainer.get()
-            store.setMemberContractState(.terminated, contracts: [])
-            store.setFutureStatus(.pendingSwitchable)
-        }
+        .environmentObject(HomeNavigationViewModel())
+}
+
+#Preview("PendingNonswitchable") {
+    fetchDependenciesForPreview()
+    previewMemberState(.future, .pendingNonswitchable)
+
+    return HomeScreen()
+        .environmentObject(HomeNavigationViewModel())
 }
 
 #Preview("Terminated") {
     fetchDependenciesForPreview()
+    previewMemberState(.terminated, .pendingSwitchable)
 
     return HomeScreen()
-        .onAppear {
-            let store: HomeStore = globalAppStateContainer.get()
-            store.setMemberContractState(.terminated, contracts: [])
-            store.setFutureStatus(.pendingSwitchable)
-        }
+        .environmentObject(HomeNavigationViewModel())
+}
+
+#Preview("Loading") {
+    fetchDependenciesForPreview()
+    previewMemberState(.loading, .none)
+
+    return HomeScreen()
+        .environmentObject(HomeNavigationViewModel())
 }
 
 #Preview("Deleted") {
     fetchDependenciesForPreview()
+    ApolloClient.saveDeleteAccountStatus(for: "ID")
+    previewMemberState(.active, .pendingSwitchable)
 
     return HomeScreen()
-        .onAppear {
-            ApolloClient.saveDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalAppStateContainer.get()
-            store.setMemberContractState(.active, contracts: [])
-            store.setFutureStatus(.pendingSwitchable)
-        }
+        .environmentObject(HomeNavigationViewModel())
 }
 
 public enum HomeRouterAction: TrackingViewNameProtocol, NavigationTitleProtocol {
