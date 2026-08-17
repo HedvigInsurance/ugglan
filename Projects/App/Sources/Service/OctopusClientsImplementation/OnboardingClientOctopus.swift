@@ -21,7 +21,7 @@ public class OnboardingClientOctopus: OnboardingClient {
     public func getOnboardingSteps() async throws -> [OnboardingStep] {
         async let contractsStack = contractsClient.getContracts()
         async let paymentStatus = paymentClient.getPaymentStatusData()
-        async let crossSells = crossSellClient.getCrossSell(source: .insurances, contractId: nil)
+        async let crossSells = crossSellClient.getCrossSell(source: .insurances)
         async let foreverData = foreverClient.getMemberReferralInformation()
         let memberDetails = try await profileClient.getMemberDetails()
         return try await OnboardingStepList.compute(
@@ -40,7 +40,7 @@ public class OnboardingClientOctopus: OnboardingClient {
     }
 
     public func getCrossSells() async throws -> [CrossSell] {
-        try await crossSellClient.getCrossSell(source: .insurances, contractId: nil).others
+        try await crossSellClient.getCrossSell(source: .insurances).others
     }
 
     public func getIsPaymentConnected() async throws -> Bool {
