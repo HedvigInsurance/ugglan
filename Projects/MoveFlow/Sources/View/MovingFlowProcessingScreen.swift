@@ -25,10 +25,10 @@ struct MovingFlowProcessingScreen: View {
         )
         .hStateViewButtonConfig(errorButtons)
         .onDeinit { [weak movingFlowConfirmVm] in
-            if movingFlowConfirmVm?.viewState == .success {
+            if let movingFlowConfirmVm, movingFlowConfirmVm.viewState == .success {
                 NotificationCenter.default.post(
                     name: .openCrossSell,
-                    object: CrossSellInfo(type: .movingFlow, contractId: movingFlowConfirmVm?.newContractId)
+                    object: CrossSellInfo(type: .movingFlow(contractId: movingFlowConfirmVm.newContractId))
                 )
             }
         }

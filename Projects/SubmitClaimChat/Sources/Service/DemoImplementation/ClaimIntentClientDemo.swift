@@ -1,8 +1,8 @@
 import Foundation
+import hCore
 
 public class ClaimIntentClientDemo: ClaimIntentClient {
     public init() {}
-    var claimIntentSubmitTaskCounter = 0
     public func startClaimIntent(input: StartClaimInput) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
@@ -78,6 +78,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         )
     }
 
+    var numberOfTasks = 0
     public func claimIntentSubmitForm(fields: [FieldValue], stepId: String) async throws -> ClaimIntentType? {
         .intent(
             model: .init(
@@ -116,16 +117,29 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     }
 
     public func claimIntentSubmitTask(stepId: String) async throws -> ClaimIntentType? {
-        .intent(
+        await delay(2)
+        if numberOfTasks >= 2 {
+            return .intent(
+                model: .init(
+                    currentStep: .init(
+                        content: .form(model: .init(fields: [])),
+                        id: "isdsd",
+                        text: "asdasdas"
+                    ),
+                    id: "",
+                    isSkippable: false,
+                    isRegrettable: false,
+                    progress: 0
+                )
+            )
+        }
+        numberOfTasks += 1
+        return .intent(
             model: .init(
                 currentStep: .init(
-                    content: .form(
-                        model: .init(
-                            fields: []
-                        )
-                    ),
-                    id: "id",
-                    text: ""
+                    content: .task(model: .init(description: "Processing....", isCompleted: false)),
+                    id: "isdsd",
+                    text: "asdasdas"
                 ),
                 id: "",
                 isSkippable: false,
@@ -221,7 +235,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 .init(
                                     defaultValues: [],
                                     id: "5",
-                                    isRequired: true,
+                                    isRequired: false,
                                     maxValue: nil,
                                     minValue: nil,
                                     options: [],
@@ -317,21 +331,20 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
     }
 
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
-        try await Task.sleep(seconds: 1)
-        claimIntentSubmitTaskCounter += 1
+        try await Task.sleep(seconds: 3)
         return .intent(
             model: .init(
                 currentStep: .init(
                     content: .task(
                         model: .init(
-                            description: "Text updated \(claimIntentSubmitTaskCounter)",
-                            isCompleted: claimIntentSubmitTaskCounter > 3
+                            description: "Text updated",
+                            isCompleted: true
                         )
                     ),
-                    id: "id\(claimIntentSubmitTaskCounter)",
-                    text: "text \(claimIntentSubmitTaskCounter)"
+                    id: "id2323",
+                    text: "text "
                 ),
-                id: "id\(claimIntentSubmitTaskCounter)",
+                id: "id2323",
                 isSkippable: false,
                 isRegrettable: false,
                 progress: 0

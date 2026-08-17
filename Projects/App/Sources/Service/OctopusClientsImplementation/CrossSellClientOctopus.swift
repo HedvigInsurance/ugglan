@@ -8,28 +8,8 @@ class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
     @Inject private var addonClient: AddonsClient
 
-    func getCrossSell(source: CrossSellSource, contractId: String?) async throws -> CrossSells {
-        let flowSource: GraphQLNullable<GraphQLEnum<OctopusGraphQL.FlowSource>> = {
-            if let flowSource = source.asGraphQLFlowSource {
-                return .some(GraphQLEnum<OctopusGraphQL.FlowSource>(flowSource))
-            }
-            return
-                .null
-        }()
-        let contractIdInput: GraphQLNullable<OctopusGraphQL.ID> = {
-            if let contractId {
-                return .some(contractId)
-            }
-            return .null
-        }()
-        let crossSellsInput = OctopusGraphQL.CrossSellInput(
-            userFlow: GraphQLEnum<OctopusGraphQL.UserFlow>.case(source.asGraphQLUserFlow),
-            flowSource: flowSource,
-            experiments: [],
-            contractId: contractIdInput
-        )
-
-        let query = OctopusGraphQL.CrossSellQuery(input: crossSellsInput)
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        let query = OctopusGraphQL.CrossSellQuery(input: source.asGraphQLCrossSellInput)
         let crossSells = try await octopus.client.fetch(query: query)
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
@@ -106,7 +86,17 @@ extension AddonCrossSell {
 }
 
 extension CrossSellSource {
-    fileprivate var asGraphQLUserFlow: OctopusGraphQL.UserFlow {
+    fileprivate var asGraphQLCrossSellInput: OctopusGraphQL.CrossSellInput {
+        .init(
+            userFlow: .case(asGraphQLUserFlow),
+            flowSource: GraphQLNullable(optionalValue: asGraphQLFlowSource.map { .case($0) }),
+            experiments: [],
+            contractId: GraphQLNullable(optionalValue: contractId),
+            claimId: GraphQLNullable(optionalValue: claimId),
+        )
+    }
+
+    private var asGraphQLUserFlow: OctopusGraphQL.UserFlow {
         switch self {
         case .home: return .homeXSell
         case .closedClaim: return .smartXSell
@@ -117,7 +107,7 @@ extension CrossSellSource {
         }
     }
 
-    fileprivate var asGraphQLFlowSource: OctopusGraphQL.FlowSource? {
+    private var asGraphQLFlowSource: OctopusGraphQL.FlowSource? {
         switch self {
         case .home: return nil
         case .closedClaim: return .closedClaim
@@ -126,5 +116,17 @@ extension CrossSellSource {
         case .movingFlow: return .moving
         case .insurances: return nil
         }
+    }
+
+    private var contractId: String? {
+        switch self {
+        case let .changeTier(contractId), let .movingFlow(contractId): contractId
+        case let .closedClaim(_, contractId): contractId
+        case .home, .addon, .insurances: nil
+        }
+    }
+
+    private var claimId: String? {
+        if case let .closedClaim(claimId, _) = self { claimId } else { nil }
     }
 }

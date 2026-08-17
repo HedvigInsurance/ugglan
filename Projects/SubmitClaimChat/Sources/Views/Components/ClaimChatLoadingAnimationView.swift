@@ -21,9 +21,7 @@ struct ClaimChatLoadingAnimationView: View {
 
     @Binding var isLoading: Bool
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var riveViewModel: RiveViewModel = {
-        makeViewModel()
-    }()
+    @State private var riveViewModel: RiveViewModel?
     @State private var animationTask: Task<Void, Error>?
     @State private var introAnimationPlayed = false
     @State private var animationOpacity: Double = 0
@@ -37,17 +35,24 @@ struct ClaimChatLoadingAnimationView: View {
 
     var body: some View {
         Group {
-            riveViewModel.view()
-                .opacity(isLoading ? animationOpacity : 1)
-                .animation(.easeIn(duration: isLoading ? 0.5 : 0), value: animationOpacity)
+            if let riveViewModel {
+                riveViewModel.view()
+                    .opacity(isLoading ? animationOpacity : 1)
+                    .animation(.easeIn(duration: isLoading ? 0.5 : 0), value: animationOpacity)
+            } else {
+                hText(" ")
+            }
         }
         .task {
-            updateAnimation(isLoading: isLoading)
+            rebuildViewModel()
             await delay(Constants.introDelay * 2)
             animationOpacity = 1
         }
         .onChange(of: isLoading) { newValue in
             updateAnimation(isLoading: newValue)
+        }
+        .onChange(of: colorScheme) { _ in
+            rebuildViewModel()
         }
         .onDisappear {
             animationTask?.cancel()
@@ -60,21 +65,28 @@ struct ClaimChatLoadingAnimationView: View {
         animationTask = Task {
             if loading && !introAnimationPlayed {
                 await delay(Constants.introDelay)
-                riveViewModel.play(animationName: RiveAnimationName.loadingIntro.rawValue)
+                riveViewModel?.play(animationName: RiveAnimationName.loadingIntro.rawValue)
                 await delay(Constants.introToLoopTransitionDelay)
-                riveViewModel.play(animationName: RiveAnimationName.loading.rawValue)
+                riveViewModel?.play(animationName: RiveAnimationName.loading.rawValue)
                 introAnimationPlayed = true
             } else if introAnimationPlayed {
-                riveViewModel.stop()
-                riveViewModel.play(animationName: RiveAnimationName.loadingOutro.rawValue)
+                riveViewModel?.stop()
+                riveViewModel?.play(animationName: RiveAnimationName.loadingOutro.rawValue)
             }
         }
     }
 
-    private static func makeViewModel() -> RiveViewModel {
+    /// Rebuilds the Rive view model for the current `colorScheme`, then re-applies
+    /// the animation state so the correct light/dark file keeps playing.
+    private func rebuildViewModel() {
+        riveViewModel = Self.makeViewModel(isDark: colorScheme == .dark)
+        introAnimationPlayed = false
+        updateAnimation(isLoading: isLoading)
+    }
+
+    private static func makeViewModel(isDark: Bool) -> RiveViewModel {
         RiveViewModel(
-            fileName: UITraitCollection.current.userInterfaceStyle == .dark
-                ? Constants.darkModeFile : Constants.lightModeFile,
+            fileName: isDark ? Constants.darkModeFile : Constants.lightModeFile,
             in: Bundle(for: NavigationRouter.self),
             animationName: RiveAnimationName.idle.rawValue,
             autoPlay: false

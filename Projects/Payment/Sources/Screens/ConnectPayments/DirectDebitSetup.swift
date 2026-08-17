@@ -160,6 +160,7 @@ private class DirectDebitWebview: UIView {
         )
 
         if type == .success {
+            onSuccess?()
             Task { await paymentStore.fetchPaymentStatus() }
         }
 

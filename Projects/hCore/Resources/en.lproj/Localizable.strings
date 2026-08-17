@@ -298,6 +298,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_ADD_NEW" = "Add new";
 "GENERAL_CONFIRM" = "Confirm";
 "GENERAL_CONTACT_US_TITLE" = "Contact our service team";
+"GENERAL_DISABLED" = "Disabled";
+"GENERAL_ENABLED" = "Enabled";
 "GENERAL_GO_TO" = "Go to %1$@";
 "GENERAL_RETRY" = "Try again";
 "GENERAL_TODAY" = "Today";
@@ -339,10 +341,16 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "Change coverage";
 "HC_RELATED_QUESTIONS_TITLE" = "Related questions";
 "HC_TITLE" = "Help and support";
+"HOME_ADDONS_READ_MORE_BUTTON" = "Read more";
+"HOME_DISCOVER_SECTION_TITLE" = "Discover our insurances";
+"HOME_DISCOVER_SEE_PRICE_BUTTON" = "See price";
 "HOME_GREETING_SUBTITLE" = "How can we help?";
 "HOME_GREETING_TITLE" = "Hi %1$@";
+"HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "Change address";
+"HOME_QUICK_ACTIONS_EDIT_INSURANCE" = "Edit insurance";
 "HOME_QUOTES_SECTION_TITLE" = "Your quotes";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Add co-insured";
+"HOME_TODO_ADD_COOWNER_TITLE" = "Add co-owner";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Missing pet chip-ID";
 "HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Missing payment method";
 "HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Missing payout method";
@@ -401,6 +409,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "NEW_MESSAGE_BUTTON" = "New message";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Summary";
 "ONBOARDING_ADDED_LABEL" = "Added";
+"ONBOARDING_ADD_BUTTON" = "Add";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Add co-insured";
 "ONBOARDING_ADD_COOWNERS_TITLE" = "Add co-owners";
 "ONBOARDING_ADD_INFO_LATER_LABEL" = "You can add this information later";
@@ -412,6 +421,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change these settings later";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Adding a payment method is required to keep your insurance active";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Add a payment method to activate your insurance";
+"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Continue to app";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15% bundle discount when you have two or more insurances with us";
@@ -423,8 +433,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "This makes it easier to help you if something happens";
 "ONBOARDING_MISSING_INFO_SUBTITLE" = "So we know who's covered by your insurance";
 "ONBOARDING_OPENS_IN_BROWSER_HINT" = "Opens in your browser";
+"ONBOARDING_PHONE_SAVE_ERROR" = "Could not save, please try again";
 "ONBOARDING_PHONE_SUBTITLE" = "Add your phone number so we can reach you if something happens";
 "ONBOARDING_PHONE_TITLE" = "Phone number";
+"ONBOARDING_SEE_PRICE_BUTTON" = "See price";
 "ONBOARDING_THEME_DARK_SUBTITLE" = "Set dark mode";
 "ONBOARDING_THEME_LIGHT_SUBTITLE" = "Set light mode";
 "ONBOARDING_THEME_SUBTITLE" = "Customize the look of the app";

@@ -64,7 +64,7 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .apollo:
-            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.1.2"))]
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "2.3.0"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -72,7 +72,7 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.6"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "8.9.0"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "8.11.0"))]
         case .snapkit:
             return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.1"))]
         case .markdownkit:
@@ -84,15 +84,15 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.10.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("3.14.0"))]
         case .umbrella:
             if isLocalUmbrellaMode { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260604114947"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260804093137"))
             ]
         case .kmpNativeCoroutines:
             return [
-                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.2"))
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.5"))
             ]
         case .tagkit:
             return [
@@ -108,15 +108,15 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.4.0"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .exact("2.5.0"))
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.1.2"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "2.3.0"))
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.7.1")))
+                .package(url: "https://github.com/apple/swift-argument-parser", .exact(.init(stringLiteral: "1.8.2")))
             ]
         case .appStateContainer:
             return [
@@ -136,7 +136,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .rive:
             return [
-                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.15.0"))
+                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.22.0"))
             ]
         case .firebaseAnalytics:
             return [
