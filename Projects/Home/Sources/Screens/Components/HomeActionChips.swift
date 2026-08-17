@@ -1,6 +1,7 @@
 import AppStateContainer
 import Claims
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -12,11 +13,10 @@ struct HomeActionChips: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            if #available(iOS 26.0, *) {
-                GlassEffectContainer { chipsRow }  // TODO: combines glass too much?
-            } else {
-                chipsRow
-            }
+            chipsRow
+        }
+        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+            scrollView.clipsToBounds = false
         }
     }
 
@@ -53,10 +53,14 @@ struct HomeActionChips: View {
 
             switch style {
             case .filled:
-                button.buttonStyle(.glassProminent)
+                button
+                    .buttonStyle(.glassProminent)
                     .tint(hFillColor.Opaque.primary.colorFor(colorScheme, .base).color)
+
             case .light:
-                button.buttonStyle(.glass)
+                button
+                    .buttonStyle(.glass)
+                    .tint(hBackgroundColor.primary.colorFor(colorScheme, .base).color)
             }
         } else {
             Button(action: action) {
