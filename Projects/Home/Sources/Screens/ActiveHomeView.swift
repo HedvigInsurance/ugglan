@@ -59,8 +59,6 @@ struct ActiveHomeView: View {
             ClaimsCard()
             HomeBottomScrollView()
         }
-        .sectionContainerStyle(.transparent)
-        .padding(.top, .padding16)
     }
 }
 
