@@ -102,7 +102,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "2.5.0"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .exact("2.5.0"))
             ]
         case .apolloIosCodegen:
             return [
