@@ -42,7 +42,7 @@ struct OnboardingThemeScreen: View {
             subTitle: .init(
                 .small,
                 .body1,
-                "Customize the look of the app",
+                L10n.onboardingThemeSubtitle,
                 alignment: .leading
             )
         )
@@ -50,7 +50,7 @@ struct OnboardingThemeScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
-                    hText("You can change these settings later", style: .label)
+                    hText(L10n.onboardingChangeSettingsLaterLabel, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
                     hContinueButton { vm.advance(after: .theme) }
                 }
@@ -67,9 +67,9 @@ struct OnboardingThemeScreen: View {
 
     private func subtitle(for theme: ThemeOption) -> String {
         switch theme {
-        case .system: return "Uses your phone's setting"  // TODO: L10n
-        case .light: return "Set light mode"  // TODO: L10n
-        case .dark: return "Set dark mode"  // TODO: L10n
+        case .system: return L10n.onboardingThemeSystemSubtitle
+        case .light: return L10n.onboardingThemeLightSubtitle
+        case .dark: return L10n.onboardingThemeDarkSubtitle
         }
     }
 }
