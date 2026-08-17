@@ -88,7 +88,7 @@ struct ActiveHomeView: View {
         }
         .sectionContainerStyle(.transparent)
     }
-    
+
     @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
