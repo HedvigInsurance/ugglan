@@ -3,42 +3,57 @@ import Claims
 import Contracts
 import Payment
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
-    @State private var handoff = NestedScrollHandoff()
     @State private var greetingHeight: CGFloat = 0
+    @State private var headerHeight: CGFloat = 0
+    @State private var scrollOffset: CGFloat = 0
+    private let scrollSpace = "homeScroll"
+
+    /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
+    private let surfaceBottomGap: CGFloat = .padding8
 
     var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 0) {
-                    GreetingView(firstName: homeStore.memberInfo?.firstName)
-                        .onGeometryChange(for: CGFloat.self, of: \.size.height) { greetingHeight = $0 }
-                    HomeSheetContainer(
-                        bottomInset: proxy.safeAreaInsets.bottom,
-                        minHeight: viewportHeight - greetingHeight,
-                        maxHeight: viewportHeight,
-                        handoff: handoff
-                    ) {
+                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                    Section {
+                        GreetingView(firstName: homeStore.memberInfo?.firstName)
+                            .onGeometryChange(for: CGFloat.self, of: \.size.height) { height in
+                                // The greeting is lazy: once scrolled off it's recycled and
+                                // reports 0, which would blow up the clip inset and the sheet's
+                                // minimum height. Latch the last real measurement.
+                                if height > 0 { greetingHeight = height }
+                            }
+                            .offset(x: 0, y: scrollOffset > 0 ? -(scrollOffset / 2) : -(scrollOffset / 3))
+                    }
+                    Section {
                         sheetContent
+                            .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
+                            // The sheet must always reach the screen bottom at rest.
+                            .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
+                            .background(Rectangle().fill(hBackgroundColor.primary))
+                            // Trim the content as it rises past the pinned header's bottom edge
+                            // so it disappears beneath the header instead of showing through
+                            // the transparent chips row. Once scrolled past the greeting,
+                            // `-scrollOffset - greetingHeight` is exactly how far the content
+                            // has gone under the header.
+                            .clipShape(TopClipShape(topInset: max(0, -scrollOffset - greetingHeight)))
+                    } header: {
+                        HomeSheetContainer()
+                            .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
                     }
                 }
+                .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: .named(scrollSpace)).minY }) {
+                    scrollOffset = $0
+                }
             }
+            .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
-            .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-                // Never hand this scroll view to setContentScrollView(_:for:) — on iOS 27 that
-                // severs hit-testing for everything scrolled: taps and horizontal pans die.
-                handoff.connect(outer: scrollView)
-                // The sheet's end must never leave the screen bottom. Letting UIKit refuse the
-                // overscroll beats clamping offsets from the observer: programmatic scroll writes
-                // mid-gesture cancel the horizontal pans inside the sheet on iOS 27.
-                scrollView.bounces = false
-            }
         }
         .background { heroBackground }
         // The hero runs behind the navigation bar. Once content scrolls under it UIKit swaps in
@@ -52,6 +67,11 @@ struct ActiveHomeView: View {
             .scaledToFill()
             .ignoresSafeArea()
             .accessibilityHidden(true)
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(hBackgroundColor.primary)
+                    .frame(height: scrollOffset > -100 ? 0 : 300)
+            }
     }
 
     private var sheetContent: some View {
@@ -59,6 +79,20 @@ struct ActiveHomeView: View {
             ClaimsCard()
             HomeBottomScrollView()
         }
+        .sectionContainerStyle(.transparent)
+    }
+}
+
+/// Clips a view by trimming `topInset` points off its top edge, revealing the rest below.
+/// Used to make scrolling content vanish beneath the pinned header.
+private struct TopClipShape: Shape {
+    var topInset: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        let inset = min(max(0, topInset), rect.height)
+        return Path(
+            CGRect(x: rect.minX, y: rect.minY + inset, width: rect.width, height: rect.height - inset)
+        )
     }
 }
 
