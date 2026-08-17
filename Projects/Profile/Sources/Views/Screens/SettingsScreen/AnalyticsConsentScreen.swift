@@ -44,10 +44,10 @@ public struct AnalyticsConsentScreen: View {
                 VStack(spacing: .padding16) {
                     privacyPolicyLink
                     VStack(spacing: .padding8) {
-                        hButton(.large, .secondary, content: .init(title:  L10n.onboardingAnalyticsAllowButton)) {
+                        hButton(.large, .secondary, content: .init(title: L10n.onboardingAnalyticsAllowButton)) {
                             select(given: true)
                         }
-                        hButton(.large, .secondary, content: .init(title:  L10n.onboardingAnalyticsDenyButton)) {
+                        hButton(.large, .secondary, content: .init(title: L10n.onboardingAnalyticsDenyButton)) {
                             select(given: false)
                         }
                     }
