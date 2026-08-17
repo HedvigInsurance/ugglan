@@ -37,7 +37,7 @@ struct HomeActionChips: View {
             }
         }
         .padding(.horizontal, .padding16)
-        .padding(.vertical, .padding8)
+        .padding(.bottom, .padding16)
     }
 
     private enum ChipStyle {

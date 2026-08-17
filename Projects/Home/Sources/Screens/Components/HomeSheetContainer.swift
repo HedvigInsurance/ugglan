@@ -87,8 +87,7 @@ struct HomeSheetContainer<Content: View>: View {
         Capsule()
             .fill(hSurfaceColor.Opaque.secondary)
             .frame(width: 40, height: 4)
-            .padding(.top, .padding8)
-            .padding(.bottom, .padding4)
+            .padding(.vertical, .padding10)
             .accessibilityHidden(true)
     }
 }
