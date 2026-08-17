@@ -51,6 +51,10 @@ public struct ProfileNavigation<Content: View>: View {
                         MyInfoView()
                     case .settings:
                         SettingsView()
+                    case .usageData:
+                        AnalyticsConsentScreen { _ in
+                            profileNavigationViewModel.profileRouter.pop()
+                        }
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
                     case .certificates:
@@ -144,6 +148,7 @@ public struct ProfileNavigation<Content: View>: View {
 public enum ProfileRouterType: Hashable {
     case myInfo
     case settings
+    case usageData
     case euroBonus
     case certificates
     case claimHistory
@@ -183,6 +188,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: MyInfoView.self)
         case .settings:
             return .init(describing: SettingsView.self)
+        case .usageData:
+            return .init(describing: AnalyticsConsentScreen.self)
         case .euroBonus:
             return .init(describing: EuroBonusView.self)
         case .certificates:
@@ -206,6 +213,8 @@ extension ProfileRouterType: NavigationTitleProtocol {
             L10n.profileMyInfoRowTitle
         case .settings:
             L10n.EmbarkOnboardingMoreOptions.settingsLabel
+        case .usageData:
+            L10n.settingsUsageDataTitle
         case .euroBonus:
             L10n.SasIntegration.title
         case .certificates:

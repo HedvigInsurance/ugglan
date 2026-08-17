@@ -9,6 +9,7 @@ import hGraphQL
 @MainActor
 class AnalyticsService {
     @Inject var client: AnalyticsClient
+    @Inject var eventClient: EventTrackingClient
     private var setDeviceInfoTask: Task<(), Never>?
     func fetchAndSetUserId() async throws {
         log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
@@ -30,6 +31,7 @@ class AnalyticsService {
     @Log
     func setWith(userId: String) {
         client.setWith(userId: userId)
+        eventClient.setUserId(userId)
     }
 
     deinit {
