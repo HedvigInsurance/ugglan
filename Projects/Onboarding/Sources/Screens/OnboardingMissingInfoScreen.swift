@@ -41,6 +41,11 @@ struct OnboardingMissingInfoScreen: View {
         return []
     }
 
+    /// Whether any contract still needs info added, gating the "add later" affordances.
+    private var hasMissingInfo: Bool {
+        contracts.contains(where: { $0.missingData })
+    }
+
     private var headerTitle: String {
         switch type {
         case .coInsured: L10n.onboardingAddCoinsuredTitle
@@ -103,12 +108,16 @@ struct OnboardingMissingInfoScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
-                    hText(L10n.onboardingAddInfoLaterLabel, style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                    if hasMissingInfo {
+                        hText(L10n.onboardingAddInfoLaterLabel, style: .label)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
                     VStack(spacing: .padding8) {
                         hContinueButton { vm.advance(after: step) }
-                        hButton(.large, .secondary, content: .init(title: L10n.onboardingDoThisLaterButton)) {
-                            vm.advance(after: step)
+                        if hasMissingInfo {
+                            hButton(.large, .secondary, content: .init(title: L10n.onboardingDoThisLaterButton)) {
+                                vm.advance(after: step)
+                            }
                         }
                     }
                 }
