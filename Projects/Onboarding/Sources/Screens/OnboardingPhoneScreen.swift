@@ -20,11 +20,17 @@ struct OnboardingPhoneScreen: View {
                                     .frame(width: 36, height: 36)
                                     .background(getColor(for: digit))
                                     .cornerRadius(.padding12)
-                                    .scaleEffect(animateDigits.contains(digit) ? 1.2 : 1)
+                                    .scaleEffect(animateDigits.contains(digit) ? 1.25 : 1)
                                     .animation(.defaultSpring, value: animateDigits.contains(digit))
                                     .onTapGesture {
                                         if Int(digit) != nil {
                                             phoneVm.phone.append(digit)
+                                        }
+                                        ImpactGenerator.soft()
+                                        animateDigits.append(digit)
+                                        Task {
+                                            await delay(0.2)
+                                            animateDigits.removeFirst()
                                         }
                                     }
                             }
@@ -73,19 +79,6 @@ struct OnboardingPhoneScreen: View {
         }
         .disabled(phoneVm.isLoading)
         .onAppear { phoneVm.prefill(phone: phoneNumber) }
-        .onChange(of: phoneVm.phone) { value in
-            if value.count < phoneVm.previousValue.count {
-            } else {
-                if let last = value.last {
-                    animateDigits.append(String(last))
-                }
-                Task {
-                    await delay(0.4)
-                    animateDigits.removeFirst()
-                }
-            }
-            phoneVm.previousValue = value
-        }
     }
 
     @hColorBuilder
@@ -108,7 +101,6 @@ private enum OnboardingPhoneField: hTextFieldFocusStateCompliant {
 class OnboardingPhoneViewModel: ObservableObject {
     private let service = OnboardingService()
     @Published var phone = ""
-    var previousValue = ""
     @Published var isLoading = false
     @Published var error: String?
     let masking = Masking(type: .phoneNumber)
