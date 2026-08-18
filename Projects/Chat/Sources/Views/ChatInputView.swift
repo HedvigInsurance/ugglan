@@ -306,12 +306,12 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     private var editingTextColor: UIColor {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        let colorScheme: ColorScheme = traitCollection.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.primary.colorFor(colorScheme, .base).color.uiColor()
     }
 
     private var placeholderTextColor: UIColor {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        let colorScheme: ColorScheme = traitCollection.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
     }
 

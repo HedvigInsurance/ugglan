@@ -87,7 +87,7 @@ private class AttributedUITextView: UITextView, UITextViewDelegate {
     }
 
     func getTextColor(useSecondaryColor: Bool) -> UIColor {
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+        let colorScheme: ColorScheme = traitCollection.userInterfaceStyle == .light ? .light : .dark
         if useSecondaryColor {
             return hTextColor.Translucent.secondary.colorFor(colorScheme, .base).color.uiColor()
         } else {

@@ -258,7 +258,7 @@ public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainA
                                     if UIColor.clear != backgroundView.backgroundColor {
                                         let bgColor = hSignalColor.Green.element
                                             .colorFor(
-                                                .init(UITraitCollection.current.userInterfaceStyle) ?? .light,
+                                                ThemeOption.current.colorScheme,
                                                 .base
                                             )
                                             .color.uiColor()
