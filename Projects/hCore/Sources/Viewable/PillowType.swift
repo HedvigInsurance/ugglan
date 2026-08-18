@@ -11,5 +11,6 @@ public enum PillowType: Codable {
     case travel
     case villa
     case vacationHome
+    case paymentProtection
     case unknown
 }

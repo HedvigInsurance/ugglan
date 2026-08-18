@@ -181,7 +181,8 @@ struct MovingFlowAddressScreen: View {
                 Task { @MainActor in
                     if let requestVm = await vm.requestMoveIntent(
                         intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
-                        selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
+                        selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? "",
+                        source: movingFlowNavigationVm.source
                     ) {
                         movingFlowNavigationVm.moveQuotesModel = requestVm
                         if let changeTierModel = requestVm.changeTierModel {
@@ -286,7 +287,11 @@ public class AddressInputModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveQuotesModel? {
+    func requestMoveIntent(
+        intentId: String,
+        selectedAddressId: String,
+        source: MovingFlowSource
+    ) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }
@@ -296,7 +301,8 @@ public class AddressInputModel: ObservableObject {
                 intentId: intentId,
                 addressInputModel: self,
                 houseInformationInputModel: nil,
-                selectedAddressId: selectedAddressId
+                selectedAddressId: selectedAddressId,
+                source: source
             )
             let movingFlowData = try await service.requestMoveIntent(
                 input: input

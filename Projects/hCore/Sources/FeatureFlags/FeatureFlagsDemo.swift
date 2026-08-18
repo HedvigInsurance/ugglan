@@ -20,7 +20,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
-            isOnboardingEnabled: false
+            isOnboardingEnabled: false,
+            isTerminationRedirectionEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -36,7 +37,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
-            isOnboardingEnabled: false
+            isOnboardingEnabled: false,
+            isTerminationRedirectionEnabled: false
         )
         featureDataPublisher.send(data)
     }

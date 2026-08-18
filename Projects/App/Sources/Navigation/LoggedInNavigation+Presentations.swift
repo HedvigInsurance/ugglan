@@ -51,10 +51,10 @@ struct LoggedInPresentations: ViewModifier {
             }
 
             .modally(
-                presented: $vm.isMoveContractPresented,
+                item: $vm.isMoveContractPresented,
                 options: .constant(.alwaysOpenOnTop)
-            ) {
-                HandleMoving()
+            ) { source in
+                HandleMoving(source: source)
             }
             .modally(
                 item: $vm.isChangeTierPresented,

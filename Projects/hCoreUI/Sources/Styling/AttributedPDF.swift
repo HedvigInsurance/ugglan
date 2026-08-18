@@ -7,7 +7,7 @@ public struct AttributedPDF {
     public init() {}
 
     public func attributedPDFString(for title: String) -> NSAttributedString {
-        let schema = ColorScheme(UITraitCollection.current.userInterfaceStyle) ?? .light
+        let schema = ThemeOption.current.colorScheme
         let attributes =
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .body1),

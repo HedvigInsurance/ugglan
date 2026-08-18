@@ -30,7 +30,8 @@ extension FeatureData {
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
-            isOnboardingEnabled: false
+            isOnboardingEnabled: false,
+            isTerminationRedirectionEnabled: false
         )
     }
 }

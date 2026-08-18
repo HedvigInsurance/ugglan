@@ -37,6 +37,19 @@ public enum ThemeOption: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// The effective color scheme, honoring the in-app theme override.
+    /// Only falls back to the process/system appearance when `.system` is selected.
+    /// Prefer this over `UITraitCollection.current` in non-view contexts, where the
+    /// static trait collection ignores the window's `overrideUserInterfaceStyle`.
+    public var colorScheme: ColorScheme {
+        switch self {
+        case .light: return .light
+        case .dark: return .dark
+        case .system:
+            return UITraitCollection.current.userInterfaceStyle == .dark ? .dark : .light
+        }
+    }
+
     @MainActor
     public func apply(animated: Bool = true) {
         let windows = UIApplication.shared.connectedScenes
