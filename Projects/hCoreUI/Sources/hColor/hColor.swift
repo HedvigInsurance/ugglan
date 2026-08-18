@@ -577,8 +577,8 @@ public struct hFillColor {
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
-                light: hGrayscaleTranslucentLight.black,
-                dark: hGrayscaleTranslucentDark.white
+                light: hGrayscaleTranslucentDark.white,
+                dark: hGrayscaleTranslucentLight.black
             )
         }
 

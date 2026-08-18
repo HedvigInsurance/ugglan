@@ -36,7 +36,7 @@ struct ActiveHomeView: View {
                             .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
                             // The sheet must always reach the screen bottom at rest.
                             .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
-                            .background(Rectangle().fill(hBackgroundColor.primary))
+                            .background(Rectangle().fill(hFillColor.Translucent.primary))
                             // Trim the content as it rises past the pinned header's bottom edge
                             // so it disappears beneath the header instead of showing through
                             // the transparent chips row. Once scrolled past the greeting,
@@ -69,7 +69,7 @@ struct ActiveHomeView: View {
             .accessibilityHidden(true)
             .overlay(alignment: .bottom) {
                 Rectangle()
-                    .fill(hBackgroundColor.primary)
+                    .fill(hFillColor.Translucent.primary)
                     .frame(height: scrollOffset > -100 ? 0 : 300)
             }
     }
