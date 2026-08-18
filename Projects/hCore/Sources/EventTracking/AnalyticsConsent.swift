@@ -20,4 +20,12 @@ public enum AnalyticsConsent {
         eventTrackingClient.setCollectionEnabled(false)
         UserDefaults.standard.set(false, forKey: hasConsentedKey)
     }
+
+    /// Returns consent to the undecided state (nil), unlike `revoke()` which stores an explicit "no".
+    @MainActor
+    public static func reset() {
+        let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
+        eventTrackingClient.setCollectionEnabled(false)
+        UserDefaults.standard.removeObject(forKey: hasConsentedKey)
+    }
 }

@@ -33,7 +33,7 @@ private struct OnboardingFlowLauncher: ViewModifier {
 
     private func checkIfShouldPresentOnboarding() async {
         guard onboardingStepsWrapper == nil,
-            !OnboardingNavigationViewModel.hasSeenOnboarding,
+            !OnboardingPresentationState.hasSeenOnboarding,
             featureFlags.isOnboardingEnabled
         else { return }
         let service = OnboardingService()

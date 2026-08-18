@@ -58,7 +58,7 @@ struct OnboardingNavigation: View {
             }
         }
         .withDismissButton {
-            OnboardingNavigationViewModel.setOnboardingToSeen()
+            OnboardingPresentationState.hasSeenOnboarding = true
         }
     }
 }
