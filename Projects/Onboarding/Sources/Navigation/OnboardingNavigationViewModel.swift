@@ -85,10 +85,10 @@ extension OnboardingNavigationViewModel {
     /// A pet chip id was added for `contractId` — clear `missingData` on that contract
     /// in the step, so the screen (which reads its contracts from `steps`) shows the
     /// added checkmark.
-    func markPetChipIdAdded(contractId: String) {
+    func markPetChipIdAdded(_ model: PetIdAddedModel) {
         steps = steps.map { step in
             guard case let .petChipIds(contracts) = step else { return step }
-            return .petChipIds(contracts: contracts.markingAdded(contractId: contractId))
+            return .petChipIds(contracts: contracts.markingAdded(contractId: model.contractId, addedInfo: model.chipId))
         }
     }
 }
@@ -136,10 +136,13 @@ extension OnboardingNavigationViewModel {
 }
 
 extension [OnboardingContract] {
-    fileprivate func markingAdded(contractId: String) -> [OnboardingContract] {
+    fileprivate func markingAdded(contractId: String, addedInfo: String? = nil) -> [OnboardingContract] {
         map { contract in
             var contract = contract
-            if contract.id == contractId { contract.missingData = false }
+            if contract.id == contractId {
+                contract.missingData = false
+                contract.addedInfo = addedInfo
+            }
             return contract
         }
     }

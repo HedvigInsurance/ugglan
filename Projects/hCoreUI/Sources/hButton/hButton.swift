@@ -88,6 +88,15 @@ public enum hButtonSize: CaseIterable {
     case large
     case medium
     case small
+
+    @preconcurrency
+    var cornerRadius: CGFloat {
+        switch self {
+        case .small: .cornerRadiusS
+        case .medium: .cornerRadiusM
+        case .large: .cornerRadiusL
+        }
+    }
 }
 
 struct _hButton<Content: View>: View {
@@ -116,16 +125,7 @@ struct _hButton<Content: View>: View {
 }
 
 extension View {
-    @ViewBuilder
-    func buttonCornerModifier(_ size: hButtonSize, withBorder: Bool) -> some View {
-        var cornerRadius: CGFloat {
-            switch size {
-            case .small: .cornerRadiusS
-            case .medium: .cornerRadiusM
-            case .large: .cornerRadiusL
-            }
-        }
-
+    func buttonCornerModifier(_ cornerRadius: CGFloat, withBorder: Bool) -> some View {
         self.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
@@ -148,11 +148,18 @@ extension EnvironmentValues {
     @Entry public var hUseButtonTextColor: hButtonTextColor = .default
     @Entry var hWithTransition: AnyTransition? = nil
     @Entry public var hCustomButtonView: AnyView? = nil
+    @Entry var hCustomButtonCornerRadius: CGFloat? = nil
 }
 
 extension View {
     public var hUseLightMode: some View {
         environment(\.hUseLightMode, true)
+    }
+}
+
+extension View {
+    public func hCustomButtonConerRadius(_ radius: CGFloat) -> some View {
+        environment(\.hCustomButtonCornerRadius, radius)
     }
 }
 

@@ -22,7 +22,6 @@ enum OnboardingMissingInfoType {
 struct OnboardingMissingInfoScreen: View {
     let type: OnboardingMissingInfoType
     @EnvironmentObject var vm: OnboardingNavigationViewModel
-
     private var step: OnboardingStep {
         switch type {
         case .coInsured: .coInsured(contracts: contracts)
@@ -63,20 +62,24 @@ struct OnboardingMissingInfoScreen: View {
                 hRow {
                     ContractInformation(
                         title: onboardingContract.contract.currentAgreement?.productVariant.displayName,
-                        subtitle: onboardingContract.contract.exposureDisplayNameShort,
-                        pillowImage: onboardingContract.contract.pillowType?.bgImage
+                        subtitle: onboardingContract.getSubtitle(),
+                        pillowImage: onboardingContract.contract.pillowType?.bgImage,
+                        size: .small
                     )
                 }
+                .horizontalPadding(.padding12)
+                .verticalPadding(.padding12)
                 .withCustomAccessory {
                     if !onboardingContract.missingData {
-                        hCoreUIAssets.checkmark.view
-                            .foregroundColor(hSignalColor.Green.element)
-                            .accessibilityLabel(
-                                L10n.onboardingAddedLabel + ", "
-                                    + onboardingContract.contract.exposureDisplayNameShort
-                            )
+                        ZStack {
+                            RoundedRectangle(cornerRadius: .cornerRadiusS)
+                                .fill(hSignalColor.Green.element)
+                            hCoreUIAssets.checkmark.view
+                                .foregroundColor(hTextColor.Opaque.negative)
+                        }
+                        .frame(width: 20, height: 20)
                     } else {
-                        hButton(.small, .secondary, content: .init(title: L10n.generalAddButton)) {
+                        hButton(.small, .primary, content: .init(title: L10n.generalAddButton)) {
                             add(onboardingContract)
                         }
                         .accessibilityLabel(
@@ -84,6 +87,7 @@ struct OnboardingMissingInfoScreen: View {
                         )
                     }
                 }
+                .hRowContentAlignment(.center)
             }
         }
         .hFormTitle(
@@ -116,8 +120,8 @@ struct OnboardingMissingInfoScreen: View {
             vm.markStakeholderAdded(contractId: contractId, type: stakeholderType)
         }
         .onReceive(NotificationCenter.default.publisher(for: .petChipIdAdded)) { notification in
-            guard type == .petChipIds, let contractId = notification.object as? String else { return }
-            vm.markPetChipIdAdded(contractId: contractId)
+            guard type == .petChipIds, let model = notification.object as? PetIdAddedModel else { return }
+            vm.markPetChipIdAdded(model)
         }
     }
 
@@ -197,9 +201,15 @@ struct OnboardingMissingInfoScreen: View {
         )
         .task {
             await delay(1)
-            NotificationCenter.default.post(name: .petChipIdAdded, object: "id1")
+            NotificationCenter.default.post(
+                name: .petChipIdAdded,
+                object: PetIdAddedModel(contractId: "id1", chipId: "chip 1")
+            )
             await delay(2)
-            NotificationCenter.default.post(name: .petChipIdAdded, object: "id2")
+            NotificationCenter.default.post(
+                name: .petChipIdAdded,
+                object: PetIdAddedModel(contractId: "id2", chipId: "chip 2")
+            )
         }
 }
 

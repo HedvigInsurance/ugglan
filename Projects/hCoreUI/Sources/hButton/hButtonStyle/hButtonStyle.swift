@@ -35,6 +35,7 @@ public enum hButtonConfigurationType: Sendable, CaseIterable {
 public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     @Environment(\.hButtonWithBorder) var withBorder
     var size: hButtonSize
+    @Environment(\.hCustomButtonCornerRadius) var customBorderRadius
 
     public func makeBody(configuration: Configuration) -> some View {
         VStack {
@@ -42,7 +43,7 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(hButtonFilledBackground(configuration: configuration))
-        .buttonCornerModifier(size, withBorder: withBorder)
+        .buttonCornerModifier(customBorderRadius ?? size.cornerRadius, withBorder: withBorder)
     }
 
     // content

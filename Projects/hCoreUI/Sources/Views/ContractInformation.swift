@@ -5,17 +5,20 @@ public struct ContractInformation: View {
     let subtitle: String?
     let pillowImage: Image?
     let status: String?
+    let size: ContractInformationSizeType
 
     public init(
         title: String?,
         subtitle: String?,
         pillowImage: Image?,
-        status: String? = nil
+        status: String? = nil,
+        size: ContractInformationSizeType = .regular,
     ) {
         self.title = title
         self.subtitle = subtitle
         self.pillowImage = pillowImage
         self.status = status
+        self.size = size
     }
 
     public var body: some View {
@@ -23,11 +26,11 @@ public struct ContractInformation: View {
             if let pillowImage {
                 pillowImage
                     .resizable()
-                    .frame(width: 48, height: 48)
+                    .frame(width: size.pillowSize, height: size.pillowSize)
             }
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
-                    hText(title ?? "", style: .heading1)
+                    hText(title ?? "", style: size.titleStyle)
                     Spacer()
                     if let status {
                         hPill(text: status, color: .grey)
@@ -36,7 +39,7 @@ public struct ContractInformation: View {
                     }
                 }
                 if let subtitle {
-                    hText(subtitle, style: .body1)
+                    hText(subtitle, style: size.subtitleStyle)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .transition(.opacity)
                 }
@@ -44,6 +47,38 @@ public struct ContractInformation: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+public enum ContractInformationSizeType {
+    case regular
+    case small
+
+    var pillowSize: CGFloat {
+        switch self {
+        case .regular:
+            return 48
+        case .small:
+            return 40
+        }
+    }
+
+    var titleStyle: HFontTextStyle {
+        switch self {
+        case .regular:
+            return .heading1
+        case .small:
+            return .label
+        }
+    }
+
+    var subtitleStyle: HFontTextStyle {
+        switch self {
+        case .regular:
+            return .body1
+        case .small:
+            return .label
+        }
     }
 }
 

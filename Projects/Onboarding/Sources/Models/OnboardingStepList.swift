@@ -18,6 +18,14 @@ public struct ContactInfo: Equatable, Hashable, Sendable {
 public struct OnboardingContract: Hashable, Identifiable, Sendable {
     public let contract: Contracts.Contract
     public var missingData: Bool
+    public var addedInfo: String?
+
+    func getSubtitle() -> String {
+        if let addedInfo {
+            return [contract.exposureDisplayNameShort, addedInfo].displayName
+        }
+        return contract.exposureDisplayNameShort
+    }
 
     public var id: String { contract.id }
 
