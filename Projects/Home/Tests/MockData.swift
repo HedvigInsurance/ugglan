@@ -32,6 +32,9 @@ struct MockData {
         },
         fetchFAQ: @escaping FetchFAQ = {
             .init(topics: [], commonQuestions: [])
+        },
+        fetchOngoingQuotes: @escaping FetchOngoingQuotes = {
+            []
         }
     ) -> MockHomeService {
         let service = MockHomeService(
@@ -40,7 +43,8 @@ struct MockData {
             fetchMissedCharge: fetchMissedCharge,
             fetchQuickActions: fetchQuickActions,
             fetchLatestMessageState: fetchLatestMessageState,
-            fetchFAQ: fetchFAQ
+            fetchFAQ: fetchFAQ,
+            fetchOngoingQuotes: fetchOngoingQuotes,
         )
         Dependencies.shared.add(module: Module { () -> HomeClient in service })
         return service
@@ -53,6 +57,7 @@ typealias FetchMissedCharge = () async throws -> Bool
 typealias FetchQuickActions = () async throws -> [QuickAction]
 typealias FetchLatestMessageState = @Sendable () async throws -> Home.MessageState
 typealias FetchFAQ = () async throws -> Home.HelpCenterFAQModel
+typealias FetchOngoingQuotes = () async throws -> [OngoingQuote]
 
 class MockHomeService: HomeClient {
     var events = [Event]()
@@ -62,6 +67,7 @@ class MockHomeService: HomeClient {
     var fetchQuickActions: FetchQuickActions
     var fetchLatestMessageState: FetchLatestMessageState
     var fetchFAQ: FetchFAQ
+    var fetchOngoingQuotes: FetchOngoingQuotes
     enum Event {
         case getImportantMessages
         case getMemberState
@@ -69,6 +75,7 @@ class MockHomeService: HomeClient {
         case getQuickActions
         case getMessagesState
         case getFaq
+        case getOngoingQuotes
     }
 
     init(
@@ -77,7 +84,8 @@ class MockHomeService: HomeClient {
         fetchMissedCharge: @escaping FetchMissedCharge,
         fetchQuickActions: @escaping FetchQuickActions,
         fetchLatestMessageState: @escaping FetchLatestMessageState,
-        fetchFAQ: @escaping FetchFAQ
+        fetchFAQ: @escaping FetchFAQ,
+        fetchOngoingQuotes: @escaping FetchOngoingQuotes
     ) {
         self.fetchImportantMessages = fetchImportantMessages
         self.fetchMemberState = fetchMemberState
@@ -85,6 +93,7 @@ class MockHomeService: HomeClient {
         self.fetchQuickActions = fetchQuickActions
         self.fetchLatestMessageState = fetchLatestMessageState
         self.fetchFAQ = fetchFAQ
+        self.fetchOngoingQuotes = fetchOngoingQuotes
     }
 
     func getImportantMessages() async throws -> [ImportantMessage] {
@@ -120,6 +129,12 @@ class MockHomeService: HomeClient {
     func getFAQ() async throws -> Home.HelpCenterFAQModel {
         events.append(.getFaq)
         let data = try await fetchFAQ()
+        return data
+    }
+
+    func getOngoingQuotes() async throws -> [OngoingQuote] {
+        events.append(.getOngoingQuotes)
+        let data = try await fetchOngoingQuotes()
         return data
     }
 }

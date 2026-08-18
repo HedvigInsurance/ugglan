@@ -59,6 +59,7 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchMemberState() }
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
+        Task { await homeStore.fetchOngoingQuotes() }
         Task { await homeStore.fetchChatNotifications() }
         if homeStore.hasMissedCharge {
             Task { await homeStore.fetchMissedCharge() }
