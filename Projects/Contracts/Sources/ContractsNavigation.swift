@@ -48,8 +48,10 @@ public struct ContractsNavigation<Content: View>: View {
             presentationStyle: .detent(style: [.height])
         ) { insurableLimit in
             InfoView(
-                title: L10n.contractCoverageMoreInfo,
-                description: insurableLimit.description
+                infoViewModel: .init(
+                    title: L10n.contractCoverageMoreInfo,
+                    description: insurableLimit.description
+                )
             )
         }
         .detent(

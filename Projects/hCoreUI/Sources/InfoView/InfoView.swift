@@ -32,8 +32,10 @@ public struct InfoViewHolder: View {
             options: .constant(.withoutGrabber)
         ) {
             InfoView(
-                title: title,
-                description: description
+                infoViewModel: .init(
+                    title: title,
+                    description: description
+                )
             )
         }
     }
@@ -68,30 +70,50 @@ public struct InfoViewHolder: View {
     }
 }
 
-public struct InfoView: View {
+public struct InfoViewModel: Equatable, Identifiable {
+    public var id: String? {
+        title
+    }
     let title: String?
     let description: String?
     let closeButtonTitle: String
-    @StateObject private var vm = InfoViewModel()
+    let actionOnClose: (() -> Void)?
 
     public init(
         title: String?,
         description: String?,
         closeButtonTitle: String = L10n.generalCloseButton,
+        actionOnClose: (() -> Void)? = nil
     ) {
         self.title = title
         self.description = description
         self.closeButtonTitle = closeButtonTitle
+        self.actionOnClose = actionOnClose
+    }
+
+    public static func == (lhs: InfoViewModel, rhs: InfoViewModel) -> Bool {
+        lhs.title == rhs.title
+    }
+}
+
+public struct InfoView: View {
+    let infoViewModel: InfoViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    public init(
+        infoViewModel: InfoViewModel
+    ) {
+        self.infoViewModel = infoViewModel
     }
 
     public var body: some View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
-                    if let title {
+                    if let title = infoViewModel.title {
                         hText(title)
                     }
-                    if let description {
+                    if let description = infoViewModel.description {
                         hText(description)
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -109,13 +131,13 @@ public struct InfoView: View {
                 hButton(
                     .large,
                     .secondary,
-                    content: .init(title: closeButtonTitle)
-                ) { vm.vc?.dismiss(animated: true) }
+                    content: .init(title: infoViewModel.closeButtonTitle)
+                ) {
+                    dismiss()
+                    infoViewModel.actionOnClose?()
+                }
             }
             .padding(.horizontal, .padding24)
-        }
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
-            vm.vc = vc
         }
     }
 }
@@ -134,10 +156,6 @@ public struct InfoViewDataModel: Codable, Equatable, Identifiable, Hashable, Sen
         self.title = title
         self.description = description
     }
-}
-
-class InfoViewModel: ObservableObject {
-    weak var vc: UIViewController?
 }
 
 extension View {
@@ -178,8 +196,10 @@ struct NavigationInfoButton: ViewModifier {
                 options: .constant(.withoutGrabber)
             ) {
                 InfoView(
-                    title: title,
-                    description: description
+                    infoViewModel: .init(
+                        title: title,
+                        description: description
+                    )
                 )
             }
     }

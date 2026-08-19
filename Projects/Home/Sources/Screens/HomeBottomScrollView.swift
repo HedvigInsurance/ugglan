@@ -98,11 +98,13 @@ class HomeBottomScrollViewModel: ObservableObject {
         let missingPayin = status?.missingConnection == .payin
         let missingPayout = status?.missingConnection == .payout
         let showsPayin = missingPayin && [MemberContractState.active, MemberContractState.future].contains(userStatus)
-        let isTerminatingDueToMissedPayments =
-            if case .terminatingDueToMissedPayments = status?.status { true } else { false }
+        let terminationDueToMissedPaymentsDate: String? = "12.11.2026."
+        //            if case let .terminatingDueToMissedPayments(date) = status?.status { date } else { nil }
+        let isTerminatingDueToMissedPayments = true
+        //            if case .terminatingDueToMissedPayments = status?.status { true } else { false }
         let showsPayout = missingPayout && !missingPayin
 
-        handleTodo(.paymentOverdue, with: isTerminatingDueToMissedPayments)
+        handleTodo(.paymentOverdue(date: terminationDueToMissedPaymentsDate), with: isTerminatingDueToMissedPayments)
         handleTodo(.paymentMethodMissing, with: showsPayin && !isTerminatingDueToMissedPayments)
         handleTodo(.payoutMethodMissing, with: showsPayout)
     }
