@@ -13,26 +13,20 @@ public struct DatePickerView: View {
 
     public var body: some View {
         hForm {
-            hSection {
-                HStack {
-                    if vm.config.showAsList ?? false {
-                        datePicker
-                            .padding(.bottom, .padding16)
-                            .labelsHidden()
-                            .datePickerStyle(.wheel)
-                    } else {
-                        datePicker
-                            .tint(hSignalColor.Green.element)
-                            .datePickerStyle(.graphical)
-                            .frame(height: 340)
-                            .introspect(.datePicker, on: .iOS(.v13...)) { [weak vm] datePicker in
-                                vm?.datePicker = datePicker
-                                vm?.updateColors()
-                            }
+            if vm.config.showAsList ?? false {
+                datePicker
+                    .padding(.bottom, .padding16)
+                    .labelsHidden()
+                    .datePickerStyle(.wheel)
+            } else {
+                datePicker
+                    .tint(hSignalColor.Green.element)
+                    .datePickerStyle(.graphical)
+                    .introspect(.datePicker, on: .iOS(.v13...)) { [weak vm] datePicker in
+                        vm?.datePicker = datePicker
+                        vm?.updateColors()
                     }
-                }
             }
-            .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
@@ -301,7 +295,7 @@ public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainA
         .HDatePickerFieldConfig(
             placeholder: "Placeholder",
             title: "Departure date",
-            showAsList: true
+            showAsList: false
         )
 
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
