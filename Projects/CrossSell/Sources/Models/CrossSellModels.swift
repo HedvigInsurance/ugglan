@@ -83,7 +83,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     let title: String
     let description: String
     let buttonTitle: String
-    let webActionURL: String?
+    let webActionURL: String
     public let imageUrl: URL?
     let bannerText: String?
     let buttonText: String?
@@ -99,7 +99,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         title: String,
         description: String,
         buttonTitle: String,
-        webActionURL: String? = nil,
+        webActionURL: String,
         bannerText: String? = nil,
         buttonText: String? = nil,
         discountText: String? = nil,
