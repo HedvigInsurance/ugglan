@@ -113,11 +113,6 @@ struct OnboardingMissingInfoScreen: View {
                     }
                     VStack(spacing: .padding8) {
                         hContinueButton { vm.advance(after: step) }
-                        if hasMissingInfo {
-                            hButton(.large, .secondary, content: .init(title: L10n.onboardingDoThisLaterButton)) {
-                                vm.advance(after: step)
-                            }
-                        }
                     }
                 }
             }
