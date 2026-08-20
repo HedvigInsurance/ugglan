@@ -419,6 +419,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_ANALYTICS_SUBTITLE" = "We use technical tools to see how you use the app, so we can make it better.\n\nProduct analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.";
 "ONBOARDING_ANALYTICS_TITLE" = "Help us make the app better";
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change these settings later";
+"ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Adding a payment method is required to keep your insurance active";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Add a payment method to activate your insurance";
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
@@ -617,7 +618,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Your insurance will be cancelled on %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Yes, cancel";
-"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Continue cancelling";
+"TERMINATION_FLOW_CONTINUE_CANCELLING" = "No thanks, continue";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Select date...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Termination date";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Since this insurance is not active yet it will be cancelled and removed today. You won’t be charged anything.";
@@ -684,6 +685,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION" = "OK";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "To be able to log in to your bank you need to have the XXX app installed.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "You do not have BankID on this device";
+"USER_ERROR_UW_GL_INVALID_STARTDATE_FOR_SAS" = "Invalid start date, must be on or before September 4th";
 "VOICEOVER_ACCEPTED" = "Is accepted";
 "VOICEOVER_ADD_INFORMATION" = "add information";
 "VOICEOVER_AUDIO_COUNTDOWN" = "Counting down";
