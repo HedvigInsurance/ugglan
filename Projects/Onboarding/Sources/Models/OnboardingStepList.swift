@@ -53,7 +53,6 @@ public enum OnboardingStepList {
             .welcome,
             .analyticsConsent,
             .phoneNumber(phoneNumber: contactInfo.phone),
-            .theme,
         ]
         let coInsuredContracts = contracts.filter(\.hasMissingCoInsured).map(OnboardingContract.init)
         if !coInsuredContracts.isEmpty {
@@ -78,6 +77,7 @@ public enum OnboardingStepList {
         if !isPaymentConnected {
             steps.append(.connectPayment(isConnected: false))
         }
+        steps.append(.theme)
         if !crossSells.isEmpty {
             steps.append(.crossSell(crossSells))
         }
