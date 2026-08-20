@@ -71,6 +71,7 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var router = NavigationRouter()
+    public let quickActionsVm = QuickActionsViewModel()
 
     @Published public var claimsAutomationStartInput: StartClaimInput?
     @Published public var isAddonPresented: ChangeAddonInput?
@@ -83,7 +84,6 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var openChatOptions: DetentPresentationOption = []
 
     public struct NavBarItems {
-        public var isFirstVetPresented = false
         public var isNewOfferPresentedModal: CrossSells?
         public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?

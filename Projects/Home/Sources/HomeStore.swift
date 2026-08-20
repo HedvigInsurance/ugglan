@@ -41,6 +41,7 @@ public final class HomeStore: AppStore {
     @Published public private(set) var contracts: [HomeContract] = []
     @Published public private(set) var importantMessages: [ImportantMessage] = []
     @Published public private(set) var quickActions: [QuickAction] = []
+    @Published public private(set) var homeQuickActions: [QuickAction] = []
     @Published public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
     @Published public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
     @Published public private(set) var showChatNotification: Bool = false
@@ -107,7 +108,9 @@ public final class HomeStore: AppStore {
     public func fetchQuickActions() async {
         isFetchingQuickActions = true
         do {
-            quickActions = try await homeService.getQuickActions()
+            let actions = try await homeService.getQuickActions()
+            quickActions = actions
+            homeQuickActions = actions.filter({ $0 != .connectPayments })
             fetchQuickActionsError = nil
             updateToolbarTypes()
         } catch {
