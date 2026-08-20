@@ -33,6 +33,7 @@ struct OnboardingPhoneScreen: View {
                                             animateDigits.removeFirst()
                                         }
                                     }
+                                    .accessibilityAddTraits(.isButton)
                             }
                         }
                     }
