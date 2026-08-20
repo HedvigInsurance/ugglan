@@ -133,7 +133,7 @@ struct StepProgressBarView: ViewModifier {
                         Task { @MainActor in
                             await delay(TimeInterval(i) * 0.2 + 0.1)
                             UIView.animate(.bouncy) {
-                                viewToAdd.transform = .init(scaleX: 1.1, y: 1.8)
+                                viewToAdd.transform = .init(scaleX: 1.1, y: 1.3)
                             }
                             await delay(0.4)
                             UIView.animate(.bouncy) {
@@ -166,7 +166,7 @@ struct StepProgressBarView: ViewModifier {
         let navBar = navigationController.navigationBar
 
         let stackView = UIStackView()
-        stackView.spacing = 10
+        stackView.spacing = 4
         stackView.distribution = .fillEqually
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -189,7 +189,7 @@ struct StepProgressBarView: ViewModifier {
             stackView.leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor, constant: 80),
             stackView.trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -80),
             stackView.centerYAnchor.constraint(equalTo: layoutGuide.centerYAnchor),
-            stackView.heightAnchor.constraint(equalToConstant: 3),
+            stackView.heightAnchor.constraint(equalToConstant: 4),
         ])
         stackView.backgroundColor = .clear
         self.stackView = stackView
