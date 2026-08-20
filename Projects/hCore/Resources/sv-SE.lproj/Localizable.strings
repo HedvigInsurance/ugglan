@@ -419,6 +419,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_ANALYTICS_SUBTITLE" = "Vi använder tekniska verktyg för att se hur du använder appen, så att vi kan göra den bättre.\n\nProduktanalys är helt frivilligt och kan när som helst stängas av i inställningarna. Denna data används aldrig för marknadsföring.";
 "ONBOARDING_ANALYTICS_TITLE" = "Hjälp oss göra appen bättre";
 "ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "Du kan ändra inställningarna senare";
+"ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Lägg till ett betalsätt för att aktivera din försäkring";
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
@@ -617,7 +618,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Din försäkring kommer att avslutas den %@";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Ja, avsluta";
-"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Fortsätt avbryta";
+"TERMINATION_FLOW_CONTINUE_CANCELLING" = "Nej tack, fortsätt";
 "TERMINATION_FLOW_DATE_FIELD_PLACEHOLDER" = "Välj datum...";
 "TERMINATION_FLOW_DATE_FIELD_TEXT" = "Slutdatum";
 "TERMINATION_FLOW_DELETION_INFO_CARD" = "Eftersom försäkringen inte är aktiv än så kommer den avslutas direkt. Du kommer inte att debiteras någonting.";
@@ -684,6 +685,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_ACTION" = "OK";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_MESSAGE" = "För att kunna logga in på din bank så behöver du ha BankID-appen installerad.";
 "TRUSTLY_MISSING_BANK_ID_APP_ALERT_TITLE" = "Du saknar BankID på denna enheten";
+"USER_ERROR_UW_GL_INVALID_STARTDATE_FOR_SAS" = "Ogiltigt startdatum, måste vara den 4 september eller tidigare";
 "VOICEOVER_ACCEPTED" = "Är accepterad";
 "VOICEOVER_ADD_INFORMATION" = "lägga till information";
 "VOICEOVER_AUDIO_COUNTDOWN" = "Räknar ner";
