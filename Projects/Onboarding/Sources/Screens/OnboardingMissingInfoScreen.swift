@@ -68,8 +68,7 @@ struct OnboardingMissingInfoScreen: View {
                     ContractInformation(
                         title: onboardingContract.contract.currentAgreement?.productVariant.displayName,
                         subtitle: onboardingContract.getSubtitle(),
-                        pillowImage: onboardingContract.contract.pillowType?.bgImage,
-                        size: .small
+                        pillowImage: onboardingContract.contract.pillowType?.bgImage
                     )
                 }
                 .horizontalPadding(.padding12)
