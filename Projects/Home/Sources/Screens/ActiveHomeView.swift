@@ -83,7 +83,7 @@ struct ActiveHomeView: View {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
-            HomeQuickActionsSection(quickActions: homeStore.quickActions)
+            HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
