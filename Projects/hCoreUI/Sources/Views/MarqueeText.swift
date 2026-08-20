@@ -15,7 +15,6 @@ public struct MarqueeText: View {
     public var body: some View {
         let stringWidth = text.widthOfString(usingFont: font)
         let stringHeight = text.heightOfString(usingFont: font)
-        let nullAnimation = Animation.linear(duration: 0)
 
         return ZStack {
             GeometryReader { geo in
@@ -24,33 +23,32 @@ public struct MarqueeText: View {
                         Text(text)
                             .lineLimit(1)
                             .font(.init(font))
-                            .offset(x: 0)
-                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0)  //
-                            .animation(
-                                animate
-                                    ? Animation
-                                        .easeInOut(duration: 1 + Double(stringWidth - geo.size.width) / 50)
-                                        .delay(startDelay)
-                                        .repeatForever(autoreverses: true)
-                                    : nullAnimation,
-                                value: animate
-                            )
-                            .onAppear {
-                                DispatchQueue.main.async {
-                                    animate = geo.size.width < stringWidth
-                                }
-                            }
+                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0)
                             .fixedSize(horizontal: true, vertical: false)
+                            // Pin the text to exactly one line so a layout pass can never
+                            // give it vertical room to drift or wrap into.
+                            .frame(height: stringHeight, alignment: .leading)
                             .frame(
                                 minWidth: 0,
                                 maxWidth: .infinity,
-                                minHeight: 0,
-                                maxHeight: .infinity,
                                 alignment: .topLeading
                             )
+                            .onAppear {
+                                DispatchQueue.main.async {
+                                    updateAnimation(
+                                        shouldAnimate: geo.size.width < stringWidth,
+                                        stringWidth: stringWidth,
+                                        containerWidth: geo.size.width
+                                    )
+                                }
+                            }
                     }
                     .onChange(of: text) { _ in
-                        animate = geo.size.width < stringWidth
+                        updateAnimation(
+                            shouldAnimate: geo.size.width < stringWidth,
+                            stringWidth: stringWidth,
+                            containerWidth: geo.size.width
+                        )
                     }
 
                     .offset(x: leftFade)
@@ -86,8 +84,13 @@ public struct MarqueeText: View {
                 } else {
                     Text(text)
                         .font(.init(font))
+                        .lineLimit(1)
                         .onChange(of: text) { _ in
-                            animate = geo.size.width < stringWidth
+                            updateAnimation(
+                                shouldAnimate: geo.size.width < stringWidth,
+                                stringWidth: stringWidth,
+                                containerWidth: geo.size.width
+                            )
                         }
                         .frame(
                             minWidth: 0,
@@ -100,8 +103,29 @@ public struct MarqueeText: View {
             }
         }
         .frame(height: stringHeight)
+        // Guard against any vertical overflow ever showing as a top/bottom drift.
+        .clipped()
         .frame(maxWidth: isCompact ? stringWidth : nil)
         .onDisappear { animate = false }
+    }
+
+    /// Drives the marquee by animating only the horizontal `offset`. Using an explicit
+    /// `withAnimation` (instead of an implicit `.animation(_:value:)` on the whole subtree)
+    /// keeps the repeating animation from ever capturing a vertical layout change and
+    /// scrolling the text top-to-bottom.
+    private func updateAnimation(shouldAnimate: Bool, stringWidth: CGFloat, containerWidth: CGFloat) {
+        guard shouldAnimate else {
+            animate = false
+            return
+        }
+        animate = false
+        withAnimation(
+            .easeInOut(duration: 1.5 + Double(stringWidth - containerWidth) / 40)
+                .delay(startDelay)
+                .repeatForever(autoreverses: true)
+        ) {
+            animate = true
+        }
     }
 
     public init(
@@ -117,7 +141,7 @@ public struct MarqueeText: View {
         self.leftFade = leftFade
         self.rightFade = rightFade
         self.startDelay = startDelay
-        self.alignment = alignment != nil ? alignment! : .topLeading
+        self.alignment = alignment ?? .topLeading
     }
 }
 
