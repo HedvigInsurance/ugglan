@@ -24,6 +24,12 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
         if let addedInfo {
             return [contract.exposureDisplayNameShort, addedInfo].displayName
         }
+        if contract.supportsCoInsured {
+            return L10n.onboardingNumberOfCoinsured(contract.coInsured.count)
+        }
+        if contract.supportsCoOwners {
+            return L10n.onboardingNumberOfCoowners(contract.coOwners.count)
+        }
         return contract.exposureDisplayNameShort
     }
 
