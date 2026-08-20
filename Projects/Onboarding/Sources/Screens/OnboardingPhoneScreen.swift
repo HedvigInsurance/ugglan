@@ -3,44 +3,51 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct OnboardingPhoneScreen: View {
+struct OnboardingPhoneScreen: View, KeyboardReadable {
     let phoneNumber: String
     @EnvironmentObject var vm: OnboardingNavigationViewModel
     @StateObject private var phoneVm = OnboardingPhoneViewModel()
     let digits = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["*", "0", "#"]]
     @State private var animateDigits: [String] = []
+    @State private var keyboardVisible = false
     var body: some View {
         hForm {
-            hSection {
-                VStack(spacing: .padding8) {
-                    ForEach(digits, id: \.self) { row in
-                        HStack(spacing: .padding10) {
-                            ForEach(row, id: \.self) { digit in
-                                hText(digit)
-                                    .frame(width: 36, height: 36)
-                                    .background(getColor(for: digit))
-                                    .cornerRadius(.padding12)
-                                    .scaleEffect(animateDigits.contains(digit) ? 1.25 : 1)
-                                    .animation(.defaultSpring, value: animateDigits.contains(digit))
-                                    .onTapGesture {
-                                        if Int(digit) != nil {
-                                            phoneVm.phone.append(digit)
+            if !keyboardVisible {
+                hSection {
+                    VStack(spacing: .padding8) {
+                        ForEach(digits, id: \.self) { row in
+                            HStack(spacing: .padding10) {
+                                ForEach(row, id: \.self) { digit in
+                                    hText(digit)
+                                        .frame(width: 44, height: 44)
+                                        .background(getColor(for: digit))
+                                        .cornerRadius(.padding12)
+                                        .scaleEffect(animateDigits.contains(digit) ? 1.25 : 1)
+                                        .animation(.defaultSpring, value: animateDigits.contains(digit))
+                                        .onTapGesture {
+                                            if Int(digit) != nil {
+                                                phoneVm.phone.append(digit)
+                                            }
+                                            ImpactGenerator.soft()
+                                            animateDigits.append(digit)
+                                            Task {
+                                                await delay(0.2)
+                                                animateDigits.removeFirst()
+                                            }
                                         }
-                                        ImpactGenerator.soft()
-                                        animateDigits.append(digit)
-                                        Task {
-                                            await delay(0.2)
-                                            animateDigits.removeFirst()
-                                        }
-                                    }
-                                    .accessibilityAddTraits(.isButton)
+                                        .accessibilityAddTraits(.isButton)
+                                        .accessibilityHidden(true)
+                                }
                             }
                         }
                     }
+                    .padding(.vertical, .padding16)
                 }
+                .sectionContainerStyle(.transparent)
+                .transition(.opacity)
             }
-            .sectionContainerStyle(.transparent)
         }
+        .hSetScrollBounce(to: true)
         .hFormTitle(
             title: .init(.small, .body1, L10n.onboardingPhoneTitle, alignment: .leading),
             subTitle: .init(
@@ -80,6 +87,10 @@ struct OnboardingPhoneScreen: View {
         }
         .disabled(phoneVm.isLoading)
         .onAppear { phoneVm.prefill(phone: phoneNumber) }
+        .onReceive(keyboardPublisher) { keyboardHeight in
+            withAnimation(.spring) { keyboardVisible = keyboardHeight != nil }
+        }
+        .dismissKeyboard()
     }
 
     @hColorBuilder

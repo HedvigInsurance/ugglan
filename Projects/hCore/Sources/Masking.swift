@@ -64,7 +64,7 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .phoneNumber:
-            let phoneRegEx = "^\\+?[0-9]{7,15}$"
+            let phoneRegEx = "^\\+?[0-9]{6,15}$"
             let phonePredicate = NSPredicate(format: "SELF MATCHES %@", phoneRegEx)
             return phonePredicate.evaluate(with: text)
         case .euroBonus: return text.count > 3
