@@ -938,7 +938,14 @@ class LoggedInNavigationViewModel: ObservableObject {
                     let nav = self?.tabBar?.selectedViewController?.children
                         .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
                 {
-                    nav.popToRootViewController(animated: true)
+                    if nav.viewControllers.count == 1 {
+                        if let scrollView = nav.viewControllers.first?.view.firstScrollView() {
+                            let topOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
+                            scrollView.setContentOffset(topOffset, animated: true)
+                        }
+                    } else {
+                        nav.popToRootViewController(animated: true)
+                    }
                 }
             }
             .store(in: &cancellables)
@@ -1184,5 +1191,23 @@ class LoggedInNavigationViewModel: ObservableObject {
 extension HomeTab: TrackingViewNameProtocol {
     var nameForTracking: String {
         String(describing: HomeScreen.self)
+    }
+}
+
+extension UIView {
+    /// Recursively finds the first `UIScrollView` in the view hierarchy (breadth-first).
+    fileprivate func firstScrollView() -> UIScrollView? {
+        if let scrollView = self as? UIScrollView {
+            return scrollView
+        }
+        var queue = subviews
+        while !queue.isEmpty {
+            let view = queue.removeFirst()
+            if let scrollView = view as? UIScrollView {
+                return scrollView
+            }
+            queue.append(contentsOf: view.subviews)
+        }
+        return nil
     }
 }
