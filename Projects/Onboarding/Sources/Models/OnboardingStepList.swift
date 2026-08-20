@@ -42,6 +42,7 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
 }
 
 public enum OnboardingStepList {
+    @MainActor
     public static func compute(
         contracts: [Contracts.Contract],
         isPaymentConnected: Bool,
@@ -50,10 +51,13 @@ public enum OnboardingStepList {
         foreverData: ForeverData? = nil
     ) -> [OnboardingStep] {
         var steps: [OnboardingStep] = [
-            .welcome,
-            .analyticsConsent,
-            .phoneNumber(phoneNumber: contactInfo.phone),
+            .welcome
         ]
+        if Dependencies.featureFlags().isAnalyticsEnabled {
+            steps.append(.analyticsConsent)
+        }
+        steps.append(.phoneNumber(phoneNumber: contactInfo.phone))
+
         let coInsuredContracts = contracts.filter(\.hasMissingCoInsured).map(OnboardingContract.init)
         if !coInsuredContracts.isEmpty {
             steps.append(.coInsured(contracts: coInsuredContracts))

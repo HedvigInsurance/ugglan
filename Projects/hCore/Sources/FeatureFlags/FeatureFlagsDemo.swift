@@ -21,7 +21,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
-            isTerminationRedirectionEnabled: false
+            isTerminationRedirectionEnabled: false,
+            isAnalyticsEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -38,7 +39,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
-            isTerminationRedirectionEnabled: false
+            isTerminationRedirectionEnabled: false,
+            isAnalyticsEnabled: false
         )
         featureDataPublisher.send(data)
     }

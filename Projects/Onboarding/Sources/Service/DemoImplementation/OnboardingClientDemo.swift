@@ -9,7 +9,7 @@ public class OnboardingClientDemo: OnboardingClient {
 
     public func getOnboardingSteps() async throws -> [OnboardingStep] {
         await delay(1)
-        return OnboardingClientDemo.getSteps()
+        return await OnboardingClientDemo.getSteps()
     }
 
     public func updateContactInfo(phone: String) async throws {}
