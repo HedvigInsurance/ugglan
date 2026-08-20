@@ -451,6 +451,7 @@ extension CGFloat {
     public static var cornerRadiusL: CGFloat = 12
     public static var cornerRadiusXL: CGFloat = 16
     public static var cornerRadiusXXL: CGFloat = 24
+    public static var cornerRadiusXXXL: CGFloat = 32
 }
 
 extension CGFloat {
