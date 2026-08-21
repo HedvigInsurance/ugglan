@@ -152,12 +152,16 @@ class AddMissingPetChipIdViewModel: ObservableObject {
 
         Task {
             do {
+                let petChipId = petChipIdMasking.unmaskedValue(text: petChipId)
                 try await service.addMissing(
-                    petChipId: petChipIdMasking.unmaskedValue(text: petChipId),
+                    petChipId: petChipId,
                     for: contract.id
                 )
                 await contractStore.fetchContracts()
-                NotificationCenter.default.post(name: .petChipIdAdded, object: nil)
+                NotificationCenter.default.post(
+                    name: .petChipIdAdded,
+                    object: PetIdAddedModel(contractId: contract.id, chipId: petChipId)
+                )
                 Toasts.success()
                 dismiss()
             } catch let error as PetChipIdError {
@@ -176,5 +180,15 @@ class AddMissingPetChipIdViewModel: ObservableObject {
 
     func dismiss() {
         router.dismiss()
+    }
+}
+
+public struct PetIdAddedModel {
+    public let contractId: String
+    public let chipId: String
+
+    public init(contractId: String, chipId: String) {
+        self.contractId = contractId
+        self.chipId = chipId
     }
 }

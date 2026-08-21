@@ -50,6 +50,12 @@ public struct hRow<Content: View, Accessory: View>: View {
         return new
     }
 
+    public func horizontalPadding(_ newPadding: CGFloat) -> Self {
+        var new = self
+        new.horizontalPadding = newPadding
+        return new
+    }
+
     public func verticalPadding(_ newPadding: CGFloat) -> Self {
         var new = self
         new.verticalPadding = newPadding

@@ -132,7 +132,7 @@ extension InformationScreen {
         return [
             LegalItem(
                 title: L10n.legalPrivacyPolicy,
-                url: baseURL.appendingPathComponent("\(webPath)/hedvig/\(locale.privacyPolicyPath)")
+                url: locale.privacyPolicyURL
             ),
             LegalItem(
                 title: L10n.legalInformation,
@@ -183,13 +183,6 @@ private struct AppInfoItem {
 }
 
 extension Localization.Locale {
-    fileprivate var privacyPolicyPath: String {
-        switch self {
-        case .sv_SE: return "personuppgifter"
-        case .en_SE: return "privacy-policy"
-        }
-    }
-
     fileprivate var accessibilityPath: String {
         switch self {
         case .sv_SE: return "hjalp/tillganglighet"

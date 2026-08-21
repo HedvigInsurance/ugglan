@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public protocol ProfileClient {
+public protocol ProfileClient: Sendable {
     func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool
@@ -10,6 +10,7 @@ public protocol ProfileClient {
     func updateLanguage() async throws
     func postDeleteRequest() async throws
     func update(email: String, phone: String) async throws -> (email: String, phone: String)
+    func update(phone: String) async throws
     func update(eurobonus: String) async throws -> PartnerData
     func updateSubscriptionPreference(to subscribed: Bool) async throws
 }

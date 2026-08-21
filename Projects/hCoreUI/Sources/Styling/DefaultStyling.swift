@@ -442,15 +442,15 @@ public struct DefaultStyling {
 
 final class ListTableView: UITableView {}
 
-@MainActor
 extension CGFloat {
-    public static var cornerRadiusXXXS: CGFloat = 2
-    public static var cornerRadiusXS: CGFloat = 6
-    public static var cornerRadiusS: CGFloat = 8
-    public static var cornerRadiusM: CGFloat = 10
-    public static var cornerRadiusL: CGFloat = 12
-    public static var cornerRadiusXL: CGFloat = 16
-    public static var cornerRadiusXXL: CGFloat = 24
+    public static let cornerRadiusXXXS: CGFloat = 2
+    public static let cornerRadiusXS: CGFloat = 6
+    public static let cornerRadiusS: CGFloat = 8
+    public static let cornerRadiusM: CGFloat = 10
+    public static let cornerRadiusL: CGFloat = 12
+    public static let cornerRadiusXL: CGFloat = 16
+    public static let cornerRadiusXXL: CGFloat = 24
+    public static let cornerRadiusRounded: CGFloat = 999
 }
 
 extension CGFloat {

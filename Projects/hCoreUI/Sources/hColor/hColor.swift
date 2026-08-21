@@ -42,7 +42,7 @@ public struct ShapeEnvironmentRedraw<Content: View>: View {
 
 @MainActor
 extension Shape {
-    public func fill<S>(_ content: S, style _: FillStyle = FillStyle()) -> some View where S: hColor {
+    public func fill(_ content: any hColor, style _: FillStyle = FillStyle()) -> some View {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
             self.fill(content.colorFor(colorScheme, userInterfaceLevel).color)
         }

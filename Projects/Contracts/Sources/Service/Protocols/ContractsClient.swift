@@ -2,7 +2,7 @@ import Addons
 import Foundation
 
 @MainActor
-public protocol FetchContractsClient {
+public protocol FetchContractsClient: Sendable {
     func getContracts() async throws -> ContractsStack
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }

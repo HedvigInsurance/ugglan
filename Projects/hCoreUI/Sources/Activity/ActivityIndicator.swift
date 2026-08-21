@@ -87,15 +87,18 @@ public struct WordmarkActivityIndicator: View {
 public struct DotsActivityIndicator: View {
     @State var animate: Bool = false
     var size: Size
+    var animated: Bool
     public enum Size {
         case standard
         case small
     }
 
     public init(
-        _ size: Size
+        _ size: Size,
+        animated: Bool = true
     ) {
         self.size = size
+        self.animated = animated
     }
 
     var dotSize: CGFloat {
@@ -109,11 +112,11 @@ public struct DotsActivityIndicator: View {
 
     public var body: some View {
         HStack(alignment: .center, spacing: 0) {
-            PulsingCircle(index: 0).frame(width: dotSize, height: dotSize)
+            PulsingCircle(index: 0, animated: animated).frame(width: dotSize, height: dotSize)
             Color.clear.frame(width: dotSize)
-            PulsingCircle(index: 1).frame(width: dotSize, height: dotSize)
+            PulsingCircle(index: 1, animated: animated).frame(width: dotSize, height: dotSize)
             Color.clear.frame(width: dotSize)
-            PulsingCircle(index: 2).frame(width: dotSize, height: dotSize)
+            PulsingCircle(index: 2, animated: animated).frame(width: dotSize, height: dotSize)
         }
         .onAppear {
             animate = true
@@ -129,6 +132,7 @@ private struct PulsingCircle: View {
     let totalNumber: CGFloat = 3
     let duration: CGFloat = 0.5
     let index: CGFloat
+    let animated: Bool
     @State var animate: Bool = false
 
     public var body: some View {
@@ -136,7 +140,9 @@ private struct PulsingCircle: View {
             .fill(getFillColor)
             .opacity(animate ? 0.4 : 1)
             .onAppear {
-                setAnimation()
+                if animated {
+                    setAnimation()
+                }
             }
     }
 

@@ -15,6 +15,7 @@ import Foundation
 import Home
 import InsuranceEvidence
 import MoveFlow
+import Onboarding
 import Payment
 import Profile
 import SubmitClaimChat
@@ -46,6 +47,7 @@ enum DI {
             let profileDemoService = ProfileClientDemo()
             let homeServiceDemo = HomeClientDemo()
             let analyticsService = AnalyticsClientDemo()
+            let eventTrackingClient = EventTrackingClientDemo()
             let notificationClient = NotificationClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let changeTierClient = ChangeTierClientDemo()
@@ -55,6 +57,7 @@ enum DI {
             let campaignClient = hCampaignClientDemo()
             let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
             let petChipIdClient = PetChipIdClientDemo()
+            let onboardingClient = OnboardingClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -65,6 +68,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> ProfileClient in profileDemoService })
             Dependencies.shared.add(module: Module { () -> HomeClient in homeServiceDemo })
             Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
+            Dependencies.shared.add(module: Module { () -> EventTrackingClient in eventTrackingClient })
             Dependencies.shared.add(module: Module { () -> NotificationClient in notificationClient })
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
@@ -75,6 +79,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> hCampaignClient in campaignClient })
             Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
             Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
+            Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -95,6 +100,7 @@ enum DI {
             let travelInsuranceService = TravelInsuranceClientOctopus()
             let featureFlagsClientUnleash = FeatureFlagsUnleash(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
+            let eventTrackingClient = EventTrackingClientFirebase()
             let notificationService = NotificationClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
@@ -105,6 +111,7 @@ enum DI {
             let insuranceEvidenceClient = InsuranceEvidenceClientOctopus()
             let claimIntentClient = ClaimIntentClientOctopus()
             let petChipIdClient = PetChipIdClientOctopus()
+            let onboardingClient = OnboardingClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
@@ -122,6 +129,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
+                Dependencies.shared.add(module: Module { () -> EventTrackingClient in eventTrackingClient })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
@@ -134,6 +142,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
+                Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -150,6 +159,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> HomeClient in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
+                Dependencies.shared.add(module: Module { () -> EventTrackingClient in eventTrackingClient })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
@@ -162,6 +172,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
+                Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
             }
         }
     }

@@ -72,7 +72,6 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         }
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
-            isConnectPaymentEnabled: unleashClient.getVariant(name: "payment_type").name == "trustly",
             isSubmitClaimEnabled: true,
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),
             emailPreferencesEnabled: true,
@@ -85,7 +84,9 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             ),
             isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide"),
             isResumeClaimEnabled: unleashClient.isEnabled(name: "enable_claim_intent_resume"),
-            isTerminationRedirectionEnabled: !unleashClient.isEnabled(name: "disable_termination_redirection")
+            isOnboardingEnabled: !unleashClient.isEnabled(name: "disable_onboarding"),
+            isTerminationRedirectionEnabled: !unleashClient.isEnabled(name: "disable_termination_redirection"),
+            isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics")
         )
         featureDataPublisher.send(data)
     }

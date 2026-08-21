@@ -1,0 +1,151 @@
+import Profile
+import SwiftUI
+import hCore
+import hCoreUI
+
+struct OnboardingPhoneScreen: View, KeyboardReadable {
+    let phoneNumber: String
+    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @StateObject private var phoneVm = OnboardingPhoneViewModel()
+    let digits = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["*", "0", "#"]]
+    @State private var animateDigits: [String] = []
+    @State private var keyboardVisible = false
+    var body: some View {
+        hForm {
+            if !keyboardVisible {
+                hSection {
+                    VStack(spacing: .padding8) {
+                        ForEach(digits, id: \.self) { row in
+                            HStack(spacing: .padding10) {
+                                ForEach(row, id: \.self) { digit in
+                                    hText(digit)
+                                        .frame(width: 44, height: 44)
+                                        .background(getColor(for: digit))
+                                        .cornerRadius(.padding12)
+                                        .scaleEffect(animateDigits.contains(digit) ? 1.25 : 1)
+                                        .animation(.defaultSpring, value: animateDigits.contains(digit))
+                                        .onTapGesture {
+                                            if Int(digit) != nil {
+                                                phoneVm.phone.append(digit)
+                                            }
+                                            ImpactGenerator.soft()
+                                            animateDigits.append(digit)
+                                            Task {
+                                                await delay(0.2)
+                                                animateDigits.removeFirst()
+                                            }
+                                        }
+                                        .accessibilityAddTraits(.isButton)
+                                        .accessibilityHidden(true)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, .padding16)
+                }
+                .sectionContainerStyle(.transparent)
+                .transition(.opacity)
+            }
+        }
+        .hSetScrollBounce(to: true)
+        .hFormTitle(
+            title: .init(.small, .body1, L10n.onboardingPhoneTitle, alignment: .leading),
+            subTitle: .init(
+                .small,
+                .body1,
+                L10n.onboardingPhoneSubtitle,
+                alignment: .leading
+            )
+        )
+        .hFormContentPosition(.center)
+        .hFormAttachToBottom {
+            hSection {
+                VStack(spacing: .padding8) {
+                    hFloatingTextField(
+                        masking: phoneVm.masking,
+                        value: $phoneVm.phone,
+                        equals: $phoneVm.focus,
+                        focusValue: .phone,
+                        placeholder: L10n.phoneNumberRowTitle,
+                        error: $phoneVm.error
+                    )
+
+                    hSaveButton(.primary) {
+                        if await phoneVm.save() {
+                            UIApplication.dismissKeyboard()
+                            vm.advance(after: .phoneNumber(phoneNumber: phoneNumber))
+                        }
+                    }
+                    .hButtonIsLoading(phoneVm.isLoading)
+                    hButton(.large, .ghost, content: .init(title: L10n.onboardingDoThisLaterButton)) {
+                        UIApplication.dismissKeyboard()
+                        vm.advance(after: .phoneNumber(phoneNumber: phoneNumber))
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .disabled(phoneVm.isLoading)
+        .onAppear { phoneVm.prefill(phone: phoneNumber) }
+        .onReceive(keyboardPublisher) { keyboardHeight in
+            withAnimation(.spring) { keyboardVisible = keyboardHeight != nil }
+        }
+        .dismissKeyboard()
+    }
+
+    @hColorBuilder
+    private func getColor(for digit: String) -> some hColor {
+        if animateDigits.contains(digit) {
+            hSignalColor.Green.fill
+        } else {
+            hSurfaceColor.Translucent.secondary
+        }
+    }
+}
+
+private enum OnboardingPhoneField: hTextFieldFocusStateCompliant {
+    case phone
+    static let last: OnboardingPhoneField = .phone
+    var next: OnboardingPhoneField? { nil }
+}
+
+@MainActor
+class OnboardingPhoneViewModel: ObservableObject {
+    private let service = OnboardingService()
+    @Published var phone = ""
+    @Published var isLoading = false
+    @Published var error: String?
+    let masking = Masking(type: .phoneNumber)
+    @Published fileprivate var focus: OnboardingPhoneField?
+
+    // NOTE: contact info arrives via the `.phoneNumber` step's payload (fetched once in
+    // getOnboardingSteps); updateContactInfo takes phone and the screen passes
+    func prefill(phone: String) {
+        if self.phone.isEmpty { self.phone = phone }
+    }
+
+    func save() async -> Bool {
+        withAnimation {
+            isLoading = true; error = nil
+        }
+        defer { withAnimation { isLoading = false } }
+        do {
+            if phone == "" {
+                throw MyInfoSaveError.phoneNumberEmpty
+            }
+            if !Masking(type: .phoneNumber).isValid(text: phone) {
+                throw MyInfoSaveError.phoneNumberMalformed
+            }
+            try await service.updateContactInfo(phone: phone)
+            return true
+        } catch {
+            self.error = error.localizedDescription
+            return false
+        }
+    }
+}
+
+#Preview {
+    OnboardingPhoneScreen(phoneNumber: "0735328847")
+        .environmentObject(OnboardingNavigationViewModel())
+}
