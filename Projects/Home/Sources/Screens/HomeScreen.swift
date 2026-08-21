@@ -91,6 +91,7 @@ extension HomeScreen {
                 }
             }
         }
+        .animation(.spring(), value: vm.memberContractState)
     }
 
     @ViewBuilder

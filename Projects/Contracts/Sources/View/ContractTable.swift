@@ -9,6 +9,7 @@ import hCoreUI
 
 struct ContractTable: View {
     @AppObservedObject var store: ContractStore
+    @AppObservedObject var crossSellStore: CrossSellStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
     @State var bottomContentHeights: [String: CGFloat] = [:]
@@ -65,9 +66,7 @@ struct ContractTable: View {
                     VStack(spacing: .padding8) {
                         CrossSellingView(withHeader: true)
                             .padding(.top, .padding8)
-
                         addonBannersView
-
                         movingToANewHomeView
                         if !(store.terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
@@ -105,6 +104,8 @@ struct ContractTable: View {
                         }
                     }
                     .animation(.spring(), value: store.terminatedContracts)
+                    .animation(.spring(), value: crossSellStore.crossSells)
+                    .animation(.spring(), value: vm.addonBanners)
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: isExpanded)

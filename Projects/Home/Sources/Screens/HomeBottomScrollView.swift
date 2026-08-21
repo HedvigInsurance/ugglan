@@ -48,6 +48,7 @@ struct HomeBottomScrollView: View {
                 }
             }
         )
+        .animation(.spring(), value: vm.items)
     }
 }
 

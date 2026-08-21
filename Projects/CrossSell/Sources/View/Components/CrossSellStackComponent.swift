@@ -24,7 +24,7 @@ public struct CrossSellStackComponent: View {
             VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
                     CrossSellingItem(crossSell: crossSell, discountAvailable: discountAvailable)
-                        .transition(.slide)
+                        .transition(.opacity)
                 }
             }
         }
@@ -36,7 +36,7 @@ public struct CrossSellStackComponent: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .transition(.slide)
+        .transition(.opacity)
     }
 }
 
