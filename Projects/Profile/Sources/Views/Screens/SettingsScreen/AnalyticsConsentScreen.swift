@@ -6,27 +6,22 @@ public struct AnalyticsConsentScreen: View {
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var consentGiven: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var handlingConsent = false
-    private let showsGraphic: Bool
     private let onConsentSelected: @MainActor (_ given: Bool) async -> Void
 
     public init(
-        showsGraphic: Bool = false,
         onConsentSelected: @escaping @MainActor (_ given: Bool) async -> Void
     ) {
-        self.showsGraphic = showsGraphic
         self.onConsentSelected = onConsentSelected
     }
 
     public var body: some View {
         hForm {
-            if showsGraphic {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        graphic
-                    }
+            hSection {
+                VStack(spacing: .padding16) {
+                    graphic
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.center)
         .hFormTitle(
