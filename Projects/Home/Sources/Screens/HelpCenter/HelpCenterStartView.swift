@@ -319,11 +319,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 
     func updateColors() {
         let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
-        let hColor = hTextColor.Opaque.primary
-        let color = UIColor(
-            light: hColor.colorFor(.light, .base).color.uiColor(),
-            dark: hColor.colorFor(.dark, .base).color.uiColor()
-        )
+        let color = hTextColor.Opaque.primary.uiColor()
         button?.setTitleColor(color, for: .normal)
     }
 }

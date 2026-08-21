@@ -108,14 +108,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     }
 
     private func setupShareButton() {
-        let color = UIColor { trait in
-            hTextColor.Opaque.primary
-                .colorFor(
-                    trait.userInterfaceStyle == .light ? .light : .dark,
-                    .base
-                )
-                .color.uiColor()
-        }
+        let color = hTextColor.Opaque.primary.uiColor()
         let image = UIImage(systemName: "square.and.arrow.up")?
             .withTintColor(color, renderingMode: .alwaysTemplate)
         let barButtonItem = UIBarButtonItem(

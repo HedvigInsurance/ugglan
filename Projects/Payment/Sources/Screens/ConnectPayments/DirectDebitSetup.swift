@@ -166,8 +166,7 @@ private class DirectDebitWebview: UIView {
 
         let debitResultHostingView = UIHostingController(rootView: directDebitResult)
         let backgroundView = UIView()
-        let scheme = traitCollection.userInterfaceStyle == .light ? ColorScheme.light : .dark
-        backgroundView.backgroundColor = hBackgroundColor.primary.colorFor(scheme, .base).color.uiColor()
+        backgroundView.backgroundColor = hBackgroundColor.primary.uiColor()
         addSubview(backgroundView)
         addSubview(debitResultHostingView.view)
 

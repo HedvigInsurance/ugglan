@@ -28,10 +28,7 @@ public struct hTextView: View {
         enabled: Bool = true,
         showOnAppear: Binding<Bool> = .constant(false),
         floatingPlaceholder: Bool = false,
-        color: UIColor = UIColor { trait in
-            let style = trait.userInterfaceStyle
-            return hSurfaceColor.Opaque.primary.colorFor(style == .dark ? .dark : .light, .base).color.uiColor()
-        },
+        color: UIColor = hSurfaceColor.Opaque.primary.uiColor(),
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue

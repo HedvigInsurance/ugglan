@@ -197,10 +197,7 @@ public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainA
     /// labels representing days (mon, tue...)
     @MainActor
     private func configure(sectionHeader: UIView) {
-        let daysColor = UIColor(
-            light: hTextColor.Opaque.tertiary.colorFor(.light, .base).color.uiColor(),
-            dark: hTextColor.Opaque.tertiary.colorFor(.dark, .base).color.uiColor()
-        )
+        let daysColor = hTextColor.Opaque.tertiary.uiColor()
         for subview in sectionHeader.subviews {
             if let subview = subview.subviews.first as? UILabel {
                 subview.textColor = daysColor
@@ -211,14 +208,8 @@ public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainA
     /// buttons for previous, next month
     @MainActor
     private func configure(header: UIView) {
-        let buttonsColor = UIColor(
-            light: hFillColor.Opaque.secondary.colorFor(.light, .base).color.uiColor(),
-            dark: hFillColor.Opaque.secondary.colorFor(.dark, .base).color.uiColor()
-        )
-        let textColor = UIColor(
-            light: hTextColor.Opaque.primary.colorFor(.light, .base).color.uiColor(),
-            dark: hTextColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
-        )
+        let buttonsColor = hFillColor.Opaque.secondary.uiColor()
+        let textColor = hTextColor.Opaque.primary.uiColor()
         let buttons = header.subviews.filter { $0.isKind(of: UIButton.self) }
         for button in buttons {
             if let button = button as? UIButton {

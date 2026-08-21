@@ -43,20 +43,14 @@ struct ProgressBarView: ViewModifier {
 
         let progress = UIProgressView(progressViewStyle: .default)
         progress.translatesAutoresizingMaskIntoConstraints = false
-        progress.progressTintColor = UIColor(
-            light: hFillColor.Opaque.primary.colorFor(.light, .base).color.uiColor(),
-            dark: hFillColor.Opaque.primary.colorFor(.dark, .base).color.uiColor()
-        )
+        progress.progressTintColor = hFillColor.Opaque.primary.uiColor()
         progress.trackTintColor = .clear
 
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundEffect = UIBlurEffect(style: .regular)
         DefaultStyling.applyCommonNavigationBarStyling(appearance)
-        appearance.shadowColor = UIColor(
-            light: hBorderColor.primary.colorFor(.light, .base).color.uiColor(),
-            dark: hBorderColor.primary.colorFor(.dark, .base).color.uiColor()
-        )
+        appearance.shadowColor = hBorderColor.primary.uiColor()
 
         navBar.standardAppearance = appearance
         navBar.scrollEdgeAppearance = appearance

@@ -306,13 +306,11 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     private var editingTextColor: UIColor {
-        let colorScheme: ColorScheme = traitCollection.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.Opaque.primary.colorFor(colorScheme, .base).color.uiColor()
+        hTextColor.Opaque.primary.uiColor()
     }
 
     private var placeholderTextColor: UIColor {
-        let colorScheme: ColorScheme = traitCollection.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
+        hTextColor.Opaque.secondary.uiColor()
     }
 
     override func paste(_ sender: Any?) {
