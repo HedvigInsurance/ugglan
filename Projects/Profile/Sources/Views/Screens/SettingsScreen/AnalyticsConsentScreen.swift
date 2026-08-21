@@ -8,7 +8,6 @@ public struct AnalyticsConsentScreen: View {
     @State private var handlingConsent = true
     private let showsGraphic: Bool
     private let onConsentSelected: @MainActor (_ given: Bool) async -> Void
-    private let privacyPolicyUrl = URL(string: "https://www.hedvig.com/se/personuppgifter")!
 
     public init(
         showsGraphic: Bool = false,
@@ -124,7 +123,7 @@ public struct AnalyticsConsentScreen: View {
         .frame(minHeight: 44)
         .contentShape(Rectangle())
         .onTapGesture {
-            UIApplication.shared.open(privacyPolicyUrl)
+            UIApplication.shared.open(Localization.Locale.currentLocale.value.privacyPolicyURL)
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
