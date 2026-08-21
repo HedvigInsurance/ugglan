@@ -61,9 +61,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%1$@ medförsäkrad</string>
+        <string>%li medförsäkrad</string>
         <key>other</key>
-        <string>%1$@ medförsäkrade</string>
+        <string>%li medförsäkrade</string>
       </dict>
     </dict>
     <key>ONBOARDING_NUMBER_OF_COOWNERS</key>
@@ -77,9 +77,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%1$@ delägare</string>
+        <string>%li delägare</string>
         <key>other</key>
-        <string>%1$@ delägare</string>
+        <string>%li delägare</string>
       </dict>
     </dict>
   </dict>

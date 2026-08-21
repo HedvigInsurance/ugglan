@@ -61,9 +61,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%1$@ co-insured</string>
+        <string>%li co-insured</string>
         <key>other</key>
-        <string>%1$@ co-insured</string>
+        <string>%li co-insured</string>
       </dict>
     </dict>
     <key>ONBOARDING_NUMBER_OF_COOWNERS</key>
@@ -77,9 +77,9 @@
         <key>NSStringFormatValueTypeKey</key>
         <string>li</string>
         <key>one</key>
-        <string>%1$@ co-owner</string>
+        <string>%li co-owner</string>
         <key>other</key>
-        <string>%1$@ co-owners</string>
+        <string>%li co-owners</string>
       </dict>
     </dict>
   </dict>

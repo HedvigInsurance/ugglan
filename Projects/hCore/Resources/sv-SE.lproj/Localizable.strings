@@ -337,7 +337,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_TITLE" = "Snabbval";
 "HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE" = "Reseintyg";
 "HC_QUICK_ACTIONS_TRAVEL_CERTIFICATE_SUBTITLE" = "Skaffa ett reseintyg för din resa";
-"HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE" = "Ändra din skyddssnivå och självrisk";
+"HC_QUICK_ACTIONS_UPGRADE_COVERAGE_SUBTITLE" = "Ändra din skyddsnivå och självrisk";
 "HC_QUICK_ACTIONS_UPGRADE_COVERAGE_TITLE" = "Ändra skydd";
 "HC_RELATED_QUESTIONS_TITLE" = "";
 "HC_TITLE" = "Hjälp och support";
@@ -425,10 +425,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Fortsätt till appen";
-"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15 % paketrabatt när du har två eller fler försäkringar hos oss";
-"ONBOARDING_CROSS_SELL_TITLE" = "Få paketrabatt";
+"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% samlingsrabatt när du har två eller fler försäkringar för hem, bil eller djur";
+"ONBOARDING_CROSS_SELL_TITLE" = "Få samlingsrabatt";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Gör det senare";
-"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "Med Hedvig Forever får du %1$@ rabatt för varje vän du bjuder in.";
+"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "Med Hedvig Forever får du %1$@ rabatt för varje vän du bjuder in";
 "ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK" = "Med Hedvig Forever får du rabatt för varje vän du bjuder in.";
 "ONBOARDING_INVITE_FRIEND_TITLE" = "Bjud in en vän";
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "Det gör det lättare att hjälpa dig om något händer";
