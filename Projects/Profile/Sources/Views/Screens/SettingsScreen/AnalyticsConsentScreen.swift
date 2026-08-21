@@ -5,28 +5,23 @@ import hCoreUI
 public struct AnalyticsConsentScreen: View {
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var consentGiven: Bool?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var handlingConsent = true
-    private let showsGraphic: Bool
+    @State private var handlingConsent = false
     private let onConsentSelected: @MainActor (_ given: Bool) async -> Void
 
     public init(
-        showsGraphic: Bool = false,
         onConsentSelected: @escaping @MainActor (_ given: Bool) async -> Void
     ) {
-        self.showsGraphic = showsGraphic
         self.onConsentSelected = onConsentSelected
     }
 
     public var body: some View {
         hForm {
-            if showsGraphic {
-                hSection {
-                    VStack(spacing: .padding16) {
-                        graphic
-                    }
+            hSection {
+                VStack(spacing: .padding16) {
+                    graphic
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .sectionContainerStyle(.transparent)
         }
         .hFormContentPosition(.center)
         .hFormTitle(
@@ -43,31 +38,39 @@ public struct AnalyticsConsentScreen: View {
                 VStack(spacing: .padding16) {
                     privacyPolicyLink
                     VStack(spacing: .padding8) {
-                        hButton(.large, .secondary, content: .init(title: L10n.onboardingAnalyticsAllowButton)) {
-                            select(given: true)
+                        hButton(
+                            .large,
+                            consentGiven == true ? .primary : .secondary,
+                            content: .init(title: L10n.onboardingAnalyticsAllowButton)
+                        ) {
+                            await select(given: true)
                         }
-                        hButton(.large, .secondary, content: .init(title: L10n.onboardingAnalyticsDenyButton)) {
-                            select(given: false)
+                        hButton(
+                            .large,
+                            consentGiven == false ? .primary : .secondary,
+                            content: .init(title: L10n.onboardingAnalyticsDenyButton)
+                        ) {
+                            await select(given: false)
                         }
                     }
-                    .disabled(!handlingConsent)
                 }
             }
             .sectionContainerStyle(.transparent)
         }
     }
 
-    private func select(given: Bool) {
-        if given {
-            AnalyticsConsent.give()
-        } else {
-            AnalyticsConsent.revoke()
+    private func select(given: Bool) async {
+        guard !handlingConsent else { return }
+        withAnimation {
+            if given {
+                AnalyticsConsent.give()
+            } else {
+                AnalyticsConsent.revoke()
+            }
         }
+        handlingConsent = true
+        await onConsentSelected(given)
         handlingConsent = false
-        Task {
-            await onConsentSelected(given)
-            handlingConsent = true
-        }
     }
 
     private var graphic: some View {

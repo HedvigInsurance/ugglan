@@ -31,7 +31,8 @@ extension FeatureData {
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
-            isTerminationRedirectionEnabled: false
+            isTerminationRedirectionEnabled: false,
+            isAnalyticsEnabled: false
         )
     }
 }

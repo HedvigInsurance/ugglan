@@ -68,8 +68,7 @@ struct OnboardingMissingInfoScreen: View {
                     ContractInformation(
                         title: onboardingContract.contract.currentAgreement?.productVariant.displayName,
                         subtitle: onboardingContract.getSubtitle(),
-                        pillowImage: onboardingContract.contract.pillowType?.bgImage,
-                        size: .small
+                        pillowImage: onboardingContract.contract.pillowType?.bgImage
                     )
                 }
                 .horizontalPadding(.padding12)
@@ -83,6 +82,7 @@ struct OnboardingMissingInfoScreen: View {
                                 .foregroundColor(hTextColor.Opaque.negative)
                         }
                         .frame(width: 20, height: 20)
+                        .transition(.scale.animation(.bouncy))
                     } else {
                         hButton(.small, .primary, content: .init(title: L10n.generalAddButton)) {
                             add(onboardingContract)
@@ -90,6 +90,7 @@ struct OnboardingMissingInfoScreen: View {
                         .accessibilityLabel(
                             L10n.generalAddButton + ", " + onboardingContract.contract.exposureDisplayNameShort
                         )
+                        .transition(.scale(scale: 0, anchor: .trailing).combined(with: .opacity).animation(.easeInOut))
                     }
                 }
                 .hRowContentAlignment(.center)
@@ -108,17 +109,11 @@ struct OnboardingMissingInfoScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
-                    if hasMissingInfo {
-                        hText(L10n.onboardingAddInfoLaterLabel, style: .label)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
+                    hText(L10n.onboardingAddInfoLaterLabel, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .opacity(hasMissingInfo ? 1 : 0)
                     VStack(spacing: .padding8) {
                         hContinueButton { vm.advance(after: step) }
-                        if hasMissingInfo {
-                            hButton(.large, .secondary, content: .init(title: L10n.onboardingDoThisLaterButton)) {
-                                vm.advance(after: step)
-                            }
-                        }
                     }
                 }
             }
@@ -126,11 +121,17 @@ struct OnboardingMissingInfoScreen: View {
         }
         .onReceive(EditStakeholdersViewModel.updatedStakeholderForContractId) { contractId in
             guard let contractId, let stakeholderType = type.stakeholderType else { return }
-            vm.markStakeholderAdded(contractId: contractId, type: stakeholderType)
+            Task {
+                await delay(1)
+                vm.markStakeholderAdded(contractId: contractId, type: stakeholderType)
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: .petChipIdAdded)) { notification in
             guard type == .petChipIds, let model = notification.object as? PetIdAddedModel else { return }
-            vm.markPetChipIdAdded(model)
+            Task {
+                await delay(0.4)
+                vm.markPetChipIdAdded(model)
+            }
         }
     }
 

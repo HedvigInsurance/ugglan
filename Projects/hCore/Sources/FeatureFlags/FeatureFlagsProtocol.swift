@@ -20,6 +20,7 @@ public struct FeatureData: Codable, Equatable {
     public let isResumeClaimEnabled: Bool
     public let isOnboardingEnabled: Bool
     public let isTerminationRedirectionEnabled: Bool
+    public let isAnalyticsEnabled: Bool
 
     public init(
         isUpdateNecessary: Bool,
@@ -32,7 +33,8 @@ public struct FeatureData: Codable, Equatable {
         isPuppyGuideEnabled: Bool,
         isResumeClaimEnabled: Bool,
         isOnboardingEnabled: Bool,
-        isTerminationRedirectionEnabled: Bool
+        isTerminationRedirectionEnabled: Bool,
+        isAnalyticsEnabled: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
@@ -45,6 +47,7 @@ public struct FeatureData: Codable, Equatable {
         self.isResumeClaimEnabled = isResumeClaimEnabled
         self.isOnboardingEnabled = isOnboardingEnabled
         self.isTerminationRedirectionEnabled = isTerminationRedirectionEnabled
+        self.isAnalyticsEnabled = isAnalyticsEnabled
     }
 }
 
@@ -77,7 +80,8 @@ public class FeatureFlags: ObservableObject {
         isPuppyGuideEnabled: false,
         isResumeClaimEnabled: false,
         isOnboardingEnabled: false,
-        isTerminationRedirectionEnabled: true
+        isTerminationRedirectionEnabled: false,
+        isAnalyticsEnabled: false
     )
 
     @Published public var hasFetchedInitialData = false

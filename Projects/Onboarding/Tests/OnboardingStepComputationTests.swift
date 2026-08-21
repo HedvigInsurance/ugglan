@@ -8,6 +8,17 @@ import hCore
 
 @MainActor
 final class OnboardingStepComputationTests: XCTestCase {
+    override func setUp() async throws {
+        try await super.setUp()
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: true)
+    }
+
+    override func tearDown() async throws {
+        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
+        try await super.tearDown()
+    }
+
     func testStaticStepsAlwaysPresent() {
         let steps = OnboardingStepList.compute(
             contracts: [],
@@ -23,6 +34,16 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .theme,
             ]
         )
+    }
+
+    func testAnalyticsConsentStepHiddenWhenAnalyticsDisabled() {
+        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
+        let steps = OnboardingStepList.compute(
+            contracts: [],
+            isPaymentConnected: true,
+            crossSells: []
+        )
+        XCTAssertFalse(steps.contains(.analyticsConsent))
     }
 
     func testPhoneNumberStepCarriesContactInfo() {
@@ -158,11 +179,11 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .welcome,
                 .analyticsConsent,
                 .phoneNumber(phoneNumber: ""),
-                .theme,
                 .coInsured(contracts: [.init(contract: contract)]),
                 .coOwners(contracts: [.init(contract: contract)]),
                 .petChipIds(contracts: [.init(contract: contract)]),
                 .connectPayment(isConnected: false),
+                .theme,
                 .crossSell([.mock]),
             ]
         )
@@ -200,6 +221,25 @@ extension OnboardingStepComputationTests {
             coInsured: coInsured,
             coOwners: coOwners,
             missingPetChipId: missingPetChipId
+        )
+    }
+}
+
+extension FeatureData {
+    fileprivate static func mock(isAnalyticsEnabled: Bool) -> FeatureData {
+        .init(
+            isUpdateNecessary: false,
+            isSubmitClaimEnabled: false,
+            osVersionTooLow: false,
+            emailPreferencesEnabled: false,
+            isDemoMode: false,
+            isAddonsRemovalFromMovingFlowEnabled: false,
+            isNewConversationFromInboxEnabled: false,
+            isPuppyGuideEnabled: false,
+            isResumeClaimEnabled: false,
+            isOnboardingEnabled: true,
+            isTerminationRedirectionEnabled: false,
+            isAnalyticsEnabled: isAnalyticsEnabled
         )
     }
 }

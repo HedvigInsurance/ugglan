@@ -11,6 +11,7 @@ public struct AskForRating {
         UserDefaults.standard.set(numberOfSessions, forKey: userDefaultsKey)
     }
 
+    @MainActor
     public func askAccordingToTheNumberOfSessions() {
         guard !UserDefaults.standard.bool(forKey: userDefaultsCompletedKey) else { return }
 
@@ -21,7 +22,11 @@ public struct AskForRating {
         }
     }
 
+    @MainActor
     public func askForReview() {
+        if Dependencies.featureFlags().isOnboardingEnabled && !OnboardingPresentationState.hasSeenOnboarding {
+            return
+        }
         guard !UserDefaults.standard.bool(forKey: userDefaultsCompletedKey) else { return }
         UserDefaults.standard.set(true, forKey: userDefaultsCompletedKey)
         DispatchQueue.main.async {

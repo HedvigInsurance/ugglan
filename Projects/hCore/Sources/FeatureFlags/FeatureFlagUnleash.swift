@@ -85,7 +85,8 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isPuppyGuideEnabled: !unleashClient.isEnabled(name: "disable_puppy_guide"),
             isResumeClaimEnabled: unleashClient.isEnabled(name: "enable_claim_intent_resume"),
             isOnboardingEnabled: !unleashClient.isEnabled(name: "disable_onboarding"),
-            isTerminationRedirectionEnabled: !unleashClient.isEnabled(name: "disable_termination_redirection")
+            isTerminationRedirectionEnabled: !unleashClient.isEnabled(name: "disable_termination_redirection"),
+            isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics")
         )
         featureDataPublisher.send(data)
     }
