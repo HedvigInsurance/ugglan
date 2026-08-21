@@ -407,24 +407,25 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MY_PAYMENT_TITLE" = "Payments";
 "MY_PAYMENT_UPDATING_MESSAGE" = "You have just added or changed your bank account, your new bank account will appear here after your bank has accepted autogiro. Usually within 2 working days.";
 "NEW_MESSAGE_BUTTON" = "New message";
+"OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE" = "Choose insurance amount";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Summary";
 "ONBOARDING_ADDED_LABEL" = "Added";
 "ONBOARDING_ADD_BUTTON" = "Add";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Add co-insured";
 "ONBOARDING_ADD_COOWNERS_TITLE" = "Add co-owners";
-"ONBOARDING_ADD_INFO_LATER_LABEL" = "You can add this information later";
+"ONBOARDING_ADD_INFO_LATER_LABEL" = "You can add this later";
 "ONBOARDING_ADD_PET_CHIP_IDS_TITLE" = "Add your pets ID numbers";
 "ONBOARDING_ANALYTICS_ALLOW_BUTTON" = "Allow";
-"ONBOARDING_ANALYTICS_DENY_BUTTON" = "Deny";
-"ONBOARDING_ANALYTICS_SUBTITLE" = "We use technical tools to see how you use the app, so we can make it better.\n\nProduct analytics is completely optional and can be turned off any time in settings. This data is never used for marketing.";
+"ONBOARDING_ANALYTICS_DENY_BUTTON" = "Don't allow";
+"ONBOARDING_ANALYTICS_SUBTITLE" = "We use technical tools to collect data on how you use the app, so we can improve the experience.\n\nProduct analytics is completely optional and can be turned off anytime in settings. This data is not used for marketing.";
 "ONBOARDING_ANALYTICS_TITLE" = "Help us make the app better";
-"ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change these settings later";
+"ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "You can change this anytime in settings";
 "ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
-"ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Adding a payment method is required to keep your insurance active";
-"ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Add a payment method to activate your insurance";
+"ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "You can change accounts later in settings";
+"ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "You need to connect a payment method to keep your insurance active";
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
-"ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment";
-"ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Continue to app";
+"ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment method";
+"ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Go to the app";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% discount when you have two or more insurances with us. The discount applies to home, car, and pet insurance";
 "ONBOARDING_CROSS_SELL_TITLE" = "Get bundle discount";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Do this later";
@@ -673,6 +674,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE" = "Amount deducted from your compensation";
 "TIER_FLOW_SELECT_DEDUCTIBLE_TITLE" = "Select your deductible";
 "TIER_FLOW_SELECT_INSURANCE_SUBTITLE" = "Select the insurance you want to edit";
+"TIER_FLOW_SELECT_PAYMENT_PROTECTION_DROPDOWN_TITLE" = "Monthly compensation";
 /* button on Summary screen */
 "TIER_FLOW_SHOW_COVERAGE" = "Show your coverage";
 "TIER_FLOW_SUBTITLE" = "Set your coverage level and deductible";
@@ -838,6 +840,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "insurance_certificate_title" = "Insurance certificate";
 /* Figma */
 "insurance_details.change_address_button" = "Change address";
+"insurance_details.change_amount" = "Change insurance amount";
+"insurance_details.change_amount_subtitle" = "Your monthly compensation";
 "insurance_details.change_coverage" = "Change coverage";
 "insurance_details.move_button" = "Move to new address";
 /* Figma */

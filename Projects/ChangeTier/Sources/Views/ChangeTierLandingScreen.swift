@@ -80,13 +80,13 @@ public struct ChangeTierLandingScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    L10n.tierFlowTitle,
+                    vm.flowTitle,
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    vm.canEditDeductible ? L10n.tierFlowSubtitle : L10n.tierFlowSubtitleWithoutDeductible
+                    vm.flowSubtitle
                 )
             )
             .hFormAttachToBottom {
@@ -161,7 +161,7 @@ public struct ChangeTierLandingScreen: View {
                 VStack(alignment: .leading, spacing: .padding4) {
                     hFloatingField(
                         value: vm.selectedTier?.name ?? "",
-                        placeholder: L10n.tierFlowCoverageLabel
+                        placeholder: vm.tierFieldLabel
                     ) {}
                     .hBackgroundOption(option: [.locked])
                     .hFieldTrailingView {
@@ -178,13 +178,13 @@ public struct ChangeTierLandingScreen: View {
         } else {
             DropdownView(
                 value: vm.selectedTier?.name ?? "",
-                placeHolder: vm.selectedTier != nil
-                    ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
+                placeHolder: vm.tierFieldPlaceholder
             ) { [weak vm, weak changeTierNavigationVm] in
-                let selectedItem = vm?.selectedTier?.name ?? vm?.tiers.first?.name
-                changeTierNavigationVm?.isEditTierPresented = .init(
+                guard let vm, let changeTierNavigationVm else { return }
+                let selectedItem = vm.selectedTier?.name ?? vm.tiers.first?.name
+                changeTierNavigationVm.isEditTierPresented = .init(
                     selectedItem: selectedItem,
-                    type: .tiers(tiers: vm?.tiers.sorted(by: { $0.level < $1.level }) ?? [])
+                    type: .tiers(tiers: vm.tiers.sorted(by: { $0.level < $1.level }))
                 )
             }
             .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)

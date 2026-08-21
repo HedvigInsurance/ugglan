@@ -38,6 +38,11 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
 }
 
 extension TypeOfContract {
+    /// Payment protection contracts reuse the tier flow but with "insurance amount" wording instead of "coverage".
+    public var isPaymentProtection: Bool {
+        self == .sePaymentProtection
+    }
+
     public static func resolve(for typeOfContract: String) -> Self {
         if let concreteTypeOfContract = Self(rawValue: typeOfContract) {
             return concreteTypeOfContract

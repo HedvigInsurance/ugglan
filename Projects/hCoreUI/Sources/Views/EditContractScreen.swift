@@ -6,11 +6,17 @@ public struct EditContractScreen: View {
     @State var selectedValue: String?
 
     let editTypes: [EditType]
+    let isPaymentProtection: Bool
     let onSelectedType: (EditType) -> Void
     @EnvironmentObject var router: NavigationRouter
 
-    public init(editTypes: [EditType], onSelectedType: @escaping (EditType) -> Void) {
+    public init(
+        editTypes: [EditType],
+        isPaymentProtection: Bool = false,
+        onSelectedType: @escaping (EditType) -> Void
+    ) {
         self.editTypes = editTypes
+        self.isPaymentProtection = isPaymentProtection
         self.onSelectedType = onSelectedType
     }
 
@@ -28,10 +34,13 @@ public struct EditContractScreen: View {
                                         spacing: .padding2
                                     ) {
                                         HStack {
-                                            hText(editType.title)
+                                            hText(editType.title(isPaymentProtection: isPaymentProtection))
                                         }
-                                        hText(editType.subtitle, style: .label)
-                                            .foregroundColor(hTextColor.Translucent.secondary)
+                                        hText(
+                                            editType.subtitle(isPaymentProtection: isPaymentProtection),
+                                            style: .label
+                                        )
+                                        .foregroundColor(hTextColor.Translucent.secondary)
                                     }
                                     .asAnyView
                                 },
@@ -60,7 +69,8 @@ public struct EditContractScreen: View {
                         .disabled(selectedType == nil)
                         .accessibilityHint(
                             selectedType != nil
-                                ? L10n.voiceoverOptionSelected + (selectedType?.title ?? "")
+                                ? L10n.voiceoverOptionSelected
+                                    + (selectedType?.title(isPaymentProtection: isPaymentProtection) ?? "")
                                 : L10n.voiceoverPickerInfo(selectedType?.buttonTitle ?? L10n.generalContinueButton)
                         )
 

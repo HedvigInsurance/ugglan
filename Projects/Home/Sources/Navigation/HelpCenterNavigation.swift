@@ -174,6 +174,8 @@ public struct HelpCenterNavigation<Content: View>: View {
             content: { actionsWrapper in
                 EditContractScreen(
                     editTypes: actionsWrapper.quickActions.compactMap(\.asEditType),
+                    isPaymentProtection: !tierChangeableContracts.isEmpty
+                        && tierChangeableContracts.allSatisfy(\.typeOfContract.isPaymentProtection),
                     onSelectedType: { selectedType in
                         handle(quickAction: selectedType.asQuickAction)
                     }
@@ -225,6 +227,10 @@ public struct HelpCenterNavigation<Content: View>: View {
         .environmentObject(helpCenterVm)
     }
 
+    private var tierChangeableContracts: [Contracts.Contract] {
+        contractStore.activeContracts.filter(\.supportsChangeTier)
+    }
+
     private func handle(quickAction: QuickAction) {
         switch quickAction {
         case .connectPayments:
@@ -249,8 +255,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .editCoInsured: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coInsured)
         case .editCoOwners: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coOwner)
         case .upgradeCoverage:
-            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.activeContracts
-                .filter(\.supportsChangeTier)
+            let contractsSupportingChangingTier: [ChangeTierContract] =
+                tierChangeableContracts
                 .map {
                     .init(
                         contractId: $0.id,
