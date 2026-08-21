@@ -1,7 +1,7 @@
 import Foundation
 
 @MainActor
-public protocol ProfileClient {
+public protocol ProfileClient: Sendable {
     func getProfileState() async throws -> (
         memberData: MemberDetails, partnerData: PartnerData?, canCreateInsuranceEvidence: Bool,
         hasTravelInsurances: Bool

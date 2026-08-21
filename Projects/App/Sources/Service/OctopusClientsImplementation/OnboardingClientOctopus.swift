@@ -23,7 +23,7 @@ public class OnboardingClientOctopus: OnboardingClient {
         async let paymentStatus = paymentClient.getPaymentStatusData()
         async let crossSells = crossSellClient.getCrossSell(source: .insurances)
         async let foreverData = foreverClient.getMemberReferralInformation()
-        let memberDetails = try await profileClient.getMemberDetails()
+        async let memberDetails = profileClient.getMemberDetails()
         return try await OnboardingStepList.compute(
             contracts: contractsStack.activeContracts + contractsStack.pendingContracts,
             isPaymentConnected: paymentStatus.status != .needsSetup,
