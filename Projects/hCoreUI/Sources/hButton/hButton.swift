@@ -89,7 +89,7 @@ public enum hButtonSize: CaseIterable {
     case medium
     case small
 
-    @preconcurrency
+    @MainActor
     var cornerRadius: CGFloat {
         switch self {
         case .small: .cornerRadiusS
