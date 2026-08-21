@@ -39,7 +39,7 @@ struct OnboardingInviteScreen: View {
                                 hButton(
                                     .large,
                                     .secondary,
-                                    content: .init(title: L10n.onboardingInviteFriendTitle)
+                                    content: .init(title: L10n.ReferralsEmpty.shareCodeButton)
                                 ) {
                                     shareCode(code: discountCode)
                                 }

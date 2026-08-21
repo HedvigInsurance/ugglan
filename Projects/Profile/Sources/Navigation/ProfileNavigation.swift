@@ -53,6 +53,7 @@ public struct ProfileNavigation<Content: View>: View {
                         SettingsView()
                     case .usageData:
                         AnalyticsConsentScreen { _ in
+                            await delay(0.8)
                             profileNavigationViewModel.profileRouter.pop()
                         }
                     case .euroBonus:
