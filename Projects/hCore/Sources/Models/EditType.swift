@@ -6,23 +6,27 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     case cancellation
     case removeAddons
 
-    public var title: String {
+    /// Payment protection contracts reuse the tier flow with "insurance amount" wording instead of "coverage".
+    public func title(isPaymentProtection: Bool = false) -> String {
         switch self {
         case .coInsured: return L10n.contractEditCoinsured
         case .coOwners: return L10n.editCoownerTitle
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        case .changeTier: return L10n.InsuranceDetails.changeCoverage
+        case .changeTier:
+            return isPaymentProtection ? L10n.InsuranceDetails.changeAmount : L10n.InsuranceDetails.changeCoverage
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
         case .removeAddons: return L10n.removeAddonButtonTitle
         }
     }
 
-    public var subtitle: String {
+    public func subtitle(isPaymentProtection: Bool = false) -> String {
         switch self {
         case .changeAddress: return L10n.hcQuickActionsChangeAddressSubtitle
         case .coInsured: return L10n.hcQuickActionsCoInsuredSubtitle
         case .coOwners: return L10n.editCoownerSubtitle
-        case .changeTier: return L10n.hcQuickActionsUpgradeCoverageSubtitle
+        case .changeTier:
+            return isPaymentProtection
+                ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation: return L10n.hcQuickActionsTerminationSubtitle
         case .removeAddons: return L10n.hcQuickActionsRemoveAddonSubtitle
         }

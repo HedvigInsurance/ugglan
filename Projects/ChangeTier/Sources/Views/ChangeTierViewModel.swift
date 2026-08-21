@@ -292,6 +292,41 @@ public class ChangeTierViewModel: ObservableObject {
         calculateTotal()
     }
 
+    var isPaymentProtection: Bool {
+        typeOfContract?.isPaymentProtection == true
+    }
+
+    var flowTitle: String {
+        isPaymentProtection ? L10n.InsuranceDetails.changeAmount : L10n.tierFlowTitle
+    }
+
+    var flowSubtitle: String {
+        if isPaymentProtection {
+            return L10n.InsuranceDetails.changeAmountSubtitle
+        }
+        return canEditDeductible ? L10n.tierFlowSubtitle : L10n.tierFlowSubtitleWithoutDeductible
+    }
+
+    var tierFieldLabel: String {
+        isPaymentProtection ? L10n.tierFlowSelectPaymentProtectionDropdownTitle : L10n.tierFlowCoverageLabel
+    }
+
+    var tierFieldPlaceholder: String {
+        if selectedTier != nil {
+            return tierFieldLabel
+        }
+        return isPaymentProtection
+            ? L10n.tierFlowSelectPaymentProtectionDropdownTitle : L10n.tierFlowCoveragePlaceholder
+    }
+
+    var selectTierTitle: String {
+        isPaymentProtection ? L10n.offerPresenterInsuranceAmountTitle : L10n.tierFlowSelectCoverageTitle
+    }
+
+    var selectTierSubtitle: String {
+        isPaymentProtection ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.tierFlowSelectCoverageSubtitle
+    }
+
     private func getData() async throws -> ChangeTierIntentModelState {
         switch changeTierInput {
         case let .contractWithSource(source):

@@ -22,10 +22,10 @@ struct EditScreen: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText(type.title, style: .heading1)
+                    hText(title, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .accessibilityAddTraits(.isHeader)
-                    hText(type.subTitle, style: .heading1)
+                    hText(subTitle, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -41,6 +41,22 @@ struct EditScreen: View {
         .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             bottomView
+        }
+    }
+
+    private var title: String {
+        switch type {
+        case .tiers: return vm.selectTierTitle
+        case .deductible: return L10n.tierFlowSelectDeductibleTitle
+        case let .addon(addon): return addon.addonSubtype
+        }
+    }
+
+    private var subTitle: String {
+        switch type {
+        case .tiers: return vm.selectTierSubtitle
+        case .deductible: return L10n.tierFlowSelectDeductibleSubtitle
+        case .addon: return L10n.tierFlowSelectAddonSubtitle
         }
     }
 
@@ -193,22 +209,6 @@ enum EditTierType: Equatable {
     case tiers(tiers: [Tier])
     case deductible(quotes: [Quote])
     case addon(addon: AddonQuote)
-
-    var title: String {
-        switch self {
-        case .tiers: return L10n.tierFlowSelectCoverageTitle
-        case .deductible: return L10n.tierFlowSelectDeductibleTitle
-        case let .addon(addon): return addon.addonSubtype
-        }
-    }
-
-    var subTitle: String {
-        switch self {
-        case .tiers: return L10n.tierFlowSelectCoverageSubtitle
-        case .deductible: return L10n.tierFlowSelectDeductibleSubtitle
-        case .addon: return L10n.tierFlowSelectAddonSubtitle
-        }
-    }
 }
 
 #Preview {

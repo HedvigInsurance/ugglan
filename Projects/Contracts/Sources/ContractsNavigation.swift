@@ -65,6 +65,7 @@ public struct ContractsNavigation<Content: View>: View {
         ) { contract in
             EditContractScreen(
                 editTypes: EditType.getTypes(for: contract),
+                isPaymentProtection: contract.typeOfContract.isPaymentProtection,
                 onSelectedType: { selectedType in
                     contractsNavigationVm.changeYourInformationContract = nil
                     switch selectedType {

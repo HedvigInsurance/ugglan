@@ -407,24 +407,25 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MY_PAYMENT_TITLE" = "Betalning";
 "MY_PAYMENT_UPDATING_MESSAGE" = "Du har precis lagt till eller ändrat ditt bankkonto, ditt nya bankkonto kommer synas här efter din bank accepterat autogirot inom 2 arbetsdagar.";
 "NEW_MESSAGE_BUTTON" = "Nytt meddelande";
+"OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE" = "Välj försäkringsbelopp";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Sammanfattning";
 "ONBOARDING_ADDED_LABEL" = "Tillagd";
 "ONBOARDING_ADD_BUTTON" = "Lägg till";
 "ONBOARDING_ADD_COINSURED_TITLE" = "Lägg till medförsäkrade";
-"ONBOARDING_ADD_COOWNERS_TITLE" = "Lägg till medägare";
-"ONBOARDING_ADD_INFO_LATER_LABEL" = "Du kan lägga till informationen senare";
+"ONBOARDING_ADD_COOWNERS_TITLE" = "Lägg till delägare";
+"ONBOARDING_ADD_INFO_LATER_LABEL" = "Du kan lägga till det här senare";
 "ONBOARDING_ADD_PET_CHIP_IDS_TITLE" = "Lägg till dina djurs ID-nummer";
 "ONBOARDING_ANALYTICS_ALLOW_BUTTON" = "Tillåt";
-"ONBOARDING_ANALYTICS_DENY_BUTTON" = "Neka";
-"ONBOARDING_ANALYTICS_SUBTITLE" = "Vi använder tekniska verktyg för att se hur du använder appen, så att vi kan göra den bättre.\n\nProduktanalys är helt frivilligt och kan när som helst stängas av i inställningarna. Denna data används aldrig för marknadsföring.";
-"ONBOARDING_ANALYTICS_TITLE" = "Hjälp oss göra appen bättre";
-"ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "Du kan ändra inställningarna senare";
+"ONBOARDING_ANALYTICS_DENY_BUTTON" = "Tillåt inte";
+"ONBOARDING_ANALYTICS_SUBTITLE" = "Vi använder tekniska verktyg för att samla in data om hur du använder appen, så att vi kan förbättra upplevelsen.\n\nProduktanalysen är helt frivillig och kan stängas av när du vill i inställningarna. Uppgifterna används inte för marknadsföring.";
+"ONBOARDING_ANALYTICS_TITLE" = "Hjälp oss att göra appen bättre";
+"ONBOARDING_CHANGE_SETTINGS_LATER_LABEL" = "Du kan ändra det här när du vill i inställningarna";
 "ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla";
-"ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Lägg till ett betalsätt för att aktivera din försäkring";
+"ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Du behöver lägga till en betalningsmetod för att din försäkring ska fortsätta gälla";
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
-"ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Fortsätt till appen";
+"ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Till appen";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% samlingsrabatt när du har två eller fler försäkringar för hem, bil eller djur";
 "ONBOARDING_CROSS_SELL_TITLE" = "Få samlingsrabatt";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Gör det senare";
@@ -673,6 +674,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TIER_FLOW_SELECT_DEDUCTIBLE_SUBTITLE" = "Belopp avdraget från din ersättning";
 "TIER_FLOW_SELECT_DEDUCTIBLE_TITLE" = "Välj din självrisk";
 "TIER_FLOW_SELECT_INSURANCE_SUBTITLE" = "Välj den försäkring du vill uppdatera";
+"TIER_FLOW_SELECT_PAYMENT_PROTECTION_DROPDOWN_TITLE" = "Ersättning per månad";
 /* button on Summary screen */
 "TIER_FLOW_SHOW_COVERAGE" = "Visa ditt skydd";
 "TIER_FLOW_SUBTITLE" = "Välj din skyddsnivå och självrisk";
@@ -838,6 +840,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "insurance_certificate_title" = "Försäkringsbrev";
 /* Figma */
 "insurance_details.change_address_button" = "Ändra adress";
+"insurance_details.change_amount" = "Ändra försäkringsbelopp";
+"insurance_details.change_amount_subtitle" = "Ersättning per månad";
 "insurance_details.change_coverage" = "Ändra skydd";
 "insurance_details.move_button" = "Flytta till ny adress";
 /* Figma */
