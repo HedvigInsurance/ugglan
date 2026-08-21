@@ -426,11 +426,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment method";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Go to the app";
-"ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% discount when you have two or more insurances with us. The discount applies to home, car, and pet insurance";
+"ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% discount when you have two or more insurances with us. Applies to all except accident";
 "ONBOARDING_CROSS_SELL_TITLE" = "Get bundle discount";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Do this later";
-"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "With Hedvig Forever, you get %1$@ off for every friend you invite";
-"ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK" = "With Hedvig Forever, you get a discount off for every friend you invite.";
+"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "When someone gets Hedvig with your code you both get %1$@ discount per month";
+"ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK" = "When someone gets Hedvig with your code you both get monthly discount";
 "ONBOARDING_INVITE_FRIEND_TITLE" = "Invite a friend";
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "It's faster if you ever need to make a claim";
 "ONBOARDING_MISSING_INFO_SUBTITLE" = "So we know who's covered by your insurance";

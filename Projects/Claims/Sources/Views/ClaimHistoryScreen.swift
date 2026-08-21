@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimHistoryScreen: View {
-    @AppState var store: ClaimsStore
+    @AppObservedObject var store: ClaimsStore
     var onTap: (ClaimModel) -> Void
 
     public init(

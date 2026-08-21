@@ -426,10 +426,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Till appen";
-"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% samlingsrabatt när du har två eller fler försäkringar för hem, bil eller djur";
+"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% rabatt när du har två eller fler försäkringar. Gäller alla utom olycksfall";
 "ONBOARDING_CROSS_SELL_TITLE" = "Få samlingsrabatt";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Gör det senare";
-"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "Med Hedvig Forever får du %1$@ rabatt för varje vän du bjuder in";
+"ONBOARDING_INVITE_FRIEND_SUBTITLE" = "När någon skaffar Hedvig med din kod får ni båda %1$@ rabatt per månad";
 "ONBOARDING_INVITE_FRIEND_SUBTITLE_FALLBACK" = "När någon skaffar Hedvig med din kod får ni båda rabatt per månad";
 "ONBOARDING_INVITE_FRIEND_TITLE" = "Bjud in en vän";
 "ONBOARDING_MISSING_INFO_PET_SUBTITLE" = "Det går snabbare om du behöver anmäla något";
