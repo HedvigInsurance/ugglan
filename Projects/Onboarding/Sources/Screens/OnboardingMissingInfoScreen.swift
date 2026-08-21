@@ -133,8 +133,6 @@ struct OnboardingMissingInfoScreen: View {
                 vm.markPetChipIdAdded(model)
             }
         }
-        .task {
-        }
     }
 
     private func add(_ onboardingContract: OnboardingContract) {
