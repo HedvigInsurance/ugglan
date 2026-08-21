@@ -1,17 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "hedvig_symbol_original_4K-alpha_lightmode.png",
-      "idiom" : "universal"
-    },
-    {
-      "appearances" : [
-        {
-          "appearance" : "luminosity",
-          "value" : "dark"
-        }
-      ],
-      "filename" : "helipad-darkmode.png",
+      "filename" : "Hedvig-Helipad-2026_4K 3.png",
       "idiom" : "universal"
     }
   ],
