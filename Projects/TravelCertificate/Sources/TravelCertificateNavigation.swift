@@ -133,8 +133,10 @@ public struct TravelCertificateNavigation: View {
             options: .constant(.withoutGrabber)
         ) {
             InfoView(
-                title: L10n.TravelCertificate.Info.title,
-                description: L10n.TravelCertificate.Info.subtitle
+                infoViewModel: .init(
+                    title: L10n.TravelCertificate.Info.title,
+                    description: L10n.TravelCertificate.Info.subtitle
+                )
             )
         }
         .handleAddons(input: $vm.isAddonPresented)

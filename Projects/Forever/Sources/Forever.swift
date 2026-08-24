@@ -57,8 +57,10 @@ public struct ForeverView: View {
             ) {
                 if let discountAmount = foreverNavigationVm.foreverData?.monthlyDiscountPerReferral {
                     InfoView(
-                        title: L10n.ReferralsInfoSheet.headline,
-                        description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount)
+                        infoViewModel: .init(
+                            title: L10n.ReferralsInfoSheet.headline,
+                            description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount)
+                        )
                     )
                 }
             }

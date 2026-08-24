@@ -144,8 +144,10 @@ struct ChangeAddonNavigation: View {
             options: .constant(.withoutGrabber)
         ) { infoModel in
             InfoView(
-                title: infoModel.title,
-                description: infoModel.description
+                infoViewModel: .init(
+                    title: infoModel.title,
+                    description: infoModel.description
+                )
             )
         }
     }

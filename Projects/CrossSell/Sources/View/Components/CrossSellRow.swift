@@ -61,8 +61,6 @@ public struct CrossSellRow<Pillow: View>: View {
             }
         }
         .padding(.vertical, .padding8)
-
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + " " + (accessibilityAction ?? buttonTitle))
         .onTapGesture { performAction() }

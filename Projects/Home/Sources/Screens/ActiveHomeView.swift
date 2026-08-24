@@ -88,6 +88,7 @@ struct ActiveHomeView: View {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
+            HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes)
             HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
@@ -159,6 +160,12 @@ private struct TopClipShape: Shape {
 }
 
 #Preview {
+    setUpActiveHomeViewPreview()
+    return ActiveHomeView()
+        .environmentObject(HomeNavigationViewModel())
+}
+
+#Preview("In tab bar") {
     setUpActiveHomeViewPreview()
 
     return TabView {
