@@ -1,39 +1,16 @@
-import AppStateContainer
-import ChangeTier
 import Chat
-import Contracts
-import EditStakeholders
-import Payment
-import SafariServices
-import SubmitClaimChat
 import SwiftUI
-import TerminateContracts
 import hCore
 import hCoreUI
 
 @MainActor
 public class HelpCenterNavigationViewModel: ObservableObject {
-    @Published var quickActions = QuickActions()
     // Set by the deep-link handler before/after the help-center modal opens.
     // Consumed by `HelpCenterNavigation` via .task(id:) so the push runs after
     // the NavigationStack has mounted and registered its destination modifiers.
     @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
-    var connectPaymentsVm = ConnectPaymentViewModel()
-    public let editStakeholdersVm = EditStakeholdersViewModel(
-        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
-    )
-    let terminateInsuranceVm = TerminateInsuranceViewModel()
+    public let quickActionsVm = QuickActionsViewModel()
     public let router = NavigationRouter()
-
-    struct QuickActions {
-        var editContractActions: EditInsuranceActionsWrapper?
-        var isTravelCertificatePresented = false
-        var isChangeAddressPresented = false
-        var isCancellationPresented = false
-        var isFirstVetPresented = false
-        var sickAbroadData: SubmitClaimChat.Deflection? = nil
-        var isChangeTierPresented: ChangeTierContractsInput?
-    }
 
     public init() {}
 }
@@ -63,23 +40,15 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
         switch self {
         case .startView:
             return .init(describing: HelpCenterStartView.self)
-        case .firstVet:
-            return .init(describing: FirstVetView.self)
-        case .editYourInsurance:
-            return .init(describing: EditContractScreen.self)
         }
     }
 
     case startView
-    case firstVet
-    case editYourInsurance
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
-    @AppObservedObject private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
-    private let contractStore: ContractStore = globalAppStateContainer.get()
 
     public init(
         helpCenterVm: HelpCenterNavigationViewModel,
@@ -97,7 +66,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         ) {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
-                    handle(quickAction: quickAction)
+                    helpCenterVm.quickActionsVm.perform(quickAction)
                 }
             )
             .navigationTitle(L10n.hcTitle)
@@ -130,161 +99,8 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
         }
         .ignoresSafeArea()
-        .detent(
-            presented: $helpCenterVm.quickActions.isFirstVetPresented,
-            presentationStyle: .detent(style: [.large])
-        ) {
-            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
-                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
-                .withDismissButton()
-                .embededInNavigation(
-                    options: [.navigationType(type: .large), .extendedNavigationWidth],
-                    tracking: HelpCenterDetentRouterType.firstVet
-                )
-        }
-        .modally(
-            item: $helpCenterVm.quickActions.isChangeTierPresented
-        ) { input in
-            ChangeTierNavigation(input: input)
-        }
-        .detent(
-            item: $helpCenterVm.quickActions.sickAbroadData,
-            presentationStyle: .detent(style: [.large])
-        ) { sickAbroadData in
-            getSubmitClaimDeflectScreen(sickAbroadData: sickAbroadData)
-        }
-        .modally(
-            presented: $helpCenterVm.quickActions.isTravelCertificatePresented,
-            content: {
-                redirect(
-                    .travelInsurance
-                )
-            }
-        )
-        .modally(
-            presented: $helpCenterVm.quickActions.isChangeAddressPresented,
-            content: {
-                redirect(.moveFlow)
-            }
-        )
-
-        .detent(
-            item: $helpCenterVm.quickActions.editContractActions,
-
-            content: { actionsWrapper in
-                EditContractScreen(
-                    editTypes: actionsWrapper.quickActions.compactMap(\.asEditType),
-                    isPaymentProtection: !tierChangeableContracts.isEmpty
-                        && tierChangeableContracts.allSatisfy(\.typeOfContract.isPaymentProtection),
-                    onSelectedType: { selectedType in
-                        handle(quickAction: selectedType.asQuickAction)
-                    }
-                )
-                .navigationTitle(L10n.hcQuickActionsEditInsuranceTitle)
-                .embededInNavigation(
-                    options: [.navigationType(type: .large)],
-                    tracking: HelpCenterDetentRouterType.editYourInsurance
-                )
-            }
-        )
-        .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
-        .handleTerminateInsurance(
-            vm: helpCenterVm.terminateInsuranceVm
-        ) { dismissType in
-            switch dismissType {
-            case .done:
-                Task { await contractStore.fetchContracts() }
-                let homeStore: HomeStore = globalAppStateContainer.get()
-                Task { await homeStore.fetchQuickActions() }
-            case .chat:
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
-            case let .openFeedback(url):
-                Task { await contractStore.fetchContracts() }
-                let homeStore: HomeStore = globalAppStateContainer.get()
-                Task { await homeStore.fetchQuickActions() }
-                var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                if urlComponent?.scheme == nil {
-                    urlComponent?.scheme = "https"
-                }
-                let schema = urlComponent?.scheme
-                let requiresAuthorization = url.requiresAuthorization
-                if let finalUrl = urlComponent?.url {
-                    if (schema == "https" || schema == "http") && !requiresAuthorization {
-                        let vc = SFSafariViewController(url: finalUrl)
-                        vc.modalPresentationStyle = .pageSheet
-                        vc.preferredControlTintColor = .brand(.primaryText())
-                        UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-                    } else {
-                        Task { await Dependencies.urlOpener.open(url) }
-                    }
-                }
-            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
-                break
-            }
-        }
-        .environmentObject(helpCenterVm)
+        .handleQuickActions(with: helpCenterVm.quickActionsVm, redirect: redirect)
     }
-
-    private var tierChangeableContracts: [Contracts.Contract] {
-        contractStore.activeContracts.filter(\.supportsChangeTier)
-    }
-
-    private func handle(quickAction: QuickAction) {
-        switch quickAction {
-        case .connectPayments:
-            helpCenterVm.connectPaymentsVm.set()
-        case .travelInsurance:
-            helpCenterVm.quickActions.isTravelCertificatePresented = true
-        case let .editInsurance(insuranceQuickActions):
-            helpCenterVm.quickActions.editContractActions = insuranceQuickActions
-        case .changeAddress:
-            helpCenterVm.quickActions.isChangeAddressPresented = true
-        case .cancellation:
-            let contractsConfig: [TerminationConfirmConfig] = contractStore.activeContracts
-                .filter(\.supportsTermination)
-                .map(\.asTerminationConfirmConfig)
-            Task {
-                do {
-                    try await helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
-                } catch let exception {
-                    Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
-                }
-            }
-        case .editCoInsured: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coInsured)
-        case .editCoOwners: helpCenterVm.editStakeholdersVm.start(stakeholderType: .coOwner)
-        case .upgradeCoverage:
-            let contractsSupportingChangingTier: [ChangeTierContract] =
-                tierChangeableContracts
-                .map {
-                    .init(
-                        contractId: $0.id,
-                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: $0.exposureDisplayName
-                    )
-                }
-            helpCenterVm.quickActions.isChangeTierPresented = .init(
-                source: .changeTier,
-                contracts: contractsSupportingChangingTier
-            )
-        case .firstVet:
-            helpCenterVm.quickActions.isFirstVetPresented = true
-        case let .sickAbroad(data):
-            helpCenterVm.quickActions.sickAbroadData = data
-        case .removeAddons: break  // TODO:
-        }
-    }
-
-    private func getSubmitClaimDeflectScreen(sickAbroadData: SubmitClaimChat.Deflection) -> some View {
-        redirect(.deflect(sickAbroadData))
-    }
-}
-
-public enum HelpCenterRedirectType {
-    case travelInsurance
-    case moveFlow
-    case deflect(SubmitClaimChat.Deflection)
 }
 
 #Preview {

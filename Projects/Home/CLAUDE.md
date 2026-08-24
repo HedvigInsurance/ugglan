@@ -12,10 +12,11 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 - **Entry point**: `Screens/HomeScreen.swift` -- `HomeScreen` view and `HomeVM` ViewModel
 - **Store**: `HomeStore.swift` -- `HomeStore` (`AppStore`), `MemberInfo`, `FutureStatus`
 - **Navigation**: `Navigation/HomeNavigation.swift` -- `HomeNavigationViewModel`, chat/claim/cross-sell orchestration
-- **Help Center navigation**: `Navigation/HelpCenterNavigation.swift` -- `HelpCenterNavigationViewModel`, `HelpCenterNavigation` view with quick action routing
+- **Help Center navigation**: `Navigation/HelpCenterNavigation.swift` -- `HelpCenterNavigationViewModel` plus a thin `hNavigationStack` wrapper; it owns a `QuickActionsViewModel` but no routing logic of its own
+- **Quick action routing**: `Navigation/QuickActionsViewModel.swift` -- `QuickActionsViewModel` (`perform(_:)` + six flat presentation flags), the `handleQuickActions(with:redirect:)` modifier holding the detent/modal chain, and `HelpCenterRedirectType`. Mounted twice: by `HelpCenterNavigation` and by `HomeTab` in App
 - **Service protocol**: `Service/Protocols/HomeClient.swift` -- `HomeClient`, `MemberState`, `MessageState`
 - **Demo service**: `Service/DemoImplementation/HomeClientDemo.swift`
-- **Components**: `Screens/Components/MainHomeView.swift`, `ImportantMessagesView.swift`, `RenewalCard.swift`, `FutureSectionView.swift`, `ContactInfoView.swift`, `StakeholderInfoHomeView.swift`
+- **Components**: `Screens/Components/MainHomeView.swift`, `ImportantMessagesView.swift`, `RenewalCard.swift`, `FutureSectionView.swift`, `ContactInfoView.swift`, `StakeholderInfoHomeView.swift`, `HomeQuickActionsSection.swift`
 - **Help Center views**: `Screens/HelpCenter/HelpCenterStartView.swift`, `HelpCenterTopicView.swift`, `HelpCenterQuestionView.swift`
 - **Help Center reusable components**: `Screens/HelpCenter/ReusableComponents/HelpCenterPill.swift`, `HelpCenterQuestion.swift`, `HelpCenterQuickActionView.swift`, `HelpCenterSupportView.swift`, `HelpViewSource.swift`
 - **Models**: `Models/Contract.swift`, `ImportantMessage.swift`, `QuickAction.swift`, `HelpCenterFAQModel.swift`, `MemberContractState.swift`, `UpcomingRenewal.swift`
@@ -29,12 +30,12 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 - **Routes defined here**:
   - `HomeRouterAction.inbox` -- pushes the Chat `InboxView` within the Home tab
   - `HelpCenterNavigationRouterType.inbox` -- pushes `InboxView` inside the Help Center
-  - `HelpCenterRedirectType` -- `.travelInsurance`, `.moveFlow`, `.deflect` for redirecting out of the Help Center
+  - `HelpCenterRedirectType` -- `.travelInsurance`, `.moveFlow`, `.deflect` for flows Home cannot present itself; defined in `Navigation/QuickActionsViewModel.swift` and supplied by whichever host mounts `handleQuickActions` (App resolves all three in one shared `quickActionRedirect(for:)`)
 - **Entry from other modules**: Home is a root tab in the main tab bar (configured in App). `HomeNavigationViewModel` listens for `.openChat` and `.openCrossSell` notifications from anywhere in the app.
-- **Navigation style**: Uses legacy `RouterHost + Router` for both the Help Center sub-navigation and the Home toolbar inbox route. Claim flow is launched via `handleClaimFlow` modifier (from SubmitClaimChat) bound to `claimsAutomationStartInput`.
+- **Navigation style**: Help Center sub-navigation uses `hNavigationStack` with a `NavigationRouter` (`HelpCenterNavigation.swift`); the Home toolbar inbox route uses the legacy `RouterHost + Router`. Claim flow is launched via `handleClaimFlow` modifier (from SubmitClaimChat) bound to `claimsAutomationStartInput`.
 
 ## Gotchas
 - `HomeVM` mirrors `HomeStore.memberContractState` rather than subscribing to the whole store; it triggers the cross-store fetches in `fetchHomeState()` for Home/CrossSell/Contract/Payment stores.
 - Chat notification polling uses a 10-second `Timer.publish` that checks the top-visible ViewController description string to decide whether to poll -- a fragile heuristic.
-- The Help Center navigation handler (`HelpCenterNavigation`) is complex, managing quick actions that can launch termination flows, change-tier flows, travel certificates, address changes, edit stakeholders, and more -- all via detents and modals from a single view.
+- Quick-action routing is shared, not Help Center's: `QuickActionsViewModel.perform(_:)` can launch termination, change-tier, travel certificate, address change, edit stakeholders, FirstVet, connect payments and the sick-abroad deflection. Six flat `@Published` presentation properties (`editContractActions`, `isTravelCertificatePresented`, `isChangeAddressPresented`, `firstVetPartners`, `sickAbroadData`, `isChangeTierPresented`) drive six separate detent/modal hosts inside the `handleQuickActions` modifier -- one host per property, no grouped presentation enum, matching how `ContractsNavigationViewModel` and `LoggedInNavigation` do it. The ones with a payload (`editContractActions`, `firstVetPartners`, `sickAbroadData`, `isChangeTierPresented`) are optionals that carry it, captured from the `QuickAction` associated value in `perform(_:)` and passed to `detent(item:)`, so no presented screen reads a store for its own data (the terminate-dismiss handler still resolves `HomeStore`/`ContractStore` to refetch): `firstVetPartners` in particular uses the `FirstVetPartnersWrapper` box (`Models/QuickAction.swift`, sibling of `EditInsuranceActionsWrapper`) only because `detent(item:)` requires `Identifiable & Equatable` and an array is not Identifiable. Help Center and the Home tab each own a separate `QuickActionsViewModel` instance, so a Home tile never opens the Help Center modal -- and a change to the switch changes both surfaces at once.
 - `openHelpCenter` in `HomeScreen` reaches into `ContractStore` directly via `globalAppStateContainer.get()` to check contract state -- a global-state read inside the view layer.

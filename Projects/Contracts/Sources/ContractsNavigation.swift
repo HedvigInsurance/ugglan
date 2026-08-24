@@ -174,7 +174,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var addonActionPresented: AddonAction?
     @Published public var isActiveTab = false
 
-    public var editStakeholdersVm = EditStakeholdersViewModel(
+    public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 
