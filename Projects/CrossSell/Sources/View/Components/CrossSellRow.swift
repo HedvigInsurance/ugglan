@@ -60,13 +60,10 @@ public struct CrossSellRow<Pillow: View>: View {
                     }
                     Spacer()
 
-                    hButton(.small, variant, content: .init(title: buttonTitle)) {
-                        tapAnimationTrigger.toggle()
-                        action()
-                    }
-                    .disabled(isLoading)
-                    .hButtonIsLoading(isLoading)
-                    .animation(.default, value: isLoading)
+                    hButton(.small, variant, content: .init(title: buttonTitle)) { performAction() }
+                        .disabled(isLoading)
+                        .hButtonIsLoading(isLoading)
+                        .animation(.default, value: isLoading)
                 }
             }
             .padding(.vertical, .padding8)
@@ -74,11 +71,15 @@ public struct CrossSellRow<Pillow: View>: View {
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + " " + (accessibilityAction ?? buttonTitle))
-        .onTapGesture {
-            tapAnimationTrigger.toggle()
-            action()
-            ImpactGenerator.soft()
-        }
+        .onTapGesture { performAction() }
         .accessibilityAddTraits(.isButton)
+        .accessibilityAction(.default) { performAction() }
+    }
+
+    private func performAction() {
+        guard !isLoading else { return }
+        tapAnimationTrigger.toggle()
+        action()
+        ImpactGenerator.soft()
     }
 }

@@ -88,6 +88,7 @@ struct ActiveHomeView: View {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
+            HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
@@ -99,7 +100,7 @@ struct ActiveHomeView: View {
                 .offset(y: bottomOverscrollExtension)
         }
     }
-    
+
     @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
@@ -158,6 +159,13 @@ private struct TopClipShape: Shape {
 }
 
 #Preview {
+    setUpActiveHomeViewPreview()
+
+    return ActiveHomeView()
+        .environmentObject(HomeNavigationViewModel())
+}
+
+#Preview("In tab bar") {
     setUpActiveHomeViewPreview()
 
     return TabView {

@@ -243,7 +243,7 @@ struct ContractInformationView: View {
                     .hButtonIsLoading(
                         contractsNavigationVm.isAddonPresented?.preselectedAddonTitle == available.displayName
                     )
-                    .accessibilityHint(L10n.voiceoverPressTo + L10n.contractOverviewAddonAdd)
+                    .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.contractOverviewAddonAdd)
                 case .existing(let existing):
                     AddonViewRow(
                         title: existing.displayName,
