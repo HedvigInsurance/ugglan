@@ -122,7 +122,7 @@ struct ChangeAddonScreen: View {
             .accessibilityHidden(false)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.addonFlowSelectSuboptionTitle)
         .accessibilityAction { navigationVm.isSelectableAddonPresented = selectable }
     }
 
