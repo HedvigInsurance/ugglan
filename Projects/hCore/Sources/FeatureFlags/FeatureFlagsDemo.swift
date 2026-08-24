@@ -22,7 +22,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
             isTerminationRedirectionEnabled: false,
-            isAnalyticsEnabled: false
+            isAnalyticsEnabled: false,
+            isResumingOngoingShopSessionsEnabled: false
         )
         featureDataPublisher.send(data)
     }
@@ -40,7 +41,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
             isTerminationRedirectionEnabled: false,
-            isAnalyticsEnabled: false
+            isAnalyticsEnabled: false,
+            isResumingOngoingShopSessionsEnabled: false
         )
         featureDataPublisher.send(data)
     }

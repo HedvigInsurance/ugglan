@@ -16,10 +16,10 @@ struct ActiveHomeView: View {
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
     private let scrollSpace = "homeScroll"
-
+    
     /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
     private let surfaceBottomGap: CGFloat = .padding8
-
+    
     var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
@@ -38,14 +38,14 @@ struct ActiveHomeView: View {
                     Section {
                         sheetContent
                             .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
-                            // The sheet must always reach the screen bottom at rest.
+                        // The sheet must always reach the screen bottom at rest.
                             .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
                             .background(Rectangle().fill(hFillColor.Translucent.primary))
-                            // Trim the content as it rises past the pinned header's bottom edge
-                            // so it disappears beneath the header instead of showing through
-                            // the transparent chips row. Once scrolled past the greeting,
-                            // `-scrollOffset - greetingHeight` is exactly how far the content
-                            // has gone under the header.
+                        // Trim the content as it rises past the pinned header's bottom edge
+                        // so it disappears beneath the header instead of showing through
+                        // the transparent chips row. Once scrolled past the greeting,
+                        // `-scrollOffset - greetingHeight` is exactly how far the content
+                        // has gone under the header.
                             .clipShape(TopClipShape(topInset: max(0, -scrollOffset - greetingHeight)))
                     } header: {
                         HomeSheetContainer()
@@ -64,7 +64,7 @@ struct ActiveHomeView: View {
         // the standard appearance, whose background material would paint a band across the image.
         .toolbarBackground(.hidden, for: .navigationBar)
     }
-
+    
     private var heroBackground: some View {
         hCoreUIAssets.submitClaimBg.view
             .resizable()
@@ -77,19 +77,20 @@ struct ActiveHomeView: View {
                     .frame(height: scrollOffset > -100 ? 0 : 300)
             }
     }
-
+    
     private var sheetContent: some View {
         VStack(spacing: .padding40) {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
+            HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes)
             HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
         .sectionContainerStyle(.transparent)
     }
-
+    
     @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
@@ -102,7 +103,7 @@ struct ActiveHomeView: View {
 /// Used to make scrolling content vanish beneath the pinned header.
 private struct TopClipShape: Shape {
     var topInset: CGFloat
-
+    
     func path(in rect: CGRect) -> Path {
         let inset = min(max(0, topInset), rect.height)
         return Path(
@@ -121,7 +122,7 @@ private struct TopClipShape: Shape {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-
+    
     let store: HomeStore = globalAppStateContainer.get()
     store.setFutureStatus(.none)
     Task {
@@ -143,14 +144,14 @@ private struct TopClipShape: Shape {
 
 #Preview {
     setUpActiveHomeViewPreview()
-
+    
     return ActiveHomeView()
         .environmentObject(HomeNavigationViewModel())
 }
 
 #Preview("In tab bar") {
     setUpActiveHomeViewPreview()
-
+    
     return TabView {
         ActiveHomeView()
             .environmentObject(HomeNavigationViewModel())

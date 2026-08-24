@@ -86,7 +86,10 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isResumeClaimEnabled: unleashClient.isEnabled(name: "enable_claim_intent_resume"),
             isOnboardingEnabled: !unleashClient.isEnabled(name: "disable_onboarding"),
             isTerminationRedirectionEnabled: !unleashClient.isEnabled(name: "disable_termination_redirection"),
-            isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics")
+            isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics"),
+            isResumingOngoingShopSessionsEnabled: !unleashClient.isEnabled(
+                name: "disable_resuming_ongoing_shop_sessions"
+            )
         )
         featureDataPublisher.send(data)
     }

@@ -144,8 +144,10 @@ public struct ChatNavigation<Content: View>: View {
             presentationStyle: .detent(style: [.height])
         ) { model in
             InfoView(
-                title: model.title,
-                description: model.description
+                infoViewModel: .init(
+                    title: model.title,
+                    description: model.description
+                )
             )
         }
     }

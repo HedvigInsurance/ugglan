@@ -11,9 +11,9 @@ public struct CrossSellRow<Pillow: View>: View {
     private let accessibilityAction: String?
     private let pillow: Pillow
     private let action: () -> Void
-
+    
     @State private var tapAnimationTrigger = false
-
+    
     public init(
         title: String,
         subtitle: String,
@@ -33,42 +33,34 @@ public struct CrossSellRow<Pillow: View>: View {
         self.pillow = pillow()
         self.action = action
     }
-
+    
     public var body: some View {
-        ZStack {
-            ColorAnimationView(
-                animationTrigger: $tapAnimationTrigger,
-                color: hBackgroundColor.clear,
-                animationColor: hSurfaceColor.Translucent.primary
-            )
-            HStack(spacing: .padding16) {
-                pillow
-                    .frame(width: 48, height: 48)
-                    .accessibilityHidden(true)
-
-                HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
-                        MarqueeText(
-                            text: subtitle,
-                            font: Fonts.fontFor(style: .label),
-                            leftFade: 3,
-                            rightFade: 3,
-                            startDelay: 2
-                        )
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    Spacer()
-
-                    hButton(.small, variant, content: .init(title: buttonTitle)) { performAction() }
-                        .disabled(isLoading)
-                        .hButtonIsLoading(isLoading)
-                        .animation(.default, value: isLoading)
+        HStack(spacing: .padding16) {
+            pillow
+                .frame(width: 48, height: 48)
+                .accessibilityHidden(true)
+            
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
+                    MarqueeText(
+                        text: subtitle,
+                        font: Fonts.fontFor(style: .label),
+                        leftFade: 3,
+                        rightFade: 3,
+                        startDelay: 2
+                    )
+                    .foregroundColor(hTextColor.Opaque.secondary)
                 }
+                Spacer()
+                
+                hButton(.small, variant, content: .init(title: buttonTitle)) { performAction() }
+                    .disabled(isLoading)
+                    .hButtonIsLoading(isLoading)
+                    .animation(.default, value: isLoading)
             }
-            .padding(.vertical, .padding8)
         }
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+        .padding(.vertical, .padding8)
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverPressTo + " " + (accessibilityAction ?? buttonTitle))
         .onTapGesture { performAction() }

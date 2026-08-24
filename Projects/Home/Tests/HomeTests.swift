@@ -90,6 +90,118 @@ final class HomeTests: XCTestCase {
         XCTAssertEqual(store.memberInfo?.firstName, "Victor")
     }
 
+    func testFetchOngoingQuotesSuccess() async {
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes, quotes)
+    }
+
+    func testFetchOngoingQuotesFailureLeavesQuotesEmpty() async {
+        let mockService = MockData.createMockHomeService(
+            fetchOngoingQuotes: { throw NetworkError.badRequest(message: nil) }
+        )
+        sut = mockService
+
+        let store = HomeStore()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertTrue(store.ongoingQuotes.isEmpty)
+    }
+
+    func testFetchOngoingQuotesWithFlagOffSkipsTheService() async {
+        let mockService = MockData.createMockHomeService(
+            fetchOngoingQuotes: { [Self.makeOngoingQuote(id: "1")] }
+        )
+        sut = mockService
+
+        let store = HomeStore()
+        await withOngoingQuotesFlag(enabled: false) {
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertTrue(store.ongoingQuotes.isEmpty)
+        XCTAssertFalse(mockService.events.contains(.getOngoingQuotes))
+    }
+
+    /// On a cold launch Home fetches before Unleash has answered, so the flag is still off.
+    /// The quotes must arrive when the flag does, without the screen being revisited.
+    func testOngoingQuotesLoadWhenTheFlagArrivesAfterTheFirstFetch() async throws {
+        let mockClient = MockFeatureFlagsClient()
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
+
+        try await FeatureFlags.shared.setup(with: [:])
+        mockClient.send(.allOff(isResumingOngoingShopSessionsEnabled: false))
+        await waitUntil(description: "Flag arrives switched off") {
+            FeatureFlags.shared.isResumingOngoingShopSessionsEnabled == false
+        }
+
+        let quotes = [Self.makeOngoingQuote(id: "1")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchOngoingQuotes()
+        XCTAssertTrue(store.ongoingQuotes.isEmpty)
+
+        mockClient.send(.allOff(isResumingOngoingShopSessionsEnabled: true))
+        await waitUntil(description: "Ongoing quotes are set when the flag turns on") {
+            store.ongoingQuotes == quotes
+        }
+
+        mockClient.send(.allOff())
+        await waitUntil(description: "Ongoing quotes are cleared when the flag turns off") {
+            store.ongoingQuotes.isEmpty
+        }
+        Dependencies.shared.remove(for: FeatureFlagsClient.self)
+    }
+
+    func testOngoingQuoteSecondaryTextPrefersPriceOverSubtitle() {
+        let withPrice = Self.makeOngoingQuote(
+            id: "1",
+            subtitle: "Studio apartment, Stockholm",
+            monthlyNet: .init(amount: "199", currency: "SEK")
+        )
+        let withoutPrice = Self.makeOngoingQuote(
+            id: "2",
+            subtitle: "Studio apartment, Stockholm",
+            monthlyNet: nil
+        )
+
+        XCTAssertNotEqual(withPrice.secondaryText, "Studio apartment, Stockholm")
+        XCTAssertEqual(withoutPrice.secondaryText, "Studio apartment, Stockholm")
+    }
+
+    private func withOngoingQuotesFlag(enabled: Bool, _ body: () async -> Void) async {
+        let previous = FeatureFlags.shared.data
+        FeatureFlags.shared.data = .allOff(isResumingOngoingShopSessionsEnabled: enabled)
+        await body()
+        FeatureFlags.shared.data = previous
+    }
+
+    private static func makeOngoingQuote(
+        id: String,
+        subtitle: String? = "Studio apartment, Stockholm",
+        monthlyNet: MonetaryAmount? = .init(amount: "199", currency: "SEK")
+    ) -> OngoingQuote {
+        .init(
+            id: id,
+            title: "Home Insurance",
+            subtitle: subtitle,
+            monthlyNet: monthlyNet,
+            resumeUrl: URL(string: "https://hedvig.com/resume/\(id)")!,
+            pillowImageUrl: nil
+        )
+    }
+
     func testGetQuickActionsSuccess() async {
         let quickActions: [QuickAction] = [
             .cancellation, .travelInsurance, .connectPayments, .editCoInsured,
@@ -153,8 +265,6 @@ final class HomeTests: XCTestCase {
         await waitUntil(description: "Toolbar contains chat icon under flag-ON") {
             store.toolbarOptionTypes.contains(.chat(hasUnread: false))
         }
-
-        XCTAssertTrue(store.toolbarOptionTypes.contains(.chat(hasUnread: false)))
 
         mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
         await waitUntil(description: "Flag resets") {
