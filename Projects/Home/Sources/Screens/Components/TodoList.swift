@@ -6,6 +6,7 @@ import hCoreUI
 struct TodoList: View {
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
     let todos: [Todo]
+    @State private var infoView: InfoViewModel?
 
     var body: some View {
         if !todos.isEmpty {
@@ -31,12 +32,29 @@ struct TodoList: View {
             }
             .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
+            .detent(item: $infoView) { infoViewModel in
+                InfoView(infoViewModel: infoViewModel)
+            }
         }
     }
 
     private func open(_ todo: Todo) {
         switch todo {
-        case .paymentOverdue: NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)  // TODO: weird opening chat without any hint (member has to pay and then contact IEX via chat)
+        case let .paymentOverdue(date):
+            let description: String
+            if let date {
+                description = L10n.InfoCardMissingPayment.missingPaymentsBody(date)
+            } else {
+                description = L10n.InfoCardMissingPayment.body
+            }
+            infoView = .init(
+                title: nil,
+                description: description,
+                closeButtonTitle: L10n.General.chatButton,
+                actionOnClose: {
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            )
         case .paymentMethodMissing: navigationVm.connectPaymentVm.set()
         case .payoutMethodMissing: navigationVm.isPayoutMethodPresented = true
         case .petChipIdMissing: NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
@@ -50,8 +68,36 @@ struct TodoList: View {
     }
 }
 
-enum Todo: Identifiable, Comparable {
+enum Todo: Identifiable, Comparable, Hashable {
     var id: Todo { self }
+
+    // Identity is by case only — the associated date must not affect equality/hashing,
+    // otherwise inserting/removing the todo in `localTodos` (a Set) would miss when the
+    // date differs. `String?` is also not `Comparable`, so ordering is defined by case.
+    static func == (lhs: Todo, rhs: Todo) -> Bool {
+        lhs.sortOrder == rhs.sortOrder
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(sortOrder)
+    }
+
+    static func < (lhs: Todo, rhs: Todo) -> Bool {
+        lhs.sortOrder < rhs.sortOrder
+    }
+
+    private var sortOrder: Int {
+        switch self {
+        case .paymentOverdue: 0
+        case .paymentMethodMissing: 1
+        case .payoutMethodMissing: 2
+        case .petChipIdMissing: 3
+        case .contactDetailsMissing: 4
+        case .dataCollectionPermissionMissing: 5
+        case .coInsuredMissing: 6
+        case .coOwnerMissing: 7
+        }
+    }
 
     var title: String {
         switch self {
@@ -81,7 +127,7 @@ enum Todo: Identifiable, Comparable {
         }
     }
 
-    case paymentOverdue
+    case paymentOverdue(date: String?)
     case paymentMethodMissing
     case payoutMethodMissing
     case petChipIdMissing
@@ -94,7 +140,7 @@ enum Todo: Identifiable, Comparable {
 #Preview {
     TodoList(
         todos: [
-            .paymentOverdue,
+            .paymentOverdue(date: nil),
             .paymentMethodMissing,
             .petChipIdMissing,
             .coOwnerMissing,

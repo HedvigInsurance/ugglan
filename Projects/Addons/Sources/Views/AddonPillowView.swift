@@ -11,7 +11,7 @@ public struct AddonPillowView: View {
     private var pillowAsset: ImageAsset {
         switch type {
         case .carPlus: hCoreUIAssets.bigPillowCar
-        case .travelPlus: hCoreUIAssets.bigPillowVacationHome
+        case .travelPlus: hCoreUIAssets.bigPillowHome
         case .unknown: hCoreUIAssets.bigPillowHome
         }
     }
@@ -30,7 +30,7 @@ public struct AddonPillowView: View {
                 .overlay {
                     hCoreUIAssets.plus.view
                         .resizable()
-                        .frame(width: 10, height: 10)
+                        .frame(width: 17, height: 17)
                         .foregroundColor(hFillColor.Opaque.primary)
                 }
         }

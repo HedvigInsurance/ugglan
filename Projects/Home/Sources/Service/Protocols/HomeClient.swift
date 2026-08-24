@@ -6,6 +6,7 @@ public protocol HomeClient {
     func getMemberState() async throws -> MemberState
     func getHasMissedCharge() async throws -> Bool
     func getQuickActions() async throws -> [QuickAction]
+    func getOngoingQuotes() async throws -> [OngoingQuote]
     func getMessagesState() async throws -> MessageState
     func getFAQ() async throws -> HelpCenterFAQModel
 }
