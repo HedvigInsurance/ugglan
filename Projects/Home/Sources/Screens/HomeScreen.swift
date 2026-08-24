@@ -62,7 +62,9 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
         if homeStore.hasMissedCharge { Task { await homeStore.fetchMissedCharge() } }
-        Task { await crossSellStore.fetchRecommendedCrossSellId() }
+        Task { await homeStore.fetchChatNotifications() }
+        Task { await crossSellStore.fetchHomeCrossSells() }
+        Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
         Task { await paymentStore.fetchPaymentStatus() }
 

@@ -27,6 +27,7 @@ public class OnboardingClientDemo: OnboardingClient {
                 title: "Accident insurance",
                 description: "From 49 kr/mo",
                 buttonTitle: "See price",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: ""
             )
