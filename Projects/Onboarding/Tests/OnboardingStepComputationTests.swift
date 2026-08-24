@@ -251,6 +251,7 @@ extension CrossSell {
             title: "title",
             description: "description",
             buttonTitle: "buttonTitle",
+            webActionURL: "webActionURL",
             imageUrl: nil,
             buttonDescription: "buttonDescription"
         )
