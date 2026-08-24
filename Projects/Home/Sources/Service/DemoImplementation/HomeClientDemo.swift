@@ -9,7 +9,7 @@ public class HomeClientDemo: HomeClient {
 
     public func getMemberState() async throws -> MemberState {
         .init(
-            memberInfo: .init(id: "id", isContactInfoUpdateNeeded: false),
+            memberInfo: .init(id: "id", firstName: "Hedvig", isContactInfoUpdateNeeded: false),
             contracts: [],
             contractState: MemberContractState.active,
             futureState: FutureStatus.none

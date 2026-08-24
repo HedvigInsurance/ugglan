@@ -450,6 +450,7 @@ extension CGFloat {
     public static let cornerRadiusL: CGFloat = 12
     public static let cornerRadiusXL: CGFloat = 16
     public static let cornerRadiusXXL: CGFloat = 24
+    public static let cornerRadiusXXXL: CGFloat = 32
     public static let cornerRadiusRounded: CGFloat = 999
 }
 
