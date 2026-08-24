@@ -8,6 +8,7 @@ import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
+    @AppObservedObject private var claimsStore: ClaimsStore
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
@@ -82,12 +83,8 @@ struct ActiveHomeView: View {
 
     private var sheetContent: some View {
         VStack(spacing: .padding40) {
-            hSection {
-                ClaimsCard()
-            }
-            hSection {
-                HomeBottomScrollView(vm: bottomVm)
-            }
+            ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
+            bannerSection
             TodoList(todos: bottomVm.todos)
         }
         .sectionContainerStyle(.transparent)
@@ -116,6 +113,13 @@ private struct TopClipShape: Shape {
                 height: rect.height - inset + bottomExtension
             )
         )
+    }
+
+    @ViewBuilder private var bannerSection: some View {
+        if !bottomVm.items.isEmpty {
+            hSection { HomeBottomScrollView(vm: bottomVm) }
+                .sectionContainerStyle(.transparent)
+        }
     }
 }
 
