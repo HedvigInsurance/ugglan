@@ -21,7 +21,7 @@ public final class ClaimsStore: AppStore {
             setAllActiveClaims()
         }
     }
-    @Published var allActiveClaims: [ActiveClaimType] = []
+    @Published public internal(set) var allActiveClaims: [ActiveClaimType] = []
     @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
@@ -108,16 +108,14 @@ public final class ClaimsStore: AppStore {
         self.allActiveClaims = claims
     }
 
-    enum ActiveClaimType: Equatable, Identifiable, Codable {
+    public enum ActiveClaimType: Equatable, Identifiable, Codable, Sendable {
         case claim(model: ClaimModel)
         case claimInProgress(model: ClaimInProgressModel)
 
-        var id: String {
+        public var id: String {
             switch self {
-            case .claim(let model):
-                return model.id
-            case .claimInProgress(let model):
-                return model.id
+            case .claim(let model): model.id
+            case .claimInProgress(let model): model.id
             }
         }
     }
