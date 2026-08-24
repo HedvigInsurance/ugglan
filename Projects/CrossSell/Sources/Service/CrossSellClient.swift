@@ -15,6 +15,7 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
     case addon
     case movingFlow(contractId: String)
     case insurances
+    case onboarding
 
     public var rawValue: RawValue {
         switch self {
@@ -24,6 +25,7 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
         case .addon: "addon"
         case .movingFlow: "movingFlow"
         case .insurances: "insurances"
+        case .onboarding: "onboarding"
         }
     }
 }

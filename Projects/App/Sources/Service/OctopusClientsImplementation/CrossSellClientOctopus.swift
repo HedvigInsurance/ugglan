@@ -104,6 +104,7 @@ extension CrossSellSource {
         case .addon: return .smartXSell
         case .movingFlow: return .smartXSell
         case .insurances: return .insurances
+        case .onboarding: return .onboarding
         }
     }
 
@@ -115,6 +116,7 @@ extension CrossSellSource {
         case .addon: return .addon
         case .movingFlow: return .moving
         case .insurances: return nil
+        case .onboarding: return nil
         }
     }
 
@@ -122,7 +124,7 @@ extension CrossSellSource {
         switch self {
         case let .changeTier(contractId), let .movingFlow(contractId): contractId
         case let .closedClaim(_, contractId): contractId
-        case .home, .addon, .insurances: nil
+        case .home, .addon, .insurances, .onboarding: nil
         }
     }
 
