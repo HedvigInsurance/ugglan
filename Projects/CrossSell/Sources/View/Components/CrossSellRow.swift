@@ -11,9 +11,9 @@ public struct CrossSellRow<Pillow: View>: View {
     private let accessibilityAction: String?
     private let pillow: Pillow
     private let action: () -> Void
-    
+
     @State private var tapAnimationTrigger = false
-    
+
     public init(
         title: String,
         subtitle: String,
@@ -33,13 +33,13 @@ public struct CrossSellRow<Pillow: View>: View {
         self.pillow = pillow()
         self.action = action
     }
-    
+
     public var body: some View {
         HStack(spacing: .padding16) {
             pillow
                 .frame(width: 48, height: 48)
                 .accessibilityHidden(true)
-            
+
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
@@ -53,7 +53,7 @@ public struct CrossSellRow<Pillow: View>: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 Spacer()
-                
+
                 hButton(.small, variant, content: .init(title: buttonTitle)) { performAction() }
                     .disabled(isLoading)
                     .hButtonIsLoading(isLoading)
