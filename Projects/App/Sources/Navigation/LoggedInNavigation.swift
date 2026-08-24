@@ -714,6 +714,7 @@ struct HomeTab: View {
                 await store.fetchClaimInProgress()
             }
         }
+        .handleAddons(input: $homeNavigationVm.isAddonPresented)
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented,
             options: .constant(.alwaysOpenOnTop)
