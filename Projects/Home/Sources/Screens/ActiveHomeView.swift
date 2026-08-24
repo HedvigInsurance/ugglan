@@ -144,13 +144,6 @@ private struct TopClipShape: Shape {
 #Preview {
     setUpActiveHomeViewPreview()
 
-    return ActiveHomeView()
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("In tab bar") {
-    setUpActiveHomeViewPreview()
-
     return TabView {
         ActiveHomeView()
             .environmentObject(HomeNavigationViewModel())
