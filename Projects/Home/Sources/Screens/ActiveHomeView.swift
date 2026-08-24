@@ -95,6 +95,13 @@ struct ActiveHomeView: View {
                 .offset(y: bottomOverscrollExtension)
         }
     }
+
+    @ViewBuilder private var bannerSection: some View {
+        if !bottomVm.items.isEmpty {
+            hSection { HomeBottomScrollView(vm: bottomVm) }
+                .sectionContainerStyle(.transparent)
+        }
+    }
 }
 
 /// Clips a view by trimming `topInset` points off its top edge, revealing the rest below.
@@ -113,13 +120,6 @@ private struct TopClipShape: Shape {
                 height: rect.height - inset + bottomExtension
             )
         )
-    }
-
-    @ViewBuilder private var bannerSection: some View {
-        if !bottomVm.items.isEmpty {
-            hSection { HomeBottomScrollView(vm: bottomVm) }
-                .sectionContainerStyle(.transparent)
-        }
     }
 }
 
