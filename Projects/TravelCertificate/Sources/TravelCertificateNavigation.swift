@@ -23,7 +23,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
-    public var editStakeholdersVm = EditStakeholdersViewModel(
+    public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }

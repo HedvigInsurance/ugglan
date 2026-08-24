@@ -187,7 +187,7 @@ public struct ChangeTierLandingScreen: View {
                     type: .tiers(tiers: vm.tiers.sorted(by: { $0.level < $1.level }))
                 )
             }
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
+            .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.contractEditInfo)
         }
     }
 
@@ -204,7 +204,7 @@ public struct ChangeTierLandingScreen: View {
                     type: .addon(addon: quote)
                 )
             }
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
+            .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.contractEditInfo)
         }
     }
 
@@ -245,7 +245,7 @@ public struct ChangeTierLandingScreen: View {
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
-            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
+            .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.contractEditInfo)
         }
     }
 
