@@ -10,6 +10,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 title: "title",
                 description: "description",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "buttonDescription"
             )
@@ -18,6 +19,15 @@ public class CrossSellClientDemo: CrossSellClient {
     }
 
     public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
-        []
+        [
+            AddonBanner(
+                contractIds: [],
+                displayTitle: "Travel Plus",
+                displayDescription:
+                    "Extended travel insurance with extra coverage for your travels",
+                badges: ["Popular"],
+                addonType: .travelPlus
+            )
+        ]
     }
 }

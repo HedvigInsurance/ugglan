@@ -8,6 +8,7 @@ public final class CrossSellStore: AppStore {
     private let crossSellService = CrossSellService()
 
     @Published public internal(set) var crossSells: CrossSells?
+    @Published public internal(set) var homeCrossSells: CrossSells?
     @Published public internal(set) var addonBanners: [AddonBanner] = []
     @Published public internal(set) var hasNewOffer: Bool = false
 
@@ -41,10 +42,12 @@ public final class CrossSellStore: AppStore {
         }
     }
 
-    public func fetchRecommendedCrossSellId() async {
+    public func fetchHomeCrossSells() async {
         do {
-            let recommended = try await crossSellService.getCrossSell(source: .home).recommended?.id
-            hasNewOffer = recommended != nil && recommended != lastSeenRecommendedProductId
+            let crossSells = try await crossSellService.getCrossSell(source: .home)
+            homeCrossSells = crossSells
+            let recommendedId = crossSells.recommended?.id
+            hasNewOffer = recommendedId != nil && recommendedId != lastSeenRecommendedProductId
         } catch {}
     }
 

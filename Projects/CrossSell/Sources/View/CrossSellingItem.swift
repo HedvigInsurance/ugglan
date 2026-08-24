@@ -6,80 +6,40 @@ import hCoreUI
 struct CrossSellingItem: View {
     let crossSell: CrossSell
     let discountAvailable: Bool
-    @State private var fieldIsClicked = false
     @State private var isCrossSellLoading = false
 
     func openExternal() {
-        if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
-            Task {
-                isCrossSellLoading = true
-                await Dependencies.urlOpener.open(url)
-                isCrossSellLoading = false
-            }
-        } else {
-            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+        Task {
+            guard let url = URL(string: crossSell.webActionURL) else { return }
+            isCrossSellLoading = true
+            await Dependencies.urlOpener.open(url)
+            isCrossSellLoading = false
         }
     }
 
     var body: some View {
-        ZStack {
-            ColorAnimationView(
-                animationTrigger: $fieldIsClicked,
-                color: hBackgroundColor.clear,
-                animationColor: hSurfaceColor.Translucent.primary
-            )
-            HStack {
-                HStack(spacing: .padding16) {
-                    KFImage(crossSell.imageUrl)
-                        .placeholder {
-                            hCoreUIAssets.bigPillowHome.view
-                                .resizable()
-                                .frame(width: 48, height: 48)
-                        }
-                        .fade(duration: 0.25)
-                        .resizable()
-                        .frame(width: 48, height: 48)
-                        .aspectRatio(contentMode: .fill)
-                        .accessibilityHidden(true)
-                    HStack(spacing: 0) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
-                            MarqueeText(
-                                text: crossSell.description,
-                                font: Fonts.fontFor(style: .label),
-                                leftFade: 3,
-                                rightFade: 3,
-                                startDelay: 2
-                            )
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                        }
-                        Spacer()
-
-                        hButton(
-                            .small,
-                            discountAvailable ? .primaryAlt : .secondary,
-                            content: .init(title: crossSell.buttonTitle)
-                        ) {
-                            fieldIsClicked.toggle()
-                            openExternal()
-                        }
-                        .disabled(isCrossSellLoading)
-                        .hButtonIsLoading(isCrossSellLoading)
-                        .animation(.default, value: isCrossSellLoading)
-                    }
-                }
-                .accessibilityElement(children: .combine)
-                .accessibilityValue(L10n.voiceoverPressTo + L10n.crossSellGetPrice)
-                .onTapGesture {
-                    fieldIsClicked.toggle()
-                    openExternal()
-                    ImpactGenerator.soft()
-                }
-                .accessibilityAddTraits(.isButton)
-            }
-            .padding(.vertical, .padding8)
+        CrossSellRow(
+            title: crossSell.title,
+            subtitle: crossSell.description,
+            buttonTitle: crossSell.buttonTitle,
+            variant: discountAvailable ? .primaryAlt : .secondary,
+            isLoading: isCrossSellLoading,
+            accessibilityAction: L10n.crossSellGetPrice,
+            pillow: { Pillow(imageUrl: crossSell.imageUrl) }
+        ) {
+            openExternal()
         }
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
+    }
+
+    struct Pillow: View {
+        let imageUrl: URL?
+        var body: some View {
+            KFImage(imageUrl)
+                .placeholder { hCoreUIAssets.bigPillowHome.view.resizable() }
+                .fade(duration: 0.25)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        }
     }
 }
 
@@ -90,6 +50,7 @@ struct CrossSellingItem: View {
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
             buttonTitle: "Save 50%",
+            webActionURL: "",
             imageUrl: nil,
             buttonDescription: "button description"
         ),

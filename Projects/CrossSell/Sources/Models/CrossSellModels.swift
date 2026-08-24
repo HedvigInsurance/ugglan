@@ -99,7 +99,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         title: String,
         description: String,
         buttonTitle: String,
-        webActionURL: String? = nil,
+        webActionURL: String,
         bannerText: String? = nil,
         buttonText: String? = nil,
         discountText: String? = nil,

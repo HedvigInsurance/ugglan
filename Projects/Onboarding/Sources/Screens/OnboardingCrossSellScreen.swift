@@ -75,6 +75,7 @@ private struct OnboardingCrossSellRow: View {
                     title: "title",
                     description: "desc",
                     buttonTitle: "See price",
+                    webActionURL: "",
                     imageUrl: URL(
                         string:
                             "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F832x832%2Ff8c6668c24%2Frental-pillow-832x832px.png&w=640&q=75"
@@ -86,6 +87,7 @@ private struct OnboardingCrossSellRow: View {
                     title: "title 2",
                     description: "desc 2",
                     buttonTitle: "See price",
+                    webActionURL: "",
                     imageUrl: URL(
                         string:
                             "https://www.hedvig.com/_next/image?url=https%3A%2F%2Fassets.hedvig.com%2Ff%2F165473%2F832x832%2Ff8c6668c24%2Frental-pillow-832x832px.png&w=640&q=75"
