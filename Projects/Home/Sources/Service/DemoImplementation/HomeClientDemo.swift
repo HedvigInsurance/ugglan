@@ -24,6 +24,19 @@ public class HomeClientDemo: HomeClient {
         []
     }
 
+    public func getOngoingQuotes() async throws -> [OngoingQuote] {
+        [
+            .init(
+                id: "quote1",
+                title: "Home Insurance",
+                subtitle: "Studio apartment, Stockholm",
+                monthlyNet: .init(amount: "199", currency: "SEK"),
+                resumeUrl: URL(string: "https://www.hedvig.com/se")!,
+                pillowImageUrl: nil
+            )
+        ]
+    }
+
     public func getMessagesState() async throws -> MessageState {
         .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: nil)
     }

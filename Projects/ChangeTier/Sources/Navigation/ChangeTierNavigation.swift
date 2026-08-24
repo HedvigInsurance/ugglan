@@ -227,8 +227,10 @@ public struct ChangeTierNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
-                title: insurableLimit.label,
-                description: insurableLimit.description
+                infoViewModel: .init(
+                    title: insurableLimit.label,
+                    description: insurableLimit.description
+                )
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
@@ -255,8 +257,10 @@ public struct ChangeTierNavigation: View {
             presentationStyle: .detent(style: [.height])
         ) { info in
             InfoView(
-                title: info.title ?? "",
-                description: info.description ?? ""
+                infoViewModel: .init(
+                    title: info.title,
+                    description: info.description
+                )
             )
         }
     }

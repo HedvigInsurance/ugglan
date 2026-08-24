@@ -170,7 +170,7 @@ struct PaymentMethodView: View {
         }
         .sectionContainerStyle(.transparent)
         .detent(item: $infoText) { text in
-            InfoView(title: nil, description: text)
+            InfoView(infoViewModel: .init(title: nil, description: text))
         }
     }
 
