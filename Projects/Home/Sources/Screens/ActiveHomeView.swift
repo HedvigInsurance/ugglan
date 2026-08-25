@@ -16,6 +16,9 @@ struct ActiveHomeView: View {
     /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
     private let surfaceBottomGap: CGFloat = .padding8
 
+    /// On iPad the scroll content floats as a centered column instead of hugging the screen width.
+    private let maxContentWidth: CGFloat = 600
+
     /// White below the sheet's end so rubber-banding never exposes the hero through the bottom.
     private let bottomOverscrollExtension: CGFloat = 500
 
@@ -56,6 +59,8 @@ struct ActiveHomeView: View {
                             .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
                     }
                 }
+                .frame(maxWidth: maxContentWidth)
+                .frame(maxWidth: .infinity)
                 .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: .named(scrollSpace)).minY }) {
                     scrollOffset = $0
                 }
