@@ -9,7 +9,6 @@ struct HomeActionChips: View {
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
     @AppObservedObject var store: ClaimsStore
     @InjectObservableObject var featureFlags: FeatureFlags
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -21,22 +20,24 @@ struct HomeActionChips: View {
     }
 
     private var chipsRow: some View {
-        HStack(spacing: .padding8) {
-            chip(label: L10n.HomeTab.claimButtonText, style: .filled) {
-                navigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
-            }
+        hSection {
+            HStack(spacing: .padding8) {
+                chip(label: L10n.HomeTab.claimButtonText, style: .filled) {
+                    navigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
+                }
 
-            if !featureFlags.isDemoMode {
-                chip(label: L10n.HomeTab.getHelp, style: .light) {
-                    navigationVm.isHelpCenterPresented = true
+                if !featureFlags.isDemoMode {
+                    chip(label: L10n.HomeTab.getHelp, style: .light) {
+                        navigationVm.isHelpCenterPresented = true
+                    }
+                }
+
+                chip(label: L10n.dashboardOpenChat, style: .light) {
+                    navigationVm.router.push(HomeRouterAction.inbox)
                 }
             }
-            // TODO: Lokalise
-            chip(label: "Contact us", style: .light) {
-                navigationVm.router.push(HomeRouterAction.inbox)
-            }
         }
-        .padding(.horizontal, .padding16)
+        .sectionContainerStyle(.transparent)
         .padding(.bottom, .padding16)
     }
 
@@ -55,12 +56,12 @@ struct HomeActionChips: View {
             case .filled:
                 button
                     .buttonStyle(.glassProminent)
-                    .tint(hFillColor.Opaque.primary.colorFor(colorScheme, .base).color)
+                    .tint(hFillColor.Opaque.primary)
 
             case .light:
                 button
                     .buttonStyle(.glass)
-                    .tint(hBackgroundColor.primary.colorFor(colorScheme, .base).color)
+                    .tint(hBackgroundColor.primary)
             }
         } else {
             Button(action: action) {
