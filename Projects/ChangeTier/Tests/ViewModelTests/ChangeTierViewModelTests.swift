@@ -320,4 +320,52 @@ final class ChangeTierViewModelTests: XCTestCase {
             assertionFailure("not proper state")
         }
     }
+
+    func testSummaryNoticeInfoForIncreasedPaymentProtectionAmount() async throws {
+        let model = try await modelForSummaryNoticeInfo(typeOfContract: .sePaymentProtection)
+        model.setTier(for: "max")
+        assert(model.summaryNoticeInfo == L10n.changeTierPaymentProtectionInfo)
+    }
+
+    func testSummaryNoticeInfoForNotIncreasedPaymentProtectionAmount() async throws {
+        let model = try await modelForSummaryNoticeInfo(typeOfContract: .sePaymentProtection)
+        model.setTier(for: "standard")
+        assert(model.summaryNoticeInfo == nil)
+    }
+
+    func testSummaryNoticeInfoForNonPaymentProtectionContract() async throws {
+        let model = try await modelForSummaryNoticeInfo(typeOfContract: .seHouse)
+        model.setTier(for: "max")
+        assert(model.summaryNoticeInfo == nil)
+    }
+
+    /// Builds a loaded view model where the current tier is level 1, "standard" is level 1 and "max" is level 2.
+    private func modelForSummaryNoticeInfo(typeOfContract: TypeOfContract) async throws -> ChangeTierViewModel {
+        let changeTierIntentModel: ChangeTierIntentModel = .init(
+            contractId: "contractId",
+            displayName: "display name",
+            activationDate: Date(),
+            tiers: tiers,
+            currentTier: currentTier,
+            currentQuote: nil,
+            selectedTier: nil,
+            selectedQuote: nil,
+            canEditTier: true,
+            typeOfContract: typeOfContract,
+            relatedAddons: [:]
+        )
+
+        let mockService = MockData.createMockChangeTier(fetchTier: { _ in
+            changeTierIntentModel
+        })
+
+        sut = mockService
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
+        vm = model
+        try await Task.sleep(seconds: 0.03)
+        return model
+    }
 }

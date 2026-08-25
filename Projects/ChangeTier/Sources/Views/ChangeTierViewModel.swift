@@ -327,8 +327,14 @@ public class ChangeTierViewModel: ObservableObject {
         isPaymentProtection ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.tierFlowSelectCoverageSubtitle
     }
 
+    /// Raising the payment protection amount comes with a 90 day qualification period before the new amount applies
     var summaryNoticeInfo: String? {
-        isPaymentProtection ? L10n.changeTierPaymentProtectionInfo : nil
+        guard isPaymentProtection,
+            let currentTier,
+            let selectedTier,
+            selectedTier.level > currentTier.level
+        else { return nil }
+        return L10n.changeTierPaymentProtectionInfo
     }
 
     private func getData() async throws -> ChangeTierIntentModelState {
