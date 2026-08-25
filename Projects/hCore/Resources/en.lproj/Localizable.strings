@@ -103,9 +103,9 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
+"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your updated amount will take effect after your qualification period. Your current amount remains active during this period.";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
-"CHANGE_TIER_PAYMENT_PROTECTION_INFO" = "Your updated amount will take effect after 90 days. Your current amount remains active during this period.";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Claim";
 "CHAT_CONVERSATION_CLOSED" = "Closed";
@@ -174,6 +174,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE" = "Roughly how long had the stroller been there before you noticed it was gone?";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE" = "A day or more";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT" = "Overnight";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS" = "2-8 hours";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 hours";
+"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";

@@ -103,9 +103,9 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
+"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Det nya försäkringsbeloppet börjar gälla efter att kvalificeringstiden passerat. Ditt nuvarande belopp gäller som vanligt under tiden.";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
-"CHANGE_TIER_PAYMENT_PROTECTION_INFO" = "";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
 "CHAT_CONVERSATION_CLOSED" = "Avslutad";
@@ -174,6 +174,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_RECORDING_TITLE" = "Inspelning";
 "CLAIM_CHAT_SKIPPED_STEP" = "Saknas";
 "CLAIM_CHAT_SKIP_STEP" = "Hoppa över";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE" = "Ungefär hur länge stod barnvagnen där innan du märkte att den var borta?";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE" = "Ett dygn eller mer";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT" = "Över natten";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS" = "2-8 timmar";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 timmar";
+"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Var barnvagnen låst? Berätta gärna med egna ord, t.ex. vilket lås du använde.";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in ditt skadeärende";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Bearbetar information, vänligen vänta.";
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";

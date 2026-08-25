@@ -334,7 +334,7 @@ public class ChangeTierViewModel: ObservableObject {
             let selectedTier,
             selectedTier.level > currentTier.level
         else { return nil }
-        return L10n.changeTierPaymentProtectionInfo
+        return L10n.changeInsuranceAmountPaymentProtectionInfo
     }
 
     private func getData() async throws -> ChangeTierIntentModelState {
