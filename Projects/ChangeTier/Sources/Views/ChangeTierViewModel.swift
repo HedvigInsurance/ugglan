@@ -327,6 +327,10 @@ public class ChangeTierViewModel: ObservableObject {
         isPaymentProtection ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.tierFlowSelectCoverageSubtitle
     }
 
+    var summaryNoticeInfo: String? {
+        isPaymentProtection ? L10n.changeTierPaymentProtectionInfo : nil
+    }
+
     private func getData() async throws -> ChangeTierIntentModelState {
         switch changeTierInput {
         case let .contractWithSource(source):

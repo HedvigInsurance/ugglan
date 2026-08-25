@@ -51,6 +51,7 @@ extension ChangeTierViewModel {
         return QuoteSummary(
             contracts: contracts,
             activationDate: self.activationDate,
+            noticeInfo: summaryNoticeInfo,
             totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net)
         )
     }

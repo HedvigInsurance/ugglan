@@ -105,6 +105,7 @@
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
+"CHANGE_TIER_PAYMENT_PROTECTION_INFO" = "";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Skadeärende";
 "CHAT_CONVERSATION_CLOSED" = "Avslutad";

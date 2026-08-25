@@ -105,6 +105,7 @@
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
+"CHANGE_TIER_PAYMENT_PROTECTION_INFO" = "Your updated amount will take effect after 90 days. Your current amount remains active during this period.";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
 "CHAT_CONVERSATION_CLAIM_TITLE" = "Claim";
 "CHAT_CONVERSATION_CLOSED" = "Closed";
