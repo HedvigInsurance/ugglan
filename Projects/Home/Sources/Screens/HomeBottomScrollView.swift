@@ -64,6 +64,7 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleStatusMessage()
         handleUpdateContactInfo()
         handleMissingPetChipIds()
+        handleDataCollectionPermission()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -212,6 +213,17 @@ class HomeBottomScrollViewModel: ObservableObject {
             .removeDuplicates()
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
                 self?.handleTodo(.contactDetailsMissing, with: isContactInfoUpdateNeeded)
+            })
+            .store(in: &cancellables)
+    }
+
+    private func handleDataCollectionPermission() {
+        UserDefaults.standard.publisher(for: \.analyticsConsentDecision)
+            .map { $0 == nil }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] undecided in
+                self?.handleTodo(.dataCollectionPermissionMissing, with: undecided)
             })
             .store(in: &cancellables)
     }
