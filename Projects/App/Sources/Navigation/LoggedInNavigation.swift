@@ -526,6 +526,18 @@ struct LoggedInNavigation: View {
                     tracking: ProfileRouterType.myInfo
                 )
         }
+        .detent(
+            presented: $vm.isAnalyticsConsentPresented,
+            options: .constant(.alwaysOpenOnTop),
+        ) { [weak vm] in
+            AnalyticsConsentScreen { _ in
+                await delay(0.8)
+                vm?.isAnalyticsConsentPresented = false
+            }
+            .embededInNavigation(
+                tracking: ProfileRouterType.usageData
+            )
+        }
         .handleMissedPayment(data: $vm.missedPaymentData)
     }
 
@@ -890,6 +902,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
+    @Published var isAnalyticsConsentPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
@@ -1019,6 +1032,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .startClaim,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openAnalyticsConsent),
+            name: .openAnalyticsConsent,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1059,6 +1079,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func openReviewContactInfo() {
         isReviewContactInfoPresented = true
+    }
+
+    @objc func openAnalyticsConsent() {
+        isAnalyticsConsentPresented = true
     }
 
     @objc func tierChanged() {

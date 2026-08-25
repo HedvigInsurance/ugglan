@@ -17,6 +17,7 @@ extension Notification.Name {
     public static let openMissingPetChipId = Notification.Name("openMissingPetChipId")
     public static let didChargeOutstandingPayment = Notification.Name("didChargeOutstandingPayment")
     public static let startClaim = Notification.Name("startClaim")
+    public static let openAnalyticsConsent = Notification.Name("openAnalyticsConsent")
 }
 
 public enum StartClaimInputType: Equatable {
