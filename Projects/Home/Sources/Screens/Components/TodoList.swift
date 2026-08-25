@@ -41,8 +41,7 @@ struct TodoList: View {
         case .payoutMethodMissing: navigationVm.isPayoutMethodPresented = true
         case .petChipIdMissing: NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
         case .contactDetailsMissing: NotificationCenter.default.post(name: .openReviewContactInfo, object: nil)
-        case .dataCollectionPermissionMissing:
-            NotificationCenter.default.post(name: .openAnalyticsConsent, object: nil)
+        case .dataCollectionPermissionMissing: NotificationCenter.default.post(name: .openAnalyticsConsent, object: nil)
         case .coInsuredMissing:
             navigationVm.editStakeholdersVm.start(stakeholderType: .coInsured, forMissingStakeholders: true)
         case .coOwnerMissing:
@@ -61,7 +60,7 @@ enum Todo: Identifiable, Comparable {
         case .payoutMethodMissing: L10n.homeTodoMissingPayoutMethodTitle
         case .petChipIdMissing: L10n.homeTodoMissingChipIdTitle
         case .contactDetailsMissing: L10n.homeTodoUpdateContactDetailsTitle
-        case .dataCollectionPermissionMissing: "Select usage data handling"  // TODO: move to Lokalise
+        case .dataCollectionPermissionMissing: L10n.homeTodoSelectUsageDataTitle
         case .coInsuredMissing: L10n.homeTodoAddCoinsuredTitle
         case .coOwnerMissing: L10n.homeTodoAddCoownerTitle
         }
