@@ -7,8 +7,8 @@ import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @ObservedObject var vm: HomeBottomScrollViewModel
-    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
+    @ObservedObject private var vm: HomeBottomScrollViewModel
+    @StateObject private var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
 
     init(vm: HomeBottomScrollViewModel) {
         self.vm = vm
