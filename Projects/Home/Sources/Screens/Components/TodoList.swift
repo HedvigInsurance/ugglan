@@ -72,7 +72,7 @@ enum Todo: Identifiable, Comparable {
     var image: some View {
         switch self {
         case .paymentOverdue: hCoreUIAssets.warningTriangleOutlined.view.foregroundColor(hSignalColor.Red.text)
-        case .paymentMethodMissing: hCoreUIAssets.paymentOutlined.view  // TODO: fix payment missing icon
+        case .paymentMethodMissing: hCoreUIAssets.payments.view
         case .payoutMethodMissing: hCoreUIAssets.paymentOutlined.view
         case .petChipIdMissing: hCoreUIAssets.id.view
         case .contactDetailsMissing: hCoreUIAssets.reload.view
