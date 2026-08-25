@@ -73,12 +73,12 @@ enum Todo: Identifiable, Comparable {
         switch self {
         case .paymentOverdue: hCoreUIAssets.warningTriangleOutlined.view.foregroundColor(hSignalColor.Red.text)
         case .paymentMethodMissing: hCoreUIAssets.payments.view
-        case .payoutMethodMissing: hCoreUIAssets.paymentOutlined.view
+        case .payoutMethodMissing: hCoreUIAssets.payments.view
         case .petChipIdMissing: hCoreUIAssets.id.view
-        case .contactDetailsMissing: hCoreUIAssets.reload.view
+        case .contactDetailsMissing: hCoreUIAssets.infoOutlined.view
         case .dataCollectionPermissionMissing: hCoreUIAssets.eq.view
         case .coInsuredMissing: hCoreUIAssets.profileOutlined.view
-        case .coOwnerMissing: hCoreUIAssets.profileOutlined.view  // TODO: fix co-owner missing icon
+        case .coOwnerMissing: hCoreUIAssets.profileOutlined.view
         }
     }
 
