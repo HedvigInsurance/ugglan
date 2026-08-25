@@ -243,6 +243,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Active";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "To be updated %1$@";
+"DASHBOARD_OPEN_CHAT" = "Contact us";
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "In %1$li days your insurance will be renewed. Read your updated insurance certificate here.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Read certificate";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Your insurance will be renewed tomorrow. Read your updated insurance certificate here.";
@@ -407,6 +408,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MY_PAYMENT_TITLE" = "Payments";
 "MY_PAYMENT_UPDATING_MESSAGE" = "You have just added or changed your bank account, your new bank account will appear here after your bank has accepted autogiro. Usually within 2 working days.";
 "NEW_MESSAGE_BUTTON" = "New message";
+"OFFER_PRESENTER_INSURANCE_AMOUNT_SUBTITLE" = "Your monthly compensation";
 "OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE" = "Choose insurance amount";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Summary";
 "ONBOARDING_ADDED_LABEL" = "Added";

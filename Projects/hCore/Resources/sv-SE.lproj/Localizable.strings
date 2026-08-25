@@ -243,6 +243,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Aktiv";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "Uppdateras %1$@";
+"DASHBOARD_OPEN_CHAT" = "Kontakta oss";
 "DASHBOARD_RENEWAL_PROMPTER_BODY" = "Om %1$li dagar kommer din försäkring förnyas. Läs ditt uppdaterade försäkringsbrev här.";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_BUTTON" = "Läs försäkringsbrev";
 "DASHBOARD_RENEWAL_PROMPTER_BODY_TOMORROW" = "Din försäkring kommer att förnyas imorgon. Läs ditt uppdaterade försäkringsbevis här.";
@@ -407,6 +408,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "MY_PAYMENT_TITLE" = "Betalning";
 "MY_PAYMENT_UPDATING_MESSAGE" = "Du har precis lagt till eller ändrat ditt bankkonto, ditt nya bankkonto kommer synas här efter din bank accepterat autogirot inom 2 arbetsdagar.";
 "NEW_MESSAGE_BUTTON" = "Nytt meddelande";
+"OFFER_PRESENTER_INSURANCE_AMOUNT_SUBTITLE" = "Högsta ersättning per månad";
 "OFFER_PRESENTER_INSURANCE_AMOUNT_TITLE" = "Välj försäkringsbelopp";
 "OFFER_UPDATE_SUMMARY_TITLE" = "Sammanfattning";
 "ONBOARDING_ADDED_LABEL" = "Tillagd";
