@@ -47,6 +47,12 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         }
     }
 
+    /// Drops the files restored from `model.currentFiles`. Their `id` is the file URL rather than a
+    /// real file id, so they cannot be re-submitted as-is when the step is shown for input again.
+    func clearResumedFiles() {
+        fileUploadVm.fileGridViewModel.files = []
+    }
+
     override func accessibilityEditHint() -> String {
         if state.isSkipped {
             return L10n.claimChatSkippedStep

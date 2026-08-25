@@ -464,6 +464,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             }
         }
         let handler = createStepHandler(for: claimIntent)
+        (handler as? SubmitClaimFileUploadStep)?.clearResumedFiles()
         if let currentStep = currentStep {
             if currentStep is SubmitClaimTaskStep && !(handler is SubmitClaimTaskStep) {
                 handler.state.showLoadingAnimation = false
@@ -500,9 +501,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
         let handler = createStepHandler(for: newClaimIntent)
-        if let handler = handler as? SubmitClaimFileUploadStep {
-            handler.fileUploadVm.fileGridViewModel.files = []
-        }
+        (handler as? SubmitClaimFileUploadStep)?.clearResumedFiles()
         self.progress = newClaimIntent.progress
         Task { @MainActor in
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {
