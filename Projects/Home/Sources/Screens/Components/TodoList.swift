@@ -27,6 +27,8 @@ struct TodoList: View {
                 .onTap { open(todo) }
                 .hRowContentAlignment(.center)
                 .hWithoutHorizontalPadding(.divider)
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(L10n.voiceoverPressTo + " " + todo.title)
             }
             .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
