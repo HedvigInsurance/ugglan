@@ -29,3 +29,10 @@ public enum AnalyticsConsent {
         UserDefaults.standard.removeObject(forKey: hasConsentedKey)
     }
 }
+
+extension UserDefaults {
+    @objc(analytics_collection_has_consented)
+    public dynamic var analyticsConsentDecision: NSNumber? {
+        object(forKey: AnalyticsConsent.hasConsentedKey) as? NSNumber
+    }
+}
