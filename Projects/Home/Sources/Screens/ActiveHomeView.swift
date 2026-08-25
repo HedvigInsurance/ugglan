@@ -85,11 +85,9 @@ struct ActiveHomeView: View {
             hSection {
                 ClaimsCard()
             }
-            .sectionContainerStyle(.transparent)
             hSection {
                 HomeBottomScrollView(vm: bottomVm)
             }
-            .sectionContainerStyle(.transparent)
             TodoList(todos: bottomVm.todos)
         }
         .sectionContainerStyle(.transparent)
