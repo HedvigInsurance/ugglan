@@ -63,7 +63,7 @@ enum Todo: Identifiable, Comparable {
         case .contactDetailsMissing: L10n.homeTodoUpdateContactDetailsTitle
         case .dataCollectionPermissionMissing: "Select usage data handling"  // TODO: move to Lokalise
         case .coInsuredMissing: L10n.homeTodoAddCoinsuredTitle
-        case .coOwnerMissing: L10n.contractAddAdditionalCoowner
+        case .coOwnerMissing: L10n.homeTodoAddCoownerTitle
         }
     }
 
