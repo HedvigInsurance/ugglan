@@ -7,7 +7,7 @@ import hCoreUI
 
 struct HomeActionChips: View {
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
-    @AppState var store: ClaimsStore
+    @AppObservedObject var store: ClaimsStore
     @InjectObservableObject var featureFlags: FeatureFlags
     @Environment(\.colorScheme) private var colorScheme
 
