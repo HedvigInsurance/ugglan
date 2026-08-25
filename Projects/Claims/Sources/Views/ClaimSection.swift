@@ -12,7 +12,6 @@ struct ClaimSection: View {
             vm: scrollVM,
             content: { claimType in
                 ClaimStatusCard(claimType: claimType, enableTap: true)
-                    .padding(.top)
                     .padding(.bottom, 5)
             }
         )

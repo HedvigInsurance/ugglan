@@ -18,6 +18,7 @@ public struct ClaimsCard: View {
                 }
             }
         }
+        .hWithoutDivider
         .task {
             while !Task.isCancelled {
                 await store.fetchActiveClaims()
