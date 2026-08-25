@@ -18,7 +18,6 @@ struct TodoList: View {
                             hText(todo.title)
                             hText(L10n.homeTodoRequiresActionSubtitle).foregroundColor(hSignalColor.Red.text)
                         }
-                        .accessibilityElement(children: .combine)
                         .hTextStyle(.label)
                     }
                     Spacer()
@@ -28,7 +27,7 @@ struct TodoList: View {
                 .hRowContentAlignment(.center)
                 .hWithoutHorizontalPadding(.divider)
                 .accessibilityElement(children: .combine)
-                .accessibilityHint(L10n.voiceoverPressTo + " " + todo.title)
+                .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.a11YViewDetails)
             }
             .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
