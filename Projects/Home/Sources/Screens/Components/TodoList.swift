@@ -42,7 +42,8 @@ struct TodoList: View {
         case .payoutMethodMissing: navigationVm.isPayoutMethodPresented = true
         case .petChipIdMissing: NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
         case .contactDetailsMissing: NotificationCenter.default.post(name: .openReviewContactInfo, object: nil)
-        case .dataCollectionPermissionMissing: break  // TODO: add it later?
+        case .dataCollectionPermissionMissing:
+            NotificationCenter.default.post(name: .openAnalyticsConsent, object: nil)
         case .coInsuredMissing:
             navigationVm.editStakeholdersVm.start(stakeholderType: .coInsured, forMissingStakeholders: true)
         case .coOwnerMissing:
