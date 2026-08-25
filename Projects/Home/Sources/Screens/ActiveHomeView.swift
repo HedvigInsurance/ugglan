@@ -16,6 +16,9 @@ struct ActiveHomeView: View {
     /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
     private let surfaceBottomGap: CGFloat = .padding8
 
+    /// White below the sheet's end so rubber-banding never exposes the hero through the bottom.
+    private let bottomOverscrollExtension: CGFloat = 500
+
     var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
@@ -42,7 +45,12 @@ struct ActiveHomeView: View {
                             // the transparent chips row. Once scrolled past the greeting,
                             // `-scrollOffset - greetingHeight` is exactly how far the content
                             // has gone under the header.
-                            .clipShape(TopClipShape(topInset: max(0, -scrollOffset - greetingHeight)))
+                            .clipShape(
+                                TopClipShape(
+                                    topInset: max(0, -scrollOffset - greetingHeight),
+                                    bottomExtension: bottomOverscrollExtension
+                                )
+                            )
                     } header: {
                         HomeSheetContainer()
                             .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
@@ -67,11 +75,6 @@ struct ActiveHomeView: View {
             .scaledToFill()
             .ignoresSafeArea()
             .accessibilityHidden(true)
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(hFillColor.Translucent.primary)
-                    .frame(height: scrollOffset > -100 ? 0 : 300)
-            }
     }
 
     private var sheetContent: some View {
@@ -80,6 +83,12 @@ struct ActiveHomeView: View {
             HomeBottomScrollView()
         }
         .sectionContainerStyle(.transparent)
+        .background(alignment: .bottom) {
+            Rectangle()
+                .fill(hFillColor.Translucent.primary)
+                .frame(height: bottomOverscrollExtension)
+                .offset(y: bottomOverscrollExtension)
+        }
     }
 }
 
@@ -87,11 +96,17 @@ struct ActiveHomeView: View {
 /// Used to make scrolling content vanish beneath the pinned header.
 private struct TopClipShape: Shape {
     var topInset: CGFloat
+    var bottomExtension: CGFloat
 
     func path(in rect: CGRect) -> Path {
         let inset = min(max(0, topInset), rect.height)
         return Path(
-            CGRect(x: rect.minX, y: rect.minY + inset, width: rect.width, height: rect.height - inset)
+            CGRect(
+                x: rect.minX,
+                y: rect.minY + inset,
+                width: rect.width,
+                height: rect.height - inset + bottomExtension
+            )
         )
     }
 }
