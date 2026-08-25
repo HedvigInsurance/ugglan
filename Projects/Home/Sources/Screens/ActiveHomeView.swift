@@ -64,9 +64,6 @@ struct ActiveHomeView: View {
             .ignoresSafeArea(edges: .bottom)
         }
         .background { heroBackground }
-        // The hero runs behind the navigation bar. Once content scrolls under it UIKit swaps in
-        // the standard appearance, whose background material would paint a band across the image.
-        .toolbarBackground(.hidden, for: .navigationBar)
     }
 
     private var heroBackground: some View {
