@@ -103,6 +103,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
+"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your updated amount will take effect after your qualification period. Your current amount remains active during this period.";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
@@ -173,6 +174,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE" = "Roughly how long had the stroller been there before you noticed it was gone?";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE" = "A day or more";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_OVERNIGHT" = "Overnight";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS" = "2-8 hours";
+"CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 hours";
+"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";
@@ -358,6 +365,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_TODO_PAYMENT_OVERDUE_TITLE" = "Your payment is overdue";
 "HOME_TODO_REQUIRES_ACTION_SUBTITLE" = "Requires action";
 "HOME_TODO_SECTION_TITLE" = "To do";
+"HOME_TODO_SELECT_USAGE_DATA_TITLE" = "Select usage data handling";
 "HOME_TODO_UPDATE_CONTACT_DETAILS_TITLE" = "Update contact details";
 "HONESTY_PLEDGE_DESCRIPTION" = "Hedvig is based on trust. I solemnly swear to recite the event as it was and only claim the compensation I’m entitled to.";
 "HONESTY_PLEDGE_HEADER" = "Make a claim";
