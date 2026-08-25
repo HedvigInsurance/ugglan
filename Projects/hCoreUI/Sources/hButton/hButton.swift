@@ -158,7 +158,7 @@ extension View {
 }
 
 extension View {
-    public func hCustomButtonConerRadius(_ radius: CGFloat) -> some View {
+    public func hCustomButtonCornerRadius(_ radius: CGFloat) -> some View {
         environment(\.hCustomButtonCornerRadius, radius)
     }
 }

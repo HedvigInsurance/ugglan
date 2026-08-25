@@ -73,7 +73,7 @@ struct HomeActionChips: View {
                     .padding(.top, .padding8)
                     .padding(.bottom, .padding6)
             }
-            .hCustomButtonConerRadius(.cornerRadiusRounded)
+            .hCustomButtonCornerRadius(.cornerRadiusRounded)
             .hShadow(type: .light)
         }
     }
