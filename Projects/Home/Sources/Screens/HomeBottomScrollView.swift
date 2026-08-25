@@ -7,11 +7,11 @@ import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @StateObject private var vm: HomeBottomScrollViewModel
+    @ObservedObject var vm: HomeBottomScrollViewModel
     @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
 
-    init(vm: HomeBottomScrollViewModel? = nil) {
-        _vm = StateObject(wrappedValue: vm ?? HomeBottomScrollViewModel())
+    init(vm: HomeBottomScrollViewModel) {
+        self.vm = vm
     }
 
     var body: some View {
@@ -236,7 +236,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return HomeBottomScrollView()
+    return HomeBottomScrollView(vm: HomeBottomScrollViewModel())
 }
 
 struct InfoCardView: Identifiable, Hashable {
