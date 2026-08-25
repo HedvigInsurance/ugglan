@@ -64,17 +64,17 @@ struct HomeActionChips: View {
                     .tint(hBackgroundColor.primary)
             }
         } else {
-            Button(action: action) {
-                chipLable(label, style: style)
-                    .padding(.horizontal, .padding16)
-                    .padding(.vertical, .padding12)
-                    .background {
-                        switch style {
-                        case .filled: Capsule().fill(hFillColor.Opaque.primary).hShadow(type: .light)
-                        case .light: Capsule().fill(hBackgroundColor.primary).hShadow(type: .light)
-                        }
-                    }
+            hButton(.medium, style == .filled ? .primary : .secondaryAlt, content: .init(title: label)) {
+                action()
             }
+            .hCustomButtonView {
+                chipLable(label, style: style)
+                    .padding(.horizontal, .padding4)
+                    .padding(.top, .padding8)
+                    .padding(.bottom, .padding6)
+            }
+            .hCustomButtonConerRadius(.cornerRadiusRounded)
+            .hShadow(type: .light)
         }
     }
 
