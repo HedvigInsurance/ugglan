@@ -218,13 +218,14 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleDataCollectionPermission() {
-        UserDefaults.standard.publisher(for: \.analyticsConsentDecision)
-            .map { $0 == nil }
+        let featureFlags = Dependencies.featureFlags()
+
+        UserDefaults.standard.publisher(for: \.analyticsConsent)
+            .combineLatest(featureFlags.$data)
+            .map { consent, featureFlags in consent == nil && featureFlags.isAnalyticsEnabled }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] undecided in
-                self?.handleTodo(.dataCollectionPermissionMissing, with: undecided)
-            })
+            .sink { [weak self] undecided in self?.handleTodo(.dataCollectionPermissionMissing, with: undecided) }
             .store(in: &cancellables)
     }
 

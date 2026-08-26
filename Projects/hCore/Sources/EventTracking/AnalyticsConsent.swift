@@ -32,7 +32,7 @@ public enum AnalyticsConsent {
 
 extension UserDefaults {
     @objc(analytics_collection_has_consented)
-    public dynamic var analyticsConsentDecision: NSNumber? {
+    public dynamic var analyticsConsent: NSNumber? {
         object(forKey: AnalyticsConsent.hasConsentedKey) as? NSNumber
     }
 }
