@@ -324,7 +324,7 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testSummaryNoticeInfoForIncreasedPaymentProtectionAmount() async throws {
         let model = try await modelForSummaryNoticeInfo(typeOfContract: .sePaymentProtection)
         model.setTier(for: "max")
-        assert(model.summaryNoticeInfo == L10n.changeTierPaymentProtectionInfo)
+        assert(model.summaryNoticeInfo == L10n.changeInsuranceAmountPaymentProtectionInfo)
     }
 
     func testSummaryNoticeInfoForNotIncreasedPaymentProtectionAmount() async throws {
