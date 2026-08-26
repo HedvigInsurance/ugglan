@@ -44,10 +44,13 @@ public struct HomeScreen: View {
 
 @MainActor
 class HomeVM: ObservableObject {
-    private var cancellables = Set<AnyCancellable>()
+    private var chatNotificationsTimerCancellable: AnyCancellable?
+    private var claimsTimerCancellable: AnyCancellable?
     private let contractStore: ContractStore = globalAppStateContainer.get()
     private let homeStore: HomeStore = globalAppStateContainer.get()
     private let claimsStore: ClaimsStore = globalAppStateContainer.get()
+    private let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+    private let paymentStore: PaymentStore = globalAppStateContainer.get()
 
     init() {
         addObserverForApplicationDidBecomeActive()
@@ -58,17 +61,12 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchMemberState() }
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
-        Task { await homeStore.fetchChatNotifications() }
-        if homeStore.hasMissedCharge {
-            Task { await homeStore.fetchMissedCharge() }
-        }
-        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+        if homeStore.hasMissedCharge { Task { await homeStore.fetchMissedCharge() } }
         Task { await crossSellStore.fetchRecommendedCrossSellId() }
         Task { await contractStore.fetchContracts() }
-        let paymentStore: PaymentStore = globalAppStateContainer.get()
         Task { await paymentStore.fetchPaymentStatus() }
 
-        Timer.publish(every: 10, on: .main, in: .common)
+        chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
             .prepend(.now)
             .receive(on: RunLoop.main)
@@ -76,9 +74,8 @@ class HomeVM: ObservableObject {
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
                 Task { await homeStore.fetchChatNotifications() }
             }
-            .store(in: &cancellables)
 
-        Timer.publish(every: 120, on: .main, in: .common)
+        claimsTimerCancellable = Timer.publish(every: 120, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
             .prepend(.now)
@@ -90,7 +87,6 @@ class HomeVM: ObservableObject {
                     _ = await (fetchActive, fetchInProgress)
                 }
             }
-            .store(in: &cancellables)
     }
 
     private func addObserverForApplicationDidBecomeActive() {
