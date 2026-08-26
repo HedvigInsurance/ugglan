@@ -21,7 +21,7 @@ struct HomeAddonsSection: View {
                         CrossSellRow(
                             title: banner.displayTitle,
                             subtitle: banner.displayDescription,
-                            buttonTitle: "Read more",  // TODO: move to Lokalise
+                            buttonTitle: L10n.homeAddonsReadMoreButton,
                             variant: .secondary,
                             isLoading: navigationVm.isAddonPresented?.contractInfos == input.contractInfos,
                             pillow: { AddonPillowView(type: banner.addonType) }
