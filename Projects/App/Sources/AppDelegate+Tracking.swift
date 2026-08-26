@@ -103,7 +103,12 @@ extension AppDelegate {
             RUMMonitor.shared().stopResource(resourceKey: key, response: url, size: 0, attributes: [:])
         }
 
-        FirebaseApp.configure()
+        // `setupSession()` can run more than once (e.g. on the impersonation deep-link path),
+        // so only configure Firebase if it hasn't been configured yet to avoid the
+        // "Default app has already been configured" crash.
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
         let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
         eventTrackingClient.setCollectionEnabled(AnalyticsConsent.isGiven)
     }
