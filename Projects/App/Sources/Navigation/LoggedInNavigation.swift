@@ -534,6 +534,9 @@ struct LoggedInNavigation: View {
                 await delay(0.8)
                 vm?.isAnalyticsConsentPresented = false
             }
+            .hFormContentPosition(.compact)
+            .navigationTitle(L10n.settingsUsageDataTitle)
+            .withDismissButton()
             .embededInNavigation(
                 tracking: ProfileRouterType.usageData
             )
