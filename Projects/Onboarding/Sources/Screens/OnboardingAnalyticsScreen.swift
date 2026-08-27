@@ -10,6 +10,7 @@ struct OnboardingAnalyticsScreen: View {
             await delay(0.8)
             vm.advance(after: .analyticsConsent)
         }
+        .hFormContentPosition(.center)
     }
 }
 
