@@ -22,7 +22,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         self.model = model
         let resumedUploads: [FileModel] = model.currentFiles.map { file in
             FileModel(
-                fileId: file.url.absoluteString,
+                fileId: file.id,
                 signedUrl: file.url.absoluteString,
                 mimeType: file.contentType.mime,
                 name: file.fileName
@@ -45,12 +45,6 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         } catch {
             throw error
         }
-    }
-
-    /// Drops the files restored from `model.currentFiles`. Their `id` is the file URL rather than a
-    /// real file id, so they cannot be re-submitted as-is when the step is shown for input again.
-    func clearResumedFiles() {
-        fileUploadVm.fileGridViewModel.files = []
     }
 
     override func accessibilityEditHint() -> String {
@@ -203,7 +197,7 @@ public class FilesUploadViewModel: ObservableObject {
                             uploadedFileIds = model.fileIds
                         }
                     }
-                    return uploadedFileIds
+                    return uploadedFileIds + alreadyUploadedFiles
                 }
 
                 delayTimer = nil
