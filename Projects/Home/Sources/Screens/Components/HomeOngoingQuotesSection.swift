@@ -34,6 +34,7 @@ struct HomeOngoingQuotesSection: View {
 
 private struct OngoingQuoteCard: View {
     let quote: OngoingQuote
+    @State private var isLoading = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: .padding16) {
@@ -68,6 +69,8 @@ private struct OngoingQuoteCard: View {
         .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.generalContinueButton)
         .onTapGesture { resume() }
         .accessibilityAction(.default) { resume() }
+        .hButtonIsLoading(isLoading)
+        .disabled(isLoading)
     }
 
     private var pillow: some View {
@@ -82,13 +85,16 @@ private struct OngoingQuoteCard: View {
     }
 
     private func resume() {
-        log.addUserAction(
-            type: .click,
-            name: "home ongoing quote",
-            attributes: ["quoteId": quote.id]
-        )
         Task {
+            isLoading = true
+            await delay(2)
+            log.addUserAction(
+                type: .click,
+                name: "home ongoing quote",
+                attributes: ["quoteId": quote.id]
+            )
             await Dependencies.urlOpener.open(quote.resumeUrl)
+            isLoading = false
         }
     }
 }
@@ -105,7 +111,7 @@ private struct OngoingQuoteCard: View {
             quotes: [
                 .previewQuote(id: "1"),
                 .previewQuote(id: "2", title: "Car Insurance + Accident Insurance"),
-                .previewQuote(id: "3", title: "Accident Insurance", monthlyNet: nil),
+                .previewQuote(id: "3", title: "Accident Insurance"),
             ]
         )
     }
@@ -119,16 +125,12 @@ private struct OngoingQuoteCard: View {
 }
 
 extension OngoingQuote {
-    fileprivate static func previewQuote(
-        id: String,
-        title: String = "Home Insurance",
-        monthlyNet: MonetaryAmount? = .init(amount: "199", currency: "SEK")
-    ) -> OngoingQuote {
+    fileprivate static func previewQuote(id: String, title: String = "Home Insurance") -> OngoingQuote {
         .init(
             id: id,
             title: title,
             subtitle: "Studio apartment, Stockholm",
-            monthlyNet: monthlyNet,
+            monthlyNet: .init(amount: "199", currency: "SEK"),
             resumeUrl: URL(string: "https://www.hedvig.com/se")!,
             pillowImageUrl: nil
         )
