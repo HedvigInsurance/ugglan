@@ -8,6 +8,7 @@ public struct ToolbarButtonView: View {
     let type: ToolbarOptionType
     let placement: ListToolBarPlacement
     let useSpacing: Bool
+    let size: CGFloat?
     private var leadingSpacing: CGFloat {
         if #available(iOS 26.0, *) {
             return 0
@@ -43,12 +44,14 @@ public struct ToolbarButtonView: View {
         type: ToolbarOptionType,
         placement: ListToolBarPlacement,
         action: @escaping (_: ToolbarOptionType) -> Void,
-        useSpacing: Bool = false
+        useSpacing: Bool = false,
+        size: CGFloat? = nil
     ) {
         self.type = type
         self.placement = placement
         self.action = action
         self.useSpacing = useSpacing
+        self.size = size
     }
 
     public var body: some View {
@@ -78,7 +81,11 @@ public struct ToolbarButtonView: View {
                             .offset(badgeOffset)
                     }
                 }
+                .frame(width: size, height: size)
             }
+            // The inner image is accessibility-hidden, so the button synthesizes no label
+            // of its own — without this, VoiceOver announces a bare "Button".
+            .accessibilityLabel(type.accessibilityDisplayName)
             .padding(.leading, useSpacing ? leadingSpacing : 0)
             .padding(.trailing, useSpacing ? trailingSpacing : 0)
         }
