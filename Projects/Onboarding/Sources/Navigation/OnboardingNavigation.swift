@@ -33,7 +33,7 @@ struct OnboardingNavigation: View {
         .handleEditStakeholders(with: vm.editStakeholdersVm)
         .handleConnectPayment(with: vm.connectPaymentVm)
         .handleMissingChipIds(input: $vm.missingPetChipIdInput)
-        .hCustomButtonConerRadius(.cornerRadiusRounded)
+        .hCustomButtonCornerRadius(.cornerRadiusRounded)
     }
 
     @ViewBuilder

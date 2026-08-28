@@ -40,6 +40,7 @@ class HomeClientOctopus: HomeClient {
         return .init(
             memberInfo: .init(
                 id: memberId,
+                firstName: data.currentMember.firstName,
                 isContactInfoUpdateNeeded: isContactInfoUpdateNeeded
             ),
             contracts: contracts,

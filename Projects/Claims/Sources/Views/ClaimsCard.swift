@@ -10,16 +10,15 @@ public struct ClaimsCard: View {
 
     public var body: some View {
         VStack {
-            if store.allActiveClaims.isEmpty {
-                Spacer().frame(height: 40)
-            } else if store.allActiveClaims.count == 1, let claim = store.allActiveClaims.first {
-                ClaimStatusCard(claimType: claim, enableTap: true)
-                    .padding(.vertical)
-            } else {
-                ClaimSection(claims: $store.allActiveClaims)
-                    .padding(.vertical)
+            if !store.allActiveClaims.isEmpty {
+                if store.allActiveClaims.count == 1, let claim = store.allActiveClaims.first {
+                    ClaimStatusCard(claimType: claim, enableTap: true)
+                } else {
+                    ClaimSection(claims: $store.allActiveClaims)
+                }
             }
         }
+        .hWithoutDivider
         .task {
             while !Task.isCancelled {
                 await store.fetchActiveClaims()
