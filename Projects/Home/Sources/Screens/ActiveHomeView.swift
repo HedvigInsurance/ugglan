@@ -75,25 +75,21 @@ struct ActiveHomeView: View {
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
             .onGeometryChange(for: CGFloat.self, of: \.safeAreaInsets.top) { topSafeAreaInset = $0 }
-            .overlay(alignment: .top) {
+            .overlay(alignment: .topTrailing) {
                 HomeNavigationBar()
-                    .padding(.vertical, .padding8)
+                    .padding(.vertical, .padding4)
                     .onGeometryChange(for: CGFloat.self, of: \.size.height) { navBarHeight = $0 }
-                    .opacity(toolbarOpacity)
-                    .offset(y: toolbarOffset * Double.pi)
+                    .opacity(showNavigation ? 1 : 0)
+                    .offset(y: showNavigation ? 0 : -30)
+                    .animation(.easeInOut(duration: 0.2), value: scrollOffset)
             }
         }
         .background { heroBackground }
     }
 
-    private var toolbarOffset: CGFloat {
-        guard greetingHeight > 0 else { return 0 }
-        return min(0, scrollOffset + greetingHeight - navBarHeight)
-    }
-
-    private var toolbarOpacity: CGFloat {
-        guard navBarHeight > 0 else { return 1 }
-        return max(0, 1 + toolbarOffset / (navBarHeight + topSafeAreaInset))
+    private var showNavigation: Bool {
+        guard greetingHeight > 0 else { return true }
+        return scrollOffset + greetingHeight - navBarHeight > 0
     }
 
     private var heroBackground: some View {
@@ -147,7 +143,6 @@ private struct HomeNavigationBar: View {
 
     private func toolbar() -> some View {
         HStack(spacing: .padding8) {
-            Spacer()
             ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
                 barButton(for: type)
             }
@@ -172,7 +167,7 @@ private struct HomeNavigationBar: View {
                     break
                 }
             },
-            size: .padding40
+            size: .padding40 + .padding4
         )
         if #available(iOS 26.0, *) {
             button.glassEffect(.regular.interactive(), in: Circle())
