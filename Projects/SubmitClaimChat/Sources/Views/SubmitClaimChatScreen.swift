@@ -113,22 +113,27 @@ public struct SubmitClaimChatScreen: View {
                     ScrollToBottomButton(scrollAction: scrollToBottom)
                 }
                 if !viewModel.shouldHideCurrentInput {
-                    CurrentStepView(step: currentStep)
-                        .padding(.top, .padding16)
-                        .background {
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        viewModel.currentStepInputHeight = proxy.size.height
-                                    }
-                                    .onChange(of: proxy.size) { value in
-                                        viewModel.currentStepInputHeight = value.height
-                                    }
+                    ScrollView {
+                        CurrentStepView(step: currentStep)
+                            .padding(.top, .padding16)
+                            .background {
+                                GeometryReader { proxy in
+                                    Color.clear
+                                        .onAppear {
+                                            viewModel.currentStepInputHeight = proxy.size.height
+                                        }
+                                        .onChange(of: proxy.size) { value in
+                                            viewModel.currentStepInputHeight = value.height
+                                        }
+                                }
                             }
-                        }
-                        .transition(.offset(x: 0, y: 1000))
-                        .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
-                        .accessibilityFocused($isCurrentStepFocused)
+                    }
+                    .frame(maxHeight: viewModel.currentStepInputHeight)
+                    .addScrollBounce()
+                    .transition(.offset(x: 0, y: 1000))
+                    .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
+                    .accessibilityFocused($isCurrentStepFocused)
+                    .dismissKeyboard()
                 }
             }
         }
@@ -156,6 +161,16 @@ public struct SubmitClaimChatScreen: View {
     }
 }
 
+extension View {
+    @ViewBuilder
+    func addScrollBounce() -> some View {
+        if #available(iOS 16.4, *) {
+            self.scrollBounceBehavior(.basedOnSize)
+        } else {
+            self
+        }
+    }
+}
 struct ScrollToBottomButton: View {
     let scrollAction: () -> Void
 
