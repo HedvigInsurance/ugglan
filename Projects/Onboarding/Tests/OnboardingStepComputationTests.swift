@@ -239,7 +239,8 @@ extension FeatureData {
             isResumeClaimEnabled: false,
             isOnboardingEnabled: true,
             isTerminationRedirectionEnabled: false,
-            isAnalyticsEnabled: isAnalyticsEnabled
+            isAnalyticsEnabled: isAnalyticsEnabled,
+            isResumingOngoingShopSessionsEnabled: false
         )
     }
 }
@@ -251,6 +252,7 @@ extension CrossSell {
             title: "title",
             description: "description",
             buttonTitle: "buttonTitle",
+            webActionURL: "webActionURL",
             imageUrl: nil,
             buttonDescription: "buttonDescription"
         )

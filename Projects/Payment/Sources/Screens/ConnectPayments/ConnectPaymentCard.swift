@@ -16,7 +16,7 @@ public struct ConnectPaymentCardView: View {
 
     @ViewBuilder
     func getStatusInfoView(from status: PayinMethodStatus) -> some View {
-        if case let .contactUs(date) = status {
+        if case let .terminatingDueToMissedPayments(date) = status {
             InfoCard(
                 text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
                 type: .attention

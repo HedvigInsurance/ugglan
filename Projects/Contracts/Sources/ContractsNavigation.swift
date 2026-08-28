@@ -48,8 +48,10 @@ public struct ContractsNavigation<Content: View>: View {
             presentationStyle: .detent(style: [.height])
         ) { insurableLimit in
             InfoView(
-                title: L10n.contractCoverageMoreInfo,
-                description: insurableLimit.description
+                infoViewModel: .init(
+                    title: L10n.contractCoverageMoreInfo,
+                    description: insurableLimit.description
+                )
             )
         }
         .detent(
@@ -174,7 +176,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var addonActionPresented: AddonAction?
     @Published public var isActiveTab = false
 
-    public var editStakeholdersVm = EditStakeholdersViewModel(
+    public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 

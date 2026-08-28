@@ -17,13 +17,11 @@ public struct AnalyticsConsentScreen: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(spacing: .padding16) {
-                    graphic
-                }
+                graphic
             }
+            .padding(.vertical, .padding16)
             .sectionContainerStyle(.transparent)
         }
-        .hFormContentPosition(.center)
         .hFormTitle(
             title: .init(.small, .body1, L10n.onboardingAnalyticsTitle, alignment: .leading),
             subTitle: .init(

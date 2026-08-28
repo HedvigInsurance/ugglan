@@ -11,6 +11,7 @@ final class RecommendedCrossSellTests: XCTestCase {
             title: "title",
             description: "description",
             buttonTitle: "button title",
+            webActionURL: "",
             bannerText: bannerText,
             imageUrl: nil,
             buttonDescription: "button description"

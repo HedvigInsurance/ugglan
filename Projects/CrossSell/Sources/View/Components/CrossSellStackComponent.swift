@@ -7,17 +7,12 @@ public struct CrossSellStackComponent: View {
     let withHeader: Bool
     let headerTitle: String
     let discountAvailable: Bool
-    public init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool) {
+    public init(crossSells: [CrossSell], discountAvailable: Bool, withHeader: Bool, headerTitle: String? = nil) {
         self.crossSells = crossSells
         self.withHeader = withHeader
         self.discountAvailable = discountAvailable
-        headerTitle = {
-            if discountAvailable {
-                return L10n.insuranceOffersSubheading
-            } else {
-                return L10n.InsuranceTab.CrossSells.title
-            }
-        }()
+        self.headerTitle =
+            headerTitle ?? (discountAvailable ? L10n.insuranceOffersSubheading : L10n.InsuranceTab.CrossSells.title)
     }
     public var body: some View {
         let content = hSection {
@@ -48,6 +43,7 @@ public struct CrossSellStackComponent: View {
                 title: "title",
                 description: "long description that goes long way",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button"
             ),
@@ -56,6 +52,7 @@ public struct CrossSellStackComponent: View {
                 title: "short btn",
                 description: "short",
                 buttonTitle: "Save 15%",
+                webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "button"
             ),

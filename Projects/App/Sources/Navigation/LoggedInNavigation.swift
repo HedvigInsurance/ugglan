@@ -526,6 +526,21 @@ struct LoggedInNavigation: View {
                     tracking: ProfileRouterType.myInfo
                 )
         }
+        .detent(
+            presented: $vm.isAnalyticsConsentPresented,
+            options: .constant(.alwaysOpenOnTop),
+        ) { [weak vm] in
+            AnalyticsConsentScreen { _ in
+                await delay(0.8)
+                vm?.isAnalyticsConsentPresented = false
+            }
+            .hFormContentPosition(.compact)
+            .navigationTitle(L10n.settingsUsageDataTitle)
+            .withDismissButton()
+            .embededInNavigation(
+                tracking: ProfileRouterType.usageData
+            )
+        }
         .handleMissedPayment(data: $vm.missedPaymentData)
     }
 
@@ -714,6 +729,10 @@ struct HomeTab: View {
                 await store.fetchClaimInProgress()
             }
         }
+        .handleAddons(input: $homeNavigationVm.isAddonPresented)
+        .handleQuickActions(with: homeNavigationVm.quickActionsVm) { redirectType in
+            quickActionRedirect(for: redirectType)
+        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented,
             options: .constant(.alwaysOpenOnTop)
@@ -721,52 +740,9 @@ struct HomeTab: View {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm
             ) { redirectType in
-                switch redirectType {
-                case .moveFlow:
-                    HandleMoving()
-                case .travelInsurance:
-                    TravelCertificateNavigation(
-                        vm: loggedInVm.travelCertificateNavigationVm,
-                        infoButtonPlacement: .leading,
-                        useOwnNavigation: true
-                    )
-                    .handleEditStakeholders(
-                        with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm
-                    )
-                case let .deflect(data):
-                    SubmitClaimDeflectScreen(
-                        model: data,
-                        openChat: {
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatType.newConversation
-                            )
-                        }
-                    )
-                    .navigationTitle(L10n.commonClaimEmergencyTitle)
-                    .withDismissButton()
-                    .embededInNavigation(
-                        options: [.navigationType(type: .large), .extendedNavigationWidth],
-                        tracking: LoggedInNavigationDetentType.submitClaimDeflect
-                    )
-                }
+                quickActionRedirect(for: redirectType)
             }
-            .handleEditStakeholders(
-                with: loggedInVm.helpCenterVm.editStakeholdersVm
-            )
             .environmentObject(homeNavigationVm)
-        }
-        .detent(
-            presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            presentationStyle: .detent(style: [.large])
-        ) {
-            let store: HomeStore = globalAppStateContainer.get()
-            FirstVetView(partners: store.quickActions.getFirstVetPartners ?? [])
-                .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
-                .embededInNavigation(
-                    options: [.navigationType(type: .large), .extendedNavigationWidth],
-                    tracking: LoggedInNavigationDetentType.firstVet
-                )
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
@@ -823,6 +799,36 @@ struct HomeTab: View {
         }
     }
 
+    @ViewBuilder
+    private func quickActionRedirect(for redirectType: HelpCenterRedirectType) -> some View {
+        switch redirectType {
+        case .moveFlow: HandleMoving()
+        case .travelInsurance:
+            TravelCertificateNavigation(
+                vm: loggedInVm.travelCertificateNavigationVm,
+                infoButtonPlacement: .leading,
+                useOwnNavigation: true
+            )
+            .handleEditStakeholders(with: loggedInVm.travelCertificateNavigationVm.editStakeholdersVm)
+        case let .deflect(data):
+            SubmitClaimDeflectScreen(
+                model: data,
+                openChat: {
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.newConversation
+                    )
+                }
+            )
+            .navigationTitle(L10n.commonClaimEmergencyTitle)
+            .withDismissButton()
+            .embededInNavigation(
+                options: [.navigationType(type: .large), .extendedNavigationWidth],
+                tracking: LoggedInNavigationDetentType.submitClaimDeflect
+            )
+        }
+    }
+
     private func openClaimDetails(claim: ClaimModel?, type: ClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
             .navigationTitle(L10n.claimsYourClaim)
@@ -845,15 +851,12 @@ enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
         switch self {
         case .submitClaimDeflect:
             return .init(describing: SubmitClaimDeflectScreen.self)
-        case .firstVet:
-            return .init(describing: FirstVetView.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }
     }
 
     case submitClaimDeflect
-    case firstVet
     case error
 }
 
@@ -890,6 +893,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isFaqPresented: FAQModel?
     @Published var askForPushNotification = false
     @Published var isReviewContactInfoPresented = false
+    @Published var isAnalyticsConsentPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
@@ -1019,6 +1023,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             name: .startClaim,
             object: nil
         )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openAnalyticsConsent),
+            name: .openAnalyticsConsent,
+            object: nil
+        )
     }
 
     @objc func addonsChanged() {
@@ -1059,6 +1070,10 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func openReviewContactInfo() {
         isReviewContactInfoPresented = true
+    }
+
+    @objc func openAnalyticsConsent() {
+        isAnalyticsConsentPresented = true
     }
 
     @objc func tierChanged() {

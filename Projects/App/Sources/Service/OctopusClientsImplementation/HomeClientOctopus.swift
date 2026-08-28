@@ -161,6 +161,23 @@ class HomeClientOctopus: HomeClient {
         )
     }
 
+    func getOngoingQuotes() async throws -> [OngoingQuote] {
+        let data = try await octopus.client
+            .fetch(query: OctopusGraphQL.OngoingShopSessionsQuery())
+
+        return data.currentMember.ongoingShopSessions.compactMap { session in
+            guard let resumeUrl = URL(string: session.display.resumeUrl) else { return nil }
+            return OngoingQuote(
+                id: session.id,
+                title: session.display.title,
+                subtitle: session.display.subtitle,
+                monthlyNet: .init(optionalFragment: session.display.monthlyNet?.fragments.moneyFragment),
+                resumeUrl: resumeUrl,
+                pillowImageUrl: URL(string: session.display.pillowImage?.fragments.storyblokImageAssetFragment.src)
+            )
+        }
+    }
+
     func getFAQ() async throws -> HelpCenterFAQModel {
         let query = OctopusGraphQL.MemberFAQQuery()
         let data = try await octopus.client.fetch(query: query)
