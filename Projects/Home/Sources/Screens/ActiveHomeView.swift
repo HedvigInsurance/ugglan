@@ -15,6 +15,9 @@ struct ActiveHomeView: View {
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
+    @State private var navBarHeight: CGFloat = 0
+    @State private var topSafeAreaInset: CGFloat = 0
+
     private let scrollSpace = "homeScroll"
 
     /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
@@ -71,8 +74,22 @@ struct ActiveHomeView: View {
             }
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
+            .onGeometryChange(for: CGFloat.self, of: \.safeAreaInsets.top) { topSafeAreaInset = $0 }
+            .overlay(alignment: .topTrailing) {
+                HomeNavigationBar()
+                    .padding(.vertical, .padding4)
+                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { navBarHeight = $0 }
+                    .opacity(showNavigation ? 1 : 0)
+                    .offset(y: showNavigation ? 0 : -30)
+                    .animation(.easeInOut(duration: 0.2), value: scrollOffset)
+            }
         }
         .background { heroBackground }
+    }
+
+    private var showNavigation: Bool {
+        guard greetingHeight > 0 else { return true }
+        return scrollOffset + greetingHeight - navBarHeight > 0
     }
 
     private var heroBackground: some View {
@@ -106,6 +123,56 @@ struct ActiveHomeView: View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
                 .sectionContainerStyle(.transparent)
+        }
+    }
+}
+
+private struct HomeNavigationBar: View {
+    @AppObservedObject private var homeStore: HomeStore
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+
+    var body: some View {
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: .padding8) {
+                toolbar()
+            }
+        } else {
+            toolbar()
+        }
+    }
+
+    private func toolbar() -> some View {
+        HStack(spacing: .padding8) {
+            ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
+                barButton(for: type)
+            }
+        }
+        .padding(.horizontal, .padding16)
+    }
+
+    @ViewBuilder
+    private func barButton(for type: ToolbarOptionType) -> some View {
+        let button = ToolbarButtonView(
+            type: type,
+            placement: .trailing,
+            action: { [weak navigationVm] type in
+                switch type {
+                case .crossSell:
+                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+                case .firstVet:
+                    navigationVm?.quickActionsVm
+                        .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
+                case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
+                case .travelCertificate, .insuranceEvidence:
+                    break
+                }
+            },
+            size: .padding40 + .padding4
+        )
+        if #available(iOS 26.0, *) {
+            button.glassEffect(.regular.interactive(), in: Circle())
+        } else {
+            button
         }
     }
 }
