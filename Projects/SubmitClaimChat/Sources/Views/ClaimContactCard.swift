@@ -116,8 +116,8 @@ struct ParnerButtonView: View {
         ClaimContactCard(
             model: .init(
                 id: "id",
-                imageUrl: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
-                url: "https://odyssey.dev.hedvigit.com/logos/mehrwerk-logo.svg",
+                imageUrl: "",
+                url: "",
                 phoneNumber: nil,
                 title: nil,
                 description: nil,

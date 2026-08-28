@@ -52,7 +52,6 @@ extension AppDelegate {
                         hosts: [
                             Environment.current.octopusEndpointURL.host ?? "",
                             Environment.current.claimsApiURL.host ?? "",
-                            Environment.current.odysseyApiURL.host ?? "",
                         ],
                         sampleRate: 100
                     )
@@ -76,7 +75,6 @@ extension AppDelegate {
                         hostsWithHeaders: [
                             Environment.current.octopusEndpointURL.host ?? "": [TracingHeaderType.datadog],
                             Environment.current.claimsApiURL.host ?? "": [TracingHeaderType.datadog],
-                            Environment.current.odysseyApiURL.host ?? "": [TracingHeaderType.datadog],
                         ],
                         traceControlInjection: .all
                     )
