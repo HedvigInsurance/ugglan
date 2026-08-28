@@ -6,12 +6,12 @@ import hCore
 class TerminateContractsService {
     @Inject private var client: TerminateContractsClient
 
-    @Log([.error])
+    @Log()
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
         try await client.getTerminationSurvey(contractId: contractId)
     }
 
-    @Log([.error])
+    @Log()
     func terminateContract(
         contractId: String,
         terminationDate: String,
@@ -30,7 +30,7 @@ class TerminateContractsService {
         return data
     }
 
-    @Log([.error])
+    @Log()
     func deleteContract(
         contractId: String,
         surveyOptionId: String,
