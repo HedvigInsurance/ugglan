@@ -26,6 +26,9 @@ struct ActiveHomeView: View {
     /// White below the sheet's end so rubber-banding never exposes the hero through the bottom.
     private let bottomOverscrollExtension: CGFloat = 500
 
+    /// How far the content dissolves before it slips under the pinned header.
+    private let contentFadeHeight: CGFloat = 4
+
     var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
@@ -46,18 +49,26 @@ struct ActiveHomeView: View {
                             .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
                             // The sheet must always reach the screen bottom at rest.
                             .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
-                            .background(Rectangle().fill(hFillColor.Translucent.primary))
-                            // Trim the content as it rises past the pinned header's bottom edge
-                            // so it disappears beneath the header instead of showing through
-                            // the transparent chips row. Once scrolled past the greeting,
-                            // `-scrollOffset - greetingHeight` is exactly how far the content
-                            // has gone under the header.
-                            .clipShape(
-                                TopClipShape(
+                            // Two masks, with the surface sandwiched between them. This one runs
+                            // before the background, so it fades the content alone: text and cards
+                            // dissolve into the sheet rather than vanishing mid-glyph.
+                            .mask(alignment: .top) {
+                                topFadeMask(
                                     topInset: max(0, -scrollOffset - greetingHeight),
-                                    bottomExtension: bottomOverscrollExtension
+                                    fadeHeight: contentFadeHeight
                                 )
-                            )
+                            }
+                            .background(Rectangle().fill(hFillColor.Translucent.primary))
+                            // ...and this one runs after, hard-cutting content *and* surface at the
+                            // header's bottom edge. The sheet keeps a crisp top edge instead of
+                            // showing through the transparent chips row. Once scrolled past the
+                            // greeting, `-scrollOffset - greetingHeight` is exactly how far the
+                            // content has gone under the header.
+                            // Keep both masks in sync — the fade only reads correctly when the
+                            // hard cut lands on the same inset.
+                            .mask(alignment: .top) {
+                                topFadeMask(topInset: max(0, -scrollOffset - greetingHeight), fadeHeight: 0)
+                            }
                     } header: {
                         HomeSheetContainer()
                             .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
@@ -93,6 +104,9 @@ struct ActiveHomeView: View {
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
+        // Keeps the first card clear of the fade band while the sheet sits at rest. Once
+        // scrolled, the band travels down through the content and this no longer compensates.
+        .padding(.top, contentFadeHeight)
         .sectionContainerStyle(.transparent)
         .background(alignment: .bottom) {
             Rectangle()
@@ -108,24 +122,25 @@ struct ActiveHomeView: View {
                 .sectionContainerStyle(.transparent)
         }
     }
-}
 
-/// Clips a view by trimming `topInset` points off its top edge, revealing the rest below.
-/// Used to make scrolling content vanish beneath the pinned header.
-private struct TopClipShape: Shape {
-    var topInset: CGFloat
-    var bottomExtension: CGFloat
-
-    func path(in rect: CGRect) -> Path {
-        let inset = min(max(0, topInset), rect.height)
-        return Path(
-            CGRect(
-                x: rect.minX,
-                y: rect.minY + inset,
-                width: rect.width,
-                height: rect.height - inset + bottomExtension
-            )
-        )
+    /// Hides the top `topInset` points outright, then fades the next `fadeHeight` points from
+    /// transparent to opaque.
+    ///
+    /// Both of `body`'s masks use this: a non-zero `fadeHeight` dissolves the content's edge, and
+    /// `0` collapses the gradient to nothing for a hard cut.
+    ///
+    /// The negative bottom padding stretches the mask `bottomOverscrollExtension` points past the
+    /// content's own bottom edge, so the white overscroll rectangle drawn below `sheetContent`
+    /// survives both masks instead of being clipped away.
+    @ViewBuilder private func topFadeMask(topInset: CGFloat, fadeHeight: CGFloat) -> some View {
+        VStack(spacing: 0) {
+            Color.clear
+                .frame(height: topInset)
+            LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                .frame(height: fadeHeight)
+            Color.black
+        }
+        .padding(.bottom, -bottomOverscrollExtension)
     }
 }
 
