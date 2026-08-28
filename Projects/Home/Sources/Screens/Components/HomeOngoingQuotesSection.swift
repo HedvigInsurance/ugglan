@@ -68,6 +68,7 @@ private struct OngoingQuoteCard: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.generalContinueButton)
         .onTapGesture { resume() }
+        .accessibilityAddTraits(.isButton)
         .accessibilityAction(.default) { resume() }
         .hButtonIsLoading(isLoading)
         .disabled(isLoading)
