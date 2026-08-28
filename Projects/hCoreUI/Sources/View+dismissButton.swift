@@ -24,12 +24,15 @@ extension View {
     /// and dismisses directly otherwise. Use when the alert should depend on runtime state.
     /// `title`, `confirmButtonTitle`, and `cancelButtonTitle` fall back to the generic
     /// "Are you sure?" / "Yes" / "No" copy when not provided.
+    /// Pass `ButtonRole.affirmative` as `confirmButtonRole` when confirming does not
+    /// discard anything, so the button is not styled as destructive.
     public func withDismissButton(
         withAlert: Bool,
         title: String? = nil,
         message: String? = nil,
         confirmButtonTitle: String? = nil,
-        cancelButtonTitle: String? = nil
+        cancelButtonTitle: String? = nil,
+        confirmButtonRole: ButtonRole? = .destructive
     ) -> some View {
         modifier(
             DismissButton(
@@ -37,7 +40,8 @@ extension View {
                 title: title,
                 message: message,
                 confirmButtonTitle: confirmButtonTitle,
-                cancelButtonTitle: cancelButtonTitle
+                cancelButtonTitle: cancelButtonTitle,
+                confirmButtonRole: confirmButtonRole
             )
         )
     }
@@ -50,6 +54,7 @@ private struct DismissButton: ViewModifier {
     let message: String?
     let confirmButtonTitle: String?
     let cancelButtonTitle: String?
+    let confirmButtonRole: ButtonRole?
     let action: (() -> Void)?
     @EnvironmentObject var router: NavigationRouter
     @State var isAlertPresented = false
@@ -61,6 +66,7 @@ private struct DismissButton: ViewModifier {
         confirmButtonTitle: String? = nil,
         cancelButtonTitle: String? = nil,
         reducedTopSpacing: Int = 0,
+        confirmButtonRole: ButtonRole? = .destructive,
         action: (() -> Void)? = nil
     ) {
         self.reducedTopSpacing = reducedTopSpacing
@@ -69,6 +75,7 @@ private struct DismissButton: ViewModifier {
         self.message = message
         self.confirmButtonTitle = confirmButtonTitle
         self.cancelButtonTitle = cancelButtonTitle
+        self.confirmButtonRole = confirmButtonRole
         self.action = action
     }
 
@@ -105,6 +112,7 @@ private struct DismissButton: ViewModifier {
                         confirmButton: confirmButtonTitle,
                         cancelButton: cancelButtonTitle,
                         isPresented: $isAlertPresented,
+                        confirmButtonRole: confirmButtonRole,
                         action: action
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
@@ -122,6 +130,7 @@ extension View {
         confirmButton: String? = nil,
         cancelButton: String? = nil,
         isPresented: Binding<Bool>,
+        confirmButtonRole: ButtonRole? = .destructive,
         action: (() -> Void)? = nil
     ) -> some View {
         modifier(
@@ -130,7 +139,8 @@ extension View {
                 message: message,
                 confirmButton: confirmButton ?? L10n.General.yes,
                 cancelButton: cancelButton ?? L10n.General.no,
-                isPresented: isPresented
+                isPresented: isPresented,
+                confirmButtonRole: confirmButtonRole
             )
         )
     }
@@ -141,6 +151,7 @@ private struct DismissAlertPopup: ViewModifier {
     let message: String
     let confirmButton: String
     let cancelButton: String
+    let confirmButtonRole: ButtonRole?
     let action: (() -> Void)?
     @Binding var isPresented: Bool
     @EnvironmentObject var router: NavigationRouter
@@ -151,6 +162,7 @@ private struct DismissAlertPopup: ViewModifier {
         confirmButton: String = L10n.General.yes,
         cancelButton: String = L10n.General.no,
         isPresented: Binding<Bool>,
+        confirmButtonRole: ButtonRole? = .destructive,
         action: (() -> Void)? = nil
     ) {
         self.title = title
@@ -158,6 +170,7 @@ private struct DismissAlertPopup: ViewModifier {
         self.confirmButton = confirmButton
         self.cancelButton = cancelButton
         self._isPresented = isPresented
+        self.confirmButtonRole = confirmButtonRole
         self.action = action
     }
     func body(content: Content) -> some View {
@@ -167,7 +180,7 @@ private struct DismissAlertPopup: ViewModifier {
                     Button(cancelButton, role: .cancel) {
                         isPresented = false
                     }
-                    Button(confirmButton, role: .destructive) {
+                    Button(confirmButton, role: confirmButtonRole) {
                         router.dismiss()
                         action?()
                     }
@@ -175,6 +188,19 @@ private struct DismissAlertPopup: ViewModifier {
             } message: {
                 hText(message)
             }
+    }
+}
+
+extension ButtonRole {
+    /// Role for a confirm button that does not discard anything — "Leave" on a saved draft, for example.
+    /// `.confirm` from iOS 26, where it renders as the affirmative action; no role below that,
+    /// since `.destructive` would tint a harmless action red.
+    public static var affirmative: ButtonRole? {
+        if #available(iOS 26.0, *) {
+            return .confirm
+        } else {
+            return nil
+        }
     }
 }
 

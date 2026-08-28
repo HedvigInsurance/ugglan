@@ -81,7 +81,8 @@ extension View {
                 title: L10n.resumeClaimLeaveTitle,
                 message: L10n.resumeClaimLeaveBody,
                 confirmButtonTitle: L10n.resumeClaimLeaveConfirm,
-                cancelButtonTitle: L10n.resumeClaimLeaveCancel
+                cancelButtonTitle: L10n.resumeClaimLeaveCancel,
+                confirmButtonRole: ButtonRole.affirmative
             )
         } else {
             withAlertDismiss(message: L10n.Claims.Alert.body)

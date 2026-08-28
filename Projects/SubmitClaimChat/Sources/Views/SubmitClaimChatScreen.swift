@@ -500,9 +500,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
 
     private func handleRegretStep(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent) {
         let handler = createStepHandler(for: newClaimIntent)
-        if let handler = handler as? SubmitClaimFileUploadStep {
-            handler.fileUploadVm.fileGridViewModel.files = []
-        }
         self.progress = newClaimIntent.progress
         Task { @MainActor in
             if let indexToRemove = allSteps.firstIndex(where: { $0.id == currentClaimIntent.currentStep.id }) {

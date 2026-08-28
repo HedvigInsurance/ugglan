@@ -22,7 +22,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
         self.model = model
         let resumedUploads: [FileModel] = model.currentFiles.map { file in
             FileModel(
-                fileId: file.url.absoluteString,
+                fileId: file.id,
                 signedUrl: file.url.absoluteString,
                 mimeType: file.contentType.mime,
                 name: file.fileName
@@ -197,7 +197,7 @@ public class FilesUploadViewModel: ObservableObject {
                             uploadedFileIds = model.fileIds
                         }
                     }
-                    return uploadedFileIds
+                    return uploadedFileIds + alreadyUploadedFiles
                 }
 
                 delayTimer = nil

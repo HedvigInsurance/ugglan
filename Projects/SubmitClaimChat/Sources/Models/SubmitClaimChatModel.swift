@@ -335,12 +335,14 @@ public struct ClaimIntentStepContentFileUpload: Sendable {
     }
 }
 
-public struct ClaimIntentStepContentFileUploadFile: Sendable {
+public struct ClaimIntentStepContentFileUploadFile: Sendable, Identifiable {
+    public let id: String
     public let url: URL
     public let contentType: MimeType
     public let fileName: String
 
-    public init(url: URL, contentType: MimeType, fileName: String) {
+    public init(id: String, url: URL, contentType: MimeType, fileName: String) {
+        self.id = id
         self.url = url
         self.contentType = contentType
         self.fileName = fileName

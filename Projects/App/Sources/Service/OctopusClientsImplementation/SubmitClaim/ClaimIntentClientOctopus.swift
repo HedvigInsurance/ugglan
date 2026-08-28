@@ -424,6 +424,7 @@ extension ClaimIntentStepContent {
                         .compactMap { file in
                             guard let url = URL(string: file.url) else { return nil }
                             return ClaimIntentStepContentFileUploadFile(
+                                id: file.id,
                                 url: url,
                                 contentType: .findBy(mimeType: file.contentType),
                                 fileName: file.fileName
