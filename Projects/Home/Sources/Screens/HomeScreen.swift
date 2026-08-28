@@ -20,22 +20,22 @@ public struct HomeScreen: View {
 
     public var body: some View {
         ActiveHomeView()
-            .setHomeNavigationBars(
-                with: $homeStore.toolbarOptionTypes,
-                action: { [weak navigationVm] type in
-                    switch type {
-                    case .crossSell:
-                        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
-                    case .firstVet:
-                        navigationVm?.quickActionsVm
-                            .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
-                    case .chat:
-                        navigationVm?.router.push(HomeRouterAction.inbox)
-                    case .travelCertificate, .insuranceEvidence:
-                        break
-                    }
-                }
-            )
+            //            .setHomeNavigationBars(
+            //                with: $homeStore.toolbarOptionTypes,
+            //                action: { [weak navigationVm] type in
+            //                    switch type {
+            //                    case .crossSell:
+            //                        NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+            //                    case .firstVet:
+            //                        navigationVm?.quickActionsVm
+            //                            .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
+            //                    case .chat:
+            //                        navigationVm?.router.push(HomeRouterAction.inbox)
+            //                    case .travelCertificate, .insuranceEvidence:
+            //                        break
+            //                    }
+            //                }
+            //            )
             .trackVisibility(as: HomeScreen.self)
             .task {
                 vm.fetchHomeState()

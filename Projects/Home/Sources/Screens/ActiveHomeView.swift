@@ -15,6 +15,8 @@ struct ActiveHomeView: View {
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
+    @State private var navBarHeight: CGFloat = 0
+
     private let scrollSpace = "homeScroll"
 
     /// Keeps the surface's white reaching a touch past the last item, like the old sheet did.
@@ -40,12 +42,19 @@ struct ActiveHomeView: View {
                                 if height > 0 { greetingHeight = height }
                             }
                             .offset(x: 0, y: scrollOffset > 0 ? -(scrollOffset / 2) : -(scrollOffset / 3))
+                    } header: {
+                        HomeNavigationBar()
+                            .padding(.vertical, .padding8)
+                            .onGeometryChange(for: CGFloat.self, of: \.size.height) { navBarHeight = $0 }
                     }
                     Section {
                         sheetContent
                             .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
                             // The sheet must always reach the screen bottom at rest.
-                            .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
+                            .frame(
+                                minHeight: viewportHeight - greetingHeight - headerHeight - navBarHeight,
+                                alignment: .top
+                            )
                             .background(Rectangle().fill(hFillColor.Translucent.primary))
                             // Trim the content as it rises past the pinned header's bottom edge
                             // so it disappears beneath the header instead of showing through
@@ -54,7 +63,7 @@ struct ActiveHomeView: View {
                             // has gone under the header.
                             .clipShape(
                                 TopClipShape(
-                                    topInset: max(0, -scrollOffset - greetingHeight),
+                                    topInset: max(0, -scrollOffset - greetingHeight - navBarHeight),
                                     bottomExtension: bottomOverscrollExtension
                                 )
                             )
@@ -106,6 +115,57 @@ struct ActiveHomeView: View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
                 .sectionContainerStyle(.transparent)
+        }
+    }
+}
+
+private struct HomeNavigationBar: View {
+    @AppObservedObject private var homeStore: HomeStore
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+
+    var body: some View {
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: .padding8) {
+                toolbar()
+            }
+        } else {
+            toolbar()
+        }
+    }
+
+    private func toolbar() -> some View {
+        HStack(spacing: .padding8) {
+            Spacer()
+            ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
+                barButton(for: type)
+            }
+        }
+        .padding(.horizontal, .padding16)
+    }
+
+    @ViewBuilder
+    private func barButton(for type: ToolbarOptionType) -> some View {
+        let button = ToolbarButtonView(
+            type: type,
+            placement: .trailing,
+            action: { [weak navigationVm] type in
+                switch type {
+                case .crossSell:
+                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+                case .firstVet:
+                    navigationVm?.quickActionsVm
+                        .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
+                case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
+                case .travelCertificate, .insuranceEvidence:
+                    break
+                }
+            },
+            size: .padding40
+        )
+        if #available(iOS 26.0, *) {
+            button.glassEffect(.regular.interactive(), in: Circle())
+        } else {
+            button
         }
     }
 }

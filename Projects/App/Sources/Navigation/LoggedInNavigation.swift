@@ -705,7 +705,7 @@ struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
     var body: some View {
-        hNavigationStack(router: homeNavigationVm.router, tracking: self) {
+        hNavigationStack(router: homeNavigationVm.router, options: .navigationBarHidden, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(
