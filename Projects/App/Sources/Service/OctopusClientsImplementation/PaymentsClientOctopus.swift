@@ -40,7 +40,7 @@ extension PaymentStatusData {
             .displayDateDDMMMYYYYFormat
 
         let status: PayinMethodStatus = {
-            if let date = missedPaymentsTerminationDate { return .contactUs(date: date) }
+            if let date = missedPaymentsTerminationDate { return .terminatingDueToMissedPayments(date: date) }
             if let defaultPayin = defaultPayinFragment { return defaultPayin.status.asPayinMethodStatus }
             return missingConnection == .payin ? .needsSetup : .noNeedToConnect
         }()

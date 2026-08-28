@@ -1,17 +1,18 @@
-import Apollo
 import AppStateContainer
 import Combine
 import Contracts
-import EditStakeholders
 import Payment
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @StateObject private var vm = HomeBottomScrollViewModel()
-    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
-    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+    @ObservedObject private var vm: HomeBottomScrollViewModel
+    @StateObject private var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
+
+    init(vm: HomeBottomScrollViewModel) {
+        self.vm = vm
+    }
 
     var body: some View {
         InfoCardScrollView(
@@ -19,32 +20,14 @@ struct HomeBottomScrollView: View {
             vm: scrollVM,
             content: { content in
                 switch content.id {
-                case .payment:
-                    ConnectPaymentCardView()
-                        .environmentObject(navigationVm.connectPaymentVm)
-                case .payout:
-                    ConnectPayoutCardView { [weak navigationVm] in
-                        navigationVm?.isPayoutMethodPresented = true
-                    }
-                case .renewal:
-                    RenewalCardView()
+                case .renewal: RenewalCardView()
                 case let .importantMessage(id):
                     let store: HomeStore = globalAppStateContainer.get()
                     if let importantMessage = store.getImportantMessage(with: id) {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
-                case .missingCoInsured(let type):
-                    StakeholderInfoHomeView(infoText: type.missingAddInfoText) {
-                        navigationVm.editStakeholdersVm.start(stakeholderType: type, forMissingStakeholders: true)
-                    }
-                case .terminated:
-                    InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
-                case .updateContactInfo:
-                    ContactInfoView()
-                case .missingPetChipId:
-                    MissingPetChipIdInfoCard {
-                        NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
-                    }
+                case .terminated, .activeInFuture, .pendingSwitchable, .pendingNonswitchable:
+                    InfoCard(text: content.id.statusMessage, type: .info)
                 }
             }
         )
@@ -55,13 +38,18 @@ struct HomeBottomScrollView: View {
 @MainActor
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
+    @Published var todos = [Todo]()
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var localItems = Set<InfoCardView>() {
         didSet {
-            withAnimation {
-                items = localItems.sorted(by: { $0.id < $1.id })
-            }
+            withAnimation { items = localItems.sorted(by: { $0.id < $1.id }) }
+        }
+    }
+
+    private var localTodos = Set<Todo>() {
+        didSet {
+            withAnimation { todos = localTodos.sorted() }
         }
     }
 
@@ -73,38 +61,28 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleMissingCoOwners()
         handleImportantMessages()
         handleRenewalCardView()
-        handleTerminatedMessage()
+        handleStatusMessage()
         handleUpdateContactInfo()
         handleMissingPetChipIds()
+        handleDataCollectionPermission()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
         let item = InfoCardView(with: item)
-        if addItem {
-            _ = withAnimation {
-                self.localItems.insert(item)
-            }
-        } else {
-            _ = withAnimation {
-                self.localItems.remove(item)
-            }
+        withAnimation {
+            if addItem { localItems.insert(item) } else { localItems.remove(item) }
+        }
+    }
+
+    private func handleTodo(_ todo: Todo, with addItem: Bool) {
+        withAnimation {
+            if addItem { localTodos.insert(todo) } else { localTodos.remove(todo) }
         }
     }
 
     private func handlePayments() {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         let homeStore: HomeStore = globalAppStateContainer.get()
-        homeStore.$memberContractState
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] memberContractState in
-                switch memberContractState {
-                case .terminated:
-                    self?.handleItem(.terminated, with: true)
-                default:
-                    self?.handleItem(.terminated, with: false)
-                }
-            })
-            .store(in: &cancellables)
         let needsPaymentSetupPublisher = paymentStore.$paymentStatusData
             .removeDuplicates()
         let memberStatePublisher = homeStore.$memberContractState
@@ -121,15 +99,16 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
         let missingPayin = status?.missingConnection == .payin
         let missingPayout = status?.missingConnection == .payout
-        handleItem(
-            .payment,
-            with: missingPayin
-                && [MemberContractState.active, MemberContractState.future].contains(userStatus)
-        )
-        handleItem(
-            .payout,
-            with: missingPayout && !missingPayin
-        )
+        let showsPayin = missingPayin && [MemberContractState.active, MemberContractState.future].contains(userStatus)
+        let terminationDueToMissedPaymentsDate: String? =
+            if case let .terminatingDueToMissedPayments(date) = status?.status { date } else { nil }
+        let isTerminatingDueToMissedPayments =
+            if case .terminatingDueToMissedPayments = status?.status { true } else { false }
+        let showsPayout = missingPayout && !missingPayin
+
+        handleTodo(.paymentOverdue(date: terminationDueToMissedPaymentsDate), with: isTerminatingDueToMissedPayments)
+        handleTodo(.paymentMethodMissing, with: showsPayin && !isTerminatingDueToMissedPayments)
+        handleTodo(.payoutMethodMissing, with: showsPayout)
     }
 
     private func handleImportantMessages() {
@@ -146,10 +125,8 @@ class HomeBottomScrollViewModel: ObservableObject {
                 var oldItems = self.localItems
                 let itemsToRemove = oldItems.filter { view in
                     switch view.id {
-                    case .importantMessage:
-                        return true
-                    default:
-                        return false
+                    case .importantMessage: true
+                    default: false
                     }
                 }
                 for itemToRemove in itemsToRemove {
@@ -158,9 +135,7 @@ class HomeBottomScrollViewModel: ObservableObject {
                 for importantMessage in importantMessages {
                     oldItems.insert(.init(with: .importantMessage(message: importantMessage.id)))
                 }
-                withAnimation {
-                    self.localItems = oldItems
-                }
+                withAnimation { self.localItems = oldItems }
             })
             .store(in: &cancellables)
     }
@@ -183,7 +158,7 @@ class HomeBottomScrollViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingCoInsured(type: .coInsured), with: show)
+                self?.handleTodo(.coInsuredMissing, with: show)
             })
             .store(in: &cancellables)
     }
@@ -194,24 +169,43 @@ class HomeBottomScrollViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingCoInsured(type: .coOwner), with: show)
+                self?.handleTodo(.coOwnerMissing, with: show)
             })
             .store(in: &cancellables)
     }
 
-    func handleTerminatedMessage() {
+    private func handleStatusMessage() {
         let store: HomeStore = globalAppStateContainer.get()
         store.$memberContractState
+            .combineLatest(store.$futureStatus)
+            .map { memberContractState, futureStatus in
+                Self.statusCard(for: memberContractState, futureStatus: futureStatus)
+            }
+            .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] memberContractState in
-                switch memberContractState {
-                case .terminated:
-                    self?.handleItem(.terminated, with: true)
-                default:
-                    self?.handleItem(.terminated, with: false)
+            .sink(receiveValue: { [weak self] statusCard in
+                guard let self = self else { return }
+                let staleItems = self.localItems.filter { $0.id.isStatusMessage }
+                var newItems = self.localItems.subtracting(staleItems)
+                if let statusCard {
+                    newItems.insert(.init(with: statusCard))
                 }
+                withAnimation { self.localItems = newItems }
             })
             .store(in: &cancellables)
+    }
+
+    private static func statusCard(
+        for memberContractState: MemberContractState,
+        futureStatus: FutureStatus
+    ) -> InfoCardType? {
+        switch (memberContractState, futureStatus) {
+        case (.terminated, _): .terminated
+        case (.future, let .activeInFuture(inceptionDate)): .activeInFuture(inceptionDate: inceptionDate)
+        case (.future, .pendingSwitchable): .pendingSwitchable
+        case (.future, .pendingNonswitchable): .pendingNonswitchable
+        default: nil
+        }
     }
 
     func handleUpdateContactInfo() {
@@ -220,8 +214,20 @@ class HomeBottomScrollViewModel: ObservableObject {
             .compactMap { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
-                self?.handleItem(.updateContactInfo, with: isContactInfoUpdateNeeded)
+                self?.handleTodo(.contactDetailsMissing, with: isContactInfoUpdateNeeded)
             })
+            .store(in: &cancellables)
+    }
+
+    private func handleDataCollectionPermission() {
+        let featureFlags = Dependencies.featureFlags()
+
+        UserDefaults.standard.publisher(for: \.analyticsConsent)
+            .combineLatest(featureFlags.$data)
+            .map { consent, featureFlags in consent == nil && featureFlags.isAnalyticsEnabled }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] undecided in self?.handleTodo(.dataCollectionPermissionMissing, with: undecided) }
             .store(in: &cancellables)
     }
 
@@ -231,15 +237,21 @@ class HomeBottomScrollViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
-                self?.handleItem(.missingPetChipId, with: show)
+                self?.handleTodo(.petChipIdMissing, with: show)
             })
             .store(in: &cancellables)
     }
 }
 
 #Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-    return HomeBottomScrollView()
+    Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+    Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return HomeBottomScrollView(vm: HomeBottomScrollViewModel())
 }
 
 struct InfoCardView: Identifiable, Hashable {
@@ -249,13 +261,29 @@ struct InfoCardView: Identifiable, Hashable {
     }
 }
 
+/// The synthesized `Comparable` follows the declaration order, and that order is the carousel order.
 public enum InfoCardType: Hashable, Comparable {
-    case payment
-    case payout
-    case missingCoInsured(type: StakeholderType)
-    case missingPetChipId
     case importantMessage(message: String)
     case renewal
     case terminated
-    case updateContactInfo
+    case activeInFuture(inceptionDate: String)
+    case pendingSwitchable
+    case pendingNonswitchable
+}
+
+extension InfoCardType {
+    /// `nil` for the cards that bring their own view instead of a line of status copy.
+    var statusMessage: String? {
+        switch self {
+        case .terminated: L10n.HomeTab.terminatedBody
+        case let .activeInFuture(inceptionDate): L10n.HomeTab.activeInFutureInfo(inceptionDate)
+        case .pendingSwitchable: L10n.HomeTab.pendingSwitchableInfo
+        case .pendingNonswitchable: L10n.HomeTab.pendingNonswitchableInfo
+        case .importantMessage, .renewal: nil
+        }
+    }
+
+    var isStatusMessage: Bool {
+        statusMessage != nil
+    }
 }

@@ -16,6 +16,7 @@ Handles insurance addon discovery, purchase, and removal. Supports both toggleab
 - Service implementation: `AddonsService` in `Sources/Service/OctopusImplementation/AddonsService.swift`
 - Demo: `AddonsClientDemo` in `Sources/Service/DemoImplementation/AddonsClientDemo.swift`
 - Screens: `ChangeAddonScreen`, `ChangeAddonSummaryScreen`, `AddonProcessingScreen`, `AddonSelectInsuranceScreen`, `AddonSelectSubOptionScreen`, `AddonLearnMoreView`, `RemoveAddonScreen`, `RemoveAddonSummaryScreen`, `RemoveAddonProcessingScreen`, `DeflectView` in `Sources/Views/`
+- Shared visuals: `AddonPillowView` in `Sources/Views/` — 48pt pillow per `AddonType` with the plus badge; consumed by Home's addon rows
 - Models: `AddonOffer` in `Sources/Models/AddonOffer.swift`, `AddonRemoveOffer` in `Sources/Models/AddonRemoveOffer.swift`
 
 ## Dependencies

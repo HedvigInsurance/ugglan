@@ -56,6 +56,7 @@ public struct ProfileNavigation<Content: View>: View {
                             await delay(0.8)
                             profileNavigationViewModel.profileRouter.pop()
                         }
+                        .hFormContentPosition(.center)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
                     case .certificates:

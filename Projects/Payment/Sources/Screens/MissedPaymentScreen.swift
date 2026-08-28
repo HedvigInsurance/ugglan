@@ -42,7 +42,7 @@ struct MissedPaymentScreen: View {
                         .padding(.padding16)
                 }
                 .padding(.top, .padding8)
-                if showInfoMesaage {
+                if isTerminatingDueToMissedPayments {
                     hSection {
                         infoCard
                     }
@@ -75,7 +75,7 @@ struct MissedPaymentScreen: View {
             presented: $vm.showSuccessScreen
         ) {
             StateView(
-                type: showInfoMesaage ? .error : .success,
+                type: isTerminatingDueToMissedPayments ? .error : .success,
                 title: L10n.paymentsPaymentInProgress,
                 bodyText: L10n.paymentsPaymentInProgressDescription,
                 formPosition: .center
@@ -92,7 +92,7 @@ struct MissedPaymentScreen: View {
                 )
             )
             .hStateViewContentBottomAttachedView {
-                if showInfoMesaage {
+                if isTerminatingDueToMissedPayments {
                     infoCard
                 }
             }
@@ -224,9 +224,8 @@ struct MissedPaymentScreen: View {
         )
     }
 
-    private var showInfoMesaage: Bool {
-        if case .contactUs = paymentStore.paymentStatusData?.status { return true }
-        return false
+    private var isTerminatingDueToMissedPayments: Bool {
+        if case .terminatingDueToMissedPayments = paymentStore.paymentStatusData?.status { true } else { false }
     }
 }
 
@@ -277,7 +276,7 @@ class PaymentOverdueScreenViewModel: ObservableObject {
 
     let store: PaymentStore = globalAppStateContainer.get()
     store.paymentStatusData = .init(
-        status: .contactUs(date: "22. maj 2026."),
+        status: .terminatingDueToMissedPayments(date: "22. maj 2026."),
         chargingDay: 27,
         defaultPayinMethod: nil,
         payinMethods: [],

@@ -23,7 +23,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
-    public var editStakeholdersVm = EditStakeholdersViewModel(
+    public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }
@@ -133,8 +133,10 @@ public struct TravelCertificateNavigation: View {
             options: .constant(.withoutGrabber)
         ) {
             InfoView(
-                title: L10n.TravelCertificate.Info.title,
-                description: L10n.TravelCertificate.Info.subtitle
+                infoViewModel: .init(
+                    title: L10n.TravelCertificate.Info.title,
+                    description: L10n.TravelCertificate.Info.subtitle
+                )
             )
         }
         .handleAddons(input: $vm.isAddonPresented)

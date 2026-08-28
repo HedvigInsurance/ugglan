@@ -27,7 +27,8 @@ public struct HomeScreen: View {
                     case .crossSell:
                         NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
                     case .firstVet:
-                        navigationVm?.navBarItems.isFirstVetPresented = true
+                        navigationVm?.quickActionsVm
+                            .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
                     case .chat:
                         navigationVm?.router.push(HomeRouterAction.inbox)
                     case .travelCertificate, .insuranceEvidence:
@@ -44,37 +45,51 @@ public struct HomeScreen: View {
 
 @MainActor
 class HomeVM: ObservableObject {
-    private var cancellables = Set<AnyCancellable>()
-    private var chatNotificationPullTimerCancellable: AnyCancellable?
-    private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
-    let contractStore: ContractStore = globalAppStateContainer.get()
+    private var chatNotificationsTimerCancellable: AnyCancellable?
+    private var claimsTimerCancellable: AnyCancellable?
+    private let contractStore: ContractStore = globalAppStateContainer.get()
+    private let homeStore: HomeStore = globalAppStateContainer.get()
+    private let claimsStore: ClaimsStore = globalAppStateContainer.get()
+    private let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+    private let paymentStore: PaymentStore = globalAppStateContainer.get()
 
     init() {
         addObserverForApplicationDidBecomeActive()
-        let store: HomeStore = globalAppStateContainer.get()
-        Task { await store.fetchMissedCharge() }
+        Task { await homeStore.fetchMissedCharge() }
     }
 
     func fetchHomeState() {
-        let store: HomeStore = globalAppStateContainer.get()
-        Task { await store.fetchMemberState() }
-        Task { await store.fetchImportantMessages() }
-        Task { await store.fetchQuickActions() }
-        Task { await store.fetchChatNotifications() }
-        if store.hasMissedCharge {
-            Task { await store.fetchMissedCharge() }
-        }
-        let crossSellStore: CrossSellStore = globalAppStateContainer.get()
-        Task { await crossSellStore.fetchRecommendedCrossSellId() }
+        Task { await homeStore.fetchMemberState() }
+        Task { await homeStore.fetchImportantMessages() }
+        Task { await homeStore.fetchQuickActions() }
+        Task { await homeStore.fetchOngoingQuotes() }
+        if homeStore.hasMissedCharge { Task { await homeStore.fetchMissedCharge() } }
+        Task { await homeStore.fetchChatNotifications() }
+        Task { await crossSellStore.fetchHomeCrossSells() }
+        Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
-        let paymentStore: PaymentStore = globalAppStateContainer.get()
         Task { await paymentStore.fetchPaymentStatus() }
-        chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
-        chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
-            .sink { _ in
+
+        chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
+            .autoconnect()
+            .prepend(.now)
+            .receive(on: RunLoop.main)
+            .sink { [self] _ in
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
-                let store: HomeStore = globalAppStateContainer.get()
-                Task { await store.fetchChatNotifications() }
+                Task { await homeStore.fetchChatNotifications() }
+            }
+
+        claimsTimerCancellable = Timer.publish(every: 120, on: .main, in: .common)
+            .autoconnect()
+            .receive(on: RunLoop.main)
+            .prepend(.now)
+            .sink { [self] _ in
+                guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
+                Task {
+                    async let fetchActive = claimsStore.fetchActiveClaims()
+                    async let fetchInProgress: Void = claimsStore.fetchClaimInProgress()
+                    _ = await (fetchActive, fetchInProgress)
+                }
             }
     }
 

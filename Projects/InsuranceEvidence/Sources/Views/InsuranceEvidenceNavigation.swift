@@ -40,8 +40,10 @@ public struct InsuranceEvidenceNavigation: View {
             options: .constant(.withoutGrabber)
         ) {
             InfoView(
-                title: L10n.InsuranceEvidence.readMoreTitle,
-                description: L10n.InsuranceEvidence.readMoreDescription
+                infoViewModel: .init(
+                    title: L10n.InsuranceEvidence.readMoreTitle,
+                    description: L10n.InsuranceEvidence.readMoreDescription
+                )
             )
         }
     }
