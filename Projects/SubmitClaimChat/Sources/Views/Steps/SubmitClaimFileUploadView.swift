@@ -17,9 +17,6 @@ struct SubmitClaimFileUploadView: View {
 
     var body: some View {
         showFilesView
-            .showFileSourcePicker($viewModel.showFileSourcePicker) { files in
-                fileUploadVm.addFiles(with: files)
-            }
             .onChange(of: fileUploadVm.hasFiles) { hasFiles in
                 viewModel.setDisableSkip(to: hasFiles)
             }
@@ -40,6 +37,9 @@ struct SubmitClaimFileUploadView: View {
                         } else {
                             addFilesButton
                         }
+                    }
+                    .showFileSourcePicker($viewModel.showFileSourcePicker) { files in
+                        fileUploadVm.addFiles(with: files)
                     }
                     .hButtonIsLoading(false)
                 }
