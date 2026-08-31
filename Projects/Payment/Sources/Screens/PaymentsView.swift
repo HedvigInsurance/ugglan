@@ -16,21 +16,13 @@ public struct PaymentsView: View {
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        Task {
-                            async let load: () = store.load()
-                            async let fetchStatus: () = store.fetchPaymentStatus()
-                            async let missedPayment: () = store.getMissedPayment()
-                            _ = await (load, fetchStatus, missedPayment)
-                        }
+                        vm.fetchData()
                     }),
                     dismissButton: nil
                 )
             )
-            .task {
-                async let load: () = store.load()
-                async let fetchStatus: () = store.fetchPaymentStatus()
-                async let missedPayment: () = store.getMissedPayment()
-                _ = await (load, fetchStatus, missedPayment)
+            .onAppear {
+                vm.fetchData()
             }
     }
 
@@ -199,6 +191,7 @@ public struct PaymentsView: View {
 public class PaymentsViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @AppState private var store: PaymentStore
+    private var fetchTask: Task<Void, Never>?
 
     init() {
         store.$isFetchingPaymentStatus
@@ -210,6 +203,21 @@ public class PaymentsViewModel: ObservableObject {
                 return .success
             }
             .assign(to: &$viewState)
+    }
+
+    /// Fetches all payment data in an unstructured `Task` owned by the ViewModel.
+    /// Called from `.onAppear` so it runs each time the view is presented, while
+    /// being decoupled from the view's lifecycle — it survives the aggressive
+    /// `.task` cancellation SwiftUI performs on iOS 18 during navigation transitions.
+    func fetchData() {
+        fetchTask?.cancel()
+        let store = self.store
+        fetchTask = Task {
+            async let load: () = store.load()
+            async let fetchStatus: () = store.fetchPaymentStatus()
+            async let missedPayment: () = store.getMissedPayment()
+            _ = await (load, fetchStatus, missedPayment)
+        }
     }
 }
 
