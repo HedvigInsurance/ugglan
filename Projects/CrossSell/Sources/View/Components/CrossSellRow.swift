@@ -45,10 +45,9 @@ public struct CrossSellRow<Pillow: View>: View {
                     hText(title, style: .body1).foregroundColor(hTextColor.Translucent.primary)
                     MarqueeText(
                         text: subtitle,
-                        font: Fonts.fontFor(style: .label),
-                        leftFade: 3,
-                        rightFade: 3,
-                        startDelay: 2
+                        leftFade: 2,
+                        rightFade: 2,
+                        pauseDuration: 2
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
