@@ -51,10 +51,11 @@ class HomeVM: ObservableObject {
         Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
         Task { await paymentStore.fetchPaymentStatus() }
-
+        Task { await homeStore.fetchChatNotifications() }
+        Task { await claimsStore.fetchActiveClaims() }
+        Task { await claimsStore.fetchClaimInProgress() }
         chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
-            .prepend(.now)
             .receive(on: RunLoop.main)
             .sink { [self] _ in
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
@@ -64,7 +65,6 @@ class HomeVM: ObservableObject {
         claimsTimerCancellable = Timer.publish(every: 120, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
-            .prepend(.now)
             .sink { [self] _ in
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
                 Task {
