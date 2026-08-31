@@ -19,7 +19,7 @@ public struct HomeScreen: View {
     public var body: some View {
         ActiveHomeView()
             .trackVisibility(as: HomeScreen.self)
-            .task {
+            .onAppear {
                 vm.fetchHomeState()
             }
     }
