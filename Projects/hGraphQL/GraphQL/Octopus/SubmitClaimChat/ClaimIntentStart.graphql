@@ -5,9 +5,9 @@ mutation ClaimIntentStart {
 }
 
 
-query ClaimIntentStartWithPreviousSteps {
+query ClaimIntentStartWithPreviousSteps($resume: Boolean!) {
   currentMember {
-    resumableClaimIntent {
+    resumableClaimIntent(resume: $resume) {
       ...ClaimIntentFragment
       previousSteps {
         ...ClaimIntentStepFragment

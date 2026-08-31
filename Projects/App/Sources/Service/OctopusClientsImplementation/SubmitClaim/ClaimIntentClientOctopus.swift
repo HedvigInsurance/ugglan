@@ -18,7 +18,7 @@ class ClaimIntentClientOctopus: ClaimIntentClient {
                 return try handleStep(intentFragment: intent?.fragments.claimIntentFragment)
             case .inProgress:
                 let data = try await octopus.client.fetch(
-                    query: OctopusGraphQL.ClaimIntentStartWithPreviousStepsQuery()
+                    query: OctopusGraphQL.ClaimIntentStartWithPreviousStepsQuery(resume: true)
                 )
 
                 let intent = data.currentMember.resumableClaimIntent
