@@ -113,7 +113,7 @@ public struct hNavigationStack<Screen: View>: View {
             initialView()
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(
-                    options.contains(.navigationBarHidden) ? .hidden : .visible,
+                    hNavigationStack.navigationBarVisibility(for: options),
                     for: .navigationBar
                 )
                 .trackNavigation(name: tracking.nameForTracking)
@@ -123,6 +123,19 @@ public struct hNavigationStack<Screen: View>: View {
             hNavigationStack.wireUpDismiss(navController: navController, router: router)
         }
         .environmentObject(router)
+    }
+
+    /// Resolves the toolbar visibility for the navigation bar based on the given options.
+    /// When `.ignoreNavigationBarVisibility` is set, the host does not force a visibility
+    /// value, leaving it up to individual pushed screens to control their own navigation bar.
+    private static func navigationBarVisibility(for options: RouterOptions) -> Visibility {
+        if options.contains(.navigationBarHidden) {
+            return .hidden
+        }
+        if options.contains(.ignoreNavigationBarVisibility) {
+            return .automatic
+        }
+        return .visible
     }
 
     private static func applyCustomStyling(to navController: UINavigationController, options: RouterOptions) {

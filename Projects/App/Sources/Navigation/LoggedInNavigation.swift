@@ -705,8 +705,9 @@ struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
     var body: some View {
-        hNavigationStack(router: homeNavigationVm.router, options: .navigationBarHidden, tracking: self) {
+        hNavigationStack(router: homeNavigationVm.router, options: .ignoreNavigationBarVisibility, tracking: self) {
             HomeScreen()
+                .toolbar(.hidden, for: .navigationBar)
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                     openClaimDetails(
                         claim: claim,
