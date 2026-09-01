@@ -6,28 +6,13 @@ struct HomeCrossSellsSection: View {
     let crossSells: CrossSells?
 
     var body: some View {
-        if let crossSells, !crossSells.all.isEmpty {
+        if let crossSells, !crossSells.others.isEmpty {
             CrossSellStackComponent(
-                crossSells: crossSells.all,
+                crossSells: crossSells.others,
                 discountAvailable: crossSells.discountAvailable,
                 withHeader: true,
                 headerTitle: L10n.crossSellSubtitle
             )
-        }
-    }
-}
-
-extension CrossSells {
-    fileprivate var all: [CrossSell] {
-        (recommended?.toCrossSell()).map { [$0] + others } ?? others
-    }
-}
-
-extension RecommendedCrossSell {
-    fileprivate func toCrossSell() -> CrossSell? {
-        switch self {
-        case let .insurance(insurance): insurance
-        case .addon: nil
         }
     }
 }

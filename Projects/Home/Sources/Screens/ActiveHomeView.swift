@@ -191,7 +191,7 @@ private struct HomeNavigationBar: View {
             action: { [weak navigationVm] type in
                 switch type {
                 case .crossSell:
-                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .home))
+                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
                 case .firstVet:
                     navigationVm?.quickActionsVm
                         .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))

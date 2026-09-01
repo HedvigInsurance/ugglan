@@ -98,25 +98,27 @@ extension CrossSellSource {
 
     private var asGraphQLUserFlow: OctopusGraphQL.UserFlow {
         switch self {
-        case .home: return .homeXSell
-        case .closedClaim: return .smartXSell
-        case .changeTier: return .smartXSell
-        case .addon: return .smartXSell
-        case .movingFlow: return .smartXSell
-        case .insurances: return .insurances
-        case .onboarding: return .onboarding
+        case .homeXSell: .homeXSell
+        case .closedClaim: .smartXSell
+        case .changeTier: .smartXSell
+        case .addon: .smartXSell
+        case .movingFlow: .smartXSell
+        case .home: .home
+        case .insurances: .insurances
+        case .onboarding: .onboarding
         }
     }
 
     private var asGraphQLFlowSource: OctopusGraphQL.FlowSource? {
         switch self {
-        case .home: return nil
-        case .closedClaim: return .closedClaim
-        case .changeTier: return .changeTier
-        case .addon: return .addon
-        case .movingFlow: return .moving
-        case .insurances: return nil
-        case .onboarding: return nil
+        case .homeXSell: nil
+        case .closedClaim: .closedClaim
+        case .changeTier: .changeTier
+        case .addon: .addon
+        case .movingFlow: .moving
+        case .home: nil
+        case .insurances: nil
+        case .onboarding: nil
         }
     }
 
@@ -124,7 +126,7 @@ extension CrossSellSource {
         switch self {
         case let .changeTier(contractId), let .movingFlow(contractId): contractId
         case let .closedClaim(_, contractId): contractId
-        case .home, .addon, .insurances, .onboarding: nil
+        case .homeXSell, .addon, .home, .insurances, .onboarding: nil
         }
     }
 

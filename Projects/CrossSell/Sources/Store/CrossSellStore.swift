@@ -44,9 +44,10 @@ public final class CrossSellStore: AppStore {
 
     public func fetchHomeCrossSells() async {
         do {
-            let crossSells = try await crossSellService.getCrossSell(source: .home)
-            homeCrossSells = crossSells
-            let recommendedId = crossSells.recommended?.id
+            async let home = crossSellService.getCrossSell(source: .home)
+            let recommendedId = try await crossSellService.getCrossSell(source: .homeXSell).recommended?.id
+
+            homeCrossSells = try await home
             hasNewOffer = recommendedId != nil && recommendedId != lastSeenRecommendedProductId
         } catch {}
     }
