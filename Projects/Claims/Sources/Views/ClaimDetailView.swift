@@ -47,13 +47,6 @@ public struct ClaimDetailView: View {
                 }
             }
         }
-        .showFileSourcePicker(
-            $vm.showFileSourcePicker,
-            selecedFiles: { [weak vm] files in
-                guard let vm else { return }
-                vm.showAddFiles(with: files)
-            }
-        )
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
                 let claimStore: ClaimsStore = globalAppStateContainer.get()
@@ -309,6 +302,13 @@ public struct ClaimDetailView: View {
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
                             ) { [weak vm] in vm?.showFileSourcePicker = true }
+                            .showFileSourcePicker(
+                                $vm.showFileSourcePicker,
+                                selecedFiles: { [weak vm] files in
+                                    guard let vm else { return }
+                                    vm.showAddFiles(with: files)
+                                }
+                            )
                         }
                     }
                     .sectionContainerStyle(.transparent)

@@ -56,7 +56,11 @@ public struct ClaimFilesView: View {
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
                             ) { [weak vm] in vm?.showFileSourcePicker = true }
                             .disabled(vm.isLoading)
-
+                            .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
+                                for file in files {
+                                    vm?.add(file: file)
+                                }
+                            }
                             hButton(
                                 .large,
                                 .primary,
@@ -69,11 +73,6 @@ public struct ClaimFilesView: View {
                     .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
-            }
-        }
-        .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
-            for file in files {
-                vm?.add(file: file)
             }
         }
     }
