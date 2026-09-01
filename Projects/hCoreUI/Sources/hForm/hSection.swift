@@ -208,8 +208,8 @@ extension View {
         environment(\.hWithoutDivider, true)
     }
 
-    public func shouldShowDivider(_ show: Bool) -> some View {
-        environment(\.hWithoutDivider, show)
+    public func shouldHideDivider(_ hide: Bool) -> some View {
+        environment(\.hWithoutDivider, hide)
     }
 }
 
