@@ -19,39 +19,9 @@ struct ContractInformationView: View {
                 VStack(spacing: .padding16) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
-                    hSection(contract.getDisplayItems()) { element in
-                        switch element.type {
-                        case let .stakeholderItem(stakeholderItem):
-                            coInsuredView(stakeholderItem: stakeholderItem, contract: contract)
-                        case let .itemCost(cost):
-                            hRow {
-                                ItemCostView(itemCost: cost)
-                            }
-                        case let .regular(title, value, subtitle):
-                            hRow {
-                                VStack(alignment: .leading, spacing: 0) {
-                                    hText(title)
-                                    if let subtitle {
-                                        hText(subtitle, style: .label)
-                                            .foregroundColor(hTextColor.Translucent.secondary)
-                                    }
-                                }
-                            }
-                            .withCustomAccessory {
-                                Group {
-                                    Spacer()
-                                    if let date = value.localDateToDate?.displayDateDDMMMYYYYFormat {
-                                        hText(date)
-                                    } else {
-                                        ZStack {
-                                            hText(value)
-                                            hText(" ")
-                                        }
-                                    }
-                                }
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            }
-                            .accessibilityElement(children: .combine)
+                    hSection(contract.getDisplayItems()) { item in
+                        ContractDisplayItemRow(item: item) { stakeholderItem in
+                            stakeholderRow(stakeholderItem, contract: contract)
                         }
                     }
                     .sectionContainerStyle(.opaque)
@@ -91,49 +61,33 @@ struct ContractInformationView: View {
         }
     }
 
-    private func coInsuredView(stakeholderItem: StakeholderItem?, contract: Contract) -> some View {
+    private func stakeholderRow(_ stakeholderItem: StakeholderItem?, contract: Contract) -> some View {
         hRow {
             if let stakeholderItem {
+                let isEditable = contract.canEditStakeholder(stakeholderItem.stakeholder)
                 if stakeholderItem.stakeholder.hasMissingInfo {
                     StakeholderField(
-                        accessoryView: getAccessoryView(
-                            contract: contract,
-                            stakeholder: stakeholderItem.stakeholder
-                        )
-                        .foregroundColor(hSignalColor.Amber.element),
+                        accessoryView: missingInfoAccessory(isEditable: isEditable),
                         date: stakeholderItem.stakeholder.terminatesOn
                             ?? stakeholderItem.stakeholder.activatesOn,
-                        stakeholderType: stakeholderItem.stakeholderType,
+                        stakeholderType: stakeholderItem.stakeholderType
                     )
                     .onTapGesture {
-                        if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo),
-                            stakeholderItem.stakeholder.terminatesOn == nil
-                        {
-                            let contract: StakeholdersConfig = .init(
-                                contract: contract,
-                                stakeholderType: stakeholderItem.stakeholderType,
-                                fromInfoCard: false
-                            )
-                            contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
-                        }
+                        guard isEditable else { return }
+                        let config: StakeholdersConfig = .init(
+                            contract: contract,
+                            stakeholderType: stakeholderItem.stakeholderType,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editStakeholdersVm.start(fromContract: config)
                     }
                     .accessibilityAddTraits(.isButton)
-                    .accessibilityAddTraits(
-                        {
-                            if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo)
-                                && stakeholderItem.stakeholder.terminatesOn == nil
-                            {
-                                return .isButton
-                            }
-                            return AccessibilityTraits()
-                        }()
-                    )
                 } else {
                     StakeholderField(
                         stakeholder: stakeholderItem.stakeholder,
                         accessoryView: EmptyView(),
                         date: stakeholderItem.date,
-                        stakeholderType: stakeholderItem.stakeholderType,
+                        stakeholderType: stakeholderItem.stakeholderType
                     )
                 }
             } else {
@@ -230,9 +184,10 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func getAccessoryView(contract: Contract, stakeholder: Stakeholder) -> some View {
-        if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo), stakeholder.terminatesOn == nil {
+    private func missingInfoAccessory(isEditable: Bool) -> some View {
+        if isEditable {
             hCoreUIAssets.warningTriangleFilledSmall.view
+                .foregroundColor(hSignalColor.Amber.element)
         } else {
             EmptyView()
         }
@@ -409,5 +364,10 @@ extension Contract {
         case onlyCoOwners(): L10n.editCoownerTitle
         default: L10n.contractEditInfoLabel
         }
+    }
+
+    /// A stakeholder row is only actionable while the contract allows editing and the person is not being removed.
+    fileprivate func canEditStakeholder(_ stakeholder: Stakeholder) -> Bool {
+        (showEditCoInsuredInfo || showEditCoOwnersInfo) && stakeholder.terminatesOn == nil
     }
 }

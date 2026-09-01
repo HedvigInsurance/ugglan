@@ -17,10 +17,6 @@ class StakeholdersViewModel: ObservableObject {
         self.config = config
     }
 
-    var hasContentBelow: Bool {
-        nbOfMissingStakeholdersExcludingDeleted > 0
-    }
-
     var hasExistingStakeholders: Bool {
         !config.preSelectedStakeholders.filter { !stakeholdersAdded.contains($0) }.isEmpty
     }

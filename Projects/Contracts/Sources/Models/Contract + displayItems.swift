@@ -1,50 +1,34 @@
-import hCore
 import EditStakeholders
+import hCore
 
 extension Contract {
     func getDisplayItems() -> [ContractInformationDisplayItem] {
-        var items = [ContractInformationDisplayItem]()
-        if let displayItems = currentAgreement?.getDisplayItems() {
-            items.append(contentsOf: displayItems)
-        }
-        if supportsCoInsured || supportsCoOwners || typeOfContract.isPaymentProtection {
-            let supportedPplValue = switch coInsured.count {
-            case 0: L10n.changeAddressOnlyYou
-            default: L10n.changeAddressYouPlus(coInsured.count)
-            }
-            items.append(
-                .init(
-                    id: "supportedPpl",
-                    type: .regular(title: L10n.coinsuredEditTitle, value: supportedPplValue, subtitle: nil)
-                )
+        var items = currentAgreement?.getDisplayItems() ?? []
+        guard supportsCoInsured || supportsCoOwners || typeOfContract.isPaymentProtection else { return items }
+
+        let coInsuredValue =
+            coInsured.isEmpty ? L10n.changeAddressOnlyYou : L10n.changeAddressYouPlus(coInsured.count)
+        items.append(
+            .init(
+                id: "supportedPpl",
+                type: .regular(title: L10n.coinsuredEditTitle, value: coInsuredValue, subtitle: nil)
             )
-            
-            items.append(
-                .init(
-                    id: "owner",
-                    type: .stakeholderItem(
-                        item: nil
-                    )
-                )
-            )
-            for stakeholderItem in stakeholderItems() {
-                items.append(.init(id: stakeholderItem.id, type: .stakeholderItem(item: stakeholderItem)))
-            }
-        }
+        )
+        // A stakeholder item without a person renders the contract owner.
+        items.append(.init(id: "owner", type: .stakeholder(item: nil)))
+        items.append(contentsOf: stakeholderItems.map { .init(id: $0.id, type: .stakeholder(item: $0)) })
         return items
     }
-    
-    fileprivate func stakeholderItems() -> [StakeholderItem] {
+
+    private var stakeholderItems: [StakeholderItem] {
         coInsured.map { $0.asStakeholderItem(type: .coInsured) }
             + coOwners.map { $0.asStakeholderItem(type: .coOwner) }
     }
 }
 
-
-
 extension Agreement {
     func getDisplayItems() -> [ContractInformationDisplayItem] {
-        let displayItems = displayItems.map { displayItem in
+        let items = displayItems.map { displayItem in
             ContractInformationDisplayItem(
                 id: displayItem.id,
                 type: .regular(
@@ -54,23 +38,17 @@ extension Agreement {
                 )
             )
         }
-
-        let itemCostDisplayItem = itemCost.map({ itemCost in
-            ContractInformationDisplayItem(id: "itemCost", type: .itemCost(cost: itemCost))
-        })
-        if let itemCostDisplayItem {
-            return displayItems + [itemCostDisplayItem]
-        }
-        return displayItems
+        guard let itemCost else { return items }
+        return items + [.init(id: "itemCost", type: .itemCost(cost: itemCost))]
     }
 }
 
 struct ContractInformationDisplayItem: Identifiable {
     let id: String
-    let type: ContractInformationDisplayItemType
+    let type: ItemType
 
-    enum ContractInformationDisplayItemType {
-        case stakeholderItem(item: StakeholderItem?)
+    enum ItemType {
+        case stakeholder(item: StakeholderItem?)
         case itemCost(cost: ItemCost)
         case regular(title: String, value: String, subtitle: String?)
     }

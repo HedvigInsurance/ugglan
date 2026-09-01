@@ -26,20 +26,18 @@ public struct ContractOwnerField: View {
     }
 
     public var body: some View {
-        VStack(spacing: .padding16) {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    hText(fullName)
-                        .foregroundColor(getTitleColor)
-                    Spacer()
-                    hCoreUIAssets.lock.view
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-                }
-                hText(SSN, style: .label)
-                    .foregroundColor(getSubTitleColor)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                hText(fullName)
+                    .foregroundColor(getTitleColor)
+                Spacer()
+                hCoreUIAssets.lock.view
+                    .foregroundColor(hTextColor.Opaque.tertiary)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            hText(SSN, style: .label)
+                .foregroundColor(getSubTitleColor)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
     }
 

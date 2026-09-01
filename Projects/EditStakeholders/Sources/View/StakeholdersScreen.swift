@@ -8,17 +8,17 @@ struct StakeholdersScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: StakeholderFieldType?
 
-    private var displayItems: [ShareholderDisplayItemType] {
-        let owner = ShareholderDisplayItemType.owner
-        let items = vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
-        let coInsured = items.enumerated()
-            .map { (index, stakeholder) in
-                ShareholderDisplayItemType.stakeholder(item: stakeholder, withDivider: index < items.count - 1)
-            }
-        if vm.config.numberOfMissingStakeholdersWithoutTermination == 0 {
-            return [owner] + coInsured + [.add]
+    private var displayItems: [StakeholderRowItem] {
+        let stakeholders = vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
+        let stakeholderRows = stakeholders.map { stakeholder in
+            StakeholderRowItem.stakeholder(
+                item: stakeholder,
+                // No divider above the add button, so the last person in the list hides its own.
+                hidesDivider: stakeholder.id == stakeholders.last?.id
+            )
         }
-        return [owner] + coInsured
+        let showsAddButton = vm.config.numberOfMissingStakeholdersWithoutTermination == 0
+        return [.owner] + stakeholderRows + (showsAddButton ? [.add] : [])
     }
 
     var body: some View {
@@ -31,7 +31,7 @@ struct StakeholdersScreen: View {
                             config: vm.config
                         )
                     }
-                case let .stakeholder(stakeholder, withDivider):
+                case let .stakeholder(stakeholder, hidesDivider):
                     hRow {
                         StakeholderField(
                             stakeholder: stakeholder.stakeholder,
@@ -41,7 +41,7 @@ struct StakeholdersScreen: View {
                             stakeholderType: stakeholder.stakeholderType
                         )
                     }
-                    .shouldHideDivider(!withDivider)
+                    .shouldHideDivider(hidesDivider)
                     .accessibilityValue(accessoryType(for: stakeholder).accessibilityValue)
                 case .add:
                     hRow {
@@ -185,19 +185,16 @@ struct StakeholdersScreen: View {
     return StakeholdersScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
 }
 
-private enum ShareholderDisplayItemType: Identifiable {
+private enum StakeholderRowItem: Identifiable {
+    case owner
+    case stakeholder(item: StakeholderItem, hidesDivider: Bool)
+    case add
+
     var id: String {
         switch self {
-        case .owner:
-            return "owner"
-        case let .stakeholder(item, _):
-            return item.id
-        case .add:
-            return "add"
+        case .owner: "owner"
+        case let .stakeholder(item, _): item.id
+        case .add: "add"
         }
     }
-
-    case owner
-    case stakeholder(item: StakeholderItem, withDivider: Bool)
-    case add
 }

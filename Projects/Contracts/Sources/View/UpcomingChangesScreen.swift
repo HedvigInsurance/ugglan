@@ -22,39 +22,7 @@ struct UpcomingChangesScreen: View {
     var body: some View {
         hForm {
             hSection(agreement.getDisplayItems()) { item in
-                switch item.type {
-                case let .itemCost(cost):
-                    hRow {
-                        ItemCostView(itemCost: cost)
-                    }
-                case let .regular(title, value, subtitle):
-                    hRow {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(title)
-                            if let subtitle {
-                                hText(subtitle, style: .label)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            }
-                        }
-                    }
-                    .withCustomAccessory {
-                        Group {
-                            Spacer()
-                            if let date = value.localDateToDate?.displayDateDDMMMYYYYFormat {
-                                hText(date)
-                            } else {
-                                ZStack {
-                                    hText(value)
-                                    hText(" ")
-                                }
-                            }
-                        }
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    .accessibilityElement(children: .combine)
-                case .stakeholderItem:
-                    EmptyView()
-                }
+                ContractDisplayItemRow(item: item)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -95,16 +63,6 @@ struct UpcomingChangesScreen: View {
         }
         .hWithoutHorizontalPadding([.row, .divider])
         .hFormContentPosition(.compact)
-    }
-
-    private func displayItemView(_ item: AgreementDisplayItem) -> some View {
-        hRow {
-            HStack {
-                hText(item.displayTitle)
-                Spacer()
-                hText(item.displayValue).foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
     }
 }
 
