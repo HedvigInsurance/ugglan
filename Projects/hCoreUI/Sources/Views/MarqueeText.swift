@@ -17,6 +17,10 @@ public struct MarqueeText: View {
     /// How long a single edge-to-edge scroll takes. Longer = slower.
     private let scrollDuration: TimeInterval = 5
 
+    /// Anchor ids for the invisible spacers at each end of the text.
+    private let startAnchorID = "before"
+    private let endAnchorID = "after"
+
     public init(
         text: String,
         leftFade: CGFloat,
@@ -34,11 +38,11 @@ public struct MarqueeText: View {
             ScrollView(.horizontal) {
                 HStack(spacing: 0) {
                     Rectangle().frame(width: 0)
-                        .id("before")
+                        .id(startAnchorID)
                     hText(text, style: .label)
                         .lineLimit(1)
                     Rectangle().frame(width: 0)
-                        .id("after")
+                        .id(endAnchorID)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -48,9 +52,9 @@ public struct MarqueeText: View {
                 // Ping-pong forever: scroll to the end, hold, scroll back to the start, hold,
                 // repeat. When the text fits, scrollTo is a no-op so it just idles.
                 while !Task.isCancelled {
-                    await scroll(scrollView, to: "after", anchor: .trailing)
+                    await scroll(scrollView, to: endAnchorID, anchor: .trailing)
                     await delay(pauseDuration)
-                    await scroll(scrollView, to: "before", anchor: .leading)
+                    await scroll(scrollView, to: startAnchorID, anchor: .leading)
                     await delay(pauseDuration)
                 }
             }
