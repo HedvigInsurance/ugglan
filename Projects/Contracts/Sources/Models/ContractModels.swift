@@ -1,10 +1,12 @@
 import AppStateContainer
+import AutomaticLog
 import EditStakeholders
 import Foundation
 import TerminateContracts
 import hCore
 import hCoreUI
 
+@Loggable
 public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
@@ -71,7 +73,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let typeOfContract: TypeOfContract
     public let firstName: String
     public let lastName: String
-    public let ssn: String?
+    @Sensitive public let ssn: String?
     public let coInsured: [Stakeholder]
     public let coOwners: [Stakeholder]
     public let missingPetChipId: Bool

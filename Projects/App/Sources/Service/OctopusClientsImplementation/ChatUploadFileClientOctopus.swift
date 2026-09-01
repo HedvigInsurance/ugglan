@@ -12,7 +12,7 @@ import hGraphQL
 class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
-    @Log
+    @Log(sensitive: ["files"])
     func upload(
         files: [File],
         withProgress: (@Sendable (_ progress: Double) -> Void)?

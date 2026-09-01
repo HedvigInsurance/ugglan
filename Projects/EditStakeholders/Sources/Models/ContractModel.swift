@@ -1,3 +1,6 @@
+import AutomaticLog
+
+@Loggable
 public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
@@ -36,7 +39,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let supportsCoOwners: Bool
     public let firstName: String
     public let lastName: String
-    public let ssn: String?
+    @Sensitive public let ssn: String?
     public let coInsured: [Stakeholder]
     public let coOwners: [Stakeholder]
 

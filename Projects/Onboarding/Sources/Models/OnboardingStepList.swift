@@ -1,11 +1,13 @@
+import AutomaticLog
 import Contracts
 import CrossSell
 import Forever
 import Foundation
 import hCore
 
+@Loggable
 public struct ContactInfo: Equatable, Hashable, Sendable {
-    public let phone: String
+    @Sensitive public let phone: String
 
     public init(phone: String) {
         self.phone = phone

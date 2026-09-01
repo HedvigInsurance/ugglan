@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -111,6 +112,28 @@ public enum MessageType: Codable, Hashable, Sendable {
     case deepLink(url: URL)
     case otherLink(url: URL)
     case unknown
+}
+
+extension MessageType: SensitiveValue {
+    /// An associated value cannot carry `@Sensitive`, so the masking is written out here:
+    /// member-written chat content never reaches the log, while the case itself stays readable.
+    public var maskedDescription: String {
+        switch self {
+        case let .text(text, action):
+            return "text(text: \(AutomaticLog.maskedLogDescription(text)), "
+                + "action: \(AutomaticLog.logDescription(action as Any)))"
+        case let .file(file):
+            return "file(file: \(AutomaticLog.logDescription(file)))"
+        case let .crossSell(url):
+            return "crossSell(url: \(url))"
+        case let .deepLink(url):
+            return "deepLink(url: \(url))"
+        case let .otherLink(url):
+            return "otherLink(url: \(url))"
+        case .unknown:
+            return "unknown"
+        }
+    }
 }
 
 public struct ActionMessage: Codable, Hashable, Sendable {
