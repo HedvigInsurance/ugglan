@@ -104,6 +104,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
 "CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Det nya beloppet börjar gälla när din kvalificeringstid är slut. Fram till dess gäller ditt nuvarande belopp.";
+"CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Hämtar försäkringsbelopp...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Aktivera pushnotiser så du inte missar några av våra meddelanden.";
@@ -680,6 +681,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TIER_FLOW_PREVIOUS_PRICE" = "Ditt tidigare pris %1$@";
 "TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY" = "Från %@/mån";
 "TIER_FLOW_PROCESSING" = "Hämtar skyddsnivåer...";
+"TIER_FLOW_PROCESSING_PAYMENT_PROTECTION" = "Hämtar försäkringsbelopp...";
 "TIER_FLOW_SELECT_ADDON_SUBTITLE" = "Välj antalet resdagar som täcks";
 "TIER_FLOW_SELECT_COVERAGE_SUBTITLE" = "Hitta rätt skydd";
 "TIER_FLOW_SELECT_COVERAGE_TITLE" = "Välj din skyddsnivå";

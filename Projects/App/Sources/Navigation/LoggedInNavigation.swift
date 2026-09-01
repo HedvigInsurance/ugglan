@@ -123,7 +123,8 @@ class PushNotificationHandler {
                         .init(
                             contractId: contractId,
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                            contractExposureName: contract.exposureDisplayName
+                            contractExposureName: contract.exposureDisplayName,
+                            typeOfContract: contract.typeOfContract
                         )
                     ]
                 )
@@ -135,7 +136,8 @@ class PushNotificationHandler {
                     .init(
                         contractId: $0.id,
                         contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: $0.exposureDisplayName
+                        contractExposureName: $0.exposureDisplayName,
+                        typeOfContract: $0.typeOfContract
                     )
                 }
             viewModel?.isChangeTierPresented = ChangeTierContractsInput(

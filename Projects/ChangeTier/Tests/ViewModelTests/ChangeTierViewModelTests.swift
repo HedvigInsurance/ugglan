@@ -320,4 +320,48 @@ final class ChangeTierViewModelTests: XCTestCase {
             assertionFailure("not proper state")
         }
     }
+
+    func testProcessingTextUsesPaymentProtectionCopyBeforeTiersAreFetched() async throws {
+        let mockService = MockData.createMockChangeTier()
+        sut = mockService
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(
+                data: .init(source: .changeTier, contractId: "contractId", typeOfContract: .sePaymentProtection)
+            )
+        )
+        vm = model
+
+        //the loading text is on screen before the fetch resolves, so no waiting here on purpose
+        assert(model.isPaymentProtection)
+        assert(model.processingText == L10n.tierFlowProcessingPaymentProtection)
+    }
+
+    func testProcessingTextUsesCoverageCopyForNonPaymentProtectionContracts() async throws {
+        let mockService = MockData.createMockChangeTier()
+        sut = mockService
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(
+                data: .init(source: .changeTier, contractId: "contractId", typeOfContract: .seHouse)
+            )
+        )
+        vm = model
+
+        assert(!model.isPaymentProtection)
+        assert(model.processingText == L10n.tierFlowProcessing)
+    }
+
+    func testProcessingTextFallsBackToCoverageCopyWhenTypeOfContractIsUnknown() async throws {
+        let mockService = MockData.createMockChangeTier()
+        sut = mockService
+
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
+        vm = model
+
+        assert(!model.isPaymentProtection)
+        assert(model.processingText == L10n.tierFlowProcessing)
+    }
 }

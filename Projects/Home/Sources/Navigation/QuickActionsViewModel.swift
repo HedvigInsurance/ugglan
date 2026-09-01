@@ -54,7 +54,8 @@ public final class QuickActionsViewModel: ObservableObject {
                     .init(
                         contractId: $0.id,
                         contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: $0.exposureDisplayName
+                        contractExposureName: $0.exposureDisplayName,
+                        typeOfContract: $0.typeOfContract
                     )
                 }
             isChangeTierPresented = .init(

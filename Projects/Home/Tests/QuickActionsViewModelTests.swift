@@ -131,7 +131,8 @@ final class QuickActionsViewModelTests: XCTestCase {
         let expectedContract = ChangeTierContract(
             contractId: "eligible",
             contractDisplayName: "Home Insurance",
-            contractExposureName: "Apartment"
+            contractExposureName: "Apartment",
+            typeOfContract: .seHouse
         )
         XCTAssertEqual(vm.isChangeTierPresented?.source, .changeTier)
         XCTAssertEqual(vm.isChangeTierPresented?.contracts, [expectedContract])
@@ -205,7 +206,8 @@ final class QuickActionsViewModelTests: XCTestCase {
 
 // Minimal Contract fixture -- only the fields the view model actually reads
 // (id, supportsChangeTier, supportsTermination, currentAgreement.productVariant.displayName,
-// exposureDisplayName) vary between call sites; the rest are fixed filler to satisfy the memberwise init.
+// exposureDisplayName, typeOfContract) vary between call sites; the rest are fixed filler to satisfy
+// the memberwise init.
 private func makeContract(
     id: String,
     displayName: String,

@@ -87,6 +87,11 @@ public class ChangeTierViewModel: ObservableObject {
     ) {
         self.changeTierInput = changeTierInput
         self.dataProvider = dataProvider
+        //set upfront when known so the loading state already uses the right wording
+        switch changeTierInput {
+        case let .contractWithSource(data): self.typeOfContract = data.typeOfContract
+        case let .existingIntent(intent, _): self.typeOfContract = intent.typeOfContract
+        }
         fetchTiers()
     }
 
@@ -294,6 +299,10 @@ public class ChangeTierViewModel: ObservableObject {
 
     var isPaymentProtection: Bool {
         typeOfContract?.isPaymentProtection == true
+    }
+
+    var processingText: String {
+        isPaymentProtection ? L10n.tierFlowProcessingPaymentProtection : L10n.tierFlowProcessing
     }
 
     var flowTitle: String {
