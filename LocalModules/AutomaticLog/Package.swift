@@ -30,5 +30,14 @@ let package = Package(
 
         // Library that exposes a macro as part of its API, which is used in client programs.
         .target(name: "AutomaticLog", dependencies: ["AutomaticLogMacros"]),
+
+        .testTarget(
+            name: "AutomaticLogTests",
+            dependencies: [
+                "AutomaticLog",
+                "AutomaticLogMacros",
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+            ]
+        ),
     ]
 )

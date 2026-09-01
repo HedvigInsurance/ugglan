@@ -1,4 +1,5 @@
 import Addons
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -13,17 +14,19 @@ public protocol TravelInsuranceClient {
     )
 }
 
+@Loggable
 public struct TravelInsuranceFormDTO: Encodable {
     public let contractId: String
     public let startDate: String
     public let isMemberIncluded: Bool
     public let coInsured: [CoInsuredDto]
-    public let email: String
+    @Sensitive public let email: String
 }
 
+@Loggable
 public struct CoInsuredDto: Encodable {
     public let fullName: String
-    public let personalNumber: String?
+    @Sensitive public let personalNumber: String?
     public let birthDate: String?
 }
 
