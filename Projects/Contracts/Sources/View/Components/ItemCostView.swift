@@ -6,15 +6,6 @@ struct ItemCostView: View {
     let itemCost: ItemCost
     @State private var detentPriceBreakdownModel: PriceFieldModel.PriceFieldInfoModel?
     var body: some View {
-        hSection {
-            hRow {
-                content
-            }
-        }
-        .showPriceBreakdown(for: $detentPriceBreakdownModel)
-    }
-
-    private var content: some View {
         HStack(spacing: .padding2) {
             hText(L10n.detailsTableInsurancePremium)
             Spacer()
@@ -34,6 +25,7 @@ struct ItemCostView: View {
         .accessibilityAction {
             infoButtonTapAction()
         }
+        .showPriceBreakdown(for: $detentPriceBreakdownModel)
     }
 
     private func infoButtonTapAction() {
