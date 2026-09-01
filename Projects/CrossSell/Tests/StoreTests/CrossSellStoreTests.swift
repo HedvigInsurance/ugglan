@@ -32,8 +32,7 @@ final class CrossSellStoreTests: XCTestCase {
             store.fetchCrossSellError == nil && store.crossSells == CrossSell.getDefault
         }
 
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getCrossSell)
+        assert(mockService.events == [.getCrossSell])
     }
 
     func testFetchCrossSalesFailure() async throws {
@@ -47,8 +46,7 @@ final class CrossSellStoreTests: XCTestCase {
         try await Task.sleep(seconds: 0.5)
         assert(store.fetchCrossSellError != nil)
         assert(store.crossSells?.others.isEmpty == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getCrossSell)
+        assert(mockService.events == [.getCrossSell])
     }
 
     func testFetchHomeCrossSellsSuccess() async {
@@ -64,8 +62,7 @@ final class CrossSellStoreTests: XCTestCase {
         }
 
         assert(store.hasNewOffer == true)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getCrossSell)
+        assert(mockService.events == [.getCrossSell, .getCrossSell])
     }
 
     func testFetchAddonBannersDataSuccess() async {
@@ -79,8 +76,7 @@ final class CrossSellStoreTests: XCTestCase {
             store.fetchAddonBannersError == nil && store.addonBanners == AddonBanner.getDefault
         }
 
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBanners)
+        assert(mockService.events == [.getAddonBanners])
     }
 
     func testFetchAddonBannerDataFailure() async throws {
@@ -94,8 +90,7 @@ final class CrossSellStoreTests: XCTestCase {
         try await Task.sleep(seconds: 0.5)
         assert(store.fetchAddonBannersError != nil)
         assert(store.crossSells?.others.isEmpty == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getAddonBanners)
+        assert(mockService.events == [.getAddonBanners])
     }
 }
 
