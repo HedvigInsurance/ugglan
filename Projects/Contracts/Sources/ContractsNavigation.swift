@@ -87,7 +87,11 @@ public struct ContractsNavigation<Content: View>: View {
                         contractsNavigationVm.editStakeholdersVm.start(fromContract: configContract)
                     case .changeTier:
                         contractsNavigationVm.changeTierInput = .contractWithSource(
-                            data: .init(source: .changeTier, contractId: contract.id)
+                            data: .init(
+                                source: .changeTier,
+                                contractId: contract.id,
+                                typeOfContract: contract.typeOfContract
+                            )
                         )
                     case .cancellation:
                         let config = TerminationConfirmConfig(contract: contract)

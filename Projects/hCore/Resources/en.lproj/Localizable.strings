@@ -104,6 +104,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
 "CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your new amount takes effect once your qualification period ends. Until then, your current amount applies.";
+"CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Fetching insurance amount...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
 "CHAT_ACTIVATE_NOTIFICATIONS_BODY" = "Enable push notifications to ensure you receive all our messages.";
@@ -680,6 +681,7 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TIER_FLOW_PREVIOUS_PRICE" = "Your previous price %1$@";
 "TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY" = "From %@/mo";
 "TIER_FLOW_PROCESSING" = "Fetching coverage levels...";
+"TIER_FLOW_PROCESSING_PAYMENT_PROTECTION" = "Fetching insurance amounts...";
 "TIER_FLOW_SELECT_ADDON_SUBTITLE" = "Days covered when travelling";
 "TIER_FLOW_SELECT_COVERAGE_SUBTITLE" = "Find the right coverage for you";
 "TIER_FLOW_SELECT_COVERAGE_TITLE" = "Select your coverage";

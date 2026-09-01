@@ -32,7 +32,8 @@ struct SelectInsuranceScreen: View {
                         changeTierInput: .contractWithSource(
                             data: .init(
                                 source: changeTierContractsInput.source,
-                                contractId: selectedContract.contractId
+                                contractId: selectedContract.contractId,
+                                typeOfContract: selectedContract.typeOfContract
                             )
                         )
                     )

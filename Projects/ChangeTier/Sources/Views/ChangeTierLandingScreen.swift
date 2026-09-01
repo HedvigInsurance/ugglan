@@ -31,7 +31,7 @@ public struct ChangeTierLandingScreen: View {
             .hStateViewButtonConfig(dataLoaderErrorButtons)
         } else {
             ProcessingStateView(
-                loadingViewText: L10n.tierFlowProcessing,
+                loadingViewText: vm.processingText,
                 state: $vm.viewState,
                 duration: 6
             )
