@@ -21,14 +21,39 @@ struct UpcomingChangesScreen: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 0) {
-                hSection(agreement.displayItems, id: \.displayValue) { item in
-                    displayItemView(item)
-                }
-                if let cost = agreement.itemCost {
-                    hRowDivider()
-                        .padding(.horizontal, .padding16)
-                    ItemCostView(itemCost: cost)
+            hSection(agreement.getDisplayItems()) { item in
+                switch item.type {
+                case let .itemCost(cost):
+                    hRow {
+                        ItemCostView(itemCost: cost)
+                    }
+                case let .regular(title, value, subtitle):
+                    hRow {
+                        VStack(alignment: .leading, spacing: 0) {
+                            hText(title)
+                            if let subtitle {
+                                hText(subtitle, style: .label)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            }
+                        }
+                    }
+                    .withCustomAccessory {
+                        Group {
+                            Spacer()
+                            if let date = value.localDateToDate?.displayDateDDMMMYYYYFormat {
+                                hText(date)
+                            } else {
+                                ZStack {
+                                    hText(value)
+                                    hText(" ")
+                                }
+                            }
+                        }
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                    .accessibilityElement(children: .combine)
+                case .stakeholderItem:
+                    EmptyView()
                 }
             }
         }
