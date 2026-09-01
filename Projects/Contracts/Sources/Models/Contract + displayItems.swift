@@ -1,5 +1,5 @@
-import hCore
 import EditStakeholders
+import hCore
 
 extension Contract {
     func getDisplayItems() -> [ContractInformationDisplayItem] {
@@ -8,17 +8,18 @@ extension Contract {
             items.append(contentsOf: displayItems)
         }
         if supportsCoInsured || supportsCoOwners || typeOfContract.isPaymentProtection {
-            let supportedPplValue = switch coInsured.count {
-            case 0: L10n.changeAddressOnlyYou
-            default: L10n.changeAddressYouPlus(coInsured.count)
-            }
+            let supportedPplValue =
+                switch coInsured.count {
+                case 0: L10n.changeAddressOnlyYou
+                default: L10n.changeAddressYouPlus(coInsured.count)
+                }
             items.append(
                 .init(
                     id: "supportedPpl",
                     type: .regular(title: L10n.coinsuredEditTitle, value: supportedPplValue, subtitle: nil)
                 )
             )
-            
+
             items.append(
                 .init(
                     id: "owner",
@@ -33,14 +34,12 @@ extension Contract {
         }
         return items
     }
-    
+
     fileprivate func stakeholderItems() -> [StakeholderItem] {
         coInsured.map { $0.asStakeholderItem(type: .coInsured) }
             + coOwners.map { $0.asStakeholderItem(type: .coOwner) }
     }
 }
-
-
 
 extension Agreement {
     func getDisplayItems() -> [ContractInformationDisplayItem] {
