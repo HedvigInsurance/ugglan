@@ -1,7 +1,9 @@
+import AutomaticLog
 import Foundation
 import hCore
 import hCoreUI
 
+@Loggable
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
     let contractId: String
     let displayName: String
@@ -9,7 +11,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     let minStartDate: Date
     let maxStartDate: Date
     let maxDuration: Int
-    let email: String?
+    @Sensitive let email: String?
     let fullName: String
 
     public init(
@@ -33,9 +35,10 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     }
 }
 
+@Loggable
 public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
-    var personalNumber: String? = nil
+    @Sensitive var personalNumber: String? = nil
     var birthDate: String? = nil
 }
 

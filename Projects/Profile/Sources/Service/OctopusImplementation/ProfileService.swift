@@ -29,12 +29,14 @@ class ProfileService {
         try await client.updateLanguage()
     }
 
-    @Log
+    // The result tuple echoes the same contact details back and cannot be annotated,
+    // so the output is not logged.
+    @Log(.error, sensitive: ["email", "phone"])
     func update(email: String?, phone: String?) async throws -> (email: String, phone: String) {
         try await client.update(email: email ?? "", phone: phone ?? "")
     }
 
-    @Log
+    @Log(sensitive: ["eurobonus"])
     func update(eurobonus: String) async throws -> PartnerData {
         try await client.update(eurobonus: eurobonus)
     }

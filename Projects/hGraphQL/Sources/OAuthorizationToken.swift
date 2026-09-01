@@ -1,9 +1,11 @@
+import AutomaticLog
 import Foundation
 
+@Loggable
 public struct OAuthorizationToken: Codable {
-    public var accessToken: String
+    @Sensitive public var accessToken: String
     public var accessTokenExpirationDate: Date
-    public var refreshToken: String
+    @Sensitive public var refreshToken: String
     public var refreshTokenExpirationDate: Date
 
     public init(
