@@ -11,7 +11,7 @@ public struct hTextView: View {
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
     @State private var value: String = ""
-    @State private var selectedValue: String = ""
+    @State private var selectedValue: String
     @State private var popoverHeight: CGFloat = 0
     @Binding private var showOnAppear: Bool
     @AccessibilityFocusState var isFocused: Bool
