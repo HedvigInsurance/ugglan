@@ -63,11 +63,10 @@ private struct QuickActionTile: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(hFillColor.Opaque.primary)
                     .accessibilityHidden(true)
-
-                hText(action.displayTitle, style: .label)
+                hText(action.homeDisplayTitle ?? action.displayTitle, style: .label)
             }
             .padding(.vertical, .padding14)
-            .padding(.horizontal, .padding12)
+            .padding(.horizontal, .padding10)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background {
                 RoundedRectangle(cornerRadius: .cornerRadiusXL)

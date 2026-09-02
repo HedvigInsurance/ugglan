@@ -31,6 +31,14 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    public var homeDisplayTitle: String? {
+        switch self {
+        case .editInsurance: L10n.homeQuickActionsEditInsurance
+        case .changeAddress: L10n.homeQuickActionsChangeAddress
+        default: nil
+        }
+    }
+
     public var displaySubtitle: String {
         switch self {
         case .sickAbroad: L10n.hcQuickActionsSickAbroadSubtitle
