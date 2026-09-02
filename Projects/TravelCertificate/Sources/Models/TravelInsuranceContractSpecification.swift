@@ -11,7 +11,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
     let minStartDate: Date
     let maxStartDate: Date
     let maxDuration: Int
-    @Sensitive let email: String?
+    @Masked let email: String?
     let fullName: String
 
     public init(
@@ -38,7 +38,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 @Loggable
 public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
-    @Sensitive var personalNumber: String? = nil
+    @Masked var personalNumber: String? = nil
     var birthDate: String? = nil
 }
 

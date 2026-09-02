@@ -6,19 +6,19 @@ import XCTest
 
 private let testMacros: [String: any Macro.Type] = [
     "Log": AutomaticLogMacros.AutomaticLog.self,
-    "Sensitive": SensitiveMacro.self,
+    "Masked": MaskedMacro.self,
     "Loggable": LoggableMacro.self,
 ]
 
 final class LoggableExpansionTests: XCTestCase {
-    func testLoggableCollectsTheSensitivePropertyNames() {
+    func testLoggableCollectsTheMaskedPropertyNames() {
         assertMacroExpansion(
             """
             @Loggable
             public struct Member {
                 let name: String
-                @Sensitive let email: String
-                @Sensitive var phone: String?
+                @Masked let email: String
+                @Masked var phone: String?
             }
             """,
             expandedSource: """
@@ -29,19 +29,19 @@ final class LoggableExpansionTests: XCTestCase {
                     var phone: String?
                 }
 
-                extension Member: AutomaticLog.SensitiveFieldsProviding {
-                    public static let sensitiveLogFields: Set<String> = ["email", "phone"]
+                extension Member: AutomaticLog.MaskedFieldsProviding {
+                    public static let maskedLogFields: Set<String> = ["email", "phone"]
                 }
                 """,
             macros: testMacros
         )
     }
 
-    func testSensitiveWithoutLoggableIsAnError() {
+    func testMaskedWithoutLoggableIsAnError() {
         assertMacroExpansion(
             """
             struct Member {
-                @Sensitive let email: String
+                @Masked let email: String
             }
             """,
             expandedSource: """
@@ -51,7 +51,7 @@ final class LoggableExpansionTests: XCTestCase {
                 """,
             diagnostics: [
                 DiagnosticSpec(
-                    message: "'@Sensitive' has no effect here: mark 'Member' with '@Loggable' to collect it",
+                    message: "'@Masked' has no effect here: mark 'Member' with '@Loggable' to collect it",
                     line: 2,
                     column: 5
                 )
@@ -66,7 +66,7 @@ final class LogMacroExpansionTests: XCTestCase {
         assertMacroExpansion(
             """
             struct Service {
-                @Log(sensitive: ["token"])
+                @Log(masked: ["token"])
                 func exchange(token: String, id: String) {
                     handle(id)
                 }
@@ -85,11 +85,11 @@ final class LogMacroExpansionTests: XCTestCase {
         )
     }
 
-    func testUnknownSensitiveNameIsAnError() {
+    func testUnknownMaskedNameIsAnError() {
         assertMacroExpansion(
             """
             struct Service {
-                @Log(.error, sensitive: ["tokn"])
+                @Log(.error, masked: ["tokn"])
                 func exchange(token: String) {
                     handle(token)
                 }

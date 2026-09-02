@@ -20,13 +20,13 @@ public struct TravelInsuranceFormDTO: Encodable {
     public let startDate: String
     public let isMemberIncluded: Bool
     public let coInsured: [CoInsuredDto]
-    @Sensitive public let email: String
+    @Masked public let email: String
 }
 
 @Loggable
 public struct CoInsuredDto: Encodable {
     public let fullName: String
-    @Sensitive public let personalNumber: String?
+    @Masked public let personalNumber: String?
     public let birthDate: String?
 }
 

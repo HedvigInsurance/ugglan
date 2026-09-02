@@ -43,9 +43,9 @@ public struct AutomaticLog: BodyMacro {
         return options.isEmpty ? .all : options
     }
 
-    private static func parseSensitiveNames(from attribute: AttributeSyntax) -> [String] {
+    private static func parseMaskedNames(from attribute: AttributeSyntax) -> [String] {
         guard let arguments = attribute.arguments?.as(LabeledExprListSyntax.self),
-            let argument = arguments.first(where: { $0.label?.text == "sensitive" }),
+            let argument = arguments.first(where: { $0.label?.text == "masked" }),
             let array = argument.expression.as(ArrayExprSyntax.self)
         else {
             return []
@@ -56,10 +56,10 @@ public struct AutomaticLog: BodyMacro {
         }
     }
 
-    /// A name in `sensitive:` that is not a parameter would silently log a secret in plain
+    /// A name in `masked:` that is not a parameter would silently log a secret in plain
     /// text, so a rename or a typo has to fail the build.
     private static func validate(
-        sensitiveNames: [String],
+        maskedNames: [String],
         of funcDecl: FunctionDeclSyntax,
         attribute: AttributeSyntax,
         in context: some MacroExpansionContext
@@ -67,7 +67,7 @@ public struct AutomaticLog: BodyMacro {
         let parameterNames = funcDecl.signature.parameterClause.parameters
             .map { ($0.secondName ?? $0.firstName).text }
 
-        for name in sensitiveNames where !parameterNames.contains(name) {
+        for name in maskedNames where !parameterNames.contains(name) {
             let detail =
                 parameterNames.isEmpty
                 ? "it has no parameters"
@@ -95,13 +95,13 @@ public struct AutomaticLog: BodyMacro {
         }
 
         let options = parseLogOptions(from: attribute)
-        let sensitiveNames = parseSensitiveNames(from: attribute)
-        validate(sensitiveNames: sensitiveNames, of: funcDecl, attribute: attribute, in: context)
+        let maskedNames = parseMaskedNames(from: attribute)
+        validate(maskedNames: maskedNames, of: funcDecl, attribute: attribute, in: context)
         let metadata = extractFunctionMetadata(
             from: funcDecl,
             in: context,
             options: options,
-            sensitiveNames: sensitiveNames
+            maskedNames: maskedNames
         )
         var statements = generateEntryLogStatements(for: metadata)
 
@@ -116,10 +116,10 @@ public struct AutomaticLog: BodyMacro {
 
     // MARK: - Function Metadata
 
-    /// A parameter of a logged function, plus whether `@Sensitive` was applied to it.
+    /// A parameter of a logged function, plus whether `@Masked` was applied to it.
     private struct LoggedParameter {
         let name: String
-        let isSensitive: Bool
+        let isMasked: Bool
     }
 
     private struct FunctionMetadata {
@@ -137,7 +137,7 @@ public struct AutomaticLog: BodyMacro {
         from funcDecl: FunctionDeclSyntax,
         in context: some MacroExpansionContext,
         options: ParsedLogOptions,
-        sensitiveNames: [String]
+        maskedNames: [String]
     ) -> FunctionMetadata {
         let functionName = funcDecl.name.text
         let typeName = findParentTypeName(of: funcDecl, in: context)
@@ -145,7 +145,7 @@ public struct AutomaticLog: BodyMacro {
 
         let parameters = funcDecl.signature.parameterClause.parameters.map { parameter in
             let name = (parameter.secondName ?? parameter.firstName).text
-            return LoggedParameter(name: name, isSensitive: sensitiveNames.contains(name))
+            return LoggedParameter(name: name, isMasked: maskedNames.contains(name))
         }
 
         let hasReturnType = funcDecl.signature.returnClause != nil
@@ -176,7 +176,7 @@ public struct AutomaticLog: BodyMacro {
         let dictElements = metadata.parameters
             .map { parameter in
                 let description =
-                    parameter.isSensitive
+                    parameter.isMasked
                     ? "AutomaticLog.maskedLogDescription(\(parameter.name) as Any)"
                     : "AutomaticLog.logDescription(\(parameter.name) as Any)"
                 return "\"\(parameter.name)\": \(description)"
@@ -425,7 +425,7 @@ public struct AutomaticLog: BodyMacro {
 struct AutomaticLogPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         AutomaticLog.self,
-        SensitiveMacro.self,
+        MaskedMacro.self,
         LoggableMacro.self,
     ]
 }

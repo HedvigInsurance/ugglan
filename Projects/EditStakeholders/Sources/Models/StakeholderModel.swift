@@ -5,7 +5,7 @@ import hCore
 
 @Loggable
 public struct Stakeholder: Codable, Hashable, Equatable, Sendable {
-    @Sensitive public let SSN: String?
+    @Masked public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?
     public var lastName: String?

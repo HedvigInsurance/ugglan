@@ -3,9 +3,9 @@ import Foundation
 
 @Loggable
 public struct OAuthorizationToken: Codable {
-    @Sensitive public var accessToken: String
+    @Masked public var accessToken: String
     public var accessTokenExpirationDate: Date
-    @Sensitive public var refreshToken: String
+    @Masked public var refreshToken: String
     public var refreshTokenExpirationDate: Date
 
     public init(

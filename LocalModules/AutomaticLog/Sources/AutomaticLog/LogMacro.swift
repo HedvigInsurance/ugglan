@@ -15,22 +15,22 @@ public struct LogOptions: OptionSet, Sendable {
     public static let all: LogOptions = [.output, .error]
 }
 
-public protocol SensitiveFieldsProviding {
-    static var sensitiveLogFields: Set<String> { get }
+public protocol MaskedFieldsProviding {
+    static var maskedLogFields: Set<String> { get }
 }
 
-extension SensitiveFieldsProviding {
+extension MaskedFieldsProviding {
     /// Instance-side access, so `logDescription(_:)` can read the set off an existential.
-    var sensitiveLogFieldsForLogging: Set<String> { Self.sensitiveLogFields }
+    var maskedLogFieldsForLogging: Set<String> { Self.maskedLogFields }
 }
 
-public protocol SensitiveValue {
+public protocol MaskedValue {
     var maskedDescription: String { get }
 }
 
 public func logDescription(_ value: Any) -> String {
-    if let sensitive = value as? SensitiveValue {
-        return sensitive.maskedDescription
+    if let masked = value as? MaskedValue {
+        return masked.maskedDescription
     }
     return _describe(value)
 }
@@ -80,7 +80,7 @@ private func _describe(_ value: Any) -> String {
         return "[\(parts.joined(separator: ", "))]"
 
     default:
-        let sensitiveFields = (value as? any SensitiveFieldsProviding)?.sensitiveLogFieldsForLogging ?? []
+        let maskedFields = (value as? any MaskedFieldsProviding)?.maskedLogFieldsForLogging ?? []
         var parts: [String] = []
         for child in mirror.children {
             guard let label = child.label else {
@@ -89,10 +89,10 @@ private func _describe(_ value: Any) -> String {
             }
             // @Published and property wrappers store under a leading underscore.
             let name = label.hasPrefix("_") ? String(label.dropFirst()) : label
-            if sensitiveFields.contains(name) {
+            if maskedFields.contains(name) {
                 parts.append("\(name): \(_mask(child.value))")
-            } else if let sensitive = child.value as? SensitiveValue {
-                parts.append("\(name): \(sensitive.maskedDescription)")
+            } else if let masked = child.value as? MaskedValue {
+                parts.append("\(name): \(masked.maskedDescription)")
             } else {
                 parts.append("\(name): \(_describe(child.value))")
             }
@@ -102,11 +102,11 @@ private func _describe(_ value: Any) -> String {
 }
 
 @attached(peer)
-public macro Sensitive() = #externalMacro(module: "AutomaticLogMacros", type: "SensitiveMacro")
+public macro Masked() = #externalMacro(module: "AutomaticLogMacros", type: "MaskedMacro")
 
-@attached(extension, conformances: SensitiveFieldsProviding, names: named(sensitiveLogFields))
+@attached(extension, conformances: MaskedFieldsProviding, names: named(maskedLogFields))
 public macro Loggable() = #externalMacro(module: "AutomaticLogMacros", type: "LoggableMacro")
 
 @attached(body)
-public macro Log(_ options: LogOptions = .all, sensitive: [String] = []) =
+public macro Log(_ options: LogOptions = .all, masked: [String] = []) =
     #externalMacro(module: "AutomaticLogMacros", type: "AutomaticLog")

@@ -14,7 +14,7 @@ public class OnboardingService {
         try await client.getOnboardingSteps()
     }
 
-    @Log(sensitive: ["phone"])
+    @Log(masked: ["phone"])
     public func updateContactInfo(phone: String) async throws {
         try await client.updateContactInfo(phone: phone)
     }

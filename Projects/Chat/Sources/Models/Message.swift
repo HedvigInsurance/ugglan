@@ -114,8 +114,8 @@ public enum MessageType: Codable, Hashable, Sendable {
     case unknown
 }
 
-extension MessageType: SensitiveValue {
-    /// An associated value cannot carry `@Sensitive`, so the masking is written out here:
+extension MessageType: MaskedValue {
+    /// An associated value cannot carry `@Masked`, so the masking is written out here:
     /// member-written chat content never reaches the log, while the case itself stays readable.
     public var maskedDescription: String {
         switch self {
