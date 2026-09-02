@@ -11,7 +11,7 @@ public class EditStakeholdersService {
         try await service.commitMidtermChange(commitId: commitId)
     }
 
-    @Log(sensitive: ["SSN"])
+    @Log(masked: ["SSN"])
     func fetchPersonalInformation(SSN: String) async throws -> PersonalData? {
         try await service.fetchPersonalInformation(SSN: SSN)
     }

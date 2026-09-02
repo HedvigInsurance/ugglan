@@ -8,19 +8,19 @@ public class AuthenticationService {
 
     public init() {}
 
-    @Log(.error, sensitive: ["otpState"])
+    @Log(.error, masked: ["otpState"])
     public func submit(otpState: OTPState) async throws -> String {
         try await client.submit(otpState: otpState)
     }
 
-    @Log(.error, sensitive: ["otpState"])
+    @Log(.error, masked: ["otpState"])
     public func start(
         with otpState: OTPState
     ) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         try await client.start(with: otpState)
     }
 
-    @Log(.error, sensitive: ["otpState"])
+    @Log(.error, masked: ["otpState"])
     public func resend(otp otpState: OTPState) async throws {
         try await client.resend(otp: otpState)
     }
@@ -35,12 +35,12 @@ public class AuthenticationService {
         try await client.logout()
     }
 
-    @Log(.error, sensitive: ["code"])
+    @Log(.error, masked: ["code"])
     public func exchange(code: String) async throws {
         try await client.exchange(code: code)
     }
 
-    @Log(.error, sensitive: ["refreshToken"])
+    @Log(.error, masked: ["refreshToken"])
     public func exchange(refreshToken: String) async throws {
         try await client.exchange(refreshToken: refreshToken)
     }

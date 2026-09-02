@@ -3,12 +3,12 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-/// `@Sensitive` carries no code of its own — it is a marker that `@Loggable` reads.
+/// `@Masked` carries no code of its own — it is a marker that `@Loggable` reads.
 ///
 /// Its whole job at expansion time is to reject the two ways the marker could silently
 /// do nothing: a computed property, which reflection never sees, and a type that is not
 /// `@Loggable`, which never collects the marker.
-public struct SensitiveMacro: PeerMacro {
+public struct MaskedMacro: PeerMacro {
     public static func expansion(
         of node: AttributeSyntax,
         providingPeersOf declaration: some DeclSyntaxProtocol,
@@ -18,7 +18,7 @@ public struct SensitiveMacro: PeerMacro {
             context.diagnose(
                 Diagnostic(
                     node: node,
-                    message: MacroExpansionErrorMessage("'@Sensitive' can only be applied to a stored property")
+                    message: MacroExpansionErrorMessage("'@Masked' can only be applied to a stored property")
                 )
             )
             return []
@@ -29,7 +29,7 @@ public struct SensitiveMacro: PeerMacro {
                 Diagnostic(
                     node: node,
                     message: MacroExpansionErrorMessage(
-                        "'@Sensitive' has no effect on a computed property, which is never logged"
+                        "'@Masked' has no effect on a computed property, which is never logged"
                     )
                 )
             )
@@ -41,7 +41,7 @@ public struct SensitiveMacro: PeerMacro {
                 Diagnostic(
                     node: node,
                     message: MacroExpansionErrorMessage(
-                        "'@Sensitive' has no effect here: mark '\(typeName)' with '@Loggable' to collect it"
+                        "'@Masked' has no effect here: mark '\(typeName)' with '@Loggable' to collect it"
                     )
                 )
             )
@@ -92,7 +92,7 @@ public struct SensitiveMacro: PeerMacro {
     }
 }
 
-/// Generates the `SensitiveFieldsProviding` conformance from the type's `@Sensitive` properties.
+/// Generates the `MaskedFieldsProviding` conformance from the type's `@Masked` properties.
 public struct LoggableMacro: ExtensionMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -105,17 +105,17 @@ public struct LoggableMacro: ExtensionMacro {
         // case the field set is hand-written.
         let alreadyConforms =
             declaration.inheritanceClause?.inheritedTypes
-            .contains { $0.type.trimmedDescription.hasSuffix("SensitiveFieldsProviding") } ?? false
+            .contains { $0.type.trimmedDescription.hasSuffix("MaskedFieldsProviding") } ?? false
         guard !alreadyConforms else { return [] }
 
-        let fields = sensitiveFieldNames(in: declaration)
+        let fields = maskedFieldNames(in: declaration)
 
         if fields.isEmpty {
             context.diagnose(
                 Diagnostic(
                     node: node,
                     message: MacroExpansionWarningMessage(
-                        "'@Loggable' has no effect: no property of '\(type.trimmedDescription)' is marked '@Sensitive'"
+                        "'@Loggable' has no effect: no property of '\(type.trimmedDescription)' is marked '@Masked'"
                     )
                 )
             )
@@ -130,18 +130,18 @@ public struct LoggableMacro: ExtensionMacro {
         return [
             try ExtensionDeclSyntax(
                 """
-                extension \(type.trimmed): AutomaticLog.SensitiveFieldsProviding {
-                    \(raw: accessLevel)static let sensitiveLogFields: Set<String> = [\(raw: elements)]
+                extension \(type.trimmed): AutomaticLog.MaskedFieldsProviding {
+                    \(raw: accessLevel)static let maskedLogFields: Set<String> = [\(raw: elements)]
                 }
                 """
             )
         ]
     }
 
-    private static func sensitiveFieldNames(in declaration: some DeclGroupSyntax) -> [String] {
+    private static func maskedFieldNames(in declaration: some DeclGroupSyntax) -> [String] {
         declaration.memberBlock.members.flatMap { member -> [String] in
             guard let variable = member.decl.as(VariableDeclSyntax.self),
-                variable.attributes.contains(where: isSensitiveAttribute)
+                variable.attributes.contains(where: isMaskedAttribute)
             else {
                 return []
             }
@@ -151,9 +151,9 @@ public struct LoggableMacro: ExtensionMacro {
         }
     }
 
-    private static func isSensitiveAttribute(_ attribute: AttributeListSyntax.Element) -> Bool {
+    private static func isMaskedAttribute(_ attribute: AttributeListSyntax.Element) -> Bool {
         guard case .attribute(let attribute) = attribute else { return false }
         let name = attribute.attributeName.trimmedDescription
-        return name == "Sensitive" || name.hasSuffix(".Sensitive")
+        return name == "Masked" || name.hasSuffix(".Masked")
     }
 }

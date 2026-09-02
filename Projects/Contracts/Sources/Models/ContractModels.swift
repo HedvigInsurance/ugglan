@@ -73,7 +73,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let typeOfContract: TypeOfContract
     public let firstName: String
     public let lastName: String
-    @Sensitive public let ssn: String?
+    @Masked public let ssn: String?
     public let coInsured: [Stakeholder]
     public let coOwners: [Stakeholder]
     public let missingPetChipId: Bool
