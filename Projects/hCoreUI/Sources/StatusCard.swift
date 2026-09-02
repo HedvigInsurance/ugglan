@@ -76,7 +76,6 @@ where MainContent: View, BottomContent: View {
                 onSelected()
             }
         }
-        .accessibilityAddTraits(.isButton)
         .accessibilityAddTraits(onSelected != nil ? .isButton : [])
         .modifier(StatusCardBackgroundModifier())
     }
