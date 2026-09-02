@@ -148,18 +148,11 @@ extension EnvironmentValues {
     @Entry public var hUseButtonTextColor: hButtonTextColor = .default
     @Entry var hWithTransition: AnyTransition? = nil
     @Entry public var hCustomButtonView: AnyView? = nil
-    @Entry var hCustomButtonCornerRadius: CGFloat? = nil
 }
 
 extension View {
     public var hUseLightMode: some View {
         environment(\.hUseLightMode, true)
-    }
-}
-
-extension View {
-    public func hCustomButtonCornerRadius(_ radius: CGFloat) -> some View {
-        environment(\.hCustomButtonCornerRadius, radius)
     }
 }
 
