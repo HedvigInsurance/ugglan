@@ -681,7 +681,6 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "TIER_FLOW_PREVIOUS_PRICE" = "Your previous price %1$@";
 "TIER_FLOW_PRICE_LABEL_WITHOUT_CURRENCY" = "From %@/mo";
 "TIER_FLOW_PROCESSING" = "Fetching coverage levels...";
-"TIER_FLOW_PROCESSING_PAYMENT_PROTECTION" = "Fetching insurance amounts...";
 "TIER_FLOW_SELECT_ADDON_SUBTITLE" = "Days covered when travelling";
 "TIER_FLOW_SELECT_COVERAGE_SUBTITLE" = "Find the right coverage for you";
 "TIER_FLOW_SELECT_COVERAGE_TITLE" = "Select your coverage";

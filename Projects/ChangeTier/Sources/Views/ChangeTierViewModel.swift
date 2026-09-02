@@ -302,7 +302,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var processingText: String {
-        isPaymentProtection ? L10n.tierFlowProcessingPaymentProtection : L10n.tierFlowProcessing
+        isPaymentProtection ? L10n.changeInsuranceAmountProcessing : L10n.tierFlowProcessing
     }
 
     var flowTitle: String {
