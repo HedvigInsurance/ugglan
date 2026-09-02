@@ -88,15 +88,6 @@ public enum hButtonSize: CaseIterable {
     case large
     case medium
     case small
-
-    @MainActor
-    var cornerRadius: CGFloat {
-        switch self {
-        case .small: .cornerRadiusS
-        case .medium: .cornerRadiusM
-        case .large: .cornerRadiusL
-        }
-    }
 }
 
 struct _hButton<Content: View>: View {
