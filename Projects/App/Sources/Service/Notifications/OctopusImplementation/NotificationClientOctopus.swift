@@ -6,7 +6,7 @@ import hGraphQL
 public class NotificationService {
     @Inject var service: NotificationClient
 
-    @Log(sensitive: ["token"])
+    @Log(masked: ["token"])
     func register(for token: String) async throws {
         try await service.register(for: token)
     }

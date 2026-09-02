@@ -5,27 +5,27 @@ import XCTest
 @Loggable
 private struct Member: Codable, Equatable, Hashable, Sendable {
     let name: String
-    @Sensitive let email: String
-    @Sensitive let phone: String?
+    @Masked let email: String
+    @Masked let phone: String?
 }
 
 /// Field names are matched exactly, so an unconventionally cased property still works.
 @Loggable
 private struct Stakeholder {
     let fullName: String
-    @Sensitive let SSN: String?
+    @Masked let SSN: String?
 }
 
-/// The case `@Sensitive` exists for: a `@Published` property, which no property wrapper
+/// The case `@Masked` exists for: a `@Published` property, which no property wrapper
 /// could have been applied to.
 @Loggable
 private final class LoginState: ObservableObject {
     @Published var isLoading = false
-    @Published @Sensitive var code = "1234"
+    @Published @Masked var code = "1234"
 }
 
 /// An enum case's associated value cannot carry an attribute, so the type masks itself.
-private enum Payload: SensitiveValue {
+private enum Payload: MaskedValue {
     case text(text: String, id: String)
     case empty
 
@@ -48,12 +48,12 @@ private struct Envelope {
 nonisolated(unsafe) private var capturedLogs: [String] = []
 
 private struct Credentials {
-    @Log(sensitive: ["refreshToken"])
+    @Log(masked: ["refreshToken"])
     func exchange(refreshToken: String, id: String) -> String {
         "exchanged \(refreshToken.count) for \(id)"
     }
 
-    @Log(.error, sensitive: ["token"])
+    @Log(.error, masked: ["token"])
     func register(for token: String) async throws {
         _ = token
     }
@@ -64,8 +64,8 @@ private struct Credentials {
     }
 }
 
-final class SensitiveFieldTests: XCTestCase {
-    func testSensitiveStoredPropertyIsMaskedAndKeepsItsName() {
+final class MaskedFieldTests: XCTestCase {
+    func testMaskedStoredPropertyKeepsItsName() {
         let described = logDescription(Member(name: "Alice", email: "alice@example.com", phone: "070"))
 
         XCTAssertTrue(described.contains("name: Alice"))
@@ -74,7 +74,7 @@ final class SensitiveFieldTests: XCTestCase {
         XCTAssertFalse(described.contains("alice@example.com"))
     }
 
-    func testSensitiveOptionalStaysNil() {
+    func testMaskedOptionalStaysNil() {
         XCTAssertTrue(logDescription(Member(name: "A", email: "a@b.c", phone: nil)).contains("phone: nil"))
     }
 
@@ -92,13 +92,13 @@ final class SensitiveFieldTests: XCTestCase {
         XCTAssertTrue(described.contains("code: "))
     }
 
-    func testSensitiveFieldsAreMaskedWhenNested() {
+    func testMaskedFieldsStayMaskedWhenNested() {
         let described = logDescription([Member(name: "A", email: "a@b.c", phone: nil)])
 
         XCTAssertFalse(described.contains("a@b.c"))
     }
 
-    func testNonSensitiveValuesAreUnchanged() {
+    func testNonMaskedValuesAreUnchanged() {
         XCTAssertEqual(logDescription("plain"), "plain")
         XCTAssertEqual(logDescription(Optional<String>.none as Any), "nil")
     }
@@ -112,8 +112,8 @@ final class SensitiveFieldTests: XCTestCase {
     }
 }
 
-final class SensitiveValueConformanceTests: XCTestCase {
-    func testHandWrittenConformanceMasksOnlyTheSensitivePayload() {
+final class MaskedValueConformanceTests: XCTestCase {
+    func testHandWrittenConformanceMasksOnlyThePayload() {
         let described = logDescription(Envelope(sentAt: "today", payload: .text(text: "hello there", id: "7")))
 
         XCTAssertTrue(described.contains("sentAt: today"))
@@ -129,7 +129,7 @@ final class SensitiveValueConformanceTests: XCTestCase {
     }
 }
 
-final class SensitiveParameterTests: XCTestCase {
+final class MaskedParameterTests: XCTestCase {
     override func setUp() {
         super.setUp()
         capturedLogs = []

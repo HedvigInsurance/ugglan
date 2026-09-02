@@ -7,7 +7,7 @@ import hCore
 
 @Loggable
 public struct ContactInfo: Equatable, Hashable, Sendable {
-    @Sensitive public let phone: String
+    @Masked public let phone: String
 
     public init(phone: String) {
         self.phone = phone

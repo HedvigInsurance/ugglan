@@ -125,7 +125,7 @@ public class NewConversationService: ChatServiceProtocol {
         )
     }
 
-    @Log(sensitive: ["message"])
+    @Log(masked: ["message"])
     public func send(message: Message) async throws -> Message {
         if conversationService == nil, generatingConversation == false {
             generatingConversation = true

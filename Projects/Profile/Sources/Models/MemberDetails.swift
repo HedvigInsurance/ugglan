@@ -4,8 +4,8 @@ import Foundation
 @Loggable
 public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var id: String
-    @Sensitive public var phone: String?
-    @Sensitive public var email: String?
+    @Masked public var phone: String?
+    @Masked public var email: String?
     public var firstName: String
     public var lastName: String
     let isTravelCertificateEnabled: Bool
