@@ -1,13 +1,15 @@
+import AutomaticLog
 import Foundation
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
+@Loggable
 public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let size: Double
     public let mimeType: MimeType
-    public let name: String
+    @Masked public let name: String
     public let source: FileSource
 
     public init(id: String, size: Double, mimeType: MimeType, name: String, source: FileSource) {

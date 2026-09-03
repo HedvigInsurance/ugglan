@@ -1,3 +1,6 @@
+import AutomaticLog
+
+@Loggable
 public struct InsuranceEvidenceInput: Sendable, Hashable {
-    public internal(set) var email: String
+    @Masked public internal(set) var email: String
 }
