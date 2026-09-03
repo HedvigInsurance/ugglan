@@ -143,6 +143,11 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
         return false
     }
 
+    var terminationDateLimits: (min: Date?, max: Date?)? {
+        guard case let .terminateWithDate(minDate, maxDate, _) = surveyData?.action else { return nil }
+        return (minDate.localDateToDate, maxDate.localDateToDate)
+    }
+
     // MARK: - Initialization
 
     init(

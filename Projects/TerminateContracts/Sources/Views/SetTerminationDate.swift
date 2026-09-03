@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDate: View {
-    @State private var terminationDate = Date()
+    @State private var terminationDate: Date
     @State private var isHidden = false
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
@@ -11,11 +11,12 @@ struct SetTerminationDate: View {
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
         self.terminationNavigationVm = terminationNavigationVm
-        _terminationDate = State(wrappedValue: terminationNavigationVm.selectedDate ?? Date())
+        let minDate = terminationNavigationVm.terminationDateLimits?.min
+        _terminationDate = State(wrappedValue: terminationNavigationVm.selectedDate ?? minDate ?? Date())
     }
 
     var body: some View {
-        if case let .terminateWithDate(minDate, maxDate, _) = terminationNavigationVm.surveyData?.action {
+        if let dateLimits = terminationNavigationVm.terminationDateLimits {
             DatePickerView(
                 vm: .init(
                     continueAction: {
@@ -31,9 +32,8 @@ struct SetTerminationDate: View {
                     },
                     date: $terminationDate,
                     config: .init(
-                        minDate: minDate.localDateToDate,
-                        maxDate: maxDate.localDateToDate,
-                        initialySelectedValue: Date(),
+                        minDate: dateLimits.min,
+                        maxDate: dateLimits.max,
                         placeholder: "",
                         title: L10n.terminationDateText,
                         showAsList: false,
