@@ -354,7 +354,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_TITLE" = "Hjälp och support";
 "HOME_ADDONS_READ_MORE_BUTTON" = "Läs mer";
 "HOME_DISCOVER_SECTION_TITLE" = "Upptäck våra försäkringar";
-"HOME_DISCOVER_SEE_PRICE_BUTTON" = "Se pris";
 "HOME_GREETING_SUBTITLE" = "Hur kan vi hjälpa dig?";
 "HOME_GREETING_TITLE" = "Hej %1$@";
 "HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "Ändra adress";
@@ -451,7 +450,6 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_PHONE_SAVE_ERROR" = "Kunde inte spara, försök igen";
 "ONBOARDING_PHONE_SUBTITLE" = "Så vi kan nå dig om det behövs";
 "ONBOARDING_PHONE_TITLE" = "Telefonnummer";
-"ONBOARDING_SEE_PRICE_BUTTON" = "Se pris";
 "ONBOARDING_THEME_DARK_SUBTITLE" = "Alltid mörkt läge";
 "ONBOARDING_THEME_LIGHT_SUBTITLE" = "Alltid ljust läge";
 "ONBOARDING_THEME_SUBTITLE" = "Välj hur appen ska se ut";
