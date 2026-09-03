@@ -167,3 +167,42 @@ final class MaskedParameterTests: XCTestCase {
         XCTAssertTrue(log.contains("name: Alice"))
     }
 }
+
+private struct OptionalEnvelope {
+    let sentAt: String
+    let payload: Payload?
+}
+
+private struct Batch {
+    let sentAt: String
+    let payloads: [Payload]
+}
+
+/// `MaskedValue` has to hold wherever the value sits. A type that masks itself as a direct
+/// property but leaks inside an array would be the worst kind of gap: invisible at the
+/// declaration site.
+final class MaskedValueReachabilityTests: XCTestCase {
+    func testMaskedValueInsideAnOptionalPropertyIsMasked() {
+        let described = logDescription(OptionalEnvelope(sentAt: "today", payload: .text(text: "hello there", id: "7")))
+
+        XCTAssertFalse(described.contains("hello there"))
+    }
+
+    func testMaskedValueInsideATopLevelCollectionIsMasked() {
+        let described = logDescription([Payload.text(text: "hello there", id: "7")])
+
+        XCTAssertFalse(described.contains("hello there"))
+    }
+
+    func testMaskedValueInsideACollectionPropertyIsMasked() {
+        let described = logDescription(Batch(sentAt: "today", payloads: [.text(text: "hello there", id: "7")]))
+
+        XCTAssertFalse(described.contains("hello there"))
+    }
+
+    func testMaskedValueInsideADictionaryValueIsMasked() {
+        let described = logDescription(["a": Payload.text(text: "hello there", id: "7")])
+
+        XCTAssertFalse(described.contains("hello there"))
+    }
+}

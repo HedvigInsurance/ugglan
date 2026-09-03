@@ -29,10 +29,7 @@ public protocol MaskedValue {
 }
 
 public func logDescription(_ value: Any) -> String {
-    if let masked = value as? MaskedValue {
-        return masked.maskedDescription
-    }
-    return _describe(value)
+    _describe(value)
 }
 
 public func maskedLogDescription(_ value: Any) -> String {
@@ -52,6 +49,12 @@ private func _mask(_ value: Any) -> String {
 }
 
 private func _describe(_ value: Any) -> String {
+    // Checked here rather than at each call site, so a type that masks itself keeps masking
+    // wherever it sits: a property, an array element, a dictionary value.
+    if let masked = value as? MaskedValue {
+        return masked.maskedDescription
+    }
+
     let mirror = Mirror(reflecting: value)
 
     if mirror.children.isEmpty {
@@ -91,8 +94,6 @@ private func _describe(_ value: Any) -> String {
             let name = label.hasPrefix("_") ? String(label.dropFirst()) : label
             if maskedFields.contains(name) {
                 parts.append("\(name): \(_mask(child.value))")
-            } else if let masked = child.value as? MaskedValue {
-                parts.append("\(name): \(masked.maskedDescription)")
             } else {
                 parts.append("\(name): \(_describe(child.value))")
             }
