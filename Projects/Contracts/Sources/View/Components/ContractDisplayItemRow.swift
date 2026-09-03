@@ -13,7 +13,7 @@ struct ContractDisplayItemRow<StakeholderRow: View>: View {
 
     init(
         item: ContractInformationDisplayItem,
-        @ViewBuilder stakeholderRow: @escaping (StakeholderItem?) -> StakeholderRow
+        @ViewBuilder stakeholderRow: @escaping (StakeholderItem?) -> StakeholderRow = { _ in EmptyView() }
     ) {
         self.item = item
         self.stakeholderRow = stakeholderRow
