@@ -92,7 +92,10 @@ struct ActiveHomeView: View {
                     .onGeometryChange(for: CGFloat.self, of: \.size.height) { navBarHeight = $0 }
                     .opacity(showNavigation ? 1 : 0)
                     .offset(y: showNavigation ? 0 : -30)
-                    .animation(.easeInOut(duration: 0.2), value: scrollOffset)
+                    // Animate only when the bar's visibility flips, not on every scroll tick.
+                    // `scrollOffset` mutates each frame, which re-animated the toolbar's Liquid
+                    // Glass shape continuously and trips the iOS 26 SDF renderer (SDFStyle crash).
+                    .animation(.easeInOut(duration: 0.2), value: showNavigation)
             }
         }
         .background { heroBackground }
