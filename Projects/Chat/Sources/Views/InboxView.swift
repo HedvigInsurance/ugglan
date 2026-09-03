@@ -107,7 +107,7 @@ public struct InboxView: View {
         hRow {
             rowViewContent(for: conversation)
         }
-        .shouldShowDivider(vm.shouldHideDivider(for: conversation))
+        .shouldHideDivider(vm.shouldHideDivider(for: conversation))
     }
 
     func rowViewContent(for conversation: Conversation) -> some View {

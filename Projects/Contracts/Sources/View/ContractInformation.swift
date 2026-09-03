@@ -10,181 +10,92 @@ import hCoreUI
 
 struct ContractInformationView: View {
     @AppObservedObject var store: ContractStore
-    @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
     let id: String
+
     var body: some View {
         Group {
             if let contract = store.contractForId(id) {
                 VStack(spacing: .padding16) {
                     updatedContractView(contract)
                         .transition(.opacity.combined(with: .scale))
+                    hSection(contract.getDisplayItems()) { item in
+                        ContractDisplayItemRow(item: item) { stakeholderItem in
+                            stakeholderRow(stakeholderItem, contract: contract)
+                        }
+                    }
+                    .sectionContainerStyle(.opaque)
+                    .hWithoutHorizontalPadding([.section])
 
-                    if let displayItems = contract.currentAgreement?.displayItems {
-                        hSection {
-                            hSection(displayItems, id: \.id) { item in
-                                hRow {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        hText(item.displayTitle)
-                                        if let subtitle = item.displaySubtitle {
-                                            hText(subtitle, style: .label)
-                                                .foregroundColor(hTextColor.Translucent.secondary)
-                                        }
-                                    }
+                    missingStakeholderInfoCards(for: contract)
+                    missingPetIdInfoCard(for: contract)
+
+                    addonsView(contract: contract)
+
+                    VStack(spacing: .padding8) {
+                        if contract.showEditInfo {
+                            hButton(
+                                .large,
+                                .secondary,
+                                content: .init(title: contract.showEditInfoButtonText)
+                            ) {
+                                if contract.onlyCoInsured() {
+                                    let contract: StakeholdersConfig = .init(
+                                        contract: contract,
+                                        stakeholderType: .coInsured,
+                                        fromInfoCard: false
+                                    )
+
+                                    contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
+                                } else {
+                                    contractsNavigationVm.changeYourInformationContract = contract
                                 }
-                                .withCustomAccessory {
-                                    Spacer()
-                                    Group {
-                                        if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
-                                            hText(date)
-                                        } else {
-                                            ZStack {
-                                                hText(item.displayValue)
-                                                hText(" ")
-                                            }
-                                        }
-                                    }
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                                }
-                                .accessibilityElement(children: .combine)
-                            }
-
-                            if let currentAgreementCost = contract.currentAgreement?.itemCost {
-                                if !displayItems.isEmpty {
-                                    hRowDivider()
-                                        .hWithoutHorizontalPadding([.divider])
-                                        .padding(.horizontal, .padding16)
-                                }
-
-                                ItemCostView(itemCost: currentAgreementCost)
-                            }
-
-                            if contract.supportsCoInsured || contract.supportsCoOwners {
-                                hRowDivider()
-                                    .hWithoutHorizontalPadding([.divider])
-                                    .padding(.horizontal, .padding16)
-                                addCoInsuredView(contract: contract)
                             }
                         }
-                        .sectionContainerStyle(.opaque)
-                        .hWithoutHorizontalPadding([.section])
-
-                        missingStakeholderInfoCards(for: contract)
-                        missingPetIdInfoCard(for: contract)
-
-                        addonsView(contract: contract)
-
-                        VStack(spacing: .padding8) {
-                            if contract.showEditInfo {
-                                hButton(
-                                    .large,
-                                    .secondary,
-                                    content: .init(title: vm.getButtonText(contract))
-                                ) {
-                                    if contract.onlyCoInsured() {
-                                        let contract: StakeholdersConfig = .init(
-                                            contract: contract,
-                                            stakeholderType: .coInsured,
-                                            fromInfoCard: false
-                                        )
-
-                                        contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
-                                    } else {
-                                        contractsNavigationVm.changeYourInformationContract = contract
-                                    }
-                                }
-                            }
-                            moveAddressButton(contract: contract)
-                        }
+                        moveAddressButton(contract: contract)
                     }
                 }
                 .padding(.horizontal, .padding16)
                 .padding(.bottom, .padding16)
             }
         }
-        .sectionContainerStyle(.transparent)
     }
 
-    func insuredField(contract: Contract) -> some View {
-        VStack {
-            HStack {
-                hText(L10n.coinsuredEditTitle)
-                Spacer()
-                hText(
-                    contract.coInsured.count > 0
-                        ? L10n.changeAddressYouPlus(contract.coInsured.count) : L10n.changeAddressOnlyYou
-                )
-                .foregroundColor(hTextColor.Opaque.secondary)
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private func addCoInsuredView(contract: Contract) -> some View {
-        let nbOfMissingStakeholders = contract.nbOfMissingCoInsured + contract.nbOfMissingCoOwners
-        VStack(spacing: 0) {
-            hSection {
-                if contract.supportsCoInsured {
-                    HStack {
-                        hRow {
-                            insuredField(contract: contract)
-                        }
+    private func stakeholderRow(_ stakeholderItem: StakeholderItem?, contract: Contract) -> some View {
+        hRow {
+            if let stakeholderItem {
+                let isEditable = contract.canEditStakeholder(stakeholderItem.stakeholder)
+                if stakeholderItem.stakeholder.hasMissingInfo {
+                    StakeholderField(
+                        accessoryView: missingInfoAccessory(isEditable: isEditable),
+                        date: stakeholderItem.stakeholder.terminatesOn
+                            ?? stakeholderItem.stakeholder.activatesOn,
+                        stakeholderType: stakeholderItem.stakeholderType
+                    )
+                    .onTapGesture {
+                        guard isEditable else { return }
+                        let config: StakeholdersConfig = .init(
+                            contract: contract,
+                            stakeholderType: stakeholderItem.stakeholderType,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editStakeholdersVm.start(fromContract: config)
                     }
+                    .accessibilityAddTraits(.isButton)
+                } else {
+                    StakeholderField(
+                        stakeholder: stakeholderItem.stakeholder,
+                        accessoryView: EmptyView(),
+                        date: stakeholderItem.date,
+                        stakeholderType: stakeholderItem.stakeholderType
+                    )
                 }
-
-                let hasContentBelow =
-                    !vm.stakeholderItems(for: contract).isEmpty || nbOfMissingStakeholders > 0
+            } else {
                 ContractOwnerField(
                     enabled: true,
-                    hasContentBelow: hasContentBelow,
                     fullName: contract.fullName,
                     SSN: contract.ssn ?? ""
                 )
-                .padding(.top, .padding16)
-            }
-
-            hSection(vm.stakeholderItems(for: contract)) { item in
-                hRow {
-                    if item.stakeholder.hasMissingInfo {
-                        StakeholderField(
-                            accessoryView: getAccessoryView(contract: contract, stakeholder: item.stakeholder)
-                                .foregroundColor(hSignalColor.Amber.element),
-                            date: item.stakeholder.terminatesOn ?? item.stakeholder.activatesOn,
-                            stakeholderType: item.stakeholderType,
-                        )
-                        .onTapGesture {
-                            if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo),
-                                item.stakeholder.terminatesOn == nil
-                            {
-                                let contract: StakeholdersConfig = .init(
-                                    contract: contract,
-                                    stakeholderType: item.stakeholderType,
-                                    fromInfoCard: false
-                                )
-                                contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
-                            }
-                        }
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityAddTraits(
-                            {
-                                if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo)
-                                    && item.stakeholder.terminatesOn == nil
-                                {
-                                    return .isButton
-                                }
-                                return AccessibilityTraits()
-                            }()
-                        )
-                    } else {
-                        StakeholderField(
-                            stakeholder: item.stakeholder,
-                            accessoryView: EmptyView(),
-                            date: item.date,
-                            stakeholderType: item.stakeholderType,
-                        )
-                    }
-                }
             }
         }
     }
@@ -273,9 +184,10 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func getAccessoryView(contract: Contract, stakeholder: Stakeholder) -> some View {
-        if (contract.showEditCoInsuredInfo || contract.showEditCoOwnersInfo), stakeholder.terminatesOn == nil {
+    private func missingInfoAccessory(isEditable: Bool) -> some View {
+        if isEditable {
             hCoreUIAssets.warningTriangleFilledSmall.view
+                .foregroundColor(hSignalColor.Amber.element)
         } else {
             EmptyView()
         }
@@ -348,23 +260,6 @@ struct ContractInformationView: View {
                 .ghost,
                 content: .init(title: L10n.InsuranceDetails.moveButton)
             ) { contractsNavigationVm.isChangeAddressPresented = true }
-        }
-    }
-}
-
-@MainActor
-private class ContractsInformationViewModel: ObservableObject {
-    func stakeholderItems(for contract: Contract) -> [StakeholderItem] {
-        contract.coInsured.map { $0.asStakeholderItem(type: .coInsured) }
-            + contract.coOwners.map { $0.asStakeholderItem(type: .coOwner) }
-    }
-
-    @MainActor
-    func getButtonText(_ contract: Contract) -> String {
-        switch true {
-        case contract.onlyCoInsured(): L10n.contractEditCoinsured
-        case contract.onlyCoOwners(): L10n.editCoownerTitle
-        default: L10n.contractEditInfoLabel
         }
     }
 }
@@ -459,5 +354,20 @@ public struct AddonAction: Equatable, Identifiable {
             case .removal: return L10n.removeAddonButtonTitle
             }
         }
+    }
+}
+
+extension Contract {
+    fileprivate var showEditInfoButtonText: String {
+        switch true {
+        case onlyCoInsured(): L10n.contractEditCoinsured
+        case onlyCoOwners(): L10n.editCoownerTitle
+        default: L10n.contractEditInfoLabel
+        }
+    }
+
+    /// A stakeholder row is only actionable while the contract allows editing and the person is not being removed.
+    fileprivate func canEditStakeholder(_ stakeholder: Stakeholder) -> Bool {
+        (showEditCoInsuredInfo || showEditCoOwnersInfo) && stakeholder.terminatesOn == nil
     }
 }

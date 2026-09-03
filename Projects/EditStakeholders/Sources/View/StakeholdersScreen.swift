@@ -8,21 +8,65 @@ struct StakeholdersScreen: View {
     @ObservedObject var intentViewModel: IntentViewModel
     let type: StakeholderFieldType?
 
-    private var displayItems: [StakeholderItem] {
-        vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
+    private var displayItems: [StakeholderRowItem] {
+        let stakeholders = vm.items(for: type, activationDate: intentViewModel.intent?.activationDate)
+        let stakeholderRows = stakeholders.map { stakeholder in
+            StakeholderRowItem.stakeholder(
+                item: stakeholder,
+                // No divider above the add button, so the last person in the list hides its own.
+                hidesDivider: stakeholder.id == stakeholders.last?.id
+            )
+        }
+        let showsAddButton = vm.config.numberOfMissingStakeholdersWithoutTermination == 0
+        return [.owner] + stakeholderRows + (showsAddButton ? [.add] : [])
     }
 
     var body: some View {
         hForm {
-            VStack(spacing: 0) {
-                contractOwnerField(hasContentBelow: !displayItems.isEmpty || vm.hasContentBelow)
-                stakeholderSection(list: displayItems)
-                buttonSection
+            hSection(displayItems) { item in
+                switch item {
+                case .owner:
+                    hRow {
+                        ContractOwnerField(
+                            config: vm.config
+                        )
+                    }
+                case let .stakeholder(stakeholder, hidesDivider):
+                    hRow {
+                        StakeholderField(
+                            stakeholder: stakeholder.stakeholder,
+                            accessoryView: getAccessoryView(stakeholder: stakeholder),
+                            statusPill: stakeholder.type == .added ? .added : nil,
+                            date: stakeholder.date,
+                            stakeholderType: stakeholder.stakeholderType
+                        )
+                    }
+                    .shouldHideDivider(hidesDivider)
+                    .accessibilityValue(accessoryType(for: stakeholder).accessibilityValue)
+                case .add:
+                    hRow {
+                        hButton(
+                            .large,
+                            .secondary,
+                            content: .init(title: vm.config.stakeholderType.addButtonTitle)
+                        ) {
+                            if !vm.hasExistingStakeholders {
+                                editStakeholdersNavigation.stakeholderInputModel = .init(
+                                    actionType: .add,
+                                    stakeholderModel: Stakeholder(),
+                                    title: vm.config.stakeholderType.addButtonTitle,
+                                    contractId: vm.config.contractId
+                                )
+                            } else {
+                                editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
+                            }
+                        }
+                    }
+                }
             }
             .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding6)
-
             infoCardSection
         }
         .hFormAttachToBottom {
@@ -45,56 +89,6 @@ struct StakeholdersScreen: View {
     private var buttonView: some View {
         if vm.showConfirmChangesButton {
             ConfirmChangesView(editStakeholdersNavigation: editStakeholdersNavigation)
-        }
-    }
-
-    private func contractOwnerField(hasContentBelow: Bool) -> some View {
-        hSection {
-            ContractOwnerField(
-                hasContentBelow: hasContentBelow,
-                config: vm.config
-            )
-            .padding(.top, .padding16)
-        }
-    }
-
-    private func stakeholderSection(list: [StakeholderItem]) -> some View {
-        hSection(list) { item in
-            hRow {
-                StakeholderField(
-                    stakeholder: item.stakeholder,
-                    accessoryView: getAccessoryView(stakeholder: item),
-                    statusPill: item.type == .added ? .added : nil,
-                    date: item.date,
-                    stakeholderType: item.stakeholderType
-                )
-            }
-            .accessibilityValue(accessoryType(for: item).accessibilityValue)
-        }
-    }
-
-    @ViewBuilder
-    private var buttonSection: (some View)? {
-        if vm.config.numberOfMissingStakeholdersWithoutTermination == 0 {
-            hSection {
-                hButton(
-                    .large,
-                    .secondary,
-                    content: .init(title: vm.config.stakeholderType.addButtonTitle)
-                ) {
-                    if !vm.hasExistingStakeholders {
-                        editStakeholdersNavigation.stakeholderInputModel = .init(
-                            actionType: .add,
-                            stakeholderModel: Stakeholder(),
-                            title: vm.config.stakeholderType.addButtonTitle,
-                            contractId: vm.config.contractId
-                        )
-                    } else {
-                        editStakeholdersNavigation.selectStakeholder = .init(id: vm.config.contractId)
-                    }
-                }
-            }
-            .hWithoutHorizontalPadding([.row])
         }
     }
 
@@ -189,4 +183,18 @@ struct StakeholdersScreen: View {
     )
     let vm = StakeholdersViewModel(with: config)
     return StakeholdersScreen(vm: vm, intentViewModel: IntentViewModel(), type: .localEdit)
+}
+
+private enum StakeholderRowItem: Identifiable {
+    case owner
+    case stakeholder(item: StakeholderItem, hidesDivider: Bool)
+    case add
+
+    var id: String {
+        switch self {
+        case .owner: "owner"
+        case let .stakeholder(item, _): item.id
+        case .add: "add"
+        }
+    }
 }
