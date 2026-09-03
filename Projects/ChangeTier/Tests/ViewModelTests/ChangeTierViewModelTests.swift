@@ -334,7 +334,7 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         //the loading text is on screen before the fetch resolves, so no waiting here on purpose
         assert(model.isPaymentProtection)
-        assert(model.processingText == L10n.tierFlowProcessingPaymentProtection)
+        assert(model.processingText == L10n.changeInsuranceAmountProcessing)
     }
 
     func testProcessingTextUsesCoverageCopyForNonPaymentProtectionContracts() async throws {
