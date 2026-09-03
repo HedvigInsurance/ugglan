@@ -1,9 +1,11 @@
+import AutomaticLog
 import Chat
 import CrossSell
 import Foundation
 import hCore
 import hCoreUI
 
+@Loggable
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
         id: String,
@@ -57,8 +59,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let status: ClaimStatus
     public let outcome: ClaimOutcome?
     public let submittedAt: Date?
-    public let signedAudioURL: String?
-    public let memberFreeText: String?
+    @Masked public let signedAudioURL: String?
+    @Masked public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let targetFileUploadUri: String
     public let conversation: Conversation?
@@ -68,7 +70,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var infoText: String?
     public let displayItems: [ClaimDisplayItem]
     public let isPartnerClaim: Bool
-    public let handlerEmail: String?
+    @Masked public let handlerEmail: String?
     public let exposureDisplayName: String?
     public let externalId: String?
     public let contractId: String?
