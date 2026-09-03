@@ -56,9 +56,3 @@ struct ContractDisplayItemRow<StakeholderRow: View>: View {
         }
     }
 }
-
-extension ContractDisplayItemRow where StakeholderRow == EmptyView {
-    init(item: ContractInformationDisplayItem) {
-        self.init(item: item) { _ in EmptyView() }
-    }
-}

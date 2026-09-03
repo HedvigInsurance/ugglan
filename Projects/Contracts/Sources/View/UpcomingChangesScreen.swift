@@ -22,7 +22,9 @@ struct UpcomingChangesScreen: View {
     var body: some View {
         hForm {
             hSection(agreement.getDisplayItems()) { item in
-                ContractDisplayItemRow(item: item)
+                ContractDisplayItemRow(item: item) { _ in
+                    EmptyView()
+                }
             }
         }
         .sectionContainerStyle(.transparent)
