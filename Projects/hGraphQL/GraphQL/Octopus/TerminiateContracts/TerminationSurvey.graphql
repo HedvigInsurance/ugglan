@@ -55,6 +55,7 @@ fragment TerminationSurveyOptionRedirectionFragment on TerminationFlowSurveyOpti
 fragment TerminationSurveyOptionSuggestionFragment on TerminationFlowSurveyOptionSuggestion {
   type
   description
+  actionText
   url
 }
 

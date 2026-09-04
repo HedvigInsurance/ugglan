@@ -76,11 +76,13 @@ public struct TerminationRedirectionImage: Codable, Equatable, Hashable, Sendabl
 public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
     public let type: TerminationSuggestionType
     public let description: String
+    public let actionText: String?
     public let url: String?
 
-    public init(type: TerminationSuggestionType, description: String, url: String?) {
+    public init(type: TerminationSuggestionType, description: String, actionText: String? = nil, url: String?) {
         self.type = type
         self.description = description
+        self.actionText = actionText
         self.url = url
     }
 
@@ -95,6 +97,9 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
     }
 
     public var buttonTitle: String {
+        if let actionText, !actionText.isEmpty {
+            return actionText
+        }
         switch type {
         case .updateAddress:
             return L10n.terminationOfferButtonUpdateAddress
