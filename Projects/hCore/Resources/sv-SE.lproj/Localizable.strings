@@ -103,7 +103,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
-"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Det nya beloppet börjar gälla när din kvalificeringstid är slut. Fram till dess gäller ditt nuvarande belopp.";
+"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Det nya beloppet börjar gälla efter 90 dagar. Fram till dess gäller ditt nuvarande belopp.";
 "CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Hämtar försäkringsbelopp...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";

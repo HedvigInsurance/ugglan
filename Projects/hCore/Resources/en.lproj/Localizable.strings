@@ -103,7 +103,7 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
-"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your new amount takes effect once your qualification period ends. Until then, your current amount applies.";
+"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your new amount takes effect after 90 days. Until then, your current amount applies.";
 "CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Fetching insurance amount...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
