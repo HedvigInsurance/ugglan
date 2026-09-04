@@ -81,11 +81,11 @@ struct AddMissingPetChipIdBottomSheet: View {
                     )
 
                     VStack(spacing: .padding8) {
-                        hSaveButton(.primary) { [weak vm] in vm?.addMissingPetChipId() }
+                        hSaveButton(.primary) { vm.addMissingPetChipId() }
                             .disabled(!vm.canProceed)
                             .hButtonIsLoading(vm.isLoading)
 
-                        hCancelButton { [weak vm] in vm?.dismiss() }
+                        hCancelButton { vm.dismiss() }
                     }
                 }
             }

@@ -48,13 +48,13 @@ public struct DeflectView: View {
 
                     VStack(spacing: .padding8) {
                         if let buttonTitle, let deflectAction {
-                            hButton(.large, .primary, content: .init(title: buttonTitle)) { [weak router] in
-                                router?.dismiss()
+                            hButton(.large, .primary, content: .init(title: buttonTitle)) {
+                                router.dismiss()
                                 deflectAction()
                             }
                         }
-                        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) { [weak router] in
-                            router?.dismiss()
+                        hButton(.large, .secondary, content: .init(title: L10n.generalCancelButton)) {
+                            router.dismiss()
                         }
                     }
                 }

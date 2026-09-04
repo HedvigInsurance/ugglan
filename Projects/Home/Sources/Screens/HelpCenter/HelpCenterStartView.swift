@@ -163,8 +163,8 @@ public struct HelpCenterStartView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .accessibilityElement(children: .combine)
-                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [weak router] in
-                    router?.push(PuppyGuideRoute.list)
+                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [router] in
+                    router.push(PuppyGuideRoute.list)
                 }
                 .hButtonWithBorder
                 .hButtonTakeFullWidth(true)
@@ -172,8 +172,8 @@ public struct HelpCenterStartView: View {
             .padding(.padding16)
         }
         .hWithoutHorizontalPadding([.section])
-        .onTapGesture { [weak router] in
-            router?.push(PuppyGuideRoute.list)
+        .onTapGesture { [router] in
+            router.push(PuppyGuideRoute.list)
         }
         .accessibilityAddTraits(.isButton)
     }

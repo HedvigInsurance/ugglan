@@ -47,16 +47,16 @@ struct RemoveAddonScreen: View {
                                     )
                                     .hFieldSize(.small)
                                 },
-                                onTap: { [weak vm] in vm?.toggleAddon(addon) }
+                                onTap: { vm.toggleAddon(addon) }
                             )
                         }
                     }
                 }
                 hSection {
-                    hContinueButton { [weak vm, weak navigationVm] in
-                        await vm?.getAddonRemoveOfferCost()
-                        guard vm?.addonRemoveOfferCost != nil else { return }
-                        navigationVm?.router.push(RemoveAddonRouterActions.summary)
+                    hContinueButton {
+                        await vm.getAddonRemoveOfferCost()
+                        guard vm.addonRemoveOfferCost != nil else { return }
+                        navigationVm.router.push(RemoveAddonRouterActions.summary)
                     }
                     .disabled(!vm.allowToContinue)
                     .hButtonIsLoading(vm.fetchingCostState == .loading)

@@ -181,9 +181,8 @@ public class FilesUploadViewModel: ObservableObject {
                         let response: FileUploadResponseModel = try await self.uploadClient.upload(
                             url: url,
                             multipart: multipart
-                        ) { [weak self] progress in
+                        ) { progress in
                             DispatchQueue.main.async {
-                                guard let self = self else { return }
                                 self.uploadProgress = progress
                                 self.progress = min(self.uploadProgress, self.timerProgress)
                             }

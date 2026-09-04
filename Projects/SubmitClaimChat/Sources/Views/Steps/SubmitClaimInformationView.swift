@@ -11,8 +11,8 @@ struct SubmitClaimInformationView: View {
                 .large,
                 .primary,
                 content: .init(title: viewModel.informationModel.buttonTitle)
-            ) { [weak viewModel] in
-                viewModel?.submitResponse()
+            ) {
+                viewModel.submitResponse()
             }
         }
         .sectionContainerStyle(.transparent)

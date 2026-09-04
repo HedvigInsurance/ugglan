@@ -44,8 +44,8 @@ struct SetTerminationDateLandingScreen: View {
 
                     hSection {
                         VStack(spacing: .padding16) {
-                            hContinueButton { [weak terminationNavigationVm] in
-                                terminationNavigationVm?.router.push(TerminationFlowRouterActions.confirmation)
+                            hContinueButton {
+                                terminationNavigationVm.router.push(TerminationFlowRouterActions.confirmation)
                             }
                             .disabled(
                                 isDeletion

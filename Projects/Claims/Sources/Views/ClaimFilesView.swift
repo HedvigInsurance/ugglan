@@ -54,11 +54,11 @@ public struct ClaimFilesView: View {
                                 .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
-                            ) { [weak vm] in vm?.showFileSourcePicker = true }
+                            ) { vm.showFileSourcePicker = true }
                             .disabled(vm.isLoading)
-                            .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
+                            .showFileSourcePicker($vm.showFileSourcePicker) { files in
                                 for file in files {
-                                    vm?.add(file: file)
+                                    vm.add(file: file)
                                 }
                             }
                             hButton(

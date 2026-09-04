@@ -40,10 +40,10 @@ struct ChangeAddonScreen: View {
                 }
 
                 hSection {
-                    hContinueButton { [weak vm, weak navigationVm] in
-                        await vm?.getAddonOfferCost()
-                        guard vm?.addonOfferCost != nil else { return }
-                        navigationVm?.router.push(ChangeAddonRouterActions.summary)
+                    hContinueButton {
+                        await vm.getAddonOfferCost()
+                        guard vm.addonOfferCost != nil else { return }
+                        navigationVm.router.push(ChangeAddonRouterActions.summary)
                     }
                     .disabled(!vm.allowToContinue)
                     .hButtonIsLoading(vm.fetchingCostState == .loading)

@@ -225,13 +225,7 @@ struct ChatScreenModifier: ViewModifier {
                 }
             )
             .onAppear {
-                vm.scrollCancellable = chatScrollViewDelegate.isScrolling
-                    .subscribe(on: RunLoop.main)
-                    .sink { [weak vm] _ in
-                        withAnimation {
-                            vm?.chatInputVm.showBottomMenu = false
-                        }
-                    }
+                vm.observeScrolling(chatScrollViewDelegate.isScrolling)
                 Task {
                     await vm.startFetchingNewMessages()
                 }

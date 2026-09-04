@@ -651,17 +651,17 @@ struct LoggedInNavigation: View {
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
                 LanguagePickerView {
-                    [weak profileNavigationVm = vm.profileNavigationVm, weak mainNavigationVm, weak vm] in
+                    [weak profileNavigationVm = vm.profileNavigationVm, mainNavigationVm, vm] in
                     // show loading screen since we everything needs to be updated
-                    mainNavigationVm?.hasLaunchFinished = false
+                    mainNavigationVm.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
                     let store: ProfileStore = globalAppStateContainer.get()
                     Task { await store.updateLanguage() }
                     // show home screen with updated langauge
-                    mainNavigationVm?.loggedInVm = .init()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak mainNavigationVm, weak vm] in
-                        mainNavigationVm?.hasLaunchFinished = true
-                        vm?.selectedTab = 0
+                    mainNavigationVm.loggedInVm = .init()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [mainNavigationVm, vm] in
+                        mainNavigationVm.hasLaunchFinished = true
+                        vm.selectedTab = 0
                     }
                 } onCancel: { [weak profileNavigationVm = vm.profileNavigationVm] in
                     profileNavigationVm?.isLanguagePickerPresented = false
@@ -669,13 +669,13 @@ struct LoggedInNavigation: View {
             case let .deleteRequestLoading(state):
                 DeleteRequestLoadingView(
                     screenState: state,
-                    dismissAction: { [weak vm] profileDismissAction in
+                    dismissAction: { [vm] profileDismissAction in
                         switch profileDismissAction {
                         case .makeHomeTabActiveAndOpenChat:
-                            vm?.selectedTab = 0
+                            vm.selectedTab = 0
                             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                         default:
-                            vm?.selectedTab = 0
+                            vm.selectedTab = 0
                         }
                     }
                 )

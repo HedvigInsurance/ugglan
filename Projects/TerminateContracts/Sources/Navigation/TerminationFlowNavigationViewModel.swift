@@ -401,13 +401,13 @@ struct TerminationFlowNavigation: View {
                 .routerDestination(
                     for: TerminationFlowFinalRouterActions.self,
                     options: .hidesBackButton
-                ) { [weak vm] action in
+                ) { action in
                     Group {
                         switch action {
                         case .success:
                             openTerminationSuccessScreen(
-                                isDeletion: vm?.isDeletion ?? false,
-                                terminationDate: vm?.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
+                                isDeletion: vm.isDeletion,
+                                terminationDate: vm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
                             )
                         case let .failure(message):
                             openTerminationFailScreen(message: message)

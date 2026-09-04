@@ -15,8 +15,7 @@ struct DevSettingsView: View {
                     hText("Submit claim flow animations")
                 }
                 .withSelectedAccessory(devSettingsStore.isSubmitClaimAnimationsEnabled)
-                .onTap { [weak devSettingsStore] in
-                    guard let devSettingsStore else { return }
+                .onTap { [devSettingsStore] in
                     devSettingsStore.setSubmitClaimAnimationsEnabled(
                         !devSettingsStore.isSubmitClaimAnimationsEnabled
                     )

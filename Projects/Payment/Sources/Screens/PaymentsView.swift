@@ -165,8 +165,8 @@ public struct PaymentsView: View {
                 }
 
                 if store.showsConnectPayout {
-                    ConnectPayoutCardView { [weak router] in
-                        router?.push(PayoutRouterActions.selectedPayoutMethod)
+                    ConnectPayoutCardView {
+                        router.push(PayoutRouterActions.selectedPayoutMethod)
                     }
                 }
 
@@ -178,7 +178,7 @@ public struct PaymentsView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { [weak router] in router?.push(PaymentsRouterAction.payoutMethod) }
+                    .onTap { router.push(PaymentsRouterAction.payoutMethod) }
                 }
             }
             .sectionContainerStyle(.transparent)

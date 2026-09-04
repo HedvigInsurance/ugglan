@@ -271,6 +271,20 @@ public class ChatScreenViewModel: ObservableObject {
     let messageVm: ChatMessageViewModel
 
     var scrollCancellable: AnyCancellable?
+
+    /// Hides the input's bottom menu while the user scrolls. The sink is stored on this object,
+    /// so its closure must not hold `self`: the view model would otherwise retain itself.
+    func observeScrolling(_ isScrolling: some Publisher<Bool, Never>) {
+        scrollCancellable =
+            isScrolling
+            .subscribe(on: RunLoop.main)
+            .sink { [weak self] _ in
+                withAnimation {
+                    self?.chatInputVm.showBottomMenu = false
+                }
+            }
+    }
+
     private var pollTimerCancellable: AnyCancellable?
     var hideBannerCancellable: AnyCancellable?
     private var openDeepLinkObserver: NSObjectProtocol?

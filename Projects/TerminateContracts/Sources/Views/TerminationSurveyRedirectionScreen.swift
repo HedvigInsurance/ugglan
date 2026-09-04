@@ -33,16 +33,15 @@ struct TerminationSurveyRedirectionScreen: View {
                         .large,
                         .primary,
                         content: .init(title: redirection.actionText)
-                    ) { [weak terminationFlowNavigationViewModel] in
-                        terminationFlowNavigationViewModel?.handleRedirection(redirection)
+                    ) {
+                        terminationFlowNavigationViewModel.handleRedirection(redirection)
                     }
                     hButton(
                         .large,
                         .secondary,
                         content: .init(title: L10n.terminationFlowContinueCancelling)
-                    ) { [weak terminationFlowNavigationViewModel] in
-                        terminationFlowNavigationViewModel?
-                            .continueSurvey(option: route.option, comment: route.comment)
+                    ) {
+                        terminationFlowNavigationViewModel.continueSurvey(option: route.option, comment: route.comment)
                     }
                 }
             }

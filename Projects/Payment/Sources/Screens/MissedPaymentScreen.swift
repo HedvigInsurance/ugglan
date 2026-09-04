@@ -85,8 +85,8 @@ struct MissedPaymentScreen: View {
                     actionButtonAttachedToBottom: .init(
                         buttonTitle: L10n.generalDoneButton,
                         buttonStyle: .secondary,
-                        buttonAction: { [weak vm] in
-                            vm?.showSuccessScreen = false
+                        buttonAction: {
+                            vm.showSuccessScreen = false
                         }
                     )
                 )
