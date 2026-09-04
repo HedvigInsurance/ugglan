@@ -57,19 +57,21 @@ class HomeVM: ObservableObject {
         chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
-            .sink { [self] _ in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
-                Task { await homeStore.fetchChatNotifications() }
+                Task { await self.homeStore.fetchChatNotifications() }
             }
 
         claimsTimerCancellable = Timer.publish(every: 120, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
-            .sink { [self] _ in
+            .sink { [weak self] _ in
+                guard let self else { return }
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
                 Task {
-                    async let fetchActive = claimsStore.fetchActiveClaims()
-                    async let fetchInProgress: Void = claimsStore.fetchClaimInProgress()
+                    async let fetchActive = self.claimsStore.fetchActiveClaims()
+                    async let fetchInProgress: Void = self.claimsStore.fetchClaimInProgress()
                     _ = await (fetchActive, fetchInProgress)
                 }
             }
