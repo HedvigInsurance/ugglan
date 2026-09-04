@@ -63,7 +63,8 @@ public struct InboxView: View {
                         isNewMessageSheetPresented = true
                     } label: {
                         HStack(alignment: .bottom, spacing: 4) {
-                            Image(systemName: "square.and.pencil")
+                            hCoreUIAssets.penEdit.view
+                                .resizable()
                             hText(L10n.inboxNewMessage, style: .body1)
                         }
                         .padding(.leading, .padding2)
