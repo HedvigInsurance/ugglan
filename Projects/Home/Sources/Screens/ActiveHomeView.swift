@@ -114,12 +114,6 @@ struct ActiveHomeView: View {
     }
 }
 
-/// The full-bleed hero image behind the greeting and sheet.
-///
-/// Extracted into its own `View` type (rather than an inlined computed property) so it becomes an
-/// independent node in the view graph. Keeping the whole screen inlined into one giant nested value
-/// makes its deinit recurse very deep, which overflows the main-thread stack when the logged-in tree
-/// is torn down at logout on iOS 16.
 private struct HeroBackgroundView: View {
     var body: some View {
         hCoreUIAssets.submitClaimBg.view
@@ -130,10 +124,6 @@ private struct HeroBackgroundView: View {
     }
 }
 
-/// The stack of cards that makes up the white sheet.
-///
-/// Its own `View` type so the seven heavy sections are behind a type boundary instead of being
-/// inlined into `ActiveHomeView.body` — see `HeroBackgroundView` for why this matters.
 private struct HomeSheetContent: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
@@ -172,15 +162,6 @@ private struct HomeSheetContent: View {
     }
 }
 
-/// Hides the top `topInset` points outright, then fades the next `fadeHeight` points from
-/// transparent to opaque.
-///
-/// Both of `body`'s masks use this: a non-zero `fadeHeight` dissolves the content's edge, and
-/// `0` collapses the gradient to nothing for a hard cut.
-///
-/// The negative bottom padding stretches the mask `bottomOverscrollExtension` points past the
-/// content's own bottom edge, so the white overscroll rectangle drawn below the sheet content
-/// survives both masks instead of being clipped away.
 private struct TopFadeMask: View {
     let topInset: CGFloat
     let fadeHeight: CGFloat
