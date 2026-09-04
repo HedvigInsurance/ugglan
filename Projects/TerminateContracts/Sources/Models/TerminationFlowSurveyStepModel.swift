@@ -97,7 +97,7 @@ public struct TerminationSuggestion: Codable, Equatable, Hashable, Sendable {
     }
 
     public var buttonTitle: String {
-        if let actionText, !actionText.isEmpty {
+        if let actionText {
             return actionText
         }
         switch type {
