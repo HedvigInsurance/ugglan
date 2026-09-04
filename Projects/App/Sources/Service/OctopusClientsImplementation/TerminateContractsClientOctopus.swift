@@ -146,6 +146,7 @@ extension OctopusGraphQL.TerminationSurveyOptionSuggestionFragment {
         .init(
             type: type.asTerminationSuggestionType,
             description: description,
+            actionText: actionText,
             url: url
         )
     }

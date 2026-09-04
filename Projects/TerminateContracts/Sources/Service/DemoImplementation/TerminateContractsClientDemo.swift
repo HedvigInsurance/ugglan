@@ -24,7 +24,12 @@ class TerminateContractsClientDemo: TerminateContractsClient {
                     id: "option1",
                     title: "I found a better price",
                     feedbackRequired: false,
-                    suggestion: .init(type: .downgradePrice, description: "We can offer you a better price", url: nil),
+                    suggestion: .init(
+                        type: .downgradePrice,
+                        description: "We can offer you a better price",
+                        actionText: "Change amount",
+                        url: nil
+                    ),
                     subOptions: []
                 ),
                 .init(
