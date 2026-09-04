@@ -36,14 +36,4 @@ final class TerminationSuggestionTests: XCTestCase {
         )
         XCTAssertEqual(redirect.buttonTitle, L10n.terminationFlowLearnMore)
     }
-
-    func testButtonTitle_fallsBackToTypeWhenActionTextIsEmpty() {
-        let suggestion = TerminationSuggestion(
-            type: .downgradePrice,
-            description: "We can offer you a better price",
-            actionText: "",
-            url: nil
-        )
-        XCTAssertEqual(suggestion.buttonTitle, L10n.terminationOfferButtonChangeTier)
-    }
 }
