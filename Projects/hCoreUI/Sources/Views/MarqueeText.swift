@@ -1,181 +1,120 @@
-import Combine
 import SwiftUI
+import hCore
 
+/// Auto-scrolling ("marquee") single-line text.
+///
+/// When the text is wider than the available width it ping-pongs horizontally — scrolling to
+/// the end, pausing, then back to the start — and repeats forever. When the text fits, it
+/// stays put. The leading/trailing edges are softened with a fade so text slides in and out
+/// gently rather than being hard-clipped.
 public struct MarqueeText: View {
     public var text: String
-    public var font: UIFont
     public var leftFade: CGFloat
     public var rightFade: CGFloat
-    public var startDelay: Double
-    public var alignment: Alignment
+    /// How long to hold at each end before scrolling back.
+    public var pauseDuration: TimeInterval
 
-    @State private var animate = false
-    var isCompact = false
+    /// How long a single edge-to-edge scroll takes. Longer = slower.
+    private let scrollDuration: TimeInterval = 5
 
-    public var body: some View {
-        let stringWidth = text.widthOfString(usingFont: font)
-        let stringHeight = text.heightOfString(usingFont: font)
-
-        return ZStack {
-            GeometryReader { geo in
-                if stringWidth > geo.size.width {  // don't use self.animate as conditional here
-                    Group {
-                        Text(text)
-                            .lineLimit(1)
-                            .font(.init(font))
-                            .offset(x: animate ? -(stringWidth - geo.size.width) - 6 : 0)
-                            .fixedSize(horizontal: true, vertical: false)
-                            // Pin the text to exactly one line so a layout pass can never
-                            // give it vertical room to drift or wrap into.
-                            .frame(height: stringHeight, alignment: .leading)
-                            .frame(
-                                minWidth: 0,
-                                maxWidth: .infinity,
-                                alignment: .topLeading
-                            )
-                            .onAppear {
-                                DispatchQueue.main.async {
-                                    updateAnimation(
-                                        shouldAnimate: geo.size.width < stringWidth,
-                                        stringWidth: stringWidth,
-                                        containerWidth: geo.size.width
-                                    )
-                                }
-                            }
-                    }
-                    .onChange(of: text) { _ in
-                        updateAnimation(
-                            shouldAnimate: geo.size.width < stringWidth,
-                            stringWidth: stringWidth,
-                            containerWidth: geo.size.width
-                        )
-                    }
-
-                    .offset(x: leftFade)
-                    .mask(
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .frame(width: 2)
-                                .opacity(0)
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.black.opacity(0), Color.black]),
-                                startPoint: /*@START_MENU_TOKEN@*/ .leading /*@END_MENU_TOKEN@*/,
-                                endPoint: /*@START_MENU_TOKEN@*/ .trailing /*@END_MENU_TOKEN@*/
-                            )
-                            .frame(width: leftFade)
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.black, Color.black]),
-                                startPoint: /*@START_MENU_TOKEN@*/ .leading /*@END_MENU_TOKEN@*/,
-                                endPoint: /*@START_MENU_TOKEN@*/ .trailing /*@END_MENU_TOKEN@*/
-                            )
-                            LinearGradient(
-                                gradient: Gradient(colors: [Color.black, Color.black.opacity(0)]),
-                                startPoint: /*@START_MENU_TOKEN@*/ .leading /*@END_MENU_TOKEN@*/,
-                                endPoint: /*@START_MENU_TOKEN@*/ .trailing /*@END_MENU_TOKEN@*/
-                            )
-                            .frame(width: rightFade)
-                            Rectangle()
-                                .frame(width: 2)
-                                .opacity(0)
-                        }
-                    )
-                    .frame(width: geo.size.width + leftFade)
-                    .offset(x: leftFade * -1)
-                } else {
-                    Text(text)
-                        .font(.init(font))
-                        .lineLimit(1)
-                        .onChange(of: text) { _ in
-                            updateAnimation(
-                                shouldAnimate: geo.size.width < stringWidth,
-                                stringWidth: stringWidth,
-                                containerWidth: geo.size.width
-                            )
-                        }
-                        .frame(
-                            minWidth: 0,
-                            maxWidth: .infinity,
-                            minHeight: 0,
-                            maxHeight: .infinity,
-                            alignment: alignment
-                        )
-                }
-            }
-        }
-        .frame(height: stringHeight)
-        // Guard against any vertical overflow ever showing as a top/bottom drift.
-        .clipped()
-        .frame(maxWidth: isCompact ? stringWidth : nil)
-        .onDisappear { animate = false }
-    }
-
-    /// Drives the marquee by animating only the horizontal `offset`. Using an explicit
-    /// `withAnimation` (instead of an implicit `.animation(_:value:)` on the whole subtree)
-    /// keeps the repeating animation from ever capturing a vertical layout change and
-    /// scrolling the text top-to-bottom.
-    private func updateAnimation(shouldAnimate: Bool, stringWidth: CGFloat, containerWidth: CGFloat) {
-        guard shouldAnimate else {
-            animate = false
-            return
-        }
-        animate = false
-        withAnimation(
-            .easeInOut(duration: 1.5 + Double(stringWidth - containerWidth) / 40)
-                .delay(startDelay)
-                .repeatForever(autoreverses: true)
-        ) {
-            animate = true
-        }
-    }
+    /// Anchor ids for the invisible spacers at each end of the text.
+    private let startAnchorID = "before"
+    private let endAnchorID = "after"
 
     public init(
         text: String,
-        font: UIFont,
         leftFade: CGFloat,
         rightFade: CGFloat,
-        startDelay: Double,
-        alignment: Alignment? = nil
+        pauseDuration: TimeInterval
     ) {
         self.text = text
-        self.font = font
         self.leftFade = leftFade
         self.rightFade = rightFade
-        self.startDelay = startDelay
-        self.alignment = alignment ?? .topLeading
-    }
-}
-
-extension MarqueeText {
-    public func makeCompact(_ compact: Bool = true) -> Self {
-        var view = self
-        view.isCompact = compact
-        return view
-    }
-}
-
-extension String {
-    func widthOfString(usingFont font: UIFont) -> CGFloat {
-        let fontAttributes = [NSAttributedString.Key.font: font]
-        let size = self.size(withAttributes: fontAttributes)
-        return size.width
+        self.pauseDuration = pauseDuration
     }
 
-    func heightOfString(usingFont font: UIFont) -> CGFloat {
-        let fontAttributes = [NSAttributedString.Key.font: font]
-        let size = self.size(withAttributes: fontAttributes)
-        return size.height
+    public var body: some View {
+        ScrollViewReader { scrollView in
+            ScrollView(.horizontal) {
+                HStack(spacing: 0) {
+                    Rectangle().frame(width: 0)
+                        .id(startAnchorID)
+                    hText(text, style: .label)
+                        .lineLimit(1)
+                    Rectangle().frame(width: 0)
+                        .id(endAnchorID)
+                }
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            .mask(fadeMask)
+            .scrollDisabled(true)
+            .task {
+                // Ping-pong forever: scroll to the end, hold, scroll back to the start, hold,
+                // repeat. When the text fits, scrollTo is a no-op so it just idles.
+                while !Task.isCancelled {
+                    await scroll(scrollView, to: endAnchorID, anchor: .trailing)
+                    await delay(pauseDuration)
+                    await scroll(scrollView, to: startAnchorID, anchor: .leading)
+                    await delay(pauseDuration)
+                }
+            }
+        }
+    }
+
+    /// Animates a scroll to the given anchor id and waits for the animation to finish.
+    @MainActor
+    private func scroll(_ proxy: ScrollViewProxy, to id: String, anchor: UnitPoint) async {
+        withAnimation(.easeInOut(duration: scrollDuration)) {
+            proxy.scrollTo(id, anchor: anchor)
+        }
+        await delay(scrollDuration)
+    }
+
+    /// Soft fade at the leading/trailing edges so text slides in and out gently.
+    private var fadeMask: some View {
+        HStack(spacing: 0) {
+            LinearGradient(
+                gradient: Gradient(colors: [.clear, .black]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: leftFade)
+            Color.black
+            LinearGradient(
+                gradient: Gradient(colors: [.black, .clear]),
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(width: rightFade)
+        }
     }
 }
 
 #Preview {
     VStack {
-        MarqueeText(
-            text: "1234567890 1234567890 1234567890",
-            font: .systemFont(ofSize: 20),
-            leftFade: 3,
-            rightFade: 3,
-            startDelay: 0
-        )
+        HStack(alignment: .center) {
+            Rectangle()
+                .frame(width: 60, height: 30)
+            MarqueeText(
+                text: "Placing long text that just to see how it behaves",
+                leftFade: 3,
+                rightFade: 3,
+                pauseDuration: 2
+            )
+            hButton(.medium, .primary, content: .init(title: "title")) {}
+        }
+
+        HStack {
+            Rectangle()
+                .frame(width: 60, height: 30)
+            MarqueeText(
+                text: "1234567890",
+                leftFade: 3,
+                rightFade: 3,
+                pauseDuration: 2
+            )
+            hButton(.medium, .primary, content: .init(title: "title")) {}
+        }
     }
-    .frame(width: 100)
+    .frame(maxWidth: .infinity)
 }
