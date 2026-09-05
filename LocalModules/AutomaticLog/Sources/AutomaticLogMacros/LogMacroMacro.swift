@@ -20,12 +20,12 @@ public struct AutomaticLog: BodyMacro {
 
     private static func parseLogOptions(from attribute: AttributeSyntax) -> ParsedLogOptions {
         guard let arguments = attribute.arguments?.as(LabeledExprListSyntax.self),
-            let firstArgument = arguments.first
+            let optionsArgument = arguments.first(where: { $0.label == nil })
         else {
             return .all
         }
 
-        let argText = firstArgument.expression.description.trimmingCharacters(in: .whitespaces)
+        let argText = optionsArgument.expression.description.trimmingCharacters(in: .whitespaces)
 
         if argText == ".all" {
             return .all
@@ -43,6 +43,46 @@ public struct AutomaticLog: BodyMacro {
         return options.isEmpty ? .all : options
     }
 
+    private static func parseMaskedNames(from attribute: AttributeSyntax) -> [String] {
+        guard let arguments = attribute.arguments?.as(LabeledExprListSyntax.self),
+            let argument = arguments.first(where: { $0.label?.text == "masked" }),
+            let array = argument.expression.as(ArrayExprSyntax.self)
+        else {
+            return []
+        }
+
+        return array.elements.compactMap { element in
+            element.expression.as(StringLiteralExprSyntax.self)?.representedLiteralValue
+        }
+    }
+
+    /// A name in `masked:` that is not a parameter would silently log a secret in plain
+    /// text, so a rename or a typo has to fail the build.
+    private static func validate(
+        maskedNames: [String],
+        of funcDecl: FunctionDeclSyntax,
+        attribute: AttributeSyntax,
+        in context: some MacroExpansionContext
+    ) {
+        let parameterNames = funcDecl.signature.parameterClause.parameters
+            .map { ($0.secondName ?? $0.firstName).text }
+
+        for name in maskedNames where !parameterNames.contains(name) {
+            let detail =
+                parameterNames.isEmpty
+                ? "it has no parameters"
+                : "parameters are: \(parameterNames.joined(separator: ", "))"
+            context.diagnose(
+                Diagnostic(
+                    node: attribute,
+                    message: MacroExpansionErrorMessage(
+                        "'\(name)' is not a parameter of '\(funcDecl.name.text)' — \(detail)"
+                    )
+                )
+            )
+        }
+    }
+
     public static func expansion(
         of attribute: AttributeSyntax,
         providingBodyFor declaration: some DeclSyntaxProtocol & WithOptionalCodeBlockSyntax,
@@ -55,7 +95,14 @@ public struct AutomaticLog: BodyMacro {
         }
 
         let options = parseLogOptions(from: attribute)
-        let metadata = extractFunctionMetadata(from: funcDecl, in: context, options: options)
+        let maskedNames = parseMaskedNames(from: attribute)
+        validate(maskedNames: maskedNames, of: funcDecl, attribute: attribute, in: context)
+        let metadata = extractFunctionMetadata(
+            from: funcDecl,
+            in: context,
+            options: options,
+            maskedNames: maskedNames
+        )
         var statements = generateEntryLogStatements(for: metadata)
 
         if metadata.hasReturnType {
@@ -69,10 +116,16 @@ public struct AutomaticLog: BodyMacro {
 
     // MARK: - Function Metadata
 
+    /// A parameter of a logged function, plus whether `@Masked` was applied to it.
+    private struct LoggedParameter {
+        let name: String
+        let isMasked: Bool
+    }
+
     private struct FunctionMetadata {
         let functionName: String
         let fullFunctionName: String
-        let parameterNames: [String]
+        let parameters: [LoggedParameter]
         let hasReturnType: Bool
         let isAsync: Bool
         let isThrows: Bool
@@ -83,14 +136,17 @@ public struct AutomaticLog: BodyMacro {
     private static func extractFunctionMetadata(
         from funcDecl: FunctionDeclSyntax,
         in context: some MacroExpansionContext,
-        options: ParsedLogOptions
+        options: ParsedLogOptions,
+        maskedNames: [String]
     ) -> FunctionMetadata {
         let functionName = funcDecl.name.text
         let typeName = findParentTypeName(of: funcDecl, in: context)
         let fullFunctionName = typeName.isEmpty ? functionName : "\(typeName) \(functionName)"
 
-        let parameters = funcDecl.signature.parameterClause.parameters
-        let parameterNames = parameters.map { $0.secondName ?? $0.firstName }.map(\.text)
+        let parameters = funcDecl.signature.parameterClause.parameters.map { parameter in
+            let name = (parameter.secondName ?? parameter.firstName).text
+            return LoggedParameter(name: name, isMasked: maskedNames.contains(name))
+        }
 
         let hasReturnType = funcDecl.signature.returnClause != nil
         let isAsync = funcDecl.signature.effectSpecifiers?.asyncSpecifier != nil
@@ -101,7 +157,7 @@ public struct AutomaticLog: BodyMacro {
         return FunctionMetadata(
             functionName: functionName,
             fullFunctionName: fullFunctionName,
-            parameterNames: parameterNames,
+            parameters: parameters,
             hasReturnType: hasReturnType,
             isAsync: isAsync,
             isThrows: isThrows,
@@ -113,12 +169,18 @@ public struct AutomaticLog: BodyMacro {
     // MARK: - Entry Log Generation
 
     private static func generateEntryLogStatements(for metadata: FunctionMetadata) -> [CodeBlockItemSyntax] {
-        guard !metadata.parameterNames.isEmpty else {
+        guard !metadata.parameters.isEmpty else {
             return []
         }
 
-        let dictElements = metadata.parameterNames
-            .map { "\"\($0)\": AutomaticLog.redactedDescription(\($0) as Any, name: \"\($0)\")" }
+        let dictElements = metadata.parameters
+            .map { parameter in
+                let description =
+                    parameter.isMasked
+                    ? "AutomaticLog.maskedLogDescription(\(parameter.name) as Any)"
+                    : "AutomaticLog.logDescription(\(parameter.name) as Any)"
+                return "\"\(parameter.name)\": \(description)"
+            }
             .joined(separator: ", ")
 
         let logSetupCode = """
@@ -156,12 +218,12 @@ public struct AutomaticLog: BodyMacro {
         let logError = metadata.options.contains(.error)
 
         let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
+            metadata.parameters.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
 
         let successLog: String
         if logOutput {
             successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
+                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.logDescription(_logResult as Any))")
                 """
         } else {
             successLog = """
@@ -204,12 +266,12 @@ public struct AutomaticLog: BodyMacro {
         let logOutput = metadata.options.contains(.output)
 
         let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
+            metadata.parameters.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
 
         let successLog: String
         if logOutput {
             successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
+                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.logDescription(_logResult as Any))")
                 """
         } else {
             successLog = """
@@ -260,7 +322,7 @@ public struct AutomaticLog: BodyMacro {
         let logError = metadata.options.contains(.error)
 
         let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
+            metadata.parameters.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
 
         let successLog: String
         if logOutput {
@@ -307,7 +369,7 @@ public struct AutomaticLog: BodyMacro {
         let logOutput = metadata.options.contains(.output)
 
         let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
+            metadata.parameters.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
 
         let successLog: String
         if logOutput {
@@ -362,6 +424,8 @@ public struct AutomaticLog: BodyMacro {
 @main
 struct AutomaticLogPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        AutomaticLog.self
+        AutomaticLog.self,
+        MaskedMacro.self,
+        LoggableMacro.self,
     ]
 }

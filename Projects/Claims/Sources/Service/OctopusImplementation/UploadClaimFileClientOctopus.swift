@@ -12,7 +12,7 @@ public class hClaimFileUploadService {
 
     public init() {}
 
-    @Log
+    @Log(masked: ["files"])
     public func upload(
         endPoint: String,
         files: [File],
@@ -26,7 +26,7 @@ public class hClaimFileUploadService {
         }
     }
 
-    @Log
+    @Log(masked: ["files"])
     public func uploadClaimsChatFile(
         endPoint: String,
         files: [File],
