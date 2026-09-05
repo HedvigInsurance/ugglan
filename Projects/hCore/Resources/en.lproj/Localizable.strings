@@ -103,7 +103,6 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Please enter year of construction";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Year of construction";
 "CHANGE_ADDRESS_YOU_PLUS" = "You + %1$li";
-"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Your new amount takes effect once your qualification period ends. Until then, your current amount applies.";
 "CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Fetching insurance amount...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Change payout account";
 "CHANGE_TIER_BUTTON_TITLE" = "Change coverage level";
@@ -356,8 +355,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_DISCOVER_SECTION_TITLE" = "Discover our insurances";
 "HOME_GREETING_SUBTITLE" = "How can we help?";
 "HOME_GREETING_TITLE" = "Hi %1$@";
-"HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "Change address";
+"HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "I'm moving";
 "HOME_QUICK_ACTIONS_EDIT_INSURANCE" = "Edit insurance";
+"HOME_QUICK_ACTIONS_INVITE" = "Invite a friend";
+"HOME_QUICK_ACTIONS_TRAVEL_CERT" = "Travel certificate";
+"HOME_QUICK_ACTIONS_UPCOMING_PAYMENT" = "Upcoming payment";
+"HOME_QUICK_ACTIONS_UPGRADE_COVERAGE" = "Upgrade my coverage";
 "HOME_QUOTES_SECTION_TITLE" = "Your quotes";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Add co-insured";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Add co-owner";
