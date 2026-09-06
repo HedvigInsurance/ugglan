@@ -103,7 +103,6 @@
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_ERROR" = "Ange byggår";
 "CHANGE_ADDRESS_YEAR_OF_CONSTRUCTION_LABEL" = "Byggår";
 "CHANGE_ADDRESS_YOU_PLUS" = "Du + %1$li";
-"CHANGE_INSURANCE_AMOUNT_PAYMENT_PROTECTION_INFO" = "Det nya beloppet börjar gälla när din kvalificeringstid är slut. Fram till dess gäller ditt nuvarande belopp.";
 "CHANGE_INSURANCE_AMOUNT_PROCESSING" = "Hämtar försäkringsbelopp...";
 "CHANGE_PAYOUT_METHOD_BUTTON_LABEL" = "Ändra utbetalningskonto";
 "CHANGE_TIER_BUTTON_TITLE" = "Ändra skyddsnivå";
@@ -356,8 +355,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_DISCOVER_SECTION_TITLE" = "Upptäck våra försäkringar";
 "HOME_GREETING_SUBTITLE" = "Hur kan vi hjälpa dig?";
 "HOME_GREETING_TITLE" = "Hej %1$@";
-"HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "Ändra adress";
+"HOME_QUICK_ACTIONS_CHANGE_ADDRESS" = "Jag ska flytta";
 "HOME_QUICK_ACTIONS_EDIT_INSURANCE" = "Ändra försäkring";
+"HOME_QUICK_ACTIONS_INVITE" = "Bjud in en vän";
+"HOME_QUICK_ACTIONS_TRAVEL_CERT" = "Reseintyg";
+"HOME_QUICK_ACTIONS_UPCOMING_PAYMENT" = "Kommande betalning";
+"HOME_QUICK_ACTIONS_UPGRADE_COVERAGE" = "Uppgradera mitt skydd";
 "HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Lägg till medägare";
