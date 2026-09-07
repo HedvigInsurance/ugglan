@@ -50,17 +50,16 @@ public struct ClaimFilesView: View {
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: .padding8) {
-                            hButton(
+                            hFileSourcePickerButton(
                                 .large,
                                 .secondary,
                                 content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
-                            ) { [weak vm] in vm?.showFileSourcePicker = true }
-                            .disabled(vm.isLoading)
-                            .showFileSourcePicker($vm.showFileSourcePicker) { [weak vm] files in
+                            ) { [weak vm] files in
                                 for file in files {
                                     vm?.add(file: file)
                                 }
                             }
+                            .disabled(vm.isLoading)
                             hButton(
                                 .large,
                                 .primary,
@@ -106,7 +105,6 @@ public class ClaimFilesViewModel: ObservableObject {
     @Published var success = false
     @Published var error: String?
     @Published var progress: Double = 0
-    @Published var showFileSourcePicker = false
 
     private let endPoint: String
     let fileGridViewModel: FileGridViewModel

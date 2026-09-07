@@ -6,7 +6,6 @@ import hCore
 
 final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
     @Published var selectedOption: String?
-    @Published var showFileSourcePicker = false
 
     let model: ClaimIntentStepContentFileUpload
     let fileUploadVm: FilesUploadViewModel

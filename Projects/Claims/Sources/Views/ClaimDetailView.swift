@@ -297,18 +297,13 @@ public struct ClaimDetailView: View {
                             }
                             .verticalPadding(0)
                             .fixedSize(horizontal: false, vertical: true)
-                            hButton(
+                            hFileSourcePickerButton(
                                 .medium,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
-                            ) { [weak vm] in vm?.showFileSourcePicker = true }
-                            .showFileSourcePicker(
-                                $vm.showFileSourcePicker,
-                                selecedFiles: { [weak vm] files in
-                                    guard let vm else { return }
-                                    vm.showAddFiles(with: files)
-                                }
-                            )
+                            ) { [weak vm] files in
+                                vm?.showAddFiles(with: files)
+                            }
                         }
                     }
                     .sectionContainerStyle(.transparent)
@@ -340,8 +335,8 @@ public struct ClaimDetailView: View {
             InsuranceTermView(
                 documents: documents,
                 withHeader: L10n.ClaimStatusDetail.Documents.title
-            ) { [weak vm] document in
-                vm?.document = document
+            ) { document in
+                vm.document = document
             }
         }
     }
@@ -447,8 +442,6 @@ public class ClaimDetailViewModel: ObservableObject {
         }
     }
 
-    @Published var showFileSourcePicker = false
-
     private(set) var player: AudioPlayer?
     private var claimDetailsService: FetchClaimDetailsService
     @Published var fetchFilesError: String?
@@ -547,12 +540,12 @@ public class ClaimDetailViewModel: ObservableObject {
         do {
             let files = try await claimDetailsService.getFiles()
             store.setFiles(files, for: type.claimId)
-            withAnimation { [weak self] in
-                self?.fileGridViewModel.files = files
+            withAnimation {
+                self.fileGridViewModel.files = files
             }
         } catch let ex {
-            withAnimation { [weak self] in
-                self?.fetchFilesError = ex.localizedDescription
+            withAnimation {
+                self.fetchFilesError = ex.localizedDescription
             }
         }
     }

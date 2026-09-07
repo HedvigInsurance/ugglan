@@ -38,9 +38,6 @@ struct SubmitClaimFileUploadView: View {
                             addFilesButton
                         }
                     }
-                    .showFileSourcePicker($viewModel.showFileSourcePicker) { files in
-                        fileUploadVm.addFiles(with: files)
-                    }
                     .hButtonIsLoading(false)
                 }
             }
@@ -54,11 +51,13 @@ struct SubmitClaimFileUploadView: View {
 
     @ViewBuilder
     private var addMoreFilesButton: some View {
-        hButton(
+        hFileSourcePickerButton(
             .large,
             .secondary,
             content: .init(title: L10n.ClaimStatusDetail.addMoreFiles)
-        ) { [weak viewModel] in viewModel?.showFileSourcePicker = true }
+        ) { [weak fileUploadVm] files in
+            fileUploadVm?.addFiles(with: files)
+        }
     }
 
     @ViewBuilder
@@ -90,13 +89,15 @@ struct SubmitClaimFileUploadView: View {
 
     @ViewBuilder
     private var addFilesButton: some View {
-        hButton(
+        hFileSourcePickerButton(
             .large,
             .primary,
             content: .init(
                 title: L10n.ClaimStatusDetail.addFiles
             )
-        ) { viewModel.showFileSourcePicker = true }
+        ) { [weak fileUploadVm] files in
+            fileUploadVm?.addFiles(with: files)
+        }
     }
 }
 

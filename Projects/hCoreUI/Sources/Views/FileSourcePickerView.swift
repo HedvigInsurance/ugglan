@@ -10,6 +10,39 @@ extension View {
     }
 }
 
+/// A button that presents the file source picker from locally-owned state.
+///
+/// Prefer this over applying `showFileSourcePicker(_:selecedFiles:)` yourself. The picker presents
+/// through native `.confirmationDialog`/`.sheet`, whose presentation registration outlives the
+/// presenting screen and retains the view value it is attached to — including whatever that view's
+/// bindings capture. A binding derived from `$viewModel` captures the view model strongly, so
+/// storing the flag on a view model leaks the whole model graph. `@State` here has nothing to pin;
+/// keep `selectedFiles` weak at the call site.
+public struct hFileSourcePickerButton: View {
+    @State private var showPicker = false
+    private let size: hButtonSize
+    private let type: hButtonConfigurationType
+    private let content: hButtonContent
+    private let selectedFiles: SelectedFiles
+
+    public init(
+        _ size: hButtonSize,
+        _ type: hButtonConfigurationType,
+        content: hButtonContent,
+        selectedFiles: @escaping SelectedFiles
+    ) {
+        self.size = size
+        self.type = type
+        self.content = content
+        self.selectedFiles = selectedFiles
+    }
+
+    public var body: some View {
+        hButton(size, type, content: content) { showPicker = true }
+            .showFileSourcePicker($showPicker, selecedFiles: selectedFiles)
+    }
+}
+
 private struct FileSourcePickerView: ViewModifier {
     @Binding private var presentFileSourcePicker: Bool
     @State private var showCamera: Bool = false
