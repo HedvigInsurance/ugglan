@@ -10,7 +10,7 @@ struct hButtonModifier: ViewModifier {
             .padding(.bottom, bottomPadding)
             .frame(minHeight: minHeight)
             .frame(maxWidth: (hButtonTakeFullWidth || size == .large) ? .infinity : nil)
-            .padding(.horizontal, size == .large ? 0 : .padding16)
+            .padding(.horizontal, horizontalPadding)
     }
 
     private var topPadding: CGFloat {
@@ -32,6 +32,17 @@ struct hButtonModifier: ViewModifier {
             return 9
         case .small:
             return 7.5
+        }
+    }
+
+    private var horizontalPadding: CGFloat {
+        switch size {
+        case .large:
+            return 14
+        case .medium:
+            return 14
+        case .small:
+            return 12
         }
     }
 
