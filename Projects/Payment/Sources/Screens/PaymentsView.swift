@@ -28,7 +28,7 @@ public struct PaymentsView: View {
 
     private var successView: some View {
         hForm {
-            VStack(spacing: .padding8) {
+            VStack(spacing: .padding16) {
                 payments
                 PaymentsMenuView()
             }
@@ -119,6 +119,7 @@ public struct PaymentsView: View {
                     router.push(paymentData)
                 }
             }
+            .sectionContainerStyle(.primaryWithShadow)
         }
     }
 
@@ -127,9 +128,21 @@ public struct PaymentsView: View {
         @EnvironmentObject var router: NavigationRouter
 
         var body: some View {
-            let showsHistoricalSections = store.paymentStatusData?.showsHistoricalSections ?? false
+            if store.showsPayinSection,
+                let paymentMethod = store.paymentStatusData?.defaultOrFirstDefaultPayinMethod
+            {
+                hSection {
+                    // Only the primary method ever reaches this row, so the pill would
+                    // have nothing to set apart.
+                    PaymentMethodRow(paymentMethod, showsPrimaryLabel: false) {
+                        router.push(PaymentsRouterAction.paymentMethod)
+                    }
+                }
+                .withHeader(title: L10n.paymentMethodTitle)
+                .sectionContainerStyle(.transparent)
+            }
             hSection {
-                if showsHistoricalSections {
+                if store.paymentStatusData?.showsHistoricalSections ?? false {
                     hRow {
                         hCoreUIAssets.campaign.view
                             .foregroundColor(hSignalColor.Green.element)
@@ -149,18 +162,6 @@ public struct PaymentsView: View {
                     .withChevronAccessory
                     .onTap {
                         router.push(PaymentsRouterAction.history)
-                    }
-                }
-                if store.showsPayinSection {
-                    hRow {
-                        hCoreUIAssets.payments.view
-                            .foregroundColor(hTextColor.Opaque.primary)
-                        hText(L10n.PaymentDetails.NavigationBar.title)
-                        Spacer()
-                    }
-                    .withChevronAccessory
-                    .onTap {
-                        router.push(PaymentsRouterAction.paymentMethod)
                     }
                 }
 

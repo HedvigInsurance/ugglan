@@ -79,21 +79,6 @@ extension Sequence where Element == ConnectedPaymentMethod {
     }
 }
 
-extension ConnectedPaymentMethod {
-    var info: String {
-        switch method {
-        case .trustly(let bankAccount), .nordea(let bankAccount):
-            return bankAccount?.account ?? ""
-        case .swish(let phoneNumber):
-            return phoneNumber ?? ""
-        case .invoice:
-            return provider.payoutTitle
-        case .unknown:
-            return ""
-        }
-    }
-}
-
 public struct ConnectedPaymentMethod: Codable, Equatable, Sendable, Hashable, Identifiable {
     public var id: String {
         provider.asString + status.asString
@@ -123,7 +108,7 @@ public enum PaymentMethodStatus: Codable, Equatable, Sendable, Hashable {
     case unknown
 }
 
-public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable {
+public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable, CaseIterable {
     public var id: String {
         self.asString
     }
@@ -216,55 +201,6 @@ public struct PaymentSetupResult: Codable, Equatable, Sendable {
         case pending
         case failed
         case unknown
-    }
-}
-
-extension PaymentProvider {
-    public static func from(providerString: String?) -> PaymentProvider {
-        guard let provider = providerString?.lowercased() else { return .unknown }
-        if provider == "kivra" || provider == "invoice" {
-            return .invoice
-        } else if provider.hasPrefix("trustly") {
-            return .trustly
-        } else if provider == "swish" {
-            return .swish
-        } else if provider == "nordea" {
-            return .nordea
-        } else {
-            return .unknown
-        }
-    }
-
-    public func infoText(for dueDate: String) -> String? {
-        switch self {
-        case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
-        case .invoice: L10n.kivraPaymentInfo
-        default: nil
-        }
-    }
-
-    public var infoText: String? {
-        switch self {
-        case .trustly: L10n.paymentsPaymentDetailsInfoDescription
-        case .invoice: L10n.kivraPaymentInfo
-        default: nil
-        }
-    }
-
-    public var paymentMethodLabel: String? {
-        switch self {
-        case .trustly: L10n.paymentsAutogiroLabel
-        case .invoice: L10n.paymentsInvoice
-        case .swish, .nordea, .unknown: nil
-        }
-    }
-
-    public var infoTextForPendingStatus: String? {
-        switch self {
-        case .trustly: L10n.paymentsInProgress
-        case .invoice: L10n.paymentsInProgressKivra
-        case .swish, .nordea, .unknown: nil
-        }
     }
 }
 
