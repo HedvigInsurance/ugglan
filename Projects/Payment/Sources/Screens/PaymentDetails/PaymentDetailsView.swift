@@ -173,7 +173,7 @@ public struct PaymentDetailsView: View {
         }
     }
 
-    private func bankDetails(data: PaymentMethodData) -> some View {
+    private func bankDetails(data: ConnectedPaymentMethod) -> some View {
         PaymentMethodView(data: data, withDate: false)
             .hWithoutHorizontalPadding([.section, .row, .divider])
     }
@@ -260,10 +260,9 @@ public struct PaymentDetailsView: View {
             ),
         amountPerReferral: .sek(10),
         payinMethod: .init(
-            provider: .invoice,
             status: .active,
             isDefault: true,
-            details: .invoice(delivery: .kivra, email: nil)
+            method: .invoice(delivery: .kivra)
         ),
         addedToThePayment: nil
     )

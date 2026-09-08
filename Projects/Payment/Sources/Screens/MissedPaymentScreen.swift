@@ -266,10 +266,9 @@ class PaymentOverdueScreenViewModel: ObservableObject {
         referralDiscount: nil,
         amountPerReferral: .sek(10),
         payinMethod: .init(
-            provider: .trustly,
             status: .active,
             isDefault: true,
-            details: .bankAccount(account: "account", bank: "bank")
+            method: .trustly(bankAccount: .init(account: "account", bank: "bank"))
         ),
         addedToThePayment: nil
     )
@@ -290,10 +289,9 @@ class PaymentOverdueScreenViewModel: ObservableObject {
         missedPaymentdata: .init(
             paymentData: paymentData,
             paymentMethodData: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "account", bank: "bank")
+                method: .trustly(bankAccount: .init(account: "account", bank: "bank"))
             )
         ),
         onSuccess: {}
