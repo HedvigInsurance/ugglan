@@ -13,6 +13,9 @@ struct PaymentMethodScreen: View {
             store.showsChangePayinMethod
         {
             hForm {
+                hSection {
+                    PaymentMethodRow(defaultPayinMethod, accessory: .none)
+                }
                 PaymentMethodInfoView(
                     data: defaultPayinMethod,
                     chargingDay: paymentChargeData.chargingDay,
@@ -51,57 +54,63 @@ struct PaymentMethodScreen: View {
     }
 }
 
-#Preview {
-    Localization.Locale.currentLocale.send(.en_SE)
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+@MainActor
+fileprivate struct PreviewData {
+    func getStoreAndInitiateDependancies(for method: PaymentMethod) -> PaymentStore {
+        let store: PaymentStore = globalAppStateContainer.get()
+        store.paymentStatusData = .init(
+            status: .active,
+            chargingDay: 27,
+            defaultPayinMethod: .init(
+                status: .active,
+                isDefault: true,
+                method: method
+            ),
+            payinMethods: [
+                .init(
+                    status: .active,
+                    isDefault: true,
+                    method: method
+                )
+            ],
+            defaultPayoutMethod: nil,
+            payoutMethods: [],
+            availableMethods: [],
+            missingConnection: nil,
+            layout: .other
+        )
+        Localization.Locale.currentLocale.send(.en_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return store
+    }
+}
 
+#Preview("Invoice") {
+    let store = PreviewData().getStoreAndInitiateDependancies(for: .invoice(delivery: .kivra))
     return PaymentMethodScreen()
+        .environmentObject(store)
+}
+
+#Preview("Trustly") {
+    let store = PreviewData()
+        .getStoreAndInitiateDependancies(for: .trustly(bankAccount: .init(account: "account", bank: "bank")))
+    return PaymentMethodScreen()
+        .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
-        .task {
-            let store: PaymentStore = globalAppStateContainer.get()
-            store.paymentStatusData = .init(
-                status: .active,
-                chargingDay: 27,
-                defaultPayinMethod: .init(
-                    status: .active,
-                    isDefault: true,
-                    method: .invoice(delivery: .kivra)
-                ),
-                payinMethods: [
-                    .init(
-                        status: .active,
-                        isDefault: true,
-                        method: .invoice(delivery: .kivra)
-                    )
-                ],
-                defaultPayoutMethod: nil,
-                payoutMethods: [],
-                availableMethods: [],
-                missingConnection: nil,
-                layout: .other
-            )
-            await delay(2)
-            store.paymentStatusData = .init(
-                status: .active,
-                chargingDay: 27,
-                defaultPayinMethod: .init(
-                    status: .active,
-                    isDefault: true,
-                    method: .trustly(bankAccount: .init(account: "*****123", bank: "Nordea"))
-                ),
-                payinMethods: [
-                    .init(
-                        status: .active,
-                        isDefault: true,
-                        method: .trustly(bankAccount: .init(account: "*****123", bank: "Nordea"))
-                    )
-                ],
-                defaultPayoutMethod: nil,
-                payoutMethods: [],
-                availableMethods: [],
-                missingConnection: nil,
-                layout: .other
-            )
-        }
+}
+
+#Preview("Swish") {
+    let store = PreviewData().getStoreAndInitiateDependancies(for: .swish(phoneNumber: "0700123456"))
+    return PaymentMethodScreen().environmentObject(store)
+}
+
+#Preview("Nordea") {
+    let store = PreviewData()
+        .getStoreAndInitiateDependancies(for: .nordea(bankAccount: .init(account: "Nordea Account", bank: "Nordea")))
+    return PaymentMethodScreen().environmentObject(store)
+}
+
+#Preview("Unknown") {
+    let store = PreviewData().getStoreAndInitiateDependancies(for: .unknown)
+    return PaymentMethodScreen().environmentObject(store)
 }
