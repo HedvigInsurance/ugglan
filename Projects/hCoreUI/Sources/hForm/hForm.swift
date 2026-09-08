@@ -14,7 +14,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @State private var ignoreKeyboard = false
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
     var content: Content
@@ -74,7 +73,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     }
                 }
             }
-            .ignoresSafeArea(.keyboard, edges: ignoreKeyboard ? .bottom : [])
+            .ignoresSafeArea(.keyboard, edges: vm.ignoreKeyboard ? .bottom : [])
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
@@ -123,10 +122,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 || vm?.vc?.presentedViewController?.isKind(of: UISearchController.self) == true
                             {
                                 vm?.keyboardVisible = keyboardHeight != nil
-                                ignoreKeyboard = false
+                                vm?.ignoreKeyboard = false
                             } else {
                                 vm?.keyboardVisible = false
-                                ignoreKeyboard = true
+                                vm?.ignoreKeyboard = true
                             }
                         }
                 }
@@ -254,6 +253,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 private class hUpdatedFormViewModel: ObservableObject {
     var keyboardCancellable: AnyCancellable?
     @Published var keyboardVisible: Bool = false
+    @Published var ignoreKeyboard: Bool = false
     weak var scrollView: UIScrollView? {
         didSet {
             scrollView?.clipsToBounds = false
