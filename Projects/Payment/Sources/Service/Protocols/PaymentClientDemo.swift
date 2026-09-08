@@ -137,13 +137,13 @@ public class hPaymentClientDemo: hPaymentClient {
             defaultPayinMethod: .init(
                 status: .active,
                 isDefault: true,
-                method: .trustly(bankAccount: .init(account: "****1234", bank: "Connected bank"))
+                method: .trustly(bankAccount: .init(account: "****1234", bank: "Handelsbanken"))
             ),
             payinMethods: [
                 .init(
                     status: .active,
                     isDefault: true,
-                    method: .trustly(bankAccount: .init(account: "****1234", bank: "Connected bank"))
+                    method: .trustly(bankAccount: .init(account: "****1234", bank: "Handelsbanken"))
                 )
             ],
             defaultPayoutMethod: nil,
