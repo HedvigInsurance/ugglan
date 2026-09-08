@@ -102,7 +102,7 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
         case .history:
             return L10n.paymentHistoryTitle
         case .paymentMethod:
-            return L10n.PaymentDetails.NavigationBar.title
+            return L10n.paymentMethodTitle
         case .payoutMethod:
             return L10n.payoutPageHeading
         }
