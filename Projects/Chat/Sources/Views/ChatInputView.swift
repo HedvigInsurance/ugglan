@@ -8,7 +8,7 @@ import hCoreUI
 
 struct ChatInputView: View {
     @StateObject var vm: ChatInputViewModel
-    @State var height: CGFloat = 0
+    @FocusState private var isInputFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -22,12 +22,14 @@ struct ChatInputView: View {
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .padding([.horizontal, .top], .padding8)
+                .animation(.easeInOut(duration: 0.2), value: vm.inputText)
 
                 if vm.showBottomMenu {
                     bottomMenu
                 }
             }
         }
+        .releasesKeyboardRetentionOnDeinit()
     }
 
     private var addFilesButton: some View {
@@ -53,16 +55,22 @@ struct ChatInputView: View {
 
     private var inputField: some View {
         HStack(alignment: .bottom, spacing: 0) {
-            CustomTextViewRepresentable(
-                placeholder: L10n.chatInputPlaceholder,
-                text: $vm.inputText,
-                height: $height,
-                keyboardIsShown: $vm.keyboardIsShown
-            ) { file in
-                vm.sendMessage(.init(type: .file(file: file)))
-            }
-            .frame(height: height)
-            .frame(minHeight: 40)
+            TextField(L10n.chatInputPlaceholder, text: $vm.inputText, axis: .vertical)
+                .modifier(hFontModifier(style: .body1))
+                .foregroundColor(hTextColor.Opaque.primary)
+                .tint(hTextColor.Opaque.primary)
+                .lineLimit(1...5)
+                .focused($isInputFocused)
+                .padding(.horizontal, .padding8)
+                .frame(minHeight: 40)
+                .onChange(of: isInputFocused) { newValue in
+                    vm.keyboardIsShown = newValue
+                }
+                .onChange(of: vm.keyboardIsShown) { newValue in
+                    if isInputFocused != newValue {
+                        isInputFocused = newValue
+                    }
+                }
 
             Button {
                 vm.sendTextMessage()
@@ -197,169 +205,6 @@ class ChatInputViewModel: NSObject, ObservableObject {
         picker.delegate = self
         picker.modalPresentationStyle = .overFullScreen
         UIApplication.shared.getTopViewController()?.present(picker, animated: true)
-    }
-}
-
-struct CustomTextViewRepresentable: UIViewRepresentable {
-    let placeholder: String
-    @Binding var text: String
-    @Binding var height: CGFloat
-    @Binding var keyboardIsShown: Bool
-    @Environment(\.colorScheme) var schema
-    let onPaste: ((File) -> Void)?
-    func makeUIView(context _: Context) -> some UIView {
-        CustomTextView(
-            placeholder: placeholder,
-            inputText: $text,
-            height: $height,
-            keyboardIsShown: $keyboardIsShown,
-            onPaste: onPaste
-        )
-    }
-
-    func updateUIView(_ uiView: UIViewType, context _: Context) {
-        if let uiView = uiView as? CustomTextView {
-            if text == "", !uiView.isFirstResponder {
-                uiView.text = text
-                uiView.updateHeight()
-                uiView.updateColors()
-            }
-        }
-    }
-}
-
-@MainActor
-private class CustomTextView: UITextView, UITextViewDelegate {
-    @Binding private var inputText: String
-    @Binding private var height: CGFloat
-    @Binding private var keyboardIsShown: Bool
-    private var placeholderLabel = UILabel()
-    let onPaste: ((File) -> Void)?
-    init(
-        placeholder: String,
-        inputText: Binding<String>,
-        height: Binding<CGFloat>,
-        keyboardIsShown: Binding<Bool>,
-        onPaste: ((File) -> Void)?
-    ) {
-        _inputText = inputText
-        self.onPaste = onPaste
-        _height = height
-        _keyboardIsShown = keyboardIsShown
-        super.init(frame: .zero, textContainer: nil)
-        textContainerInset = .init(top: 4, left: 4, bottom: 4, right: 4)
-        delegate = self
-        font = Fonts.fontFor(style: .body1)
-        text = inputText.wrappedValue
-        textColor = UIColor.black
-        backgroundColor = .clear
-        placeholderLabel.font = Fonts.fontFor(style: .body1)
-        placeholderLabel.text = placeholder
-        addSubview(placeholderLabel)
-        placeholderLabel.accessibilityElementsHidden = true
-        placeholderLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(4)
-            make.leading.equalToSuperview().offset(8)
-        }
-        accessibilityLabel = placeholderLabel.text
-    }
-
-    @objc private func handleDoneButtonTap() {
-        resignFirstResponder()
-    }
-
-    func updateHeight() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            withAnimation {
-                self.height = min(self.contentSize.height, 150)
-            }
-        }
-    }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func textViewDidBeginEditing(_: UITextView) {
-        keyboardIsShown = true
-    }
-
-    func textView(_ textView: UITextView, shouldChangeTextIn _: NSRange, replacementText _: String) -> Bool {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-            self?.inputText = textView.text
-            self?.updateHeight()
-            self?.updateColors()
-        }
-        return true
-    }
-
-    func textViewDidEndEditing(_: UITextView) {
-        keyboardIsShown = false
-    }
-
-    func updateColors() {
-        placeholderLabel.isHidden = !text.isEmpty
-        placeholderLabel.textColor = placeholderTextColor
-        textColor = editingTextColor
-    }
-
-    private var editingTextColor: UIColor {
-        hTextColor.Opaque.primary.uiColor()
-    }
-
-    private var placeholderTextColor: UIColor {
-        hTextColor.Opaque.secondary.uiColor()
-    }
-
-    override func paste(_ sender: Any?) {
-        if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-            if let images = UIPasteboard.general.images, images.count > 0 {
-                for image in images {
-                    if let data = image.jpegData(compressionQuality: 0.9) {
-                        let file = File(
-                            id: UUID().uuidString,
-                            size: Double(data.count),
-                            mimeType: .JPEG,
-                            name: "image_\(Date())",
-                            source: .data(data: data)
-                        )
-                        onPaste?(file)
-                    }
-                }
-                return
-            } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
-                for url in urls {
-                    if let contentProvider = NSItemProvider(contentsOf: url) {
-                        Task { [weak self] in
-                            if let file = await contentProvider.getFile() {
-                                self?.onPaste?(file)
-                            }
-                        }
-                    }
-                }
-            } else {
-                super.paste(sender)
-            }
-        } else {
-            super.paste(sender)
-        }
-    }
-
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(UIResponder.paste(_:)) {
-            if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
-                UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
-            {
-                return true
-            } else if let urlTypes = UIPasteboard.typeListURL as? [String],
-                UIPasteboard.general.contains(pasteboardTypes: urlTypes)
-            {
-                return true
-            }
-        }
-        return super.canPerformAction(action, withSender: sender)
     }
 }
 
