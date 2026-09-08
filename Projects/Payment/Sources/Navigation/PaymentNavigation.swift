@@ -38,6 +38,8 @@ public struct PaymentsNavigation: View {
                         PaymentMethodScreen()
                     case .payoutMethod:
                         PayoutSelectedMethodScreen()
+                    case .paymentMethods:
+                        PaymentMethodsScreen()
                     }
                 }
                 .routerDestination(for: PayoutRouterActions.self) { routerAction in
@@ -81,6 +83,7 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
     case history
     case paymentMethod
     case payoutMethod
+    case paymentMethods
 
     var nameForTracking: String {
         switch self {
@@ -92,6 +95,8 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
             return .init(describing: PaymentMethodScreen.self)
         case .payoutMethod:
             return .init(describing: PayoutSelectedMethodScreen.self)
+        case .paymentMethods:
+            return .init(describing: PaymentMethodsScreen.self)
         }
     }
 
@@ -105,6 +110,8 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
             return L10n.paymentMethodTitle
         case .payoutMethod:
             return L10n.payoutPageHeading
+        case .paymentMethods:
+            return L10n.paymentMethodsTitle
         }
     }
 }
