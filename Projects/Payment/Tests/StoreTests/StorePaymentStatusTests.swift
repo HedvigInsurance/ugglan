@@ -22,17 +22,15 @@ final class StorePaymentStatusTests: XCTestCase {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "descriptor", bank: "displayName")
+                method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
             ),
             payinMethods: [
                 .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "descriptor", bank: "displayName")
+                    method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
                 )
             ],
             defaultPayoutMethod: nil,

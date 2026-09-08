@@ -132,36 +132,23 @@ public struct PayoutSelectedMethodScreen: View {
 
 extension PaymentStatusData {
     fileprivate var payoutAccountDisplayValue: String? {
-        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
-        switch method.details {
-        case .bankAccount(let account, _):
-            return "\(account)"
-        case .swish(let phoneNumber):
-            return "\(phoneNumber)"
-        case .invoice:
-            return method.provider.payoutTitle
-        case nil:
-            return ""
-        }
+        defaultOrFirstDefaultPayoutMethod?.info
     }
 
     fileprivate var payoutAccountDisplayTitle: String? {
-        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
-        guard let details = method.details else { return method.provider.payoutTitle }
+        guard let payoutMethod = defaultOrFirstDefaultPayoutMethod else { return nil }
         let sufix: String? = {
-            switch details {
-            case .invoice:
+            switch payoutMethod.method {
+            case .trustly(let bankAccount), .nordea(let bankAccount):
+                return bankAccount?.bank
+            case .swish, .invoice, .unknown:
                 return nil
-            case .swish:
-                return nil
-            case .bankAccount(_, let bank):
-                return bank
             }
         }()
         if let sufix {
-            return method.provider.payoutTitle + " - " + sufix
+            return payoutMethod.provider.payoutTitle + " - " + sufix
         }
-        return method.provider.payoutTitle
+        return payoutMethod.provider.payoutTitle
     }
 
     fileprivate var showChangeButton: Bool {
@@ -177,34 +164,32 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    provider: .nordea,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                    method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                 ),
                 payinMethods: [
                     .init(
-                        provider: .nordea,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    provider: .nordea,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(
-                        account: "3300-920123132",
-                        bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                    method: .nordea(
+                        bankAccount: .init(
+                            account: "3300-920123132",
+                            bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                        )
                     )
                 ),
                 payoutMethods: [
                     .init(
-                        provider: .nordea,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 availableMethods: [
@@ -232,31 +217,27 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    provider: .invoice,
                     status: .active,
                     isDefault: true,
-                    details: .invoice(delivery: .kivra, email: nil)
+                    method: .invoice(delivery: .kivra)
                 ),
                 payinMethods: [
                     .init(
-                        provider: .invoice,
                         status: .active,
                         isDefault: true,
-                        details: .invoice(delivery: .kivra, email: nil)
+                        method: .invoice(delivery: .kivra)
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
+                    method: .trustly(bankAccount: .init(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG"))
                 ),
                 payoutMethods: [
                     .init(
-                        provider: .trustly,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .trustly(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 availableMethods: [
