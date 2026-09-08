@@ -164,6 +164,16 @@ public struct PaymentsView: View {
                         router.push(PaymentsRouterAction.history)
                     }
                 }
+                if store.showsPayinSection {
+                    hRow {
+                        hCoreUIAssets.payments.view
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        hText(L10n.paymentMethodsTitle)
+                        Spacer()
+                    }
+                    .withChevronAccessory
+                    .onTap { router.push(PaymentsRouterAction.paymentMethods) }
+                }
 
                 if store.showsConnectPayout {
                     ConnectPayoutCardView {
