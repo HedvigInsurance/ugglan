@@ -6,17 +6,25 @@ struct PaymentMethodRow<Value>: View where Value: Hashable {
     private let item: ItemModel
     private let provider: PaymentProvider
     private let content: Content
+    private let isDisabled: Bool
 
     private enum Content {
         /// `isInert` takes no taps, so the row never fires a haptic for an action that isn't there.
+        /// Selectable rows use `isDisabled` instead.
         case plain(accessory: hRadioOptionAccessory, showsPrimaryLabel: Bool, isInert: Bool, onTap: () -> Void)
         case selection(value: Value, selection: Binding<Value?>)
     }
 
-    private init(item: ItemModel, provider: PaymentProvider, content: Content) {
+    private init(
+        item: ItemModel,
+        provider: PaymentProvider,
+        content: Content,
+        isDisabled: Bool = false
+    ) {
         self.item = item
         self.provider = provider
         self.content = content
+        self.isDisabled = isDisabled
     }
 
     var body: some View {
@@ -48,6 +56,7 @@ struct PaymentMethodRow<Value>: View where Value: Hashable {
             hRadioOption(value: value, selection: selection, item: item) {
                 provider.image()
             }
+            .disabled(isDisabled)
         }
     }
 }
@@ -77,7 +86,10 @@ extension PaymentMethodRow where Value == ConnectedPaymentMethod {
         self.init(
             item: method.item,
             provider: method.provider,
-            content: .selection(value: method, selection: selection)
+            content: method.isDefault
+                ? .plain(accessory: .none, showsPrimaryLabel: true, isInert: true, onTap: {})
+                : .selection(value: method, selection: selection),
+            isDisabled: method.isPending
         )
     }
 }

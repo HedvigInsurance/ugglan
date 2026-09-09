@@ -4,8 +4,10 @@ import hCoreUI
 extension ConnectedPaymentMethod {
     var title: String {
         switch method {
-        case .trustly, .nordea:
+        case .trustly:
             L10n.myPaymentBankRowLabel
+        case .nordea:
+            L10n.bankPayoutMethodCardTitle
         case .swish:
             "Swish"
         case .invoice(let delivery):

@@ -51,56 +51,108 @@ extension PaymentProvider {
         }
     }
 
+    /// The payout copy reads wrong when connecting a method to charge from.
+    public var payinTitle: String {
+        switch self {
+        case .trustly: return "Trustly"
+        case .swish: return "Swish"
+        case .invoice: return "Kivra"
+        case .nordea: return L10n.bankPayoutMethodCardTitle
+        case .unknown: return ""
+        }
+    }
+
+    public var payinSubtitle: String {
+        switch self {
+        case .trustly: return L10n.paymentOptionTrustlySubtitle
+        case .swish: return L10n.paymentOptionSwishSubtitle
+        case .invoice: return L10n.paymentOptionInvoiceSubtitle
+        case .nordea: return L10n.bankPayoutMethodCardDescription
+        case .unknown: return ""
+        }
+    }
+
     @MainActor
     @ViewBuilder
-    public var image: some View {
+    public func image(size: CGFloat = 40) -> some View {
         switch self {
         case .trustly:
             ZStack {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
                     .fill(hBackgroundColor.negative)
-                    .frame(width: 40, height: 40)
+                    .frame(width: size, height: size)
                 hCoreUIAssets.trustly.view
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 24)
+                    .frame(width: size * 0.6)
                     .foregroundColor(hTextColor.Opaque.negative)
             }
         case .invoice:
-            hCoreUIAssets.kivra.view.resizable().frame(width: 40, height: 40)
+            hCoreUIAssets.kivra.view.resizable().frame(width: size, height: size)
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
         case .swish:
             ZStack {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
-                    .fill(hBackgroundColor.negative)
-                    .frame(width: 40, height: 40)
+                    .fill(hBackgroundColor.primary)
+                    .frame(width: size, height: size)
                 hCoreUIAssets.swish.view
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 29)
+                    .frame(width: size * 0.6)
             }
         case .nordea:
             ZStack {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
-                    .fill(hBackgroundColor.negative)
-                    .frame(width: 40, height: 40)
-                hCoreUIAssets.payments.view
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 26)
+                    .fill(hFillColor.Opaque.negative)
+                    .frame(width: size, height: size)
+                hText(L10n.myPaymentBankRowLabel, style: .finePrint)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .hWithoutFontMultiplier
             }
         case .unknown:
             RoundedRectangle(cornerRadius: .cornerRadiusS)
-                .fill(hBackgroundColor.negative)
-                .frame(width: 40, height: 40)
+                .fill(hBackgroundColor.primary)
+                .frame(width: size, height: size)
+        }
+    }
+
+    @MainActor
+    @ViewBuilder
+    public func chooseDefaultImage(size: CGFloat = 74) -> some View {
+        switch self {
+        case .trustly:
+            ZStack {
+                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                    .fill(hBackgroundColor.primary)
+                    .frame(width: size, height: size)
+                hCoreUIAssets.trustly.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: size * 0.6)
+                    .foregroundColor(hTextColor.Opaque.primary)
+            }
+        default:
+            image(size: size)
         }
     }
 }
 
 #Preview {
-    VStack {
-        ForEach(PaymentProvider.allCases) { provider in
-            provider.image
+    HStack {
+        VStack {
+            hText("Regular")
+            ForEach(PaymentProvider.allCases) { provider in
+                provider.image()
+            }
         }
+        VStack {
+            hText("Choose default image")
+            ForEach(PaymentProvider.allCases) { provider in
+                provider.chooseDefaultImage()
+            }
+        }
+    }
+    .background {
+        hSurfaceColor.Opaque.primary
     }
 }

@@ -8,6 +8,7 @@ public protocol hPaymentClient: Sendable {
     func getMissedPaymentData() async throws -> MissedPaymentData?
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult
     func chargeOutstandingPayment() async throws
+    func setDefaultPaymentMethod(_ method: PaymentMethod) async throws
 }
 
 public enum PaymentError: Error {
