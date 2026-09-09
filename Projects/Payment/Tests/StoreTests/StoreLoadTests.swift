@@ -112,7 +112,6 @@ final class StoreLoadTests: XCTestCase {
         XCTAssertNotNil(store.loadPaymentDataError)
         assert(store.paymentData == nil)
         assert(store.ongoingPaymentData.isEmpty)
-        // A failed fetch must not mark the data fresh, or the next load would be skipped.
         XCTAssertNil(store.paymentDataFetchedAt)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)

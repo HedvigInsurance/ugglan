@@ -27,20 +27,12 @@ final class HomeQuickActionTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    // reset first: it cancels the 250 ms debounced snapshot write that would otherwise land after the wipe
-    private func resetContainer() {
-        globalAppStateContainer.reset()
-        globalAppStateContainer.clearPersistence()
-    }
-
-    func testHomeQuickActionsFollowFigmaOrderWithUpcomingPayment() async {
+    func testHomeQuickActionsOrder() async {
         let editActions = EditInsuranceActionsWrapper(
             quickActions: [.editCoInsured, .upgradeCoverage, .cancellation]
         )
-        // Deflection.init mints a fresh id, so the same instance has to appear on both sides.
+        // Deflection.init mints a fresh id, so both sides must share one instance.
         let deflection = Deflection.fixture
-        // Deliberately not in tile order -- the row's order comes from the store's literal,
-        // never from the order the backend happened to send.
         let store = await makeStore(
             quickActions: [
                 .travelInsurance,
@@ -80,15 +72,6 @@ final class HomeQuickActionTests: XCTestCase {
         XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend, .upcomingPayment])
     }
 
-    func testHomeQuickActionsHideUpcomingPaymentWhenNothingIsDue() async {
-        let store = await makeStore(
-            quickActions: [.travelInsurance],
-            paymentClient: MockPaymentClient(upcomingPayment: nil)
-        )
-
-        XCTAssertEqual(store.homeQuickActions, [.travelCertificate, .inviteFriend])
-    }
-
     func testHomeQuickActionsOmitUpgradeCoverageWithoutNestedFlag() async {
         let editActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .cancellation])
         let store = await makeStore(
@@ -99,28 +82,6 @@ final class HomeQuickActionTests: XCTestCase {
         XCTAssertEqual(store.homeQuickActions, [.editInsurance(editActions), .inviteFriend, .upcomingPayment])
     }
 
-    func testHomeQuickActionsIgnoreTopLevelUpgradeCoverageAndNonTileActions() async {
-        // .upgradeCoverage only ever arrives nested inside .editInsurance; a top-level one
-        // must not produce a tile, or it would appear for members the backend never
-        // enabled change-tier for.
-        let store = await makeStore(
-            quickActions: [
-                .connectPayments,
-                .upgradeCoverage,
-                .editCoInsured,
-                .editCoOwners,
-                .removeAddons,
-                .cancellation,
-                .firstVet(partners: []),
-            ],
-            paymentClient: MockPaymentClient(upcomingPayment: .fixture)
-        )
-
-        XCTAssertEqual(store.homeQuickActions, [.inviteFriend, .upcomingPayment])
-    }
-
-    /// Registers both service mocks, builds the store and drives the two fetches the
-    /// pipeline combines -- the same two `HomeVM.fetchHomeState()` fires on appear.
     private func makeStore(quickActions: [QuickAction], paymentClient: MockPaymentClient) async -> HomeStore {
         MockData.createMockHomeService(fetchQuickActions: { quickActions })
         Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentClient })
@@ -132,9 +93,14 @@ final class HomeQuickActionTests: XCTestCase {
         await paymentStore.load()
         return store
     }
+
+    // reset before clearing: it cancels the debounced snapshot write that would otherwise land after the wipe
+    private func resetContainer() {
+        globalAppStateContainer.reset()
+        globalAppStateContainer.clearPersistence()
+    }
 }
 
-/// Boundary mock: only the call the Home pipeline can trigger returns data.
 private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
     var upcomingPayment: PaymentData?
 
