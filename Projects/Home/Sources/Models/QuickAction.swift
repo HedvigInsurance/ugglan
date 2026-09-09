@@ -31,14 +31,6 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    public var homeDisplayTitle: String? {
-        switch self {
-        case .editInsurance: L10n.homeQuickActionsEditInsurance
-        case .changeAddress: L10n.homeQuickActionsChangeAddress
-        default: nil
-        }
-    }
-
     public var displaySubtitle: String {
         switch self {
         case .sickAbroad: L10n.hcQuickActionsSickAbroadSubtitle
@@ -127,25 +119,61 @@ public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Senda
 
 extension Sequence where Iterator.Element == QuickAction {
     var hasFirstVet: Bool {
-        first(where: { $0.isFirstVet }) != nil
+        first { $0.isFirstVet } != nil
     }
 
-    public var getFirstVetPartners: [FirstVetPartner]? {
-        first(where: { $0.isFirstVet })?.firstVetPartners
+    var firstVetPartners: [FirstVetPartner]? {
+        first { $0.isFirstVet }?.firstVetPartners
+    }
+
+    var editInsuranceActions: EditInsuranceActionsWrapper? {
+        first { $0.isEditInsurance }?.editInsuranceActions
+    }
+
+    var sickAbroadDeflection: Deflection? {
+        first { $0.isEditInsurance }?.sickAbroadDeflection
     }
 }
 
 extension QuickAction {
-    internal var isFirstVet: Bool {
+    fileprivate var isFirstVet: Bool {
         switch self {
         case .firstVet: true
         default: false
         }
     }
 
-    public var firstVetPartners: [FirstVetPartner]? {
+    fileprivate var firstVetPartners: [FirstVetPartner]? {
         switch self {
         case let .firstVet(partners): partners
+        default: nil
+        }
+    }
+
+    fileprivate var isEditInsurance: Bool {
+        switch self {
+        case .editInsurance: true
+        default: false
+        }
+    }
+
+    fileprivate var editInsuranceActions: EditInsuranceActionsWrapper? {
+        switch self {
+        case let .editInsurance(actions): actions
+        default: nil
+        }
+    }
+
+    fileprivate var isSickAbroad: Bool {
+        switch self {
+        case .sickAbroad: true
+        default: false
+        }
+    }
+
+    fileprivate var sickAbroadDeflection: Deflection? {
+        switch self {
+        case let .sickAbroad(deflection): deflection
         default: nil
         }
     }

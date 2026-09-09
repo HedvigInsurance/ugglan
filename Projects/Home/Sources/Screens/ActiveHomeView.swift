@@ -212,7 +212,7 @@ private struct HomeNavigationBar: View {
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
                 case .firstVet:
                     navigationVm?.quickActionsVm
-                        .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
+                        .perform(.firstVet(partners: homeStore.quickActions.firstVetPartners ?? []))
                 case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
                 case .travelCertificate, .insuranceEvidence:
                     break

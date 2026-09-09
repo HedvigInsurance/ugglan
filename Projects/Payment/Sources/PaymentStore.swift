@@ -8,6 +8,7 @@ public final class PaymentStore: AppStore {
     @Inject private var paymentService: hPaymentClient
 
     @Published public internal(set) var paymentData: PaymentData?
+    @Published public internal(set) var paymentDataFetchedAt: Date?
     @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
     @Published public internal(set) var paymentStatusData: PaymentStatusData?
     @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
@@ -67,12 +68,17 @@ public final class PaymentStore: AppStore {
         paymentStatusData?.missingConnection == .payout && !showsConnectPayment
     }
 
-    public func load() async {
+    private static let paymentDataCacheDuration: TimeInterval = 30 * 60
+
+    public func load(forceUpdate: Bool = false) async {
+        let isStale = paymentDataFetchedAt.map { -$0.timeIntervalSinceNow > Self.paymentDataCacheDuration } ?? true
+        guard !isLoadingPaymentData && (forceUpdate || isStale) else { return }
         isLoadingPaymentData = true
         do {
             let payment = try await paymentService.getPaymentData()
             paymentData = payment.upcoming
             ongoingPaymentData = payment.ongoing
+            paymentDataFetchedAt = Date()
             loadPaymentDataError = nil
         } catch {
             loadPaymentDataError = L10n.General.errorBody

@@ -43,7 +43,7 @@ public struct PaymentsView: View {
         }
         .onPullToRefresh {
             async let fetchStatus: () = store.fetchPaymentStatus()
-            async let load: () = store.load()
+            async let load: () = store.load(forceUpdate: true)
             async let missedPayment: () = store.getMissedPayment()
             _ = await (fetchStatus, load, missedPayment)
         }
