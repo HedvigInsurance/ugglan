@@ -506,7 +506,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_ADD_METHOD_BUTTON" = "Lägg till betalningsmetod";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Välj primär metod";
-"PAYMENT_CONNECT_SUBTITLE" = "Lägg till en betalningsmetod för att hålla din försäkring aktiv";
+"PAYMENT_CONNECT_SUBTITLE" = "Lägg till en ny betalningsmetod för din försäkring";
 "PAYMENT_CONNECT_TITLE" = "Koppla betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
@@ -515,11 +515,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Direktbetalning via faktura";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Betalningar och utbetalningar via Swish";
 "PAYMENT_OPTION_TRUSTLY_SUBTITLE" = "Anslut din bank via Trustly";
-"PAYMENT_PRIMARY_CONFIRM_TITLE" = "Bekräfta primär betalningsmetod";
-"PAYMENT_PRIMARY_LABEL" = "Primär";
-"PAYMENT_PRIMARY_SUBTITLE" = "Ändra ditt föredragna betalsätt";
-"PAYMENT_PRIMARY_TITLE" = "Primär betalningsmetod";
-"PAYMENT_REMOVE_SUBTITLE" = "Är du säker på att du vill ta bort betalningsmetoden?";
+"PAYMENT_PRIMARY_CONFIRM_TITLE" = "Bekräfta betalningsmetod";
+"PAYMENT_PRIMARY_LABEL" = "Förvalt";
+"PAYMENT_PRIMARY_SUBTITLE" = "Den här metoden används för dina månadsbetalningar";
+"PAYMENT_PRIMARY_TITLE" = "Välj betalningsmetod";
+"PAYMENT_REMOVE_SUBTITLE" = "Du kan lägga till den igen när som helst";
 "PAYMENT_REMOVE_TITLE" = "Ta bort betalningsmetod";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
