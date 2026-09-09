@@ -34,8 +34,8 @@ struct PayoutChangeMethodScreen: View {
         }
         .detent(
             item: $showConnectPayoutMethod,
-            presentationStyle: showConnectPayoutMethod?.detentPresentationStyle ?? .detent(style: [.large]),
-            options: .constant(showConnectPayoutMethod?.options ?? [])
+            presentationStyle: showConnectPayoutMethod?.payoutSetupPresentationStyle ?? .detent(style: [.large]),
+            options: .constant(showConnectPayoutMethod?.payoutSetupPresentationOptions ?? [])
         ) { [weak router, weak paymentMethodRouter] paymentProvider in
             let onSuccess = { [weak paymentMethodRouter] in
                 let store: PaymentStore = globalAppStateContainer.get()
@@ -69,28 +69,6 @@ struct PayoutChangeMethodScreen: View {
     }
 }
 
-extension PaymentProvider {
-    var payoutTitle: String {
-        switch self {
-        case .nordea: return L10n.bankPayoutMethodCardTitle
-        case .swish: return "Swish"
-        case .trustly: return "Trustly"
-        case .invoice: return L10n.paymentsInvoice
-        case .unknown: return ""
-        }
-    }
-
-    var payoutSubtitle: String {
-        switch self {
-        case .nordea: return L10n.bankPayoutMethodCardDescription
-        case .swish: return L10n.payoutMethodSwishDescription
-        case .trustly: return L10n.payoutMethodTrustlyDescription
-        case .invoice: return L10n.payoutMethodInvoiceDescription
-        case .unknown: return ""
-        }
-    }
-}
-
 #Preview {
     PayoutChangeMethodScreen()
         .environmentObject(NavigationRouter())
@@ -113,27 +91,6 @@ extension PaymentProvider {
                 layout: .other
             )
         }
-}
-
-@MainActor
-extension PaymentProvider {
-    fileprivate var detentPresentationStyle: DetentPresentationStyle {
-        switch self {
-        case .trustly, .unknown, .invoice:
-            return .detent(style: [.large])
-        case .swish, .nordea:
-            return .detent(style: [.height])
-        }
-    }
-
-    fileprivate var options: DetentPresentationOption {
-        switch self {
-        case .trustly:
-            return [.disableDismissOnScroll, .withoutGrabber]
-        case .swish, .nordea, .unknown, .invoice:
-            return []
-        }
-    }
 }
 
 @MainActor

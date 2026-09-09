@@ -94,6 +94,16 @@ extension PaymentMethodRow where Value == ConnectedPaymentMethod {
     }
 }
 
+extension PaymentMethodRow where Value == AvailablePaymentMethod {
+    init(payin method: AvailablePaymentMethod, selection: Binding<AvailablePaymentMethod?>) {
+        self.init(
+            item: .init(title: method.provider.payinTitle, subTitle: method.provider.payinSubtitle),
+            provider: method.provider,
+            content: .selection(value: method, selection: selection)
+        )
+    }
+}
+
 #Preview {
     let trustly = ConnectedPaymentMethod(
         status: .active,

@@ -72,6 +72,26 @@ extension PaymentProvider {
         }
     }
 
+    var payoutTitle: String {
+        switch self {
+        case .nordea: return L10n.bankPayoutMethodCardTitle
+        case .swish: return "Swish"
+        case .trustly: return "Trustly"
+        case .invoice: return L10n.paymentsInvoice
+        case .unknown: return ""
+        }
+    }
+
+    var payoutSubtitle: String {
+        switch self {
+        case .nordea: return L10n.bankPayoutMethodCardDescription
+        case .swish: return L10n.payoutMethodSwishDescription
+        case .trustly: return L10n.payoutMethodTrustlyDescription
+        case .invoice: return L10n.payoutMethodInvoiceDescription
+        case .unknown: return ""
+        }
+    }
+
     @MainActor
     @ViewBuilder
     public func image(size: CGFloat = 40) -> some View {
