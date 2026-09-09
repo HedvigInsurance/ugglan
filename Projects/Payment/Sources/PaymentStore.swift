@@ -97,6 +97,14 @@ public final class PaymentStore: AppStore {
         isFetchingPaymentStatus = false
     }
 
+    /// Detached so a refresh kicked off from a sheet's completion outlives that sheet's teardown.
+    static func refreshStatusDetached() {
+        Task {
+            let store: PaymentStore = globalAppStateContainer.get()
+            await store.fetchPaymentStatus()
+        }
+    }
+
     public func getHistory() async {
         isLoadingHistory = true
         do {

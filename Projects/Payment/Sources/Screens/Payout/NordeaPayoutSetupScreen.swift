@@ -41,22 +41,12 @@ struct NordeaPayoutSetupScreen: View {
     private var bottomContent: some View {
         hSection {
             if let errorMessage = vm.errorMessage {
-                errorView(message: errorMessage)
+                PaymentErrorLabel(message: errorMessage)
             }
             saveButton
         }
         .padding(.vertical, .padding16)
         .sectionContainerStyle(.transparent)
-    }
-
-    private func errorView(message: String) -> some View {
-        HStack {
-            Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
-                .foregroundColor(hSignalColor.Red.element)
-            hText(message, style: .label)
-                .foregroundColor(hSignalColor.Red.text)
-        }
-        .padding(.bottom, .padding8)
     }
 
     private var saveButton: some View {
