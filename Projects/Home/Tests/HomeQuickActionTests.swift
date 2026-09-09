@@ -12,9 +12,7 @@ final class HomeQuickActionTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-        // HomeStore.init subscribes to the container's PaymentStore, so each test needs a fresh one.
-        globalAppStateContainer.reset()
+        resetContainer()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         sut = nil
@@ -23,9 +21,16 @@ final class HomeQuickActionTests: XCTestCase {
     override func tearDown() async throws {
         Dependencies.shared.remove(for: HomeClient.self)
         Dependencies.shared.remove(for: hPaymentClient.self)
+        resetContainer()
         try await Task.sleep(seconds: 0.0000001)
 
         XCTAssertNil(sut)
+    }
+
+    // reset first: it cancels the 250 ms debounced snapshot write that would otherwise land after the wipe
+    private func resetContainer() {
+        globalAppStateContainer.reset()
+        globalAppStateContainer.clearPersistence()
     }
 
     func testHomeQuickActionsFollowFigmaOrderWithUpcomingPayment() async {

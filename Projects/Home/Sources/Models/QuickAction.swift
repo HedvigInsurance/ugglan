@@ -117,32 +117,29 @@ public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Senda
     }
 }
 
-extension Sequence where Iterator.Element == QuickAction {
+extension Collection where Element == QuickAction {
     var hasFirstVet: Bool {
-        first { $0.isFirstVet } != nil
+        firstVetPartners != nil
     }
 
     var firstVetPartners: [FirstVetPartner]? {
-        first { $0.isFirstVet }?.firstVetPartners
+        first(\.firstVetPartners)
     }
 
     var editInsuranceActions: EditInsuranceActionsWrapper? {
-        first { $0.isEditInsurance }?.editInsuranceActions
+        first(\.editInsuranceActions)
     }
 
     var sickAbroadDeflection: Deflection? {
-        first { $0.isEditInsurance }?.sickAbroadDeflection
+        first(\.sickAbroadDeflection)
+    }
+
+    private func first<Payload>(_ payload: KeyPath<QuickAction, Payload?>) -> Payload? {
+        lazy.compactMap { $0[keyPath: payload] }.first
     }
 }
 
 extension QuickAction {
-    fileprivate var isFirstVet: Bool {
-        switch self {
-        case .firstVet: true
-        default: false
-        }
-    }
-
     fileprivate var firstVetPartners: [FirstVetPartner]? {
         switch self {
         case let .firstVet(partners): partners
@@ -150,24 +147,10 @@ extension QuickAction {
         }
     }
 
-    fileprivate var isEditInsurance: Bool {
-        switch self {
-        case .editInsurance: true
-        default: false
-        }
-    }
-
     fileprivate var editInsuranceActions: EditInsuranceActionsWrapper? {
         switch self {
         case let .editInsurance(actions): actions
         default: nil
-        }
-    }
-
-    fileprivate var isSickAbroad: Bool {
-        switch self {
-        case .sickAbroad: true
-        default: false
         }
     }
 
