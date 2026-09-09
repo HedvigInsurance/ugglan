@@ -24,6 +24,7 @@ struct PaymentMethodsScreen: View {
                         hButton(.large, .secondary, content: .init(title: L10n.payoutAddPayoutMethod)) {
                         }
                         hButton(.large, .ghost, content: .init(title: L10n.paymentChoosePrimaryButton)) {
+                            paymentsNavigationVM.showChooseDefaultPaymentMethod = true
                         }
                     }
                 }
@@ -65,4 +66,33 @@ struct PaymentMethodsScreen: View {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentMethodsScreen()
         .environmentObject(PaymentsNavigationViewModel())
+        .task {
+            await delay(3)
+            store.paymentStatusData = .init(
+                status: .active,
+                chargingDay: 27,
+                defaultPayinMethod: .init(
+                    status: .active,
+                    isDefault: true,
+                    method: .swish(phoneNumber: "0701231231")
+                ),
+                payinMethods: [
+                    .init(
+                        status: .active,
+                        isDefault: false,
+                        method: .trustly(bankAccount: .init(account: "account", bank: "bank"))
+                    ),
+                    .init(
+                        status: .active,
+                        isDefault: true,
+                        method: .swish(phoneNumber: "0701231231")
+                    ),
+                ],
+                defaultPayoutMethod: nil,
+                payoutMethods: [],
+                availableMethods: [],
+                missingConnection: nil,
+                layout: .other
+            )
+        }
 }
