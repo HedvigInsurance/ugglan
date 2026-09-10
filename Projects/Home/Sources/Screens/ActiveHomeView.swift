@@ -178,6 +178,7 @@ private struct TopFadeMask: View {
         .padding(.bottom, -bottomOverscrollExtension)
     }
 }
+
 private struct HomeNavigationBar: View {
     @AppObservedObject private var homeStore: HomeStore
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
@@ -228,6 +229,19 @@ private struct HomeNavigationBar: View {
     }
 }
 
+extension View {
+    @ViewBuilder
+    func disableScrollClipCompat() -> some View {
+        if #available(iOS 17.0, *) {
+            self.scrollClipDisabled()
+        } else {
+            self.introspect(.scrollView, on: .iOS(.v16)) { scrollView in
+                scrollView.clipsToBounds = false
+            }
+        }
+    }
+}
+
 @MainActor private func setUpActiveHomeViewPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
@@ -243,6 +257,7 @@ private struct HomeNavigationBar: View {
     store.setFutureStatus(.none)
     Task {
         await store.fetchMemberState()
+        await store.fetchQuickActions()
         store.setMemberContractState(
             .active,
             contracts: [
@@ -259,12 +274,6 @@ private struct HomeNavigationBar: View {
 }
 
 #Preview {
-    setUpActiveHomeViewPreview()
-    return ActiveHomeView()
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("In tab bar") {
     setUpActiveHomeViewPreview()
 
     return TabView {
