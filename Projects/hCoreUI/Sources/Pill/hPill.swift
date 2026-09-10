@@ -166,12 +166,12 @@ fileprivate struct PillWrapperModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(
-                RoundedRectangle(cornerRadius: .infinity)
+                Capsule()
                     .fill(color.pillBackgroundColor(level: colorLevel))
             )
             .overlay {
                 if withBorder {
-                    RoundedRectangle(cornerRadius: .infinity)
+                    Capsule()
                         .stroke(hBorderColor.primary, lineWidth: 1)
                 }
             }
