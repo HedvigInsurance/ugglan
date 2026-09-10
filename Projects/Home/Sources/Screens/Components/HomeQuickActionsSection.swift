@@ -1,4 +1,3 @@
-import Payment
 import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -10,6 +9,7 @@ private let tileWidth: CGFloat = 160
 struct HomeQuickActionsSection: View {
     let quickActions: [HomeQuickAction]
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @State private var actionInFlight: HomeQuickAction?
 
     var body: some View {
         if !quickActions.isEmpty {
@@ -19,6 +19,7 @@ struct HomeQuickActionsSection: View {
                     .sectionContainerStyle(.transparent)
                 tiles
             }
+            .disabled(actionInFlight != nil)
         }
     }
 
@@ -26,8 +27,11 @@ struct HomeQuickActionsSection: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: .padding8) {
                 ForEach(quickActions) { action in
-                    HomeQuickActionTile(action: action) { perform(action) }
-                        .frame(width: tileWidth)
+                    HomeQuickActionTile(
+                        action: action,
+                        isLoading: actionInFlight == action
+                    ) { await perform(action) }
+                    .frame(width: tileWidth)
                 }
             }
             .padding(.horizontal, .padding16)
@@ -36,7 +40,10 @@ struct HomeQuickActionsSection: View {
         .disableScrollClipCompat()
     }
 
-    private func perform(_ action: HomeQuickAction) {
+    private func perform(_ action: HomeQuickAction) async {
+        guard actionInFlight == nil else { return }
+        actionInFlight = action
+        defer { actionInFlight = nil }
         log.addUserAction(
             type: .click,
             name: "home quick action",
@@ -50,30 +57,39 @@ struct HomeQuickActionsSection: View {
         case let .sickAbroad(deflection): navigationVm.quickActionsVm.perform(.sickAbroad(deflection: deflection))
         case .upgradeCoverage: navigationVm.quickActionsVm.perform(.upgradeCoverage)
         case .inviteFriend: navigationVm.isForeverPresented = true
-        case let .upcomingPayment(upcomingPaymentData): navigationVm.isUpcomingPaymentPresented = upcomingPaymentData
+        case .upcomingPayment: await navigationVm.presentUpcomingPayment()
         }
     }
 }
 
 private struct HomeQuickActionTile: View {
     let action: HomeQuickAction
-    let onTap: () -> Void
+    let isLoading: Bool
+    let onTap: () async -> Void
 
     var body: some View {
         Button {
-            ImpactGenerator.soft()
-            onTap()
+            ImpactGenerator.light()
+            Task { await onTap() }
         } label: {
-            VStack(alignment: .leading, spacing: 0) {
-                action.icon.view
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hFillColor.Opaque.primary)
-                    .accessibilityHidden(true)
-                Spacer(minLength: .padding6)
-                hText(action.title, style: .finePrint)
+            ZStack {
+                if isLoading {
+                    DotsActivityIndicator(.standard)
+                        .useDarkColor
+                        .transition(.opacity)
+                }
+                VStack(alignment: .leading, spacing: 0) {
+                    action.icon.view
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
+                        .accessibilityHidden(true)
+                    Spacer(minLength: .padding6)
+                    hText(action.title, style: .finePrint)
+                }
+                .opacity(isLoading ? 0.6 : 1)
             }
+            .animation(.easeInOut(duration: 0.2), value: isLoading)
             .padding(.padding14)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background {
@@ -87,9 +103,16 @@ private struct HomeQuickActionTile: View {
             .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
             .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(HomeQuickActionTileStyle())
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
+    }
+}
+
+private struct HomeQuickActionTileStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.75 : 1)
     }
 }
 
@@ -107,23 +130,6 @@ private struct HomeQuickActionTile: View {
         linkOnlyPartners: [],
         buttonTitle: ""
     )
-    let previewPaymentData = PaymentData(
-        id: "preview",
-        payment: .init(
-            gross: .sek(400),
-            net: .sek(370),
-            carriedAdjustment: nil,
-            settlementAdjustment: nil,
-            date: "2026-09-27"
-        ),
-        status: .upcoming,
-        contracts: [],
-        referralDiscount: nil,
-        amountPerReferral: .sek(10),
-        payinMethod: nil,
-        addedToThePayment: nil
-    )
-
     return HomeQuickActionsSection(
         quickActions: [
             .editInsurance(previewEditActions),
@@ -132,7 +138,7 @@ private struct HomeQuickActionTile: View {
             .sickAbroad(previewDeflection),
             .upgradeCoverage,
             .inviteFriend,
-            .upcomingPayment(previewPaymentData),
+            .upcomingPayment,
         ]
     )
     .environmentObject(HomeNavigationViewModel())

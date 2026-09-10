@@ -69,7 +69,7 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 
 ## Gotchas
 
-- **`load()` is cached** on persisted `paymentDataFetchedAt` and skipped while a load is in flight; `load(forceUpdate: true)` bypasses the age check. Home calls it on every appear.
+- **`load()` is cached** on persisted `paymentDataFetchedAt` and skipped while a load is in flight; `load(forceUpdate: true)` bypasses both, so a tap always gets a fresh fetch even if it overlaps Home's on-appear load. Home calls it on every appear and force-refetches on the Upcoming payment tile tap.
 - **`PaymentDetailsView` is public**: Home presents it as a detent for its Upcoming payment tile.
 - **`PaymentStore` is the source of truth.** Setup screens (Nordea/Swish/Trustly) maintain their own local state and trigger `store.fetchPaymentStatus()` on success via `globalAppStateContainer.get()`.
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.

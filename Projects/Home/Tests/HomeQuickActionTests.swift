@@ -55,7 +55,7 @@ final class HomeQuickActionTests: XCTestCase {
                 .sickAbroad(deflection),
                 .upgradeCoverage,
                 .inviteFriend,
-                .upcomingPayment(upcoming),
+                .upcomingPayment,
             ]
         )
     }
@@ -71,7 +71,7 @@ final class HomeQuickActionTests: XCTestCase {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         await paymentStore.load(forceUpdate: true)
 
-        XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend, .upcomingPayment(upcoming)])
+        XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend, .upcomingPayment])
     }
 
     func testHomeQuickActionsOmitUpgradeCoverageWithoutNestedFlag() async {
@@ -84,8 +84,35 @@ final class HomeQuickActionTests: XCTestCase {
 
         XCTAssertEqual(
             store.homeQuickActions,
-            [.editInsurance(editActions), .inviteFriend, .upcomingPayment(upcoming)]
+            [.editInsurance(editActions), .inviteFriend, .upcomingPayment]
         )
+    }
+
+    func testUpcomingPaymentTilePresentsFreshlyFetchedPayment() async {
+        let paymentClient = MockPaymentClient(upcomingPayment: nil)
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentClient })
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        await paymentStore.load()
+
+        let fresh = PaymentData.fixture
+        paymentClient.upcomingPayment = fresh
+        let vm = HomeNavigationViewModel()
+        await vm.presentUpcomingPayment()
+
+        XCTAssertEqual(vm.isUpcomingPaymentPresented, fresh)
+    }
+
+    func testUpcomingPaymentTileDoesNotPresentWhenFetchFails() async {
+        let paymentClient = MockPaymentClient(upcomingPayment: nil)
+        paymentClient.error = PaymentError.missingDataError(message: "failed")
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentClient })
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+
+        let vm = HomeNavigationViewModel()
+        await vm.presentUpcomingPayment()
+
+        XCTAssertNotNil(paymentStore.loadPaymentDataError)
+        XCTAssertNil(vm.isUpcomingPaymentPresented)
     }
 
     private func makeStore(quickActions: [QuickAction], paymentClient: MockPaymentClient) async -> HomeStore {
@@ -109,13 +136,15 @@ final class HomeQuickActionTests: XCTestCase {
 
 private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
     var upcomingPayment: PaymentData?
+    var error: Error?
 
     init(upcomingPayment: PaymentData?) {
         self.upcomingPayment = upcomingPayment
     }
 
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        (upcomingPayment, [])
+        if let error { throw error }
+        return (upcomingPayment, [])
     }
 
     func getPaymentStatusData() async throws -> PaymentStatusData {

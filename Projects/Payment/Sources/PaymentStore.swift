@@ -72,7 +72,7 @@ public final class PaymentStore: AppStore {
 
     public func load(forceUpdate: Bool = false) async {
         let isStale = paymentDataFetchedAt.map { -$0.timeIntervalSinceNow > Self.paymentDataCacheDuration } ?? true
-        guard !isLoadingPaymentData && (forceUpdate || isStale) else { return }
+        guard forceUpdate || (!isLoadingPaymentData && isStale) else { return }
         isLoadingPaymentData = true
         do {
             let payment = try await paymentService.getPaymentData()

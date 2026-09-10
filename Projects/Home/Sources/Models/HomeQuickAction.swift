@@ -1,5 +1,3 @@
-import Foundation
-import Payment
 import SubmitClaimChat
 import hCore
 import hCoreUI
@@ -9,7 +7,7 @@ public enum HomeQuickAction: Identifiable, Equatable {
     case changeAddress
     case travelCertificate
     case sickAbroad(Deflection)
-    case upcomingPayment(PaymentData)
+    case upcomingPayment
     case inviteFriend
     case upgradeCoverage
 
