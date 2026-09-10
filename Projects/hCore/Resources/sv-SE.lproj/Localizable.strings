@@ -248,7 +248,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_VIEW_CERTIFICATE_BUTTON" = "Se certifikat";
 "CROSS_SELL_BANNER_TEXT" = "Populärt val";
 "CROSS_SELL_BUTTON" = "Se ditt pris";
-"CROSS_SELL_SUBTITLE" = "Upptäck fler försäkringar";
+"CROSS_SELL_SUBTITLE" = "Upptäck mer skydd";
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Aktiv";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "Uppdateras %1$@";
@@ -441,7 +441,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Till appen";
-"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% rabatt när du har två eller fler försäkringar. Gäller alla utom olycksfall";
+"ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% samlingsrabatt när du har två eller fler försäkringar";
 "ONBOARDING_CROSS_SELL_TITLE" = "Få samlingsrabatt";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Gör det senare";
 "ONBOARDING_INVITE_FRIEND_SUBTITLE" = "När någon skaffar Hedvig med din kod får ni båda %1$@ rabatt per månad";
@@ -512,6 +512,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
+"PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Kopplad";
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Faktura till din Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Betalningar och utbetalningar via Swish";
@@ -522,7 +523,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_TITLE" = "Välj betalningsmetod";
 "PAYMENT_REMOVE_SUBTITLE" = "Du kan lägga till den igen när som helst";
 "PAYMENT_REMOVE_TITLE" = "Ta bort betalningsmetod";
+"PAYMENT_SWISH_APPROVE_TITLE" = "Godkänn kopplingen i Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Byt telefonnummer";
+"PAYMENT_SWISH_EXPLANATION_BUTTON" = "Så fungerar återkommande betalningar med Swish";
+"PAYMENT_SWISH_SUBTITLE" = "Vi skickar kopplingen till Swish på det här numret";
+"PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
@@ -833,6 +838,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claims.alert.body" = "Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.";
 "cross_sell.info.faq_chat_button" = "Kontakta oss";
 "cross_sell_get_price" = "Få pris";
+"cross_sell_see_price" = "Se pris";
 /* Figma */
 "dashboard_multiple_renewals_prompter_button" = "Läs nya försäkringsbrev";
 "edit_coinsured_ssn_placeholder" = "ÅÅÅÅMMDD-XXXX";

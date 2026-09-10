@@ -248,7 +248,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CONTRACT_VIEW_CERTIFICATE_BUTTON" = "View certificate";
 "CROSS_SELL_BANNER_TEXT" = "Popular choice";
 "CROSS_SELL_BUTTON" = "See your price";
-"CROSS_SELL_SUBTITLE" = "Discover more insurances";
+"CROSS_SELL_SUBTITLE" = "Discover more coverage";
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Active";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "To be updated %1$@";
@@ -441,7 +441,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment method";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Go to the app";
-"ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% discount when you have two or more insurances with us. Applies to all except accident";
+"ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% bundle discount when you have two or more insurances with us";
 "ONBOARDING_CROSS_SELL_TITLE" = "Get bundle discount";
 "ONBOARDING_DO_THIS_LATER_BUTTON" = "Do this later";
 "ONBOARDING_INVITE_FRIEND_SUBTITLE" = "When someone gets Hedvig with your code you both get %1$@ discount per month";
@@ -512,6 +512,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
 "PAYMENT_METHOD_TITLE" = "Payment method";
+"PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Connected";
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Invoice to your Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Payments and payouts via Swish";
@@ -522,7 +523,11 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_TITLE" = "Choose payment method";
 "PAYMENT_REMOVE_SUBTITLE" = "You can add it back any time";
 "PAYMENT_REMOVE_TITLE" = "Remove payment method";
+"PAYMENT_SWISH_APPROVE_TITLE" = "Approve the connection in Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Change phone number";
+"PAYMENT_SWISH_EXPLANATION_BUTTON" = "How recurring payments with Swish work";
+"PAYMENT_SWISH_SUBTITLE" = "We'll send the connection request to Swish on this number";
+"PAYMENT_SWISH_TITLE" = "Confirm your Swish number";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
@@ -833,6 +838,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claims.alert.body" = "If you exit, you'll go back to the start page and your inputted data will be lost.";
 "cross_sell.info.faq_chat_button" = "Contact us";
 "cross_sell_get_price" = "Get price";
+"cross_sell_see_price" = "See price";
 /* Figma */
 "dashboard_multiple_renewals_prompter_button" = "Read new certificates";
 "edit_coinsured_ssn_placeholder" = "YYYYMMDD-XXXX";
