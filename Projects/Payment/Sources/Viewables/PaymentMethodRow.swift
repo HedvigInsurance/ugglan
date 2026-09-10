@@ -94,12 +94,12 @@ extension PaymentMethodRow where Value == ConnectedPaymentMethod {
     }
 }
 
-extension PaymentMethodRow where Value == AvailablePaymentMethod {
-    init(payin method: AvailablePaymentMethod, selection: Binding<AvailablePaymentMethod?>) {
+extension PaymentMethodRow where Value == PaymentProvider {
+    init(payin provider: PaymentProvider, selection: Binding<PaymentProvider?>) {
         self.init(
-            item: .init(title: method.provider.payinTitle, subTitle: method.provider.payinSubtitle),
-            provider: method.provider,
-            content: .selection(value: method, selection: selection)
+            item: .init(title: provider.payinTitle, subTitle: provider.payinSubtitle),
+            provider: provider,
+            content: .selection(value: provider, selection: selection)
         )
     }
 }
@@ -131,6 +131,7 @@ extension PaymentMethodRow where Value == AvailablePaymentMethod {
                 PaymentMethodRow(pendingSwish)
                 PaymentMethodRow(trustly, selection: .constant(trustly))
                 PaymentMethodRow(swish, selection: .constant(trustly))
+                PaymentMethodRow(payin: .invoice, selection: .constant(nil))
             }
         }
         .sectionContainerStyle(.transparent)

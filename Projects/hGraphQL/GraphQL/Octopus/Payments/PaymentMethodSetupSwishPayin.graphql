@@ -1,0 +1,5 @@
+mutation PaymentMethodSetupSwishPayin($input: PaymentMethodSetupSwishInput!) {
+  paymentMethodSetupSwishPayin(input: $input) {
+      ...PaymentMethodSetupOutputFragment
+  }
+}

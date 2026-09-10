@@ -59,6 +59,7 @@
 		<string>googlegmail</string>
 		<string>message</string>
 		<string>bankid</string>
+		<string>swish</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
