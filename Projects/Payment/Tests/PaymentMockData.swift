@@ -62,8 +62,9 @@ struct MockPaymentData {
             .init()
         },
         fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod = {
-            .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
+            .init(status: .pending, orderId: "order-1", url: "https://example.com/setup", errorMessage: nil)
         },
+        fetchPaymentSetupStatus: @escaping FetchPaymentSetupStatus = { .active },
         fetchMissedPaymentData: @escaping FetchMissedPaymentData = { nil },
         chargeOutstandingPayment: @escaping ChargeOutstandingPayment = {},
         setDefaultPaymentMethod: @escaping SetDefaultPaymentMethod = {}
@@ -73,6 +74,7 @@ struct MockPaymentData {
             fetchPaymentStatusData: fetchPaymentStatusData,
             fetchPaymentHistoryData: fetchPaymentHistoryData,
             fetchSetupPaymentMethod: fetchSetupPaymentMethod,
+            fetchPaymentSetupStatus: fetchPaymentSetupStatus,
             fetchMissedPaymentData: fetchMissedPaymentData,
             chargeOutstandingPayment: chargeOutstandingPayment,
             setDefaultPaymentMethod: setDefaultPaymentMethod
@@ -86,6 +88,7 @@ typealias FetchPaymentData = () async throws -> (upcoming: Payment.PaymentData?,
 typealias FetchPaymentStatusData = () async throws -> PaymentStatusData
 typealias FetchPaymentHistoryData = () async throws -> [PaymentHistoryListData]
 typealias FetchSetupPaymentMethod = () async throws -> PaymentSetupResult
+typealias FetchPaymentSetupStatus = () async throws -> PaymentSetupResult.PaymentSetupStatus
 typealias FetchMissedPaymentData = () async throws -> MissedPaymentData?
 typealias ChargeOutstandingPayment = () async throws -> Void
 typealias SetDefaultPaymentMethod = () async throws -> Void
@@ -97,15 +100,20 @@ class MockPaymentService: hPaymentClient {
     var fetchPaymentStatusData: FetchPaymentStatusData
     var fetchPaymentHistoryData: FetchPaymentHistoryData
     var fetchSetupPaymentMethod: FetchSetupPaymentMethod
+    var fetchPaymentSetupStatus: FetchPaymentSetupStatus
     var fetchMissedPaymentData: FetchMissedPaymentData
     var chargeOutstandingPaymentClosure: ChargeOutstandingPayment
     var setDefaultPaymentMethodClosure: SetDefaultPaymentMethod
+
+    var setupTypes = [PaymentMethodSetupType]()
+    var lastSetupType: PaymentMethodSetupType? { setupTypes.last }
 
     enum Event {
         case getPaymentData
         case getPaymentStatusData
         case getPaymentHistoryData
         case setupPaymentMethod
+        case getPaymentSetupStatus
         case getMissedPaymentData
         case chargeOutstandingPayment
         case setDefaultPaymentMethod
@@ -116,6 +124,7 @@ class MockPaymentService: hPaymentClient {
         fetchPaymentStatusData: @escaping FetchPaymentStatusData,
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData,
         fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod,
+        fetchPaymentSetupStatus: @escaping FetchPaymentSetupStatus,
         fetchMissedPaymentData: @escaping FetchMissedPaymentData,
         chargeOutstandingPayment: @escaping ChargeOutstandingPayment,
         setDefaultPaymentMethod: @escaping SetDefaultPaymentMethod
@@ -124,6 +133,7 @@ class MockPaymentService: hPaymentClient {
         self.fetchPaymentStatusData = fetchPaymentStatusData
         self.fetchPaymentHistoryData = fetchPaymentHistoryData
         self.fetchSetupPaymentMethod = fetchSetupPaymentMethod
+        self.fetchPaymentSetupStatus = fetchPaymentSetupStatus
         self.fetchMissedPaymentData = fetchMissedPaymentData
         self.chargeOutstandingPaymentClosure = chargeOutstandingPayment
         self.setDefaultPaymentMethodClosure = setDefaultPaymentMethod
@@ -149,8 +159,15 @@ class MockPaymentService: hPaymentClient {
 
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         events.append(.setupPaymentMethod)
+        setupTypes.append(type)
         let data = try await fetchSetupPaymentMethod()
         return data
+    }
+
+    func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        events.append(.getPaymentSetupStatus)
+        let status = try await fetchPaymentSetupStatus()
+        return status
     }
 
     func getMissedPaymentData() async throws -> MissedPaymentData? {
@@ -167,5 +184,16 @@ class MockPaymentService: hPaymentClient {
     func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
         events.append(.setDefaultPaymentMethod)
         try await setDefaultPaymentMethodClosure()
+    }
+}
+
+extension PaymentMethodSetupType {
+    var phoneNumber: String? {
+        switch self {
+        case let .swishPayin(phoneNumber), let .swishPayout(phoneNumber):
+            return phoneNumber
+        case .trustly, .nordeaPayout:
+            return nil
+        }
     }
 }
