@@ -116,13 +116,13 @@ struct _hButton<Content: View>: View {
 }
 
 extension View {
-    func buttonCornerModifier(_ cornerRadius: CGFloat, withBorder: Bool) -> some View {
-        self.clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
+    func buttonCornerModifier(withBorder: Bool) -> some View {
+        self.clipShape(Capsule())
+            .contentShape(Capsule())
             .overlay(
                 Group {
                     if withBorder {
-                        RoundedRectangle(cornerRadius: cornerRadius).stroke(hBorderColor.primary, lineWidth: 1)
+                        Capsule().stroke(hBorderColor.primary, lineWidth: 1)
                     }
                 }
             )

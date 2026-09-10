@@ -79,12 +79,12 @@ fileprivate struct PillModifier: ViewModifier {
             .padding(.top, getTopPadding)
             .padding(.bottom, getBottomPadding)
             .background(
-                RoundedRectangle(cornerRadius: getCornerRadius)
+                pillShape
                     .fill(color.pillBackgroundColor(level: colorLevel))
             )
             .overlay {
                 if withBorder {
-                    RoundedRectangle(cornerRadius: getCornerRadius)
+                    pillShape
                         .stroke(hBorderColor.primary, lineWidth: 1)
                 }
             }
@@ -133,10 +133,17 @@ fileprivate struct PillModifier: ViewModifier {
         }
     }
 
+    /// `capsuleShape` was expressed as cornerRadius 24, which only rendered as a capsule
+    /// because the radius exceeded half the pill's height and CoreGraphics clamped it. iOS 26
+    /// renders shapes through a signed-distance-field path that is not forgiving of a radius
+    /// larger than the shape allows, so name the capsule directly instead.
+    private var pillShape: AnyShape {
+        capsuleShape
+            ? AnyShape(Capsule())
+            : AnyShape(RoundedRectangle(cornerRadius: getCornerRadius))
+    }
+
     private var getCornerRadius: CGFloat {
-        if capsuleShape {
-            return .cornerRadiusXXL
-        }
         switch fieldSize {
         case .small:
             return .cornerRadiusXS

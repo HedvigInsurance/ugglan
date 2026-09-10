@@ -14,7 +14,6 @@ struct ActiveHomeView: View {
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
     @State private var navBarHeight: CGFloat = 0
-    @State private var topSafeAreaInset: CGFloat = 0
 
     private let scrollSpace = "homeScroll"
 
@@ -41,7 +40,7 @@ struct ActiveHomeView: View {
                                 // The greeting is lazy: once scrolled off it's recycled and
                                 // reports 0, which would blow up the clip inset and the sheet's
                                 // minimum height. Latch the last real measurement.
-                                if height > 0 { greetingHeight = height }
+                                if height > 0, height.isFinite { greetingHeight = height }
                             }
                             .offset(x: 0, y: scrollOffset > 0 ? -(scrollOffset / 2) : -(scrollOffset / 3))
                     }
@@ -53,7 +52,7 @@ struct ActiveHomeView: View {
                         )
                         .padding(.bottom, proxy.safeAreaInsets.bottom + surfaceBottomGap)
                         // The sheet must always reach the screen bottom at rest.
-                        .frame(minHeight: viewportHeight - greetingHeight - headerHeight, alignment: .top)
+                        .frame(minHeight: max(0, viewportHeight - greetingHeight - headerHeight), alignment: .top)
                         // Two masks, with the surface sandwiched between them. This one runs
                         // before the background, so it fades the content alone: text and cards
                         // dissolve into the sheet rather than vanishing mid-glyph.
@@ -81,22 +80,30 @@ struct ActiveHomeView: View {
                         }
                     } header: {
                         HomeSheetContainer()
-                            .onGeometryChange(for: CGFloat.self, of: \.size.height) { headerHeight = $0 }
+                            .onGeometryChange(for: CGFloat.self, of: \.size.height) {
+                                headerHeight = $0.isFinite ? $0 : 0
+                            }
                     }
                 }
                 .frame(maxWidth: maxContentWidth)
                 .frame(maxWidth: .infinity)
                 .onGeometryChange(for: CGFloat.self, of: { $0.frame(in: .named(scrollSpace)).minY }) {
-                    scrollOffset = $0
+                    // A named coordinate space that hasn't resolved yet reports CGRect.infinite,
+                    // so minY arrives as -inf. `topInset` below clamps negatives but not
+                    // infinities, so such a value reaches a mask shape as .frame(height: .infinity)
+                    // and trips the iOS 26 SDF renderer (inf - inf = NaN when SDFStyle.distanceRange
+                    // builds its ClosedRange, which traps). Keep the stored offset finite.
+                    scrollOffset = $0.isFinite ? $0 : 0
                 }
             }
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
-            .onGeometryChange(for: CGFloat.self, of: \.safeAreaInsets.top) { topSafeAreaInset = $0 }
             .overlay(alignment: .topTrailing) {
                 HomeNavigationBar()
                     .padding(.vertical, .padding4)
-                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { navBarHeight = $0 }
+                    .onGeometryChange(for: CGFloat.self, of: \.size.height) {
+                        navBarHeight = $0.isFinite ? $0 : 0
+                    }
                     .opacity(showNavigation ? 1 : 0)
                     .offset(y: showNavigation ? 0 : -30)
                     // Animate only when the bar's visibility flips, not on every scroll tick.
@@ -183,12 +190,14 @@ private struct HomeNavigationBar: View {
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
 
     var body: some View {
-        if #available(iOS 26.0, *) {
-            GlassEffectContainer(spacing: .padding8) {
+        if !homeStore.toolbarOptionTypes.isEmpty {
+            if #available(iOS 26.0, *) {
+                GlassEffectContainer(spacing: .padding8) {
+                    toolbar()
+                }
+            } else {
                 toolbar()
             }
-        } else {
-            toolbar()
         }
     }
 
