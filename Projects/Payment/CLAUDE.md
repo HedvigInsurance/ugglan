@@ -70,7 +70,7 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 ## Gotchas
 
 - **`load()` is cached** on persisted `paymentDataFetchedAt` and skipped while a load is in flight; `load(forceUpdate: true)` bypasses the age check. Home calls it on every appear.
-- **`paymentsRouter` is public** for `DeepLinkHandler`: `DeepLink.upcomingPayment` switches to Payments, awaits `load()`, pushes `PaymentDetailsView`; with nothing due it stays on the tab root.
+- **`PaymentDetailsView` is public**: Home presents it as a detent for its Upcoming payment tile.
 - **`PaymentStore` is the source of truth.** Setup screens (Nordea/Swish/Trustly) maintain their own local state and trigger `store.fetchPaymentStatus()` on success via `globalAppStateContainer.get()`.
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.
 - **`DirectDebitSetup`** is a UIKit `UIViewRepresentable` wrapping `WKWebView`; uses `TrustlyScriptHandler` for JS↔Swift bridging and Combine-based state synchronization. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.

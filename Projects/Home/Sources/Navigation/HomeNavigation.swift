@@ -77,6 +77,8 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isHelpCenterPresented = false
     @Published public var isPayoutMethodPresented = false
+    @Published public var isForeverPresented = false
+    @Published public var isUpcomingPaymentPresented: PaymentData?
 
     @Published public var navBarItems = NavBarItems()
 

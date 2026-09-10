@@ -11,7 +11,6 @@ public enum DeepLink: String, Codable, CaseIterable {
     case sasEuroBonus = "eurobonus"
     case contract
     case payments
-    case upcomingPayment = "payments/upcoming"
     case travelCertificate
     case helpCenter = "help-center"
     case helpCenterTopic = "help-center/topic"
@@ -64,8 +63,6 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.SasIntegration.title
         case .payments:
             return L10n.myPaymentTitle
-        case .upcomingPayment:
-            return L10n.paymentsUpcomingPayment
         case .contract:
             return L10n.deepLinkContract
         case .travelCertificate:

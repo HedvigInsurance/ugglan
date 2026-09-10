@@ -8,7 +8,7 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
     public var connectPaymentVm = ConnectPaymentViewModel()
-    public let paymentsRouter = NavigationRouter()
+    let paymentsRouter = NavigationRouter()
 
     public init() {}
 }

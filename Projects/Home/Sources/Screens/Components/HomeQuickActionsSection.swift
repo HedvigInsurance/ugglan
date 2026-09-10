@@ -1,3 +1,4 @@
+import Payment
 import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -29,11 +30,8 @@ struct HomeQuickActionsSection: View {
                         .frame(width: tileWidth)
                 }
             }
-            .fixedSize(horizontal: true, vertical: true)
             .padding(.horizontal, .padding16)
-        }
-        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-            scrollView.clipsToBounds = false
+            .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -50,9 +48,8 @@ struct HomeQuickActionsSection: View {
         case .travelCertificate: navigationVm.quickActionsVm.perform(.travelInsurance)
         case let .sickAbroad(deflection): navigationVm.quickActionsVm.perform(.sickAbroad(deflection: deflection))
         case .upgradeCoverage: navigationVm.quickActionsVm.perform(.upgradeCoverage)
-        case .inviteFriend: NotificationCenter.default.post(name: .openDeepLink, object: DeepLink.forever.url)
-        case .upcomingPayment:
-            NotificationCenter.default.post(name: .openDeepLink, object: DeepLink.upcomingPayment.url)
+        case .inviteFriend: navigationVm.isForeverPresented = true
+        case let .upcomingPayment(upcomingPaymentData): navigationVm.isUpcomingPaymentPresented = upcomingPaymentData
         }
     }
 }
@@ -95,22 +92,36 @@ private struct HomeQuickActionTile: View {
     }
 }
 
-private let previewEditActions = EditInsuranceActionsWrapper(
-    quickActions: [.editCoInsured, .upgradeCoverage]
-)
-private let previewDeflection = Deflection(
-    title: nil,
-    content: .init(title: "", description: ""),
-    partners: [],
-    infoText: nil,
-    warningText: nil,
-    questions: [],
-    linkOnlyPartners: [],
-    buttonTitle: ""
-)
-
-#Preview("All actions") {
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
+
+    let previewEditActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .upgradeCoverage])
+    let previewDeflection = Deflection(
+        title: nil,
+        content: .init(title: "", description: ""),
+        partners: [],
+        infoText: nil,
+        warningText: nil,
+        questions: [],
+        linkOnlyPartners: [],
+        buttonTitle: ""
+    )
+    let previewPaymentData = PaymentData(
+        id: "preview",
+        payment: .init(
+            gross: .sek(400),
+            net: .sek(370),
+            carriedAdjustment: nil,
+            settlementAdjustment: nil,
+            date: "2026-09-27"
+        ),
+        status: .upcoming,
+        contracts: [],
+        referralDiscount: nil,
+        amountPerReferral: .sek(10),
+        payinMethod: nil,
+        addedToThePayment: nil
+    )
 
     return HomeQuickActionsSection(
         quickActions: [
@@ -120,51 +131,8 @@ private let previewDeflection = Deflection(
             .sickAbroad(previewDeflection),
             .upgradeCoverage,
             .inviteFriend,
-            .upcomingPayment,
+            .upcomingPayment(previewPaymentData),
         ]
     )
     .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("Client tiles only") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(quickActions: [.inviteFriend, .upcomingPayment])
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("All actions - accessibility3") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(
-        quickActions: [
-            .editInsurance(previewEditActions),
-            .changeAddress,
-            .travelCertificate,
-            .sickAbroad(previewDeflection),
-            .upgradeCoverage,
-            .inviteFriend,
-            .upcomingPayment,
-        ]
-    )
-    .environmentObject(HomeNavigationViewModel())
-    .environment(\.dynamicTypeSize, .accessibility3)
-}
-
-#Preview("All actions - accessibility5") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(
-        quickActions: [
-            .editInsurance(previewEditActions),
-            .changeAddress,
-            .travelCertificate,
-            .sickAbroad(previewDeflection),
-            .upgradeCoverage,
-            .inviteFriend,
-            .upcomingPayment,
-        ]
-    )
-    .environmentObject(HomeNavigationViewModel())
-    .environment(\.dynamicTypeSize, .accessibility5)
 }

@@ -212,7 +212,6 @@ class PushNotificationHandler {
 class DeepLinkHandler {
     weak var viewModel: LoggedInNavigationViewModel?
     private let contractStore: ContractStore = globalAppStateContainer.get()
-    private let paymentStore: PaymentStore = globalAppStateContainer.get()
     func handle(_ deepLinkUrl: URL?) {
         guard let url = deepLinkUrl else { return }
         guard let deepLink = DeepLink.getType(from: url) else {
@@ -239,8 +238,6 @@ class DeepLinkHandler {
             handleContractDeeplink(url)
         case .payments:
             dismissAndSelectTab(3)
-        case .upcomingPayment:
-            handleUpcomingPaymentDeeplink()
         case .travelCertificate:
             viewModel?.isTravelInsurancePresented = true
         case .insuranceEvidence:
@@ -346,16 +343,6 @@ class DeepLinkHandler {
                 viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
                 viewModel?.contractsNavigationVm.contractsRouter.push(contract)
             }
-        }
-    }
-
-    private func handleUpcomingPaymentDeeplink() {
-        dismissAndSelectTab(3)
-        Task { [weak viewModel, paymentStore] in
-            await paymentStore.load(forceUpdate: true)
-            guard let paymentData = paymentStore.paymentData else { return }
-            viewModel?.paymentsNavigationVm.paymentsRouter.popToRoot()
-            viewModel?.paymentsNavigationVm.paymentsRouter.push(paymentData)
         }
     }
 
@@ -806,12 +793,31 @@ struct HomeTab: View {
         )
         .detent(
             presented: $homeNavigationVm.isPayoutMethodPresented,
-            presentationStyle: .detent(
-                style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop])
         ) {
             PayoutNavigation()
                 .environmentObject(loggedInVm.paymentsNavigationVm)
+        }
+        .detent(
+            presented: $homeNavigationVm.isForeverPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            ForeverNavigation(useOwnNavigation: false)
+                .navigationTitle(L10n.ReferralsInfoSheet.headline)
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: ForeverNavigation.self))
+        }
+        .detent(
+            item: $homeNavigationVm.isUpcomingPaymentPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) { upcomingPaymentData in
+            PaymentDetailsView(data: upcomingPaymentData)
+                .navigationTitle(L10n.paymentsUpcomingPayment)
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
         }
     }
 

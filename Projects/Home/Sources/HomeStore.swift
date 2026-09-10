@@ -104,7 +104,7 @@ public final class HomeStore: AppStore {
                     editActions?.quickActions.contains(.upgradeCoverage) == true
                         ? HomeQuickAction.upgradeCoverage : nil,
                     HomeQuickAction.inviteFriend,
-                    upcomingPayment != nil ? HomeQuickAction.upcomingPayment : nil,
+                    upcomingPayment.map(HomeQuickAction.upcomingPayment),
                 ]
                 return tiles.compactMap { $0 }
             }

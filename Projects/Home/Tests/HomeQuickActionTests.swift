@@ -33,6 +33,7 @@ final class HomeQuickActionTests: XCTestCase {
         )
         // Deflection.init mints a fresh id, so both sides must share one instance.
         let deflection = Deflection.fixture
+        let upcoming = PaymentData.fixture
         let store = await makeStore(
             quickActions: [
                 .travelInsurance,
@@ -42,7 +43,7 @@ final class HomeQuickActionTests: XCTestCase {
                 .changeAddress,
                 .firstVet(partners: [.init(id: "vet", description: nil, url: nil, title: nil)]),
             ],
-            paymentClient: MockPaymentClient(upcomingPayment: .fixture)
+            paymentClient: MockPaymentClient(upcomingPayment: upcoming)
         )
 
         XCTAssertEqual(
@@ -54,7 +55,7 @@ final class HomeQuickActionTests: XCTestCase {
                 .sickAbroad(deflection),
                 .upgradeCoverage,
                 .inviteFriend,
-                .upcomingPayment,
+                .upcomingPayment(upcoming),
             ]
         )
     }
@@ -65,21 +66,26 @@ final class HomeQuickActionTests: XCTestCase {
 
         XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend])
 
-        paymentClient.upcomingPayment = .fixture
+        let upcoming = PaymentData.fixture
+        paymentClient.upcomingPayment = upcoming
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         await paymentStore.load(forceUpdate: true)
 
-        XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend, .upcomingPayment])
+        XCTAssertEqual(store.homeQuickActions, [.changeAddress, .inviteFriend, .upcomingPayment(upcoming)])
     }
 
     func testHomeQuickActionsOmitUpgradeCoverageWithoutNestedFlag() async {
         let editActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .cancellation])
+        let upcoming = PaymentData.fixture
         let store = await makeStore(
             quickActions: [.editInsurance(actions: editActions)],
-            paymentClient: MockPaymentClient(upcomingPayment: .fixture)
+            paymentClient: MockPaymentClient(upcomingPayment: upcoming)
         )
 
-        XCTAssertEqual(store.homeQuickActions, [.editInsurance(editActions), .inviteFriend, .upcomingPayment])
+        XCTAssertEqual(
+            store.homeQuickActions,
+            [.editInsurance(editActions), .inviteFriend, .upcomingPayment(upcoming)]
+        )
     }
 
     private func makeStore(quickActions: [QuickAction], paymentClient: MockPaymentClient) async -> HomeStore {
