@@ -502,17 +502,18 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PROCESSING_PAYMENT" = "Processing payment";
 "PAYMENTS_REFERRAL_DISCOUNT" = "Referral discount";
 "PAYMENTS_SUBTOTAL" = "Subtotal";
+"PAYMENTS_SWISH_NUMBER" = "Phone number";
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
 "PAYMENTS_VIEW_PAYMENT" = "View payment";
 "PAYMENT_ADD_METHOD_BUTTON" = "Add payment method";
-"PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Choose primary method";
+"PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Change primary method";
 "PAYMENT_CONNECT_SUBTITLE" = "Add a new payment method for your insurance";
 "PAYMENT_CONNECT_TITLE" = "Connect payment";
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Connected";
-"PAYMENT_OPTION_INVOICE_SUBTITLE" = "Direct payment via Invoice";
+"PAYMENT_OPTION_INVOICE_SUBTITLE" = "Invoice to your Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Payments and payouts via Swish";
 "PAYMENT_OPTION_TRUSTLY_SUBTITLE" = "Connect your bank via Trustly";
 "PAYMENT_PRIMARY_CONFIRM_TITLE" = "Confirm payment method";
@@ -521,6 +522,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_TITLE" = "Choose payment method";
 "PAYMENT_REMOVE_SUBTITLE" = "You can add it back any time";
 "PAYMENT_REMOVE_TITLE" = "Remove payment method";
+"PAYMENT_SWISH_CHANGE_NUMBER" = "Change phone number";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
@@ -578,9 +580,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_EXPIRED_TITLE" = "This draft has expired";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Continue";
 "RESUME_CLAIM_LEAVE_BODY" = "What you've filled in is saved as a draft for 7 days.";
-"RESUME_CLAIM_LEAVE_CANCEL" = "Stay";
-"RESUME_CLAIM_LEAVE_CONFIRM" = "Leave";
-"RESUME_CLAIM_LEAVE_TITLE" = "Leave this claim?";
+"RESUME_CLAIM_LEAVE_CANCEL" = "Continue";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Save draft";
+"RESUME_CLAIM_LEAVE_TITLE" = "Close this claim?";
 "RESUME_CLAIM_STATED" = "Started %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
 /* Placeholder for search bar in the Help center */
