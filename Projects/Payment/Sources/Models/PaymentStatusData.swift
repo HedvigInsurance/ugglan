@@ -78,6 +78,13 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     var showsHistoricalSections: Bool {
         layout != .qasaOnly
     }
+
+    func payinMethod(for provider: PaymentProvider) -> (method: ConnectedPaymentMethod, isProcessing: Bool)? {
+        let methods = (payinMethods + [defaultPayinMethod].compactMap { $0 }).filter { $0.provider == provider }
+        let connected = methods.first(where: { $0.status == .active }) ?? methods.first
+        guard let connected else { return nil }
+        return (connected, methods.contains(where: { $0.status == .pending }))
+    }
 }
 
 /// Describes the member's contract mix, which drives the payments screen layout.
@@ -96,7 +103,7 @@ public enum PaymentLayout: Codable, Equatable, Sendable, Hashable {
 
 extension Sequence where Element == ConnectedPaymentMethod {
     var hasMethodInProgress: Bool {
-        !self.filter({ $0.status == .pending && $0.isDefault == true }).isEmpty
+        contains(where: { $0.status == .pending && $0.isDefault })
     }
 }
 
