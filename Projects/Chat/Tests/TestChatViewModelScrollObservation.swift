@@ -21,6 +21,7 @@ final class TestChatViewModelScrollObservation: XCTestCase {
         model.chatInputVm.showBottomMenu = true
 
         model.observeScrolling(isScrolling)
+        XCTAssertNotNil(model.scrollCancellable, "observeScrolling must store the subscription")
 
         // `subscribe(on: RunLoop.main)` defers both the upstream subscribe and the demand it
         // requests to later run-loop turns, and the subject drops anything sent before that.
@@ -44,7 +45,7 @@ final class TestChatViewModelScrollObservation: XCTestCase {
         let isScrolling = PassthroughSubject<Bool, Never>()
 
         model?.observeScrolling(isScrolling)
-        isScrolling.send(true)
+        XCTAssertNotNil(model?.scrollCancellable, "observeScrolling must store the subscription")
         model = nil
 
         XCTAssertNil(weakModel, "the sink stored on scrollCancellable must not hold the view model")

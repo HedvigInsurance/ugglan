@@ -194,8 +194,10 @@ struct ClaimStepResultView: View {
                             await viewModel?.regret()
                         }
                     },
-                    onClose: {
-                        isEditButtonFocused = true
+                    // Stored on alertVm, which this view's @EnvironmentObject holds strongly, so
+                    // capturing the view here would close a cycle no dismissal breaks.
+                    onClose: { [$isEditButtonFocused] in
+                        $isEditButtonFocused.wrappedValue = true
                     }
                 )
             }
