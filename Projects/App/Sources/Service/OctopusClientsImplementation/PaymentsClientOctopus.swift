@@ -79,7 +79,8 @@ extension PaymentStatusData {
             payoutMethods: payoutMethods,
             availableMethods: availableMethods,
             missingConnection: missingConnection,
-            layout: .init(contractTypes: allContractTypes)
+            layout: .init(contractTypes: allContractTypes),
+            memberPhoneNumber: data.currentMember.phoneNumber
         )
     }
 }
@@ -239,6 +240,31 @@ class hPaymentClientOctopus: hPaymentClient {
             let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayoutMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
+        case let .swishPayin(phoneNumber):
+            let input = OctopusGraphQL.PaymentMethodSetupSwishInput(
+                phoneNumber: phoneNumber
+            )
+            let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayinMutation(input: input)
+            let data = try await octopus.client.mutation(mutation: mutation)!
+            return data.paymentMethodSetupSwishPayin.fragments.paymentMethodSetupOutputFragment
+                .toPaymentSetupResult()
+        }
+    }
+
+    func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        let query = OctopusGraphQL.PaymentMethodSetupStatusQuery(orderId: orderId)
+        guard let result = try await octopus.client.fetch(query: query).paymentMethodSetupStatus else {
+            return .unknown
+        }
+        switch result.status {
+        case .case(.active): return .active
+        case .case(.pending): return .pending
+        case .case(.failed): return .failed
+        default:
+            if let message = result.error?.message {
+                throw PaymentError.missingDataError(message: message)
+            }
+            return .unknown
         }
     }
 
@@ -294,7 +320,7 @@ extension OctopusGraphQL.PaymentMethodSetupOutputFragment {
             default: return .unknown
             }
         }()
-        return PaymentSetupResult(status: status, url: url, errorMessage: error?.message)
+        return PaymentSetupResult(status: status, orderId: orderId, url: url, errorMessage: error?.message)
     }
 }
 

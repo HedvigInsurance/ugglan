@@ -11,6 +11,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public let availableMethods: [AvailablePaymentMethod]
     public let missingConnection: MissingPaymentConnection?
     public let layout: PaymentLayout
+    public let memberPhoneNumber: String?
 
     public init(
         status: PayinMethodStatus,
@@ -21,7 +22,8 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         payoutMethods: [ConnectedPaymentMethod],
         availableMethods: [AvailablePaymentMethod],
         missingConnection: MissingPaymentConnection?,
-        layout: PaymentLayout
+        layout: PaymentLayout,
+        memberPhoneNumber: String? = nil
     ) {
         self.status = status
         self.chargingDay = chargingDay
@@ -32,6 +34,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.defaultPayoutMethod = defaultPayoutMethod
         self.missingConnection = missingConnection
         self.layout = layout
+        self.memberPhoneNumber = memberPhoneNumber
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
@@ -210,15 +213,18 @@ public enum PaymentMethodSetupType: Sendable {
     case trustly
     case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
+    case swishPayin(phoneNumber: String)
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {
     public let status: PaymentSetupStatus
+    public let orderId: String?
     public let url: String?
     public let errorMessage: String?
 
-    public init(status: PaymentSetupStatus, url: String?, errorMessage: String?) {
+    public init(status: PaymentSetupStatus, orderId: String?, url: String?, errorMessage: String?) {
         self.status = status
+        self.orderId = orderId
         self.url = url
         self.errorMessage = errorMessage
     }
