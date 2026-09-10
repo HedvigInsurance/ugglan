@@ -6,30 +6,56 @@ import hCoreUI
 struct PaymentMethodsScreen: View {
     @AppObservedObject private var store: PaymentStore
     @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
+    @EnvironmentObject private var router: NavigationRouter
 
     var body: some View {
-        if let paymentMethods = store.paymentStatusData?.payinMethods {
-            hForm {
-                hSection {
-                    hRadioOptionList(paymentMethods, spacing: .padding8) { method in
-                        PaymentMethodRow(method)
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-                .padding(.top, .padding8)
-            }
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: .padding8) {
-                        hButton(.large, .secondary, content: .init(title: L10n.paymentAddMethodButton)) {
-                            paymentsNavigationVM.showAddPaymentMethod = true
+        if let statusData = store.paymentStatusData {
+            let paymentMethods = statusData.payinMethods
+            if paymentMethods.isEmpty {
+                StateView(
+                    type: .empty,
+                    title: L10n.paymentMethodsTitle,
+                    bodyText: L10n.paymentMethodsEmpty,
+                    formPosition: .center
+                )
+                .hStateViewButtonConfig(
+                    .init(
+                        actionButtonAttachedToBottom: .init(
+                            buttonTitle: L10n.paymentAddMethodButton,
+                            buttonStyle: .secondary,
+                            buttonAction: {
+                                paymentsNavigationVM.showAddPaymentMethod = true
+                            }
+                        )
+                    )
+                )
+            } else {
+                hForm {
+                    hSection {
+                        hRadioOptionList(paymentMethods, spacing: .padding8) { method in
+                            PaymentMethodRow(method) {
+                                router.push(PaymentsRouterAction.paymentMethod(provider: method.provider))
+                            }
                         }
-                        hButton(.large, .ghost, content: .init(title: L10n.paymentChoosePrimaryButton)) {
-                            paymentsNavigationVM.showChooseDefaultPaymentMethod = true
+                    }
+                    .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding8)
+                }
+                .hFormAttachToBottom {
+                    hSection {
+                        VStack(spacing: .padding8) {
+                            hButton(.large, .secondary, content: .init(title: L10n.paymentAddMethodButton)) {
+                                paymentsNavigationVM.showAddPaymentMethod = true
+                            }
+                            if statusData.canChooseDefaultPayinMethod {
+                                hButton(.large, .ghost, content: .init(title: L10n.paymentChoosePrimaryButton)) {
+                                    paymentsNavigationVM.showChooseDefaultPaymentMethod = true
+                                }
+                            }
                         }
                     }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
             }
         }
     }
