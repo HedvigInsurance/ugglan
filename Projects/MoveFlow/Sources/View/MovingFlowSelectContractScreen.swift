@@ -46,14 +46,10 @@ struct MovingFlowSelectContractScreen: View {
     }
 
     var body: some View {
-        ItemPickerScreen(
-            config: itemPickerConfig
-        )
-        .hFieldSize(.small)
-        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
-        .hFormTitle(
-            title: .init(.small, .heading2, L10n.movingEmbarkTitle, alignment: .leading),
-            subTitle: .init(.small, .heading2, L10n.movingFlowBody)
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.movingEmbarkTitle,
+            subtitle: L10n.movingFlowBody
         )
     }
 }

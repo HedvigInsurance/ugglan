@@ -369,7 +369,6 @@ public struct MovingFlowNavigation: View {
 
     func openSelectInsuranceScreen() -> some View {
         MovingFlowSelectContractScreen(navigationVm: movingFlowNavigationVm, router: router)
-            .withAlertDismiss()
     }
 
     func openSelectHousingScreen() -> some View {
