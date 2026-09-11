@@ -526,7 +526,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_APPROVE_TITLE" = "Approve the connection in Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Change phone number";
 "PAYMENT_SWISH_EXPLANATION_BUTTON" = "How recurring payments with Swish work";
+"PAYMENT_SWISH_FAILURE_TITLE" = "Connection failed";
 "PAYMENT_SWISH_SUBTITLE" = "We'll send the connection request to Swish on this number";
+"PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Charged automatically each month";
+"PAYMENT_SWISH_SUCCESS_TITLE" = "Swish is connected";
 "PAYMENT_SWISH_TITLE" = "Confirm your Swish number";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
