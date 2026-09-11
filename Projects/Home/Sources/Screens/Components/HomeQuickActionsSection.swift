@@ -72,23 +72,16 @@ private struct HomeQuickActionTile: View {
             ImpactGenerator.light()
             Task { await onTap() }
         } label: {
-            ZStack {
-                if isLoading {
-                    DotsActivityIndicator(.standard)
-                        .useDarkColor
-                        .transition(.opacity)
-                }
-                VStack(alignment: .leading, spacing: 0) {
-                    action.icon.view
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .accessibilityHidden(true)
-                    Spacer(minLength: .padding6)
-                    hText(action.title, style: .finePrint)
-                }
-                .opacity(isLoading ? 0.6 : 1)
+            VStack(alignment: .leading, spacing: 0) {
+                action.icon.view
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                    .accessibilityHidden(true)
+                Spacer(minLength: .padding6)
+                hText(action.title, style: .finePrint)
             }
+            .opacity(isLoading ? 0.75 : 1)
             .animation(.easeInOut(duration: 0.2), value: isLoading)
             .padding(.padding14)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
