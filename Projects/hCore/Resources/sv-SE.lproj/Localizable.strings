@@ -526,7 +526,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_APPROVE_TITLE" = "Godkänn kopplingen i Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Byt telefonnummer";
 "PAYMENT_SWISH_EXPLANATION_BUTTON" = "Så fungerar återkommande betalningar med Swish";
+"PAYMENT_SWISH_FAILURE_TITLE" = "";
 "PAYMENT_SWISH_SUBTITLE" = "Vi skickar kopplingen till Swish på det här numret";
+"PAYMENT_SWISH_SUCCESS_SUBTITLE" = "";
+"PAYMENT_SWISH_SUCCESS_TITLE" = "";
 "PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
