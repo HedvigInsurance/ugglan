@@ -37,7 +37,7 @@ public struct CrossSellingDetent: View {
             .padding(.top, .padding16)
         }
         .hFormContentPosition(.compact)
-        .configureTitleView(title: L10n.crossSellSubtitle)
+        .configureTitleView(title: L10n.crossSellTitle, subTitle: L10n.crossSellSubtitle)
         .embededInNavigation(
             router: router,
             options: [.navigationType(type: .large), .extendedNavigationWidth],
