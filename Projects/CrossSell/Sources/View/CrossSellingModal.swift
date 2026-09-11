@@ -1,14 +1,21 @@
+import Addons
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct CrossSellingModal: View {
     let crossSells: CrossSells
+    let addons: [AddonBanner]
+    let onAddonTap: (AddonBanner) -> Void
 
     public init(
-        crossSells: CrossSells
+        crossSells: CrossSells,
+        addons: [AddonBanner],
+        onAddonTap: @escaping (AddonBanner) -> Void
     ) {
         self.crossSells = crossSells
+        self.addons = addons
+        self.onAddonTap = onAddonTap
     }
 
     public var body: some View {
@@ -28,6 +35,7 @@ public struct CrossSellingModal: View {
                         }
                     }
                     CrossSellStackComponent(crossSells: crossSells.others)
+                    CrossSellAddonsSection(addons: addons, onAddonTap: onAddonTap)
                 }
                 .padding(.bottom, .padding16)
             }
@@ -48,5 +56,5 @@ extension CrossSellingModal: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingModal(crossSells: .init(recommended: nil, others: []))
+    return CrossSellingModal(crossSells: .init(recommended: nil, others: []), addons: [], onAddonTap: { _ in })
 }
