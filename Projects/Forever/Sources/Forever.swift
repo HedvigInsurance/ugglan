@@ -9,6 +9,7 @@ public struct ForeverView: View {
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @State private var isInfoViewPresented = false
+    @Environment(\.hSecondaryToolbarPlacement) private var infoButtonPlacement
     @State var discountCodeHeight: CGFloat = 0 {
         didSet {
             recalculateHeight()
@@ -42,13 +43,14 @@ public struct ForeverView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(id: "foreverInfoButton", placement: infoButtonPlacement) {
                     SwiftUI.Button {
                         isInfoViewPresented = true
                     } label: {
                         hCoreUIAssets.infoOutlined.view
                             .foregroundColor(hTextColor.Opaque.primary)
                     }
+                    .accessibilityLabel(L10n.voiceoverMoreInfo)
                 }
             }
             .detent(
