@@ -769,14 +769,7 @@ struct HomeTab: View {
             presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { crossSells in
-            CrossSellingModal(
-                crossSells: crossSells,
-                addons: crossSellStore.addonBanners,
-                onAddonTap: { banner in
-                    homeNavigationVm.navBarItems.isNewOfferPresentedModal = nil
-                    presentAddon(for: banner)
-                }
-            )
+            CrossSellingModal(crossSells: crossSells)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
