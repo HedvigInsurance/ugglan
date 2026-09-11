@@ -77,52 +77,62 @@ struct ClaimInputPrototypeScreen: View {
     }
 
     private var mainContent: some View {
-        ZStack(alignment: .bottom) {
-            GeometryReader { proxy in
-                hForm {
-                    VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.steps, id: \.id) { step in
-                            ClaimInputPrototypeStepView(step: step)
-                        }
+        GeometryReader { proxy in
+            hForm {
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(viewModel.steps, id: \.id) { step in
+                        ClaimInputPrototypeStepView(step: step)
                     }
-                    .padding(.horizontal, .padding16)
-                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
+                .padding(.horizontal, .padding16)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
 
-                    if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
-                        Color.clear.frame(height: viewModel.calculatePaddingHeight())
-                    }
+                if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
+                    Color.clear.frame(height: viewModel.calculatePaddingHeight())
                 }
-                .hFormContentPosition(.top)
-                .scrollIndicators(.hidden)
-                .onAppear {
-                    scrollCoordinator.scrollViewHeight = proxy.size.height
-                }
-                .hFormBottomBackgroundColor(.aiPoweredGradient)
-                .onChange(of: proxy.size) { value in
-                    scrollCoordinator.scrollViewHeight = value.height
-                }
-                .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+            }
+            .hFormContentPosition(.top)
+            .scrollIndicators(.hidden)
+            .onAppear {
+                scrollCoordinator.scrollViewHeight = proxy.size.height
+            }
+            .hFormBottomBackgroundColor(.aiPoweredGradient)
+            .onChange(of: proxy.size) { value in
+                scrollCoordinator.scrollViewHeight = value.height
+            }
+            .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                // Record the home-indicator inset once; later the docked input adds to safeAreaInsets.bottom.
+                if scrollCoordinator.scrollViewBottomInset == 0 {
                     scrollCoordinator.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
-                    viewModel.scrollView = scrollView
-                    // Stay detached while the text card (and keyboard) is open – see beginText().
-                    if viewModel.inputMode != .text, scrollView != scrollCoordinator.scrollView {
-                        scrollCoordinator.scrollView = scrollView
-                    }
                 }
-                .hFormAttachToBottom {
-                    if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
+                viewModel.scrollView = scrollView
+                // Stay detached while the text card (and keyboard) is open – see beginText().
+                if viewModel.inputMode != .text, scrollView != scrollCoordinator.scrollView {
+                    scrollCoordinator.scrollView = scrollView
+                }
+            }
+            // The docked input is a bottom safe-area bar, so iOS 26 draws its native progressive blur
+            // (scroll edge effect) under the button row instead of a frosted box.
+            .modifier(
+                ClaimInputPrototypeBottomBar {
+                    if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                         currentStepView
                     }
                 }
-            }
-            .ignoresSafeArea(
-                .keyboard,
-                edges: scrollCoordinator.shouldMergeInputWithContent ? [] : .all
             )
-            if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
-                currentStepView
+            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: viewModel.inputMode != .choose))
+            .hFormAttachToBottom {
+                if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
+                    currentStepView
+                }
             }
         }
+        // The chat ignores the keyboard (like the shipping screen) except while the text card is up,
+        // so the inset card rises with the keyboard (Figma 2.x).
+        .ignoresSafeArea(
+            .keyboard,
+            edges: scrollCoordinator.shouldMergeInputWithContent || viewModel.inputMode == .text ? [] : .all
+        )
     }
 
     private var currentStepView: some View {
@@ -152,10 +162,17 @@ struct ClaimInputPrototypeScreen: View {
         }
         .padding(.bottom, .padding16)
         .background {
-            // Frosted glass behind the docked inputs (1.x and follow-ups). The cards (2.x / 3.x) float on the page.
-            if viewModel.inputMode == .choose || viewModel.inputMode == .select {
+            // iOS 26 draws the native scroll edge effect; earlier systems get a gradient-masked blur.
+            if #unavailable(iOS 26.0), viewModel.inputMode == .choose {
                 BackgroundBlurView()
-                    .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
+                    .mask(
+                        LinearGradient(
+                            colors: [.clear, .black, .black],
+                            startPoint: .top,
+                            endPoint: .init(x: 0.5, y: 0.45)
+                        )
+                    )
+                    .padding(.top, -.padding48)
                     .ignoresSafeArea(.container, edges: .bottom)
             }
         }
@@ -188,6 +205,34 @@ struct ClaimInputPrototypeScreen: View {
         Task {
             try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             isCurrentStepFocused = true
+        }
+    }
+}
+
+// MARK: - Docked input as a bottom bar (iOS 26 safeAreaBar gets the scroll edge effect)
+private struct ClaimInputPrototypeBottomBar<Bar: View>: ViewModifier {
+    @ViewBuilder let bar: () -> Bar
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.safeAreaBar(edge: .bottom, spacing: 0) { bar() }
+        } else {
+            content.safeAreaInset(edge: .bottom, spacing: 0) { bar() }
+        }
+    }
+}
+
+// MARK: - Native progressive blur under the docked input (iOS 26 scroll edge effect)
+private struct ClaimInputPrototypeScrollEdgeEffect: ViewModifier {
+    let isHidden: Bool
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .scrollEdgeEffectStyle(.soft, for: .bottom)
+                .scrollEdgeEffectHidden(isHidden, for: .bottom)
+        } else {
+            content
         }
     }
 }

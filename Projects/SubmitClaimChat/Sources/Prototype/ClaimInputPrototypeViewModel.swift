@@ -154,11 +154,13 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
     }
 
     // MARK: Height bookkeeping (copied from SubmitClaimChatViewModel)
+    /// Room below the last step so it can scroll to the top. The docked input sits in the scroll view's
+    /// safe-area inset (not over the content), so its height is subtracted rather than reserved.
     func calculatePaddingHeight() -> CGFloat {
         let height =
-            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset + scrollCoordinator.topPadding
-            - lastStepContentHeight
-        return max(height, currentStepInputHeight + scrollCoordinator.topPadding)
+            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset - currentStepInputHeight
+            + scrollCoordinator.topPadding - lastStepContentHeight
+        return max(height, scrollCoordinator.topPadding)
     }
 
     private func recalculateStepHeights() {
