@@ -118,6 +118,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
 
     let scrollCoordinator = ClaimChatScrollCoordinator()
     let voiceRecorder = VoiceRecorder()
+    /// The chat's alert host – used for the Ändra confirmation.
+    let alertVm = SubmitClaimChatScreenAlertViewModel()
     var currentVerticalSizeClass: UserInterfaceSizeClass?
     var totalStepsHeight: CGFloat = 0
     var stepHeights: [String: CGFloat] = [:] {

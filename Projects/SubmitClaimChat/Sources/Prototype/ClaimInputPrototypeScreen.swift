@@ -62,6 +62,7 @@ struct ClaimInputPrototypeScreen: View {
                 viewModel.currentVerticalSizeClass = verticalSizeClass
             }
             .addProgressBar(with: $viewModel.progress)
+            .submitClaimChatScreenAlert(viewModel.alertVm)
             .environmentObject(viewModel)
     }
 
@@ -274,24 +275,28 @@ struct ClaimInputPrototypeMessageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            // Figma: 24 pt Hedvig symbol to the left of the message, 8 pt gap.
-            HStack(alignment: .top, spacing: .padding8) {
-                if step.showLoadingAnimation {
-                    ClaimChatLoadingAnimationView(isLoading: $step.isLoaderAnimating)
-                        .frame(width: 24, height: 24)
-                }
-                RevealTextView(
-                    text: step.text,
-                    delay: 1,
-                    animate: step.animateText,
-                    onTextAnimationDone: {
-                        step.isLoaderAnimating = false
-                        viewModel.revealFinished(for: step)
+            // New Claims Flow logic: after an input the question disappears and only the answer stays.
+            if step.answer == nil {
+                // Figma: 24 pt Hedvig symbol to the left of the message, 8 pt gap.
+                HStack(alignment: .top, spacing: .padding8) {
+                    if step.showLoadingAnimation {
+                        ClaimChatLoadingAnimationView(isLoading: $step.isLoaderAnimating)
+                            .frame(width: 24, height: 24)
                     }
-                )
-                .accessibilityAddTraits(.isHeader)
-                .fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: 0)
+                    RevealTextView(
+                        text: step.text,
+                        delay: 1,
+                        animate: step.animateText,
+                        onTextAnimationDone: {
+                            step.isLoaderAnimating = false
+                            viewModel.revealFinished(for: step)
+                        }
+                    )
+                    .accessibilityAddTraits(.isHeader)
+                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                }
+                .transition(.opacity)
             }
 
             HStack {
@@ -309,8 +314,13 @@ struct ClaimInputPrototypeMessageView: View {
                         .hFieldSize(.large)
                         .capsuleShape(true)
                         .hPillAttributes(attributes: [.withChevron])
-                        .onTapGesture {
-                            viewModel.regret(step)
+                        .onTapGesture { [weak viewModel] in
+                            // Same confirmation as the shipping chat (edit-native frame).
+                            viewModel?.alertVm.alertModel = .init(
+                                type: .edit,
+                                message: L10n.claimChatEditExplanation,
+                                action: { viewModel?.regret(step) }
+                            )
                         }
                         .accessibilityAddTraits(.isButton)
                     }
@@ -319,7 +329,6 @@ struct ClaimInputPrototypeMessageView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .fixedSize(horizontal: false, vertical: true)
             }
-            .padding(.top, step.answer == nil ? 0 : .padding16)
             .id("result_\(step.id)")
         }
     }
