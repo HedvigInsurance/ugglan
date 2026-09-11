@@ -13,6 +13,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     }
 
     @Published var taskModel: ClaimIntentStepContentTask
+    @Published var displayText: String?
 
     required init(
         claimIntent: ClaimIntent,
@@ -25,6 +26,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         self.taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         state.showResults = true
+        displayText = taskModel.description
         Task { [weak self] in
             try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
             self?.submitResponse()
@@ -41,6 +43,10 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
                 throw ClaimIntentError.invalidResponse
             }
             try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            Task {
+                await delay(1)
+                displayText = nil
+            }
             taskModel = .init(description: "", isCompleted: true)
             return result
         } catch {
@@ -63,6 +69,13 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             switch claimIntent {
             case let .intent(model):
                 self.claimIntent = model
+                Task {
+                    if displayText != taskModel.description {
+                        displayText = nil
+                    }
+                    await delay(0.4)
+                    displayText = taskModel.description
+                }
             default:
                 break
             }
