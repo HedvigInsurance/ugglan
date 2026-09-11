@@ -86,7 +86,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             state.error = nil
 
             if hasError {
-                await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
+                await delay(ClaimChatConstants.Timing.shortDelay)
             }
             do {
                 try Task.checkCancellation()
@@ -123,7 +123,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             state.isEnabled = true
             state.isLoading = false
         }
-        try? await Task.sleep(seconds: ClaimChatConstants.Timing.skipDelay)
+        try? await Task.sleep(for: .seconds(ClaimChatConstants.Timing.skipDelay))
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
             state.isSkipped = true

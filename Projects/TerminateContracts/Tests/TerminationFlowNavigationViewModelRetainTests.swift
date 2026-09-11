@@ -20,7 +20,7 @@ final class TerminationFlowNavigationViewModelRetainTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: TerminateContractsClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        try await Task.sleep(for: .seconds(0.0000001))
         XCTAssertNil(sut)
         try await super.tearDown()
     }

@@ -30,7 +30,7 @@ struct SubmitClaimSingleSelectView: View {
         .sectionContainerStyle(.transparent)
         .animation(.easeInOut, value: viewModel.selectedOptionId)
         .task {
-            await delay(TimeInterval(ClaimChatConstants.Timing.optionReveal))
+            await delay(ClaimChatConstants.Timing.optionReveal)
             showOptions = true
         }
     }

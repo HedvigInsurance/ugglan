@@ -136,12 +136,9 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
 
     var delay: TimeInterval {
         switch self {
-        case .chat:
-            return 1.5
-        case .travelCertificate, .insuranceEvidence:
-            return 0.5
-        default:
-            return 0
+        case .chat: 1.5
+        case .travelCertificate, .insuranceEvidence: 0.5
+        default: 0
         }
     }
 

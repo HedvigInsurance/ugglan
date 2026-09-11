@@ -303,7 +303,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         fieldId: String,
         query: String
     ) async throws -> FormFieldSearchResult {
-        try await Task.sleep(seconds: 0.5)
+        try await Task.sleep(for: .seconds(0.5))
         let allOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = [
             .init(
                 title: "iPhone 15 Pro",
@@ -340,7 +340,7 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         "Done",
     ]
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
-        try await Task.sleep(seconds: 3)
+        try await Task.sleep(for: .seconds(3))
         let intent = ClaimIntentType.intent(
             model: .init(
                 currentStep: .init(

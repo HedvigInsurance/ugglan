@@ -18,7 +18,7 @@ final class SubmitClaimDeflectMessageStep: ClaimIntentStepHandler {
         self.deflectMessageModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
-            await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
+            await delay(ClaimChatConstants.Timing.shortDelay)
             self?.state.showResults = true
         }
     }

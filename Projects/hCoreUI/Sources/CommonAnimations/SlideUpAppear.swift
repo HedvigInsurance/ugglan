@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 struct SlideUpAppearAnimationModifier: ViewModifier {
-    var delay: Double
+    var delay: TimeInterval
     @State var animateAppearPerformed = false
     @State var height: CGFloat = 0
 
@@ -42,7 +42,7 @@ struct SlideUpAppearAnimationModifier: ViewModifier {
 }
 
 extension View {
-    public func slideUpAppearAnimation(delay: Double = 0.2) -> some View {
+    public func slideUpAppearAnimation(delay: TimeInterval = 0.2) -> some View {
         modifier(SlideUpAppearAnimationModifier(delay: delay))
     }
 }

@@ -126,13 +126,13 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             }
             isAudioInputPresented = false
             Task { [weak voiceRecorder] in
-                await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
+                await delay(ClaimChatConstants.Timing.standardAnimation)
                 voiceRecorder?.isSending = false
             }
             return result
         } catch {
             Task { [weak voiceRecorder] in
-                await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
+                await delay(ClaimChatConstants.Timing.standardAnimation)
                 voiceRecorder?.isSending = false
             }
             throw error

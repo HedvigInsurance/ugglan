@@ -38,7 +38,7 @@ struct VoiceRecordButton: View {
         .onChange(of: countdownNumber) { _ in
             buttonScale = 1.3
             Task {
-                await delay(TimeInterval(ClaimChatConstants.Timing.hapticDelay))
+                await delay(ClaimChatConstants.Timing.hapticDelay)
                 buttonScale = 1.0
             }
         }
@@ -86,7 +86,7 @@ struct VoiceRecordButton: View {
                         await postAccessibilityAnnouncementAndWait("\(number)")
                     }
                 } else {
-                    await delay(TimeInterval(ClaimChatConstants.Timing.countdownStep))
+                    await delay(ClaimChatConstants.Timing.countdownStep)
                 }
                 try Task.checkCancellation()
                 ImpactGenerator.light()
