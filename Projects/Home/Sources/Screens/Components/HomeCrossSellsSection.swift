@@ -9,9 +9,7 @@ struct HomeCrossSellsSection: View {
         if let crossSells, !crossSells.others.isEmpty {
             CrossSellStackComponent(
                 crossSells: crossSells.others,
-                discountAvailable: crossSells.discountAvailable,
-                withHeader: true,
-                headerTitle: L10n.crossSellSubtitle
+                withHeader: false
             )
         }
     }
@@ -25,7 +23,7 @@ struct HomeCrossSellsSection: View {
                     id: "2",
                     title: "Accident Insurance",
                     description: "From 79 SEK/mo.",
-                    buttonTitle: "Save 50%",
+                    buttonTitle: "See price",
                     webActionURL: "",
                     imageUrl: nil,
                     buttonDescription: ""
@@ -36,13 +34,12 @@ struct HomeCrossSellsSection: View {
                     id: "1",
                     title: "Pet Insurance",
                     description: "For your dog or cat",
-                    buttonTitle: "Get price",
+                    buttonTitle: "See price",
                     webActionURL: "",
                     imageUrl: nil,
                     buttonDescription: ""
                 )
-            ],
-            discountAvailable: false
+            ]
         )
     )
 }

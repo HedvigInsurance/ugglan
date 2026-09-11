@@ -9,13 +9,13 @@ public class CrossSellClientDemo: CrossSellClient {
                 id: "1",
                 title: "title",
                 description: "description",
-                buttonTitle: "Save 15%",
+                buttonTitle: "See price",
                 webActionURL: "",
                 imageUrl: nil,
                 buttonDescription: "buttonDescription"
             )
         ]
-        return .init(recommended: nil, others: crossSells, discountAvailable: true)
+        return .init(recommended: nil, others: crossSells)
     }
 
     public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {

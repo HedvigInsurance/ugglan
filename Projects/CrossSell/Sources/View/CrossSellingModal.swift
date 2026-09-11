@@ -29,7 +29,6 @@ public struct CrossSellingModal: View {
                     }
                     CrossSellStackComponent(
                         crossSells: crossSells.others,
-                        discountAvailable: crossSells.discountAvailable,
                         withHeader: crossSells.hasRecommendation
                     )
                 }
@@ -52,5 +51,5 @@ extension CrossSellingModal: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingModal(crossSells: .init(recommended: nil, others: [], discountAvailable: true))
+    return CrossSellingModal(crossSells: .init(recommended: nil, others: []))
 }

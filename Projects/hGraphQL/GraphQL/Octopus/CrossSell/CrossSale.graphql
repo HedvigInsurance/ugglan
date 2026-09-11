@@ -4,7 +4,6 @@ query CrossSell($input: CrossSellInput!) {
 		  otherCrossSells {
 			  ...CrossSellFragment
 		  }
-		  discountAvailable
 		  recommendedAddon {
 			  id
 			  title
