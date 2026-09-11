@@ -94,6 +94,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case autoplayText
         /// Resting, then scrolls to the top of the chat (Figma 1.3 – arrow above the docked input).
         case autoplayScroll
+        /// Voice card in its sending state (Figma 3.6), never completes.
+        case sendingVoice
     }
 
     // MARK: Published UI state
@@ -247,7 +249,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             draftText = Copy.sampleAnswer
             inputMode = .choose
             modeAfterScroll = .text
-        case .voice:
+        case .voice, .sendingVoice:
             inputMode = .choose
             modeAfterScroll = .voice
         case .savedText:
@@ -267,6 +269,10 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
                 if modeAfterScroll == .voice { voiceRecorder.startOver() }
                 withAnimation { inputMode = modeAfterScroll }
+                if state == .sendingVoice {
+                    try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
+                    voiceRecorder.isSending = true
+                }
             }
         }
     }
@@ -433,15 +439,15 @@ enum ClaimInputPrototypeCopy {
         var presetAnswer: ClaimInputPrototypeStep.Answer? = nil
     }
 
+    // Reused Lokalise keys: CHAT_UPLOAD_PRESEND (Skicka), general_cancel_button (Avbryt),
+    // CHAT_INPUT_PLACEHOLDER (Skriv här...), GENERAL.EDIT (Ändra), CLAIM_CHAT_SKIP_STEP (Hoppa över).
+    // The strings below have no key yet – new Lokalise keys needed if the design ships.
     static let navigationTitle = "Claim"
     static let write = "Skriv"
     static let record = "Spela in"
-    static let cancel = "Avbryt"
-    static let save = "Spara"
-    static let edit = "Ändra"
     static let textFieldLabel = "Beskriv vad som hänt"
-    static let textFieldPlaceholder = "Skriv här..."
     static let voiceTitle = "Berätta vad som hänt"
+    static let sending = "Skickar…"
     static let sampleAnswer = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
 
     /// The whole chat, in order. Every question uses the new Skriv · Spela in · Hoppa över input.

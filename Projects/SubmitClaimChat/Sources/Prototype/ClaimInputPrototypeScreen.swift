@@ -256,7 +256,7 @@ struct ClaimInputPrototypeMessageView: View {
                         .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
                     if step.answer != nil, step.isRegrettable {
                         hPill(
-                            text: ClaimInputPrototypeCopy.edit,
+                            text: L10n.General.edit,
                             color: .grey,
                             colorLevel: .two,
                             withBorder: false

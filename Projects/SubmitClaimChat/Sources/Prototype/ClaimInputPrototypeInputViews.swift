@@ -120,9 +120,9 @@ struct ClaimInputPrototypeTextCard: View {
             VStack(alignment: .leading, spacing: .padding4) {
                 hText(Copy.textFieldLabel, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
-                TextField(Copy.textFieldPlaceholder, text: $viewModel.draftText, axis: .vertical)
+                TextField(L10n.chatInputPlaceholder, text: $viewModel.draftText, axis: .vertical)
                     .font(Font(Fonts.fontFor(style: .body1)))
-                    .foregroundColor(hTextColor.Opaque.primary)
+                    .foregroundColor(viewModel.isSaving ? hTextColor.Opaque.secondary : hTextColor.Opaque.primary)
                     .lineLimit(1...6)
                     .focused($isFocused)
                     .disabled(viewModel.isSaving)
@@ -132,11 +132,11 @@ struct ClaimInputPrototypeTextCard: View {
 
             HStack(spacing: .padding8) {
                 Spacer(minLength: 0)
-                hButton(.medium, .secondary, content: .init(title: Copy.cancel)) {
+                hButton(.medium, .secondary, content: .init(title: L10n.generalCancelButton)) {
                     viewModel.cancelInput()
                 }
                 .disabled(viewModel.isSaving)
-                hButton(.medium, .primary, content: .init(title: Copy.save)) {
+                hButton(.medium, .primary, content: .init(title: L10n.chatUploadPresend)) {
                     viewModel.saveText()
                 }
                 .disabled(viewModel.draftText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -151,6 +151,10 @@ struct ClaimInputPrototypeTextCard: View {
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.layoutUpdate)
                 isFocused = true
             }
+        }
+        .onChange(of: viewModel.isSaving) { isSaving in
+            // Figma 2.5: keyboard goes down while saving.
+            if isSaving { isFocused = false }
         }
         .transition(.opacity.combined(with: .move(edge: .bottom)))
     }
@@ -168,9 +172,9 @@ struct ClaimInputPrototypeVoiceCard: View {
                 hText(Copy.voiceTitle)
                     .foregroundColor(titleColor)
                     .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
-                hText(voiceRecorder.formattedTime ?? " ", style: .body1)
+                hText(voiceRecorder.isSending ? Copy.sending : (voiceRecorder.formattedTime ?? " "), style: .body1)
                     .foregroundColor(timerColor)
-                    .accessibilityHidden(true)
+                    .accessibilityHidden(!voiceRecorder.isSending)
             }
             .padding(.top, .padding8)
             .opacity(voiceRecorder.error != nil ? 0 : 1)
@@ -185,14 +189,12 @@ struct ClaimInputPrototypeVoiceCard: View {
                     .multilineTextAlignment(.center)
                     .transition(.opacity)
                 }
-                if voiceRecorder.isSending {
-                    DotsActivityIndicator(.standard)
-                        .useDarkColor
-                }
+                // Figma 3.6: while sending the waveform stays, greyed out, and every tile is disabled.
                 waveformSection
                     .padding(.horizontal, .padding8)
                     .padding(.vertical, .padding64)
-                    .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
+                    .opacity(voiceRecorder.error != nil ? 0 : (voiceRecorder.isSending ? 0.35 : 1))
+                    .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
                     .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                     .accessibilityHidden(
                         voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
@@ -206,7 +208,7 @@ struct ClaimInputPrototypeVoiceCard: View {
                 } else {
                     VoicePlaybackButton()
                 }
-                VoiceSendButton(onTap: { [weak viewModel] in
+                ClaimInputPrototypeSendTile(onTap: { [weak viewModel] in
                     try await viewModel?.sendVoice()
                 })
             }
@@ -236,13 +238,9 @@ struct ClaimInputPrototypeVoiceCard: View {
         .transition(.opacity.combined(with: .move(edge: .bottom)))
     }
 
-    @hColorBuilder
+    /// Figma 3.6: the title stays in ink while sending; only the subtitle and tiles are greyed.
     private var titleColor: some hColor {
-        if !voiceRecorder.isSending {
-            hTextColor.Opaque.primary
-        } else {
-            hTextColor.Opaque.disabled
-        }
+        hTextColor.Opaque.primary
     }
 
     @hColorBuilder
@@ -277,6 +275,79 @@ struct ClaimInputPrototypeVoiceCard: View {
             if !voiceRecorder.isPlaying {
                 voiceRecorder.startPlayback()
             }
+        }
+    }
+}
+
+// MARK: - Skicka tile – VoiceSendButton plus the "Skickar…" sending label from Figma 3.6
+struct ClaimInputPrototypeSendTile: View {
+    let onTap: () async throws -> Void
+    @EnvironmentObject var voiceRecorder: VoiceRecorder
+
+    private var isEnabled: Bool { voiceRecorder.hasRecording && !voiceRecorder.isSending }
+
+    var body: some View {
+        Button {
+            ImpactGenerator.soft()
+            Task {
+                voiceRecorder.error = nil
+                voiceRecorder.isSending = true
+                voiceRecorder.stopPlayback()
+                do {
+                    try await onTap()
+                } catch {
+                    voiceRecorder.isSending = false
+                    voiceRecorder.error = .sendingFailed
+                }
+            }
+        } label: {
+            VStack(spacing: .padding4) {
+                ZStack {
+                    Circle()
+                        .fill(circleColor)
+                        .frame(width: 32, height: 32)
+                    hCoreUIAssets.arrowUp.view
+                        .foregroundColor(iconColor)
+                }
+                .opacity(voiceRecorder.isSending ? 0.4 : 1)
+
+                hText(voiceRecorder.isSending ? Copy.sending : L10n.chatUploadPresend, style: .label)
+                    .foregroundColor(textColor)
+            }
+            .wrapContentForControlButton()
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
+        .accessibilityLabel(L10n.chatUploadPresend)
+        .accessibilityAddTraits(.isButton)
+        .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+        .animation(.defaultSpring, value: voiceRecorder.isSending)
+    }
+
+    @hColorBuilder
+    private var circleColor: some hColor {
+        if voiceRecorder.hasRecording {
+            hSignalColor.Blue.element
+        } else {
+            hSurfaceColor.Translucent.secondary
+        }
+    }
+
+    @hColorBuilder
+    private var iconColor: some hColor {
+        if voiceRecorder.hasRecording {
+            hFillColor.Opaque.white
+        } else {
+            hFillColor.Opaque.tertiary
+        }
+    }
+
+    @hColorBuilder
+    private var textColor: some hColor {
+        if isEnabled {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Opaque.tertiary
         }
     }
 }
