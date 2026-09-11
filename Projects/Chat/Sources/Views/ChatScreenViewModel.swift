@@ -72,7 +72,7 @@ public class ChatMessageViewModel: ObservableObject {
                 isFetchingPreviousMessages = false
             } catch _ {
                 if withAutomaticRetry {
-                    try? await Task.sleep(seconds: 2)
+                    await delay(2)
                     isFetchingPreviousMessages = false
                     await fetchPreviousMessages()
                 } else {

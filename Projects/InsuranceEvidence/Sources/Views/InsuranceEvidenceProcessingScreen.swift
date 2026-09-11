@@ -75,10 +75,10 @@ class ProcessingViewModel: ObservableObject {
         viewState = .loading
         do {
             let minimumTime = Task {
-                try await Task.sleep(seconds: 3)
+                await delay(3)
             }
             let results = try await navigation.service.createInsuranceEvidence(input: input)
-            try await minimumTime.value
+            await minimumTime.value
             insuranceEvidence = results
             viewState = .success
         } catch {

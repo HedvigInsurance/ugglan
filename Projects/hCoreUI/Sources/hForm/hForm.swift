@@ -109,8 +109,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             }
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
-            .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
-                guard let vm else { return }
+            .introspect(.scrollView, on: .iOS(.v13...)) { [vm] scrollView in
                 if scrollView != vm.scrollView {
                     vm.scrollView = scrollView
                     vm.keyboardCancellable =
@@ -130,8 +129,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         }
                 }
             }
-            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-                vm?.vc = vc
+            .introspect(.viewController, on: .iOS(.v13...)) { [vm] vc in
+                vm.vc = vc
             }
         }
     }

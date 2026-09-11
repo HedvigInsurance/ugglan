@@ -12,7 +12,7 @@ public class InsuranceEvidenceClientDemo: InsuranceEvidenceClient {
     }
 
     public func createInsuranceEvidence(input _: InsuranceEvidenceInput) async throws -> InsuranceEvidence {
-        try await Task.sleep(seconds: 1)
+        await delay(1)
         return InsuranceEvidence(
             url: ""
         )

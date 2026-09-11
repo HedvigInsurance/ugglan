@@ -28,7 +28,7 @@ public struct hTextView: View {
         enabled: Bool = true,
         showOnAppear: Binding<Bool> = .constant(false),
         floatingPlaceholder: Bool = false,
-        color: UIColor = hSurfaceColor.Opaque.primary.uiColor(),
+        color: UIColor? = nil,
         onContinue: @escaping (_ text: String) -> Void = { _ in }
     ) {
         self.selectedValue = selectedValue
@@ -40,7 +40,7 @@ public struct hTextView: View {
         self.enabled = enabled
         self._showOnAppear = showOnAppear
         self.floatingPlaceholder = floatingPlaceholder
-        self.color = color
+        self.color = color ?? hSurfaceColor.Opaque.primary.uiColor()
     }
 
     public var body: some View {
@@ -152,7 +152,7 @@ public struct hTextView: View {
             selectedValue = value
             onContinue(value)
             Task {
-                try? await Task.sleep(seconds: 0.5)
+                await delay(0.5)
                 isFocused = true
             }
             vc?.dismiss(animated: true)
@@ -160,7 +160,7 @@ public struct hTextView: View {
         cancelAction.execute = { [weak vc] in
             vc?.dismiss(animated: true)
             Task {
-                try? await Task.sleep(seconds: 0.5)
+                await delay(0.5)
                 isFocused = true
             }
         }
@@ -437,7 +437,7 @@ private class TextView: UITextView, UITextViewDelegate {
         updateHeight()
         Task { [weak self] in
             // Delay to ensure the view is fully laid out before updating height
-            try await Task.sleep(seconds: 0.3)
+            await delay(0.3)
             self?.updateHeight()
         }
     }

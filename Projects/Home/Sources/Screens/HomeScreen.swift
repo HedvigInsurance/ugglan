@@ -121,7 +121,7 @@ class HomeVM: ObservableObject {
     Task {
         let store: HomeStore = globalAppStateContainer.get()
         await store.fetchMemberState()
-        try? await Task.sleep(seconds: 0.3)
+        await delay(0.3)
         store.setMemberContractState(state, contracts: [])
         store.setFutureStatus(futureStatus)
     }

@@ -15,7 +15,7 @@ final class ForeverTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ForeverClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
 
         XCTAssertNil(sut)
     }

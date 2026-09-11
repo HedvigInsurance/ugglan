@@ -90,10 +90,10 @@ class ProcessingViewModel: ObservableObject {
                 )
                 do {
                     let minimumTime = Task {
-                        try await Task.sleep(seconds: 3)
+                        await delay(3)
                     }
                     let url = try await self.service.submitForm(dto: dto)
-                    try await minimumTime.value
+                    await minimumTime.value
 
                     downloadUrl = url
                     viewState = .success

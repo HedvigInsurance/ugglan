@@ -126,7 +126,7 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
         Spacer()
         SubmitClaimFileUploadView(viewModel: model)
             .task { [weak model] in
-                try? await Task.sleep(seconds: 1)
+                await delay(1)
                 model?.fileUploadVm.fileGridViewModel.files
                     .append(
                         .init(

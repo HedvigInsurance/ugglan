@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 final class SubmitClaimDeflectMessageStep: ClaimIntentStepHandler {
@@ -17,7 +18,7 @@ final class SubmitClaimDeflectMessageStep: ClaimIntentStepHandler {
         self.deflectMessageModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
+            await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
             self?.state.showResults = true
         }
     }

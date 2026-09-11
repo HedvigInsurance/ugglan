@@ -9,16 +9,16 @@ struct RevealTextView: View {
     let text: String
     var animate: Bool { _animate && !disableSubmitChatClaimAnimations }
     private let _animate: Bool
-    let delay: Float
+    let initialDelay: TimeInterval
     private var onTextAnimationDone: (() -> Void)
     init(
         text: String,
-        delay: Float,
+        initialDelay: TimeInterval,
         animate: Bool = true,
         onTextAnimationDone: @escaping (() -> Void)
     ) {
         self.text = text
-        self.delay = delay
+        self.initialDelay = initialDelay
         self._animate = animate
         self.onTextAnimationDone = onTextAnimationDone
     }
@@ -48,12 +48,12 @@ struct RevealTextView: View {
 
     private func animateText() {
         Task {
-            try? await Task.sleep(seconds: delay)
+            await delay(initialDelay)
             showDot = false
 
             var characterIndex = 0
-            var elapsedTime: Float = 0
-            let slowModeThreshold: Float = 1.0
+            var elapsedTime = 0.0
+            let slowModeThreshold = 1.0
 
             for textIndex in 0..<text.count {
                 let character = getCharacter(at: textIndex)
@@ -72,7 +72,7 @@ struct RevealTextView: View {
 
                 // Calculate and apply delay
                 let sleepDuration = calculateDelay(for: character, slowMode: isSlowMode)
-                try? await Task.sleep(seconds: sleepDuration)
+                await delay(TimeInterval(sleepDuration))
 
                 if isSlowMode {
                     elapsedTime += sleepDuration
@@ -83,15 +83,15 @@ struct RevealTextView: View {
         }
     }
 
-    private func calculateDelay(for character: String, slowMode: Bool) -> Float {
+    private func calculateDelay(for character: String, slowMode: Bool) -> TimeInterval {
         let isPunctuationOrNewline = [".", "?", "!", "\n"].contains(character)
         if slowMode {
-            let punctuationDelay: Float = isPunctuationOrNewline ? 0.2 : 0
-            let baseDelay: Float = 0.02
+            let punctuationDelay = isPunctuationOrNewline ? 0.2 : 0
+            let baseDelay = 0.02
             return punctuationDelay + baseDelay
         } else {
-            let punctuationDelay: Float = isPunctuationOrNewline ? 0.05 : 0
-            let baseDelay: Float = 0.008
+            let punctuationDelay = isPunctuationOrNewline ? 0.05 : 0
+            let baseDelay = 0.008
             return punctuationDelay + baseDelay
         }
     }
@@ -103,11 +103,11 @@ struct RevealTextView: View {
 
     private func startCharacterFadeIn(at index: Int) {
         let opacitySteps = 20
-        let stepDuration: Float = 0.03
+        let stepDuration = 0.03
 
         Task {
             for step in 0...opacitySteps {
-                try? await Task.sleep(seconds: stepDuration)
+                await delay(stepDuration)
                 visibleCharacters[index] = Double(step) / Double(opacitySteps)
             }
         }
@@ -148,7 +148,7 @@ struct AnimatedTextRenderer: TextRenderer {
 
             Hedvigs Hemförsäkring Max med tillägget Reseskydd Plus belönas med ett av de högsta poängen när Konsumenternas Försäkringsbyrå jämför skyddet hos olika försäkringsbolag. Se hela jämförelsen på konsumenternas.se.
             """,
-        delay: 0,
+        initialDelay: 0,
         onTextAnimationDone: {}
     )
 }

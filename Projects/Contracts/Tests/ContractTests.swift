@@ -10,7 +10,7 @@ final class ContractsTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: FetchContractsClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
 
         XCTAssertNil(sut)
     }

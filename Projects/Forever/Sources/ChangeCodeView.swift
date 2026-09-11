@@ -60,7 +60,7 @@ class ChangeCodeViewModel: ObservableObject {
 
     private func handleOnSave(text: String) async throws {
         try await foreverService.changeCode(code: text)
-        try await foreverVm?.fetchForeverData()
+        await foreverVm?.fetchForeverData()
         router?.push(ForeverRouterActions.success)
     }
 }

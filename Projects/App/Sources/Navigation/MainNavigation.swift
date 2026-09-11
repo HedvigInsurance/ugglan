@@ -302,7 +302,7 @@ class MainNavigationViewModel: ObservableObject {
     @objc func resetBadge() {
         UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
         Task {
-            try await UNUserNotificationCenter.current().setBadgeCount(0)
+            try? await UNUserNotificationCenter.current().setBadgeCount(0)
         }
     }
 

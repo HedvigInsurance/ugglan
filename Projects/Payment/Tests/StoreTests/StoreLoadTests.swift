@@ -1,4 +1,5 @@
 import AppStateContainer
+import TestDependencies
 import XCTest
 
 @testable import Payment

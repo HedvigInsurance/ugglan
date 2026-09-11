@@ -17,7 +17,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: ProfileClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
         XCTAssertNil(sut)
     }
 
@@ -29,10 +29,10 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
-        try await Task.sleep(seconds: 0.3)
+        await delay(0.3)
         let currentValue = model.isUnsubscribed
         await model.toggleSubscription()
-        try await Task.sleep(seconds: 0.3)
+        await delay(0.3)
         assert(model.isLoading == false && model.isUnsubscribed == !currentValue)
     }
 

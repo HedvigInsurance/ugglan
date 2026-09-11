@@ -70,7 +70,7 @@ struct AnalyticsClientOctopus: AnalyticsClient {
             _ = try await octopus.client.mutation(mutation: mutation)
         } catch _ {
             //if fails retry in 1s or return if task is cancelledApolloClient.bundle = Bundle.main
-            try? await Task.sleep(seconds: 1)
+            await delay(1)
             if Task.isCancelled {
                 return
             }

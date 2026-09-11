@@ -10,7 +10,7 @@ public class ForeverNavigationViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var viewState: ProcessingState = .loading
 
-    func fetchForeverData() async throws {
+    func fetchForeverData() async {
         if foreverData == nil {
             withAnimation {
                 viewState = .loading

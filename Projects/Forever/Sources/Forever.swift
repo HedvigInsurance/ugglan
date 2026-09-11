@@ -31,7 +31,7 @@ public struct ForeverView: View {
                 .init(
                     actionButton: .init(buttonAction: {
                         Task {
-                            try await foreverNavigationVm.fetchForeverData()
+                            await foreverNavigationVm.fetchForeverData()
                         }
                     }),
                     dismissButton: nil
@@ -39,7 +39,7 @@ public struct ForeverView: View {
             )
             .onAppear {
                 Task {
-                    try await foreverNavigationVm.fetchForeverData()
+                    await foreverNavigationVm.fetchForeverData()
                 }
             }
             .toolbar {
@@ -89,7 +89,7 @@ public struct ForeverView: View {
             }
             .onPullToRefresh {
                 Task { @MainActor in
-                    try await foreverNavigationVm.fetchForeverData()
+                    await foreverNavigationVm.fetchForeverData()
                 }
             }
         }

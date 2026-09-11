@@ -249,7 +249,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             Task {
-                try await Task.sleep(seconds: 3)
+                await hCore.delay(3)
                 ToolbarOptionType.animateOffer = false
             }
             return ToolbarOptionType.animateOffer

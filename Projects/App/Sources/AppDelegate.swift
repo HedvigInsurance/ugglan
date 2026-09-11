@@ -227,7 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 } else {
                     hasPresentedVC = false
                 }
-                try await Task.sleep(seconds: 0.05)
+                await delay(0.05)
             }
         }
     }

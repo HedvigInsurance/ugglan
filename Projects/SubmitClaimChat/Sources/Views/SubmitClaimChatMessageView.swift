@@ -20,7 +20,7 @@ struct SubmitClaimChatMessageView: View {
                         }
                         RevealTextView(
                             text: text,
-                            delay: 1,
+                            initialDelay: 1,
                             animate: viewModel.state.animateText,
                             onTextAnimationDone: {
                                 viewModel.state.isLoaderAnimating = false

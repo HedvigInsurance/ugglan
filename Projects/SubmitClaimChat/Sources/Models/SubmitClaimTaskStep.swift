@@ -28,7 +28,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         state.showResults = true
         displayText = taskModel.description
         Task { [weak self] in
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
             self?.submitResponse()
         }
     }

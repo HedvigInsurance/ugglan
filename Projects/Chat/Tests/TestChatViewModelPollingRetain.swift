@@ -15,7 +15,7 @@ final class TestChatViewModelPollingRetain: XCTestCase {
     func testStartFetchingNewMessagesDoesNotRetainViewModel() async {
         let mockService = MockData.createMockChatService()
         var model: ChatScreenViewModel? = ChatScreenViewModel(chatService: mockService)
-        weak var weakModel = model
+        weak let weakModel = model
 
         await model?.startFetchingNewMessages()
 

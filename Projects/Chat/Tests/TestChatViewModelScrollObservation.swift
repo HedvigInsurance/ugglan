@@ -41,7 +41,7 @@ final class TestChatViewModelScrollObservation: XCTestCase {
             fetchNewMessages: { .init(conversationId: "", banner: nil) }
         )
         var model: ChatScreenViewModel? = ChatScreenViewModel(chatService: mockService)
-        weak var weakModel = model
+        weak let weakModel = model
         let isScrolling = PassthroughSubject<Bool, Never>()
 
         model?.observeScrolling(isScrolling)

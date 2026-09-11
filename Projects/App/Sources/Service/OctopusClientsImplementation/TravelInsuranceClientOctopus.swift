@@ -40,10 +40,10 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
             let delayTask = Task {
-                try await Task.sleep(seconds: 3)
+                await delay(3)
             }
             let data = try await octopus.client.mutation(mutation: mutation)
-            try await delayTask.value
+            await delayTask.value
 
             if let url = URL(string: data?.travelCertificateCreate.signedUrl) {
                 return url
