@@ -249,6 +249,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CROSS_SELL_BANNER_TEXT" = "Populärt val";
 "CROSS_SELL_BUTTON" = "Se ditt pris";
 "CROSS_SELL_SUBTITLE" = "Upptäck mer skydd";
+"CROSS_SELL_TITLE" = "För dig";
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Aktiv";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "Uppdateras %1$@";
