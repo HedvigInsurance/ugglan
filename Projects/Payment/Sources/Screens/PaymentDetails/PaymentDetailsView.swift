@@ -4,16 +4,16 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentDetailsView: View {
+public struct PaymentDetailsView: View {
     private let data: PaymentData
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: NavigationRouter
 
-    init(data: PaymentData) {
+    public init(data: PaymentData) {
         self.data = data
     }
 
-    var body: some View {
+    public var body: some View {
         hForm {
             VStack(spacing: .padding16) {
                 contractsSection

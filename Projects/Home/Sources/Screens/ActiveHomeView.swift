@@ -178,6 +178,7 @@ private struct TopFadeMask: View {
         .padding(.bottom, -bottomOverscrollExtension)
     }
 }
+
 private struct HomeNavigationBar: View {
     @AppObservedObject private var homeStore: HomeStore
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
@@ -212,7 +213,7 @@ private struct HomeNavigationBar: View {
                     NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
                 case .firstVet:
                     navigationVm?.quickActionsVm
-                        .perform(.firstVet(partners: homeStore.quickActions.getFirstVetPartners ?? []))
+                        .perform(.firstVet(partners: homeStore.quickActions.firstVetPartners ?? []))
                 case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
                 case .travelCertificate, .insuranceEvidence:
                     break
@@ -224,6 +225,19 @@ private struct HomeNavigationBar: View {
             button.glassEffect(.regular.interactive(), in: Circle())
         } else {
             button
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func disableScrollClipCompat() -> some View {
+        if #available(iOS 17.0, *) {
+            self.scrollClipDisabled()
+        } else {
+            self.introspect(.scrollView, on: .iOS(.v16)) { scrollView in
+                scrollView.clipsToBounds = false
+            }
         }
     }
 }
@@ -243,6 +257,7 @@ private struct HomeNavigationBar: View {
     store.setFutureStatus(.none)
     Task {
         await store.fetchMemberState()
+        await store.fetchQuickActions()
         store.setMemberContractState(
             .active,
             contracts: [
@@ -259,12 +274,6 @@ private struct HomeNavigationBar: View {
 }
 
 #Preview {
-    setUpActiveHomeViewPreview()
-    return ActiveHomeView()
-        .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("In tab bar") {
     setUpActiveHomeViewPreview()
 
     return TabView {

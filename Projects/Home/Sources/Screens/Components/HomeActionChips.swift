@@ -14,9 +14,7 @@ struct HomeActionChips: View {
         ScrollView(.horizontal, showsIndicators: false) {
             chipsRow
         }
-        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-            scrollView.clipsToBounds = false
-        }
+        .disableScrollClipCompat()
     }
 
     private var chipsRow: some View {

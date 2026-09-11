@@ -70,6 +70,18 @@ public class HomeNavigationViewModel: ObservableObject {
         }
     }
 
+    public func presentUpcomingPayment() async {
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        await paymentStore.load(forceUpdate: true)
+        if let error = paymentStore.loadPaymentDataError {
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: error))
+        } else if let upcomingPayment = paymentStore.paymentData {
+            isUpcomingPaymentPresented = upcomingPayment
+        } else {
+            Toasts.shared.displayToastBar(toast: .init(type: .info, text: L10n.paymentsNoPaymentsInProgress))
+        }
+    }
+
     public var router = NavigationRouter()
     public let quickActionsVm = QuickActionsViewModel()
 
@@ -77,6 +89,8 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isHelpCenterPresented = false
     @Published public var isPayoutMethodPresented = false
+    @Published public var isForeverPresented = false
+    @Published public var isUpcomingPaymentPresented: PaymentData?
 
     @Published public var navBarItems = NavBarItems()
 

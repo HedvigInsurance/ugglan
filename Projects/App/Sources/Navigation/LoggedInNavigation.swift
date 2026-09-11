@@ -793,12 +793,31 @@ struct HomeTab: View {
         )
         .detent(
             presented: $homeNavigationVm.isPayoutMethodPresented,
-            presentationStyle: .detent(
-                style: [.large]),
+            presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop])
         ) {
             PayoutNavigation()
                 .environmentObject(loggedInVm.paymentsNavigationVm)
+        }
+        .detent(
+            presented: $homeNavigationVm.isForeverPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) {
+            ForeverNavigation(useOwnNavigation: false)
+                .navigationTitle(L10n.ReferralsInfoSheet.headline)
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: ForeverNavigation.self))
+        }
+        .detent(
+            item: $homeNavigationVm.isUpcomingPaymentPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant([.alwaysOpenOnTop])
+        ) { upcomingPaymentData in
+            PaymentDetailsView(data: upcomingPaymentData)
+                .navigationTitle(L10n.paymentsUpcomingPayment)
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
         }
     }
 

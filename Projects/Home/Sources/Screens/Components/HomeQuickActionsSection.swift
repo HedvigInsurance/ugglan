@@ -1,11 +1,15 @@
 import SubmitClaimChat
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
+private let tileWidth: CGFloat = 160
+
 struct HomeQuickActionsSection: View {
-    let quickActions: [QuickAction]
+    let quickActions: [HomeQuickAction]
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @State private var actionInFlight: HomeQuickAction?
 
     var body: some View {
         if !quickActions.isEmpty {
@@ -15,58 +19,71 @@ struct HomeQuickActionsSection: View {
                     .sectionContainerStyle(.transparent)
                 tiles
             }
+            .disabled(actionInFlight != nil)
         }
     }
 
-    @ViewBuilder private var tiles: some View {
-        HStack(spacing: .padding8) {
-            ForEach(quickActions.prefix(3), id: \.displayTitle) { action in
-                tile(action)
-                    .frame(maxWidth: .infinity)
+    private var tiles: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: .padding8) {
+                ForEach(quickActions) { action in
+                    HomeQuickActionTile(
+                        action: action,
+                        isLoading: actionInFlight == action
+                    ) { await perform(action) }
+                    .frame(width: tileWidth)
+                }
             }
-            ForEach(0..<max(0, 3 - quickActions.count), id: \.self) { _ in
-                Color.clear
-                    .frame(maxWidth: .infinity)
-            }
+            .padding(.horizontal, .padding16)
+            .fixedSize(horizontal: false, vertical: true)
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.horizontal, .padding16)
+        .disableScrollClipCompat()
     }
 
-    private func tile(_ action: QuickAction) -> some View {
-        QuickActionTile(action: action) { perform(action) }
-    }
-
-    private func perform(_ action: QuickAction) {
+    private func perform(_ action: HomeQuickAction) async {
+        guard actionInFlight == nil else { return }
+        actionInFlight = action
+        defer { actionInFlight = nil }
         log.addUserAction(
             type: .click,
             name: "home quick action",
             attributes: ["action": action.id]
         )
-        navigationVm.quickActionsVm.perform(action)
+
+        switch action {
+        case let .editInsurance(actions): navigationVm.quickActionsVm.perform(.editInsurance(actions: actions))
+        case .changeAddress: navigationVm.quickActionsVm.perform(.changeAddress)
+        case .travelCertificate: navigationVm.quickActionsVm.perform(.travelInsurance)
+        case let .sickAbroad(deflection): navigationVm.quickActionsVm.perform(.sickAbroad(deflection: deflection))
+        case .upgradeCoverage: navigationVm.quickActionsVm.perform(.upgradeCoverage)
+        case .inviteFriend: navigationVm.isForeverPresented = true
+        case .upcomingPayment: await navigationVm.presentUpcomingPayment()
+        }
     }
 }
 
-private struct QuickActionTile: View {
-    let action: QuickAction
-    let onTap: () -> Void
+private struct HomeQuickActionTile: View {
+    let action: HomeQuickAction
+    let isLoading: Bool
+    let onTap: () async -> Void
 
     var body: some View {
         Button {
-            ImpactGenerator.soft()
-            onTap()
+            ImpactGenerator.light()
+            Task { await onTap() }
         } label: {
-            VStack(alignment: .leading, spacing: .padding6) {
+            VStack(alignment: .leading, spacing: 0) {
                 action.icon.view
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(hFillColor.Opaque.primary)
                     .accessibilityHidden(true)
-                hText(action.homeDisplayTitle ?? action.displayTitle, style: .label)
+                Spacer(minLength: .padding6)
+                hText(action.title, style: .finePrint)
             }
-            .padding(.vertical, .padding14)
-            .padding(.horizontal, .padding10)
+            .opacity(isLoading ? 0.75 : 1)
+            .animation(.easeInOut(duration: 0.2), value: isLoading)
+            .padding(.padding14)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background {
                 RoundedRectangle(cornerRadius: .cornerRadiusXL)
@@ -79,66 +96,43 @@ private struct QuickActionTile: View {
             .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
             .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(HomeQuickActionTileStyle())
         .accessibilityElement(children: .combine)
-        .accessibilityHint(action.displaySubtitle)
+        .accessibilityAddTraits(.isButton)
     }
 }
 
-@MainActor
-extension QuickAction {
-    fileprivate var icon: ImageAsset {
-        switch self {
-        case .editInsurance: hCoreUIAssets.settings
-        case .changeAddress: hCoreUIAssets.reload
-        case .travelInsurance: hCoreUIAssets.travel
-        case .connectPayments: hCoreUIAssets.payments
-        case .firstVet: hCoreUIAssets.firstVet
-        case .sickAbroad: hCoreUIAssets.infoOutlined
-        case .editCoInsured: hCoreUIAssets.id
-        case .editCoOwners: hCoreUIAssets.id
-        case .upgradeCoverage: hCoreUIAssets.shieldOutlined
-        case .cancellation: hCoreUIAssets.close
-        case .removeAddons: hCoreUIAssets.minus
-        }
+private struct HomeQuickActionTileStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.75 : 1)
     }
 }
 
-#Preview("Three actions") {
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
 
+    let previewEditActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .upgradeCoverage])
+    let previewDeflection = Deflection(
+        title: nil,
+        content: .init(title: "", description: ""),
+        partners: [],
+        infoText: nil,
+        warningText: nil,
+        questions: [],
+        linkOnlyPartners: [],
+        buttonTitle: ""
+    )
     return HomeQuickActionsSection(
         quickActions: [
-            .editInsurance(actions: .init(quickActions: [.editCoInsured, .upgradeCoverage])),
+            .editInsurance(previewEditActions),
             .changeAddress,
-            .travelInsurance,
+            .travelCertificate,
+            .sickAbroad(previewDeflection),
+            .upgradeCoverage,
+            .inviteFriend,
+            .upcomingPayment,
         ]
     )
     .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("Two actions") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(
-        quickActions: [
-            .changeAddress,
-            .travelInsurance,
-        ]
-    )
-    .environmentObject(HomeNavigationViewModel())
-}
-
-#Preview("Three actions - accessibility3") {
-    Localization.Locale.currentLocale.send(.en_SE)
-
-    return HomeQuickActionsSection(
-        quickActions: [
-            .editInsurance(actions: .init(quickActions: [.editCoInsured, .upgradeCoverage])),
-            .changeAddress,
-            .travelInsurance,
-        ]
-    )
-    .environmentObject(HomeNavigationViewModel())
-    .environment(\.dynamicTypeSize, .accessibility3)
 }
