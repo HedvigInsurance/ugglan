@@ -4,25 +4,16 @@ import hCoreUI
 
 public struct CrossSellStackComponent: View {
     let crossSells: [CrossSell]
-    let withHeader: Bool
-    public init(crossSells: [CrossSell], withHeader: Bool) {
+    public init(crossSells: [CrossSell]) {
         self.crossSells = crossSells
-        self.withHeader = withHeader
     }
     public var body: some View {
-        let content = hSection {
+        hSection {
             VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
                     CrossSellingItem(crossSell: crossSell)
                         .transition(.opacity)
                 }
-            }
-        }
-        Group {
-            if withHeader {
-                content.withHeader(title: L10n.InsuranceTab.CrossSells.title)
-            } else {
-                content
             }
         }
         .sectionContainerStyle(.transparent)
@@ -51,7 +42,6 @@ public struct CrossSellStackComponent: View {
                 imageUrl: nil,
                 buttonDescription: "button"
             ),
-        ],
-        withHeader: true
+        ]
     )
 }

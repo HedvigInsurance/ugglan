@@ -7,7 +7,7 @@ struct OnboardingCrossSellScreen: View {
     @EnvironmentObject var vm: OnboardingNavigationViewModel
     var body: some View {
         hForm {
-            CrossSellStackComponent(crossSells: vm.crossSells, withHeader: false)
+            CrossSellStackComponent(crossSells: vm.crossSells)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .hFormTitle(
