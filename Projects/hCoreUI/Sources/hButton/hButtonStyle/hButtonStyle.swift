@@ -42,7 +42,7 @@ public struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(hButtonFilledBackground(configuration: configuration))
-        .buttonCornerModifier(.cornerRadiusRounded, withBorder: withBorder)
+        .buttonCornerModifier(withBorder: withBorder)
     }
 
     // content

@@ -19,7 +19,7 @@ struct CrossSellDiscountProgressComponent: View {
                     ForEach(1..<4) { column in
                         VStack(spacing: 4) {
                             ZStack {
-                                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                                Capsule()
                                     .fill(hSurfaceColor.Opaque.secondary)
                                 if (column <= numberOfInsurances + 1) {
                                     AnimatedProgressView(orderOfExecution: column, pulse: column > numberOfInsurances)
@@ -76,11 +76,11 @@ private struct AnimatedProgressView: View {
     var body: some View {
         GeometryReader { geo in
             if pulse {
-                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                Capsule()
                     .fill(hSignalColor.Green.element.opacity(animationProgress))
                     .scaleEffect(x: 1, y: 1 + animationProgress / 4)
             } else {
-                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                Capsule()
                     .fill(hSignalColor.Green.element)
                     .mask(alignment: .leading) {
                         Rectangle()

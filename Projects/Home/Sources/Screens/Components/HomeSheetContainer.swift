@@ -23,8 +23,8 @@ struct HomeSheetContainer: View {
 
     private var surfaceShape: UnevenRoundedRectangle {
         UnevenRoundedRectangle(
-            topLeadingRadius: .cornerRadiusXXXL,
-            topTrailingRadius: .cornerRadiusXXXL
+            topLeadingRadius: 20,
+            topTrailingRadius: 20
         )
     }
 
