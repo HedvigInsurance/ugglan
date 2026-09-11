@@ -216,17 +216,19 @@ struct ContractTable: View {
                         let contractInfo = store.getAddonContractInfosFor(contractIds: banner.contractIds)
                         let input = ChangeAddonInput(addonSource: .insurances, contractInfos: contractInfo)
 
-                        AddonCardView(
-                            openAddon: {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    contractsNavigationVm.isAddonPresented = input
-                                }
-                            },
-                            addon: banner
-                        )
-                        .hButtonIsLoading(
-                            contractsNavigationVm.isAddonPresented?.contractInfos == input.contractInfos
-                        )
+                        CrossSellRow(
+                            title: banner.displayTitle,
+                            subtitle: banner.displayDescription,
+                            buttonTitle: L10n.crossSellSeePrice,
+                            variant: .secondary,
+                            isLoading: contractsNavigationVm.isAddonPresented?.contractInfos
+                                == input.contractInfos,
+                            pillow: { AddonPillowView(type: banner.addonType) }
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                contractsNavigationVm.isAddonPresented = input
+                            }
+                        }
                     }
                 }
             }

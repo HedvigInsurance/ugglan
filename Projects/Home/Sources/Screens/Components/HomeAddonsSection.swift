@@ -21,7 +21,7 @@ struct HomeAddonsSection: View {
                         CrossSellRow(
                             title: banner.displayTitle,
                             subtitle: banner.displayDescription,
-                            buttonTitle: L10n.homeAddonsReadMoreButton,
+                            buttonTitle: L10n.crossSellSeePrice,
                             variant: .secondary,
                             isLoading: navigationVm.isAddonPresented?.contractInfos == input.contractInfos,
                             pillow: { AddonPillowView(type: banner.addonType) }
