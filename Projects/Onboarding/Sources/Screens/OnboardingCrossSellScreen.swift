@@ -1,5 +1,4 @@
 import CrossSell
-import Kingfisher
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +7,7 @@ struct OnboardingCrossSellScreen: View {
     @EnvironmentObject var vm: OnboardingNavigationViewModel
     var body: some View {
         hForm {
-            CrossSellStackComponent(crossSells: vm.crossSells, discountAvailable: false, withHeader: false)
+            CrossSellStackComponent(crossSells: vm.crossSells, withHeader: false)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .hFormTitle(
@@ -33,35 +32,6 @@ struct OnboardingCrossSellScreen: View {
         .task {
             await vm.fetchCrossSells()
         }
-    }
-}
-
-private struct OnboardingCrossSellRow: View {
-    let crossSell: CrossSell
-
-    var body: some View {
-        HStack(spacing: .padding16) {
-            KFImage(crossSell.imageUrl)
-                .placeholder {
-                    hCoreUIAssets.bigPillowHome.view
-                        .resizable()
-                        .frame(width: 48, height: 48)
-                }
-                .fade(duration: 0.25)
-                .resizable()
-                .frame(width: 48, height: 48)
-                .aspectRatio(contentMode: .fill)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: .padding2) {
-                hText(crossSell.title, style: .body1)
-                hText(crossSell.description, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .accessibilityElement(children: .combine)
     }
 }
 

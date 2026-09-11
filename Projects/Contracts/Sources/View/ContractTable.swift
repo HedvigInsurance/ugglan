@@ -64,7 +64,7 @@ struct ContractTable: View {
                     )
                 if !showTerminated {
                     VStack(spacing: .padding8) {
-                        CrossSellingView(withHeader: true)
+                        CrossSellingView()
                             .padding(.top, .padding8)
                         addonBannersView
                         movingToANewHomeView

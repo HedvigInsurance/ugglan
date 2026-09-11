@@ -5,7 +5,6 @@ import hCoreUI
 
 struct CrossSellingItem: View {
     let crossSell: CrossSell
-    let discountAvailable: Bool
     @State private var isCrossSellLoading = false
 
     func openExternal() {
@@ -22,9 +21,8 @@ struct CrossSellingItem: View {
             title: crossSell.title,
             subtitle: crossSell.description,
             buttonTitle: crossSell.buttonTitle,
-            variant: discountAvailable ? .primaryAlt : .secondary,
+            variant: .secondary,
             isLoading: isCrossSellLoading,
-            accessibilityAction: L10n.crossSellGetPrice,
             pillow: { Pillow(imageUrl: crossSell.imageUrl) }
         ) {
             openExternal()
@@ -49,11 +47,10 @@ struct CrossSellingItem: View {
             id: "id",
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
-            buttonTitle: "Save 50%",
+            buttonTitle: "See price",
             webActionURL: "",
             imageUrl: nil,
             buttonDescription: "button description"
-        ),
-        discountAvailable: true
+        )
     )
 }
