@@ -1,4 +1,5 @@
 import AppStateContainer
+import AutomaticLog
 import Foundation
 import UserNotifications
 import hCore
@@ -123,9 +124,10 @@ public struct PartnerData: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+@Loggable
 public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
-    let eurobonusNumber: String?
+    @Masked let eurobonusNumber: String?
     public init(eligible: Bool, eurobonusNumber: String?) {
         self.eligible = eligible
         self.eurobonusNumber = eurobonusNumber
