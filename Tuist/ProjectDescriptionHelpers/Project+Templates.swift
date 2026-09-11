@@ -15,7 +15,8 @@ extension Project {
         targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
-        sdks: [String] = []
+        sdks: [String] = [],
+        exampleScripts: [TargetScript] = []
     ) -> Project {
         let settings: [String: SettingValue] = ["SWIFT_VERSION": swiftVersion]
         let frameworkConfigurations: [Configuration] = [
@@ -187,6 +188,7 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
+                scripts: exampleScripts,
                 dependencies: [
                     [
                         .target(name: "\(name)"),
