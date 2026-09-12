@@ -249,6 +249,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CROSS_SELL_BANNER_TEXT" = "Popular choice";
 "CROSS_SELL_BUTTON" = "See your price";
 "CROSS_SELL_SUBTITLE" = "Discover more coverage";
+"CROSS_SELL_TITLE" = "For you";
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Active";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "To be updated %1$@";
@@ -506,7 +507,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
 "PAYMENTS_VIEW_PAYMENT" = "View payment";
 "PAYMENT_ADD_METHOD_BUTTON" = "Add payment method";
+"PAYMENT_CHANGE_METHOD_BUTTON" = "Change payment method";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Change primary method";
+"PAYMENT_CONFIRM_PRIMARY_WARNING" = "Your next payment will be drawn from %1$@. Claims payouts will also be sent to this account.";
 "PAYMENT_CONNECT_SUBTITLE" = "Add a new payment method for your insurance";
 "PAYMENT_CONNECT_TITLE" = "Connect payment";
 "PAYMENT_HISTORY_TITLE" = "Payment history";
@@ -839,6 +842,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.submitted" = "Submitted";
 "claim_status_detail.submitted_message" = "Your message";
 "claims.alert.body" = "If you exit, you'll go back to the start page and your inputted data will be lost.";
+"claims_record" = "Record";
+"claims_write" = "Write";
 "cross_sell.info.faq_chat_button" = "Contact us";
 "cross_sell_get_price" = "Get price";
 "cross_sell_see_price" = "See price";

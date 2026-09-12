@@ -249,6 +249,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CROSS_SELL_BANNER_TEXT" = "Populärt val";
 "CROSS_SELL_BUTTON" = "Se ditt pris";
 "CROSS_SELL_SUBTITLE" = "Upptäck mer skydd";
+"CROSS_SELL_TITLE" = "För dig";
 "DASHBOARD_INSURANCE_STATUS_ACTIVE" = "Aktiv";
 /* Figma */
 "DASHBOARD_INSURANCE_STATUS_ACTIVE_UPDATE_DATE" = "Uppdateras %1$@";
@@ -506,7 +507,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_UPCOMING_PAYMENT" = "Kommande betalning";
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_ADD_METHOD_BUTTON" = "Lägg till betalningsmetod";
+"PAYMENT_CHANGE_METHOD_BUTTON" = "";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Välj förvald metod";
+"PAYMENT_CONFIRM_PRIMARY_WARNING" = "Din nästa betalning dras från %1$@. Utbetalningar skickas också till detta konto.";
 "PAYMENT_CONNECT_SUBTITLE" = "Lägg till en ny betalningsmetod för din försäkring";
 "PAYMENT_CONNECT_TITLE" = "Koppla betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
@@ -839,6 +842,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim_status_detail.submitted" = "Inskickat";
 "claim_status_detail.submitted_message" = "Ditt meddelande";
 "claims.alert.body" = "Om du avslutar går du tillbaka till startsidan och dina inmatade uppgifter kommer att gå förlorade.";
+"claims_record" = "Spela in";
+"claims_write" = "Skriv";
 "cross_sell.info.faq_chat_button" = "Kontakta oss";
 "cross_sell_get_price" = "Få pris";
 "cross_sell_see_price" = "Se pris";
