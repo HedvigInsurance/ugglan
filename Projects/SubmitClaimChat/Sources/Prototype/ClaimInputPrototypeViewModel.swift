@@ -96,6 +96,12 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case autoplayScroll
         /// Voice card in its sending state (Figma 3.6), never completes.
         case sendingVoice
+        /// Records for a few seconds with the real recorder, stops, then sends.
+        case autoplayVoice
+        /// Saved text, then Ändra on it after a moment (card reopens prefilled).
+        case autoplayRegret
+        /// Resting, then Hoppa över.
+        case autoplaySkip
     }
 
     // MARK: Published UI state
@@ -156,13 +162,13 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
     }
 
     // MARK: Height bookkeeping (copied from SubmitClaimChatViewModel)
-    /// Room below the last step so it can scroll to the top. The docked input sits in the scroll view's
-    /// safe-area inset (not over the content), so its height is subtracted rather than reserved.
+    /// Room below the last step so it can always scroll to the top, whatever the docked input's height
+    /// (same reservation as the shipping chat; a taller card must not clamp the scroll and cover the question).
     func calculatePaddingHeight() -> CGFloat {
         let height =
-            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset - currentStepInputHeight
-            + scrollCoordinator.topPadding - lastStepContentHeight
-        return max(height, scrollCoordinator.topPadding)
+            scrollCoordinator.scrollViewHeight - scrollCoordinator.scrollViewBottomInset + scrollCoordinator.topPadding
+            - lastStepContentHeight
+        return max(height, currentStepInputHeight + scrollCoordinator.topPadding)
     }
 
     private func recalculateStepHeights() {
@@ -209,6 +215,33 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 try? await Task.sleep(seconds: 1.2)
                 saveText()
             }
+        case .autoplayVoice:
+            jump(to: .resting)
+            pendingTask = Task {
+                try? await Task.sleep(seconds: 1.5)
+                beginVoice()
+                try? await Task.sleep(seconds: 1.5)
+                _ = await voiceRecorder.startRecording()
+                try? await Task.sleep(seconds: 6)
+                voiceRecorder.stopRecording()
+                try? await Task.sleep(seconds: 2)
+                voiceRecorder.isSending = true
+                try? await sendVoice()
+            }
+        case .autoplayRegret:
+            jump(to: .savedText)
+            pendingTask = Task {
+                try? await Task.sleep(seconds: 4)
+                if let step = steps.first(where: { $0.scriptIndex == Copy.descriptionIndex }) {
+                    regret(step)
+                }
+            }
+        case .autoplaySkip:
+            jump(to: .resting)
+            pendingTask = Task {
+                try? await Task.sleep(seconds: 2)
+                skip()
+            }
         case .autoplayScroll:
             // Deep into the chat: description + two follow-ups answered, third follow-up waiting.
             jump(to: .savedText)
@@ -247,7 +280,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         guard let description = append(scriptIndex: Copy.descriptionIndex, animated: false) else { return }
         var modeAfterScroll: InputMode = .choose
         switch state {
-        case .resting, .autoplayText, .autoplayScroll:
+        case .resting, .autoplayText, .autoplayScroll, .autoplayVoice, .autoplayRegret, .autoplaySkip:
             inputMode = .choose
         case .text:
             draftText = Copy.sampleAnswer
@@ -310,8 +343,16 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
     }
 
     func beginVoice() {
+        // Same as Skriv: scroll the question to the top first so the card doesn't cover it.
         voiceRecorder.startOver()
-        withAnimation { inputMode = .voice }
+        if let step = currentStep {
+            scrollTarget = .init(id: step.id, anchor: .top)
+        }
+        pendingTask = Task {
+            try? await Task.sleep(seconds: Copy.scrollBeforeCardDelay)
+            guard !Task.isCancelled else { return }
+            withAnimation { inputMode = .voice }
+        }
     }
 
     /// Re-attaches the scroll coordinator after the text card has closed.
@@ -323,6 +364,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
     func cancelInput() {
         reattachScrollCoordinator()
         UIApplication.dismissKeyboard()
+        // Closing mid-countdown: clear the flag the countdown checks before it would start recording.
+        voiceRecorder.isCountingDown = false
         voiceRecorder.stopRecording()
         voiceRecorder.stopPlayback()
         withAnimation { inputMode = .choose }

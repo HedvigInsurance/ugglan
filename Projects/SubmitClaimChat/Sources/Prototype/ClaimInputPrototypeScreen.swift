@@ -121,7 +121,8 @@ struct ClaimInputPrototypeScreen: View {
                     }
                 }
             )
-            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: viewModel.inputMode != .choose))
+            // The docked area is transparent: no frosted box and no scroll edge effect.
+            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: true))
             .hFormAttachToBottom {
                 if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
                     currentStepView
@@ -162,21 +163,6 @@ struct ClaimInputPrototypeScreen: View {
             }
         }
         .padding(.bottom, .padding16)
-        .background {
-            // iOS 26 draws the native scroll edge effect; earlier systems get a gradient-masked blur.
-            if #unavailable(iOS 26.0), viewModel.inputMode == .choose {
-                BackgroundBlurView()
-                    .mask(
-                        LinearGradient(
-                            colors: [.clear, .black, .black],
-                            startPoint: .top,
-                            endPoint: .init(x: 0.5, y: 0.45)
-                        )
-                    )
-                    .padding(.top, -.padding48)
-                    .ignoresSafeArea(.container, edges: .bottom)
-            }
-        }
         .animation(.default, value: viewModel.inputMode)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
     }
@@ -229,8 +215,8 @@ private struct ClaimInputPrototypeScrollEdgeEffect: ViewModifier {
 
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
+            // safeAreaBar gets an automatic edge effect on iOS 26 – hide it explicitly when not wanted.
             content
-                .scrollEdgeEffectStyle(.soft, for: .bottom)
                 .scrollEdgeEffectHidden(isHidden, for: .bottom)
         } else {
             content

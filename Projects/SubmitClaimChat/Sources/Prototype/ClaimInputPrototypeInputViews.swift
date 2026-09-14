@@ -202,12 +202,16 @@ struct ClaimInputPrototypeVoiceCard: View {
             }
 
             HStack(spacing: .padding4) {
-                VoiceStartOverButton()
-                if !voiceRecorder.hasRecording {
-                    VoiceRecordButton()
-                } else {
-                    VoicePlaybackButton()
+                // Figma 3.6: every tile reads disabled while sending.
+                Group {
+                    VoiceStartOverButton()
+                    if !voiceRecorder.hasRecording {
+                        VoiceRecordButton()
+                    } else {
+                        VoicePlaybackButton()
+                    }
                 }
+                .opacity(voiceRecorder.isSending ? 0.4 : 1)
                 ClaimInputPrototypeSendTile(onTap: { [weak viewModel] in
                     try await viewModel?.sendVoice()
                 })
