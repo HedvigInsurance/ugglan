@@ -106,6 +106,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case autoplayShort
         /// Skriv → a long multi-paragraph answer → Skicka (bug report: next question / input didn't load).
         case autoplayLong
+        /// Two steps for a recording: text answer, then a voice answer on the next question.
+        case autoplayTour
         /// Saved text → Ändra → the card reopens with the text → Skicka again.
         case autoplayEditResend
     }
@@ -250,6 +252,31 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 try? await Task.sleep(seconds: 2)
                 skip()
             }
+        case .autoplayTour:
+            debugTask = Task {
+                try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+                append(scriptIndex: Copy.descriptionIndex, animated: true)
+                try? await Task.sleep(seconds: 6)
+                beginText()
+                try? await Task.sleep(seconds: 1.5)
+                for character in Copy.sampleAnswer {
+                    guard !Task.isCancelled else { return }
+                    draftText.append(character)
+                    try? await Task.sleep(seconds: 0.05)
+                }
+                try? await Task.sleep(seconds: 1.2)
+                saveText()
+                // Next question reveals; then answer it with voice.
+                try? await Task.sleep(seconds: 7)
+                beginVoice()
+                try? await Task.sleep(seconds: 1.5)
+                _ = await voiceRecorder.startRecording()
+                try? await Task.sleep(seconds: 4)
+                voiceRecorder.stopRecording()
+                try? await Task.sleep(seconds: 2)
+                voiceRecorder.isSending = true
+                try? await sendVoice()
+            }
         case .autoplayLong:
             jump(to: .resting)
             debugTask = Task {
@@ -322,6 +349,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         var modeAfterScroll: InputMode = .choose
         switch state {
         case .resting, .autoplayText, .autoplayScroll, .autoplayVoice, .autoplayRegret, .autoplaySkip, .autoplayShort,
+            .autoplayTour,
             .autoplayLong,
             .autoplayEditResend:
             inputMode = .choose
