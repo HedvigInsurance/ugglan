@@ -122,13 +122,25 @@ struct ClaimInputPrototypeScreen: View {
                 }
             )
             // iOS 26 soft scroll edge effect (subtle progressive blur) under the button row; hidden under the cards.
-            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: viewModel.inputMode != .choose))
+            .modifier(
+                ClaimInputPrototypeScrollEdgeEffect(
+                    isHidden: viewModel.inputMode != .choose || viewModel.isQuestionScrolledAway
+                )
+            )
             .hFormAttachToBottom {
                 if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
                     currentStepView
                 }
             }
         }
+        // Jump-back arrow, drawn over the chat exactly like the shipping screen's ScrollToBottomButton.
+        .overlay(alignment: .bottom) {
+            if viewModel.isQuestionScrolledAway && viewModel.inputMode == .choose {
+                ScrollToBottomButton(scrollAction: scrollToBottom)
+                    .padding(.bottom, .padding16)
+            }
+        }
+        .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
         // The chat ignores the keyboard (like the shipping screen) except while the text card is up,
         // so the inset card rises with the keyboard (Figma 2.x).
         .ignoresSafeArea(
@@ -139,17 +151,14 @@ struct ClaimInputPrototypeScreen: View {
 
     private var currentStepView: some View {
         VStack(spacing: .padding8) {
-            // Figma 1.3: the input stays docked while scrolling; the arrow above it jumps back to the question.
-            if viewModel.isQuestionScrolledAway && viewModel.inputMode != .hidden {
-                ScrollToBottomButton(scrollAction: scrollToBottom)
-                    .padding(.top, .padding16)
-            }
-            if viewModel.inputMode != .hidden {
+            // Like the shipping chat: while the member reads earlier answers the button row is hidden and only
+            // the arrow (an overlay on the chat, see mainContent) remains. Open cards stay.
+            if viewModel.inputMode != .hidden, !(viewModel.isQuestionScrolledAway && viewModel.inputMode == .choose) {
                 // Overlay old/new input during the crossfade so the row does not push the card around.
                 ZStack(alignment: .bottom) {
                     inputContent
                 }
-                .padding(.top, viewModel.isQuestionScrolledAway ? 0 : .padding16)
+                .padding(.top, .padding16)
                 .background {
                     GeometryReader { proxy in
                         Color.clear
