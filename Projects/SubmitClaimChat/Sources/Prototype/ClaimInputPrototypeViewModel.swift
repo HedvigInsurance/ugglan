@@ -104,6 +104,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case autoplaySkip
         /// Skriv → a short one-line answer → Skicka (bubble regression check).
         case autoplayShort
+        /// Skriv → a long multi-paragraph answer → Skicka (bug report: next question / input didn't load).
+        case autoplayLong
         /// Saved text → Ändra → the card reopens with the text → Skicka again.
         case autoplayEditResend
     }
@@ -248,6 +250,16 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 try? await Task.sleep(seconds: 2)
                 skip()
             }
+        case .autoplayLong:
+            jump(to: .resting)
+            debugTask = Task {
+                try? await Task.sleep(seconds: 1.5)
+                beginText()
+                try? await Task.sleep(seconds: 1.5)
+                draftText = Copy.longAnswer
+                try? await Task.sleep(seconds: 1)
+                saveText()
+            }
         case .autoplayShort:
             jump(to: .resting)
             debugTask = Task {
@@ -310,6 +322,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         var modeAfterScroll: InputMode = .choose
         switch state {
         case .resting, .autoplayText, .autoplayScroll, .autoplayVoice, .autoplayRegret, .autoplaySkip, .autoplayShort,
+            .autoplayLong,
             .autoplayEditResend:
             inputMode = .choose
         case .text:
@@ -331,7 +344,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         scrollTarget = .init(id: "", anchor: .bottom)
         Task {
             try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
-            scrollTarget = .init(id: previousStepId, anchor: .top)
+            scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
             if modeAfterScroll != .choose {
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
                 if modeAfterScroll == .voice { voiceRecorder.startOver() }
@@ -509,9 +522,9 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         stepHeights[step.id] = 0
         let previousStepId = steps.last?.id ?? ""
         steps.append(step)
-        // The shipping chat anchors to the previous step's answer ("result_…"). The prototype anchors to the
-        // previous step itself so the question, the member's answer and the new question all stay visible.
-        scrollTarget = .init(id: previousStepId, anchor: .top)
+        // Same rule as SubmitClaimChatViewModel.handleGoToNextStep: the previous step's answer row
+        // ("result_<id>") is scrolled to the top, so the new question follows directly below it.
+        scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
         return step
     }
 }
@@ -536,6 +549,13 @@ enum ClaimInputPrototypeCopy {
     static let voiceTitle = "Berätta vad som hänt"
     static let sending = "Skickar…"
     static let sampleAnswer = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+    static let longAnswer = """
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et \
+        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip \
+        ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu \
+        fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt \
+        mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium.
+        """
 
     /// The whole chat, in order. Every question uses the new Skriv · Spela in · Hoppa över input.
     /// Index `descriptionIndex` is the step Hedvig is "typing" when the prototype starts.
