@@ -145,21 +145,24 @@ struct ClaimInputPrototypeScreen: View {
                     .padding(.top, .padding16)
             }
             if viewModel.inputMode != .hidden {
-                inputContent
-                    .padding(.top, viewModel.isQuestionScrolledAway ? 0 : .padding16)
-                    .background {
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    viewModel.currentStepInputHeight = proxy.size.height
-                                }
-                                .onChange(of: proxy.size) { value in
-                                    viewModel.currentStepInputHeight = value.height
-                                }
-                        }
+                // Overlay old/new input during the crossfade so the row does not push the card around.
+                ZStack(alignment: .bottom) {
+                    inputContent
+                }
+                .padding(.top, viewModel.isQuestionScrolledAway ? 0 : .padding16)
+                .background {
+                    GeometryReader { proxy in
+                        Color.clear
+                            .onAppear {
+                                viewModel.currentStepInputHeight = proxy.size.height
+                            }
+                            .onChange(of: proxy.size) { value in
+                                viewModel.currentStepInputHeight = value.height
+                            }
                     }
-                    .transition(.offset(x: 0, y: 1000))
-                    .accessibilityFocused($isCurrentStepFocused)
+                }
+                .transition(.offset(x: 0, y: 1000))
+                .accessibilityFocused($isCurrentStepFocused)
             }
         }
         .padding(.bottom, .padding16)
@@ -288,8 +291,9 @@ struct ClaimInputPrototypeMessageView: View {
             HStack {
                 Spacer()
                 VStack(alignment: .trailing, spacing: .padding6) {
-                    ClaimInputPrototypeResultView(step: step)
-                        .transition(.offset(x: 0, y: 100).combined(with: .opacity).animation(.default))
+                    // No insertion transition on the bubble itself: an interrupted transition can leave it
+                    // invisible (seen as a lone Ändra). The VStack animates the change instead.
+                    ClaimInputPrototypeResultView(answer: step.answer)
                     if step.answer != nil, step.isRegrettable {
                         hPill(
                             text: L10n.General.edit,
@@ -313,18 +317,19 @@ struct ClaimInputPrototypeMessageView: View {
                 }
                 .animation(.easeInOut(duration: 0.2), value: step.answer)
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .fixedSize(horizontal: false, vertical: true)
             }
             .id("result_\(step.id)")
         }
     }
 }
 
+/// Takes the answer by value: observing the step object left this view stale (empty) when an answer
+/// was cleared by Ändra and set again, which showed as a lone Ändra pill.
 struct ClaimInputPrototypeResultView: View {
-    @ObservedObject var step: ClaimInputPrototypeStep
+    let answer: ClaimInputPrototypeStep.Answer?
 
     @ViewBuilder var body: some View {
-        switch step.answer {
+        switch answer {
         case .skipped:
             hText(L10n.claimChatSkippedStep)
                 .foregroundColor(hTextColor.Translucent.secondary)

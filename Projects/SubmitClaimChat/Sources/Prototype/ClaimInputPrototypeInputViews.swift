@@ -15,17 +15,17 @@ struct ClaimInputPrototypeChoiceView: View {
                 HStack(spacing: .padding8) {
                     hButton(
                         .large,
-                        .secondary,
+                        .secondaryAlt,
                         content: .init(
                             title: Copy.write,
-                            buttonImage: .init(image: hCoreUIAssets.edit.view, alignment: .leading)
+                            buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading)
                         )
                     ) {
                         viewModel.beginText()
                     }
                     hButton(
                         .large,
-                        .secondary,
+                        .secondaryAlt,
                         content: .init(
                             title: Copy.record,
                             buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading)
@@ -41,7 +41,19 @@ struct ClaimInputPrototypeChoiceView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
+        .modifier(ClaimInputPrototypeGeometryGroup())
+        .transition(.opacity)
+    }
+}
+
+/// Children animate as one unit when a card slides in (fixes the waveform "leading" the voice card).
+struct ClaimInputPrototypeGeometryGroup: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.geometryGroup()
+        } else {
+            content
+        }
     }
 }
 
@@ -156,7 +168,8 @@ struct ClaimInputPrototypeTextCard: View {
             // Figma 2.5: keyboard goes down while saving.
             if isSaving { isFocused = false }
         }
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
+        .modifier(ClaimInputPrototypeGeometryGroup())
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
 
@@ -239,7 +252,8 @@ struct ClaimInputPrototypeVoiceCard: View {
         .environmentObject(voiceRecorder)
         .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
         .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
+        .modifier(ClaimInputPrototypeGeometryGroup())
+        .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 
     /// Figma 3.6: the title stays in ink while sending; only the subtitle and tiles are greyed.

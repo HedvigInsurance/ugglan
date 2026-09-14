@@ -102,6 +102,10 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case autoplayRegret
         /// Resting, then Hoppa över.
         case autoplaySkip
+        /// Skriv → a short one-line answer → Skicka (bubble regression check).
+        case autoplayShort
+        /// Saved text → Ändra → the card reopens with the text → Skicka again.
+        case autoplayEditResend
     }
 
     // MARK: Published UI state
@@ -134,6 +138,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
 
     private let startState: StartState
     private var pendingTask: Task<Void, Never>?
+    /// Scripted debug flows run here so `regret()` / `saveText()` cancelling `pendingTask` doesn't affect them.
+    private var debugTask: Task<Void, Never>?
     /// The chat's UIScrollView, kept so the coordinator can be re-attached after the text card closes.
     weak var scrollView: UIScrollView?
 
@@ -200,7 +206,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         case .resting:
             appendAfterDelay(scriptIndex: Copy.descriptionIndex)
         case .autoplayText:
-            pendingTask = Task {
+            debugTask = Task {
                 try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
                 append(scriptIndex: Copy.descriptionIndex, animated: true)
                 try? await Task.sleep(seconds: 6)
@@ -217,7 +223,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             }
         case .autoplayVoice:
             jump(to: .resting)
-            pendingTask = Task {
+            debugTask = Task {
                 try? await Task.sleep(seconds: 1.5)
                 beginVoice()
                 try? await Task.sleep(seconds: 1.5)
@@ -230,7 +236,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             }
         case .autoplayRegret:
             jump(to: .savedText)
-            pendingTask = Task {
+            debugTask = Task {
                 try? await Task.sleep(seconds: 4)
                 if let step = steps.first(where: { $0.scriptIndex == Copy.descriptionIndex }) {
                     regret(step)
@@ -238,9 +244,31 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             }
         case .autoplaySkip:
             jump(to: .resting)
-            pendingTask = Task {
+            debugTask = Task {
                 try? await Task.sleep(seconds: 2)
                 skip()
+            }
+        case .autoplayShort:
+            jump(to: .resting)
+            debugTask = Task {
+                try? await Task.sleep(seconds: 1.5)
+                beginText()
+                try? await Task.sleep(seconds: 1.5)
+                draftText = "Hey du"
+                try? await Task.sleep(seconds: 1)
+                saveText()
+            }
+        case .autoplayEditResend:
+            jump(to: .savedText)
+            debugTask = Task {
+                try? await Task.sleep(seconds: 4)
+                if let step = steps.first(where: { $0.scriptIndex == Copy.descriptionIndex }) {
+                    regret(step)
+                }
+                try? await Task.sleep(seconds: 3)
+                draftText += " – redigerat"
+                try? await Task.sleep(seconds: 1)
+                saveText()
             }
         case .autoplayScroll:
             // Deep into the chat: description + two follow-ups answered, third follow-up waiting.
@@ -250,7 +278,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 step.answer = .text(Copy.sampleAnswer)
                 advance(after: step, animated: false)
             }
-            pendingTask = Task {
+            debugTask = Task {
                 try? await Task.sleep(seconds: 2.5)
                 scrollCoordinator.scrollView?.setContentOffset(.zero, animated: true)
             }
@@ -261,6 +289,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
 
     func reset() {
         pendingTask?.cancel()
+        debugTask?.cancel()
         reattachScrollCoordinator()
         UIApplication.dismissKeyboard()
         voiceRecorder.startOver()
@@ -280,7 +309,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
         guard let description = append(scriptIndex: Copy.descriptionIndex, animated: false) else { return }
         var modeAfterScroll: InputMode = .choose
         switch state {
-        case .resting, .autoplayText, .autoplayScroll, .autoplayVoice, .autoplayRegret, .autoplaySkip:
+        case .resting, .autoplayText, .autoplayScroll, .autoplayVoice, .autoplayRegret, .autoplaySkip, .autoplayShort,
+            .autoplayEditResend:
             inputMode = .choose
         case .text:
             draftText = Copy.sampleAnswer
@@ -410,6 +440,7 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
     /// Ändra: drop everything after the step and ask it again (mirrors regret).
     func regret(_ step: ClaimInputPrototypeStep) {
         guard let index = steps.firstIndex(where: { $0.id == step.id }), step.isRegrettable else { return }
+        let previousAnswer = step.answer
         pendingTask?.cancel()
         isSaving = false
         reattachScrollCoordinator()
@@ -426,10 +457,17 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             steps.removeSubrange((index + 1)...)
             step.answer = nil
             step.selectedOption = nil
+            // The question comes back without replaying the reveal animation.
+            step.animateText = false
+            step.isLoaderAnimating = false
             inputMode = step.kind == .description ? .choose : .select
         }
         progress = Copy.progress(forStep: step.scriptIndex)
         scrollTarget = .init(id: step.id, anchor: .top)
+        // Editing a text answer goes straight back into the text card with the text (edit mode).
+        if case .text = previousAnswer, step.kind == .description {
+            beginText()
+        }
     }
 
     private func complete(with answer: ClaimInputPrototypeStep.Answer) {
@@ -438,6 +476,8 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
             step.answer = answer
             inputMode = .hidden
         }
+        // Next question starts with an empty field.
+        draftText = ""
         progress = Copy.progress(forStep: step.scriptIndex + 1)
         appendAfterDelay(scriptIndex: step.scriptIndex + 1)
     }
