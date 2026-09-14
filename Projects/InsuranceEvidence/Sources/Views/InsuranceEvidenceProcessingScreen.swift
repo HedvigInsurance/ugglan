@@ -58,9 +58,10 @@ struct InsuranceEvidenceProcessingScreen: View {
 @MainActor
 class ProcessingViewModel: ObservableObject {
     fileprivate weak var navigation: InsuranceEvidenceNavigationViewModel!
-    fileprivate var viewState: ProcessingState = .loading
     private let input: InsuranceEvidenceInput
     fileprivate let modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
+
+    @Published fileprivate var viewState: ProcessingState = .loading
     @Published var insuranceEvidence: InsuranceEvidence?
 
     init(input: InsuranceEvidenceInput, navigation: InsuranceEvidenceNavigationViewModel) {
@@ -74,11 +75,9 @@ class ProcessingViewModel: ObservableObject {
     func submit() async {
         viewState = .loading
         do {
-            let minimumTime = Task {
-                await delay(3)
+            let results = try await Task.withMinimumDuration(.seconds(3)) {
+                try await navigation.service.createInsuranceEvidence(input: input)
             }
-            let results = try await navigation.service.createInsuranceEvidence(input: input)
-            await minimumTime.value
             insuranceEvidence = results
             viewState = .success
         } catch {

@@ -18,16 +18,14 @@ class TerminateContractsService {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        nonisolated(unsafe) let client = client
-        async let result = try await client.terminateContract(
-            contractId: contractId,
-            terminationDate: terminationDate,
-            surveyOptionId: surveyOptionId,
-            comment: comment
-        )
-        async let delayTask: () = delay(3)
-        let (data, _) = try await (result, delayTask)
-        return data
+        try await Task.withMinimumDuration(.seconds(3)) {
+            try await client.terminateContract(
+                contractId: contractId,
+                terminationDate: terminationDate,
+                surveyOptionId: surveyOptionId,
+                comment: comment
+            )
+        }
     }
 
     @Log()
@@ -36,15 +34,13 @@ class TerminateContractsService {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        nonisolated(unsafe) let client = client
-        async let result = try await client.deleteContract(
-            contractId: contractId,
-            surveyOptionId: surveyOptionId,
-            comment: comment
-        )
-        async let delayTask: () = delay(3)
-        let (data, _) = try await (result, delayTask)
-        return data
+        try await Task.withMinimumDuration(.seconds(3)) {
+            try await client.deleteContract(
+                contractId: contractId,
+                surveyOptionId: surveyOptionId,
+                comment: comment
+            )
+        }
     }
 
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {

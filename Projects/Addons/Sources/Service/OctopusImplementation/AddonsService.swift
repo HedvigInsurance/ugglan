@@ -22,9 +22,9 @@ import hCore
 
     @Log
     public func submitAddons(quoteId: String, selectedAddonIds: Set<String>) async throws {
-        async let submit: () = try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
-        async let delayTask: () = delay(3)
-        let _ = try await (submit, delayTask)
+        try await Task.withMinimumDuration(.seconds(3)) {
+            try await client.submitAddons(quoteId: quoteId, addonIds: selectedAddonIds)
+        }
     }
 
     @Log
@@ -34,8 +34,8 @@ import hCore
 
     @Log
     public func confirmAddonRemoval(contractId: String, addonIds: Set<String>) async throws {
-        async let confirm: () = try await client.confirmAddonRemoval(contractId: contractId, addonIds: addonIds)
-        async let delayTask: () = delay(3)
-        let _ = try await (confirm, delayTask)
+        try await Task.withMinimumDuration(.seconds(3)) {
+            try await client.confirmAddonRemoval(contractId: contractId, addonIds: addonIds)
+        }
     }
 }

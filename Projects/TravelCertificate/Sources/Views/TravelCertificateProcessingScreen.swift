@@ -89,11 +89,9 @@ class ProcessingViewModel: ObservableObject {
                     email: startDateViewModel.email
                 )
                 do {
-                    let minimumTime = Task {
-                        await delay(3)
+                    let url = try await Task.withMinimumDuration(.seconds(3)) {
+                        try await self.service.submitForm(dto: dto)
                     }
-                    let url = try await self.service.submitForm(dto: dto)
-                    await minimumTime.value
 
                     downloadUrl = url
                     viewState = .success

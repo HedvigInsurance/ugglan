@@ -10,28 +10,25 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
 
     func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         let query = OctopusGraphQL.TravelCertificateQuery()
-        do {
-            let data = try await octopus.client.fetch(query: query)
-            let email = data.currentMember.email
-            let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
-            let activeContracts = data.currentMember.activeContracts
 
-            let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
-                data in
-                TravelInsuranceContractSpecification(
-                    data,
-                    email: email,
-                    fullName: fullName,
-                    displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
-                        .productVariant.displayName ?? "",
-                    exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
-                        ?? ""
-                )
-            }
-            return specification
-        } catch let ex {
-            throw ex
+        let data = try await octopus.client.fetch(query: query)
+        let email = data.currentMember.email
+        let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
+        let activeContracts = data.currentMember.activeContracts
+
+        let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
+            data in
+            TravelInsuranceContractSpecification(
+                data,
+                email: email,
+                fullName: fullName,
+                displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
+                    .productVariant.displayName ?? "",
+                exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
+                    ?? ""
+            )
         }
+        return specification
     }
 
     @MainActor
@@ -39,11 +36,9 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
-            let delayTask = Task {
-                await delay(3)
+            let data = try await Task.withMinimumDuration(.seconds(3)) {
+                try await octopus.client.mutation(mutation: mutation)
             }
-            let data = try await octopus.client.mutation(mutation: mutation)
-            await delayTask.value
 
             if let url = URL(string: data?.travelCertificateCreate.signedUrl) {
                 return url
