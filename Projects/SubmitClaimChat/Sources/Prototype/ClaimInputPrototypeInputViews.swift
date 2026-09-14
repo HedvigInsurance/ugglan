@@ -15,7 +15,7 @@ struct ClaimInputPrototypeChoiceView: View {
                 HStack(spacing: .padding8) {
                     hButton(
                         .large,
-                        .secondaryAlt,
+                        .secondary,
                         content: .init(
                             title: Copy.write,
                             buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading)
@@ -23,9 +23,10 @@ struct ClaimInputPrototypeChoiceView: View {
                     ) {
                         viewModel.beginText()
                     }
+                    .background(Capsule().fill(hBackgroundColor.primary))
                     hButton(
                         .large,
-                        .secondaryAlt,
+                        .secondary,
                         content: .init(
                             title: Copy.record,
                             buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading)
@@ -33,6 +34,7 @@ struct ClaimInputPrototypeChoiceView: View {
                     ) {
                         viewModel.beginVoice()
                     }
+                    .background(Capsule().fill(hBackgroundColor.primary))
                 }
                 hButton(.large, .ghost, content: .init(title: L10n.claimChatSkipStep)) {
                     viewModel.skip()
