@@ -20,30 +20,11 @@ class EditStakeholdersClientOctopus: EditStakeholdersClient {
     func fetchPersonalInformation(SSN: String) async throws -> PersonalData? {
         let SSNInput = OctopusGraphQL.PersonalInformationInput(personalNumber: SSN)
         let query = OctopusGraphQL.PersonalInformationQuery(input: SSNInput)
-        do {
-            let data = try await octopus.client.fetch(
-                query: query
-            )
-            guard let data = data.personalInformation else {
-                throw EditStakeholdersError.missingSSN
-            }
-
-            let personalData = PersonalData(firstName: data.firstName, lastName: data.lastName)
-            return personalData
-        } catch let exception {
-            if let exception = exception as? GraphQLError {
-                switch exception {
-                case .graphQLError:
-                    throw EditStakeholdersError.serviceError(message: exception.localizedDescription)
-                case .otherError:
-                    throw EditStakeholdersError.otherError
-                }
-            } else if let exception = exception as? EditStakeholdersError {
-                throw exception
-            } else {
-                throw EditStakeholdersError.otherError
-            }
+        let data = try await octopus.client.fetch(query: query)
+        guard let personalInformation = data.personalInformation else {
+            throw EditStakeholdersError.missingSSN
         }
+        return PersonalData(firstName: personalInformation.firstName, lastName: personalInformation.lastName)
     }
 
     func createIntent(
