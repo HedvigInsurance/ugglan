@@ -121,8 +121,8 @@ struct ClaimInputPrototypeScreen: View {
                     }
                 }
             )
-            // The docked area is transparent: no frosted box and no scroll edge effect.
-            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: true))
+            // iOS 26 soft scroll edge effect (subtle progressive blur) under the button row; hidden under the cards.
+            .modifier(ClaimInputPrototypeScrollEdgeEffect(isHidden: viewModel.inputMode != .choose))
             .hFormAttachToBottom {
                 if verticalSizeClass == .compact || scrollCoordinator.shouldMergeInputWithContent {
                     currentStepView
@@ -166,6 +166,21 @@ struct ClaimInputPrototypeScreen: View {
             }
         }
         .padding(.bottom, .padding16)
+        .background {
+            // Earlier systems: gradient-masked blur approximates the progressive edge effect.
+            if #unavailable(iOS 26.0), viewModel.inputMode == .choose {
+                BackgroundBlurView()
+                    .mask(
+                        LinearGradient(
+                            colors: [.clear, .black, .black],
+                            startPoint: .top,
+                            endPoint: .init(x: 0.5, y: 0.45)
+                        )
+                    )
+                    .padding(.top, -.padding48)
+                    .ignoresSafeArea(.container, edges: .bottom)
+            }
+        }
         .animation(.default, value: viewModel.inputMode)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
     }
@@ -218,8 +233,8 @@ private struct ClaimInputPrototypeScrollEdgeEffect: ViewModifier {
 
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
-            // safeAreaBar gets an automatic edge effect on iOS 26 – hide it explicitly when not wanted.
             content
+                .scrollEdgeEffectStyle(.soft, for: .bottom)
                 .scrollEdgeEffectHidden(isHidden, for: .bottom)
         } else {
             content
@@ -264,28 +279,25 @@ struct ClaimInputPrototypeMessageView: View {
 
     var body: some View {
         VStack(spacing: .padding8) {
-            // New Claims Flow logic: after an input the question disappears and only the answer stays.
-            if step.answer == nil {
-                // Figma: 24 pt Hedvig symbol to the left of the message, 8 pt gap.
-                HStack(alignment: .top, spacing: .padding8) {
-                    if step.showLoadingAnimation {
-                        ClaimChatLoadingAnimationView(isLoading: $step.isLoaderAnimating)
-                            .frame(width: 24, height: 24)
-                    }
-                    RevealTextView(
-                        text: step.text,
-                        delay: 1,
-                        animate: step.animateText,
-                        onTextAnimationDone: {
-                            step.isLoaderAnimating = false
-                            viewModel.revealFinished(for: step)
-                        }
-                    )
-                    .accessibilityAddTraits(.isHeader)
-                    .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
+            // Shipping-chat logic: the question stays above the answer, so scrolling up reads like a chat.
+            // Figma: 24 pt Hedvig symbol to the left of the message, 8 pt gap.
+            HStack(alignment: .top, spacing: .padding8) {
+                if step.showLoadingAnimation {
+                    ClaimChatLoadingAnimationView(isLoading: $step.isLoaderAnimating)
+                        .frame(width: 24, height: 24)
                 }
-                .transition(.opacity)
+                RevealTextView(
+                    text: step.text,
+                    delay: 1,
+                    animate: step.animateText,
+                    onTextAnimationDone: {
+                        step.isLoaderAnimating = false
+                        viewModel.revealFinished(for: step)
+                    }
+                )
+                .accessibilityAddTraits(.isHeader)
+                .fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
             }
 
             HStack {
