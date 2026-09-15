@@ -276,6 +276,11 @@ final class ClaimInputPrototypeViewModel: ObservableObject {
                 try? await Task.sleep(seconds: 2)
                 voiceRecorder.isSending = true
                 try? await sendVoice()
+                // Third question reveals; then scroll up through the history, pause on the arrow, jump back.
+                try? await Task.sleep(seconds: 7)
+                scrollCoordinator.scrollView?.setContentOffset(.zero, animated: true)
+                try? await Task.sleep(seconds: 4)
+                scrollCoordinator.scrollToBottom()
             }
         case .autoplayLong:
             jump(to: .resting)
