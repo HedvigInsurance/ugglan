@@ -330,15 +330,24 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
         return FormFieldSearchResult(options: filtered, suggestedQuery: "suggested")
     }
 
+    var numberOfTask = 0
+    var texts = [
+        "Analyzing…",
+        "Reading your answer…",
+        "Going through the details…",
+        "Working out the next step…",
+        "One moment…",
+        "Done",
+    ]
     public func getNextStep(claimIntentId: String) async throws -> ClaimIntentType? {
         try await Task.sleep(seconds: 3)
-        return .intent(
+        let intent = ClaimIntentType.intent(
             model: .init(
                 currentStep: .init(
                     content: .task(
                         model: .init(
-                            description: "Text updated",
-                            isCompleted: true
+                            description: texts[min(numberOfTask, texts.count - 1)],
+                            isCompleted: numberOfTask >= texts.count - 1
                         )
                     ),
                     id: "id2323",
@@ -350,6 +359,8 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                 progress: 0
             )
         )
+        numberOfTask += 1
+        return intent
     }
     let taskDemoStep = SubmitClaimTaskStep(
         claimIntent: .init(

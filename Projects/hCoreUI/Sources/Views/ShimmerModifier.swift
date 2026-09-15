@@ -12,12 +12,12 @@ public struct ShimmerTextModifier: ViewModifier {
     public func body(content: Content) -> some View {
         if isActive {
             content
-                .opacity(0.4)
+                .opacity(0.25)
                 .overlay(
                     content
                         .mask(
                             LinearGradient(
-                                colors: [.white.opacity(0.4), .white.opacity(1), .white.opacity(0.4)],
+                                colors: [.white.opacity(0), .white.opacity(1), .white.opacity(0)],
                                 startPoint: startPoint,
                                 endPoint: endPoint
                             )
