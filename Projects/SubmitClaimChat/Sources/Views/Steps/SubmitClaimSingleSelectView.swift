@@ -14,15 +14,18 @@ struct SubmitClaimSingleSelectView: View {
                 case .pill: pillInputView
                 case .binary: binaryInputView
                 }
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.generalConfirm)
-                ) { viewModel.submitResponse() }
-                .opacity(showOptions ? 1 : 0)
-                .animation(.easeInOut, value: showOptions)
-                .disabled(viewModel.selectedOptionId == nil)
+                if viewModel.requiresConfirmation {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.generalConfirm)
+                    ) { viewModel.submitResponse() }
+                    .opacity(showOptions ? 1 : 0)
+                    .animation(.easeInOut, value: showOptions)
+                    .disabled(viewModel.selectedOptionId == nil)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .sectionContainerStyle(.transparent)
         .animation(.easeInOut, value: viewModel.selectedOptionId)
@@ -98,8 +101,9 @@ struct SubmitClaimSingleSelectView: View {
     }
 
     private func selectOption(id: String) {
+        guard !viewModel.isSelectionLocked else { return }
         ImpactGenerator.soft()
-        viewModel.selectedOptionId = id
+        viewModel.select(optionId: id)
     }
 }
 
