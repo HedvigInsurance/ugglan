@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public struct OngoingQuote: Codable, Equatable, Hashable, Identifiable, Sendable {
+public struct OngoingQuote: Identifiable, Equatable {
     public let id: String
     let title: String
     let subtitle: String?

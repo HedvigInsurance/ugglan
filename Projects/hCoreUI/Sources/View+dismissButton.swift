@@ -47,6 +47,18 @@ extension View {
     }
 }
 
+extension EnvironmentValues {
+    /// `true` while a `withDismissButton()` / `withAlertDismiss()` close button occupies
+    /// `.topBarTrailing` for this subtree.
+    @Entry public var hHasTrailingDismissButton: Bool = false
+
+    /// Where a feature-level toolbar item — an info button, for example — should sit so it
+    /// does not collide with the modal close button.
+    public var hSecondaryToolbarPlacement: ToolbarItemPlacement {
+        hHasTrailingDismissButton ? .topBarLeading : .topBarTrailing
+    }
+}
+
 private struct DismissButton: ViewModifier {
     let reducedTopSpacing: Int
     let withAlert: Bool
@@ -81,6 +93,7 @@ private struct DismissButton: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .environment(\.hHasTrailingDismissButton, true)
             .toolbar {
                 ToolbarItem(
                     id: "closeButton",
@@ -115,9 +128,6 @@ private struct DismissButton: ViewModifier {
                         confirmButtonRole: confirmButtonRole,
                         action: action
                     )
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .accessibilityLabel(L10n.a11YClose)
-                    .accessibilityAddTraits(.isButton)
                 }
             }
     }

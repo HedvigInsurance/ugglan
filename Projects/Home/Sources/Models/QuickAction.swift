@@ -31,14 +31,6 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    public var homeDisplayTitle: String? {
-        switch self {
-        case .editInsurance: L10n.homeQuickActionsEditInsurance
-        case .changeAddress: L10n.homeQuickActionsChangeAddress
-        default: nil
-        }
-    }
-
     public var displaySubtitle: String {
         switch self {
         case .sickAbroad: L10n.hcQuickActionsSickAbroadSubtitle
@@ -125,27 +117,46 @@ public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Senda
     }
 }
 
-extension Sequence where Iterator.Element == QuickAction {
+extension Collection where Element == QuickAction {
     var hasFirstVet: Bool {
-        first(where: { $0.isFirstVet }) != nil
+        firstVetPartners != nil
     }
 
-    public var getFirstVetPartners: [FirstVetPartner]? {
-        first(where: { $0.isFirstVet })?.firstVetPartners
+    var firstVetPartners: [FirstVetPartner]? {
+        first(\.firstVetPartners)
+    }
+
+    var editInsuranceActions: EditInsuranceActionsWrapper? {
+        first(\.editInsuranceActions)
+    }
+
+    var sickAbroadDeflection: Deflection? {
+        first(\.sickAbroadDeflection)
+    }
+
+    private func first<Payload>(_ payload: KeyPath<QuickAction, Payload?>) -> Payload? {
+        lazy.compactMap { $0[keyPath: payload] }.first
     }
 }
 
 extension QuickAction {
-    internal var isFirstVet: Bool {
+    fileprivate var firstVetPartners: [FirstVetPartner]? {
         switch self {
-        case .firstVet: true
-        default: false
+        case let .firstVet(partners): partners
+        default: nil
         }
     }
 
-    public var firstVetPartners: [FirstVetPartner]? {
+    fileprivate var editInsuranceActions: EditInsuranceActionsWrapper? {
         switch self {
-        case let .firstVet(partners): partners
+        case let .editInsurance(actions): actions
+        default: nil
+        }
+    }
+
+    fileprivate var sickAbroadDeflection: Deflection? {
+        switch self {
+        case let .sickAbroad(deflection): deflection
         default: nil
         }
     }

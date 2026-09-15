@@ -1,7 +1,9 @@
 import AppStateContainer
 import Combine
+import Contracts
 import CrossSell
 import Foundation
+import Payment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -41,7 +43,6 @@ public final class HomeStore: AppStore {
     @Published public private(set) var contracts: [HomeContract] = []
     @Published public private(set) var importantMessages: [ImportantMessage] = []
     @Published public private(set) var quickActions: [QuickAction] = []
-    @Published public private(set) var homeQuickActions: [QuickAction] = []
     @Published public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
     @Published public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
     @Published public private(set) var showChatNotification: Bool = false
@@ -49,6 +50,7 @@ public final class HomeStore: AppStore {
     @Published public private(set) var latestConversationTimeStamp: Date = Date()
     @Published public private(set) var latestChatTimeStamp: Date = Date()
 
+    @Transient @Published public private(set) var homeQuickActions: [HomeQuickAction] = []
     @Transient @Published public private(set) var ongoingQuotes: [OngoingQuote] = []
     @Transient @Published public private(set) var hidenImportantMessages: [String] = []
     @Transient @Published public private(set) var isFetchingQuickActions: Bool = false
@@ -88,6 +90,26 @@ public final class HomeStore: AppStore {
             .removeDuplicates()
             .sink { [weak self] _ in Task { await self?.fetchOngoingQuotes() } }
             .store(in: &cancellables)
+
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+
+        paymentStore.$paymentData
+            .combineLatest($quickActions) { upcomingPayment, actions in
+                let editActions = actions.editInsuranceActions
+                let tiles: [HomeQuickAction?] = [
+                    editActions.map(HomeQuickAction.editInsurance),
+                    actions.contains(.changeAddress) ? HomeQuickAction.changeAddress : nil,
+                    actions.contains(.travelInsurance) ? HomeQuickAction.travelCertificate : nil,
+                    actions.sickAbroadDeflection.map(HomeQuickAction.sickAbroad),
+                    editActions?.quickActions.contains(.upgradeCoverage) == true
+                        ? HomeQuickAction.upgradeCoverage : nil,
+                    HomeQuickAction.inviteFriend,
+                    upcomingPayment != nil ? HomeQuickAction.upcomingPayment : nil,
+                ]
+                return tiles.compactMap { $0 }
+            }
+            .removeDuplicates()
+            .assign(to: &$homeQuickActions)
     }
 
     public func fetchMemberState() async {
@@ -118,7 +140,6 @@ public final class HomeStore: AppStore {
         do {
             let actions = try await homeService.getQuickActions()
             quickActions = actions
-            homeQuickActions = actions.filter({ $0 != .connectPayments })
             fetchQuickActionsError = nil
             updateToolbarTypes()
         } catch {

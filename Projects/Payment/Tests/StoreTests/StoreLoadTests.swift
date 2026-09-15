@@ -66,6 +66,40 @@ final class StoreLoadTests: XCTestCase {
         assert(store.loadPaymentDataError == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
+        XCTAssertNotNil(store.paymentDataFetchedAt)
+    }
+
+    func testLoadSkipsServiceWhileDataIsFresh() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentData: { (upcoming: nil, ongoing: []) }
+        )
+        let store = PaymentStore()
+        self.store = store
+        await store.load()
+        await store.load()
+        XCTAssertEqual(mockService.events.count, 1)
+    }
+
+    func testLoadWithForceUpdateBypassesFreshness() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentData: { (upcoming: nil, ongoing: []) }
+        )
+        let store = PaymentStore()
+        self.store = store
+        await store.load()
+        await store.load(forceUpdate: true)
+        XCTAssertEqual(mockService.events.count, 2)
+    }
+
+    func testLoadRefetchesWhenDataIsStale() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentData: { (upcoming: nil, ongoing: []) }
+        )
+        let store = PaymentStore()
+        self.store = store
+        store.paymentDataFetchedAt = Date(timeIntervalSinceNow: -31 * 60)
+        await store.load()
+        XCTAssertEqual(mockService.events.count, 1)
     }
 
     func testLoadPaymentFailure() async {
@@ -78,26 +112,8 @@ final class StoreLoadTests: XCTestCase {
         XCTAssertNotNil(store.loadPaymentDataError)
         assert(store.paymentData == nil)
         assert(store.ongoingPaymentData.isEmpty)
+        XCTAssertNil(store.paymentDataFetchedAt)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
-    }
-}
-
-@MainActor
-extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
-        let exc = expectation(description: description)
-        if closure() {
-            exc.fulfill()
-        } else {
-            try! await Task.sleep(seconds: 0.1)
-            Task {
-                await self.waitUntil(description: description, closure: closure)
-                if closure() {
-                    exc.fulfill()
-                }
-            }
-        }
-        await fulfillment(of: [exc], timeout: 2)
     }
 }

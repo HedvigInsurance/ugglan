@@ -51,6 +51,7 @@ class HomeVM: ObservableObject {
         Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
         Task { await paymentStore.fetchPaymentStatus() }
+        Task { await paymentStore.load() }
         Task { await homeStore.fetchChatNotifications() }
         Task { await claimsStore.fetchActiveClaims() }
         Task { await claimsStore.fetchClaimInProgress() }

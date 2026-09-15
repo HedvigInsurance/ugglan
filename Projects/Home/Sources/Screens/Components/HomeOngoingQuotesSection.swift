@@ -9,12 +9,9 @@ struct HomeOngoingQuotesSection: View {
 
     var body: some View {
         if !quotes.isEmpty {
-            VStack(spacing: 0) {
-                hSection { EmptyView() }
-                    .withHeader(title: L10n.homeQuotesSectionTitle)
-                    .sectionContainerStyle(.transparent)
-                cards
-            }
+            hSection { cards }
+                .withHeader(title: L10n.homeQuotesSectionTitle)
+                .sectionContainerStyle(.transparent)
         }
     }
 

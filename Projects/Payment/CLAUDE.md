@@ -6,7 +6,7 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 
 `PaymentStore` is an `AppStateContainer`-backed `AppStore`; per-flow ViewModels handle setup screens.
 
-- `PaymentStore` is `@MainActor @PersistableStore final class PaymentStore: AppStore`. `@Published` properties: `paymentData`, `ongoingPaymentData`, `paymentStatusData` (payin + payout methods + available providers), `paymentHistory`, `missedPaymentData`. `@Transient @Published` flags expose per-fetch loading and error state. Async methods: `load()`, `fetchPaymentStatus()`, `getHistory()`, `getMissedPayment()`. Views observe via `@AppObservedObject`.
+- `PaymentStore` is `@MainActor @PersistableStore final class PaymentStore: AppStore`. `@Published` properties: `paymentData`, `ongoingPaymentData`, `paymentStatusData` (payin + payout methods + available providers), `paymentHistory`, `missedPaymentData`, `paymentDataFetchedAt`. `@Transient @Published` flags expose per-fetch loading and error state. Async methods: `load(forceUpdate:)`, `fetchPaymentStatus()`, `getHistory()`, `getMissedPayment()`. Views observe via `@AppObservedObject`.
 - Per-flow ViewModels: `PaymentsNavigationViewModel`, `ConnectPaymentViewModel`, `NordeaPayoutSetupViewModel`, `SwishPayoutSetupViewModel`, `PaymentOverdueScreenViewModel`, `PaymentsViewModel`, `PaymentsHistoryViewModel`. The list/history VMs derive `viewState` from the store's `isFetchingX`/`fetchXError` publishers; setup VMs (Nordea/Swish/Trustly) call `hPaymentClient` directly and trigger `store.fetchPaymentStatus()` on success.
 - `hPaymentClient` protocol exposes: `getPaymentData`, `getPaymentStatusData`, `getPaymentHistoryData`, `getMissedPaymentData`, `setupPaymentMethod(_:)`, `chargeOutstandingPayment()`. Octopus implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/` (per project convention). Demo implementation is `hPaymentClientDemo` in this module.
 - Setup providers are modeled by `PaymentProvider` (Trustly, Adyen, Kivra for payin; Nordea, Swish for payout). Each provider decides its own detent presentation style and the screen to show.
@@ -69,6 +69,8 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 
 ## Gotchas
 
+- **`load()` is cached** on persisted `paymentDataFetchedAt` and skipped while a load is in flight; `load(forceUpdate: true)` bypasses both, so a tap always gets a fresh fetch even if it overlaps Home's on-appear load. Home calls it on every appear and force-refetches on the Upcoming payment tile tap.
+- **`PaymentDetailsView` is public**: Home presents it as a detent for its Upcoming payment tile.
 - **`PaymentStore` is the source of truth.** Setup screens (Nordea/Swish/Trustly) maintain their own local state and trigger `store.fetchPaymentStatus()` on success via `globalAppStateContainer.get()`.
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.
 - **`DirectDebitSetup`** is a UIKit `UIViewRepresentable` wrapping `WKWebView`; uses `TrustlyScriptHandler` for JS↔Swift bridging and Combine-based state synchronization. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.

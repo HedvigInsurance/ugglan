@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hCoreUI
 
-public struct PaymentData: Codable, Equatable, Hashable, Sendable {
+public struct PaymentData: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
     public let payment: PaymentStack
     let status: PaymentStatus
