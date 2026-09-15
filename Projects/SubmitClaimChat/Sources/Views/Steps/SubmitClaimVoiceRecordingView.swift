@@ -4,6 +4,9 @@ import hCore
 import hCoreUI
 
 // MARK: - Main Voice Recording View
+//
+// Description step input (Figma "App P2 2026", section "5 · Text / voice input"): Skriv · Spela in side by side, then an
+// inline card for text or voice in the same docked area, instead of the stacked buttons + voice detent.
 struct SubmitClaimVoiceRecordingView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @ObservedObject var voiceRecorder: VoiceRecorder
@@ -15,108 +18,183 @@ struct SubmitClaimVoiceRecordingView: View {
 
     var body: some View {
         hSection {
-            VStack(spacing: .padding16) {
+            // Row and card overlap during the crossfade so the card slides in over the row.
+            ZStack(alignment: .bottom) {
                 if viewModel.isTextInputPresented {
-                    textInputSection
+                    textInputCard
+                } else if viewModel.isAudioInputPresented {
+                    voiceInputCard
                 } else {
                     initialButtons
                 }
             }
         }
         .sectionContainerStyle(.transparent)
-        .detent(presented: $viewModel.isAudioInputPresented) {
-            VoiceRecordingCardContent(
-                voiceRecorder: voiceRecorder,
-                onSend: {
-                    viewModel.audioFileURL = voiceRecorder.recordedFileURL
-                    try await viewModel.uploadAudioRecording()
-                    viewModel.submitResponse()
-                }
-            )
-            .disabled(!viewModel.state.isEnabled)
-            .embededInNavigation(
-                options: [.navigationBarHidden],
-                tracking: SubmitClaimVoiceRecordingViewDetentType.voiceRecording
-            )
-        }
-        .onChange(of: viewModel.isAudioInputPresented) { isPresented in
-            if !isPresented {
-                voiceRecorder.stopRecording()
-                voiceRecorder.stopPlayback()
-            }
-        }
-        .animation(.default, value: viewModel.isTextInputPresented)
+        .animation(.defaultSpring, value: viewModel.isTextInputPresented)
+        .animation(.defaultSpring, value: viewModel.isAudioInputPresented)
     }
 
-    // MARK: - Initial Buttons
+    // MARK: - Initial Buttons (Skriv · Spela in)
+    // Secondary resting token, made opaque over the blurred panel (page background behind the capsule).
     private var initialButtons: some View {
-        VStack(spacing: .padding8) {
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.claimChatUseAudio)
-            ) { viewModel.isAudioInputPresented = true }
-
+        HStack(spacing: .padding8) {
             hButton(
                 .large,
                 .secondary,
-                content: .init(title: L10n.claimChatUseTextInput)
-            ) { viewModel.isTextInputPresented = true }
+                content: .init(
+                    title: SubmitClaimAudioStepCopy.write,
+                    buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading)
+                )
+            ) {
+                viewModel.presentTextInput()
+            }
+            .background(Capsule().fill(hBackgroundColor.primary))
+            hButton(
+                .large,
+                .secondary,
+                content: .init(
+                    title: SubmitClaimAudioStepCopy.record,
+                    buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading)
+                )
+            ) {
+                viewModel.presentAudioInput()
+            }
+            .background(Capsule().fill(hBackgroundColor.primary))
         }
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
+        .geometryGroupIfAvailable()
+        .transition(.opacity)
     }
 
-    // MARK: - Text Input Section
-    private var textInputSection: some View {
-        VStack(spacing: .padding16) {
-            hTextView(
-                selectedValue: viewModel.textInput,
-                placeholder: L10n.claimsTextInputPlaceholder,
-                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-                minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
-                maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
-                showOnAppear: $viewModel.showTextViewOnAppear
-            ) { text in
-                viewModel.textInput = text
-            }
-            .hTextFieldError(viewModel.textInputError)
+    // MARK: - Text card
+    private var textInputCard: some View {
+        SubmitClaimTextInputCard(viewModel: viewModel)
+            .geometryGroupIfAvailable()
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
 
-            VStack(spacing: .padding8) {
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.saveAndContinueButtonLabel)
-                ) {
-                    UIApplication.dismissKeyboard()
+    // MARK: - Voice card (same recorder and tiles as the previous detent, now inline)
+    private var voiceInputCard: some View {
+        VoiceRecordingInlineCard(
+            voiceRecorder: voiceRecorder,
+            onSend: {
+                viewModel.audioFileURL = voiceRecorder.recordedFileURL
+                try await viewModel.uploadAudioRecording()
+                viewModel.submitResponse()
+            },
+            onClose: {
+                viewModel.dismissInput()
+            }
+        )
+        .geometryGroupIfAvailable()
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+}
+
+/// Copy without Lokalise keys yet – see Figma "App P2 2026", section "5 · Text / voice input", section 5 (Copy).
+enum SubmitClaimAudioStepCopy {
+    // TODO: Lokalise keys for the redesigned description step.
+    static let write = "Skriv"
+    static let record = "Spela in"
+    static let textFieldLabel = "Beskriv vad som hänt"
+    static let sending = "Skickar…"
+}
+
+// MARK: - Text card: label · multiline field · Avbryt / Skicka (Figma section 2)
+struct SubmitClaimTextInputCard: View {
+    @ObservedObject var viewModel: SubmitClaimAudioStep
+    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
+    @FocusState private var isFocused: Bool
+    /// The min/max-length message would make the card jump on every keystroke, so it is only shown
+    /// after the user taps the disabled Skicka button, and goes away once the text is valid.
+    @State private var showsValidationError = false
+
+    var body: some View {
+        VStack(spacing: .padding16) {
+            VStack(alignment: .leading, spacing: .padding4) {
+                hText(SubmitClaimAudioStepCopy.textFieldLabel, style: .label)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                TextField(L10n.chatInputPlaceholder, text: $viewModel.textInput, axis: .vertical)
+                    .font(Font(Fonts.fontFor(style: .body1)))
+                    .foregroundColor(
+                        viewModel.state.isEnabled ? hTextColor.Opaque.primary : hTextColor.Opaque.secondary
+                    )
+                    .lineLimit(1...6)
+                    .focused($isFocused)
+                    .disabled(!viewModel.state.isEnabled)
+                    .accessibilityLabel(SubmitClaimAudioStepCopy.textFieldLabel)
+                if showsValidationError, let error = viewModel.textInputError {
+                    hText(error, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .transition(.opacity)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            HStack(spacing: .padding8) {
+                Spacer(minLength: 0)
+                hButton(.medium, .secondary, content: .init(title: L10n.generalCancelButton)) {
+                    viewModel.dismissInput()
+                }
+                .disabled(viewModel.state.isLoading)
+                hButton(.medium, .primary, content: .init(title: L10n.chatUploadPresend)) {
                     viewModel.submitResponse()
                 }
                 .disabled(viewModel.characterMismatch)
-
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.claimsUseAudioRecording)
-                ) {
-                    withAnimation {
-                        viewModel.isTextInputPresented = false
-                        viewModel.isAudioInputPresented = true
+                .hButtonIsLoading(viewModel.state.isLoading)
+                .overlay {
+                    // A disabled button ignores taps; catch them here to explain why it is disabled.
+                    if viewModel.characterMismatch {
+                        Button {
+                            withAnimation(.defaultSpring) { showsValidationError = true }
+                        } label: {
+                            Color.clear.contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHidden(true)
                     }
                 }
             }
         }
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
+        .padding(.padding16)
+        .modifier(SubmitClaimInputCardBackground())
+        .onChange(of: viewModel.textInput) { _ in
+            if !viewModel.characterMismatch {
+                withAnimation(.defaultSpring) { showsValidationError = false }
+            }
+        }
+        .onAppear {
+            // The chat dismisses the keyboard on scroll; keep it while this card is open.
+            scrollCoordinator.keepsKeyboardWhileScrolling = true
+            guard viewModel.showTextViewOnAppear else { return }
+            Task {
+                // Focus after the card has landed so the keyboard reliably opens with it.
+                await delay(ClaimChatConstants.Timing.layoutUpdate)
+                isFocused = true
+            }
+        }
+        .onDisappear {
+            scrollCoordinator.keepsKeyboardWhileScrolling = false
+        }
+        .onChange(of: viewModel.state.isLoading) { isLoading in
+            // Figma 2.3: the keyboard goes down while sending.
+            if isLoading { isFocused = false }
+        }
+        .onChange(of: viewModel.state.isEnabled) { isEnabled in
+            if !isEnabled { isFocused = false }
+        }
     }
+}
 
-    enum SubmitClaimVoiceRecordingViewDetentType: TrackingViewNameProtocol, NavigationTitleProtocol {
-        case voiceRecording
-
-        var nameForTracking: String {
-            String(describing: VoiceRecordingCardContent.self)
-        }
-
-        var navigationTitle: String? {
-            L10n.claimsTriagingWhatHappenedTitle
-        }
+/// Card container shared by the text and voice inputs (Figma "Menu - iPhone": radius 32, soft shadow).
+struct SubmitClaimInputCardBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: .cornerRadiusXXL + .padding8)
+                    .fill(hFillColor.Opaque.negative)
+            )
+            .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
+            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
     }
 }
 
@@ -166,90 +244,57 @@ struct SubmitClaimVoiceRecordingResultView: View {
 }
 
 // MARK: - Preview
+@MainActor
+private func previewStep(textInput: String? = nil) -> SubmitClaimAudioStep {
+    SubmitClaimAudioStep(
+        claimIntent: .init(
+            currentStep: .init(
+                content: .audioRecording(
+                    model: .init(
+                        uploadURI: "/upload",
+                        freeTextMinLength: 10,
+                        freeTextMaxLength: 500,
+                        currentFreeText: textInput
+                    )
+                ),
+                id: "step1",
+                text: "Tell us what happened"
+            ),
+            id: "intent1",
+            isSkippable: false,
+            isRegrettable: false,
+            progress: 0.3
+        ),
+        service: .init(),
+        mainHandler: { _ in }
+    )
+}
+
 #Preview("Initial State") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
-                ),
-                id: "step1",
-                text: "Tell us what happened"
-            ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
-    return VStack {
+    VStack {
         Spacer()
-        SubmitClaimVoiceRecordingView(viewModel: viewModel)
+        SubmitClaimVoiceRecordingView(viewModel: previewStep())
             .padding()
     }
+    .environmentObject(ClaimChatScrollCoordinator())
 }
 
-#Preview("Voice Recording") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
-                ),
-                id: "step1",
-                text: "Tell us what happened"
-            ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
+#Preview("Voice card") {
+    let viewModel = previewStep()
+    viewModel.isAudioInputPresented = true
     return VStack {
         Spacer()
         SubmitClaimVoiceRecordingView(viewModel: viewModel)
             .padding()
     }
+    .environmentObject(ClaimChatScrollCoordinator())
 }
 
-#Preview("Text Input") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
-                ),
-                id: "step1",
-                text: "Tell us what happened"
-            ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
-    viewModel.isTextInputPresented = true
-    return VStack {
+#Preview("Text card") {
+    VStack {
         Spacer()
-        SubmitClaimVoiceRecordingView(viewModel: viewModel)
+        SubmitClaimVoiceRecordingView(viewModel: previewStep(textInput: "Lorem ipsum dolor sit amet"))
             .padding()
     }
+    .environmentObject(ClaimChatScrollCoordinator())
 }

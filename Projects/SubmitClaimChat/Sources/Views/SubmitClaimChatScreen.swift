@@ -130,6 +130,9 @@ public struct SubmitClaimChatScreen: View {
                             }
                     }
                     .frame(maxHeight: viewModel.currentStepInputHeight)
+                    // Grow/shrink with the input (the text card's field and validation message change height).
+                    .animation(.defaultSpring, value: viewModel.currentStepInputHeight)
+                    .scrollClipDisabledIfAvailable()  // the input cards' shadows extend past the frame
                     .addScrollBounce()
                     .transition(.offset(x: 0, y: 1000))
                     .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
@@ -141,13 +144,11 @@ public struct SubmitClaimChatScreen: View {
         .padding(.bottom, .padding16)
         .environmentObject(viewModel)
         .background {
-            BackgroundBlurView()
-                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
-                .ignoresSafeArea(.container, edges: .bottom)
-                .offset(
-                    x: 0,
-                    y: viewModel.shouldHideCurrentInput ? 1000 : 0
-                )
+            if let currentStep = viewModel.currentStep {
+                CurrentStepPanelBackground(step: currentStep, isOffScreen: viewModel.shouldHideCurrentInput)
+            } else {
+                CurrentStepPanelBackground.panel(isOffScreen: viewModel.shouldHideCurrentInput)
+            }
         }
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
@@ -197,6 +198,25 @@ struct ScrollToBottomButton: View {
         }
         .accessibilityAddTraits(.isButton)
         .transition(.move(edge: .bottom).combined(with: .opacity))
+    }
+}
+
+/// Frosted panel behind the docked input. Hidden while the step draws its own card (see `hidesInputPanelBackground`).
+private struct CurrentStepPanelBackground: View {
+    @ObservedObject var step: ClaimIntentStepHandler
+    let isOffScreen: Bool
+
+    var body: some View {
+        Self.panel(isOffScreen: isOffScreen)
+            .opacity(step.state.hidesInputPanelBackground ? 0 : 1)
+            .animation(.default, value: step.state.hidesInputPanelBackground)
+    }
+
+    static func panel(isOffScreen: Bool) -> some View {
+        BackgroundBlurView()
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
+            .ignoresSafeArea(.container, edges: .bottom)
+            .offset(x: 0, y: isOffScreen ? 1000 : 0)
     }
 }
 
@@ -463,6 +483,8 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 self.currentStep = nil
                 self.progress = nil
             }
+        case let .scrollToStep(id):
+            scrollTarget = .init(id: id, anchor: .top)
         }
     }
 

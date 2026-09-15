@@ -12,6 +12,8 @@ public struct VoiceSendButton: View {
         self.onTap = onTap
     }
 
+    private var isEnabled: Bool { voiceRecorder.hasRecording && !voiceRecorder.isSending }
+
     public var body: some View {
         Button(action: {
             ImpactGenerator.soft()
@@ -36,17 +38,23 @@ public struct VoiceSendButton: View {
                     hCoreUIAssets.arrowUp.view
                         .foregroundColor(iconColor)
                 }
+                // While sending the tile reads disabled but keeps its colour (Figma 3.6).
+                .opacity(voiceRecorder.isSending ? 0.4 : 1)
 
-                hText(L10n.chatUploadPresend, style: .label)
-                    .foregroundColor(textColor)
+                hText(
+                    voiceRecorder.isSending ? SubmitClaimAudioStepCopy.sending : L10n.chatUploadPresend,
+                    style: .label
+                )
+                .foregroundColor(textColor)
             }
             .wrapContentForControlButton()
         }
         .buttonStyle(.plain)
-        .disabled(!voiceRecorder.hasRecording)
+        .disabled(!isEnabled)
         .accessibilityLabel(L10n.chatUploadPresend)
         .accessibilityAddTraits(.isButton)
         .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+        .animation(.defaultSpring, value: voiceRecorder.isSending)
     }
 
     @hColorBuilder
@@ -69,7 +77,7 @@ public struct VoiceSendButton: View {
 
     @hColorBuilder
     private var textColor: some hColor {
-        if voiceRecorder.hasRecording {
+        if isEnabled {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.tertiary

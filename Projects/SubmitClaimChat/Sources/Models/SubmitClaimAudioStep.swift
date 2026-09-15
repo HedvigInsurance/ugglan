@@ -23,10 +23,23 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         willSet {
             showTextViewOnAppear = newValue
         }
+        didSet {
+            updateSkipVisibility()
+        }
     }
     @Published var showTextViewOnAppear: Bool = false
-    @Published var isAudioInputPresented: Bool = false
+    @Published var isAudioInputPresented: Bool = false {
+        didSet {
+            updateSkipVisibility()
+            guard !isAudioInputPresented else { return }
+            // Closing mid-countdown: clear the flag the countdown checks before it would start recording.
+            voiceRecorder.isCountingDown = false
+            voiceRecorder.stopRecording()
+            voiceRecorder.stopPlayback()
+        }
+    }
     @Published var uploadProgress: Double = 0
+    private var presentInputTask: Task<Void, Never>?
 
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
@@ -70,6 +83,45 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             self.textInput = currentFreeText
             self.isTextInputPresented = true
             self.showTextViewOnAppear = false
+        }
+    }
+
+    // MARK: - Inline inputs (Skriv / Spela in)
+
+    /// Opens the text card. The question is scrolled to the top first so it stays visible above the card and keyboard.
+    func presentTextInput() {
+        presentInput { $0.isTextInputPresented = true }
+    }
+
+    /// Opens the voice card with a fresh recorder, scrolling the question to the top first like the text card.
+    func presentAudioInput() {
+        voiceRecorder.startOver()
+        presentInput { $0.isAudioInputPresented = true }
+    }
+
+    /// Closes whichever card is open and returns to the Skriv / Spela in row.
+    func dismissInput() {
+        presentInputTask?.cancel()
+        UIApplication.dismissKeyboard()
+        isTextInputPresented = false
+        isAudioInputPresented = false
+    }
+
+    /// The docked card is the whole input while it is open: Hoppa över and the frosted panel are only shown
+    /// with the Skriv / Spela in row.
+    private func updateSkipVisibility() {
+        let isCardPresented = isTextInputPresented || isAudioInputPresented
+        setDisableSkip(to: isCardPresented)
+        state.hidesInputPanelBackground = isCardPresented
+    }
+
+    private func presentInput(_ present: @escaping @MainActor (SubmitClaimAudioStep) -> Void) {
+        mainHandler(.scrollToStep(id: id))
+        presentInputTask?.cancel()
+        presentInputTask = Task { @MainActor [weak self] in
+            await delay(ClaimChatConstants.Timing.inputCardReveal)
+            guard !Task.isCancelled, let self else { return }
+            present(self)
         }
     }
 

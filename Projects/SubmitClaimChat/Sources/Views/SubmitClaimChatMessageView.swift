@@ -136,6 +136,7 @@ struct ClaimStepView: View {
                     .accessibilityHint(L10n.generalContinueButton)
                 }
                 .sectionContainerStyle(.transparent)
+                .padding(.top, skipTopPadding)
             }
         }
         .disabled(!viewModel.state.isEnabled)
@@ -143,7 +144,15 @@ struct ClaimStepView: View {
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isLoading)
         .id("step_\(viewModel.id)")
     }
+
+    // Figma "App P2 2026", section "5 · Text / voice input" 1.1: Hoppa över is a ghost button 16 pt below the Skriv / Spela in row.
+    private var isDescriptionStep: Bool { viewModel is SubmitClaimAudioStep }
+
+    private var skipButtonStyle: hButtonConfigurationType { isDescriptionStep ? .ghost : .secondary }
+
+    private var skipTopPadding: CGFloat { isDescriptionStep ? .padding12 : 0 }
 }
+
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
