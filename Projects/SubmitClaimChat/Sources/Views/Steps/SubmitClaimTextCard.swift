@@ -3,7 +3,8 @@ import hCore
 import hCoreUI
 
 /// Text input for the description step (Figma "App P2 2026", section "5 · Text / voice input", section 2):
-/// label · multiline field · counter · Avbryt / Skicka, in a card that replaces the docked input area.
+/// label · multiline field · Avbryt / Skicka, in a card that replaces the docked input area.
+/// No character counter, by design: the disabled Skicka and the length message carry the min/max rule.
 struct SubmitClaimTextCard: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @FocusState private var isFocused: Bool
@@ -26,19 +27,13 @@ struct SubmitClaimTextCard: View {
                     .accessibilityHint(
                         L10n.claimsTextInputMinCharactersError(viewModel.audioRecordingModel.freeTextMinLength)
                     )
-                HStack(alignment: .top, spacing: .padding8) {
-                    if let error = viewModel.textInputError {
-                        hText(error, style: .label)
-                            .foregroundColor(hSignalColor.Red.element)
-                            .transition(.opacity)
-                    }
-                    Spacer(minLength: 0)
-                    hText(characterCount, style: .label)
-                        .foregroundColor(characterCountColor)
-                        .accessibilityLabel(characterCount)
+                if let error = viewModel.textInputError {
+                    hText(error, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .transition(.opacity)
                 }
-                .animation(.defaultSpring, value: viewModel.textInputError)
             }
+            .animation(.defaultSpring, value: viewModel.textInputError)
             .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: .padding8) {
@@ -70,19 +65,6 @@ struct SubmitClaimTextCard: View {
         }
         .onChange(of: viewModel.state.isEnabled) { isEnabled in
             if !isEnabled { isFocused = false }
-        }
-    }
-
-    private var characterCount: String {
-        "\(viewModel.textInput.count)/\(viewModel.audioRecordingModel.freeTextMaxLength)"
-    }
-
-    @hColorBuilder
-    private var characterCountColor: some hColor {
-        if viewModel.textInput.count > viewModel.audioRecordingModel.freeTextMaxLength {
-            hSignalColor.Red.element
-        } else {
-            hTextColor.Opaque.secondary
         }
     }
 }
