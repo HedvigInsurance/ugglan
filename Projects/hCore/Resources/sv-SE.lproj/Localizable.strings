@@ -154,6 +154,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "Vad har hänt?";
 "CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Vad har hänt?";
 "CLAIMS_USE_AUDIO_RECORDING" = "Gör röstinspelning";
+"CLAIMS_VOICE_RECORDING_SENDING" = "Skickar...";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Annat föremål";
@@ -182,11 +183,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 timmar";
 "CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION" = "Berätta mer";
 "CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Var barnvagnen låst? Berätta gärna med egna ord, t.ex. vilket lås du använde.";
-"CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in ditt skadeärende";
+"CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in skadeanmälan";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Bearbetar information, vänligen vänta.";
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
 "CLAIM_CHAT_USE_AUDIO" = "Spela in med röst";
+"CLAIM_CHAT_USE_AUDIO_SHORT" = "Spela in";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv i text";
+"CLAIM_CHAT_USE_TEXT_INPUT_SHORT" = "Skriv";
 "COINSURED_EDIT_TITLE" = "Försäkrade personer";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Ange manuellt";
 "COINSURED_SSN_NOT_FOUND" = "Personnumret hittades inte";
@@ -507,12 +510,14 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_UPCOMING_PAYMENT" = "Kommande betalning";
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_ADD_METHOD_BUTTON" = "Lägg till betalningsmetod";
+"PAYMENT_CHANGE_FOOTNOTE" = "Du kan ändra betalningsmetod senare";
 "PAYMENT_CHANGE_METHOD_BUTTON" = "Ändra betalningsmetod";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Välj förvald metod";
 "PAYMENT_CONFIRM_PRIMARY_WARNING" = "Din nästa betalning sker via %1$@";
 "PAYMENT_CONNECT_SUBTITLE" = "Lägg till en ny betalningsmetod för din försäkring";
 "PAYMENT_CONNECT_TITLE" = "Koppla betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
+"PAYMENT_METHODS_EMPTY" = "Du har inte lagt till någon betalningsmetod än. Lägg till en för att betala för din försäkring.";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
@@ -520,6 +525,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Faktura till din Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Betalningar och utbetalningar via Swish";
 "PAYMENT_OPTION_TRUSTLY_SUBTITLE" = "Anslut din bank via Trustly";
+"PAYMENT_PAYOUT_BANK_SUCCESS_TITLE" = "Bankkonto har lagts till för utbetalningar";
 "PAYMENT_PRIMARY_CONFIRM_TITLE" = "Bekräfta betalningsmetod";
 "PAYMENT_PRIMARY_LABEL" = "Förvald";
 "PAYMENT_PRIMARY_SUBTITLE" = "Den här metoden används för dina månadsbetalningar";
@@ -534,6 +540,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Din försäkring betalas via Swish varje månad";
 "PAYMENT_SWISH_SUCCESS_TITLE" = "Swish är nu kopplat";
 "PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
+"PAYMENT_TRUSTLY_FAILURE_TITLE" = "Vi kunde inte koppla";
+"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Dras automatiskt varje månad";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
@@ -591,8 +599,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_EXPIRED_TITLE" = "Utkastet finns inte kvar";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Fortsätt";
 "RESUME_CLAIM_LEAVE_BODY" = "Det du fyllt i sparas som utkast i 7 dagar.";
-"RESUME_CLAIM_LEAVE_CANCEL" = "Fortsätt";
-"RESUME_CLAIM_LEAVE_CONFIRM" = "Spara utkast";
+"RESUME_CLAIM_LEAVE_CANCEL" = "Fortsätt anmälan";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Spara och stäng";
 "RESUME_CLAIM_LEAVE_TITLE" = "Stäng anmälan?";
 "RESUME_CLAIM_STATED" = "Påbörjad %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Spara och fortsätt";
