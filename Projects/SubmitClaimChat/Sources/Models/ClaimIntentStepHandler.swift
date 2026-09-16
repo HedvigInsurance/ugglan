@@ -68,6 +68,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             }
             return text
         }
+        if let self = self as? SubmitClaimInformationStep {
+            return self.informationModel.notice
+        }
         return nil
     }
 

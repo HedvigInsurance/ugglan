@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 final class SubmitClaimInformationStep: ClaimIntentStepHandler {
-    override var sender: SubmitClaimChatMessageSender { .hedvig }
+    override var sender: SubmitClaimChatMessageSender { .member }
 
     let informationModel: ClaimIntentStepContentInformation
 
@@ -16,10 +16,6 @@ final class SubmitClaimInformationStep: ClaimIntentStepHandler {
         }
         self.informationModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
-        Task { [weak self] in
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
-            self?.state.showResults = true
-        }
     }
 
     override func executeStep() async throws -> ClaimIntentType {
