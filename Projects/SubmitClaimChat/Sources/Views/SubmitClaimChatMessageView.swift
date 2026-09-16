@@ -145,7 +145,6 @@ struct ClaimStepView: View {
     }
 }
 
-/// Step → card registry. While a step `usesFloatingInputCard`, the chat shows this instead of the docked input area.
 struct ClaimInputCardView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
 
@@ -157,11 +156,11 @@ struct ClaimInputCardView: View {
             case .voice:
                 VoiceRecordingCardContent(
                     voiceRecorder: viewModel.voiceRecorder,
-                    onSend: { [weak viewModel] in
-                        try await viewModel?.saveVoice()
+                    onSend: {
+                        try await viewModel.saveVoice()
                     },
-                    onClose: { [weak viewModel] in
-                        viewModel?.cancelInput()
+                    onClose: {
+                        viewModel.cancelInput()
                     }
                 )
             case .choose:

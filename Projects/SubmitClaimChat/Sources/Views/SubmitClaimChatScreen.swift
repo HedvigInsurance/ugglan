@@ -102,7 +102,6 @@ public struct SubmitClaimChatScreen: View {
             if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                 currentStepView
             }
-            // A card input takes the place of the whole docked area on any size class.
             if let currentStep = viewModel.currentStep {
                 ClaimChatFloatingCardView(step: currentStep)
             }
@@ -132,8 +131,6 @@ public struct SubmitClaimChatScreen: View {
     }
 }
 
-/// The step's docked input, its skip button and the scroll-to-bottom arrow. Steps aside (together with the panel
-/// behind it) while the step answers in a card – see `ClaimChatFloatingCardView`.
 private struct ClaimChatDockedInputView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
@@ -180,8 +177,6 @@ private struct ClaimChatDockedInputView: View {
     }
 }
 
-/// Fades the docked area out while the step `usesFloatingInputCard`. Kept in the tree (rather than removed) so the
-/// chat's step-to-step transitions and the measured input height are exactly those of the other steps.
 private struct HiddenWhileFloatingCard<Content: View>: View {
     @ObservedObject var step: ClaimIntentStepHandler
     @ViewBuilder let content: () -> Content
@@ -197,8 +192,6 @@ private struct HiddenWhileFloatingCard<Content: View>: View {
     }
 }
 
-/// The card a step answers in (text / voice) while it `usesFloatingInputCard`. Replaces the docked input area,
-/// so it never feeds the measured input height and is never clipped or hidden by the docked ScrollView.
 private struct ClaimChatFloatingCardView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
@@ -214,7 +207,6 @@ private struct ClaimChatFloatingCardView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .claimStepErrorAlert(for: step)
                     .onAppear {
-                        // Keep the question visible above the card (and the keyboard).
                         viewModel.scrollTarget = .init(id: step.id, anchor: .top)
                     }
             }
@@ -262,7 +254,6 @@ struct ScrollToBottomButton: View {
     }
 }
 
-/// Frosted panel behind the docked input.
 private struct ClaimChatInputBlurBackground: View {
     let isOffScreen: Bool
 
@@ -289,8 +280,6 @@ private struct CurrentStepView: View {
     }
 }
 
-/// Shows the step's submit error in the chat alert, with retry. Shared by the docked input and the floating card
-/// so both have one explicit error path.
 private struct ClaimStepErrorAlertModifier: ViewModifier {
     @ObservedObject var step: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
@@ -303,6 +292,7 @@ private struct ClaimStepErrorAlertModifier: ViewModifier {
                     alertVm.alertModel = .init(
                         type: .error,
                         message: step.state.error?.localizedDescription ?? "",
+                        // Stored on alertVm: neither closure may capture this view.
                         action: { [weak step] in
                             step?.submitResponse()
                         },
@@ -653,8 +643,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
     struct ScrollTarget: Equatable {
         let id: String
         let anchor: UnitPoint
-        /// Each request is distinct, so the screen's `onChange` fires even when the same step is targeted twice in
-        /// a row (e.g. a card re-opened on the same step after the member scrolled away).
         private let requestId = UUID()
 
         init(id: String, anchor: UnitPoint) {

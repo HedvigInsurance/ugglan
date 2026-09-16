@@ -14,30 +14,23 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     @Published var textInput: String = "" {
         didSet {
-            // The message goes away as soon as the text is valid; it does not come back while typing.
             if !characterMismatch { showsLengthMessage = false }
         }
     }
-    /// The min/max-length message would make the card jump on every keystroke, so it is only shown after the
-    /// member tries to send too little text (see `saveText()`).
     @Published private var showsLengthMessage = false
     var textInputError: String? {
         showsLengthMessage && characterMismatch
             ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
     }
-    /// Which input is showing in the docked area. `.text` / `.voice` replace the whole area with a card.
     @Published private(set) var inputMode: InputMode = .choose {
         didSet {
             guard inputMode != .voice, oldValue == .voice else { return }
-            // Closing mid-countdown: clear the flag the countdown checks before it would start recording.
             voiceRecorder.isCountingDown = false
             voiceRecorder.stopRecording()
             voiceRecorder.stopPlayback()
         }
     }
-    /// The text card focuses its field when the member tapped Skriv, but not when a resumed step opens pre-filled.
     @Published private(set) var shouldFocusTextInput = false
-    /// How the step was answered; drives the result bubble and the request payload.
     @Published private(set) var submittedKind: AudioRecordingStepType?
     @Published var uploadProgress: Double = 0
 
@@ -98,26 +91,22 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     // MARK: - Inline inputs (Skriv / Spela in)
 
-    /// Opens the text card and focuses its field. The card scrolls the question into view itself.
     func beginText() {
         shouldFocusTextInput = true
         inputMode = .text
     }
 
-    /// Opens the voice card with a fresh recorder.
     func beginVoice() {
         voiceRecorder.startOver()
         inputMode = .voice
     }
 
-    /// Closes whichever card is open and returns to the Skriv / Spela in row.
     func cancelInput() {
         UIApplication.dismissKeyboard()
         shouldFocusTextInput = false
         inputMode = .choose
     }
 
-    /// Submits the text card, or explains why it cannot be sent yet.
     func saveText() {
         guard !characterMismatch else {
             showsLengthMessage = true
@@ -126,7 +115,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         submitResponse()
     }
 
-    /// Uploads the recording and submits the voice card.
     func saveVoice() async throws {
         audioFileURL = voiceRecorder.recordedFileURL
         try await uploadAudioRecording()

@@ -30,8 +30,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMessageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
-    /// `true` while the member answers in a card. The chat then replaces the whole docked input
-    /// area - panel, skip button and scroll-to-bottom arrow included - with the card (see `ClaimInputCardView`).
     var usesFloatingInputCard: Bool { false }
 
     let service: ClaimIntentService

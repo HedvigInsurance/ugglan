@@ -38,11 +38,10 @@ public struct VoiceSendButton: View {
                     hCoreUIAssets.arrowUp.view
                         .foregroundColor(iconColor)
                 }
-                // While sending the tile reads disabled but keeps its colour (Figma 3.6).
                 .opacity(voiceRecorder.isSending ? 0.4 : 1)
 
                 hText(
-                    voiceRecorder.isSending ? SubmitClaimAudioStepCopy.sending : L10n.chatUploadPresend,
+                    voiceRecorder.isSending ? L10n.claimsVoiceRecordingSending : L10n.chatUploadPresend,
                     style: .label
                 )
                 .foregroundColor(textColor)

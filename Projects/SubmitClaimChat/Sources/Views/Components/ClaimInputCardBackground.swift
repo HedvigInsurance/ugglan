@@ -1,7 +1,6 @@
 import SwiftUI
 import hCoreUI
 
-/// Card container shared by the text and voice inputs (Figma "Menu - iPhone": radius 32, soft shadow).
 struct ClaimInputCardBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
@@ -15,7 +14,6 @@ struct ClaimInputCardBackground: ViewModifier {
 }
 
 extension View {
-    /// Draws the view as a floating input card docked at the bottom of the claim chat.
     func claimInputCardBackground() -> some View {
         modifier(ClaimInputCardBackground())
     }

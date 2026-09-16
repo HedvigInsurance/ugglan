@@ -4,16 +4,11 @@ import hCore
 import hCoreUI
 
 // MARK: - Main Voice Recording View
-//
-// Description step input (Figma "App P2 2026", section "5 · Text / voice input"): Skriv · Spela in. Tapping either
-// opens a card that replaces the whole docked input area – see `ClaimInputCardView`.
 struct SubmitClaimVoiceRecordingView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
 
     var body: some View {
         hSection {
-            // Side by side only when the skip button is there to absorb the height; stacked otherwise, so two large
-            // buttons plus a third row still fit on small devices.
             if viewModel.isSkippable && !viewModel.state.disableSkip {
                 HStack(spacing: .padding8) {
                     textInputButton
@@ -35,11 +30,11 @@ struct SubmitClaimVoiceRecordingView: View {
             .large,
             .secondary,
             content: .init(
-                title: SubmitClaimAudioStepCopy.write,
-                buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading)
+                title: L10n.claimsWrite,
+                buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading, size: .large)
             )
-        ) { [weak viewModel] in
-            viewModel?.beginText()
+        ) {
+            viewModel.beginText()
         }
     }
 
@@ -48,22 +43,13 @@ struct SubmitClaimVoiceRecordingView: View {
             .large,
             .secondary,
             content: .init(
-                title: SubmitClaimAudioStepCopy.record,
-                buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading)
+                title: L10n.claimsRecord,
+                buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading, size: .large)
             )
-        ) { [weak viewModel] in
-            viewModel?.beginVoice()
+        ) {
+            viewModel.beginVoice()
         }
     }
-}
-
-/// Copy without Lokalise keys yet – see Figma "App P2 2026", section "5 · Text / voice input", section 5 (Copy).
-enum SubmitClaimAudioStepCopy {
-    // TODO: Lokalise keys for the redesigned description step.
-    static let write = "Skriv"
-    static let record = "Spela in"
-    static let textFieldLabel = "Beskriv vad som hänt"
-    static let sending = "Skickar…"
 }
 
 // MARK: - Result View (shown after submission)

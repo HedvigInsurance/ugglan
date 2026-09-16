@@ -2,8 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// Voice input for the description step (Figma "App P2 2026", section "5 · Text / voice input", section 3):
-/// title · timer · waveform · Börja om / Spela in / Skicka tiles, in a card that replaces the docked input area.
 struct VoiceRecordingCardContent: View {
     @ObservedObject var voiceRecorder: VoiceRecorder
     let onSend: () async throws -> Void
@@ -20,8 +18,7 @@ struct VoiceRecordingCardContent: View {
                     .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
                 Group {
                     if voiceRecorder.isSending {
-                        // Figma 3.6: the timer reads "Skickar…" while the recording is uploaded.
-                        hText(SubmitClaimAudioStepCopy.sending, style: .body1)
+                        hText(L10n.claimsVoiceRecordingSending, style: .body1)
                             .foregroundColor(recordingProgressColor)
                     } else if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
                         let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
@@ -66,7 +63,6 @@ struct VoiceRecordingCardContent: View {
                     .multilineTextAlignment(.center)
                     .transition(.opacity)
                 }
-                // Figma 3.6: while sending the waveform stays, greyed out, and every tile reads disabled.
                 waveformSection
                     .padding(.horizontal, .padding8)
                     .padding(.bottom, .padding64)
@@ -224,7 +220,6 @@ struct VoiceRecordingCardContent: View {
                 onTap: onSend
             )
         }
-        // The tiles use Spacers internally (wrapContentForControlButton); keep them hugging.
         .fixedSize(horizontal: false, vertical: true)
     }
 }

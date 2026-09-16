@@ -23,8 +23,6 @@ final class ClaimChatScrollCoordinator: ObservableObject {
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] _ in
-                    // Only the member scrolling dismisses the keyboard: programmatic scrolls and keyboard
-                    // insets move the offset too, and would close a card the member is typing in.
                     if self?.scrollView?.viewController?.presentedViewController == nil,
                         self?.isScrolledByMember == true
                     {
