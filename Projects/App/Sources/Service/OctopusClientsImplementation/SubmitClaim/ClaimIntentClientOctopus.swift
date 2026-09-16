@@ -453,17 +453,9 @@ extension ClaimIntentStepContent {
         } else if let deflectMessage = fragment.asClaimIntentStepContentDeflectionMessage {
             self = .deflectMessage(model: .init(message: deflectMessage.message))
         } else if let information = fragment.asClaimIntentStepContentInformation {
-            let severity: ClaimIntentStepContentInformationSeverity
-            switch information.severity.value {
-            case .critical:
-                severity = .critical
-            case .info, .none:
-                severity = .info
-            }
             self = .information(
                 model: .init(
                     notice: information.notice,
-                    severity: severity,
                     buttonTitle: information.buttonTitle
                 )
             )

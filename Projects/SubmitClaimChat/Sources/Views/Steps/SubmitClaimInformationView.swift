@@ -23,23 +23,11 @@ struct SubmitClaimInformationResultView: View {
     @ObservedObject var viewModel: SubmitClaimInformationStep
 
     var body: some View {
-        hSection {
-            InfoCard(
-                text: viewModel.informationModel.notice,
-                type: viewModel.informationModel.severity.notificationType
-            )
-        }
-        .sectionContainerStyle(.transparent)
-    }
-}
-
-extension ClaimIntentStepContentInformationSeverity {
-    var notificationType: NotificationType {
-        switch self {
-        case .info:
-            return .neutral
-        case .critical:
-            return .error
-        }
+        hText(viewModel.informationModel.buttonTitle)
+            .foregroundColor(hTextColor.Opaque.primary)
+            .hPillStyle(color: .grey, colorLevel: .two)
+            .hFieldSize(.extraLarge)
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
+            .accessibilityLabel(viewModel.informationModel.buttonTitle)
     }
 }

@@ -129,7 +129,6 @@ fragment ClaimIntentStepContentFragment on ClaimIntentStepContent {
     }
     ... on ClaimIntentStepContentInformation {
         notice
-        severity
         buttonTitle
     }
 }

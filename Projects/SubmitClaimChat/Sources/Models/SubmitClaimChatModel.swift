@@ -163,23 +163,15 @@ public struct ClaimIntentStepContentDeflectionMessage: Sendable {
 
 public struct ClaimIntentStepContentInformation: Sendable {
     public let notice: String
-    public let severity: ClaimIntentStepContentInformationSeverity
     public let buttonTitle: String
 
     public init(
         notice: String,
-        severity: ClaimIntentStepContentInformationSeverity,
         buttonTitle: String
     ) {
         self.notice = notice
-        self.severity = severity
         self.buttonTitle = buttonTitle
     }
-}
-
-public enum ClaimIntentStepContentInformationSeverity: Sendable {
-    case info
-    case critical
 }
 
 public enum ClaimIntentStepOutcome: Sendable, Hashable {
