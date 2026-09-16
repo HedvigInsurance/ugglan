@@ -124,13 +124,13 @@ struct SubmitClaimSummaryAnswersView: View {
     var body: some View {
         hForm {
             hSection {
-                VStack(alignment: .leading, spacing: .padding24) {
+                VStack(alignment: .leading, spacing: .padding16) {
                     ForEach(answers) { answer in
-                        VStack(alignment: .leading, spacing: .padding4) {
-                            hText(answer.title)
+                        VStack(alignment: .leading, spacing: 0) {
+                            hText(answer.title, style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                                 .accessibilityAddTraits(.isHeader)
                             SummaryAnswerValueView(value: answer.value)
-                                .foregroundColor(hTextColor.Opaque.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -166,8 +166,10 @@ private struct SummaryAnswerValueView: View {
                 TrackPlayerView(audioPlayer: AudioPlayer(url: url))
             }
             .hWithoutHorizontalPadding([.section])
+            .padding(.top, .padding8)
         case let .files(files):
             SummaryAnswerFilesView(files: files)
+                .padding(.top, .padding8)
         }
     }
 }
