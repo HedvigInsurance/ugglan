@@ -13,9 +13,18 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
     @Published var textInput: String = "" {
-        didSet { updateTextInputError() }
+        didSet {
+            // The message goes away as soon as the text is valid; it does not come back while typing.
+            if !characterMismatch { showsLengthMessage = false }
+        }
     }
-    @Published private(set) var textInputError: String?
+    /// The min/max-length message would make the card jump on every keystroke, so it is only shown after the
+    /// member tries to send too little text (see `saveText()`).
+    @Published private var showsLengthMessage = false
+    var textInputError: String? {
+        showsLengthMessage && characterMismatch
+            ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
+    }
     /// Which input is showing in the docked area. `.text` / `.voice` replace the whole area with a card.
     @Published private(set) var inputMode: InputMode = .choose {
         didSet {
@@ -82,7 +91,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             self.textInput = currentFreeText
             self.inputMode = .text
             self.submittedKind = .text
-            updateTextInputError()
         } else if model.currentAudioUrl != nil {
             self.submittedKind = .audio
         }
@@ -109,8 +117,12 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         inputMode = .choose
     }
 
-    /// Submits the text card.
+    /// Submits the text card, or explains why it cannot be sent yet.
     func saveText() {
+        guard !characterMismatch else {
+            showsLengthMessage = true
+            return
+        }
         submitResponse()
     }
 
@@ -119,13 +131,6 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         audioFileURL = voiceRecorder.recordedFileURL
         try await uploadAudioRecording()
         submitResponse()
-    }
-
-    /// Only complain once there is something to complain about - an empty card should not show an error.
-    private func updateTextInputError() {
-        textInputError =
-            !textInput.isEmpty && characterMismatch
-            ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
     }
 
     private var uploadedAudioId: String?

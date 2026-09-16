@@ -38,7 +38,23 @@ public final class ClaimIntentClientAudioDemo: ClaimIntentClientDemo {
         stepId: String
     ) async throws -> ClaimIntentType? {
         try await Task.sleep(for: .seconds(1))
-        return .intent(
+        return followUpStep
+    }
+
+    /// Hoppa över continues to the same follow-up step as an answer does.
+    public override func claimIntentSkipStep(stepId: String) async throws -> ClaimIntentType? {
+        try await Task.sleep(for: .seconds(1))
+        return followUpStep
+    }
+
+    /// Ändra goes back to the description step.
+    public override func claimIntentRegretStep(stepId: String) async throws -> ClaimIntentType? {
+        try await Task.sleep(for: .seconds(0.5))
+        return try await startClaimIntent(input: .init(type: .regular(hasInProgress: false)))
+    }
+
+    private var followUpStep: ClaimIntentType {
+        .intent(
             model: .init(
                 currentStep: .init(
                     content: .singleSelect(

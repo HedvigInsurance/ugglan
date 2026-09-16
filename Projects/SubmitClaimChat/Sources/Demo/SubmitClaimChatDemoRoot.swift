@@ -35,8 +35,11 @@ public struct SubmitClaimChatDemoRoot: View {
                     step.textInput = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
                     step.beginText()
                 case "textShort":
+                    // Too little text: the length message only appears once Skicka is tapped.
                     step.textInput = "The fir"
                     step.beginText()
+                    await delay(3)
+                    step.saveText()
                 case "textGrow":
                     // Card grows while open (same path as the validation message appearing).
                     step.textInput = "The fir"

@@ -4,7 +4,8 @@ import hCoreUI
 
 /// Text input for the description step (Figma "App P2 2026", section "5 · Text / voice input", section 2):
 /// label · multiline field · Avbryt / Skicka, in a card that replaces the docked input area.
-/// No character counter, by design: the disabled Skicka and the length message carry the min/max rule.
+/// No character counter, by design. The length message only appears after the member taps Skicka with too little
+/// text, and goes away once the text is valid.
 struct SubmitClaimTextCard: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
     @FocusState private var isFocused: Bool
@@ -47,6 +48,22 @@ struct SubmitClaimTextCard: View {
                 }
                 .disabled(viewModel.characterMismatch)
                 .hButtonIsLoading(viewModel.state.isLoading)
+                .accessibilityHint(
+                    viewModel.characterMismatch
+                        ? L10n.claimsTextInputMinCharactersError(viewModel.audioRecordingModel.freeTextMinLength) : ""
+                )
+                .overlay {
+                    // A disabled button swallows taps; let a tap on the dimmed Skicka explain why it is disabled.
+                    if viewModel.characterMismatch {
+                        Button { [weak viewModel] in
+                            viewModel?.saveText()
+                        } label: {
+                            Color.clear.contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHidden(true)
+                    }
+                }
             }
         }
         .padding(.padding16)
