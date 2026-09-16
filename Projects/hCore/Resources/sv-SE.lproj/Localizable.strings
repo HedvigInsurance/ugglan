@@ -507,9 +507,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_UPCOMING_PAYMENT" = "Kommande betalning";
 "PAYMENTS_VIEW_PAYMENT" = "Se betalning";
 "PAYMENT_ADD_METHOD_BUTTON" = "Lägg till betalningsmetod";
-"PAYMENT_CHANGE_METHOD_BUTTON" = "";
+"PAYMENT_CHANGE_METHOD_BUTTON" = "Ändra betalningsmetod";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Välj förvald metod";
-"PAYMENT_CONFIRM_PRIMARY_WARNING" = "Din nästa betalning dras från %1$@. Utbetalningar skickas också till detta konto.";
+"PAYMENT_CONFIRM_PRIMARY_WARNING" = "Din nästa betalning sker via %1$@";
 "PAYMENT_CONNECT_SUBTITLE" = "Lägg till en ny betalningsmetod för din försäkring";
 "PAYMENT_CONNECT_TITLE" = "Koppla betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
@@ -529,10 +529,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_APPROVE_TITLE" = "Godkänn kopplingen i Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Byt telefonnummer";
 "PAYMENT_SWISH_EXPLANATION_BUTTON" = "Så fungerar återkommande betalningar med Swish";
-"PAYMENT_SWISH_FAILURE_TITLE" = "";
+"PAYMENT_SWISH_FAILURE_TITLE" = "Vi kunde inte koppla Swish";
 "PAYMENT_SWISH_SUBTITLE" = "Vi skickar kopplingen till Swish på det här numret";
-"PAYMENT_SWISH_SUCCESS_SUBTITLE" = "";
-"PAYMENT_SWISH_SUCCESS_TITLE" = "";
+"PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Din försäkring betalas via Swish varje månad";
+"PAYMENT_SWISH_SUCCESS_TITLE" = "Swish är nu kopplat";
 "PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
