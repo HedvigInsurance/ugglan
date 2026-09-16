@@ -241,4 +241,8 @@ public class hPaymentClientDemo: hPaymentClient {
     public func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
         try await Task.sleep(for: .seconds(1))
     }
+
+    public func removePaymentMethod(_ provider: PaymentProvider) async throws {
+        try await Task.sleep(for: .seconds(1))
+    }
 }
