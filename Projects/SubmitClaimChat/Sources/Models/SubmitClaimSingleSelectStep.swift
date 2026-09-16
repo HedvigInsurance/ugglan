@@ -4,6 +4,12 @@ import hCore
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     @Published var selectedOptionId: String?
     let model: ClaimIntentStepContentSelect
+    /// With a default selection the member confirms manually, otherwise picking an option submits the step
+    var requiresConfirmation: Bool { model.defaultSelectedId != nil }
+    /// Set once an auto submit is scheduled - the first pick is final, so further taps are ignored
+    @Published private(set) var isSelectionLocked = false
+    private var autoSubmitTask: Task<Void, Never>?
+
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
@@ -21,6 +27,18 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         selectedOptionId = model.currentSelectedId ?? model.defaultSelectedId
     }
 
+    func select(optionId: String) {
+        guard !isSelectionLocked else { return }
+        selectedOptionId = optionId
+        guard !requiresConfirmation else { return }
+        isSelectionLocked = true
+        autoSubmitTask = Task { [weak self] in
+            try? await Task.sleep(seconds: ClaimChatConstants.Timing.autoSubmitDelay)
+            guard !Task.isCancelled else { return }
+            self?.submitResponse()
+        }
+    }
+
     override func executeStep() async throws -> ClaimIntentType {
         guard let selectedOptionId else {
             throw ClaimIntentError.invalidInput
@@ -36,6 +54,9 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
     }
 
     override func skip() async {
+        autoSubmitTask?.cancel()
+        autoSubmitTask = nil
+        isSelectionLocked = false
         await super.skip()
         selectedOptionId = nil
     }

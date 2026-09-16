@@ -14,15 +14,18 @@ struct SubmitClaimSingleSelectView: View {
                 case .pill: pillInputView
                 case .binary: binaryInputView
                 }
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.generalConfirm)
-                ) { viewModel.submitResponse() }
-                .opacity(showOptions ? 1 : 0)
-                .animation(.easeInOut, value: showOptions)
-                .disabled(viewModel.selectedOptionId == nil)
+                if viewModel.requiresConfirmation {
+                    hButton(
+                        .large,
+                        .primary,
+                        content: .init(title: L10n.generalConfirm)
+                    ) { viewModel.submitResponse() }
+                    .opacity(showOptions ? 1 : 0)
+                    .animation(.easeInOut, value: showOptions)
+                    .disabled(viewModel.selectedOptionId == nil)
+                }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .sectionContainerStyle(.transparent)
         .animation(.easeInOut, value: viewModel.selectedOptionId)
@@ -38,19 +41,16 @@ struct SubmitClaimSingleSelectView: View {
         ) { optionId in
             let option = viewModel.model.options.first(where: { $0.id == optionId })!
             if showOptions {
-                hPill(
-                    text: option.title,
-                    color: viewModel.selectedOptionId == optionId ? .green : .grey,
-                    colorLevel: .two,
-                    withBorder: false,
-                    minWidth: .padding60
-                )
-                .hFieldSize(.large)
-                .capsuleShape(true)
-                .transition(.submitClaimOptionAppear)
-                .onTapGesture { selectOption(id: option.id) }
+                hButton(
+                    .medium,
+                    viewModel.selectedOptionId == optionId ? .primaryAlt : .secondary,
+                    content: .init(title: option.title)
+                ) {
+                    selectOption(id: option.id)
+                }
                 .accessibilityAddTraits(.isButton)
                 .optionAccessibility(label: option.title)
+                .transition(.submitClaimOptionAppear)
             }
         }
         .tagFlow(
@@ -80,7 +80,6 @@ struct SubmitClaimSingleSelectView: View {
                     }
                     .hWrapInPill(color: viewModel.selectedOptionId == option.id ? .green : .grey, colorLevel: .two)
                     .hButtonTakeFullWidth(true)
-                    .optionAccessibility(label: option.title)
                     .transition(.submitClaimOptionAppear)
                     .accessibilityAddTraits(.isButton)
                     .optionAccessibility(label: option.title)
@@ -98,15 +97,16 @@ struct SubmitClaimSingleSelectView: View {
     }
 
     private func selectOption(id: String) {
+        guard !viewModel.isSelectionLocked else { return }
         ImpactGenerator.soft()
-        viewModel.selectedOptionId = id
+        viewModel.select(optionId: id)
     }
 }
 
 extension View {
     fileprivate func optionAccessibility(label: String) -> some View {
         self.accessibilityLabel(label)
-            .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.voiceoverOptionSelected)
+            .accessibilityHint(L10n.voiceoverDoubleClickTo + " " + L10n.generalSelectButton)
             .accessibilityAddTraits(.isButton)
     }
 }
