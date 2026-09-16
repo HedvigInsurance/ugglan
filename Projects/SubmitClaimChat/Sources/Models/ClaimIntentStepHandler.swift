@@ -123,6 +123,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             state.isEnabled = true
             state.isLoading = false
         }
+        try? await Task.sleep(seconds: ClaimChatConstants.Timing.skipDelay)
         do {
             let result = try await service.claimIntentSkipStep(stepId: id)
             state.isSkipped = true

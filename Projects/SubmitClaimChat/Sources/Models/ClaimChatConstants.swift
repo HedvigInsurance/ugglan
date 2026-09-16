@@ -22,6 +22,9 @@ enum ClaimChatConstants {
         /// Delay between picking an option and auto submitting it in select views (0.5 seconds)
         static var autoSubmitDelay: Float { disableSubmitChatClaimAnimations ? 0 : 0.25 }
 
+        /// Delay between pressing skip and performing the skip request (0.25 seconds)
+        static var skipDelay: Float { disableSubmitChatClaimAnimations ? 0 : 0.25 }
+
         /// Quick delay for regret operation scroll positioning (0.4 seconds)
         static var regretScrollDelay: Float { disableSubmitChatClaimAnimations ? 0 : 0.4 }
 
