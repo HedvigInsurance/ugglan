@@ -36,8 +36,5 @@ enum ClaimChatConstants {
 
         /// Countdown step duration between numbers (1.0 second)
         static var countdownStep: TimeInterval { disableSubmitChatClaimAnimations ? 0 : 1.0 }
-
-        /// Delay between scrolling the question into view and revealing the text/voice input card (0.6 seconds)
-        static var inputCardReveal: TimeInterval { disableSubmitChatClaimAnimations ? 0 : 0.6 }
     }
 }

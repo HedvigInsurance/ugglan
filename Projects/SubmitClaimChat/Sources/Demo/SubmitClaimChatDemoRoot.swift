@@ -8,7 +8,8 @@ public struct SubmitClaimChatDemoRoot: View {
     @StateObject private var viewModel: SubmitClaimChatViewModel
     private let demoState: String?
 
-    /// `demoState` "text", "textShort" or "voice" opens that input once the first step has been revealed
+    /// `demoState` "text", "textShort", "textGrow", "textSend", "textCancelSkip" or "voice" drives that input once the
+    /// first step has been revealed
     /// (launch argument `-demoState voice` in the example scheme).
     public init(demoState: String? = nil) {
         self.demoState = demoState
@@ -27,29 +28,37 @@ public struct SubmitClaimChatDemoRoot: View {
             .environmentObject(viewModel.scrollCoordinator)
             .task {
                 guard let demoState else { return }
-                try? await Task.sleep(seconds: 6)
+                await delay(6)
                 guard let step = viewModel.currentStep as? SubmitClaimAudioStep else { return }
                 switch demoState {
                 case "text":
                     step.textInput = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-                    step.presentTextInput()
+                    step.beginText()
                 case "textShort":
                     step.textInput = "The fir"
-                    step.presentTextInput()
+                    step.beginText()
                 case "textGrow":
                     // Card grows while open (same path as the validation message appearing).
                     step.textInput = "The fir"
-                    step.presentTextInput()
-                    try? await Task.sleep(seconds: 3)
+                    step.beginText()
+                    await delay(3)
                     step.textInput =
                         "The fire started in the kitchen on Tuesday evening while we were out, and the smoke damaged the hallway and the living room ceiling."
                 case "textSend":
                     step.textInput = "Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-                    step.presentTextInput()
-                    try? await Task.sleep(seconds: 3)
-                    step.submitResponse()
+                    step.beginText()
+                    await delay(3)
+                    step.saveText()
+                case "textCancelSkip":
+                    // Skriv → type → Avbryt → Hoppa över must render the skipped pill, not an empty bubble.
+                    step.textInput = "The fire started in the kitchen"
+                    step.beginText()
+                    await delay(2)
+                    step.cancelInput()
+                    await delay(2)
+                    await step.skip()
                 case "voice":
-                    step.presentAudioInput()
+                    step.beginVoice()
                 default:
                     break
                 }

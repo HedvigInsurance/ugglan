@@ -10,7 +10,6 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: NavigationRouter
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
     public init() {}
 
@@ -103,6 +102,10 @@ public struct SubmitClaimChatScreen: View {
             if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                 currentStepView
             }
+            // A card input takes the place of the whole docked area on any size class.
+            if let currentStep = viewModel.currentStep {
+                ClaimChatFloatingCardView(step: currentStep)
+            }
         }
         .environmentObject(viewModel.alertVm)
     }
@@ -110,48 +113,62 @@ public struct SubmitClaimChatScreen: View {
     private var currentStepView: some View {
         ZStack(alignment: .bottom) {
             if let currentStep = viewModel.currentStep {
-                if viewModel.shouldHideCurrentInput {
-                    ScrollToBottomButton(scrollAction: scrollToBottom)
-                }
-                if !viewModel.shouldHideCurrentInput {
-                    ScrollView {
-                        CurrentStepView(step: currentStep)
-                            .padding(.top, .padding16)
-                            .background {
-                                GeometryReader { proxy in
-                                    Color.clear
-                                        .onAppear {
-                                            viewModel.currentStepInputHeight = proxy.size.height
-                                        }
-                                        .onChange(of: proxy.size) { value in
-                                            viewModel.currentStepInputHeight = value.height
-                                        }
-                                }
-                            }
-                    }
-                    .frame(maxHeight: viewModel.currentStepInputHeight)
-                    // Grow/shrink with the input (the text card's field and validation message change height).
-                    .animation(.defaultSpring, value: viewModel.currentStepInputHeight)
-                    .scrollClipDisabledIfAvailable()  // the input cards' shadows extend past the frame
-                    .addScrollBounce()
-                    .transition(.offset(x: 0, y: 1000))
-                    .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
-                    .accessibilityFocused($isCurrentStepFocused)
-                    .dismissKeyboard()
-                }
+                ClaimChatDockedInputView(step: currentStep)
             }
         }
         .padding(.bottom, .padding16)
         .environmentObject(viewModel)
         .background {
             if let currentStep = viewModel.currentStep {
-                CurrentStepPanelBackground(step: currentStep, isOffScreen: viewModel.shouldHideCurrentInput)
+                HiddenWhileFloatingCard(step: currentStep) {
+                    ClaimChatInputBlurBackground(isOffScreen: viewModel.shouldHideCurrentInput)
+                }
             } else {
-                CurrentStepPanelBackground.panel(isOffScreen: viewModel.shouldHideCurrentInput)
+                ClaimChatInputBlurBackground(isOffScreen: viewModel.shouldHideCurrentInput)
             }
         }
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
+    }
+}
+
+/// The step's docked input, its skip button and the scroll-to-bottom arrow. Steps aside (together with the panel
+/// behind it) while the step answers in a card – see `ClaimChatFloatingCardView`.
+private struct ClaimChatDockedInputView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
+    @ObservedObject var step: ClaimIntentStepHandler
+    @AccessibilityFocusState private var isCurrentStepFocused: Bool
+
+    var body: some View {
+        HiddenWhileFloatingCard(step: step) {
+            if viewModel.shouldHideCurrentInput {
+                ScrollToBottomButton(scrollAction: scrollToBottom)
+            }
+            if !viewModel.shouldHideCurrentInput {
+                ScrollView {
+                    CurrentStepView(step: step)
+                        .padding(.top, .padding16)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.currentStepInputHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        viewModel.currentStepInputHeight = value.height
+                                    }
+                            }
+                        }
+                }
+                .frame(maxHeight: viewModel.currentStepInputHeight)
+                .addScrollBounce()
+                .transition(.offset(x: 0, y: 1000))
+                .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
+                .accessibilityFocused($isCurrentStepFocused)
+                .dismissKeyboard()
+            }
+        }
     }
 
     private func scrollToBottom() {
@@ -160,6 +177,50 @@ public struct SubmitClaimChatScreen: View {
             await delay(ClaimChatConstants.Timing.standardAnimation)
             isCurrentStepFocused = true
         }
+    }
+}
+
+/// Fades the docked area out while the step `usesFloatingInputCard`. Kept in the tree (rather than removed) so the
+/// chat's step-to-step transitions and the measured input height are exactly those of the other steps.
+private struct HiddenWhileFloatingCard<Content: View>: View {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            content()
+        }
+        .opacity(step.usesFloatingInputCard ? 0 : 1)
+        .allowsHitTesting(!step.usesFloatingInputCard)
+        .accessibilityHidden(step.usesFloatingInputCard)
+        .animation(.defaultSpring, value: step.usesFloatingInputCard)
+    }
+}
+
+/// The card a step answers in (text / voice) while it `usesFloatingInputCard`. Replaces the docked input area,
+/// so it never feeds the measured input height and is never clipped or hidden by the docked ScrollView.
+private struct ClaimChatFloatingCardView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var step: ClaimIntentStepHandler
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            if step.usesFloatingInputCard {
+                ClaimInputCardView(viewModel: step)
+                    .padding(.horizontal, .padding16)
+                    .padding(.bottom, .padding16)
+                    .disabled(!step.state.isEnabled)
+                    .geometryGroupIfAvailable()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .claimStepErrorAlert(for: step)
+                    .onAppear {
+                        // Keep the question visible above the card (and the keyboard).
+                        viewModel.scrollTarget = .init(id: step.id, anchor: .top)
+                    }
+            }
+        }
+        .environmentObject(viewModel)
+        .animation(.defaultSpring, value: step.usesFloatingInputCard)
     }
 }
 
@@ -201,18 +262,11 @@ struct ScrollToBottomButton: View {
     }
 }
 
-/// Frosted panel behind the docked input. Hidden while the step draws its own card (see `hidesInputPanelBackground`).
-private struct CurrentStepPanelBackground: View {
-    @ObservedObject var step: ClaimIntentStepHandler
+/// Frosted panel behind the docked input.
+private struct ClaimChatInputBlurBackground: View {
     let isOffScreen: Bool
 
     var body: some View {
-        Self.panel(isOffScreen: isOffScreen)
-            .opacity(step.state.hidesInputPanelBackground ? 0 : 1)
-            .animation(.default, value: step.state.hidesInputPanelBackground)
-    }
-
-    static func panel(isOffScreen: Bool) -> some View {
         BackgroundBlurView()
             .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
             .ignoresSafeArea(.container, edges: .bottom)
@@ -222,43 +276,60 @@ private struct CurrentStepPanelBackground: View {
 
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
-    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-    @EnvironmentObject var router: NavigationRouter
+
     var body: some View {
         VStack {
             if step.state.showInput {
                 ClaimStepView(viewModel: step)
                     .transition(.offset(x: 0, y: 1000))
-                    .onChange(of: step.state.showError) { value in
-                        if value {
-                            alertVm.alertModel = .init(
-                                type: .error,
-                                message: step.state.error?.localizedDescription ?? "",
-                                // Stored on alertVm: neither closure may capture this view.
-                                action: { [weak step = step] in
-                                    step?.submitResponse()
-                                },
-                                onClose: { [weak step = step, weak router = router] in
-                                    if let claimError = step?.state.error as? ClaimIntentError {
-                                        switch claimError {
-                                        case .unknownStep, .unknownField:
-                                            Task {
-                                                await delay(0.1)
-                                                router?.dismiss()
-                                            }
-                                        default:
-                                            step?.state.isEnabled = true
-                                        }
-                                    } else {
-                                        step?.state.isEnabled = true
-                                    }
-                                }
-                            )
-                        }
-                    }
+                    .claimStepErrorAlert(for: step)
             }
         }
         .animation(.easeInOut(duration: 0.5), value: step.state.showInput)
+    }
+}
+
+/// Shows the step's submit error in the chat alert, with retry. Shared by the docked input and the floating card
+/// so both have one explicit error path.
+private struct ClaimStepErrorAlertModifier: ViewModifier {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @EnvironmentObject var router: NavigationRouter
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: step.state.showError) { value in
+                if value {
+                    alertVm.alertModel = .init(
+                        type: .error,
+                        message: step.state.error?.localizedDescription ?? "",
+                        action: { [weak step] in
+                            step?.submitResponse()
+                        },
+                        onClose: { [weak step, weak router] in
+                            if let claimError = step?.state.error as? ClaimIntentError {
+                                switch claimError {
+                                case .unknownStep, .unknownField:
+                                    Task { [weak router] in
+                                        await delay(0.1)
+                                        router?.dismiss()
+                                    }
+                                default:
+                                    step?.state.isEnabled = true
+                                }
+                            } else {
+                                step?.state.isEnabled = true
+                            }
+                        }
+                    )
+                }
+            }
+    }
+}
+
+extension View {
+    func claimStepErrorAlert(for step: ClaimIntentStepHandler) -> some View {
+        modifier(ClaimStepErrorAlertModifier(step: step))
     }
 }
 
@@ -483,8 +554,6 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 self.currentStep = nil
                 self.progress = nil
             }
-        case let .scrollToStep(id):
-            scrollTarget = .init(id: id, anchor: .top)
         }
     }
 
@@ -584,5 +653,13 @@ final class SubmitClaimChatViewModel: ObservableObject {
     struct ScrollTarget: Equatable {
         let id: String
         let anchor: UnitPoint
+        /// Each request is distinct, so the screen's `onChange` fires even when the same step is targeted twice in
+        /// a row (e.g. a card re-opened on the same step after the member scrolled away).
+        private let requestId = UUID()
+
+        init(id: String, anchor: UnitPoint) {
+            self.id = id
+            self.anchor = anchor
+        }
     }
 }

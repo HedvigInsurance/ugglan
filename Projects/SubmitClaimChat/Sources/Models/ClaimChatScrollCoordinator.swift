@@ -13,9 +13,6 @@ final class ClaimChatScrollCoordinator: ObservableObject {
     // MARK: - Published State
     @Published var isInputScrolledOffScreen = false
     @Published var shouldMergeInputWithContent = false
-    /// The inline text card keeps its keyboard open while the chat scrolls (the card scrolls the question
-    /// into view when it opens); every other step dismisses the keyboard on scroll.
-    var keepsKeyboardWhileScrolling = false
 
     // MARK: - Properties
     var scrollViewHeight: CGFloat = 0
@@ -26,14 +23,21 @@ final class ClaimChatScrollCoordinator: ObservableObject {
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] _ in
-                    if let self, !keepsKeyboardWhileScrolling,
-                        scrollView?.viewController?.presentedViewController == nil
+                    // Only the member scrolling dismisses the keyboard: programmatic scrolls and keyboard
+                    // insets move the offset too, and would close a card the member is typing in.
+                    if self?.scrollView?.viewController?.presentedViewController == nil,
+                        self?.isScrolledByMember == true
                     {
                         UIApplication.dismissKeyboard()
                     }
                     self?.checkForScrollOffset()
                 })
         }
+    }
+
+    private var isScrolledByMember: Bool {
+        guard let scrollView else { return false }
+        return scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating
     }
 
     private var scrollCancellable: AnyCancellable?

@@ -12,15 +12,3 @@ extension View {
         }
     }
 }
-
-extension View {
-    /// Lets a scroll view's content draw outside its bounds (iOS 17+); a no-op before that.
-    @ViewBuilder
-    func scrollClipDisabledIfAvailable() -> some View {
-        if #available(iOS 17.0, *) {
-            scrollClipDisabled()
-        } else {
-            self
-        }
-    }
-}

@@ -77,7 +77,7 @@ extension ClaimIntentStepHandler {
         if state.isSkipped { return .trailing }
         switch claimIntent.currentStep.content {
         case .audioRecording:
-            if (self as? SubmitClaimAudioStep)?.isTextInputPresented == true {
+            if (self as? SubmitClaimAudioStep)?.submittedKind == .text {
                 return .trailing
             }
             return .leading
@@ -136,7 +136,6 @@ struct ClaimStepView: View {
                     .accessibilityHint(L10n.generalContinueButton)
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.top, skipTopPadding)
             }
         }
         .disabled(!viewModel.state.isEnabled)
@@ -144,13 +143,32 @@ struct ClaimStepView: View {
         .animation(.easeInOut(duration: 0.2), value: viewModel.state.isLoading)
         .id("step_\(viewModel.id)")
     }
+}
 
-    // Figma "App P2 2026", section "5 · Text / voice input" 1.1: Hoppa över is a ghost button 16 pt below the Skriv / Spela in row.
-    private var isDescriptionStep: Bool { viewModel is SubmitClaimAudioStep }
+/// Step → card registry. While a step `usesFloatingInputCard`, the chat shows this instead of the docked input area.
+struct ClaimInputCardView: View {
+    @ObservedObject var viewModel: ClaimIntentStepHandler
 
-    private var skipButtonStyle: hButtonConfigurationType { isDescriptionStep ? .ghost : .secondary }
-
-    private var skipTopPadding: CGFloat { isDescriptionStep ? .padding12 : 0 }
+    @ViewBuilder var body: some View {
+        if let viewModel = viewModel as? SubmitClaimAudioStep {
+            switch viewModel.inputMode {
+            case .text:
+                SubmitClaimTextCard(viewModel: viewModel)
+            case .voice:
+                VoiceRecordingCardContent(
+                    voiceRecorder: viewModel.voiceRecorder,
+                    onSend: { [weak viewModel] in
+                        try await viewModel?.saveVoice()
+                    },
+                    onClose: { [weak viewModel] in
+                        viewModel?.cancelInput()
+                    }
+                )
+            case .choose:
+                EmptyView()
+            }
+        }
+    }
 }
 
 struct ClaimStepResultView: View {

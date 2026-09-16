@@ -22,8 +22,6 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var animateText = true
         var isLoaderAnimating = true
         var showLoadingAnimation = true
-        /// The step's input draws its own card, so the chat hides the frosted panel behind the docked input.
-        var hidesInputPanelBackground = false
     }
 
     @Published var state = StepUIState()
@@ -32,6 +30,9 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMessageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
+    /// `true` while the member answers in a card. The chat then replaces the whole docked input
+    /// area - panel, skip button and scroll-to-bottom arrow included - with the card (see `ClaimInputCardView`).
+    var usesFloatingInputCard: Bool { false }
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
@@ -249,8 +250,6 @@ enum SubmitClaimEvent {
     case regret(currentClaimIntent: ClaimIntent, newClaimIntent: ClaimIntent)
     case removeStep(id: String)
     case outcome(model: ClaimIntentStepOutcome)
-    /// Scrolls the step's question to the top of the chat (used before an input card opens over it).
-    case scrollToStep(id: String)
 }
 
 // MARK: - Errors

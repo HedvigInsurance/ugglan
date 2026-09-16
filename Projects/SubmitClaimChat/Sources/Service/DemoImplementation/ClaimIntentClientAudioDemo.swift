@@ -37,7 +37,7 @@ public final class ClaimIntentClientAudioDemo: ClaimIntentClientDemo {
         freeText: String?,
         stepId: String
     ) async throws -> ClaimIntentType? {
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(for: .seconds(1))
         return .intent(
             model: .init(
                 currentStep: .init(
@@ -73,7 +73,7 @@ public final class SubmitClaimFileUploadClientDemo: hSubmitClaimFileUploadClient
         withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> T {
         for step in 1...5 {
-            try await Task.sleep(seconds: 0.2)
+            try await Task.sleep(for: .seconds(0.2))
             withProgress?(Double(step) / 5)
         }
         let data = try JSONEncoder().encode(["fileIds": ["demo-audio"]])

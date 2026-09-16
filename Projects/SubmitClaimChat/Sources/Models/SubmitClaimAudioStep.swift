@@ -13,38 +13,37 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
     @Published var textInput: String = "" {
-        didSet {
-            textInputError =
-                characterMismatch ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
-        }
+        didSet { updateTextInputError() }
     }
-    @Published var textInputError: String?
-    @Published var isTextInputPresented: Bool = false {
-        willSet {
-            showTextViewOnAppear = newValue
-        }
+    @Published private(set) var textInputError: String?
+    /// Which input is showing in the docked area. `.text` / `.voice` replace the whole area with a card.
+    @Published private(set) var inputMode: InputMode = .choose {
         didSet {
-            updateSkipVisibility()
-        }
-    }
-    @Published var showTextViewOnAppear: Bool = false
-    @Published var isAudioInputPresented: Bool = false {
-        didSet {
-            updateSkipVisibility()
-            guard !isAudioInputPresented else { return }
+            guard inputMode != .voice, oldValue == .voice else { return }
             // Closing mid-countdown: clear the flag the countdown checks before it would start recording.
             voiceRecorder.isCountingDown = false
             voiceRecorder.stopRecording()
             voiceRecorder.stopPlayback()
         }
     }
+    /// The text card focuses its field when the member tapped Skriv, but not when a resumed step opens pre-filled.
+    @Published private(set) var shouldFocusTextInput = false
+    /// How the step was answered; drives the result bubble and the request payload.
+    @Published private(set) var submittedKind: AudioRecordingStepType?
     @Published var uploadProgress: Double = 0
-    private var presentInputTask: Task<Void, Never>?
 
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
             || textInput.count > audioRecordingModel.freeTextMaxLength
+    }
+
+    override var usesFloatingInputCard: Bool { inputMode != .choose }
+
+    enum InputMode {
+        case choose
+        case text
+        case voice
     }
 
     enum RecordingState {
@@ -81,48 +80,52 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         if let currentFreeText = model.currentFreeText {
             self.textInput = currentFreeText
-            self.isTextInputPresented = true
-            self.showTextViewOnAppear = false
+            self.inputMode = .text
+            self.submittedKind = .text
+            updateTextInputError()
+        } else if model.currentAudioUrl != nil {
+            self.submittedKind = .audio
         }
     }
 
     // MARK: - Inline inputs (Skriv / Spela in)
 
-    /// Opens the text card. The question is scrolled to the top first so it stays visible above the card and keyboard.
-    func presentTextInput() {
-        presentInput { $0.isTextInputPresented = true }
+    /// Opens the text card and focuses its field. The card scrolls the question into view itself.
+    func beginText() {
+        shouldFocusTextInput = true
+        inputMode = .text
     }
 
-    /// Opens the voice card with a fresh recorder, scrolling the question to the top first like the text card.
-    func presentAudioInput() {
+    /// Opens the voice card with a fresh recorder.
+    func beginVoice() {
         voiceRecorder.startOver()
-        presentInput { $0.isAudioInputPresented = true }
+        inputMode = .voice
     }
 
     /// Closes whichever card is open and returns to the Skriv / Spela in row.
-    func dismissInput() {
-        presentInputTask?.cancel()
+    func cancelInput() {
         UIApplication.dismissKeyboard()
-        isTextInputPresented = false
-        isAudioInputPresented = false
+        shouldFocusTextInput = false
+        inputMode = .choose
     }
 
-    /// The docked card is the whole input while it is open: Hoppa över and the frosted panel are only shown
-    /// with the Skriv / Spela in row.
-    private func updateSkipVisibility() {
-        let isCardPresented = isTextInputPresented || isAudioInputPresented
-        setDisableSkip(to: isCardPresented)
-        state.hidesInputPanelBackground = isCardPresented
+    /// Submits the text card.
+    func saveText() {
+        submitResponse()
     }
 
-    private func presentInput(_ present: @escaping @MainActor (SubmitClaimAudioStep) -> Void) {
-        mainHandler(.scrollToStep(id: id))
-        presentInputTask?.cancel()
-        presentInputTask = Task { @MainActor [weak self] in
-            await delay(ClaimChatConstants.Timing.inputCardReveal)
-            guard !Task.isCancelled, let self else { return }
-            present(self)
-        }
+    /// Uploads the recording and submits the voice card.
+    func saveVoice() async throws {
+        audioFileURL = voiceRecorder.recordedFileURL
+        try await uploadAudioRecording()
+        submitResponse()
+    }
+
+    /// Only complain once there is something to complain about - an empty card should not show an error.
+    private func updateTextInputError() {
+        textInputError =
+            !textInput.isEmpty && characterMismatch
+            ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
     }
 
     private var uploadedAudioId: String?
@@ -158,14 +161,11 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        let fileId: String? = {
-            if isTextInputPresented {
-                return nil
-            }
-            return uploadedAudioId
-        }()
+        let isText = inputMode == .text
+        submittedKind = isText ? .text : .audio
+        let fileId: String? = isText ? nil : uploadedAudioId
         voiceRecorder.isSending = true
-        let freeText = isTextInputPresented ? textInput : nil
+        let freeText = isText ? textInput : nil
         do {
             guard
                 let result = try await service.claimIntentSubmitAudio(
@@ -176,7 +176,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             else {
                 throw ClaimIntentError.invalidResponse
             }
-            isAudioInputPresented = false
+            voiceRecorder.stopPlayback()
             Task { [weak voiceRecorder] in
                 await delay(ClaimChatConstants.Timing.standardAnimation)
                 voiceRecorder?.isSending = false
@@ -195,7 +195,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         if state.isSkipped {
             return L10n.claimChatSkippedStep
         }
-        if isTextInputPresented {
+        if submittedKind == .text {
             return .accessibilitySubmittedValue(textInput)
         } else {
             return .accessibilitySubmittedValue(L10n.claimChatAudioRecordingLabel)
