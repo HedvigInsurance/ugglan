@@ -10,6 +10,7 @@ public protocol hPaymentClient: Sendable {
     func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus
     func chargeOutstandingPayment() async throws
     func setDefaultPaymentMethod(_ method: PaymentMethod) async throws
+    func removePaymentMethod(_ provider: PaymentProvider) async throws
 }
 
 public enum PaymentError: Error {

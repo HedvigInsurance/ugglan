@@ -267,6 +267,17 @@ class hPaymentClientOctopus: hPaymentClient {
         }
     }
 
+    func removePaymentMethod(_ provider: PaymentProvider) async throws {
+        guard let provider = provider.asMemberPaymentProvider else {
+            throw PaymentError.missingDataError(message: L10n.General.errorBody)
+        }
+        let mutation = OctopusGraphQL.PaymentMethodRemoveMethodMutation(provider: .case(provider))
+        let data = try await octopus.client.mutation(mutation: mutation)
+        if let userError = data?.paymentMethodRemoveMethod {
+            throw PaymentError.missingDataError(message: userError.message)
+        }
+    }
+
     func chargeOutstandingPayment() async throws {
         let mutation = OctopusGraphQL.ManuallyChargeMemberMutation()
         let data = try await octopus.client.mutation(mutation: mutation)
