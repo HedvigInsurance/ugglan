@@ -154,6 +154,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "What happened?";
 "CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "What has happened?";
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
+"CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
@@ -186,7 +187,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";
 "CLAIM_CHAT_USE_AUDIO" = "Record with voice";
+"CLAIM_CHAT_USE_AUDIO_SHORT" = "Record";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe using text";
+"CLAIM_CHAT_USE_TEXT_INPUT_SHORT" = "Write";
 "COINSURED_EDIT_TITLE" = "Insured people";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Enter manually";
 "COINSURED_SSN_NOT_FOUND" = "SSN not found";
@@ -507,12 +510,14 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
 "PAYMENTS_VIEW_PAYMENT" = "View payment";
 "PAYMENT_ADD_METHOD_BUTTON" = "Add payment method";
+"PAYMENT_CHANGE_FOOTNOTE" = "You can change payment method later";
 "PAYMENT_CHANGE_METHOD_BUTTON" = "Change payment method";
 "PAYMENT_CHOOSE_PRIMARY_BUTTON" = "Change primary method";
 "PAYMENT_CONFIRM_PRIMARY_WARNING" = "Your next payment will be made via %1$@";
 "PAYMENT_CONNECT_SUBTITLE" = "Add a new payment method for your insurance";
 "PAYMENT_CONNECT_TITLE" = "Connect payment";
 "PAYMENT_HISTORY_TITLE" = "Payment history";
+"PAYMENT_METHODS_EMPTY" = "You haven't added a billing method yet. Add one to pay for your insurance.";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
@@ -520,6 +525,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Invoice to your Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Payments and payouts via Swish";
 "PAYMENT_OPTION_TRUSTLY_SUBTITLE" = "Connect your bank via Trustly";
+"PAYMENT_PAYOUT_BANK_SUCCESS_TITLE" = "Bank account is added for payouts";
 "PAYMENT_PRIMARY_CONFIRM_TITLE" = "Confirm payment method";
 "PAYMENT_PRIMARY_LABEL" = "Primary";
 "PAYMENT_PRIMARY_SUBTITLE" = "This method will be used for your monthly payments";
@@ -534,6 +540,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Your insurance is paid via Swish each month";
 "PAYMENT_SWISH_SUCCESS_TITLE" = "Swish is now connected";
 "PAYMENT_SWISH_TITLE" = "Confirm your Swish number";
+"PAYMENT_TRUSTLY_FAILURE_TITLE" = "Connection failed";
+"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Charged automatically each month";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
@@ -591,8 +599,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "RESUME_CLAIM_EXPIRED_TITLE" = "This draft has expired";
 "RESUME_CLAIM_FALLBACK_TITLE" = "Continue";
 "RESUME_CLAIM_LEAVE_BODY" = "What you've filled in is saved as a draft for 7 days.";
-"RESUME_CLAIM_LEAVE_CANCEL" = "Continue";
-"RESUME_CLAIM_LEAVE_CONFIRM" = "Save draft";
+"RESUME_CLAIM_LEAVE_CANCEL" = "Continue claim";
+"RESUME_CLAIM_LEAVE_CONFIRM" = "Save and close";
 "RESUME_CLAIM_LEAVE_TITLE" = "Close this claim?";
 "RESUME_CLAIM_STATED" = "Started %1$@";
 "SAVE_AND_CONTINUE_BUTTON_LABEL" = "Save and continue";
