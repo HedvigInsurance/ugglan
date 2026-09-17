@@ -11,7 +11,7 @@ class TerminateContractsService {
         try await client.getTerminationSurvey(contractId: contractId)
     }
 
-    @Log()
+    @Log(masked: ["comment"])
     func terminateContract(
         contractId: String,
         terminationDate: String,
@@ -30,7 +30,7 @@ class TerminateContractsService {
         return data
     }
 
-    @Log()
+    @Log(masked: ["comment"])
     func deleteContract(
         contractId: String,
         surveyOptionId: String,
