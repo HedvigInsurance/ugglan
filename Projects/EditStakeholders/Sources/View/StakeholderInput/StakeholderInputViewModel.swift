@@ -64,25 +64,16 @@ public class StakeholderInputViewModel: ObservableObject {
                     self.nameFetchedFromSSN = true
                 }
             }
-        } catch let exception {
-            if let exception = exception as? EditStakeholdersError {
-                switch exception {
-                case .missingSSN:
-                    withAnimation {
-                        self.noSSN = true
-                        self.enterManually = true
-                        self.showInfoForMissingSSN = true
-                    }
-                case .otherError, .serviceError:
-                    self.enterManually = false
-                    withAnimation {
-                        self.SSNError = exception.localizedDescription
-                    }
-                }
-            } else {
-                withAnimation {
-                    self.SSNError = exception.localizedDescription
-                }
+        } catch EditStakeholdersError.missingSSN {
+            withAnimation {
+                self.noSSN = true
+                self.enterManually = true
+                self.showInfoForMissingSSN = true
+            }
+        } catch {
+            self.enterManually = false
+            withAnimation {
+                self.SSNError = error.localizedDescription
             }
         }
         withAnimation {
