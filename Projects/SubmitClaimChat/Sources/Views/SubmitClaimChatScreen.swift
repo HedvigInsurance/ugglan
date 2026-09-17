@@ -102,11 +102,19 @@ public struct SubmitClaimChatScreen: View {
             if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                 currentStepView
             }
-            if let currentStep = viewModel.currentStep {
-                ClaimChatFloatingCardView(step: currentStep)
-            }
+            floatingCardView
         }
         .environmentObject(viewModel.alertVm)
+    }
+
+    private var floatingCardView: some View {
+        ZStack(alignment: .bottom) {
+            if let currentStep = viewModel.currentStep {
+                ClaimChatFloatingCardView(step: currentStep)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 
     private var currentStepView: some View {
