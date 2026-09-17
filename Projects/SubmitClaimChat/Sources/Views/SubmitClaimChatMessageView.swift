@@ -77,7 +77,7 @@ extension ClaimIntentStepHandler {
         if state.isSkipped { return .trailing }
         switch claimIntent.currentStep.content {
         case .audioRecording:
-            if (self as? SubmitClaimAudioStep)?.isTextInputPresented == true {
+            if (self as? SubmitClaimAudioStep)?.submittedKind == .text {
                 return .trailing
             }
             return .leading
@@ -144,6 +144,33 @@ struct ClaimStepView: View {
         .id("step_\(viewModel.id)")
     }
 }
+
+struct ClaimInputCardView: View {
+    @ObservedObject var viewModel: ClaimIntentStepHandler
+    var onTextFocus: () -> Void = {}
+
+    @ViewBuilder var body: some View {
+        if let viewModel = viewModel as? SubmitClaimAudioStep {
+            switch viewModel.inputMode {
+            case .text:
+                SubmitClaimTextCard(viewModel: viewModel, onFocus: onTextFocus)
+            case .voice:
+                VoiceRecordingCardContent(
+                    voiceRecorder: viewModel.voiceRecorder,
+                    onSend: {
+                        try await viewModel.saveVoice()
+                    },
+                    onClose: {
+                        viewModel.cancelInput()
+                    }
+                )
+            case .choose:
+                EmptyView()
+            }
+        }
+    }
+}
+
 struct ClaimStepResultView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
     @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel

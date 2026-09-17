@@ -30,6 +30,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
     var sender: SubmitClaimChatMessageSender { .member }
     var isSkippable: Bool { claimIntent.isSkippable }
     var isRegrettable: Bool { claimIntent.isRegrettable }
+    var usesFloatingInputCard: Bool { false }
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
@@ -112,6 +113,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 } else {
                     self.state.error = error
                 }
+                state.isEnabled = true
+                state.isLoading = false
             }
         }
     }

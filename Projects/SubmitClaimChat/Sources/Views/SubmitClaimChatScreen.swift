@@ -10,7 +10,6 @@ public struct SubmitClaimChatScreen: View {
     @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
     @EnvironmentObject var router: NavigationRouter
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
     public init() {}
 
@@ -103,54 +102,78 @@ public struct SubmitClaimChatScreen: View {
             if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                 currentStepView
             }
+            floatingCardView
         }
         .environmentObject(viewModel.alertVm)
+    }
+
+    private var floatingCardView: some View {
+        ZStack(alignment: .bottom) {
+            if let currentStep = viewModel.currentStep {
+                ClaimChatFloatingCardView(step: currentStep)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.defaultSpring, value: viewModel.currentStep?.id)
     }
 
     private var currentStepView: some View {
         ZStack(alignment: .bottom) {
             if let currentStep = viewModel.currentStep {
-                if viewModel.shouldHideCurrentInput {
-                    ScrollToBottomButton(scrollAction: scrollToBottom)
-                }
-                if !viewModel.shouldHideCurrentInput {
-                    ScrollView {
-                        CurrentStepView(step: currentStep)
-                            .padding(.top, .padding16)
-                            .background {
-                                GeometryReader { proxy in
-                                    Color.clear
-                                        .onAppear {
-                                            viewModel.currentStepInputHeight = proxy.size.height
-                                        }
-                                        .onChange(of: proxy.size) { value in
-                                            viewModel.currentStepInputHeight = value.height
-                                        }
-                                }
-                            }
-                    }
-                    .frame(maxHeight: viewModel.currentStepInputHeight)
-                    .addScrollBounce()
-                    .transition(.offset(x: 0, y: 1000))
-                    .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
-                    .accessibilityFocused($isCurrentStepFocused)
-                    .dismissKeyboard()
-                }
+                ClaimChatDockedInputView(step: currentStep)
             }
         }
         .padding(.bottom, .padding16)
         .environmentObject(viewModel)
         .background {
-            BackgroundBlurView()
-                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
-                .ignoresSafeArea(.container, edges: .bottom)
-                .offset(
-                    x: 0,
-                    y: viewModel.shouldHideCurrentInput ? 1000 : 0
-                )
+            if let currentStep = viewModel.currentStep {
+                HiddenWhileFloatingCard(step: currentStep) {
+                    ClaimChatInputBlurBackground(isOffScreen: viewModel.shouldHideCurrentInput)
+                }
+            } else {
+                ClaimChatInputBlurBackground(isOffScreen: viewModel.shouldHideCurrentInput)
+            }
         }
         .animation(.default, value: viewModel.currentStep?.id)
         .animation(.easeInOut(duration: 0.5), value: scrollCoordinator.isInputScrolledOffScreen)
+    }
+}
+
+private struct ClaimChatDockedInputView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
+    @ObservedObject var step: ClaimIntentStepHandler
+    @AccessibilityFocusState private var isCurrentStepFocused: Bool
+
+    var body: some View {
+        HiddenWhileFloatingCard(step: step) {
+            if viewModel.shouldHideCurrentInput {
+                ScrollToBottomButton(scrollAction: scrollToBottom)
+            }
+            if !viewModel.shouldHideCurrentInput {
+                ScrollView {
+                    CurrentStepView(step: step)
+                        .padding(.top, .padding16)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        viewModel.currentStepInputHeight = proxy.size.height
+                                    }
+                                    .onChange(of: proxy.size) { value in
+                                        viewModel.currentStepInputHeight = value.height
+                                    }
+                            }
+                        }
+                }
+                .frame(maxHeight: viewModel.currentStepInputHeight)
+                .addScrollBounce()
+                .transition(.offset(x: 0, y: 1000))
+                .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
+                .accessibilityFocused($isCurrentStepFocused)
+                .dismissKeyboard()
+            }
+        }
     }
 
     private func scrollToBottom() {
@@ -159,6 +182,46 @@ public struct SubmitClaimChatScreen: View {
             await delay(ClaimChatConstants.Timing.standardAnimation)
             isCurrentStepFocused = true
         }
+    }
+}
+
+private struct HiddenWhileFloatingCard<Content: View>: View {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            content()
+        }
+        .opacity(step.usesFloatingInputCard ? 0 : 1)
+        .allowsHitTesting(!step.usesFloatingInputCard)
+        .accessibilityHidden(step.usesFloatingInputCard)
+        .animation(.defaultSpring, value: step.usesFloatingInputCard)
+    }
+}
+
+private struct ClaimChatFloatingCardView: View {
+    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
+    @ObservedObject var step: ClaimIntentStepHandler
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            if step.usesFloatingInputCard {
+                ClaimInputCardView(viewModel: step, onTextFocus: { viewModel.scrollToStep(step) })
+                    .padding(.horizontal, .padding16)
+                    .padding(.vertical, verticalSizeClass == .regular ? .padding16 : .padding8)
+                    .disabled(!step.state.isEnabled)
+                    .geometryGroupIfAvailable()
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .claimStepErrorAlert(for: step)
+                    .onAppear {
+                        viewModel.scrollToStep(step)
+                    }
+            }
+        }
+        .environmentObject(viewModel)
+        .animation(.defaultSpring, value: step.usesFloatingInputCard)
     }
 }
 
@@ -200,45 +263,74 @@ struct ScrollToBottomButton: View {
     }
 }
 
+private struct ClaimChatInputBlurBackground: View {
+    let isOffScreen: Bool
+
+    var body: some View {
+        BackgroundBlurView()
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: [.topLeft, .topRight]))
+            .ignoresSafeArea(.container, edges: .bottom)
+            .offset(x: 0, y: isOffScreen ? 1000 : 0)
+    }
+}
+
 private struct CurrentStepView: View {
     @ObservedObject var step: ClaimIntentStepHandler
-    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-    @EnvironmentObject var router: NavigationRouter
+
     var body: some View {
         VStack {
             if step.state.showInput {
                 ClaimStepView(viewModel: step)
                     .transition(.offset(x: 0, y: 1000))
-                    .onChange(of: step.state.showError) { value in
-                        if value {
-                            alertVm.alertModel = .init(
-                                type: .error,
-                                message: step.state.error?.localizedDescription ?? "",
-                                // Stored on alertVm: neither closure may capture this view.
-                                action: { [weak step = step] in
-                                    step?.submitResponse()
-                                },
-                                onClose: { [weak step = step, weak router = router] in
-                                    if let claimError = step?.state.error as? ClaimIntentError {
-                                        switch claimError {
-                                        case .unknownStep, .unknownField:
-                                            Task {
-                                                await delay(0.1)
-                                                router?.dismiss()
-                                            }
-                                        default:
-                                            step?.state.isEnabled = true
-                                        }
-                                    } else {
-                                        step?.state.isEnabled = true
-                                    }
-                                }
-                            )
-                        }
-                    }
+                    .claimStepErrorAlert(for: step)
             }
         }
         .animation(.easeInOut(duration: 0.5), value: step.state.showInput)
+    }
+}
+
+private struct ClaimStepErrorAlertModifier: ViewModifier {
+    @ObservedObject var step: ClaimIntentStepHandler
+    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @EnvironmentObject var router: NavigationRouter
+
+    func body(content: Content) -> some View {
+        content
+            .onChange(of: step.state.showError) { value in
+                if value {
+                    alertVm.alertModel = .init(
+                        type: .error,
+                        message: step.state.error?.localizedDescription ?? "",
+                        // Stored on alertVm: neither closure may capture this view.
+                        action: { [weak step] in
+                            step?.submitResponse()
+                        },
+                        onClose: { [weak step, weak router] in
+                            if let claimError = step?.state.error as? ClaimIntentError {
+                                switch claimError {
+                                case .unknownStep, .unknownField:
+                                    Task { [weak router] in
+                                        await delay(0.1)
+                                        router?.dismiss()
+                                    }
+                                default:
+                                    step?.state.isEnabled = true
+                                    step?.state.isLoading = false
+                                }
+                            } else {
+                                step?.state.isEnabled = true
+                                step?.state.isLoading = false
+                            }
+                        }
+                    )
+                }
+            }
+    }
+}
+
+extension View {
+    func claimStepErrorAlert(for step: ClaimIntentStepHandler) -> some View {
+        modifier(ClaimStepErrorAlertModifier(step: step))
     }
 }
 
@@ -549,6 +641,12 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
+    func scrollToStep(_ step: ClaimIntentStepHandler) {
+        guard let index = allSteps.firstIndex(where: { $0.id == step.id }) else { return }
+        let anchorStep = index > 0 && allSteps[index - 1] is SubmitClaimTaskStep ? allSteps[index - 1] : step
+        scrollTarget = .init(id: anchorStep.id, anchor: .top)
+    }
+
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {
         flowManager.createStepHandler(
             for: claimIntent,
@@ -562,5 +660,11 @@ final class SubmitClaimChatViewModel: ObservableObject {
     struct ScrollTarget: Equatable {
         let id: String
         let anchor: UnitPoint
+        private let requestId = UUID()
+
+        init(id: String, anchor: UnitPoint) {
+            self.id = id
+            self.anchor = anchor
+        }
     }
 }

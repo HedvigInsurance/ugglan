@@ -14,24 +14,38 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
 
     @Published var textInput: String = "" {
         didSet {
-            textInputError =
-                characterMismatch ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
+            if !characterMismatch { showsLengthMessage = false }
         }
     }
-    @Published var textInputError: String?
-    @Published var isTextInputPresented: Bool = false {
-        willSet {
-            showTextViewOnAppear = newValue
+    @Published private var showsLengthMessage = false
+    var textInputError: String? {
+        showsLengthMessage && characterMismatch
+            ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
+    }
+    @Published private(set) var inputMode: InputMode = .choose {
+        didSet {
+            guard inputMode != .voice, oldValue == .voice else { return }
+            voiceRecorder.isCountingDown = false
+            voiceRecorder.stopRecording()
+            voiceRecorder.stopPlayback()
         }
     }
-    @Published var showTextViewOnAppear: Bool = false
-    @Published var isAudioInputPresented: Bool = false
+    @Published private(set) var shouldFocusTextInput = false
+    @Published private(set) var submittedKind: AudioRecordingStepType?
     @Published var uploadProgress: Double = 0
 
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
         textInput.count < audioRecordingModel.freeTextMinLength
             || textInput.count > audioRecordingModel.freeTextMaxLength
+    }
+
+    override var usesFloatingInputCard: Bool { inputMode != .choose }
+
+    enum InputMode {
+        case choose
+        case text
+        case voice
     }
 
     enum RecordingState {
@@ -68,9 +82,43 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         if let currentFreeText = model.currentFreeText {
             self.textInput = currentFreeText
-            self.isTextInputPresented = true
-            self.showTextViewOnAppear = false
+            self.inputMode = .text
+            self.submittedKind = .text
+        } else if model.currentAudioUrl != nil {
+            self.submittedKind = .audio
         }
+    }
+
+    // MARK: - Inline inputs (Skriv / Spela in)
+
+    func beginText() {
+        shouldFocusTextInput = true
+        inputMode = .text
+    }
+
+    func beginVoice() {
+        voiceRecorder.startOver()
+        inputMode = .voice
+    }
+
+    func cancelInput() {
+        UIApplication.dismissKeyboard()
+        shouldFocusTextInput = false
+        inputMode = .choose
+    }
+
+    func saveText() {
+        guard !characterMismatch else {
+            showsLengthMessage = true
+            return
+        }
+        submitResponse()
+    }
+
+    func saveVoice() async throws {
+        audioFileURL = voiceRecorder.recordedFileURL
+        try await uploadAudioRecording()
+        submitResponse()
     }
 
     private var uploadedAudioId: String?
@@ -106,14 +154,11 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     }
 
     override func executeStep() async throws -> ClaimIntentType {
-        let fileId: String? = {
-            if isTextInputPresented {
-                return nil
-            }
-            return uploadedAudioId
-        }()
+        let isText = inputMode == .text
+        submittedKind = isText ? .text : .audio
+        let fileId: String? = isText ? nil : uploadedAudioId
         voiceRecorder.isSending = true
-        let freeText = isTextInputPresented ? textInput : nil
+        let freeText = isText ? textInput : nil
         do {
             guard
                 let result = try await service.claimIntentSubmitAudio(
@@ -124,7 +169,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             else {
                 throw ClaimIntentError.invalidResponse
             }
-            isAudioInputPresented = false
+            voiceRecorder.stopPlayback()
             Task { [weak voiceRecorder] in
                 await delay(ClaimChatConstants.Timing.standardAnimation)
                 voiceRecorder?.isSending = false
@@ -143,7 +188,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         if state.isSkipped {
             return L10n.claimChatSkippedStep
         }
-        if isTextInputPresented {
+        if submittedKind == .text {
             return .accessibilitySubmittedValue(textInput)
         } else {
             return .accessibilitySubmittedValue(L10n.claimChatAudioRecordingLabel)

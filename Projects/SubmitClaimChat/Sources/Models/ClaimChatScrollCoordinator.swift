@@ -23,12 +23,19 @@ final class ClaimChatScrollCoordinator: ObservableObject {
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                 .removeDuplicates()
                 .sink(receiveValue: { [weak self] _ in
-                    if self?.scrollView?.viewController?.presentedViewController == nil {
+                    if self?.scrollView?.viewController?.presentedViewController == nil,
+                        self?.isScrolledByMember == true
+                    {
                         UIApplication.dismissKeyboard()
                     }
                     self?.checkForScrollOffset()
                 })
         }
+    }
+
+    private var isScrolledByMember: Bool {
+        guard let scrollView else { return false }
+        return scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating
     }
 
     private var scrollCancellable: AnyCancellable?
