@@ -85,7 +85,6 @@ public struct WordmarkActivityIndicator: View {
 }
 
 public struct DotsActivityIndicator: View {
-    @State var animate: Bool = false
     var size: Size
     var animated: Bool
     public enum Size {
@@ -118,12 +117,6 @@ public struct DotsActivityIndicator: View {
             Color.clear.frame(width: dotSize)
             PulsingCircle(index: 2, animated: animated).frame(width: dotSize, height: dotSize)
         }
-        .onAppear {
-            animate = true
-        }
-        .onDisappear {
-            animate = false
-        }
     }
 }
 
@@ -139,10 +132,9 @@ private struct PulsingCircle: View {
         Circle()
             .fill(getFillColor)
             .opacity(animate ? 0.4 : 1)
-            .onAppear {
-                if animated {
-                    setAnimation()
-                }
+            .task {
+                guard animated else { return }
+                try? await pulse()
             }
     }
 
@@ -155,19 +147,16 @@ private struct PulsingCircle: View {
         }
     }
 
-    private func setAnimation() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration * index) {
-            withAnimation(.easeInOut(duration: duration)) {
-                animate = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                withAnimation(.easeInOut(duration: duration)) {
-                    animate = false
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + duration * (totalNumber - index - 1)) {
-                    setAnimation()
-                }
-            }
+    private func pulse() async throws {
+        try await Task.sleep(for: .seconds(duration * index))
+        while true {
+            withAnimation(.easeInOut(duration: duration)) { animate = true }
+
+            try await Task.sleep(for: .seconds(duration))
+
+            withAnimation(.easeInOut(duration: duration)) { animate = false }
+
+            try await Task.sleep(for: .seconds(duration * (totalNumber - 1)))
         }
     }
 }
