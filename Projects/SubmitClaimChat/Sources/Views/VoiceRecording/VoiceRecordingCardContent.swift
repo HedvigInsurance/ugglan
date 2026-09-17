@@ -13,66 +13,29 @@ struct VoiceRecordingCardContent: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                hText(L10n.claimsTriagingWhatHappenedTitle)
-                    .foregroundColor(titleColor)
-                    .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
-                Group {
-                    if voiceRecorder.isSending {
-                        hText(L10n.claimsVoiceRecordingSending, style: .body1)
-                            .foregroundColor(recordingProgressColor)
-                    } else if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
-                        let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
-                    {
-                        HStack(spacing: 0) {
-                            hText(formattedTimeMinutes)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                            hText(":")
-                            hText(formattedTimeSeconds)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .hTextStyle(.body1)
-                        .foregroundColor(recordingProgressColor)
-                        .accessibilityHidden(true)
-                    } else {
-                        hText(" ", style: .body1)
-                            .foregroundColor(recordingProgressColor)
-                            .accessibilityHidden(true)
-                    }
-                }
-                .background {
-                    GeometryReader { proxy in
-                        Color.clear
-                            .onAppear {
-                                timerHeight = proxy.size.height
-                            }
-                            .onChange(of: proxy.size) { value in
-                                timerHeight = value.height
-                            }
-                    }
-                }
-            }
-            .padding(.top, .padding8)
-            .opacity(voiceRecorder.error != nil ? 0 : 1)
             ZStack {
+                VStack(spacing: 0) {
+                    headerSection
+                    waveformSection
+                        .padding(.horizontal, .padding8)
+                        .padding(.bottom, verticalSizeClass == .regular ? .padding64 : .padding32)
+                        .padding(.top, max((verticalSizeClass == .regular ? .padding64 : .padding32) - timerHeight, 0))
+                        .opacity(voiceRecorder.isSending ? 0.35 : 1)
+                        .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+                        .accessibilityHidden(
+                            voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
+                        )
+                }
+                .opacity(voiceRecorder.error != nil ? 0 : 1)
                 if let error = voiceRecorder.error {
-                    VStack(spacing: .padding4) {
-                        hText(error.title ?? L10n.somethingWentWrong)
-                        hText(error.errorDescription ?? "", style: .label)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    .multilineTextAlignment(.center)
+                    StateView(
+                        type: .error,
+                        title: error.title ?? L10n.somethingWentWrong,
+                        bodyText: error.errorDescription
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
                     .transition(.opacity)
                 }
-                waveformSection
-                    .padding(.horizontal, .padding8)
-                    .padding(.bottom, verticalSizeClass == .regular ? .padding64 : .padding32)
-                    .padding(.top, max((verticalSizeClass == .regular ? .padding64 : .padding32) - timerHeight, 0))
-                    .opacity(voiceRecorder.error != nil ? 0 : (voiceRecorder.isSending ? 0.35 : 1))
-                    .animation(.defaultSpring, value: voiceRecorder.hasRecording)
-                    .accessibilityHidden(
-                        voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
-                    )
             }
             controlsSection
         }
@@ -130,6 +93,49 @@ struct VoiceRecordingCardContent: View {
             get: { voiceRecorder.isRecording },
             set: { _ in }
         )
+    }
+
+    private var headerSection: some View {
+        VStack(spacing: 0) {
+            hText(L10n.claimsTriagingWhatHappenedTitle)
+                .foregroundColor(titleColor)
+                .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
+            Group {
+                if voiceRecorder.isSending {
+                    hText(L10n.claimsVoiceRecordingSending, style: .body1)
+                        .foregroundColor(recordingProgressColor)
+                } else if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
+                    let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
+                {
+                    HStack(spacing: 0) {
+                        hText(formattedTimeMinutes)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        hText(":")
+                        hText(formattedTimeSeconds)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .hTextStyle(.body1)
+                    .foregroundColor(recordingProgressColor)
+                    .accessibilityHidden(true)
+                } else {
+                    hText(" ", style: .body1)
+                        .foregroundColor(recordingProgressColor)
+                        .accessibilityHidden(true)
+                }
+            }
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            timerHeight = proxy.size.height
+                        }
+                        .onChange(of: proxy.size) { value in
+                            timerHeight = value.height
+                        }
+                }
+            }
+        }
+        .padding(.top, .padding8)
     }
 
     private var waveformSection: some View {
