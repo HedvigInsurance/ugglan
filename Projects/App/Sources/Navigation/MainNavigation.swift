@@ -140,8 +140,7 @@ class MainNavigationViewModel: ObservableObject {
                     // via their property initializers' globalAppStateContainer.get(...).
                     // Run in a detached Task so the view switch happens immediately
                     // while the auth network logout completes in the background.
-                    Task { [weak self] in
-                        guard let self else { return }
+                    Task {
                         await self.appDelegate.logout()
                         self.loggedInVm = .init()
                     }

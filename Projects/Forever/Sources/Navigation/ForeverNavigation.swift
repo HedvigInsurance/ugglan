@@ -90,9 +90,10 @@ public struct ForeverNavigation: View {
                     switch routerAction {
                     case .success:
                         SuccessScreen(title: L10n.ReferralsChange.codeChanged, formPosition: .compact)
-                            .onAppear { [weak changeCodeRouter] in
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                    changeCodeRouter?.dismiss()
+                            .onAppear {
+                                Task {
+                                    await delay(2)
+                                    changeCodeRouter.dismiss()
                                 }
                             }
                     }

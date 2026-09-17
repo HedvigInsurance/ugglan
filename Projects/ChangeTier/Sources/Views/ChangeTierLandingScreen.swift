@@ -252,8 +252,7 @@ public struct ChangeTierLandingScreen: View {
     private var buttons: some View {
         hSection {
             VStack(spacing: .padding8) {
-                hContinueButton { [weak vm, weak changeTierNavigationVm] in
-                    guard let vm, let changeTierNavigationVm else { return }
+                hContinueButton {
                     switch vm.changeTierInput {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
@@ -273,7 +272,7 @@ public struct ChangeTierLandingScreen: View {
                         content: .init(
                             title: vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton
                         )
-                    ) { [weak changeTierNavigationVm] in changeTierNavigationVm?.isCompareTiersPresented = true }
+                    ) { changeTierNavigationVm.isCompareTiersPresented = true }
                 }
             }
         }

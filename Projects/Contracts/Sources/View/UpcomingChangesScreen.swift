@@ -45,8 +45,8 @@ struct UpcomingChangesScreen: View {
                             .large,
                             .primary,
                             content: .init(title: L10n.contractViewCertificateButton)
-                        ) { [weak contractsNavigationVm] in
-                            contractsNavigationVm?.document = hPDFDocument(
+                        ) {
+                            contractsNavigationVm.document = hPDFDocument(
                                 displayName: L10n.myDocumentsInsuranceCertificate,
                                 url: agreement.certificateUrl ?? "",
                                 type: .unknown

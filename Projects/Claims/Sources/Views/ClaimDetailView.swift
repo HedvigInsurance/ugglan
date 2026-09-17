@@ -129,11 +129,10 @@ public struct ClaimDetailView: View {
                     }
                 }
                 .withEmptyAccessory
-                .onTap { [weak vm, weak router] in
-                    guard let vm else { return }
+                .onTap {
                     if vm.toolbarOptionType.contains(.chat(hasUnread: false)) {
                         if case .conversation = vm.type {
-                            router?.pop()
+                            router.pop()
                         } else {
                             NotificationCenter.default.post(
                                 name: .openChat,
@@ -301,11 +300,10 @@ public struct ClaimDetailView: View {
                                 .medium,
                                 .primary,
                                 content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
-                            ) { [weak vm] in vm?.showFileSourcePicker = true }
+                            ) { vm.showFileSourcePicker = true }
                             .showFileSourcePicker(
                                 $vm.showFileSourcePicker,
-                                selecedFiles: { [weak vm] files in
-                                    guard let vm else { return }
+                                selecedFiles: { files in
                                     vm.showAddFiles(with: files)
                                 }
                             )

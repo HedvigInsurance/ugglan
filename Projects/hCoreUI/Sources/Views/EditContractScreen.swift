@@ -60,9 +60,9 @@ public struct EditContractScreen: View {
                             .large,
                             .primary,
                             content: .init(title: selectedType?.buttonTitle ?? L10n.generalContinueButton)
-                        ) { [weak router] in
+                        ) {
                             if let selectedType {
-                                router?.dismiss()
+                                router.dismiss()
                                 onSelectedType(selectedType)
                             }
                         }

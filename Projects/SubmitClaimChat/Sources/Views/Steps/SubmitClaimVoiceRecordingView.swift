@@ -27,10 +27,10 @@ struct SubmitClaimVoiceRecordingView: View {
         .detent(presented: $viewModel.isAudioInputPresented) {
             VoiceRecordingCardContent(
                 voiceRecorder: voiceRecorder,
-                onSend: { [weak viewModel, weak voiceRecorder] in
-                    viewModel?.audioFileURL = voiceRecorder?.recordedFileURL
-                    try await viewModel?.uploadAudioRecording()
-                    viewModel?.submitResponse()
+                onSend: {
+                    viewModel.audioFileURL = voiceRecorder.recordedFileURL
+                    try await viewModel.uploadAudioRecording()
+                    viewModel.submitResponse()
                 }
             )
             .disabled(!viewModel.state.isEnabled)

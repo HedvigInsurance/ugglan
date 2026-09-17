@@ -34,18 +34,18 @@ public struct TextInputView: View {
                             .large,
                             .primary,
                             content: .init(title: L10n.generalSaveButton)
-                        ) { [weak vm] in
-                            withAnimation { vm?.isLoading = true }
-                            await vm?.save()
-                            withAnimation { vm?.isLoading = false }
+                        ) {
+                            withAnimation { vm.isLoading = true }
+                            await vm.save()
+                            withAnimation { vm.isLoading = false }
                         }
                         .hButtonIsLoading(vm.isLoading)
 
-                        hCancelButton { [weak vm] in
+                        hCancelButton {
                             if let dismissAction = dismissAction?() {
                                 dismissAction
                             } else {
-                                await vm?.dismiss()
+                                await vm.dismiss()
                             }
                         }
                         .disabled(vm.isLoading)

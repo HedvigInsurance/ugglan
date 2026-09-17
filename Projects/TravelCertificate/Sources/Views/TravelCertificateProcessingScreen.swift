@@ -48,7 +48,7 @@ struct TravelCertificateProcessingScreen: View {
                                 .large,
                                 .primary,
                                 content: .init(title: L10n.Certificates.download)
-                            ) { [weak vm] in await vm?.presentShare() }
+                            ) { await vm.presentShare() }
                         },
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )

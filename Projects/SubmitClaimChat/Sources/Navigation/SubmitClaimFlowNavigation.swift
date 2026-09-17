@@ -51,8 +51,8 @@ struct SubmitClaimFlowNavigation: View {
                 .routerDestination(
                     for: Deflection.self,
                     destination: { model in
-                        SubmitClaimDeflectScreen(model: model) { [weak viewModel] in
-                            viewModel?.openChat()
+                        SubmitClaimDeflectScreen(model: model) {
+                            viewModel.openChat()
                         }
                         .claimChatDismissButton(
                             showResumableAlert: false,

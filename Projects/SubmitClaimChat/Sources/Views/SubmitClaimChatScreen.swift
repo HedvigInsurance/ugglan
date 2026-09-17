@@ -32,8 +32,9 @@ public struct SubmitClaimChatScreen: View {
                         action: { [weak viewModel] in
                             viewModel?.startClaimIntent()
                         },
-                        onClose: {
-                            Task { [weak router] in
+                        // Stored on alertVm, which viewModel owns: must not capture the screen.
+                        onClose: { [weak router = router] in
+                            Task {
                                 try? await Task.sleep(seconds: 0.1)
                                 router?.dismiss()
                             }
@@ -213,22 +214,23 @@ private struct CurrentStepView: View {
                             alertVm.alertModel = .init(
                                 type: .error,
                                 message: step.state.error?.localizedDescription ?? "",
-                                action: {
-                                    step.submitResponse()
+                                // Stored on alertVm: neither closure may capture this view.
+                                action: { [weak step = step] in
+                                    step?.submitResponse()
                                 },
-                                onClose: {
-                                    if let claimError = step.state.error as? ClaimIntentError {
+                                onClose: { [weak step = step, weak router = router] in
+                                    if let claimError = step?.state.error as? ClaimIntentError {
                                         switch claimError {
                                         case .unknownStep, .unknownField:
-                                            Task { [weak router] in
+                                            Task {
                                                 try? await Task.sleep(seconds: 0.1)
                                                 router?.dismiss()
                                             }
                                         default:
-                                            step.state.isEnabled = true
+                                            step?.state.isEnabled = true
                                         }
                                     } else {
-                                        step.state.isEnabled = true
+                                        step?.state.isEnabled = true
                                     }
                                 }
                             )

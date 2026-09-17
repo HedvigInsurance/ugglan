@@ -36,18 +36,12 @@ struct OnboardingConnectPaymentScreen: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                     if isPaymentConnected {
-                        hContinueButton { [weak vm] in
-                            vm?.advance(after: .connectPayment(isConnected: true))
+                        hContinueButton {
+                            vm.advance(after: .connectPayment(isConnected: true))
                         }
                     } else {
                         hButton(.large, .primary, content: .init(title: L10n.onboardingConnectPaymentTitle)) {
-                            [weak vm] in
-                            vm?.connectPaymentVm
-                                .set(onSuccess: { [weak vm] in
-                                    vm?.markPaymentConnected()
-                                }) { [weak vm] in
-                                    await vm?.fetchPaymentStatus()
-                                }
+                            vm.connectPayment()
                         }
                     }
                 }

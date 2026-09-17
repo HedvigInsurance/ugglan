@@ -14,8 +14,26 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
         }
     }
 
-    @Published fileprivate var alertPresentationModel: AlertModel?
+    /// Dropping the model when the detent closes releases its closures. Those closures are written
+    /// in the presenting views and can hold the view that owns this object.
+    @Published var alertPresentationModel: AlertModel? {
+        didSet {
+            if alertPresentationModel == nil {
+                alertModel = nil
+            }
+        }
+    }
     @Published fileprivate var systemAlertPresented = false
+
+    func performAction() {
+        alertModel?.action()
+        alertModel = nil
+    }
+
+    func performClose() {
+        alertModel?.onClose()
+        alertModel = nil
+    }
 
     struct AlertModel: Identifiable, Equatable {
         public static func == (lhs: AlertModel, rhs: AlertModel) -> Bool {
@@ -101,13 +119,13 @@ struct SubmitClaimChatScreenAlertHelper: ViewModifier {
                     primaryButton: .destructive(
                         Text(L10n.claimChatEditAnswerButton).font(.system(size: 17, weight: .medium)),
                         action: { [weak viewModel] in
-                            viewModel?.alertModel?.action()
+                            viewModel?.performAction()
                         }
                     ),
                     secondaryButton: .default(
                         Text(L10n.generalCancelButton).font(.system(size: 17, weight: .medium))
                     ) { [weak viewModel] in
-                        viewModel?.alertModel?.onClose()
+                        viewModel?.performClose()
                     }
                 )
             }
