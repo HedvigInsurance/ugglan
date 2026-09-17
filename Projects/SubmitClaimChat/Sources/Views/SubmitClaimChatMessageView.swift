@@ -147,12 +147,13 @@ struct ClaimStepView: View {
 
 struct ClaimInputCardView: View {
     @ObservedObject var viewModel: ClaimIntentStepHandler
+    var onTextFocus: () -> Void = {}
 
     @ViewBuilder var body: some View {
         if let viewModel = viewModel as? SubmitClaimAudioStep {
             switch viewModel.inputMode {
             case .text:
-                SubmitClaimTextCard(viewModel: viewModel)
+                SubmitClaimTextCard(viewModel: viewModel, onFocus: onTextFocus)
             case .voice:
                 VoiceRecordingCardContent(
                     voiceRecorder: viewModel.voiceRecorder,

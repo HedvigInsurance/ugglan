@@ -200,7 +200,7 @@ private struct ClaimChatFloatingCardView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             if step.usesFloatingInputCard {
-                ClaimInputCardView(viewModel: step)
+                ClaimInputCardView(viewModel: step, onTextFocus: { viewModel.scrollToStep(step) })
                     .padding(.horizontal, .padding16)
                     .padding(.vertical, verticalSizeClass == .regular ? .padding16 : .padding8)
                     .disabled(!step.state.isEnabled)
@@ -208,7 +208,7 @@ private struct ClaimChatFloatingCardView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .claimStepErrorAlert(for: step)
                     .onAppear {
-                        viewModel.scrollTarget = .init(id: step.id, anchor: .top)
+                        viewModel.scrollToStep(step)
                     }
             }
         }
@@ -631,6 +631,12 @@ final class SubmitClaimChatViewModel: ObservableObject {
             await delay(ClaimChatConstants.Timing.minimalDelay)
             currentStepId = handler.id
         }
+    }
+
+    func scrollToStep(_ step: ClaimIntentStepHandler) {
+        guard let index = allSteps.firstIndex(where: { $0.id == step.id }) else { return }
+        let anchorStep = index > 0 && allSteps[index - 1] is SubmitClaimTaskStep ? allSteps[index - 1] : step
+        scrollTarget = .init(id: anchorStep.id, anchor: .top)
     }
 
     private func createStepHandler(for claimIntent: ClaimIntent) -> ClaimIntentStepHandler {

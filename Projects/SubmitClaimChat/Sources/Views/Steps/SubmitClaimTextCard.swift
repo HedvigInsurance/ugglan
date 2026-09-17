@@ -4,6 +4,7 @@ import hCoreUI
 
 struct SubmitClaimTextCard: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
+    var onFocus: () -> Void = {}
     @FocusState private var isFocused: Bool
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
@@ -32,6 +33,9 @@ struct SubmitClaimTextCard: View {
                 await delay(ClaimChatConstants.Timing.layoutUpdate)
                 isFocused = true
             }
+        }
+        .onChange(of: isFocused) { isFocused in
+            if isFocused { onFocus() }
         }
         .onChange(of: viewModel.state.isLoading) { isLoading in
             if isLoading { isFocused = false }
