@@ -478,6 +478,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 handler.state.showResults = true
                 handler.state.isStepExecuted = true
                 handler.state.animateText = false
+                if let audioStep = handler as? SubmitClaimAudioStep {
+                    audioStep.state.isSkipped = audioStep.audioFileURL == nil && audioStep.textInput == ""
+                }
             }
         }
         let handler = createStepHandler(for: claimIntent)

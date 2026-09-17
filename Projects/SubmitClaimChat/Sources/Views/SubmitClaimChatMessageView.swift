@@ -74,6 +74,7 @@ extension ClaimIntentStepHandler {
     }
 
     var alignment: Alignment {
+        if state.isSkipped { return .trailing }
         switch claimIntent.currentStep.content {
         case .audioRecording:
             if (self as? SubmitClaimAudioStep)?.isTextInputPresented == true {
