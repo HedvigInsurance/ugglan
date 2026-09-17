@@ -706,6 +706,16 @@ struct HandleMoving: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
+    @AppObservedObject private var crossSellStore: CrossSellStore
+    @AppObservedObject private var contractStore: ContractStore
+
+    /// Add-on rows in the cross-sell sheets open the purchase flow rather than a store URL,
+    /// and the flow's input needs contract data the CrossSell module cannot reach.
+    private func presentAddon(for banner: AddonBanner) {
+        let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
+        homeNavigationVm.isAddonPresented = .init(addonSource: .crossSell, contractInfos: contractInfos)
+    }
+
     var body: some View {
         hNavigationStack(router: homeNavigationVm.router, options: .ignoreNavigationBarVisibility, tracking: self) {
             HomeScreen()
@@ -766,7 +776,14 @@ struct HomeTab: View {
             presentationStyle: .detent(style: [.height]),
             options: .constant([.alwaysOpenOnTop])
         ) { crossSells in
-            CrossSellingDetent(crossSells: crossSells)
+            CrossSellingDetent(
+                crossSells: crossSells,
+                addons: crossSellStore.addonBanners,
+                onAddonTap: { banner in
+                    homeNavigationVm.navBarItems.isNewOfferPresentedDetent = nil
+                    presentAddon(for: banner)
+                }
+            )
         }
         .detent(
             item: $homeNavigationVm.openChat,

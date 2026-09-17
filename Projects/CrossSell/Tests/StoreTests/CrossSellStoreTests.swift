@@ -117,8 +117,7 @@ extension CrossSell {
                 imageUrl: nil,
                 buttonDescription: "button description"
             ),
-        ],
-        discountAvailable: true
+        ]
     )
 
     fileprivate static let getDefaultWithRecommendation: CrossSells = .init(
@@ -143,8 +142,7 @@ extension CrossSell {
                 imageUrl: nil,
                 buttonDescription: "button description"
             )
-        ],
-        discountAvailable: true
+        ]
     )
 }
 

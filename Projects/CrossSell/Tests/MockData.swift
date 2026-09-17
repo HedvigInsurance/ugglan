@@ -20,8 +20,7 @@ struct MockData {
         fetchCrossSell: @escaping FetchCrossSell = { _ in
             .init(
                 recommended: nil,
-                others: [],
-                discountAvailable: true
+                others: []
             )
         }
     ) -> MockCrossSellService {

@@ -27,8 +27,7 @@ class CrossSellClientOctopus: CrossSellClient {
             }
             return nil
         }()
-        let discountAvailable = crossSells.currentMember.crossSellV2.discountAvailable
-        return .init(recommended: recommendedCrossSell, others: otherCrossSells, discountAvailable: discountAvailable)
+        return .init(recommended: recommendedCrossSell, others: otherCrossSells)
     }
 
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner] {
