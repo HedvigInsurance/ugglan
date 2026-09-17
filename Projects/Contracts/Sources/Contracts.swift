@@ -1,6 +1,7 @@
 import AppStateContainer
 import Foundation
 import SwiftUI
+import hCore
 import hCoreUI
 
 struct Contracts: View {
@@ -23,7 +24,7 @@ struct Contracts: View {
         .task {
             while !Task.isCancelled {
                 await store.fetchContracts()
-                try? await Task.sleep(seconds: 60)
+                await delay(60)
             }
         }
         .onPullToRefresh {

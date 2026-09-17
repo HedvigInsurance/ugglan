@@ -184,7 +184,7 @@ class PushNotificationHandler {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 viewModel.selectedTab = 0
                 Task { [weak viewModel] in
-                    try await Task.sleep(seconds: 0.2)
+                    await delay(0.2)
                     viewModel?.homeNavigationVm.router.push(claim)
                 }
             } catch {
@@ -402,7 +402,7 @@ class DeepLinkHandler {
         if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
             Task { [weak viewModel] in
                 do {
-                    try await Task.sleep(seconds: 0.2)
+                    await delay(0.2)
                     let contractsConfig = [contract.asTerminationConfirmConfig]
                     try await viewModel?.terminateInsuranceVm.start(with: contractsConfig)
                 } catch let exception {
@@ -414,7 +414,7 @@ class DeepLinkHandler {
         } else {
             Task { [weak viewModel] in
                 do {
-                    try await Task.sleep(seconds: 0.2)
+                    await delay(0.2)
                     let contractsConfig = contractStore.activeContracts
                         .filter(\.supportsTermination)
                         .map(\.asTerminationConfirmConfig)
@@ -432,8 +432,8 @@ class DeepLinkHandler {
         let conversationId = url.getParameter(property: .conversationId)
         Task {
             let conversationClient: ConversationsClient = Dependencies.shared.resolve()
-            let conversations = try await conversationClient.getConversations()
-            let isValidConversation = conversations.first(where: { $0.id == conversationId })
+            let conversations = try? await conversationClient.getConversations()
+            let isValidConversation = conversations?.first(where: { $0.id == conversationId })
 
             if let conversationId, isValidConversation != nil {
                 NotificationCenter.default.post(
@@ -859,8 +859,12 @@ struct HomeTab: View {
                     if claim?.showClaimClosedFlow ?? false, let claim = claim {
                         NotificationCenter.default.post(name: .openCrossSell, object: claim.asCrossSellInfo)
                         let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
-                        try await service.acknowledgeClosedStatus(for: claim.id)
-                        await claimsStore.fetchActiveClaims()
+                        do {
+                            try await service.acknowledgeClosedStatus(for: claim.id)
+                            await claimsStore.fetchActiveClaims()
+                        } catch {
+                            log.info("Failed to acknowledge closed claim status with error: \(error)")
+                        }
                     }
                 }
             }

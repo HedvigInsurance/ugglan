@@ -8,19 +8,13 @@ class EditStakeholdersClientOctopus: EditStakeholdersClient {
 
     func commitMidtermChange(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
-        let delayTask = Task {
-            try await Task.sleep(seconds: 3)
-        }
-        let clientTask = Task { @MainActor () -> String? in
-            let data = try await octopus.client.mutation(mutation: mutation)
-            if let error = data?.midtermChangeIntentCommit.userError {
-                return error.message
-            }
-            return nil
-        }
-        try await delayTask.value
-        if let error = try await clientTask.value {
-            throw EditStakeholdersError.serviceError(message: error)
+
+        async let delayTask = delay(3)
+        let data = try await octopus.client.mutation(mutation: mutation)
+        await delayTask
+
+        if let error = data?.midtermChangeIntentCommit.userError {
+            throw EditStakeholdersError.serviceError(message: error.message)
         }
     }
 

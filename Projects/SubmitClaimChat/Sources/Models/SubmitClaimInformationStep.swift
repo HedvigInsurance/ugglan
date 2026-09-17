@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 final class SubmitClaimInformationStep: ClaimIntentStepHandler {

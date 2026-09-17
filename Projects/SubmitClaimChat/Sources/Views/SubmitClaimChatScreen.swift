@@ -35,7 +35,7 @@ public struct SubmitClaimChatScreen: View {
                         // Stored on alertVm, which viewModel owns: must not capture the screen.
                         onClose: { [weak router = router] in
                             Task {
-                                try? await Task.sleep(seconds: 0.1)
+                                await delay(0.1)
                                 router?.dismiss()
                             }
                         }
@@ -156,7 +156,7 @@ public struct SubmitClaimChatScreen: View {
     private func scrollToBottom() {
         scrollCoordinator.scrollToBottom()
         Task {
-            try? await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
             isCurrentStepFocused = true
         }
     }
@@ -223,7 +223,7 @@ private struct CurrentStepView: View {
                                         switch claimError {
                                         case .unknownStep, .unknownField:
                                             Task {
-                                                try? await Task.sleep(seconds: 0.1)
+                                                await delay(0.1)
                                                 router?.dismiss()
                                             }
                                         default:
@@ -415,7 +415,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - UI Height Calculations
     private func recalculateStepHeights() {
         Task {
-            try? await Task.sleep(seconds: ClaimChatConstants.Timing.layoutUpdate)
+            await delay(TimeInterval(ClaimChatConstants.Timing.layoutUpdate))
             scrollCoordinator.checkForScrollOffset()
         }
         totalStepsHeight = stepHeights.values.reduce(0, +)
@@ -439,7 +439,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                     processClaimIntent(.outcome(model: model))
                 }
             } catch {
-                try await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
+                await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
                 self.error = error
             }
         }
@@ -508,7 +508,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 currentStep = nil
             }
             self.allSteps.append(handler)
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
             currentStep = handler
             scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
             currentStepId = handler.id
@@ -523,7 +523,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 if indexToRemove > 0 {
                     let stepIdToScrollTo = allSteps[indexToRemove - 1].id
                     scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
-                    try await Task.sleep(seconds: ClaimChatConstants.Timing.regretScrollDelay)
+                    await delay(TimeInterval(ClaimChatConstants.Timing.regretScrollDelay))
                 }
                 for item in allSteps[indexToRemove..<allSteps.count] {
                     stepHeights.removeValue(forKey: item.id)
@@ -541,7 +541,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             if allSteps.count == 1 {
                 scrollTarget = .init(id: handler.id, anchor: .top)
             }
-            try? await Task.sleep(seconds: ClaimChatConstants.Timing.minimalDelay)
+            await delay(TimeInterval(ClaimChatConstants.Timing.minimalDelay))
             currentStepId = handler.id
         }
     }

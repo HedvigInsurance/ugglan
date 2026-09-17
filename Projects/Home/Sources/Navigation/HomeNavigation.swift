@@ -48,7 +48,7 @@ public class HomeNavigationViewModel: ObservableObject {
             guard let crossSellInfo = notification.object as? CrossSellInfo else { return }
 
             Task { @MainActor in
-                let crossSells = try await crossSellInfo.getCrossSell()
+                guard let crossSells = try? await crossSellInfo.getCrossSell() else { return }
                 // A recommendation (insurance or addon) on its own uses the centered presentation;
                 // combined with other cross-sells it uses the modal, and other-sells-only uses the detent.
                 // A response with nothing to show does not present a sheet at all.

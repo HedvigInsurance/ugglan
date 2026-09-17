@@ -7,14 +7,14 @@ import hCore
 final class FetchClaimsTests: XCTestCase {
     weak var sut: MockFetchClaimsService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     }
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: hFetchClaimsClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
 
         XCTAssertNil(sut)
     }

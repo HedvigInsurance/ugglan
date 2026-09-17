@@ -1,4 +1,5 @@
 import AppStateContainer
+import TestDependencies
 import XCTest
 import hCore
 
@@ -18,7 +19,7 @@ final class HomeTests: XCTestCase {
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: HomeClient.self)
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
 
         XCTAssertNil(sut)
     }
@@ -300,15 +301,15 @@ final class HomeTests: XCTestCase {
         )
         MockData.createMockHomeService(
             fetchImportantMessages: {
-                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
+                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
                 return importantMessages
             },
             fetchMemberState: {
-                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
+                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
                 return memberState
             },
             fetchQuickActions: {
-                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
+                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
                 return [
                     .sickAbroad(
                         deflection: .init(
@@ -326,7 +327,7 @@ final class HomeTests: XCTestCase {
                 ]
             },
             fetchLatestMessageState: {
-                try await Task.sleep(seconds: Float.random(in: 0.01...0.02))
+                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
                 return messageState
             }
         )
@@ -363,24 +364,5 @@ final class HomeTests: XCTestCase {
             store.latestConversationTimeStamp == messageState.lastMessageTimeStamp
                 || store.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp
         )
-    }
-}
-
-@MainActor
-extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
-        let exc = expectation(description: description)
-        if closure() {
-            exc.fulfill()
-        } else {
-            try! await Task.sleep(seconds: 0.01)
-            Task {
-                await self.waitUntil(description: description, closure: closure)
-                if closure() {
-                    exc.fulfill()
-                }
-            }
-        }
-        await fulfillment(of: [exc], timeout: 2)
     }
 }

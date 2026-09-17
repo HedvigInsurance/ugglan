@@ -86,7 +86,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
             state.error = nil
 
             if hasError {
-                try? await Task.sleep(seconds: ClaimChatConstants.Timing.shortDelay)
+                await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
             }
             do {
                 try Task.checkCancellation()

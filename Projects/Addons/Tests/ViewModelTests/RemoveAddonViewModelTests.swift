@@ -27,7 +27,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
         let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
-        try await Task.sleep(seconds: 0.03)
+        await delay(0.03)
 
         model.toggleAddon(testRemoveOffer.removableAddons[0])
         await model.getAddonRemoveOfferCost()
@@ -47,7 +47,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
         let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
-        try await Task.sleep(seconds: 0.03)
+        await delay(0.03)
 
         await model.confirmRemoval()
 
@@ -65,7 +65,7 @@ final class RemoveAddonViewModelTests: XCTestCase {
         let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
         vm = model
-        try await Task.sleep(seconds: 0.03)
+        await delay(0.03)
 
         await model.confirmRemoval()
 

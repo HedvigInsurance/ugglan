@@ -17,7 +17,7 @@ extension TerminationRedirection {
 
 class TerminateContractsClientDemo: TerminateContractsClient {
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
-        try await Task.sleep(seconds: 0.5)
+        await delay(0.5)
         return TerminationSurveyData(
             options: [
                 .init(
@@ -79,7 +79,7 @@ class TerminateContractsClientDemo: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        try await Task.sleep(seconds: 2)
+        await delay(2)
         return .success
     }
 
@@ -88,12 +88,12 @@ class TerminateContractsClientDemo: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        try await Task.sleep(seconds: 2)
+        await delay(2)
         return .success
     }
 
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
-        try await Task.sleep(seconds: 0.3)
+        await delay(0.3)
         return .init(message: "Your insurance will be terminated on this date.", type: .info)
     }
 }

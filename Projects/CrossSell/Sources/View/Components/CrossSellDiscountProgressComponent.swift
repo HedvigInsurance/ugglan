@@ -95,12 +95,12 @@ private struct AnimatedProgressView: View {
 
     private func animate() {
         Task {
-            try? await Task.sleep(seconds: Float(orderOfExecution))
+            await delay(Double(orderOfExecution))
             withAnimation(.linear(duration: 1)) {
                 animationProgress = 1
             }
             if pulse {
-                try? await Task.sleep(seconds: 0.75)
+                await delay(0.75)
                 withAnimation(.linear(duration: 1)) {
                     animationProgress = 0
                 }

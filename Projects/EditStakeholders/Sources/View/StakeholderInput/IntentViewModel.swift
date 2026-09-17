@@ -103,7 +103,7 @@ public class IntentViewModel: ObservableObject {
     private func invalidateDetents() {
         for i in 1...4 {
             Task {
-                try await Task.sleep(seconds: Float(i) * 0.1)
+                await delay(TimeInterval(i) * 0.1)
                 UIApplication.shared.getTopViewController()?.sheetPresentationController?
                     .animateChanges {
                         UIApplication.shared.getTopViewController()?.sheetPresentationController?

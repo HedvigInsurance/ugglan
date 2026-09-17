@@ -38,7 +38,7 @@ struct VoiceRecordButton: View {
         .onChange(of: countdownNumber) { _ in
             buttonScale = 1.3
             Task {
-                try? await Task.sleep(seconds: ClaimChatConstants.Timing.hapticDelay)
+                await delay(TimeInterval(ClaimChatConstants.Timing.hapticDelay))
                 buttonScale = 1.0
             }
         }
@@ -56,8 +56,10 @@ struct VoiceRecordButton: View {
             countdownNumber = nil
         } else {
             Task {
-                try await voiceRecorder.askForPermissionIfNeeded()
-                startCountdown()
+                do {
+                    try await voiceRecorder.askForPermissionIfNeeded()
+                    startCountdown()
+                } catch {}
             }
         }
     }

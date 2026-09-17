@@ -30,7 +30,7 @@ final class QuickActionsViewModelTests: XCTestCase {
         let contractStore: ContractStore = globalAppStateContainer.get()
         contractStore.activeContracts = []
         // Let any pending release drain before checking the weak reference.
-        try await Task.sleep(seconds: 0.0000001)
+        await delay(0.0000001)
 
         XCTAssertNil(sut)
         try await super.tearDown()

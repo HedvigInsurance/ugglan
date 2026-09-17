@@ -88,8 +88,8 @@ public class EditStakeholdersViewModel: ObservableObject {
         editStakeholderModelFullScreen = nil
         editStakeholderModelMissingAlert = nil
 
-        Task { @MainActor in
-            let activeContracts = try await service.fetchContracts()
+        Task {
+            guard let activeContracts = try? await service.fetchContracts() else { return }
             let missingContract = activeContracts.first { contract in
                 if contract.id == excludingContractId {
                     return false
@@ -105,7 +105,7 @@ public class EditStakeholdersViewModel: ObservableObject {
             }
 
             if let missingContract {
-                try await Task.sleep(seconds: 0.4)
+                await delay(0.4)
                 let missingContractConfig = StakeholdersConfig(
                     contract: missingContract,
                     preSelectedStakeholders: existingStakeholders?

@@ -22,7 +22,11 @@ extension AppDelegate {
         Task {
             let client: NotificationClient = Dependencies.shared.resolve()
             let deviceTokenString = deviceToken.reduce("") { $0 + String(format: "%02X", $1) }
-            try await client.register(for: deviceTokenString)
+            do {
+                try await client.register(for: deviceTokenString)
+            } catch {
+                log.info("Failed to register device token for remote notifications with error: \(error)")
+            }
         }
     }
 
