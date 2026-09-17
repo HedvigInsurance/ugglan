@@ -42,6 +42,10 @@ struct VoiceRecordButton: View {
                 buttonScale = 1.0
             }
         }
+        .onDisappear {
+            startCountdownTask?.cancel()
+            startCountdownTask = nil
+        }
     }
 
     private func handleTap() {
