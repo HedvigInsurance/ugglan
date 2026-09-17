@@ -33,8 +33,9 @@ final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
         guard !requiresConfirmation else { return }
         isSelectionLocked = true
         autoSubmitTask = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(ClaimChatConstants.Timing.autoSubmitDelay))
+            await delay(ClaimChatConstants.Timing.autoSubmitDelay)
             guard !Task.isCancelled else { return }
+            self?.isSelectionLocked = false
             self?.submitResponse()
         }
     }
