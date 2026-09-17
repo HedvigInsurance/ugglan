@@ -9,6 +9,7 @@ struct VoiceRecordingCardContent: View {
     @State private var waveformWidth: CGFloat = 0
     @State private var dragProgress: Double?
     @State private var timerHeight: Double = 0
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     var body: some View {
         VStack(spacing: 0) {
@@ -65,8 +66,8 @@ struct VoiceRecordingCardContent: View {
                 }
                 waveformSection
                     .padding(.horizontal, .padding8)
-                    .padding(.bottom, .padding64)
-                    .padding(.top, max(.padding64 - timerHeight, 0))
+                    .padding(.bottom, verticalSizeClass == .regular ? .padding64 : .padding32)
+                    .padding(.top, max((verticalSizeClass == .regular ? .padding64 : .padding32) - timerHeight, 0))
                     .opacity(voiceRecorder.error != nil ? 0 : (voiceRecorder.isSending ? 0.35 : 1))
                     .animation(.defaultSpring, value: voiceRecorder.hasRecording)
                     .accessibilityHidden(

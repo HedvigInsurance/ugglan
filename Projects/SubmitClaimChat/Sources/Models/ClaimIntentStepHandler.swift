@@ -113,6 +113,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 } else {
                     self.state.error = error
                 }
+                state.isEnabled = true
+                state.isLoading = false
             }
         }
     }

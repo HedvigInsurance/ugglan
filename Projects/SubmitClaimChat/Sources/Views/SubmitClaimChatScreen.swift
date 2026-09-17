@@ -195,13 +195,14 @@ private struct HiddenWhileFloatingCard<Content: View>: View {
 private struct ClaimChatFloatingCardView: View {
     @EnvironmentObject var viewModel: SubmitClaimChatViewModel
     @ObservedObject var step: ClaimIntentStepHandler
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     var body: some View {
         ZStack(alignment: .bottom) {
             if step.usesFloatingInputCard {
                 ClaimInputCardView(viewModel: step)
                     .padding(.horizontal, .padding16)
-                    .padding(.bottom, .padding16)
+                    .padding(.vertical, verticalSizeClass == .regular ? .padding16 : .padding8)
                     .disabled(!step.state.isEnabled)
                     .geometryGroupIfAvailable()
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -306,9 +307,11 @@ private struct ClaimStepErrorAlertModifier: ViewModifier {
                                     }
                                 default:
                                     step?.state.isEnabled = true
+                                    step?.state.isLoading = false
                                 }
                             } else {
                                 step?.state.isEnabled = true
+                                step?.state.isLoading = false
                             }
                         }
                     )
