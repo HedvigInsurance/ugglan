@@ -86,9 +86,9 @@ class ChangeTierClientOctopus: ChangeTierClient {
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
         do {
-            async let delayTask = delay(3)
-            let data = try await octopus.client.mutation(mutation: mutation)
-            await delayTask
+            let data = try await Task.withMinimumDuration(.seconds(3)) {
+                try await octopus.client.mutation(mutation: mutation)
+            }
 
             if let userError = data?.changeTierDeductibleCommitIntent.userError?.message {
                 throw ChangeTierError.errorMessage(message: userError)

@@ -82,7 +82,7 @@ struct VoiceRecordButton: View {
             for number in (1...3).reversed() {
                 countdownNumber = number
                 if voiceOverEnabled {
-                    await withMinimumDuration(seconds: 1) {
+                    await Task.withMinimumDuration(.seconds(1)) {
                         await postAccessibilityAnnouncementAndWait("\(number)")
                     }
                 } else {
@@ -105,15 +105,6 @@ struct VoiceRecordButton: View {
                 await voiceRecorder.toggleRecording()
             }
             countdownNumber = nil
-        }
-    }
-
-    /// Runs an async operation but ensures at least `seconds` have elapsed before returning.
-    private func withMinimumDuration(seconds: TimeInterval, operation: @escaping @Sendable () async -> Void) async {
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { await operation() }
-            group.addTask { await delay(seconds) }
-            for await _ in group {}
         }
     }
 

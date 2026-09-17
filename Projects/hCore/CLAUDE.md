@@ -93,7 +93,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `AskForRating.swift` -- `AskForRating` for session-based StoreKit review prompting
 - `Unique.swift` -- `uniqued()` and `uniqued(on:)` extensions on Sequence (ported from swift-algorithms)
 - `Transient.swift` -- `@Transient` and `@OptionalTransient` property wrappers that skip values during Codable encoding
-- `Task.swift` -- `eraseToAnyCancellable()` on Task, `Task.sleep(seconds:)` with Float parameter
+- `Task.swift` -- `eraseToAnyCancellable()` on Task, `Task.withMinimumDuration(_:tolerance:_:)` (enforces a minimum elapsed time on an async operation, including when it throws)
 - `AsyncDelay.swift` -- Free function `delay(_ timeInterval:)` for async sleep
 - `TakeLeft-Right.swift` -- `takeLeft`/`takeRight` combinator functions
 - `GaussianDistGenerator.swift` -- `generateGaussianHeights` for random distribution (used in UI animations)
