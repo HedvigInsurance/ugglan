@@ -31,7 +31,8 @@ struct StakeholderProcessingScreen: View {
                 editStakeholdersNavigation.showProgressScreenWithSuccess = false
                 editStakeholdersNavigation.showProgressScreenWithoutSuccess = false
                 editStakeholdersNavigation.editStakeholderConfig = nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                Task {
+                    await delay(0.5)
                     editStakeholdersViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
                 }
                 EditStakeholdersViewModel.updatedStakeholderForContractId.send(

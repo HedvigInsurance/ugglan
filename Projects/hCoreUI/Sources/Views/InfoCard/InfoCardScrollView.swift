@@ -48,12 +48,12 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatab
         .background {
             GeometryReader { proxy in
                 Color.clear
-                    .onAppear { [vm] in
+                    .onAppear {
                         Task {
                             await vm.updateWidth(with: proxy.size.width)
                         }
                     }
-                    .onChange(of: proxy.size) { [vm] size in
+                    .onChange(of: proxy.size) { size in
                         Task {
                             await vm.updateWidth(with: size.width)
                         }

@@ -163,7 +163,7 @@ public struct HelpCenterStartView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .accessibilityElement(children: .combine)
-                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) { [router] in
+                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) {
                     router.push(PuppyGuideRoute.list)
                 }
                 .hButtonWithBorder
@@ -172,9 +172,7 @@ public struct HelpCenterStartView: View {
             .padding(.padding16)
         }
         .hWithoutHorizontalPadding([.section])
-        .onTapGesture { [router] in
-            router.push(PuppyGuideRoute.list)
-        }
+        .onTapGesture { router.push(PuppyGuideRoute.list) }
         .accessibilityAddTraits(.isButton)
     }
 
@@ -191,8 +189,8 @@ public struct HelpCenterStartView: View {
                     }
                 }
                 if showPuppyGuideRow {
-                    PuppyGuideQuickActionRow { [weak router] in
-                        router?.push(PuppyGuideRoute.list)
+                    PuppyGuideQuickActionRow {
+                        router.push(PuppyGuideRoute.list)
                     }
                 }
             }
@@ -211,7 +209,7 @@ public struct HelpCenterStartView: View {
 
     private func topicsItems(topics: [FaqTopic]) -> some View {
         VStack(spacing: .padding4) {
-            ForEach(topics, id: \.self) { [weak router] item in
+            ForEach(topics, id: \.self) { item in
                 hSection {
                     hRow {
                         hText(item.title)
@@ -219,7 +217,7 @@ public struct HelpCenterStartView: View {
                     }
                     .withChevronAccessory
                     .onTap {
-                        router?.push(item)
+                        router.push(item)
                     }
                 }
                 .hWithoutHorizontalPadding([.section])

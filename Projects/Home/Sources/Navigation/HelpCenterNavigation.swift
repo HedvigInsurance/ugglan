@@ -91,7 +91,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         .ignoresSafeArea()
                 }
             }
-            .task(id: helpCenterVm.pendingPuppyGuideRoute) { [helpCenterVm] in
+            .task(id: helpCenterVm.pendingPuppyGuideRoute) {
                 guard let route = helpCenterVm.pendingPuppyGuideRoute else { return }
                 helpCenterVm.router.popToRoot()
                 helpCenterVm.router.push(route)
