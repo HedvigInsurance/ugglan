@@ -317,7 +317,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
                 notification = data
             } catch {
                 do {
-                    try await Task.sleep(seconds: 1)
+                    try await Task.sleep(for: .seconds(1))
                     try Task.checkCancellation()
                     fetchNotification(for: date)
                 } catch { /* cancellation expected */  }

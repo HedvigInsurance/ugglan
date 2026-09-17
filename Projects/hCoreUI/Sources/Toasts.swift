@@ -10,14 +10,14 @@ public struct ToastBar {
     let text: String
     let description: String?
     let action: ToastBarAction?
-    let duration: Double
+    let duration: TimeInterval
 
     public init(
         type: NotificationType,
         icon: Image? = nil,
         text: String,
         description: String? = nil,
-        duration: Double = 3,
+        duration: TimeInterval = 3,
         action: ToastBarAction? = nil
     ) {
         self.type = type

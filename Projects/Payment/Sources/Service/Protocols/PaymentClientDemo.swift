@@ -4,7 +4,7 @@ import hCore
 public class hPaymentClientDemo: hPaymentClient {
     public init() {}
     public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(for: .seconds(1))
         return (
             .init(
                 id: "",
@@ -131,7 +131,7 @@ public class hPaymentClientDemo: hPaymentClient {
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(for: .seconds(1))
         return .init(
             status: .active,
             chargingDay: 27,
@@ -223,12 +223,12 @@ public class hPaymentClientDemo: hPaymentClient {
     }
 
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(for: .seconds(1))
         return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
     }
 
     public func chargeOutstandingPayment() async throws {
-        try await Task.sleep(seconds: 1)
+        try await Task.sleep(for: .seconds(1))
     }
 
     public func getMissedPaymentData() async throws -> MissedPaymentData? {

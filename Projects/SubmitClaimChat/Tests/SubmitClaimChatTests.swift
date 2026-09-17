@@ -336,7 +336,7 @@ private final class StubClaimIntentClient: ClaimIntentClient {
         var turnsLeft = 200
         while !isStartReleased && turnsLeft > 0 {
             turnsLeft -= 1
-            try await Task.sleep(seconds: 0.005)
+            try await Task.sleep(for: .seconds(0.005))
         }
         return try start()
     }

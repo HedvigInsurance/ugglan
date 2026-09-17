@@ -28,7 +28,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         state.showResults = true
         displayText = taskModel.description
         Task { [weak self] in
-            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
+            await delay(ClaimChatConstants.Timing.standardAnimation)
             self?.submitResponse()
         }
     }
@@ -42,7 +42,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             else {
                 throw ClaimIntentError.invalidResponse
             }
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            try await Task.sleep(for: .seconds(ClaimChatConstants.Timing.standardAnimation))
             Task {
                 await delay(1)
                 displayText = nil
@@ -60,7 +60,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             return
         } else {
             try Task.checkCancellation()
-            try await Task.sleep(seconds: ClaimChatConstants.Timing.standardAnimation)
+            try await Task.sleep(for: .seconds(ClaimChatConstants.Timing.standardAnimation))
             try Task.checkCancellation()
             guard let claimIntent = try await service.getNextStep(claimIntentId: claimIntent.id) else {
                 throw ClaimIntentError.invalidResponse

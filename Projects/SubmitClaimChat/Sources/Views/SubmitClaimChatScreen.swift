@@ -156,7 +156,7 @@ public struct SubmitClaimChatScreen: View {
     private func scrollToBottom() {
         scrollCoordinator.scrollToBottom()
         Task {
-            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
+            await delay(ClaimChatConstants.Timing.standardAnimation)
             isCurrentStepFocused = true
         }
     }
@@ -415,7 +415,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     // MARK: - UI Height Calculations
     private func recalculateStepHeights() {
         Task {
-            await delay(TimeInterval(ClaimChatConstants.Timing.layoutUpdate))
+            await delay(ClaimChatConstants.Timing.layoutUpdate)
             scrollCoordinator.checkForScrollOffset()
         }
         totalStepsHeight = stepHeights.values.reduce(0, +)
@@ -439,7 +439,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                     processClaimIntent(.outcome(model: model))
                 }
             } catch {
-                await delay(TimeInterval(ClaimChatConstants.Timing.shortDelay))
+                await delay(ClaimChatConstants.Timing.shortDelay)
                 self.error = error
             }
         }
@@ -508,7 +508,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 currentStep = nil
             }
             self.allSteps.append(handler)
-            await delay(TimeInterval(ClaimChatConstants.Timing.standardAnimation))
+            await delay(ClaimChatConstants.Timing.standardAnimation)
             currentStep = handler
             scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
             currentStepId = handler.id
@@ -523,7 +523,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 if indexToRemove > 0 {
                     let stepIdToScrollTo = allSteps[indexToRemove - 1].id
                     scrollTarget = .init(id: "result_\(stepIdToScrollTo)", anchor: .top)
-                    await delay(TimeInterval(ClaimChatConstants.Timing.regretScrollDelay))
+                    await delay(ClaimChatConstants.Timing.regretScrollDelay)
                 }
                 for item in allSteps[indexToRemove..<allSteps.count] {
                     stepHeights.removeValue(forKey: item.id)
@@ -541,7 +541,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             if allSteps.count == 1 {
                 scrollTarget = .init(id: handler.id, anchor: .top)
             }
-            await delay(TimeInterval(ClaimChatConstants.Timing.minimalDelay))
+            await delay(ClaimChatConstants.Timing.minimalDelay)
             currentStepId = handler.id
         }
     }

@@ -301,15 +301,15 @@ final class HomeTests: XCTestCase {
         )
         MockData.createMockHomeService(
             fetchImportantMessages: {
-                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
+                await delay(TimeInterval.random(in: 0.01...0.02))
                 return importantMessages
             },
             fetchMemberState: {
-                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
+                await delay(TimeInterval.random(in: 0.01...0.02))
                 return memberState
             },
             fetchQuickActions: {
-                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
+                await delay(TimeInterval.random(in: 0.01...0.02))
                 return [
                     .sickAbroad(
                         deflection: .init(
@@ -327,7 +327,7 @@ final class HomeTests: XCTestCase {
                 ]
             },
             fetchLatestMessageState: {
-                await delay(TimeInterval(Float.random(in: 0.01...0.02)))
+                await delay(TimeInterval.random(in: 0.01...0.02))
                 return messageState
             }
         )

@@ -68,7 +68,7 @@ public class FilesUploadViewModel: ObservableObject {
     @Published var progress: Double = 0
     var uploadProgress: Double = 0
     var timerProgress: Double = 0
-    let uploadDelayDuration: Float = 1.5
+    let uploadDelayDuration: TimeInterval = 1.5
 
     @Inject private var uploadClient: hSubmitClaimFileUploadClient
     let fileGridViewModel: FileGridViewModel
@@ -152,7 +152,7 @@ public class FilesUploadViewModel: ObservableObject {
 
                 let fileIds = try await withThrowingTaskGroup(of: TaskResult.self) { group in
                     group.addTask {
-                        try await Task.sleep(seconds: self.uploadDelayDuration)
+                        try await Task.sleep(for: .seconds(self.uploadDelayDuration))
                         return .sleep
                     }
 

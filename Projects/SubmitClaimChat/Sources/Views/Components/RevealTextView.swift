@@ -72,7 +72,7 @@ struct RevealTextView: View {
 
                 // Calculate and apply delay
                 let sleepDuration = calculateDelay(for: character, slowMode: isSlowMode)
-                await delay(TimeInterval(sleepDuration))
+                await delay(sleepDuration)
 
                 if isSlowMode {
                     elapsedTime += sleepDuration

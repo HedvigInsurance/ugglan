@@ -22,7 +22,7 @@ final class HomeQuickActionTests: XCTestCase {
         Dependencies.shared.remove(for: HomeClient.self)
         Dependencies.shared.remove(for: hPaymentClient.self)
         resetContainer()
-        try await Task.sleep(seconds: 0.0000001)
+        try await Task.sleep(for: .seconds(0.0000001))
 
         XCTAssertNil(sut)
     }

@@ -23,7 +23,7 @@ public struct ProcessingStateView: View {
         successViewButtonAction: (() -> Void)? = nil,
         onAppearLoadingView: (() -> Void)? = nil,
         state: Binding<ProcessingState>,
-        duration: Float = 1.5
+        duration: TimeInterval = 1.5
     ) {
         self.showSuccessScreen = showSuccessScreen ?? true
         self.loadingViewText = loadingViewText
@@ -33,7 +33,7 @@ public struct ProcessingStateView: View {
         self.onAppearLoadingView = onAppearLoadingView
         _state = state
 
-        let baseDurationFactor: Float = duration * (Float(1) / Float(24))
+        let baseDurationFactor: TimeInterval = duration / 24
         animationTimings = [
             .init(delay: 0.5, duration: baseDurationFactor * 8, progress: 0.3),
             .init(
@@ -130,8 +130,8 @@ public struct ProcessingStateView: View {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 for item in animationTimings {
                                     withAnimation(
-                                        .easeInOut(duration: TimeInterval(item.duration))
-                                            .delay(TimeInterval(item.delay))
+                                        .easeInOut(duration: item.duration)
+                                            .delay(item.delay)
                                     ) {
                                         vm.progress = item.progress
                                     }
@@ -148,8 +148,8 @@ public struct ProcessingStateView: View {
 }
 
 private struct AnimationTiming {
-    let delay: Float
-    let duration: Float
+    let delay: TimeInterval
+    let duration: TimeInterval
     let progress: Float
 }
 
