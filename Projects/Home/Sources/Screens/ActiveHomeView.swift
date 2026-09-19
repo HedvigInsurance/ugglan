@@ -9,11 +9,17 @@ import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
     @State private var navBarHeight: CGFloat = 0
+
+    /// The horizontal safe area edge that carries an inset, if any. On iPhone Duo the system
+    /// toolbar is a column down one side of the screen, and that column is exactly this inset.
+    @State private var insetHorizontalEdge: HorizontalEdge?
 
     private let scrollSpace = "homeScroll"
 
@@ -99,25 +105,79 @@ struct ActiveHomeView: View {
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
             .overlay(alignment: .topTrailing) {
-                HomeNavigationBar()
-                    .padding(.vertical, .padding4)
-                    .onGeometryChange(for: CGFloat.self, of: \.size.height) {
-                        navBarHeight = $0.isFinite ? $0 : 0
-                    }
-                    .opacity(showNavigation ? 1 : 0)
-                    .offset(y: showNavigation ? 0 : -30)
-                    // Animate only when the bar's visibility flips, not on every scroll tick.
-                    // `scrollOffset` mutates each frame, which re-animated the toolbar's Liquid
-                    // Glass shape continuously and trips the iOS 26 SDF renderer (SDFStyle crash).
-                    .animation(.easeInOut(duration: 0.2), value: showNavigation)
+                if !isSystemToolbarOnSide {
+                    HomeNavigationBar(action: toolbarAction)
+                        .padding(.vertical, .padding4)
+                        .onGeometryChange(for: CGFloat.self, of: \.size.height) {
+                            navBarHeight = $0.isFinite ? $0 : 0
+                        }
+                        .opacity(showNavigation ? 1 : 0)
+                        .offset(y: showNavigation ? 0 : -30)
+                        // Animate only when the bar's visibility flips, not on every scroll tick.
+                        // `scrollOffset` mutates each frame, which re-animated the toolbar's Liquid
+                        // Glass shape continuously and trips the iOS 26 SDF renderer (SDFStyle crash).
+                        .animation(.easeInOut(duration: 0.2), value: showNavigation)
+                }
             }
         }
+        .onGeometryChange(
+            for: HorizontalEdge?.self,
+            of: { proxy in
+                let insets = proxy.safeAreaInsets
+                if insets.trailing > 0, insets.trailing.isFinite { return .trailing }
+                if insets.leading > 0, insets.leading.isFinite { return .leading }
+                return nil
+            }
+        ) {
+            insetHorizontalEdge = $0
+        }
         .background { HeroBackgroundView() }
+        // With the system toolbar down the side, the floating overlay has no top edge to sit on,
+        // so the same buttons become real navigation bar items instead. Everywhere else the bar
+        // stays hidden and the overlay above does the job. `HomeTab` must not set the bar's
+        // visibility itself: a value set outside this view swallows the switch made here.
+        .setHomeNavigationBars(
+            with: isSystemToolbarOnSide ? $homeStore.toolbarOptionTypes : .constant([]),
+            action: toolbarAction,
+            tooltipDirection: tooltipDirection
+        )
+        .toolbar(isSystemToolbarOnSide ? .visible : .hidden, for: .navigationBar)
     }
 
     private var showNavigation: Bool {
         guard greetingHeight > 0 else { return true }
         return scrollOffset + greetingHeight - navBarHeight > 0
+    }
+
+    /// A regular iPhone only ever has a horizontal safe area inset in landscape, where the
+    /// vertical size class is compact, so an inset in a regular vertical size class means the
+    /// system toolbar itself is on the side, as on iPhone Duo.
+    private var isSystemToolbarOnSide: Bool {
+        verticalSizeClass == .regular && insetHorizontalEdge != nil
+    }
+
+    /// Next to a system toolbar column there is no room under the buttons, so tooltips open
+    /// sideways, away from the column and into the content: a column on the right puts them on
+    /// the buttons' left, a column on the left puts them on the right.
+    private var tooltipDirection: TooltipDirection {
+        guard isSystemToolbarOnSide, let insetHorizontalEdge else { return .below }
+        return insetHorizontalEdge == .trailing ? .leading : .trailing
+    }
+
+    private var toolbarAction: (ToolbarOptionType) -> Void {
+        { [weak navigationVm, weak homeStore] type in
+            switch type {
+            case .crossSell:
+                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
+            case .firstVet:
+                navigationVm?.quickActionsVm
+                    .perform(.firstVet(partners: homeStore?.quickActions.firstVetPartners ?? []))
+            case .chat:
+                navigationVm?.router.push(HomeRouterAction.inbox)
+            case .travelCertificate, .insuranceEvidence:
+                break
+            }
+        }
     }
 }
 
@@ -213,7 +273,7 @@ private struct TopFadeMask: View {
 
 private struct HomeNavigationBar: View {
     @AppObservedObject private var homeStore: HomeStore
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    let action: (ToolbarOptionType) -> Void
 
     var body: some View {
         if !homeStore.toolbarOptionTypes.isEmpty {
@@ -241,18 +301,7 @@ private struct HomeNavigationBar: View {
         let button = ToolbarButtonView(
             type: type,
             placement: .trailing,
-            action: { [weak navigationVm] type in
-                switch type {
-                case .crossSell:
-                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
-                case .firstVet:
-                    navigationVm?.quickActionsVm
-                        .perform(.firstVet(partners: homeStore.quickActions.firstVetPartners ?? []))
-                case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
-                case .travelCertificate, .insuranceEvidence:
-                    break
-                }
-            },
+            action: action,
             size: .padding40 + .padding4
         )
         if #available(iOS 26.0, *) {

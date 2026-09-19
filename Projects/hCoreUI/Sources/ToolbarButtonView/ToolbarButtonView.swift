@@ -9,6 +9,7 @@ public struct ToolbarButtonView: View {
     let placement: ListToolBarPlacement
     let useSpacing: Bool
     let size: CGFloat?
+    let tooltipDirection: TooltipDirection
     private var leadingSpacing: CGFloat {
         if #available(iOS 26.0, *) {
             return 0
@@ -45,13 +46,15 @@ public struct ToolbarButtonView: View {
         placement: ListToolBarPlacement,
         action: @escaping (_: ToolbarOptionType) -> Void,
         useSpacing: Bool = false,
-        size: CGFloat? = nil
+        size: CGFloat? = nil,
+        tooltipDirection: TooltipDirection = .below
     ) {
         self.type = type
         self.placement = placement
         self.action = action
         self.useSpacing = useSpacing
         self.size = size
+        self.tooltipDirection = tooltipDirection
     }
 
     public var body: some View {
@@ -89,7 +92,7 @@ public struct ToolbarButtonView: View {
             .padding(.leading, useSpacing ? leadingSpacing : 0)
             .padding(.trailing, useSpacing ? trailingSpacing : 0)
         }
-        .showTooltip(type: type, placement: placement)
+        .showTooltip(type: type, placement: placement, direction: tooltipDirection)
     }
 
     private func imageFor(type: ToolbarOptionType) -> some View {
@@ -108,6 +111,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
     @Binding var types: [ToolbarOptionType]
     let placement: ListToolBarPlacement
+    let tooltipDirection: TooltipDirection
 
     let leading: Leading?
     let trailing: Trailing?
@@ -125,6 +129,7 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         self.showLeading = showLeading
         self.showTrailing = showTrailing
         placement = leading == nil ? .trailing : .leading
+        tooltipDirection = .below
         action = { _ in }
         _types = .constant([])
     }
@@ -132,11 +137,13 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
     public init(
         action: @escaping (_: ToolbarOptionType) -> Void,
         types: Binding<[ToolbarOptionType]>,
-        placement: ListToolBarPlacement
+        placement: ListToolBarPlacement,
+        tooltipDirection: TooltipDirection = .below
     ) {
         self.action = action
         _types = types
         self.placement = placement
+        self.tooltipDirection = tooltipDirection
         leading = nil
         trailing = nil
         showLeading = false
@@ -165,7 +172,12 @@ public struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
         } else {
             content
                 .toolbar {
-                    ToolbarTrailingItems(types: types, placement: placement, action: action)
+                    ToolbarTrailingItems(
+                        types: types,
+                        placement: placement,
+                        action: action,
+                        tooltipDirection: tooltipDirection
+                    )
                 }
         }
     }
@@ -175,11 +187,22 @@ private struct ToolbarTrailingItems: ToolbarContent {
     let types: [ToolbarOptionType]
     let placement: ListToolBarPlacement
     let action: (_: ToolbarOptionType) -> Void
+    let tooltipDirection: TooltipDirection
+
+    private func button(_ type: ToolbarOptionType) -> some View {
+        ToolbarButtonView(
+            type: type,
+            placement: placement,
+            action: action,
+            useSpacing: true,
+            tooltipDirection: tooltipDirection
+        )
+    }
 
     var body: some ToolbarContent {
         if types.indices.contains(0) {
             ToolbarItem(id: types[0].toolbarItemId, placement: .topBarTrailing) {
-                ToolbarButtonView(type: types[0], placement: placement, action: action, useSpacing: true)
+                button(types[0])
             }
         }
         if #available(iOS 26.0, *), types.indices.contains(1) {
@@ -187,7 +210,7 @@ private struct ToolbarTrailingItems: ToolbarContent {
         }
         if types.indices.contains(1) {
             ToolbarItem(id: types[1].toolbarItemId, placement: .topBarTrailing) {
-                ToolbarButtonView(type: types[1], placement: placement, action: action, useSpacing: true)
+                button(types[1])
             }
         }
         if #available(iOS 26.0, *), types.indices.contains(2) {
@@ -195,7 +218,7 @@ private struct ToolbarTrailingItems: ToolbarContent {
         }
         if types.indices.contains(2) {
             ToolbarItem(id: types[2].toolbarItemId, placement: .topBarTrailing) {
-                ToolbarButtonView(type: types[2], placement: placement, action: action, useSpacing: true)
+                button(types[2])
             }
         }
         if #available(iOS 26.0, *), types.indices.contains(3) {
@@ -203,7 +226,7 @@ private struct ToolbarTrailingItems: ToolbarContent {
         }
         if types.indices.contains(3) {
             ToolbarItem(id: types[3].toolbarItemId, placement: .topBarTrailing) {
-                ToolbarButtonView(type: types[3], placement: placement, action: action, useSpacing: true)
+                button(types[3])
             }
         }
         if #available(iOS 26.0, *), types.indices.contains(4) {
@@ -211,7 +234,7 @@ private struct ToolbarTrailingItems: ToolbarContent {
         }
         if types.indices.contains(4) {
             ToolbarItem(id: types[4].toolbarItemId, placement: .topBarTrailing) {
-                ToolbarButtonView(type: types[4], placement: placement, action: action, useSpacing: true)
+                button(types[4])
             }
         }
     }
@@ -226,14 +249,16 @@ extension TimeInterval {
 extension View {
     public func setHomeNavigationBars(
         with options: Binding<[ToolbarOptionType]>,
-        action: @escaping (_: ToolbarOptionType) -> Void
+        action: @escaping (_: ToolbarOptionType) -> Void,
+        tooltipDirection: TooltipDirection = .below
     ) -> some View {
         ModifiedContent(
             content: self,
             modifier: ToolbarViewModifier<EmptyView, EmptyView>(
                 action: action,
                 types: options,
-                placement: .trailing
+                placement: .trailing,
+                tooltipDirection: tooltipDirection
             )
         )
     }

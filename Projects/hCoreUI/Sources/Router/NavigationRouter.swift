@@ -90,6 +90,22 @@ public class NavigationRouter: ObservableObject {
 
 // MARK: - NavigationStack-based host
 
+/// Forces the navigation bar visibility the options ask for. With `.ignoreNavigationBarVisibility`
+/// it applies nothing at all, leaving the root screen in charge of its own bar: even a
+/// `.toolbar(.automatic, for: .navigationBar)` on the root swallows every visibility change the
+/// screen makes later from inside (observed on iOS 27.1), so the host must not touch it.
+private struct NavigationBarVisibilityModifier: ViewModifier {
+    let options: RouterOptions
+
+    func body(content: Content) -> some View {
+        if options.contains(.ignoreNavigationBarVisibility) {
+            content
+        } else {
+            content.toolbar(options.contains(.navigationBarHidden) ? .hidden : .visible, for: .navigationBar)
+        }
+    }
+}
+
 public struct hNavigationStack<Screen: View>: View {
     @ObservedObject var router: NavigationRouter
     let options: RouterOptions
@@ -112,10 +128,7 @@ public struct hNavigationStack<Screen: View>: View {
         NavigationStack(path: $router.path) {
             initialView()
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbar(
-                    hNavigationStack.navigationBarVisibility(for: options),
-                    for: .navigationBar
-                )
+                .modifier(NavigationBarVisibilityModifier(options: options))
                 .trackNavigation(name: tracking.nameForTracking)
         }
         .introspect(.navigationStack, on: .iOS(.v16...)) { navController in
@@ -123,19 +136,6 @@ public struct hNavigationStack<Screen: View>: View {
             hNavigationStack.wireUpDismiss(navController: navController, router: router)
         }
         .environmentObject(router)
-    }
-
-    /// Resolves the toolbar visibility for the navigation bar based on the given options.
-    /// When `.ignoreNavigationBarVisibility` is set, the host does not force a visibility
-    /// value, leaving it up to individual pushed screens to control their own navigation bar.
-    private static func navigationBarVisibility(for options: RouterOptions) -> Visibility {
-        if options.contains(.navigationBarHidden) {
-            return .hidden
-        }
-        if options.contains(.ignoreNavigationBarVisibility) {
-            return .automatic
-        }
-        return .visible
     }
 
     private static func applyCustomStyling(to navController: UINavigationController, options: RouterOptions) {
