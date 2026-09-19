@@ -152,7 +152,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR" = "Texten måste innehålla minst %1$d tecken.";
 "CLAIMS_TEXT_INPUT_PLACEHOLDER" = "Beskriv ditt ärende";
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "Vad har hänt?";
-"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Vad har hänt?";
+"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Ditt svar";
 "CLAIMS_USE_AUDIO_RECORDING" = "Gör röstinspelning";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Skickar...";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
@@ -175,6 +175,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_RECORDING_TITLE" = "Inspelning";
 "CLAIM_CHAT_SKIPPED_STEP" = "Saknas";
 "CLAIM_CHAT_SKIP_STEP" = "Hoppa över";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION" = "Stulna tillbehör";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION_MESSAGE" = "Berätta om tillbehören som blev stulna, t.ex. vad det var och ungefär vad de kostade.";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_MESSAGE" = "Blev några tillbehör stulna tillsammans med barnvagnen?";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME" = "Välj tid";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE" = "Ungefär hur länge stod barnvagnen där innan du märkte att den var borta?";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE" = "Ett dygn eller mer";
