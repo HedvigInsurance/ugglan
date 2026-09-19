@@ -152,7 +152,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR" = "Input text must be at least %1$d characters.";
 "CLAIMS_TEXT_INPUT_PLACEHOLDER" = "Describe your claim";
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "What happened?";
-"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "What has happened?";
+"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Your answer";
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
@@ -175,6 +175,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_RECORDING_TITLE" = "Recording";
 "CLAIM_CHAT_SKIPPED_STEP" = "Skipped";
 "CLAIM_CHAT_SKIP_STEP" = "Skip";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION" = "Stolen accessories";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_DESCRIPTION_MESSAGE" = "Tell us about the accessories that were stolen, e.g. what they were and roughly what they cost.";
+"CLAIM_CHAT_STROLLER_THEFT_ACCESSORIES_MESSAGE" = "Were any accessories stolen along with the stroller?";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME" = "Select time";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_ALONE_TIME_MESSAGE" = "Roughly how long had the stroller been there before you noticed it was gone?";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_FULL_DAY_OR_MORE" = "A day or more";
