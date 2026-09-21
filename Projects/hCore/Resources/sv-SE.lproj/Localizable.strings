@@ -152,7 +152,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_TEXT_INPUT_MIN_CHARACTERS_ERROR" = "Texten måste innehålla minst %1$d tecken.";
 "CLAIMS_TEXT_INPUT_PLACEHOLDER" = "Beskriv ditt ärende";
 "CLAIMS_TEXT_INPUT_POPOVER_PLACEHOLDER" = "Vad har hänt?";
-"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Vad har hänt?";
+"CLAIMS_TRIAGING_WHAT_HAPPENED_TITLE" = "Ditt svar";
 "CLAIMS_USE_AUDIO_RECORDING" = "Gör röstinspelning";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Skickar...";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
@@ -517,7 +517,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_CONNECT_SUBTITLE" = "Lägg till en ny betalningsmetod för din försäkring";
 "PAYMENT_CONNECT_TITLE" = "Koppla betalning";
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
-"PAYMENT_METHODS_EMPTY" = "Du har inte lagt till någon betalningsmetod än. Lägg till en för att betala för din försäkring.";
+"PAYMENT_METHODS_EMPTY" = "Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
@@ -525,7 +525,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_OPTION_INVOICE_SUBTITLE" = "Faktura till din Kivra";
 "PAYMENT_OPTION_SWISH_SUBTITLE" = "Betalningar och utbetalningar via Swish";
 "PAYMENT_OPTION_TRUSTLY_SUBTITLE" = "Anslut din bank via Trustly";
-"PAYMENT_PAYOUT_BANK_SUCCESS_TITLE" = "Bankkonto har lagts till för utbetalningar";
+"PAYMENT_PAYOUT_BANK_SUCCESS_TITLE" = "Utbetalningskonto tillagt";
 "PAYMENT_PRIMARY_CONFIRM_TITLE" = "Bekräfta betalningsmetod";
 "PAYMENT_PRIMARY_LABEL" = "Förvald";
 "PAYMENT_PRIMARY_SUBTITLE" = "Den här metoden används för dina månadsbetalningar";
@@ -540,8 +540,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Din försäkring betalas via Swish varje månad";
 "PAYMENT_SWISH_SUCCESS_TITLE" = "Swish är nu kopplat";
 "PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
-"PAYMENT_TRUSTLY_FAILURE_TITLE" = "Vi kunde inte koppla";
-"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Dras automatiskt varje månad";
+"PAYMENT_TRUSTLY_FAILURE_TITLE" = "Kopplingen misslyckades";
+"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Vi aviserar dig i appen varje månad";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
