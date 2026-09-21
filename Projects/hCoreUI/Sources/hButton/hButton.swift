@@ -35,7 +35,7 @@ public struct hButton: View {
     }
 
     private var mainContent: some View {
-        HStack(spacing: .padding8) {
+        HStack(spacing: .padding4) {
             imageView(for: .leading)
             textView
             imageView(for: .trailing)
@@ -51,7 +51,7 @@ public struct hButton: View {
         if let image = content.buttonImage, image.alignment == alignment {
             image.image
                 .resizable()
-                .frame(width: .padding16, height: .padding16)
+                .frame(width: image.size.length, height: image.size.length)
         }
     }
 }
@@ -71,15 +71,30 @@ public struct hButtonContent: Equatable {
 
     @MainActor
     public struct hButtonImage: Equatable {
+        public enum Size: Equatable, Sendable {
+            case standard
+            case large
+
+            var length: CGFloat {
+                switch self {
+                case .standard: return .padding16
+                case .large: return .padding24
+                }
+            }
+        }
+
         let image: Image
         let alignment: HorizontalAlignment
+        let size: Size
 
         public init(
             image: Image,
-            alignment: HorizontalAlignment = .center
+            alignment: HorizontalAlignment = .center,
+            size: Size = .standard
         ) {
             self.image = image
             self.alignment = alignment
+            self.size = size
         }
     }
 }

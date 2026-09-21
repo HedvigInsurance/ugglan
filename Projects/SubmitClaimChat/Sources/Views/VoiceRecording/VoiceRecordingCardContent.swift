@@ -5,87 +5,56 @@ import hCoreUI
 struct VoiceRecordingCardContent: View {
     @ObservedObject var voiceRecorder: VoiceRecorder
     let onSend: () async throws -> Void
+    let onClose: () -> Void
     @State private var waveformWidth: CGFloat = 0
     @State private var dragProgress: Double?
     @State private var timerHeight: Double = 0
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     var body: some View {
-        hForm {
-            hSection {
+        VStack(spacing: 0) {
+            ZStack {
                 VStack(spacing: 0) {
-                    VStack(spacing: 0) {
-                        hText(L10n.claimsTriagingWhatHappenedTitle)
-                            .foregroundColor(titleColor)
-                            .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
-                        Group {
-                            if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
-                                let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
-                            {
-                                HStack(spacing: 0) {
-                                    hText(formattedTimeMinutes)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                    hText(":")
-                                    hText(formattedTimeSeconds)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                }
-                                .hTextStyle(.body1)
-                                .foregroundColor(recordingProgressColor)
-                                .accessibilityHidden(true)
-                            } else {
-                                hText(" ", style: .body1)
-                                    .foregroundColor(recordingProgressColor)
-                                    .accessibilityHidden(true)
-                            }
-                        }
-                        .background {
-                            GeometryReader { proxy in
-                                Color.clear
-                                    .onAppear {
-                                        timerHeight = proxy.size.height
-                                    }
-                                    .onChange(of: proxy.size) { value in
-                                        timerHeight = value.height
-                                    }
-                            }
-                        }
-                    }
-                    .opacity(voiceRecorder.error != nil ? 0 : 1)
-                    ZStack {
-                        if let error = voiceRecorder.error {
-                            StateView(
-                                type: .error,
-                                title: error.title ?? L10n.somethingWentWrong,
-                                bodyText: error.errorDescription,
-                                formPosition: nil,
-                                attachContentToBottom: false
-                            )
-                            .offset(x: 0, y: -.padding32)
-                            .transition(.opacity)
-                        }
-                        if voiceRecorder.isSending {
-                            DotsActivityIndicator(.standard)
-                                .useDarkColor
-                        }
-                        waveformSection
-                            .padding(.horizontal, .padding45)
-                            .padding(.bottom, .padding64)
-                            .padding(.top, max(.padding64 - timerHeight, 0))
-                            .opacity(voiceRecorder.isSending || voiceRecorder.error != nil ? 0 : 1)
-                            .animation(.defaultSpring, value: voiceRecorder.hasRecording)
-                            .accessibilityHidden(
-                                voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
-                            )
-                    }
-                    controlsSection
+                    headerSection
+                    waveformSection
+                        .padding(.horizontal, .padding8)
+                        .padding(.bottom, verticalSizeClass == .regular ? .padding64 : .padding32)
+                        .padding(.top, max((verticalSizeClass == .regular ? .padding64 : .padding32) - timerHeight, 0))
+                        .opacity(voiceRecorder.isSending ? 0.35 : 1)
+                        .animation(.defaultSpring, value: voiceRecorder.hasRecording)
+                        .accessibilityHidden(
+                            voiceRecorder.isCountingDown || voiceRecorder.isRecording || !voiceRecorder.hasRecording
+                        )
                 }
-                .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
-                .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
+                .opacity(voiceRecorder.error != nil ? 0 : 1)
+                if let error = voiceRecorder.error {
+                    StateView(
+                        type: .error,
+                        title: error.title ?? L10n.somethingWentWrong,
+                        bodyText: error.errorDescription
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity)
+                }
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, .padding16)
-            .padding(.top, .padding32)
+            controlsSection
         }
-        .hFormContentPosition(.compact)
+        .padding(.padding16)
+        .overlay(alignment: .topTrailing) {
+            if !voiceRecorder.isSending {
+                Button(action: onClose) {
+                    hCoreUIAssets.close.view
+                        .foregroundColor(hFillColor.Opaque.primary)
+                        .frame(minWidth: 44, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .padding(.padding6)
+                .accessibilityLabel(L10n.a11YClose)
+            }
+        }
+        .claimInputCardBackground()
+        .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
+        .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
         .disabled(voiceRecorder.isSending)
         .environmentObject(voiceRecorder)
     }
@@ -124,6 +93,49 @@ struct VoiceRecordingCardContent: View {
             get: { voiceRecorder.isRecording },
             set: { _ in }
         )
+    }
+
+    private var headerSection: some View {
+        VStack(spacing: 0) {
+            hText(L10n.claimsTriagingWhatHappenedTitle)
+                .foregroundColor(titleColor)
+                .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
+            Group {
+                if voiceRecorder.isSending {
+                    hText(L10n.claimsVoiceRecordingSending, style: .body1)
+                        .foregroundColor(recordingProgressColor)
+                } else if let formattedTimeSeconds = voiceRecorder.formattedTimeSeconds,
+                    let formattedTimeMinutes = voiceRecorder.formattedTimeMinutes
+                {
+                    HStack(spacing: 0) {
+                        hText(formattedTimeMinutes)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                        hText(":")
+                        hText(formattedTimeSeconds)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .hTextStyle(.body1)
+                    .foregroundColor(recordingProgressColor)
+                    .accessibilityHidden(true)
+                } else {
+                    hText(" ", style: .body1)
+                        .foregroundColor(recordingProgressColor)
+                        .accessibilityHidden(true)
+                }
+            }
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            timerHeight = proxy.size.height
+                        }
+                        .onChange(of: proxy.size) { value in
+                            timerHeight = value.height
+                        }
+                }
+            }
+        }
+        .padding(.top, .padding8)
     }
 
     private var waveformSection: some View {
@@ -202,17 +214,20 @@ struct VoiceRecordingCardContent: View {
 
     private var controlsSection: some View {
         HStack(spacing: .padding4) {
-            VoiceStartOverButton()
-            if !voiceRecorder.hasRecording {
-                VoiceRecordButton()
-            } else {
-                VoicePlaybackButton()
+            Group {
+                VoiceStartOverButton()
+                if !voiceRecorder.hasRecording {
+                    VoiceRecordButton()
+                } else {
+                    VoicePlaybackButton()
+                }
             }
+            .opacity(voiceRecorder.isSending ? 0.4 : 1)
             VoiceSendButton(
                 onTap: onSend
             )
         }
-        .frame(maxWidth: 600)
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -241,9 +256,20 @@ private struct PlaybackAccessibilityModifier: ViewModifier {
     }
 }
 
-#Preview {
-    let voiceRecoder = VoiceRecorder()
-    voiceRecoder.isSending = true
-    return VoiceRecordingCardContent(voiceRecorder: voiceRecoder) {
+#Preview("Voice card") {
+    VStack {
+        Spacer()
+        VoiceRecordingCardContent(voiceRecorder: VoiceRecorder(), onSend: {}, onClose: {})
+            .padding(.horizontal, .padding16)
+    }
+}
+
+#Preview("Voice card · sending") {
+    let voiceRecorder = VoiceRecorder()
+    voiceRecorder.isSending = true
+    return VStack {
+        Spacer()
+        VoiceRecordingCardContent(voiceRecorder: voiceRecorder, onSend: {}, onClose: {})
+            .padding(.horizontal, .padding16)
     }
 }

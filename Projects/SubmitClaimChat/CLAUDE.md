@@ -27,13 +27,13 @@ The SubmitClaimChat module implements the current chat-based claims submission f
 - **File upload protocol**: `Service/Protocols/FileUploadClient.swift` -- `hSubmitClaimFileUploadClient`
 - **Demo implementation**: `Service/DemoImplementation/ClaimIntentClientDemo.swift`
 - **Models**: `Models/SubmitClaimChatModel.swift` -- `ClaimIntent`, `ClaimIntentStep`, `ClaimIntentStepContent`, `ClaimIntentStepOutcome`, plus all content model structs (form fields, audio recording, file upload, summary, select, deflection, outcome)
-- **Step views**: `Views/Steps/SubmitClaimFormView.swift`, `SubmitClaimSingleSelectView.swift`, `SubmitClaimSummaryView.swift`, `SubmitClaimFileUploadView.swift`, `SubmitClaimVoiceRecordingView.swift`, `SubmitClaimTaskView.swift`, `SubmitClaimDeflectView.swift`, `SubmitClaimSuccessView.swift`, `SubmitClaimOutcomeScreen.swift`, `FormFieldSearchView.swift`, `FormFieldSearchViewModel.swift`, `SingleSelectValueView.swift`
+- **Step views**: `Views/Steps/SubmitClaimFormView.swift`, `SubmitClaimSingleSelectView.swift`, `SubmitClaimSummaryView.swift`, `SubmitClaimFileUploadView.swift`, `SubmitClaimVoiceRecordingView.swift`, `SubmitClaimTextCard.swift`, `SubmitClaimTaskView.swift`, `SubmitClaimDeflectView.swift`, `SubmitClaimSuccessView.swift`, `SubmitClaimOutcomeScreen.swift`, `FormFieldSearchView.swift`, `FormFieldSearchViewModel.swift`, `SingleSelectValueView.swift`
 - **Chat message view**: `Views/SubmitClaimChatMessageView.swift`
 - **Honesty pledge**: `Views/SubmitClaimChatHonestyPledgeScreen.swift`
 - **Voice recording**: `Views/VoiceRecording/VoiceRecorder.swift`, `VoiceRecordButton.swift`, `VoicePlaybackButton.swift`, `VoiceSendButton.swift`, `VoiceStartOverButton.swift`, `VoiceWaveformView.swift`, `VoiceRecordingCardContent.swift`
-- **Components**: `Views/Components/ClaimChatLoadingAnimationView.swift`, `RevealTextView.swift`, `ProgressIndicator.swift`, `NavigationBarProgressModifier.swift`, `SupportView.swift`, `AlertHelper.swift`
+- **Components**: `Views/Components/ClaimChatLoadingAnimationView.swift`, `ClaimInputCardBackground.swift`, `RevealTextView.swift`, `ProgressIndicator.swift`, `NavigationBarProgressModifier.swift`, `SupportView.swift`, `AlertHelper.swift`
 - **Contact card**: `Views/ClaimContactCard.swift`
-- **Extensions**: `Extensions/AccessibilityHelpers.swift`
+- **Extensions**: `Extensions/AccessibilityHelpers.swift`, `Extensions/View+layoutAvailability.swift`
 
 ## Dependencies
 - **Imports**: hCore, hCoreUI, Claims (via Project.swift)

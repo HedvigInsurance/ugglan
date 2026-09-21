@@ -6,116 +6,48 @@ import hCoreUI
 // MARK: - Main Voice Recording View
 struct SubmitClaimVoiceRecordingView: View {
     @ObservedObject var viewModel: SubmitClaimAudioStep
-    @ObservedObject var voiceRecorder: VoiceRecorder
-
-    init(viewModel: SubmitClaimAudioStep) {
-        self.viewModel = viewModel
-        self.voiceRecorder = viewModel.voiceRecorder
-    }
 
     var body: some View {
         hSection {
-            VStack(spacing: .padding16) {
-                if viewModel.isTextInputPresented {
-                    textInputSection
-                } else {
-                    initialButtons
+            if viewModel.isSkippable && !viewModel.state.disableSkip {
+                HStack(spacing: .padding8) {
+                    textInputButton
+                    audioInputButton
+                }
+            } else {
+                VStack(spacing: .padding8) {
+                    textInputButton
+                    audioInputButton
                 }
             }
         }
         .sectionContainerStyle(.transparent)
-        .detent(presented: $viewModel.isAudioInputPresented) {
-            VoiceRecordingCardContent(
-                voiceRecorder: voiceRecorder,
-                onSend: {
-                    viewModel.audioFileURL = voiceRecorder.recordedFileURL
-                    try await viewModel.uploadAudioRecording()
-                    viewModel.submitResponse()
-                }
+        .transition(.opacity)
+    }
+
+    private var textInputButton: some View {
+        hButton(
+            .large,
+            .secondary,
+            content: .init(
+                title: L10n.claimsWrite,
+                buttonImage: .init(image: hCoreUIAssets.penEdit.view, alignment: .leading, size: .large)
             )
-            .disabled(!viewModel.state.isEnabled)
-            .embededInNavigation(
-                options: [.navigationBarHidden],
-                tracking: SubmitClaimVoiceRecordingViewDetentType.voiceRecording
+        ) {
+            viewModel.beginText()
+        }
+    }
+
+    private var audioInputButton: some View {
+        hButton(
+            .large,
+            .secondary,
+            content: .init(
+                title: L10n.claimsRecord,
+                buttonImage: .init(image: hCoreUIAssets.mic.view, alignment: .leading, size: .large)
             )
-        }
-        .onChange(of: viewModel.isAudioInputPresented) { isPresented in
-            if !isPresented {
-                voiceRecorder.stopRecording()
-                voiceRecorder.stopPlayback()
-            }
-        }
-        .animation(.default, value: viewModel.isTextInputPresented)
-    }
-
-    // MARK: - Initial Buttons
-    private var initialButtons: some View {
-        VStack(spacing: .padding8) {
-            hButton(
-                .large,
-                .primary,
-                content: .init(title: L10n.claimChatUseAudio)
-            ) { viewModel.isAudioInputPresented = true }
-
-            hButton(
-                .large,
-                .secondary,
-                content: .init(title: L10n.claimChatUseTextInput)
-            ) { viewModel.isTextInputPresented = true }
-        }
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
-    }
-
-    // MARK: - Text Input Section
-    private var textInputSection: some View {
-        VStack(spacing: .padding16) {
-            hTextView(
-                selectedValue: viewModel.textInput,
-                placeholder: L10n.claimsTextInputPlaceholder,
-                popupPlaceholder: L10n.claimsTextInputPopoverPlaceholder,
-                minCharacters: viewModel.audioRecordingModel.freeTextMinLength,
-                maxCharacters: viewModel.audioRecordingModel.freeTextMaxLength,
-                showOnAppear: $viewModel.showTextViewOnAppear
-            ) { text in
-                viewModel.textInput = text
-            }
-            .hTextFieldError(viewModel.textInputError)
-
-            VStack(spacing: .padding8) {
-                hButton(
-                    .large,
-                    .primary,
-                    content: .init(title: L10n.saveAndContinueButtonLabel)
-                ) {
-                    UIApplication.dismissKeyboard()
-                    viewModel.submitResponse()
-                }
-                .disabled(viewModel.characterMismatch)
-
-                hButton(
-                    .large,
-                    .ghost,
-                    content: .init(title: L10n.claimsUseAudioRecording)
-                ) {
-                    withAnimation {
-                        viewModel.isTextInputPresented = false
-                        viewModel.isAudioInputPresented = true
-                    }
-                }
-            }
-        }
-        .transition(.opacity.combined(with: .move(edge: .bottom)))
-    }
-
-    enum SubmitClaimVoiceRecordingViewDetentType: TrackingViewNameProtocol, NavigationTitleProtocol {
-        case voiceRecording
-
-        var nameForTracking: String {
-            String(describing: VoiceRecordingCardContent.self)
-        }
-
-        var navigationTitle: String? {
-            L10n.claimsTriagingWhatHappenedTitle
+        ) {
+            viewModel.beginVoice()
         }
     }
 }
@@ -132,7 +64,7 @@ struct SubmitClaimVoiceRecordingResultView: View {
 
     var body: some View {
         VStack {
-            if viewModel.isTextInputPresented {
+            if viewModel.submittedKind == .text {
                 textResultView
             } else if let url = viewModel.audioFileURL {
                 audioResultView(url: url)
@@ -166,90 +98,56 @@ struct SubmitClaimVoiceRecordingResultView: View {
 }
 
 // MARK: - Preview
-#Preview("Initial State") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
+extension SubmitClaimAudioStep {
+    @MainActor
+    static func preview(textInput: String? = nil, isSkippable: Bool = true) -> SubmitClaimAudioStep {
+        SubmitClaimAudioStep(
+            claimIntent: .init(
+                currentStep: .init(
+                    content: .audioRecording(
+                        model: .init(
+                            uploadURI: "/upload",
+                            freeTextMinLength: 10,
+                            freeTextMaxLength: 500,
+                            currentFreeText: textInput
+                        )
+                    ),
+                    id: "step1",
+                    text: "Tell us what happened"
                 ),
-                id: "step1",
-                text: "Tell us what happened"
+                id: "intent1",
+                isSkippable: isSkippable,
+                isRegrettable: false,
+                progress: 0.3
             ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
-    return VStack {
+            service: .init(),
+            mainHandler: { _ in }
+        )
+    }
+}
+
+#Preview("Skippable · side by side") {
+    VStack {
         Spacer()
-        SubmitClaimVoiceRecordingView(viewModel: viewModel)
+        ClaimStepView(viewModel: SubmitClaimAudioStep.preview())
             .padding()
     }
 }
 
-#Preview("Voice Recording") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
-                ),
-                id: "step1",
-                text: "Tell us what happened"
-            ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
-    return VStack {
+#Preview("Not skippable · stacked") {
+    VStack {
         Spacer()
-        SubmitClaimVoiceRecordingView(viewModel: viewModel)
+        ClaimStepView(viewModel: SubmitClaimAudioStep.preview(isSkippable: false))
             .padding()
     }
 }
 
-#Preview("Text Input") {
-    let viewModel = SubmitClaimAudioStep(
-        claimIntent: .init(
-            currentStep: .init(
-                content: .audioRecording(
-                    model: .init(
-                        uploadURI: "/upload",
-                        freeTextMinLength: 10,
-                        freeTextMaxLength: 500
-                    )
-                ),
-                id: "step1",
-                text: "Tell us what happened"
-            ),
-            id: "intent1",
-            isSkippable: false,
-            isRegrettable: false,
-            progress: 0.3
-        ),
-        service: .init(),
-        mainHandler: { _ in }
-    )
-    viewModel.isTextInputPresented = true
+#Preview("Voice card") {
+    let viewModel = SubmitClaimAudioStep.preview()
+    viewModel.beginVoice()
     return VStack {
         Spacer()
-        SubmitClaimVoiceRecordingView(viewModel: viewModel)
+        ClaimInputCardView(viewModel: viewModel)
             .padding()
     }
 }
