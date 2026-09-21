@@ -73,7 +73,8 @@ public struct PaymentsNavigation: View {
         }
         .detent(
             presented: $paymentsNavigationVm.showAddPaymentMethod,
-            presentationStyle: .detent(style: [.height])
+            presentationStyle: .detent(style: [.height]),
+            options: .constant(.alwaysOpenOnTop)
         ) {
             PaymentAddPaymentMethod()
         }
