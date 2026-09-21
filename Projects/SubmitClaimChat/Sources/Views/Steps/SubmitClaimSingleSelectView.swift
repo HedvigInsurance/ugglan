@@ -48,6 +48,7 @@ struct SubmitClaimSingleSelectView: View {
                 ) {
                     selectOption(id: option.id)
                 }
+                .minimumButtonWidth(68)
                 .accessibilityAddTraits(.isButton)
                 .optionAccessibility(label: option.title)
                 .transition(.submitClaimOptionAppear)

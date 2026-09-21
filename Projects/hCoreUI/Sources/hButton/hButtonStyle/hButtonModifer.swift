@@ -2,6 +2,7 @@ import SwiftUI
 
 struct hButtonModifier: ViewModifier {
     @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
+    @Environment(\.minimumButtonWidth) var minimumButtonWidth
     var size: hButtonSize
 
     func body(content: Content) -> some View {
@@ -11,6 +12,7 @@ struct hButtonModifier: ViewModifier {
             .frame(minHeight: minHeight)
             .frame(maxWidth: (hButtonTakeFullWidth || size == .large) ? .infinity : nil)
             .padding(.horizontal, horizontalPadding)
+            .frame(minWidth: minimumButtonWidth)
     }
 
     private var topPadding: CGFloat {

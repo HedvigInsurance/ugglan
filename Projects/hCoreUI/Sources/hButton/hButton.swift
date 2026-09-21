@@ -139,6 +139,7 @@ extension EnvironmentValues {
     @Entry public var hUseButtonTextColor: hButtonTextColor = .default
     @Entry var hWithTransition: AnyTransition? = nil
     @Entry public var hCustomButtonView: AnyView? = nil
+    @Entry public var minimumButtonWidth: CGFloat? = nil
 }
 
 extension View {
@@ -202,6 +203,12 @@ extension View {
         } else {
             return AnyView(self)
         }
+    }
+}
+
+extension View {
+    public func minimumButtonWidth(_ width: CGFloat?) -> some View {
+        environment(\.minimumButtonWidth, width)
     }
 }
 
