@@ -332,6 +332,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var allSteps: [ClaimIntentStepHandler] = [] {
         didSet {
             scrollCoordinator.isInputScrolledOffScreen = false
+            recalculateStepHeights()
         }
     }
     @Published var currentStep: ClaimIntentStepHandler?
@@ -418,7 +419,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
             await delay(ClaimChatConstants.Timing.layoutUpdate)
             scrollCoordinator.checkForScrollOffset()
         }
-        totalStepsHeight = stepHeights.values.reduce(0, +)
+        // stepHeights can hold entries for steps no longer in allSteps, so sum over allSteps instead
+        totalStepsHeight = allSteps.reduce(0) { $0 + (stepHeights[$1.id] ?? 0) }
+
         if let id = allSteps.last?.id {
             lastStepContentHeight = stepHeights[id] ?? 0
         }
