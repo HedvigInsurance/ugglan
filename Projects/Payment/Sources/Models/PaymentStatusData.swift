@@ -247,13 +247,4 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case pending
     case terminatingDueToMissedPayments(date: String)
     case unknown
-
-    var connectButtonTitle: String {
-        switch self {
-        case .active, .pending:
-            return L10n.myPaymentDirectDebitReplaceButton
-        case .needsSetup, .unknown, .noNeedToConnect, .terminatingDueToMissedPayments:
-            return L10n.myPaymentDirectDebitButton
-        }
-    }
 }
