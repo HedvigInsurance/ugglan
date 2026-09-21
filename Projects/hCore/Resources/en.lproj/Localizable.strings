@@ -156,6 +156,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
+"CLAIM_CHAT_AI_INFO" = "We use AI to support the process of submitting and handling your claim.  A claims handler always reviews your claim before any decision is made.";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
@@ -342,6 +343,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HC_QUICK_ACTIONS_FIRSTVET_SUBTITLE" = "Schedule a call with a vet";
 "HC_QUICK_ACTIONS_FIRSTVET_TITLE" = "FirstVet";
 "HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE" = "Change bank or bank account";
+"HC_QUICK_ACTIONS_PAYMENTS_SUBTITLE_2" = "Manage payment methods";
 "HC_QUICK_ACTIONS_PAYMENTS_TITLE" = "Payments";
 "HC_QUICK_ACTIONS_REMOVE_ADDON_SUBTITLE" = "Change or remove active addons";
 "HC_QUICK_ACTIONS_SICK_ABROAD_SUBTITLE" = "Get emergency help when sick abroad";
@@ -635,6 +637,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SUMMARY_SCREEN_COVERAGE" = "Coverage";
 "SUMMARY_SCREEN_OVERVIEW" = "Overview";
 "SUMMARY_TOTAL_PRICE_SUBTITLE" = "Changes activate %@";
+"SWISH_EXPLANATION_ITEM_1_TEXT" = "Your insurance is paid via Swish each month. No need to approve every time.";
+"SWISH_EXPLANATION_ITEM_1_TITLE" = "Paid automatically";
+"SWISH_EXPLANATION_ITEM_2_TEXT" = "Claims payouts are sent to your Swish number.";
+"SWISH_EXPLANATION_ITEM_2_TITLE" = "Payouts straight to Swish";
+"SWISH_EXPLANATION_ITEM_3_TEXT" = "Switch or remove your payment method in settings.";
+"SWISH_EXPLANATION_ITEM_3_TITLE" = "Change anytime";
 /* Figma page iOS Release 1 */
 "TAB_HOME_TITLE" = "Home";
 /* Figma page iOS Release 1 */
