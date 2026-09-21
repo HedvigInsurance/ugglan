@@ -60,6 +60,7 @@ final class ClaimChatScrollCoordinator: ObservableObject {
             y: scrollView.contentSize.height - scrollView.bounds.size.height + scrollView.contentInset.bottom + 40
         )
         scrollView.setContentOffset(bottomOffset, animated: true)
+        checkForScrollOffset()
     }
 
     /// Checks if the current step input should be hidden based on scroll position
