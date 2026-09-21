@@ -136,11 +136,17 @@ private struct HomeSheetContent: View {
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
     @ObservedObject var bottomVm: HomeBottomScrollViewModel
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
     let contentFadeHeight: CGFloat
     let bottomOverscrollExtension: CGFloat
 
     var body: some View {
         VStack(spacing: .padding40) {
+            if bottomVm.showsConnectPaymentCard {
+                ConnectPaymentCardView(onConnectPayment: {
+                    navigationVm.connectPaymentVm.set()
+                })
+            }
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
