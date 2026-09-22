@@ -169,6 +169,7 @@ fragment ClaimIntentStepContentFormFieldFragment on ClaimIntentStepContentFormFi
         subtitle
         value
         imageUrl
+        selectedTitle
     }
     defaultValues
     currentValues

@@ -466,7 +466,12 @@ public class ClaimIntentClientDemo: ClaimIntentClient {
                                 maxValue: nil,
                                 minValue: nil,
                                 options: [
-                                    .init(title: "Opt 1", subtitle: nil, value: "opt1"),
+                                    .init(
+                                        title: "Opt 1",
+                                        subtitle: nil,
+                                        value: "opt1",
+                                        selectedTitle: "Opt 1 (selected)"
+                                    ),
                                     .init(title: "Opt 2", subtitle: nil, value: "opt2"),
                                 ],
                                 suffix: nil,

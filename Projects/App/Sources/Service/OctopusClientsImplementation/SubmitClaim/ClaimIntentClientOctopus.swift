@@ -482,7 +482,15 @@ extension ClaimIntentStepContentForm.ClaimIntentStepContentFormField {
             maxValue: fragment.maxValue,
             minValue: fragment.minValue,
             options: fragment.options?
-                .map { .init(title: $0.title, subtitle: $0.subtitle, value: $0.value, imageUrl: $0.imageUrl) } ?? [],
+                .map {
+                    .init(
+                        title: $0.title,
+                        subtitle: $0.subtitle,
+                        value: $0.value,
+                        imageUrl: $0.imageUrl,
+                        selectedTitle: $0.selectedTitle
+                    )
+                } ?? [],
             suffix: fragment.suffix,
             searchData: searchData,
             title: fragment.title,
