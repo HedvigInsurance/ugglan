@@ -31,7 +31,6 @@ struct OnboardingNavigation: View {
         }
         .environmentObject(vm)
         .handleEditStakeholders(with: vm.editStakeholdersVm)
-        .handleConnectPayment(with: vm.connectPaymentVm)
         .handleMissingChipIds(input: $vm.missingPetChipIdInput)
     }
 
