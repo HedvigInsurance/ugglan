@@ -256,19 +256,28 @@ public struct ClaimIntentStepContentForm: Sendable {
         let subtitle: String?
         let value: String
         let imageUrl: String?
+        /// Outside the picker, where the picked option stands alone, display this instead of `title`.
+        let selectedTitle: String?
         let isCustomSearchEntry: Bool
+
+        /// The title to show once the option is picked and displayed on its own.
+        var displayTitle: String {
+            selectedTitle ?? title
+        }
 
         public init(
             title: String,
             subtitle: String?,
             value: String,
             imageUrl: String? = nil,
+            selectedTitle: String? = nil,
             isCustomSearchEntry: Bool = false
         ) {
             self.title = title
             self.subtitle = subtitle
             self.value = value
             self.imageUrl = imageUrl
+            self.selectedTitle = selectedTitle
             self.isCustomSearchEntry = isCustomSearchEntry
         }
     }

@@ -221,7 +221,7 @@ struct FormFieldView: View {
         let selectedValue = viewModel.getFormStepValue(for: field.id)
         let selectedOption = field.options.first(where: { selectedValue.values.contains($0.value) })
         return DropdownView(
-            value: selectedOption?.title ?? "",
+            value: selectedOption?.displayTitle ?? "",
             placeHolder: field.title,
             error: $fieldViewModel.error
         ) { [weak viewModel] in
@@ -242,7 +242,7 @@ struct FormFieldView: View {
         let selectedOption = field.options.filter({ selectedValue.values.contains($0.value) })
 
         return DropdownView(
-            value: selectedOption.map({ $0.title }).joined(separator: ", "),
+            value: selectedOption.map({ $0.displayTitle }).joined(separator: ", "),
             placeHolder: field.title,
             error: $fieldViewModel.error
         ) { [weak viewModel] in

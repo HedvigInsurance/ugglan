@@ -99,7 +99,8 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                 if field.type == .search, let selectedSearchItem = formValues[field.id]?.selectedSearchItem {
                     return .init(skipped: false, key: field.title, type: .searchResult(value: selectedSearchItem))
                 }
-                let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) }).map({ $0.title })
+                let valuesToDisplay = field.options.filter({ userEnteredValues.contains($0.value) })
+                    .map({ $0.displayTitle })
                 if !valuesToDisplay.isEmpty {
                     let valueToDisplay = valuesToDisplay.joined(separator: ", ")
                     return .init(skipped: false, key: field.title, type: .text(value: valueToDisplay))
