@@ -3,16 +3,15 @@ name: UpdateLocalization
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    # Weekdays only (Mon-Fri) at 06:00 UTC
+    - cron: '0 6 * * 1-5'
 
 jobs:
   fetch-localization:
-    # macos-15 is Apple Silicon (arm64) — HedvigShared.xcframework has no x86_64
-    # simulator slice, so the build must stay arm64-only (same as RunTestsArm64.yml)
     runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Fetch translations
         run: scripts/translations.sh
         env:
@@ -27,23 +26,6 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
           echo "timestamp=$(date +'%Y-%m-%d-%H%M%S')" >> $GITHUB_OUTPUT
-      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        if: steps.changes.outputs.has_changes == 'true'
-        with:
-          xcode-version: latest-stable
-      - name: Post checkout pre
-        if: steps.changes.outputs.has_changes == 'true'
-        run: scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Post checkout
-        if: steps.changes.outputs.has_changes == 'true'
-        run: scripts/post-checkout.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build project
-        if: steps.changes.outputs.has_changes == 'true'
-        run: xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16e,OS=latest' CODE_SIGNING_ALLOWED=NO
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v7
@@ -52,6 +34,12 @@ jobs:
           commit-message: "chore: Updated translations ${{ steps.changes.outputs.timestamp }}"
           committer: hedvig-ops-bot <infra@hedvig.com>
           author: hedvig-ops-bot <infra@hedvig.com>
-          branch: "chore/update-translations-${{ steps.changes.outputs.timestamp }}"
-          title: "chore: Update translations ${{ steps.changes.outputs.timestamp }}"
+          # Fixed branch name: the first run opens the PR, later runs reset this
+          # branch to base + one commit and force-push, updating that same PR
+          # instead of opening a new one. A manual commit pushed here is lost on
+          # the next run.
+          branch: "chore/update-translations"
+          # Clean up once the PR is merged or closed, so the next run starts fresh.
+          delete-branch: true
+          title: "chore: Update translations"
           body: "Automated translation update"
