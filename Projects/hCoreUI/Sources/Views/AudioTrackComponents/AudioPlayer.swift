@@ -17,6 +17,10 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
     var audioPlayer: AVPlayer?
     let sampleHeights: [Int]
     var observerStatus: NSKeyValueObservation?
+    private var timeObserverToken: Any?
+    private var isObservingTimeControlStatus = false
+
+    private static weak var activePlayer: AudioPlayer?
 
     public enum PlaybackState: Equatable {
         case idle
@@ -50,9 +54,7 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
 
     private(set) var progress: Double = 0 {
         didSet {
-            withAnimation {
-                objectWillChange.send(self)
-            }
+            objectWillChange.send(self)
         }
     }
 
@@ -69,8 +71,29 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
         case .idle, .error, .finished:
             startPlaying()
         case let .playing(paused):
-            paused ? audioPlayer?.play() : audioPlayer?.pause()
+            if paused {
+                becomeActivePlayer()
+                audioPlayer?.play()
+            } else {
+                audioPlayer?.pause()
+            }
         case .loading:
+            break
+        }
+    }
+
+    private func becomeActivePlayer() {
+        if let active = Self.activePlayer, active !== self {
+            active.pauseForOtherPlayer()
+        }
+        Self.activePlayer = self
+    }
+
+    private func pauseForOtherPlayer() {
+        switch playbackState {
+        case .playing(paused: false), .loading:
+            playbackState = .playing(paused: true)
+        case .idle, .error, .finished, .playing(paused: true):
             break
         }
     }
@@ -81,10 +104,11 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
             self,
             selector: #selector(playerDidFinishPlaying),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: nil
+            object: audioPlayer?.currentItem
         )
 
         audioPlayer?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
+        isObservingTimeControlStatus = audioPlayer != nil
     }
 
     func setProgress(to progress: Double) {
@@ -97,7 +121,24 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
         }
     }
 
+    private func teardownCurrentPlayer() {
+        guard let audioPlayer else { return }
+        if let timeObserverToken {
+            audioPlayer.removeTimeObserver(timeObserverToken)
+            self.timeObserverToken = nil
+        }
+        if isObservingTimeControlStatus {
+            audioPlayer.removeObserver(self, forKeyPath: "timeControlStatus")
+            isObservingTimeControlStatus = false
+        }
+        NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        observerStatus = nil
+        self.audioPlayer = nil
+    }
+
     private func startPlaying() {
+        teardownCurrentPlayer()
+        becomeActivePlayer()
         let session = AVAudioSession.sharedInstance()
 
         do {
@@ -112,7 +153,7 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
             addAudioPlayerNotificationObserver()
-            audioPlayer?
+            timeObserverToken = audioPlayer?
                 .addPeriodicTimeObserver(
                     forInterval: CMTime(value: 1, timescale: 50),
                     queue: .main,

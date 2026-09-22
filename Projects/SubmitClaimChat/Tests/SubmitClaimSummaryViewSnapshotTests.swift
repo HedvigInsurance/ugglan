@@ -139,8 +139,9 @@ final class SubmitClaimSummaryViewSnapshotTests: XCTestCase {
     @MainActor
     func testShowAllAnswersContent() throws {
         registerDependencies()
+        let step = makeStep()
         let url = try render(
-            SubmitClaimSummaryAnswersView(answers: summaryModel.answers)
+            SubmitClaimSummaryAnswersView(answers: summaryModel.answers, audioPlayers: step.audioPlayers)
                 .navigationTitle(L10n.ClaimStatus.ClaimDetails.title)
                 .embededInNavigation(tracking: String(describing: SubmitClaimSummaryAnswersView.self)),
             name: "show_all_answers_content",
