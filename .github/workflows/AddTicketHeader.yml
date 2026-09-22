@@ -3,9 +3,13 @@ name: Update PR Ticket Header
 on:
   pull_request:
     types: [opened, edited]
+    paths-ignore:
+      - ".github/**"
 
 jobs:
   update-pr-header:
+    # Automated PRs (translations, formatting) have no ticket template to rewrite.
+    if: github.event.pull_request.user.login != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Replace PR template header with ticket ID
