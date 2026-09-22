@@ -102,6 +102,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                     mainHandler(.outcome(model: model))
                 }
                 state.isLoading = false
+            } catch is CancellationError {
+                return
             } catch let error {
                 if let error = error as? ClaimIntentError {
                     switch error {
@@ -145,6 +147,11 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
                 await self?.skip()
             }
         }
+    }
+
+    func cancelOngoingWork() {
+        submitTask?.cancel()
+        submitTask = nil
     }
 
     // describe entered values for accessibility
