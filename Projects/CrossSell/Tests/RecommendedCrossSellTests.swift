@@ -56,8 +56,7 @@ final class RecommendedCrossSellTests: XCTestCase {
     func testHasRecommendationTrueForInsurance() {
         let crossSells: CrossSells = .init(
             recommended: .insurance(makeInsurance()),
-            others: [],
-            discountAvailable: false
+            others: []
         )
 
         assert(crossSells.hasRecommendation)
@@ -66,8 +65,7 @@ final class RecommendedCrossSellTests: XCTestCase {
     func testHasRecommendationTrueForAddon() {
         let crossSells: CrossSells = .init(
             recommended: .addon(makeAddon()),
-            others: [],
-            discountAvailable: false
+            others: []
         )
 
         assert(crossSells.hasRecommendation)
@@ -76,8 +74,7 @@ final class RecommendedCrossSellTests: XCTestCase {
     func testHasRecommendationFalseWhenNil() {
         let crossSells: CrossSells = .init(
             recommended: nil,
-            others: [],
-            discountAvailable: false
+            others: []
         )
 
         assert(!crossSells.hasRecommendation)
