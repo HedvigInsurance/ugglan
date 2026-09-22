@@ -45,51 +45,48 @@ struct TrackPlayer: View {
                     .transition(.opacity.animation(.easeOut))
                 } else {
                     image
-                    let waveform = WaveformView(
+                    WaveformView(
                         stripeColor: hFillColor.Opaque.secondary,
-                        sampleHeights: audioPlayer.sampleHeights
+                        sampleHeights: audioPlayer.sampleHeights,
+                        progress: audioPlayer.progress,
+                        progressColor: hTextColor.Opaque.tertiary
                     )
                     .frame(maxWidth: .infinity)
-                    waveform
-                        .overlay(
-                            OverlayView(audioPlayer: audioPlayer, cornerRadius: 0)
-                                .mask(waveform)
-                        )
-                        .transition(
-                            .opacity.animation(.easeOut)
-                        )
-                        .accessibilityHidden(true)
-                        .gesture(
-                            DragGesture(coordinateSpace: .local)
-                                .onChanged { gesture in
-                                    let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                                    let progress = gesturePosition / width
-                                    audioPlayer.setProgress(to: min(max(progress, 0), 1))
-                                    audioPlayer.playbackState = .playing(paused: true)
-                                }
-                                .onEnded { gesture in
-                                    let gesturePosition = gesture.startLocation.x + gesture.translation.width
-                                    let progress = gesturePosition / width
-                                    audioPlayer.setProgress(to: min(max(progress, 0), 1))
-                                    audioPlayer.togglePlaying()
-                                }
-                        )
-                        .background {
-                            GeometryReader { geo in
-                                Color.clear
-                                    .onAppear {
-                                        width = geo.size.width
-                                    }
-                                    .onChange(of: geo.size) { size in
-                                        width = size.width
-                                    }
-                            }
-                        }
-                        .onDisappear {
-                            if audioPlayer.playbackState == .playing(paused: false) {
+                    .transition(
+                        .opacity.animation(.easeOut)
+                    )
+                    .accessibilityHidden(true)
+                    .gesture(
+                        DragGesture(coordinateSpace: .local)
+                            .onChanged { gesture in
+                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                                let progress = gesturePosition / width
+                                audioPlayer.setProgress(to: min(max(progress, 0), 1))
                                 audioPlayer.playbackState = .playing(paused: true)
                             }
+                            .onEnded { gesture in
+                                let gesturePosition = gesture.startLocation.x + gesture.translation.width
+                                let progress = gesturePosition / width
+                                audioPlayer.setProgress(to: min(max(progress, 0), 1))
+                                audioPlayer.togglePlaying()
+                            }
+                    )
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear
+                                .onAppear {
+                                    width = geo.size.width
+                                }
+                                .onChange(of: geo.size) { size in
+                                    width = size.width
+                                }
                         }
+                    }
+                    .onDisappear {
+                        if audioPlayer.playbackState == .playing(paused: false) {
+                            audioPlayer.playbackState = .playing(paused: true)
+                        }
+                    }
                 }
             }
             .padding(.horizontal, .padding16)

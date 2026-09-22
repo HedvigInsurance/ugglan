@@ -42,9 +42,12 @@ struct SubmitClaimSummaryView: View {
             presented: $showAllAnswers,
             presentationStyle: .detent(style: [.height])
         ) {
-            SubmitClaimSummaryAnswersView(answers: viewModel.summaryModel.answers)
-                .navigationTitle(L10n.ClaimStatus.ClaimDetails.title)
-                .embededInNavigation(tracking: String(describing: SubmitClaimSummaryAnswersView.self))
+            SubmitClaimSummaryAnswersView(
+                answers: viewModel.summaryModel.answers,
+                audioPlayers: viewModel.audioPlayers
+            )
+            .navigationTitle(L10n.ClaimStatus.ClaimDetails.title)
+            .embededInNavigation(tracking: String(describing: SubmitClaimSummaryAnswersView.self))
         }
     }
 
@@ -93,11 +96,13 @@ struct SubmitClaimSummaryView: View {
             VStack(alignment: .leading, spacing: .padding8) {
                 hText(L10n.claimChatRecordingTitle)
                     .accessibilityAddTraits(.isHeader)
-                ForEach(viewModel.summaryModel.audioRecordings, id: \.url) { audioPlayer in
-                    hSection {
-                        TrackPlayerView(audioPlayer: AudioPlayer(url: audioPlayer.url))
+                ForEach(viewModel.summaryModel.audioRecordings, id: \.url) { recording in
+                    if let audioPlayer = viewModel.audioPlayers[recording.url] {
+                        hSection {
+                            TrackPlayerView(audioPlayer: audioPlayer)
+                        }
+                        .hWithoutHorizontalPadding([.section])
                     }
-                    .hWithoutHorizontalPadding([.section])
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -120,6 +125,7 @@ struct SubmitClaimSummaryView: View {
 struct SubmitClaimSummaryAnswersView: View {
     @Environment(\.dismiss) private var dismiss
     let answers: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer]
+    let audioPlayers: [URL: AudioPlayer]
 
     var body: some View {
         hForm {
@@ -130,7 +136,7 @@ struct SubmitClaimSummaryAnswersView: View {
                             hText(answer.title, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                                 .accessibilityAddTraits(.isHeader)
-                            SummaryAnswerValueView(value: answer.value)
+                            SummaryAnswerValueView(value: answer.value, audioPlayers: audioPlayers)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -155,18 +161,22 @@ struct SubmitClaimSummaryAnswersView: View {
 
 private struct SummaryAnswerValueView: View {
     let value: ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryAnswer.Value
+    let audioPlayers: [URL: AudioPlayer]
 
+    @ViewBuilder
     var body: some View {
         switch value {
         case let .text(text):
             hText(text)
                 .frame(maxWidth: .infinity, alignment: .leading)
         case let .audio(url, _):
-            hSection {
-                TrackPlayerView(audioPlayer: AudioPlayer(url: url))
+            if let audioPlayer = audioPlayers[url] {
+                hSection {
+                    TrackPlayerView(audioPlayer: audioPlayer)
+                }
+                .hWithoutHorizontalPadding([.section])
+                .padding(.top, .padding8)
             }
-            .hWithoutHorizontalPadding([.section])
-            .padding(.top, .padding8)
         case let .files(files):
             SummaryAnswerFilesView(files: files)
                 .padding(.top, .padding8)

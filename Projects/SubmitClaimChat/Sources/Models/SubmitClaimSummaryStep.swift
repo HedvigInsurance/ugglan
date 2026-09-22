@@ -8,6 +8,7 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
 
     let summaryModel: ClaimIntentStepContentSummary
     let fileGridViewModel: FileGridViewModel
+    let audioPlayers: [URL: AudioPlayer]
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
@@ -29,6 +30,18 @@ final class SubmitClaimSummaryStep: ClaimIntentStepHandler {
             }),
             options: []
         )
+
+        var audioURLs = model.audioRecordings.map(\.url)
+        for answer in model.answers {
+            if case let .audio(url, _) = answer.value {
+                audioURLs.append(url)
+            }
+        }
+        self.audioPlayers = Dictionary(
+            audioURLs.map { ($0, AudioPlayer(url: $0)) },
+            uniquingKeysWith: { existing, _ in existing }
+        )
+
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         Task { [weak self] in
             await delay(ClaimChatConstants.Timing.shortDelay)
