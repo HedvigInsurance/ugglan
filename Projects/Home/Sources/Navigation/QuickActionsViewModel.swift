@@ -19,8 +19,7 @@ public final class QuickActionsViewModel: ObservableObject {
     @Published var firstVetPartners: FirstVetPartnersWrapper?
     @Published var sickAbroadData: SubmitClaimChat.Deflection?
     @Published var isChangeTierPresented: ChangeTierContractsInput?
-
-    let connectPaymentVm = ConnectPaymentViewModel()
+    @Published var isPaymentsPresented = false
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
@@ -30,7 +29,7 @@ public final class QuickActionsViewModel: ObservableObject {
 
     public func perform(_ quickAction: QuickAction) {
         switch quickAction {
-        case .connectPayments: connectPaymentVm.set()
+        case .connectPayments: isPaymentsPresented = true
         case .travelInsurance: isTravelCertificatePresented = true
         case let .editInsurance(insuranceQuickActions): editContractActions = insuranceQuickActions
         case .changeAddress: isChangeAddressPresented = true
@@ -155,7 +154,6 @@ private struct QuickActions<RedirectContent: View>: ViewModifier {
                     )
                 }
             )
-            .handleConnectPayment(with: vm.connectPaymentVm)
             .handleTerminateInsurance(
                 vm: vm.terminateInsuranceVm
             ) { dismissType in

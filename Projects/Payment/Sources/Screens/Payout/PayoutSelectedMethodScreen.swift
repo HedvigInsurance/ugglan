@@ -68,7 +68,7 @@ public struct PayoutSelectedMethodScreen: View {
                     content: .init(title: L10n.profilePaymentConnectDirectDebitButton)
                 ) {
                     router.dismiss()
-                    paymentsNavigationVm.connectPaymentVm.set()
+                    paymentsNavigationVm.showAddPaymentMethod = true
                 }
             }
             .sectionContainerStyle(.transparent)

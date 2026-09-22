@@ -1,4 +1,5 @@
 import Chat
+import Payment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -48,6 +49,8 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
 
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
+    @ObservedObject var quickActionsVm: QuickActionsViewModel
+
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
 
     public init(
@@ -55,6 +58,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
         self.helpCenterVm = helpCenterVm
+        self.quickActionsVm = helpCenterVm.quickActionsVm
         self.redirect = redirect
     }
 
@@ -91,6 +95,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         .ignoresSafeArea()
                 }
             }
+            .handlePaymentMethods(presented: $quickActionsVm.isPaymentsPresented)
             .task(id: helpCenterVm.pendingPuppyGuideRoute) {
                 guard let route = helpCenterVm.pendingPuppyGuideRoute else { return }
                 helpCenterVm.router.popToRoot()
