@@ -3,6 +3,11 @@ name: SwiftFormat
 on:
   pull_request:
     branches: ["*"]
+    # swift-format only touches Swift, so skip PRs that change none — a .strings-only
+    # translations PR or a workflow-only PR shouldn't spin up a macOS runner.
+    paths:
+      - "**/*.swift"
+      - ".swift-format"
 
 jobs:
   format:
