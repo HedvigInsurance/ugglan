@@ -3,7 +3,8 @@ name: UpdateLocalization
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
+    # Weekdays only (Mon-Fri) at 06:00 UTC
+    - cron: '0 6 * * 1-5'
 
 jobs:
   fetch-localization:
@@ -12,7 +13,7 @@ jobs:
     runs-on: macos-15
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Fetch translations
         run: scripts/translations.sh
         env:
@@ -52,6 +53,12 @@ jobs:
           commit-message: "chore: Updated translations ${{ steps.changes.outputs.timestamp }}"
           committer: hedvig-ops-bot <infra@hedvig.com>
           author: hedvig-ops-bot <infra@hedvig.com>
-          branch: "chore/update-translations-${{ steps.changes.outputs.timestamp }}"
-          title: "chore: Update translations ${{ steps.changes.outputs.timestamp }}"
+          # Fixed branch name: the first run opens the PR, later runs reset this
+          # branch to base + one commit and force-push, updating that same PR
+          # instead of opening a new one. A manual commit pushed here is lost on
+          # the next run.
+          branch: "chore/update-translations"
+          # Clean up once the PR is merged or closed, so the next run starts fresh.
+          delete-branch: true
+          title: "chore: Update translations"
           body: "Automated translation update"
