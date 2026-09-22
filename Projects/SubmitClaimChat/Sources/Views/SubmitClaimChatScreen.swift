@@ -559,7 +559,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         switch claimEvent {
         case let .removeStep(id):
             withAnimation {
-                self.allSteps.removeAll(where: { $0.id == id })
+                self.removeSteps(where: { $0.id == id })
                 self.stepHeights[id] = nil
             }
         case let .goToNext(claimIntent):
@@ -569,11 +569,18 @@ final class SubmitClaimChatViewModel: ObservableObject {
         case let .outcome(model):
             router.push(model)
             withAnimation {
-                self.allSteps.removeAll()
+                self.removeSteps(where: { _ in true })
                 self.currentStep = nil
                 self.progress = nil
             }
         }
+    }
+
+    private func removeSteps(where shouldRemove: (ClaimIntentStepHandler) -> Bool) {
+        for step in allSteps where shouldRemove(step) {
+            step.cancelOngoingWork()
+        }
+        allSteps.removeAll(where: shouldRemove)
     }
 
     private func handleGoToNextStep(claimIntent: ClaimIntent) {
@@ -612,7 +619,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
         Task { @MainActor in
             if let currentStep = currentStep {
                 if currentStep is SubmitClaimTaskStep && handler is SubmitClaimTaskStep {
-                    allSteps.removeAll { step in
+                    removeSteps { step in
                         step.id == currentStep.id
                     }
                 }
@@ -640,6 +647,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
                 }
                 for item in allSteps[indexToRemove..<allSteps.count] {
                     stepHeights.removeValue(forKey: item.id)
+                    item.cancelOngoingWork()
                 }
                 allSteps.removeSubrange((indexToRemove)..<allSteps.count)
             }

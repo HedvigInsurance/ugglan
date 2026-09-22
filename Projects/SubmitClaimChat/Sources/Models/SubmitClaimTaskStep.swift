@@ -15,6 +15,9 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     @Published var taskModel: ClaimIntentStepContentTask
     @Published var displayText: String?
 
+    /// Animates `displayText`; held so it can be cancelled when the step is removed from the chat.
+    private var displayTextTask: Task<Void, Never>?
+
     required init(
         claimIntent: ClaimIntent,
         service: ClaimIntentService,
@@ -43,9 +46,10 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
                 throw ClaimIntentError.invalidResponse
             }
             try await Task.sleep(for: .seconds(ClaimChatConstants.Timing.standardAnimation))
-            Task {
+            displayTextTask?.cancel()
+            displayTextTask = Task { [weak self] in
                 await delay(1)
-                displayText = nil
+                self?.displayText = nil
             }
             taskModel = .init(description: "", isCompleted: true)
             return result
@@ -69,12 +73,14 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
             switch claimIntent {
             case let .intent(model):
                 self.claimIntent = model
-                Task {
-                    if displayText != taskModel.description {
-                        displayText = nil
-                    }
+                if displayText != taskModel.description {
+                    displayText = nil
+                }
+                displayTextTask?.cancel()
+                displayTextTask = Task { [weak self] in
                     await delay(0.4)
-                    displayText = taskModel.description
+                    guard let self else { return }
+                    self.displayText = self.taskModel.description
                 }
             default:
                 break
@@ -86,5 +92,11 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
 
     override func accessibilityEditHint() -> String {
         ""
+    }
+
+    override func cancelOngoingWork() {
+        super.cancelOngoingWork()
+        displayTextTask?.cancel()
+        displayTextTask = nil
     }
 }
