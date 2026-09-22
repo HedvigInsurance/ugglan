@@ -5,6 +5,8 @@ import Foundation
 public enum DeepLink: String, Codable, CaseIterable {
     case forever
     case directDebit = "direct-debit"
+    case connectPayment = "connect-payment"
+    case connectSwish = "connect-swish"
     case profile
     case insurances
     case home
@@ -49,68 +51,39 @@ public enum DeepLink: String, Codable, CaseIterable {
 
     var importantText: String {
         switch self {
-        case .forever:
-            return L10n.tabReferralsTitle
-        case .directDebit:
-            return L10n.PayInExplainer.buttonText
-        case .profile:
-            return L10n.tabProfileTitle
-        case .insurances:
-            return L10n.tabInsurancesTitle
-        case .home:
-            return L10n.tabHomeTitle
-        case .sasEuroBonus:
-            return L10n.SasIntegration.title
-        case .payments:
-            return L10n.myPaymentTitle
-        case .contract:
-            return L10n.deepLinkContract
-        case .travelCertificate:
-            return L10n.TravelCertificate.cardTitle
-        case .helpCenter:
-            return L10n.hcTitle
-        case .helpCenterQuestion:
-            return L10n.hcQuestionTitle
-        case .helpCenterTopic:
-            return L10n.hcTitle
-        case .puppyGuide:
-            return L10n.puppyGuideTitle
-        case .moveContract:
-            return L10n.InsuranceDetails.changeAddressButton
-        case .terminateContract:
-            return L10n.hcQuickActionsTerminationTitle
-        case .conversation:
-            return L10n.chatTitle
-        case .contactInfo:
-            return L10n.profileMyInfoTitle
-        case .chat:
-            return L10n.chatConversationInbox
-        case .inbox:
-            return L10n.chatConversationInbox
-        case .changeTier:
-            return L10n.InsuranceDetails.changeCoverage
-        case .travelAddon:
-            return L10n.addonTravelDisplayName
-        case .editCoInsured:
-            return L10n.hcQuickActionsEditCoinsured
-        case .editCoOwners:
-            return L10n.editCoownerTitle  //TODO: fix lokalise?
-        case .claimDetails:
-            return L10n.ClaimStatus.ClaimDetails.title
-        case .insuranceEvidence:
-            return L10n.InsuranceEvidence.documentTitle
-        case .submitClaim:
-            return L10n.embarkSubmitClaim
-        case .carPlusAddon:
-            return L10n.addonCarPlusDisplayName
-        case .claimChat:
-            return "claim"
-        case .missingPetChipId:
-            return L10n.chipIdMissingMessage
-        case .payout:
-            return L10n.payoutPageHeading
-        case .manualCharge:
-            return L10n.paymentsPaymentOverdueTitle
+        case .forever: L10n.tabReferralsTitle
+        case .directDebit: L10n.PayInExplainer.buttonText
+        case .profile: L10n.tabProfileTitle
+        case .insurances: L10n.tabInsurancesTitle
+        case .home: L10n.tabHomeTitle
+        case .sasEuroBonus: L10n.SasIntegration.title
+        case .payments: L10n.myPaymentTitle
+        case .contract: L10n.deepLinkContract
+        case .travelCertificate: L10n.TravelCertificate.cardTitle
+        case .helpCenter: L10n.hcTitle
+        case .helpCenterQuestion: L10n.hcQuestionTitle
+        case .helpCenterTopic: L10n.hcTitle
+        case .puppyGuide: L10n.puppyGuideTitle
+        case .moveContract: L10n.InsuranceDetails.changeAddressButton
+        case .terminateContract: L10n.hcQuickActionsTerminationTitle
+        case .conversation: L10n.chatTitle
+        case .contactInfo: L10n.profileMyInfoTitle
+        case .chat: L10n.chatConversationInbox
+        case .inbox: L10n.chatConversationInbox
+        case .changeTier: L10n.InsuranceDetails.changeCoverage
+        case .travelAddon: L10n.addonTravelDisplayName
+        case .editCoInsured: L10n.hcQuickActionsEditCoinsured
+        case .editCoOwners: L10n.editCoownerTitle
+        case .claimDetails: L10n.ClaimStatus.ClaimDetails.title
+        case .insuranceEvidence: L10n.InsuranceEvidence.documentTitle
+        case .submitClaim: L10n.embarkSubmitClaim
+        case .carPlusAddon: L10n.addonCarPlusDisplayName
+        case .claimChat: L10n.claimChatTitle
+        case .missingPetChipId: L10n.chipIdMissingMessage
+        case .payout: L10n.payoutPageHeading
+        case .manualCharge: L10n.paymentsPaymentOverdueTitle
+        case .connectPayment: L10n.paymentConnectTitle
+        case .connectSwish: "Swish"
         }
     }
 

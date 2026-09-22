@@ -54,6 +54,15 @@ final class QuickActionsViewModelTests: XCTestCase {
         XCTAssertTrue(vm.isChangeAddressPresented)
     }
 
+    func testPerformConnectPaymentsPresentsPayments() {
+        let vm = QuickActionsViewModel()
+        sut = vm
+
+        vm.perform(.connectPayments)
+
+        XCTAssertTrue(vm.isPaymentsPresented)
+    }
+
     func testPerformEditInsuranceStoresEditContractActions() {
         let vm = QuickActionsViewModel()
         sut = vm
@@ -195,8 +204,6 @@ final class QuickActionsViewModelTests: XCTestCase {
 }
 
 // Intentionally uncovered perform(_:) cases -- their observable effect lives outside the view model:
-// - .connectPayments: delegates to ConnectPaymentViewModel.set(), whose state is private to that
-//   view model and whose flow needs the payment service mocked end to end.
 // - .editCoInsured / .editCoOwners: delegate to EditStakeholdersViewModel.start(stakeholderType:),
 //   which reads existing stakeholders and drives its own navigation -- heavy service mocking for no
 //   assertion the view model itself owns.
