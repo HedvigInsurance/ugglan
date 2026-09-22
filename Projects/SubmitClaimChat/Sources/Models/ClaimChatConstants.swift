@@ -4,6 +4,9 @@ import Foundation
 
 @MainActor
 enum ClaimChatConstants {
+    /// Scroll id of the AI disclaimer shown above the first step
+    static let aiDisclaimerViewId = "ai_disclaimer"
+
     /// Timing constants for animations and delays
     @MainActor
     enum Timing {

@@ -60,12 +60,16 @@ public struct SubmitClaimChatScreen: View {
             GeometryReader { proxy in
                 hForm {
                     VStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.allSteps, id: \.id) { step in
-                            StepView(step: step)
+                        aiDisclaimerView
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(viewModel.allSteps, id: \.id) { step in
+                                StepView(step: step)
+                            }
                         }
+                        .padding(.horizontal, .padding16)
                     }
-                    .padding(.horizontal, .padding16)
                     .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .animation(.easeInOut(duration: 0.3), value: viewModel.shouldShowAIDisclaimer)
 
                     if verticalSizeClass == .regular && !scrollCoordinator.shouldMergeInputWithContent {
                         Color.clear.frame(
@@ -105,6 +109,13 @@ public struct SubmitClaimChatScreen: View {
             floatingCardView
         }
         .environmentObject(viewModel.alertVm)
+    }
+
+    @ViewBuilder
+    private var aiDisclaimerView: some View {
+        if viewModel.shouldShowAIDisclaimer {
+            ClaimChatAIDisclaimerView()
+        }
     }
 
     private var floatingCardView: some View {
@@ -471,6 +482,10 @@ final class SubmitClaimChatViewModel: ObservableObject {
     @Published var progress: Float?
     var currentVerticalSizeClass: UserInterfaceSizeClass?
 
+    var shouldShowAIDisclaimer: Bool {
+        allSteps.count < 2
+    }
+
     /// Determines if the current input should be hidden based on scroll position, size class, and merge state
     var shouldHideCurrentInput: Bool {
         scrollCoordinator.isInputScrolledOffScreen && currentVerticalSizeClass == .regular
@@ -608,7 +623,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             self.allSteps.append(handler)
             await delay(ClaimChatConstants.Timing.standardAnimation)
             currentStep = handler
-            scrollTarget = .init(id: "result_\(previousStepId)", anchor: .top)
+            scrollTarget = .init(id: topScrollTargetId(fallback: "result_\(previousStepId)"), anchor: .top)
             currentStepId = handler.id
         }
     }
@@ -636,12 +651,18 @@ final class SubmitClaimChatViewModel: ObservableObject {
             stepHeights[handler.id] = 0
             allSteps.append(handler)
             currentStep = handler
-            if allSteps.count == 1 {
-                scrollTarget = .init(id: handler.id, anchor: .top)
-            }
             await delay(ClaimChatConstants.Timing.minimalDelay)
+            if allSteps.count == 1 {
+                scrollTarget = .init(id: topScrollTargetId(fallback: handler.id), anchor: .top)
+            }
             currentStepId = handler.id
         }
+    }
+
+    /// Scrolling to the top of the conversation means the AI disclaimer whenever it is
+    /// visible, so it does not end up hidden above the scroll position when it appears.
+    private func topScrollTargetId(fallback: String) -> String {
+        shouldShowAIDisclaimer ? ClaimChatConstants.aiDisclaimerViewId : fallback
     }
 
     func scrollToStep(_ step: ClaimIntentStepHandler) {
