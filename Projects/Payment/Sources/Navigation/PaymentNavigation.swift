@@ -35,8 +35,6 @@ public struct PaymentsNavigation: View {
                     switch routerAction {
                     case .selectedPayoutMethod:
                         PayoutSelectedMethodScreen()
-                    case .changePayoutMethod:
-                        PayoutChangeMethodScreen()
                     }
                 }
                 .routerDestination(for: MissedPaymentData.self) { item in
@@ -65,8 +63,6 @@ func paymentsDestination(for routerAction: PaymentsRouterAction) -> some View {
         PaymentHistoryView()
     case let .paymentMethod(provider):
         PaymentMethodScreen(paymentProvider: provider)
-    case .payoutMethod:
-        PayoutSelectedMethodScreen()
     case .paymentMethods:
         PaymentMethodsScreen()
     }
@@ -109,7 +105,6 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
     case discounts
     case history
     case paymentMethod(provider: PaymentProvider)
-    case payoutMethod
     case paymentMethods
 
     var nameForTracking: String {
@@ -120,8 +115,6 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
             return .init(describing: PaymentHistoryView.self)
         case .paymentMethod:
             return .init(describing: PaymentMethodScreen.self)
-        case .payoutMethod:
-            return .init(describing: PayoutSelectedMethodScreen.self)
         case .paymentMethods:
             return .init(describing: PaymentMethodsScreen.self)
         }
@@ -135,8 +128,6 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
             return L10n.paymentHistoryTitle
         case .paymentMethod:
             return L10n.paymentMethodTitle
-        case .payoutMethod:
-            return L10n.payoutPageHeading
         case .paymentMethods:
             return L10n.paymentMethodsTitle
         }

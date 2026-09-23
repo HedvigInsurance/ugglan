@@ -94,6 +94,20 @@ extension PaymentProvider {
         }
     }
 
+    func title(for direction: PaymentDirection) -> String {
+        switch direction {
+        case .payin: return payinTitle
+        case .payout: return payoutTitle
+        }
+    }
+
+    func subtitle(for direction: PaymentDirection) -> String {
+        switch direction {
+        case .payin: return payinSubtitle
+        case .payout: return payoutSubtitle
+        }
+    }
+
     @MainActor
     @ViewBuilder
     public func image(size: CGFloat = 40) -> some View {
