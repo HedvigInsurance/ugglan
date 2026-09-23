@@ -80,7 +80,7 @@ public struct PaymentAddPaymentMethod: View {
             PaymentConnectionPairGraphic(provider: provider, outcome: .success)
                 .padding(.vertical, .padding96)
         } else {
-            PaymentMethodPickerGraphic(selected: selected)
+            PaymentMethodPickerGraphic(direction: .payin, selected: selected)
                 .padding(.vertical, .padding64)
         }
     }
@@ -94,30 +94,15 @@ public struct PaymentAddPaymentMethod: View {
         }
     }
 
-    @ViewBuilder
     private var pickerContent: some View {
-        if let methods = store.paymentStatusData?.availablePayinMethods {
-            hSection {
-                hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
-                    PaymentMethodRow(payin: method.provider, selection: $selected)
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        }
-        hSection {
-            VStack(spacing: .padding8) {
-                hButton(.large, .primary, content: .init(title: L10n.paymentConnectTitle)) {
-                    providerToSetUp = selected
-                }
-                .disabled(selected == nil)
-                if !isHostedInFlow {
-                    hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
-                        dismiss()
-                    }
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
+        PaymentMethodPickerList(
+            methods: store.paymentStatusData?.availablePayinMethods ?? [],
+            direction: .payin,
+            selected: $selected,
+            connectTitle: L10n.paymentConnectTitle,
+            onConnect: { providerToSetUp = selected },
+            onCancel: isHostedInFlow ? nil : { dismiss() }
+        )
     }
 
     private func confirmationContent(for provider: PaymentProvider) -> some View {

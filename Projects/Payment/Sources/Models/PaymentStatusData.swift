@@ -147,6 +147,11 @@ public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiabl
     case unknown
 }
 
+enum PaymentDirection {
+    case payin
+    case payout
+}
+
 public enum PaymentMethod: Codable, Equatable, Sendable, Hashable {
     case trustly(bankAccount: BankAccount?)
     case nordea(bankAccount: BankAccount?)
