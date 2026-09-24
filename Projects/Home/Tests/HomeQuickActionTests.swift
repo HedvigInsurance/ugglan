@@ -151,6 +151,10 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
         throw PaymentError.missingDataError(message: "unused")
     }
 
+    func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        .init(showPreChargeNotice: false, showRetryChargeNotice: false)
+    }
+
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         []
     }

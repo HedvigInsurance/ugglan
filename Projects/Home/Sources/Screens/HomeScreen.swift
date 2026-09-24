@@ -52,6 +52,7 @@ class HomeVM: ObservableObject {
         Task { await contractStore.fetchContracts() }
         Task { await paymentStore.fetchPaymentStatus() }
         Task { await paymentStore.load() }
+        Task { await paymentStore.fetchPaymentNoticeData() }
         Task { await homeStore.fetchChatNotifications() }
         Task { await claimsStore.fetchActiveClaims() }
         Task { await claimsStore.fetchClaimInProgress() }
