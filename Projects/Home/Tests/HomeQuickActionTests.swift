@@ -151,6 +151,10 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
         throw PaymentError.missingDataError(message: "unused")
     }
 
+    func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        .init(showPreChargeNotice: false, showRetryChargeNotice: false)
+    }
+
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         []
     }
@@ -160,6 +164,18 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
     }
 
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
+        throw PaymentError.missingDataError(message: "unused")
+    }
+
+    func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        throw PaymentError.missingDataError(message: "unused")
+    }
+
+    func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
+        throw PaymentError.missingDataError(message: "unused")
+    }
+
+    func removePaymentMethod(_ provider: PaymentProvider) async throws {
         throw PaymentError.missingDataError(message: "unused")
     }
 

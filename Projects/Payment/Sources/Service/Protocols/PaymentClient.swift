@@ -4,6 +4,7 @@ import Foundation
 public protocol hPaymentClient: Sendable {
     func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData])
     func getPaymentStatusData() async throws -> PaymentStatusData
+    func getPaymentNoticeData() async throws -> PaymentNoticeData
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData]
     func getMissedPaymentData() async throws -> MissedPaymentData?
     func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult

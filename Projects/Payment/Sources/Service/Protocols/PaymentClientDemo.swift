@@ -166,6 +166,11 @@ public class hPaymentClientDemo: hPaymentClient {
         )
     }
 
+    public func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        try await Task.sleep(for: .seconds(1))
+        return .init(showPreChargeNotice: true, showRetryChargeNotice: false)
+    }
+
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         let success = PaymentHistoryListData(
             id: "2023",
