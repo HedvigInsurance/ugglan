@@ -58,6 +58,9 @@ struct MockPaymentData {
                 layout: .other
             )
         },
+        fetchPaymentNoticeData: @escaping FetchPaymentNoticeData = {
+            .init(showPreChargeNotice: false, showRetryChargeNotice: false)
+        },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()
         },
@@ -70,6 +73,7 @@ struct MockPaymentData {
         let service = MockPaymentService(
             fetchPaymentData: fetchPaymentData,
             fetchPaymentStatusData: fetchPaymentStatusData,
+            fetchPaymentNoticeData: fetchPaymentNoticeData,
             fetchPaymentHistoryData: fetchPaymentHistoryData,
             fetchSetupPaymentMethod: fetchSetupPaymentMethod,
             fetchMissedPaymentData: fetchMissedPaymentData,
@@ -82,6 +86,7 @@ struct MockPaymentData {
 
 typealias FetchPaymentData = () async throws -> (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData])
 typealias FetchPaymentStatusData = () async throws -> PaymentStatusData
+typealias FetchPaymentNoticeData = () async throws -> PaymentNoticeData
 typealias FetchPaymentHistoryData = () async throws -> [PaymentHistoryListData]
 typealias FetchSetupPaymentMethod = () async throws -> PaymentSetupResult
 typealias FetchMissedPaymentData = () async throws -> MissedPaymentData?
@@ -92,6 +97,7 @@ class MockPaymentService: hPaymentClient {
 
     var fetchPaymentData: FetchPaymentData
     var fetchPaymentStatusData: FetchPaymentStatusData
+    var fetchPaymentNoticeData: FetchPaymentNoticeData
     var fetchPaymentHistoryData: FetchPaymentHistoryData
     var fetchSetupPaymentMethod: FetchSetupPaymentMethod
     var fetchMissedPaymentData: FetchMissedPaymentData
@@ -100,6 +106,7 @@ class MockPaymentService: hPaymentClient {
     enum Event {
         case getPaymentData
         case getPaymentStatusData
+        case getPaymentNoticeData
         case getPaymentHistoryData
         case setupPaymentMethod
         case getMissedPaymentData
@@ -109,6 +116,7 @@ class MockPaymentService: hPaymentClient {
     init(
         fetchPaymentData: @escaping FetchPaymentData,
         fetchPaymentStatusData: @escaping FetchPaymentStatusData,
+        fetchPaymentNoticeData: @escaping FetchPaymentNoticeData,
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData,
         fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod,
         fetchMissedPaymentData: @escaping FetchMissedPaymentData,
@@ -116,6 +124,7 @@ class MockPaymentService: hPaymentClient {
     ) {
         self.fetchPaymentData = fetchPaymentData
         self.fetchPaymentStatusData = fetchPaymentStatusData
+        self.fetchPaymentNoticeData = fetchPaymentNoticeData
         self.fetchPaymentHistoryData = fetchPaymentHistoryData
         self.fetchSetupPaymentMethod = fetchSetupPaymentMethod
         self.fetchMissedPaymentData = fetchMissedPaymentData
@@ -131,6 +140,12 @@ class MockPaymentService: hPaymentClient {
     func getPaymentStatusData() async throws -> PaymentStatusData {
         events.append(.getPaymentStatusData)
         let data = try await fetchPaymentStatusData()
+        return data
+    }
+
+    func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        events.append(.getPaymentNoticeData)
+        let data = try await fetchPaymentNoticeData()
         return data
     }
 
