@@ -938,6 +938,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isAnalyticsConsentPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
+    private var hasPaymentNotice = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var cancellables = Set<AnyCancellable>()
@@ -977,6 +978,17 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        paymentStore.$paymentNoticeData
+            .map { $0?.hasNotice ?? false }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] hasPaymentNotice in
+                self?.hasPaymentNotice = hasPaymentNotice
+                self?.updatePaymentsBadge()
+            }
+            .store(in: &cancellables)
+
         $selectedTab
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -997,8 +1009,15 @@ class LoggedInNavigationViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+    /// A missed payment outranks a charge notice — only one dot fits on the tab.
+    private var paymentsBadge: UITabBarController.BadgeDot? {
+        if hasMissedPayment { return .red }
+        if hasPaymentNotice { return .blue }
+        return nil
+    }
+
     private func updatePaymentsBadge() {
-        tabBar?.updateBadgeDot(visible: hasMissedPayment, forTabTitled: L10n.tabPaymentsTitle)
+        tabBar?.updateBadgeDot(paymentsBadge, forTabTitled: L10n.tabPaymentsTitle)
     }
 
     private func setupObservers() {

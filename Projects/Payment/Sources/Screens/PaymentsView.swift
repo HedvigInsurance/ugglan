@@ -42,10 +42,7 @@ public struct PaymentsView: View {
             }
         }
         .onPullToRefresh {
-            async let fetchStatus: () = store.fetchPaymentStatus()
-            async let load: () = store.load(forceUpdate: true)
-            async let missedPayment: () = store.getMissedPayment()
-            _ = await (fetchStatus, load, missedPayment)
+            await store.fetchAllPaymentData(forceUpdate: true)
         }
     }
 
@@ -213,10 +210,7 @@ public class PaymentsViewModel: ObservableObject {
         fetchTask?.cancel()
         let store = self.store
         fetchTask = Task {
-            async let load: () = store.load()
-            async let fetchStatus: () = store.fetchPaymentStatus()
-            async let missedPayment: () = store.getMissedPayment()
-            _ = await (load, fetchStatus, missedPayment)
+            await store.fetchAllPaymentData()
         }
     }
 }
