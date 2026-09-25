@@ -5,9 +5,9 @@ public struct MissedPaymentData: Codable, Equatable, Sendable, Hashable, Identif
     public var id: String { paymentData.id }
 
     let paymentData: PaymentData
-    let paymentMethodData: PaymentMethodData
+    let paymentMethodData: ConnectedPaymentMethod
 
-    public init(paymentData: PaymentData, paymentMethodData: PaymentMethodData) {
+    public init(paymentData: PaymentData, paymentMethodData: ConnectedPaymentMethod) {
         self.paymentData = paymentData
         self.paymentMethodData = paymentMethodData
     }

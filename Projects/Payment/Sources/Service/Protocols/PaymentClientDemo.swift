@@ -61,10 +61,9 @@ public class hPaymentClientDemo: hPaymentClient {
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
                 payinMethod: .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "****124124", bank: "Handelsbanken")
+                    method: .trustly(bankAccount: .init(account: "****124124", bank: "Handelsbanken"))
                 ),
                 addedToThePayment: nil
             ),
@@ -136,17 +135,15 @@ public class hPaymentClientDemo: hPaymentClient {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "****1234", bank: "Connected bank")
+                method: .trustly(bankAccount: .init(account: "****1234", bank: "Connected bank"))
             ),
             payinMethods: [
                 .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "****1234", bank: "Connected bank")
+                    method: .trustly(bankAccount: .init(account: "****1234", bank: "Connected bank"))
                 )
             ],
             defaultPayoutMethod: nil,

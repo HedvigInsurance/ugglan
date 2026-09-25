@@ -46,10 +46,10 @@ extension PaymentStatusData {
         }()
 
         let payinMethods = paymentMethods.payinMethods.map {
-            PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
+            ConnectedPaymentMethod(fragment: $0.fragments.memberPaymentMethodFragment)
         }
         let payoutMethods = paymentMethods.payoutMethods.map {
-            PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment)
+            ConnectedPaymentMethod(fragment: $0.fragments.memberPaymentMethodFragment)
         }
         let availableMethods: [AvailablePaymentMethod] = paymentMethods.availableMethods.map {
             .init(
@@ -59,9 +59,9 @@ extension PaymentStatusData {
             )
         }
         let defaultPayinMethod = paymentMethods.defaultPayinMethod
-            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+            .map { ConnectedPaymentMethod(fragment: $0.fragments.memberPaymentMethodFragment) }
         let defaultPayoutMethod = paymentMethods.defaultPayoutMethod
-            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+            .map { ConnectedPaymentMethod(fragment: $0.fragments.memberPaymentMethodFragment) }
 
         let activeTypes = data.currentMember.activeContracts.map(\.currentAgreement.productVariant.typeOfContract)
         let pendingTypes = data.currentMember.pendingContracts.map(\.productVariant.typeOfContract)
@@ -106,10 +106,21 @@ extension PaymentProvider {
     }
 }
 
+extension ConnectedPaymentMethod {
+    /// Charge fragments only carry the provider name, so the method is reconstructed without any details.
+    static func from(providerString: String?) -> ConnectedPaymentMethod? {
+        guard let providerString else { return nil }
+        return .init(
+            status: .active,
+            isDefault: true,
+            method: .init(provider: .from(providerString: providerString))
+        )
+    }
+}
+
 @MainActor
-extension PaymentMethodData {
+extension ConnectedPaymentMethod {
     init(fragment: OctopusGraphQL.MemberPaymentMethodFragment) {
-        let provider = PaymentProvider.from(graphQL: fragment.provider)
         let status: PaymentMethodStatus = {
             switch fragment.status {
             case .case(.active): return .active
@@ -117,28 +128,36 @@ extension PaymentMethodData {
             default: return .unknown
             }
         }()
-        let details: PaymentMethodDetails? = {
-            if let bankAccount = fragment.details?.asPaymentMethodBankAccountDetails {
-                return .bankAccount(account: bankAccount.account, bank: bankAccount.bank)
-            } else if let swish = fragment.details?.asPaymentMethodSwishDetails {
-                return .swish(phoneNumber: swish.phoneNumber)
-            } else if let invoice = fragment.details?.asPaymentMethodInvoiceDetails {
-                let delivery: PaymentMethodDetails.InvoiceDelivery = {
+        let method: PaymentMethod = {
+            let bankAccount: PaymentMethod.BankAccount? = {
+                guard let bankAccount = fragment.details?.asPaymentMethodBankAccountDetails else { return nil }
+                return .init(account: bankAccount.account, bank: bankAccount.bank)
+            }()
+            switch PaymentProvider.from(graphQL: fragment.provider) {
+            case .trustly:
+                return .trustly(bankAccount: bankAccount)
+            case .nordea:
+                return .nordea(bankAccount: bankAccount)
+            case .swish:
+                return .swish(phoneNumber: fragment.details?.asPaymentMethodSwishDetails?.phoneNumber)
+            case .invoice:
+                let delivery: PaymentMethod.InvoiceDelivery? = {
+                    guard let invoice = fragment.details?.asPaymentMethodInvoiceDetails else { return nil }
                     switch invoice.delivery {
                     case .case(.kivra): return .kivra
-                    case .case(.mail): return .mail
+                    case .case(.mail): return .email(invoice.email)
                     default: return .unknown
                     }
                 }()
-                return .invoice(delivery: delivery, email: invoice.email)
+                return .invoice(delivery: delivery)
+            case .unknown:
+                return .unknown
             }
-            return nil
         }()
         self.init(
-            provider: provider,
             status: status,
             isDefault: fragment.isDefault,
-            details: details
+            method: method
         )
     }
 }
@@ -151,7 +170,7 @@ class hPaymentClientOctopus: hPaymentClient {
         let client = octopus.client
 
         async let dataResult = client.fetch(query: OctopusGraphQL.PaymentDataQuery())
-        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentMethodsQuery())
+        async let paymentDetailsResult = client.fetch(query: OctopusGraphQL.PaymentMethodsQuery(version: 2))
 
         let (data, paymentDetailsData) = try await (dataResult, paymentDetailsResult)
 
@@ -175,7 +194,7 @@ class hPaymentClientOctopus: hPaymentClient {
     }
 
     func getPaymentStatusData() async throws -> PaymentStatusData {
-        let query = OctopusGraphQL.PaymentMethodsQuery()
+        let query = OctopusGraphQL.PaymentMethodsQuery(version: 2)
         let data = try await octopus.client.fetch(query: query)
         return PaymentStatusData(data: data)
     }
@@ -281,8 +300,8 @@ extension PaymentData {
             return nil
         }()
 
-        let payinMethod: PaymentMethodData? = paymentMethodsData.currentMember.paymentMethods.defaultPayinMethod
-            .map { PaymentMethodData(fragment: $0.fragments.memberPaymentMethodFragment) }
+        let payinMethod: ConnectedPaymentMethod? = paymentMethodsData.currentMember.paymentMethods.defaultPayinMethod
+            .map { ConnectedPaymentMethod(fragment: $0.fragments.memberPaymentMethodFragment) }
 
         self.init(
             id: data.currentMember.futureCharge?.id ?? "",
@@ -313,18 +332,7 @@ extension PaymentData {
             }
             return nil
         }()
-        let payingMethod: PaymentMethodData? = {
-            if let paymentProvider = data.paymentProvider {
-                let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
-                return PaymentMethodData.init(
-                    provider: realPaymentProvider,
-                    status: .active,
-                    isDefault: true,
-                    details: nil
-                )
-            }
-            return nil
-        }()
+        let payingMethod = ConnectedPaymentMethod.from(providerString: data.paymentProvider)
         self.init(
             id: data.id ?? "",
             payment: .init(with: data),
@@ -503,18 +511,7 @@ extension PaymentData {
             return nil
         }()
 
-        let payingMethod: PaymentMethodData? = {
-            if let paymentProvider = data.paymentProvider {
-                let realPaymentProvider = PaymentProvider.from(providerString: paymentProvider)
-                return PaymentMethodData.init(
-                    provider: realPaymentProvider,
-                    status: .active,
-                    isDefault: true,
-                    details: nil
-                )
-            }
-            return nil
-        }()
+        let payingMethod = ConnectedPaymentMethod.from(providerString: data.paymentProvider)
         self.init(
             id: data.id ?? "",
             payment: .init(with: chargeFragment),

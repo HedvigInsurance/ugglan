@@ -10,7 +10,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable, Identifiable 
     let contracts: [ContractPaymentDetails]
     let referralDiscount: Discount?
     let amountPerReferral: MonetaryAmount
-    let payinMethod: PaymentMethodData?
+    let payinMethod: ConnectedPaymentMethod?
     // had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
     public var showStatusInfo: Bool
@@ -21,7 +21,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable, Identifiable 
         contracts: [ContractPaymentDetails],
         referralDiscount: Discount?,
         amountPerReferral: MonetaryAmount,
-        payinMethod: PaymentMethodData?,
+        payinMethod: ConnectedPaymentMethod?,
         addedToThePayment: [PaymentData]?,
         showStatusInfo: Bool = true
     ) {
