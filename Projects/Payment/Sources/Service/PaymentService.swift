@@ -41,4 +41,9 @@ public class hPaymentService {
     public func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
         try await client.setDefaultPaymentMethod(method)
     }
+
+    @Log(.error)
+    public func removePaymentMethod(_ provider: PaymentProvider) async throws {
+        try await client.removePaymentMethod(provider)
+    }
 }

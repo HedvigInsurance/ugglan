@@ -7,6 +7,8 @@ struct PaymentMethodScreen: View {
     @AppObservedObject private var store: PaymentStore
     @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
     @State private var providerToSetUp: PaymentProvider?
+    @State private var methodToRemove: ConnectedPaymentMethod?
+    @State private var cantRemoveInfo: InfoViewModel?
 
     let paymentProvider: PaymentProvider
 
@@ -27,35 +29,55 @@ struct PaymentMethodScreen: View {
             }
             .hFormAttachToBottom {
                 hSection {
-                    actions(isProcessing: isProcessing, status: statusData.status)
+                    actions(for: method, isProcessing: isProcessing)
                 }
                 .sectionContainerStyle(.transparent)
             }
             .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber)
+            .detent(
+                item: $methodToRemove,
+                presentationStyle: .detent(style: [.height])
+            ) { method in
+                PaymentRemoveMethodScreen(method: method) {
+                    methodToRemove = nil
+                    // The method is gone, so this screen has nothing left to show.
+                    paymentsNavigationVM.paymentsRouter.pop()
+                    PaymentStore.refreshStatusDetached()
+                }
+            }
+            .detent(
+                item: $cantRemoveInfo,
+                presentationStyle: .detent(style: [.height]),
+                options: .constant(.withoutGrabber)
+            ) { infoViewModel in
+                InfoView(infoViewModel: infoViewModel)
+            }
         }
     }
 
     @ViewBuilder
-    private func actions(isProcessing: Bool, status: PayinMethodStatus) -> some View {
+    private func actions(for method: ConnectedPaymentMethod, isProcessing: Bool) -> some View {
         switch paymentProvider {
         case .trustly:
-            changeableMethod(isProcessing: isProcessing) {
+            changeableMethod(method, isProcessing: isProcessing) {
                 ConnectPaymentBottomView()
             }
         case .swish:
-            changeableMethod(isProcessing: isProcessing) {
+            changeableMethod(method, isProcessing: isProcessing) {
                 hButton(.large, .secondary, content: .init(title: L10n.paymentSwishChangeNumber)) {
                     providerToSetUp = paymentProvider
                 }
             }
         case .invoice:
-            kivraCard(isProcessing: isProcessing, status: status)
+            // Invoices are delivered by Kivra and cannot be changed here, only removed.
+            changeableMethod(method, isProcessing: isProcessing) {}
         case .nordea, .unknown:
             EmptyView()
         }
     }
 
     private func changeableMethod<Change: View>(
+        _ method: ConnectedPaymentMethod,
         isProcessing: Bool,
         @ViewBuilder change: () -> Change
     ) -> some View {
@@ -65,32 +87,26 @@ struct PaymentMethodScreen: View {
             }
             VStack(spacing: .padding8) {
                 change()
-                removeButton
+                removeButton(for: method)
             }
         }
     }
 
-    /// Invoices are delivered by Kivra and cannot be changed here, so the card offers direct
-    /// debit as the way out.
-    private func kivraCard(isProcessing: Bool, status: PayinMethodStatus) -> some View {
-        InfoCard(
-            text: isProcessing ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-            type: .info
-        )
-        .buttons([
-            .init(
-                buttonTitle: isProcessing ? status.connectButtonTitle : L10n.profilePaymentConnectDirectDebitButton,
-                buttonAction: {
-                    paymentsNavigationVM.connectPaymentVm.set()
-                }
-            )
-        ])
-    }
-
-    // TODO: removing a method is not wired up yet — the API does not expose it.
-    private var removeButton: some View {
-        hButton(.large, .ghost, content: .init(title: L10n.General.remove)) {}
-            .hUseButtonTextColor(.red)
+    private func removeButton(for method: ConnectedPaymentMethod) -> some View {
+        hButton(.large, .ghost, content: .init(title: L10n.General.remove)) {
+            // The default method keeps the payments running, so it can't be removed from here.
+            if method.isDefault {
+                cantRemoveInfo = .init(
+                    //L10n.paymentRemovePrimaryTitle
+                    title: "This is your primary payment method",
+                    //L10n.paymentRemovePrimarySubtitle
+                    description: "Choose another primary method before removing it."
+                )
+            } else {
+                methodToRemove = method
+            }
+        }
+        .hUseButtonTextColor(.red)
     }
 }
 
