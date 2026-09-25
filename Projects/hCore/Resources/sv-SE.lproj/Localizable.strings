@@ -532,6 +532,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_LABEL" = "Förvald";
 "PAYMENT_PRIMARY_SUBTITLE" = "Den här metoden används för dina månadsbetalningar";
 "PAYMENT_PRIMARY_TITLE" = "Välj betalningsmetod";
+"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Välj en annan primär metod innan du tar bort den.";
+"PAYMENT_REMOVE_PRIMARY_TITLE" = "Detta är din primära betalningsmetod";
 "PAYMENT_REMOVE_SUBTITLE" = "Du kan lägga till den igen när som helst";
 "PAYMENT_REMOVE_TITLE" = "Ta bort betalningsmetod";
 "PAYMENT_SWISH_APPROVE_TITLE" = "Godkänn kopplingen i Swish";
