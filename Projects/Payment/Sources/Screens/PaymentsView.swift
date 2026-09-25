@@ -135,7 +135,7 @@ public struct PaymentsView: View {
                     // Only the primary method ever reaches this row, so the pill would
                     // have nothing to set apart.
                     PaymentMethodRow(paymentMethod, showsPrimaryLabel: false) {
-                        router.push(PaymentsRouterAction.paymentMethod)
+                        router.push(PaymentsRouterAction.paymentMethod(provider: paymentMethod.provider))
                     }
                 }
                 .withHeader(title: L10n.paymentMethodTitle)

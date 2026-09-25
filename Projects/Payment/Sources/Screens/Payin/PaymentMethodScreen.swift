@@ -4,53 +4,93 @@ import hCore
 import hCoreUI
 
 struct PaymentMethodScreen: View {
-    @AppObservedObject var store: PaymentStore
-    @EnvironmentObject var paymentsNavigationVM: PaymentsNavigationViewModel
+    @AppObservedObject private var store: PaymentStore
+    @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
+    @State private var providerToSetUp: PaymentProvider?
+
+    let paymentProvider: PaymentProvider
 
     var body: some View {
-        if let paymentChargeData = store.paymentStatusData,
-            let defaultPayinMethod = paymentChargeData.defaultOrFirstDefaultPayinMethod,
-            store.showsChangePayinMethod
+        if let statusData = store.paymentStatusData,
+            let (method, isProcessing) = statusData.payinMethod(for: paymentProvider)
         {
             hForm {
                 hSection {
-                    PaymentMethodRow(defaultPayinMethod, accessory: .none)
+                    PaymentMethodRow(method, accessory: .none)
                 }
                 PaymentMethodInfoView(
-                    data: defaultPayinMethod,
-                    chargingDay: paymentChargeData.chargingDay,
+                    data: method,
+                    chargingDay: statusData.chargingDay,
                     withDate: true
                 )
                 .hWithoutHorizontalPadding([.row, .divider])
             }
             .hFormAttachToBottom {
-                if defaultPayinMethod.provider == .trustly {
-                    ConnectPaymentBottomView()
-                } else if defaultPayinMethod.provider == .invoice {
-                    hSection {
-                        InfoCard(
-                            text:
-                                paymentChargeData.payinMethods.hasMethodInProgress
-                                ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
-                            type: .info
-                        )
-                        .buttons(
-                            [
-                                .init(
-                                    buttonTitle: paymentChargeData.payinMethods.hasMethodInProgress
-                                        ? paymentChargeData.status.connectButtonTitle
-                                        : L10n.profilePaymentConnectDirectDebitButton,
-                                    buttonAction: {
-                                        paymentsNavigationVM.connectPaymentVm.set()
-                                    }
-                                )
-                            ]
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                hSection {
+                    actions(isProcessing: isProcessing, status: statusData.status)
+                }
+                .sectionContainerStyle(.transparent)
+            }
+            .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber)
+        }
+    }
+
+    @ViewBuilder
+    private func actions(isProcessing: Bool, status: PayinMethodStatus) -> some View {
+        switch paymentProvider {
+        case .trustly:
+            changeableMethod(isProcessing: isProcessing) {
+                ConnectPaymentBottomView()
+            }
+        case .swish:
+            changeableMethod(isProcessing: isProcessing) {
+                hButton(.large, .secondary, content: .init(title: L10n.paymentSwishChangeNumber)) {
+                    providerToSetUp = paymentProvider
                 }
             }
+        case .invoice:
+            kivraCard(isProcessing: isProcessing, status: status)
+        case .nordea, .unknown:
+            EmptyView()
         }
+    }
+
+    private func changeableMethod<Change: View>(
+        isProcessing: Bool,
+        @ViewBuilder change: () -> Change
+    ) -> some View {
+        VStack(spacing: .padding16) {
+            if isProcessing {
+                InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+            }
+            VStack(spacing: .padding8) {
+                change()
+                removeButton
+            }
+        }
+    }
+
+    /// Invoices are delivered by Kivra and cannot be changed here, so the card offers direct
+    /// debit as the way out.
+    private func kivraCard(isProcessing: Bool, status: PayinMethodStatus) -> some View {
+        InfoCard(
+            text: isProcessing ? L10n.myPaymentUpdatingMessage : L10n.kivraNotificationBoxText,
+            type: .info
+        )
+        .buttons([
+            .init(
+                buttonTitle: isProcessing ? status.connectButtonTitle : L10n.profilePaymentConnectDirectDebitButton,
+                buttonAction: {
+                    paymentsNavigationVM.connectPaymentVm.set()
+                }
+            )
+        ])
+    }
+
+    // TODO: removing a method is not wired up yet — the API does not expose it.
+    private var removeButton: some View {
+        hButton(.large, .ghost, content: .init(title: L10n.General.remove)) {}
+            .hUseButtonTextColor(.red)
     }
 }
 
@@ -87,30 +127,37 @@ fileprivate struct PreviewData {
 
 #Preview("Invoice") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .invoice(delivery: .kivra))
-    return PaymentMethodScreen()
+    return PaymentMethodScreen(paymentProvider: .invoice)
         .environmentObject(store)
+        .environmentObject(PaymentsNavigationViewModel())
 }
 
 #Preview("Trustly") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .trustly(bankAccount: .init(account: "account", bank: "bank")))
-    return PaymentMethodScreen()
+    return PaymentMethodScreen(paymentProvider: .trustly)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
 }
 
 #Preview("Swish") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .swish(phoneNumber: "0700123456"))
-    return PaymentMethodScreen().environmentObject(store)
+    return PaymentMethodScreen(paymentProvider: .swish)
+        .environmentObject(store)
+        .environmentObject(PaymentsNavigationViewModel())
 }
 
 #Preview("Nordea") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .nordea(bankAccount: .init(account: "Nordea Account", bank: "Nordea")))
-    return PaymentMethodScreen().environmentObject(store)
+    return PaymentMethodScreen(paymentProvider: .nordea)
+        .environmentObject(store)
+        .environmentObject(PaymentsNavigationViewModel())
 }
 
 #Preview("Unknown") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .unknown)
-    return PaymentMethodScreen().environmentObject(store)
+    return PaymentMethodScreen(paymentProvider: .unknown)
+        .environmentObject(store)
+        .environmentObject(PaymentsNavigationViewModel())
 }
