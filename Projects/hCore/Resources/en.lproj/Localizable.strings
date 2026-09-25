@@ -532,6 +532,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_LABEL" = "Primary";
 "PAYMENT_PRIMARY_SUBTITLE" = "This method will be used for your monthly payments";
 "PAYMENT_PRIMARY_TITLE" = "Choose payment method";
+"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Choose another primary method before removing it.";
+"PAYMENT_REMOVE_PRIMARY_TITLE" = "This is your primary payment method";
 "PAYMENT_REMOVE_SUBTITLE" = "You can add it back any time";
 "PAYMENT_REMOVE_TITLE" = "Remove payment method";
 "PAYMENT_SWISH_APPROVE_TITLE" = "Approve the connection in Swish";
