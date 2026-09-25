@@ -41,8 +41,11 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **hCounterField** -- Numeric stepper field with plus/minus buttons, floating label, and min/max bounds
 - **hDatePickerField** -- Tappable field that opens a date picker in a detent sheet
 - **hTextView** -- Multi-line text area with character count, opens a full-screen editing popup
-- **hRadioField** -- Radio selection field with animated background; supports custom left views or ItemModel-based content
-- **hRadioOptionSelectedView** -- Circle or checkbox indicator for radio/checkbox selection state
+- **hRadioOption** -- Radio option row matching the current `Radio Option Single` spec. Title/subtitle via `ItemModel`, optional leading icon, optional trailing highlight pill, indicator side via `.hRadioIndicatorPlacement(_:)`, disabled via SwiftUI's own `.disabled(_:)`. Navigation initialisers (specialised on `Never`) swap the indicator for a chevron and the selection binding for an `onTap`, with an optional `trailing` slot between text and accessory. Draws its own card standalone and none inside `hRadioOptionList`. **Prefer this over `hRadioField` for new code.**
+- **hRadioOptionList** -- Grouped radio container (`Radio Option List`); owns the card, the full-width dividers and the optional label header. `.vertical` stacks options with dividers, `.horizontal` lays them out in equal columns with leading indicators. Pass `spacing:` to separate the options into their own cards instead of dividing one. Has a data-driven initialiser for dynamic lists.
+- **hRadioIndicator** -- 24x24 radio glyph. Selection picks the shape (ring vs filled) and enablement picks the colour, so a disabled unselected option keeps the plain ring rather than a greyed fill. Radio only -- for a checkbox use `hRadioOptionSelectedView`.
+- **hRadioField** -- Legacy radio selection field with animated background; supports custom left views or ItemModel-based content. Superseded by `hRadioOption`.
+- **hRadioOptionSelectedView** -- Legacy circle or checkbox indicator for radio/checkbox selection state; still the only option for checkboxes
 - **CheckboxToggleStyle** -- Custom ToggleStyle that renders a checkbox inside an hRow
 - **DropdownView** -- Tappable field with a chevron-down trailing icon for dropdown selection
 - **ItemPickerScreen** -- Full-screen list picker for selecting items from a collection; supports search, manual input, and info cards
@@ -187,7 +190,10 @@ Dynamic Type is supported via a multiplier system (capped at 2.5x).
 **Input fields:**
 - `Sources/hForm/hFloatingTextField.swift` -- Primary text input
 - `Sources/hForm/hFloatingField.swift` -- Tappable floating field
-- `Sources/hForm/hRadioFields/hRadioField.swift` -- Radio selection
+- `Sources/hForm/RadioFields/hRadioOption.swift` -- Radio option row (current)
+- `Sources/hForm/RadioFields/hRadioOptionList.swift` -- Grouped radio container
+- `Sources/hForm/RadioFields/hRadioOptionStyle.swift` -- Radio sizing metrics + environment keys
+- `Sources/hForm/RadioFields/hRadioField.swift` -- Radio selection (legacy)
 - `Sources/hForm/hCounterField.swift` -- Counter input
 - `Sources/hForm/hDatePickerField.swift` -- Date picker field
 
@@ -212,6 +218,8 @@ Note: Nearly every feature module in the app depends on hCoreUI.
 - Button types always trigger haptic feedback (`UIImpactFeedbackGenerator`) on tap -- this is built into `_hButton`.
 - `hForm` disables scroll bounce by default when content fits within the view height. Override with `.hSetScrollBounce(to: true)`.
 - Field components (hFloatingTextField, hRadioField, etc.) rely on the `hFieldSize` environment value defaulting to `.medium`. Always set it explicitly if you need a different size.
+- `hRadioOption` decides whether to paint its own card by reading the internal `hRadioOptionListAxis` and `hRadioOptionListSpacing` environment values, which only `hRadioOptionList` sets. Setting either by hand elsewhere will silently strip an option's background.
+- `hRadioOptionList` paints its own surface only when flush, so put it inside a `.sectionContainerStyle(.transparent)` section -- an opaque or translucent section draws a second card behind it. Given a non-zero `spacing` it paints nothing and the options carry their own cards, so a card here would show through the gaps.
 - The `Router` is UIKit-based (wraps `UINavigationController`); route destinations must conform to `Hashable & TrackingViewNameProtocol`. Register route builders via `router.builders[key]` before pushing.
 - `DefaultStyling.installCustom()` must be called at app launch to configure global UIKit appearances (navigation bar, tab bar, date picker tint, etc.).
 - Toast notifications are singleton-managed via `Toasts.shared` and display on the app's key window. Duplicate toasts (same text) are suppressed.
