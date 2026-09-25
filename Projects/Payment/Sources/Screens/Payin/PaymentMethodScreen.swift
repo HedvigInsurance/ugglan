@@ -60,7 +60,9 @@ struct PaymentMethodScreen: View {
         switch paymentProvider {
         case .trustly:
             changeableMethod(method, isProcessing: isProcessing) {
-                ConnectPaymentBottomView()
+                hButton(.large, .secondary, content: .init(title: L10n.myPaymentDirectDebitReplaceButton)) {
+                    providerToSetUp = paymentProvider
+                }
             }
         case .swish:
             changeableMethod(method, isProcessing: isProcessing) {
