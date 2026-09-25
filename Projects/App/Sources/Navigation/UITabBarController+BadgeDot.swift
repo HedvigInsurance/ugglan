@@ -2,9 +2,23 @@ import UIKit
 import hCoreUI
 
 extension UITabBarController {
+    /// A colored dot drawn over a tab's icon.
+    enum BadgeDot {
+        case red
+        case blue
+
+        @MainActor
+        fileprivate var color: UIColor {
+            switch self {
+            case .red: hSignalColor.Red.element.colorFor(.light, .base).color.uiColor()
+            case .blue: hSignalColor.Blue.element.colorFor(.light, .base).color.uiColor()
+            }
+        }
+    }
+
     private static let badgeDotTag = 999
 
-    func updateBadgeDot(visible: Bool, forTabTitled title: String) {
+    func updateBadgeDot(_ badge: BadgeDot?, forTabTitled title: String) {
         guard let viewControllers,
             let tabIndex = viewControllers.firstIndex(where: { $0.tabBarItem.title == title })
         else { return }
@@ -12,21 +26,25 @@ extension UITabBarController {
         tabBar.layoutIfNeeded()
         guard let buttonView = findTabButton(in: tabBar, at: tabIndex) else { return }
 
-        if visible {
-            addBadgeDotIfNeeded(to: buttonView)
-        } else {
+        guard let badge else {
             buttonView.viewWithTag(Self.badgeDotTag)?.removeFromSuperview()
+            return
         }
+        addOrRecolorBadgeDot(in: buttonView, color: badge.color)
     }
 
-    private func addBadgeDotIfNeeded(to buttonView: UIView) {
-        guard buttonView.viewWithTag(Self.badgeDotTag) == nil,
-            let imageView = buttonView.subviews.first(where: { $0 is UIImageView })
-        else { return }
+    private func addOrRecolorBadgeDot(in buttonView: UIView, color: UIColor) {
+        // An already placed dot only needs recoloring — its constraints still hold.
+        if let dot = buttonView.viewWithTag(Self.badgeDotTag) {
+            dot.backgroundColor = color
+            return
+        }
+
+        guard let imageView = buttonView.subviews.first(where: { $0 is UIImageView }) else { return }
 
         let dotSize: CGFloat = 8.5
         let dot = UIView()
-        dot.backgroundColor = hSignalColor.Red.element.colorFor(.light, .base).color.uiColor()
+        dot.backgroundColor = color
         dot.layer.cornerRadius = dotSize / 2
         dot.tag = Self.badgeDotTag
         dot.translatesAutoresizingMaskIntoConstraints = false
