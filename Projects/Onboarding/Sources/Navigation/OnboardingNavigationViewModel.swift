@@ -13,7 +13,6 @@ class OnboardingNavigationViewModel: ObservableObject {
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
-    let connectPaymentVm = ConnectPaymentViewModel()
     private var routeCountCancellable: AnyCancellable?
     @Published var steps: [OnboardingStep] = [
         .welcome
@@ -26,6 +25,8 @@ class OnboardingNavigationViewModel: ObservableObject {
     @Published var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
 
     @Published var missingPetChipIdInput: MissingPetChipIdInput?
+
+    @Published var enteredPhoneNumber: String?
 
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
@@ -86,33 +87,17 @@ extension OnboardingNavigationViewModel {
 
 // MARK: - Connect-payment step
 extension OnboardingNavigationViewModel {
-    /// Hands the payment flow its callbacks. They are stored on `connectPaymentVm`, which this
-    /// view model owns, so they must not hold `self` or the flow would never be released.
-    func connectPayment() {
-        connectPaymentVm.set(
-            onSuccess: { [weak self] in
-                self?.markPaymentConnected()
-            },
-            onDeinit: { [weak self] in
-                await self?.fetchPaymentStatus()
-            }
-        )
-    }
-
-    /// Refresh the `.connectPayment` step's connected flag — the member may have connected
-    /// payment since the step list was computed. Only ever flips to connected: a stale
-    /// backend read must not revert a connection made during the flow.
-    func fetchPaymentStatus() async {
-        guard let isConnected = try? await onboardingService.getIsPaymentConnected(), isConnected else { return }
-        markPaymentConnected()
+    var connectedPaymentProvider: PaymentProvider? {
+        for case let .connectPayment(true, provider) in steps { return provider }
+        return nil
     }
 
     /// Payment was connected — flip the `connectPayment` step's `isConnected` flag so the
     /// step's state reflects reality.
-    func markPaymentConnected() {
+    func markPaymentConnected(provider: PaymentProvider) {
         steps = steps.map { step in
             guard case .connectPayment = step else { return step }
-            return .connectPayment(isConnected: true)
+            return .connectPayment(isConnected: true, paymentProvider: provider)
         }
     }
 }

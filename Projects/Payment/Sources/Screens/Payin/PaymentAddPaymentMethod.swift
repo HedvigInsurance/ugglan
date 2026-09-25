@@ -3,7 +3,19 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentAddPaymentMethod: View {
+public struct PaymentAddPaymentMethod: View {
+    public struct Heading {
+        let title: String
+        let subTitle: String
+        let alignment: Alignment
+
+        public init(title: String, subTitle: String, alignment: Alignment = .center) {
+            self.title = title
+            self.subTitle = subTitle
+            self.alignment = alignment
+        }
+    }
+
     @AppObservedObject var store: PaymentStore
     @Environment(\.dismiss) private var dismiss
 
@@ -11,23 +23,54 @@ struct PaymentAddPaymentMethod: View {
     @State private var providerToSetUp: PaymentProvider?
     @State private var connectedProvider: PaymentProvider?
 
-    var body: some View {
+    private let heading: Heading?
+    private let phoneNumber: String?
+    private let onFinished: ((_ provider: PaymentProvider) -> Void)?
+
+    public init() {
+        self.heading = nil
+        self.phoneNumber = nil
+        self.onFinished = nil
+    }
+
+    public init(
+        heading: Heading,
+        phoneNumber: String? = nil,
+        connectedProvider: PaymentProvider? = nil,
+        onFinished: @escaping (_ provider: PaymentProvider) -> Void
+    ) {
+        self.heading = heading
+        self.phoneNumber = phoneNumber
+        self.onFinished = onFinished
+        _connectedProvider = State(initialValue: connectedProvider)
+    }
+
+    private var prefilledPhoneNumber: String? {
+        phoneNumber ?? store.paymentStatusData?.memberPhoneNumber
+    }
+
+    private var isHostedInFlow: Bool {
+        onFinished != nil
+    }
+
+    public var body: some View {
         hForm {
             formContent
         }
         .hFormAttachToBottom {
             bottomContent
         }
-        .hFormTitle(
-            title: .init(.small, .body1, title, alignment: .center),
-            subTitle: .init(.small, .body1, subtitle, alignment: .center)
-        )
-        .hFormContentPosition(.compact)
-        .handlePaymentSetup(
-            for: $providerToSetUp,
-            phoneNumber: store.paymentStatusData?.memberPhoneNumber
-        ) { provider in
+        .hFormTitle(title: formTitle, subTitle: formSubTitle)
+        .handlePaymentSetup(for: $providerToSetUp, phoneNumber: prefilledPhoneNumber) { provider in
             withAnimation { connectedProvider = provider }
+        }
+        .task {
+            // The picker lists what the backend offers, so a host that opens this screen
+            // without having loaded the status has nothing to show until it is fetched.
+            // Opening straight on the confirmation needs none of it.
+            if connectedProvider == nil, store.paymentStatusData == nil {
+                await store.fetchPaymentStatus()
+            }
         }
     }
 
@@ -67,8 +110,10 @@ struct PaymentAddPaymentMethod: View {
                     providerToSetUp = selected
                 }
                 .disabled(selected == nil)
-                hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
-                    dismiss()
+                if !isHostedInFlow {
+                    hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
+                        dismiss()
+                    }
                 }
             }
         }
@@ -82,28 +127,44 @@ struct PaymentAddPaymentMethod: View {
                 .multilineTextAlignment(.center)
             hSection {
                 hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
-                    dismiss()
+                    finish(with: provider)
                 }
             }
             .sectionContainerStyle(.transparent)
         }
     }
 
-    private var title: String {
-        if let connectedProvider {
-            return connectedTitle(for: connectedProvider)
+    private func finish(with provider: PaymentProvider) {
+        if let onFinished {
+            onFinished(provider)
+        } else {
+            dismiss()
         }
-        return L10n.paymentConnectTitle
     }
 
-    private var subtitle: String {
+    private var headingAlignment: Alignment {
+        heading?.alignment ?? .center
+    }
+
+    private var formTitle: hTitle {
+        if let connectedProvider {
+            return title(connectedTitle(for: connectedProvider))
+        }
+        return title(heading?.title ?? L10n.paymentConnectTitle)
+    }
+
+    private var formSubTitle: hTitle {
         if connectedProvider == .swish {
-            return L10n.paymentSwishSuccessSubtitle
+            return title(L10n.paymentSwishSuccessSubtitle)
         }
         if connectedProvider != nil {
-            return L10n.paymentTrustlySuccessSubtitle
+            return title(L10n.paymentTrustlySuccessSubtitle)
         }
-        return L10n.paymentConnectSubtitle
+        return title(heading?.subTitle ?? L10n.paymentConnectSubtitle)
+    }
+
+    private func title(_ text: String) -> hTitle {
+        .init(.small, .body1, text, alignment: headingAlignment)
     }
 
     private func connectedTitle(for provider: PaymentProvider) -> String {
@@ -141,4 +202,16 @@ private func setUpPreviewStore() {
 #Preview("Pick a method") {
     setUpPreviewStore()
     return PaymentAddPaymentMethod()
+}
+
+#Preview("Hosted by a flow") {
+    setUpPreviewStore()
+    return PaymentAddPaymentMethod(
+        heading: .init(
+            title: "Connect payment",
+            subTitle: "Set up how you want to pay",
+            alignment: .leading
+        ),
+        onFinished: { _ in }
+    )
 }
