@@ -38,7 +38,8 @@ extension PaymentProvider {
         switch self {
         case .trustly: L10n.paymentsAutogiroLabel
         case .invoice: L10n.paymentsInvoice
-        case .swish, .nordea, .unknown: nil
+        case .swish: "Swish"
+        case .nordea, .unknown: nil
         }
     }
 
@@ -54,7 +55,7 @@ extension PaymentProvider {
     @ViewBuilder
     public var image: some View {
         switch self {
-        case .trustly, .unknown:
+        case .trustly:
             ZStack {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
                     .fill(hBackgroundColor.negative)
@@ -65,7 +66,9 @@ extension PaymentProvider {
                     .frame(width: 24)
                     .foregroundColor(hTextColor.Opaque.negative)
             }
-        case .invoice: hCoreUIAssets.kivra.view.resizable().frame(width: 40, height: 40)
+        case .invoice:
+            hCoreUIAssets.kivra.view.resizable().frame(width: 40, height: 40)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
         case .swish:
             ZStack {
                 RoundedRectangle(cornerRadius: .cornerRadiusS)
@@ -86,6 +89,10 @@ extension PaymentProvider {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 26)
             }
+        case .unknown:
+            RoundedRectangle(cornerRadius: .cornerRadiusS)
+                .fill(hBackgroundColor.negative)
+                .frame(width: 40, height: 40)
         }
     }
 }
