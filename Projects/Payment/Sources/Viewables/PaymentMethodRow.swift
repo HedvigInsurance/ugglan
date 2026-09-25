@@ -13,6 +13,10 @@ struct PaymentMethodRow<Value>: View where Value: Hashable {
         /// Selectable rows use `isDisabled` instead.
         case plain(accessory: hRadioOptionAccessory, showsPrimaryLabel: Bool, isInert: Bool, onTap: () -> Void)
         case selection(value: Value, selection: Binding<Value?>)
+        /// Deliberately not `.disabled`: that would flatten the title and subtitle to one
+        /// washed-out grey, and this row is the screen's content rather than a control
+        /// someone is being kept away from.
+        case locked
     }
 
     private init(
@@ -57,6 +61,25 @@ struct PaymentMethodRow<Value>: View where Value: Hashable {
                 provider.image()
             }
             .disabled(isDisabled)
+        case .locked:
+            hRadioOption<Never>(
+                item: item,
+                accessory: .none,
+                onTap: {},
+                trailing: {
+                    hCoreUIAssets.lock.view
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .accessibilityHidden(true)
+                },
+                leading: {
+                    // The row stays enabled so the text keeps its colours, so the logo is
+                    // faded here rather than by `hRadioOption`'s disabled styling.
+                    provider.image()
+                        .opacity(0.4)
+                }
+            )
+            .allowsHitTesting(false)
+            .accessibilityRemoveTraits(.isButton)
         }
     }
 }
@@ -79,6 +102,10 @@ extension PaymentMethodRow where Value == Never {
             )
         )
     }
+
+    init(locked method: ConnectedPaymentMethod) {
+        self.init(item: method.item, provider: method.provider, content: .locked)
+    }
 }
 
 extension PaymentMethodRow where Value == ConnectedPaymentMethod {
@@ -95,9 +122,9 @@ extension PaymentMethodRow where Value == ConnectedPaymentMethod {
 }
 
 extension PaymentMethodRow where Value == PaymentProvider {
-    init(payin provider: PaymentProvider, selection: Binding<PaymentProvider?>) {
+    init(_ provider: PaymentProvider, direction: PaymentDirection, selection: Binding<PaymentProvider?>) {
         self.init(
-            item: .init(title: provider.payinTitle, subTitle: provider.payinSubtitle),
+            item: .init(title: provider.title(for: direction), subTitle: provider.subtitle(for: direction)),
             provider: provider,
             content: .selection(value: provider, selection: selection)
         )
@@ -131,7 +158,9 @@ extension PaymentMethodRow where Value == PaymentProvider {
                 PaymentMethodRow(pendingSwish)
                 PaymentMethodRow(trustly, selection: .constant(trustly))
                 PaymentMethodRow(swish, selection: .constant(trustly))
-                PaymentMethodRow(payin: .invoice, selection: .constant(nil))
+                PaymentMethodRow(locked: swish)
+                PaymentMethodRow(.invoice, direction: .payin, selection: .constant(nil))
+                PaymentMethodRow(.swish, direction: .payout, selection: .constant(nil))
             }
         }
         .sectionContainerStyle(.transparent)

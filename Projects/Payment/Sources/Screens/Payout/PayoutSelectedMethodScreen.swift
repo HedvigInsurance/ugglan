@@ -7,17 +7,21 @@ public struct PayoutSelectedMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @State private var showChangePayoutMethod = false
 
     public var body: some View {
-        if let paymentStatusData = store.paymentStatusData {
-            if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
-                existingPayoutView(paymentStatusData: paymentStatusData)
-            } else if paymentStatusData.availablePayoutMethods.isEmpty {
-                missingPayinView
-            } else {
-                missingPayoutView(paymentStatusData: paymentStatusData)
+        Group {
+            if let paymentStatusData = store.paymentStatusData {
+                if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
+                    existingPayoutView(paymentStatusData: paymentStatusData)
+                } else if paymentStatusData.availablePayoutMethods.isEmpty {
+                    missingPayinView
+                } else {
+                    missingPayoutView(paymentStatusData: paymentStatusData)
+                }
             }
         }
+        .handleChangePayoutMethod(presented: $showChangePayoutMethod)
     }
 
     private func missingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
@@ -80,23 +84,11 @@ public struct PayoutSelectedMethodScreen: View {
     private func existingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
         hForm {
             VStack(spacing: .padding8) {
-                if let displayValue = paymentStatusData.payoutAccountDisplayValue,
-                    let displayTitle = paymentStatusData.payoutAccountDisplayTitle
-                {
+                if let payoutMethod = paymentStatusData.defaultOrFirstDefaultPayoutMethod {
                     hSection {
-                        hFloatingField(
-                            value: displayValue,
-                            placeholder: displayTitle,
-                            error: nil,
-                            onTap: {}
-                        )
-                        .hFieldTrailingView {
-                            hCoreUIAssets.lock.view
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                        }
-                        .hBackgroundOption(option: [.locked])
-                        .disabled(true)
+                        PaymentMethodRow(locked: payoutMethod)
                     }
+                    .sectionContainerStyle(.transparent)
                 }
             }
             .padding(.top, .padding16)
@@ -122,7 +114,7 @@ public struct PayoutSelectedMethodScreen: View {
                     .primary,
                     content: .init(title: title)
                 ) {
-                    router.push(PayoutRouterActions.changePayoutMethod)
+                    showChangePayoutMethod = true
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -131,17 +123,6 @@ public struct PayoutSelectedMethodScreen: View {
 }
 
 extension PaymentStatusData {
-    fileprivate var payoutAccountDisplayValue: String? {
-        defaultOrFirstDefaultPayoutMethod?.info
-    }
-
-    fileprivate var payoutAccountDisplayTitle: String? {
-        guard let payoutMethod = defaultOrFirstDefaultPayoutMethod else { return nil }
-        let title = payoutMethod.provider.payoutTitle
-        guard let bank = payoutMethod.method.bankAccount?.bank else { return title }
-        return title + " - " + bank
-    }
-
     fileprivate var showChangeButton: Bool {
         !availablePayoutMethods.isEmpty
     }

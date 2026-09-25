@@ -16,24 +16,20 @@ public struct PayoutNavigation: View {
                     switch action {
                     case .selectedPayoutMethod:
                         PayoutSelectedMethodScreen()
-                    case .changePayoutMethod:
-                        PayoutChangeMethodScreen()
                     }
                 }
         }
     }
 }
 
+/// The picker is a sheet rather than a destination, so the payout flow has one route left.
 enum PayoutRouterActions: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case selectedPayoutMethod
-    case changePayoutMethod
 
     var nameForTracking: String {
         switch self {
         case .selectedPayoutMethod:
             return String(describing: PayoutSelectedMethodScreen.self)
-        case .changePayoutMethod:
-            return String(describing: PayoutChangeMethodScreen.self)
         }
     }
 
@@ -41,8 +37,6 @@ enum PayoutRouterActions: Hashable, TrackingViewNameProtocol, NavigationTitlePro
         switch self {
         case .selectedPayoutMethod:
             return L10n.payoutPageHeading
-        case .changePayoutMethod:
-            return L10n.payoutSelectPayoutMethod
         }
     }
 }
