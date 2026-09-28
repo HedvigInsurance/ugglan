@@ -57,11 +57,17 @@ public struct PaymentsView: View {
                 )
                 .padding(.bottom, .padding8)
             }
+            if store.paymentNoticeData?.showRetryChargeNotice == true {
+                hSection {
+                    InfoCard(text: L10n.paymentsRetryInfo, type: .neutral)
+                }
+            }
             if !store.ongoingPaymentData.isEmpty {
                 ForEach(store.ongoingPaymentData, id: \.id) { paymentData in
                     PaymentView(paymentData: paymentData)
                 }
             }
+
             if let upcomingPayment = store.paymentData {
                 PaymentView(paymentData: upcomingPayment)
             }
