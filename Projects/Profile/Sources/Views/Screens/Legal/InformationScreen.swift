@@ -135,6 +135,10 @@ extension InformationScreen {
                 url: locale.privacyPolicyURL
             ),
             LegalItem(
+                title: L10n.legalPrivacyPolicyApp,
+                url: locale.appPrivacyPolicyURL
+            ),
+            LegalItem(
                 title: L10n.legalInformation,
                 url: baseURL.appendingPathComponent("\(webPath)/hedvig/legal")
             ),

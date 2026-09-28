@@ -113,7 +113,7 @@ public struct AnalyticsConsentScreen: View {
 
     private var privacyPolicyLink: some View {
         HStack(spacing: .padding4) {
-            hText(L10n.legalPrivacyPolicy, style: .body1)
+            hText(L10n.legalPrivacyPolicyAppShort, style: .body1)
                 .underline()
             hCoreUIAssets.arrowNorthEast.view
                 .resizable()
@@ -124,7 +124,7 @@ public struct AnalyticsConsentScreen: View {
         .frame(minHeight: 44)
         .contentShape(Rectangle())
         .onTapGesture {
-            UIApplication.shared.open(Localization.Locale.currentLocale.value.privacyPolicyURL)
+            UIApplication.shared.open(Localization.Locale.currentLocale.value.appPrivacyPolicyURL)
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
