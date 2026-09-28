@@ -36,7 +36,7 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
     func testPayinMethodWithoutMethodsReturnsNil() {
         let statusData = makeStatusData(payinMethods: [])
 
-        XCTAssertNil(statusData.payinMethod(for: .swish))
+        XCTAssertNil(statusData.connectedPaymentMethod(for: .swish))
     }
 
     func testPayinMethodWithoutMatchingProviderReturnsNil() {
@@ -45,27 +45,25 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
             payinMethods: [makeMethod(trustly, isDefault: true), makeMethod(invoice, status: .pending)]
         )
 
-        XCTAssertNil(statusData.payinMethod(for: .swish))
+        XCTAssertNil(statusData.connectedPaymentMethod(for: .swish))
     }
 
     func testPayinMethodActiveMatchNotProcessing() throws {
         let activeSwish = makeMethod(swish)
         let statusData = makeStatusData(payinMethods: [makeMethod(trustly, isDefault: true), activeSwish])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, activeSwish)
-        XCTAssertFalse(result.isProcessing)
+        XCTAssertEqual(result, activeSwish)
     }
 
     func testPayinMethodPendingMatchIsProcessing() throws {
         let pendingSwish = makeMethod(swish, status: .pending)
         let statusData = makeStatusData(payinMethods: [makeMethod(trustly, isDefault: true), pendingSwish])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, pendingSwish)
-        XCTAssertTrue(result.isProcessing)
+        XCTAssertEqual(result, pendingSwish)
     }
 
     func testPayinMethodPrefersActiveOverPendingMatch() throws {
@@ -73,10 +71,9 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         let activeSwish = makeMethod(swish, isDefault: true)
         let statusData = makeStatusData(payinMethods: [pendingSwish, activeSwish])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, activeSwish)
-        XCTAssertTrue(result.isProcessing)
+        XCTAssertEqual(result, activeSwish)
     }
 
     func testPayinMethodFallsBackToFirstMatchWithoutActive() throws {
@@ -84,30 +81,27 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         let pendingSwish = makeMethod(swish, status: .pending)
         let statusData = makeStatusData(payinMethods: [unknownSwish, pendingSwish])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, unknownSwish)
-        XCTAssertTrue(result.isProcessing)
+        XCTAssertEqual(result, unknownSwish)
     }
 
     func testPayinMethodOtherProviderPendingNotProcessing() throws {
         let activeTrustly = makeMethod(trustly, isDefault: true)
         let statusData = makeStatusData(payinMethods: [activeTrustly, makeMethod(swish, status: .pending)])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .trustly))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .trustly))
 
-        XCTAssertEqual(result.method, activeTrustly)
-        XCTAssertFalse(result.isProcessing)
+        XCTAssertEqual(result, activeTrustly)
     }
 
     func testPayinMethodMatchOnlyInDefaultPayinMethod() throws {
         let defaultSwish = makeMethod(swish, isDefault: true)
         let statusData = makeStatusData(defaultPayinMethod: defaultSwish, payinMethods: [makeMethod(trustly)])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, defaultSwish)
-        XCTAssertFalse(result.isProcessing)
+        XCTAssertEqual(result, defaultSwish)
     }
 
     func testPayinMethodPrefersActiveListedMethodOverPendingDefault() throws {
@@ -115,9 +109,8 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         let activeSwish = makeMethod(swish)
         let statusData = makeStatusData(defaultPayinMethod: pendingDefaultSwish, payinMethods: [activeSwish])
 
-        let result = try XCTUnwrap(statusData.payinMethod(for: .swish))
+        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result.method, activeSwish)
-        XCTAssertTrue(result.isProcessing)
+        XCTAssertEqual(result, activeSwish)
     }
 }
