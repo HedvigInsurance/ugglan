@@ -156,7 +156,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
-"CLAIM_CHAT_AI_INFO" = "We use AI to support the process of submitting and handling your claim.  A claims handler always reviews your claim before any decision is made.";
+"CLAIM_CHAT_AI_INFO" = "We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
 "CLAIM_CHAT_EDIT_ANSWER_BUTTON" = "Edit answer";
@@ -532,8 +532,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_LABEL" = "Primary";
 "PAYMENT_PRIMARY_SUBTITLE" = "This method will be used for your monthly payments";
 "PAYMENT_PRIMARY_TITLE" = "Choose payment method";
-"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Choose another primary method before removing it.";
-"PAYMENT_REMOVE_PRIMARY_TITLE" = "This is your primary payment method";
+"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Choose another method before removing it.";
+"PAYMENT_REMOVE_PRIMARY_TITLE" = "Switch primary method first";
 "PAYMENT_REMOVE_SUBTITLE" = "You can add it back any time";
 "PAYMENT_REMOVE_TITLE" = "Remove payment method";
 "PAYMENT_SWISH_APPROVE_TITLE" = "Approve the connection in Swish";
