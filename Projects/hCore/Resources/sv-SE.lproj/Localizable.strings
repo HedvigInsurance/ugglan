@@ -402,6 +402,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_A11Y" = "Tillgänglighet";
 "LEGAL_INFORMATION" = "Legal information";
 "LEGAL_PRIVACY_POLICY" = "Personuppgifter";
+"LEGAL_PRIVACY_POLICY_APP" = "Integritetsnotis för Hedvig-appen";
+"LEGAL_PRIVACY_POLICY_APP_SHORT" = "Integritetsnotis";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
@@ -507,6 +509,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PERIOD_FULL" = "Hel period";
 "PAYMENTS_PROCESSING_PAYMENT" = "Pågående betalning";
 "PAYMENTS_REFERRAL_DISCOUNT" = "Rabatt via inbjudningar";
+"PAYMENTS_RETRY_INFO" = "Vi kunde inte dra betalningen och försöker igen automatiskt. Se till att det finns täckning på kontot inför nästa försök.";
 "PAYMENTS_SUBTOTAL" = "Delsumma";
 "PAYMENTS_SWISH_NUMBER" = "Telefonnummer";
 "PAYMENTS_UPCOMING_PAYMENT" = "Kommande betalning";
@@ -521,6 +524,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Betalningshistorik";
 "PAYMENT_METHODS_EMPTY" = "Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
+"PAYMENT_METHOD_PENDING" = "Det kan ta några dagar innan din nya betalningsmetod börjar gälla.";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Kopplad";

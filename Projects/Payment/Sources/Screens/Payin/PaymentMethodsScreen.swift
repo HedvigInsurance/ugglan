@@ -31,10 +31,19 @@ struct PaymentMethodsScreen: View {
                 )
             } else {
                 hForm {
-                    hSection {
-                        hRadioOptionList(paymentMethods, spacing: .padding8) { method in
-                            PaymentMethodRow(method) {
-                                router.push(PaymentsRouterAction.paymentMethod(provider: method.provider))
+                    VStack(spacing: .padding8) {
+                        hSection {
+                            hRadioOptionList(paymentMethods, spacing: .padding8) { method in
+                                PaymentMethodRow(method) {
+                                    router.push(PaymentsRouterAction.paymentMethod(provider: method.provider))
+                                }
+                            }
+                        }
+                        hSection {
+                            if let payinMethods = store.paymentStatusData?.payinMethods,
+                                payinMethods.hasMethodInProgress
+                            {
+                                InfoCard(text: L10n.paymentMethodPending, type: .neutral)
                             }
                         }
                     }

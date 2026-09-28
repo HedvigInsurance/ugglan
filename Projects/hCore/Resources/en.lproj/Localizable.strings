@@ -402,6 +402,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_A11Y" = "Accessibility";
 "LEGAL_INFORMATION" = "Legal information";
 "LEGAL_PRIVACY_POLICY" = "Privacy policy";
+"LEGAL_PRIVACY_POLICY_APP" = "Privacy notice (Hedvig app)";
+"LEGAL_PRIVACY_POLICY_APP_SHORT" = "Privacy notice";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
@@ -507,6 +509,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PERIOD_FULL" = "Full period";
 "PAYMENTS_PROCESSING_PAYMENT" = "Processing payment";
 "PAYMENTS_REFERRAL_DISCOUNT" = "Referral discount";
+"PAYMENTS_RETRY_INFO" = "We couldn't collect your payment and will try again automatically. Make sure there's enough in your account before the next attempt.";
 "PAYMENTS_SUBTOTAL" = "Subtotal";
 "PAYMENTS_SWISH_NUMBER" = "Phone number";
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
@@ -521,6 +524,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYMENT_METHODS_EMPTY" = "No payment method added. Add one to pay for your insurance.";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
+"PAYMENT_METHOD_PENDING" = "It can take a few days for your new payment method to take effect.";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Connected";

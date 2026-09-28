@@ -96,7 +96,7 @@ public struct PayoutSelectedMethodScreen: View {
         .hFormAttachToBottom {
             if paymentStatusData.payoutMethods.hasMethodInProgress {
                 hSection {
-                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .neutral)
                 }
                 .sectionContainerStyle(.transparent)
             }
