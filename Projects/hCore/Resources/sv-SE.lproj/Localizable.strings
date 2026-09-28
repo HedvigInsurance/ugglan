@@ -402,6 +402,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_A11Y" = "Tillgänglighet";
 "LEGAL_INFORMATION" = "Legal information";
 "LEGAL_PRIVACY_POLICY" = "Personuppgifter";
+"LEGAL_PRIVACY_POLICY_APP" = "Personuppgifter (Hedvig app)";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";

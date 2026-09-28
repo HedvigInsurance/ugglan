@@ -124,7 +124,7 @@ public struct AnalyticsConsentScreen: View {
         .frame(minHeight: 44)
         .contentShape(Rectangle())
         .onTapGesture {
-            UIApplication.shared.open(Localization.Locale.currentLocale.value.privacyPolicyURL)
+            UIApplication.shared.open(Localization.Locale.currentLocale.value.appPrivacyPolicyURL)
         }
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
