@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 import unittest
+from pathlib import Path
 
 import spm_snapshot as spm
 
@@ -49,6 +50,13 @@ class SnapshotTest(unittest.TestCase):
         ]}}
         result = spm.snapshot(resolved, "Package.resolved", "s", "r", "j", "1")
         self.assertEqual(list(result["manifests"]["Package.resolved"]["resolved"]), ["pkg:swift/github.com/onevcat/Kingfisher@8.9.0"])
+
+    def test_only_files_inside_the_repository_are_read(self):
+        self.assertIsNone(spm.repo_file(Path("../outside/Package.resolved")))
+        self.assertIsNone(spm.repo_file(Path("/etc/passwd")))
+        self.assertIsNone(spm.repo_file(Path("does-not-exist/Package.resolved")))
+        self.assertEqual(spm.repo_file(Path("scripts/dependency-submission/spm_snapshot.py")),
+                         Path.cwd().resolve() / "scripts/dependency-submission/spm_snapshot.py")
 
     def test_snapshot_is_valid_json_for_the_api(self):
         json.dumps(spm.snapshot({"pins": []}, "Package.resolved", "s", "r", "j", "1"))

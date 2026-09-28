@@ -76,10 +76,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--job", required=True, help="correlator: workflow + job name")
     parser.add_argument("--run-id", required=True)
     args = parser.parse_args(argv)
-    result = snapshot(json.loads(args.resolved.read_text()), str(args.resolved), args.sha, args.ref, args.job, args.run_id)
+    resolved = repo_file(args.resolved)
+    if resolved is None:
+        parser.error(f"{args.resolved} is not a file inside the repository ({Path.cwd()})")
+    manifest = str(resolved.relative_to(Path.cwd().resolve()))
+    result = snapshot(json.loads(resolved.read_text()), manifest, args.sha, args.ref, args.job, args.run_id)
     json.dump(result, sys.stdout, indent=1)
-    print(f"{len(result['manifests'][str(args.resolved)]['resolved'])} packages from {args.resolved}", file=sys.stderr)
+    print(f"{len(result['manifests'][manifest]['resolved'])} packages from {manifest}", file=sys.stderr)
     return 0
+
+
+def repo_file(path: Path) -> Path | None:
+    """The path resolved inside the working directory, or None when it escapes it or is not a file."""
+    resolved = (Path.cwd() / path).resolve()
+    return resolved if resolved.is_relative_to(Path.cwd().resolve()) and resolved.is_file() else None
 
 
 if __name__ == "__main__":
