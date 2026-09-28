@@ -1,0 +1,55 @@
+# Submits the Swift package tree to this repo's GitHub dependency graph, so the
+# SBOM export and Hedvig's open-source register (prod-env/compliance/oss-register)
+# see what the app ships. GitHub only parses Package.resolved at the repo root;
+# Tuist generates ours inside Ugglan.xcworkspace, so without this the graph holds
+# only the Fastlane gems.
+name: DependencySubmission
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dependency-submission
+  cancel-in-progress: true
+
+jobs:
+  submit:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - run: python3 -m unittest discover -s scripts/dependency-submission
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
+        with:
+          xcode-version: latest-stable
+
+      # Puts the mise shims on PATH for the steps after it, so generate must be a
+      # separate step.
+      - name: Install mise + Tuist
+        run: scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve packages
+        run: |
+          tuist generate --no-open
+          xcodebuild -resolvePackageDependencies -workspace Ugglan.xcworkspace -scheme Ugglan
+
+      - name: Submit snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 scripts/dependency-submission/spm_snapshot.py \
+            Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved \
+            --sha "$GITHUB_SHA" --ref "$GITHUB_REF" --job "$GITHUB_WORKFLOW/$GITHUB_JOB" --run-id "$GITHUB_RUN_ID" \
+            > "$RUNNER_TEMP/snapshot.json"
+          gh api "repos/$GITHUB_REPOSITORY/dependency-graph/snapshots" --input "$RUNNER_TEMP/snapshot.json"
