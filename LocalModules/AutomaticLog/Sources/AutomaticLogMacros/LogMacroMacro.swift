@@ -78,6 +78,17 @@ public struct AutomaticLog: BodyMacro {
         let isThrows: Bool
         let returnType: String
         let options: ParsedLogOptions
+
+        /// `true` when the caller asked for success/return value logging.
+        var logsOutput: Bool { options.contains(.output) }
+
+        /// `true` when the caller asked for error logging and the function can actually throw.
+        var logsError: Bool { options.contains(.error) && isThrows }
+
+        /// Arguments are only captured when at least one log statement will print them.
+        var needsLogArgs: Bool { !parameterNames.isEmpty && (logsOutput || logsError) }
+
+        var argsString: String { needsLogArgs ? "(\\(String(describing: _logArgs)))" : "" }
     }
 
     private static func extractFunctionMetadata(
@@ -113,7 +124,7 @@ public struct AutomaticLog: BodyMacro {
     // MARK: - Entry Log Generation
 
     private static func generateEntryLogStatements(for metadata: FunctionMetadata) -> [CodeBlockItemSyntax] {
-        guard !metadata.parameterNames.isEmpty else {
+        guard metadata.needsLogArgs else {
             return []
         }
 
@@ -129,12 +140,42 @@ public struct AutomaticLog: BodyMacro {
         return Array(parsedSetup.statements)
     }
 
+    // MARK: - Log Statement Generation
+
+    /// Returns an empty string when `.output` was not requested, so nothing is logged on success.
+    private static func successLogStatement(for metadata: FunctionMetadata, includesResult: Bool) -> String {
+        guard metadata.logsOutput else {
+            return ""
+        }
+
+        let result = includesResult ? " → \\(AutomaticLog.redactedDescription(_logResult as Any))" : ""
+
+        return """
+            AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(metadata.argsString)\(result)")
+            """
+    }
+
+    /// Returns an empty string when `.error` was not requested, so nothing is logged on failure.
+    private static func errorLogStatement(for metadata: FunctionMetadata) -> String {
+        guard metadata.logsError else {
+            return ""
+        }
+
+        return """
+            AutomaticLog.loginClosure("⚠️ \(metadata.fullFunctionName)\(metadata.argsString) → \\(String(describing: error))")
+            """
+    }
+
     // MARK: - Return Type Function Handling
 
     private static func generateReturnTypeStatements(
         for metadata: FunctionMetadata,
         body: CodeBlockSyntax
     ) -> [CodeBlockItemSyntax] {
+        guard metadata.logsOutput || metadata.logsError else {
+            return Array(body.statements)
+        }
+
         let bodyCode = body.statements.description
         let returnCode =
             metadata.isThrows
@@ -152,43 +193,23 @@ public struct AutomaticLog: BodyMacro {
         let awaitKeyword = metadata.isAsync ? "await " : ""
         let asyncKeyword = metadata.isAsync ? "async " : ""
 
-        let logOutput = metadata.options.contains(.output)
-        let logError = metadata.options.contains(.error)
+        let invocation = """
+            let _logResult = try \(awaitKeyword){ () \(asyncKeyword)throws -> \(metadata.returnType) in
+                \(bodyCode)
+            }()
+            \(successLogStatement(for: metadata, includesResult: true))
+            return _logResult
+            """
 
-        let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
-
-        let successLog: String
-        if logOutput {
-            successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
-                """
-        } else {
-            successLog = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
-        }
-
-        let errorLogStatement: String
-        if logError {
-            errorLogStatement = """
-                AutomaticLog.loginClosure("⚠️ \(metadata.fullFunctionName)\(argsString) → \\(String(describing: error))")
-                """
-        } else {
-            errorLogStatement = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
+        guard metadata.logsError else {
+            return invocation
         }
 
         return """
             do {
-                let _logResult = try \(awaitKeyword){ () \(asyncKeyword)throws -> \(metadata.returnType) in
-                    \(bodyCode)
-                }()
-                \(successLog)
-                return _logResult
+                \(invocation)
             } catch {
-                \(errorLogStatement)
+                \(errorLogStatement(for: metadata))
                 throw error
             }
             """
@@ -201,27 +222,11 @@ public struct AutomaticLog: BodyMacro {
         let closureSignature = buildClosureSignature(for: metadata)
         let closureCall = metadata.isAsync ? "await " : ""
 
-        let logOutput = metadata.options.contains(.output)
-
-        let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
-
-        let successLog: String
-        if logOutput {
-            successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString) → \\(AutomaticLog.redactedDescription(_logResult as Any))")
-                """
-        } else {
-            successLog = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
-        }
-
         return """
             let _logResult =\(closureCall){\(closureSignature)in
                 \(bodyCode)
             }()
-            \(successLog)
+            \(successLogStatement(for: metadata, includesResult: true))
             return _logResult
             """
     }
@@ -245,7 +250,11 @@ public struct AutomaticLog: BodyMacro {
         for metadata: FunctionMetadata,
         body: CodeBlockSyntax
     ) -> [CodeBlockItemSyntax] {
-        if metadata.isThrows {
+        guard metadata.logsOutput || metadata.logsError else {
+            return Array(body.statements)
+        }
+
+        if metadata.logsError {
             return generateThrowingVoidStatements(for: metadata, body: body)
         } else {
             return generateNonThrowingVoidStatements(for: metadata, body: body)
@@ -256,40 +265,12 @@ public struct AutomaticLog: BodyMacro {
         for metadata: FunctionMetadata,
         body: CodeBlockSyntax
     ) -> [CodeBlockItemSyntax] {
-        let logOutput = metadata.options.contains(.output)
-        let logError = metadata.options.contains(.error)
-
-        let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
-
-        let successLog: String
-        if logOutput {
-            successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString)")
-                """
-        } else {
-            successLog = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
-        }
-
-        let errorLogStatement: String
-        if logError {
-            errorLogStatement = """
-                AutomaticLog.loginClosure("⚠️ \(metadata.fullFunctionName)\(argsString) → \\(String(describing: error))")
-                """
-        } else {
-            errorLogStatement = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
-        }
-
         let throwingCode = """
             do {
                 \(body.statements.description)
-                \(successLog)
+                \(successLogStatement(for: metadata, includesResult: false))
             } catch {
-                \(errorLogStatement)
+                \(errorLogStatement(for: metadata))
                 throw error
             }
             """
@@ -304,23 +285,7 @@ public struct AutomaticLog: BodyMacro {
     ) -> [CodeBlockItemSyntax] {
         var statements = Array(body.statements)
 
-        let logOutput = metadata.options.contains(.output)
-
-        let argsString =
-            metadata.parameterNames.isEmpty ? "" : "(\\(String(describing: _logArgs)))"
-
-        let successLog: String
-        if logOutput {
-            successLog = """
-                AutomaticLog.loginClosure("✅ \(metadata.fullFunctionName)\(argsString)")
-                """
-        } else {
-            successLog = """
-                AutomaticLog.loginClosure("📥 \(metadata.fullFunctionName)\(argsString)")
-                """
-        }
-
-        let parsedLog = Parser.parse(source: successLog)
+        let parsedLog = Parser.parse(source: successLogStatement(for: metadata, includesResult: false))
         statements.append(contentsOf: parsedLog.statements)
 
         return statements
