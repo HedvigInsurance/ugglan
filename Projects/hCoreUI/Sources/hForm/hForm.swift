@@ -322,6 +322,7 @@ public enum hFormBottomBackgroundStyle {
 public enum HFormTitleSpacingType {
     case standard
     case small
+    case navigationLike
     case none
 
     var topMargin: CGFloat {
@@ -330,6 +331,8 @@ public enum HFormTitleSpacingType {
             return 56
         case .small:
             return 16
+        case .navigationLike:
+            return 36
         case .none:
             return 0
         }
@@ -339,6 +342,8 @@ public enum HFormTitleSpacingType {
         switch self {
         case .standard:
             return 64
+        case .navigationLike:
+            return 24
         case .small, .none:
             return 0
         }

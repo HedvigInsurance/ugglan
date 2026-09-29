@@ -73,6 +73,12 @@ extension View {
     public func hShadow(type: ShadowType = .default, show: Bool = true) -> some View {
         modifier(hShadowModifier(type: type, show: show))
     }
+
+    /// The two-layer card shadow: a soft spread plus a tight contact shadow.
+    public func hCardShadow() -> some View {
+        hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
+            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2))
+    }
 }
 
 public enum ShadowType {
@@ -131,6 +137,7 @@ public enum hSectionContainerStyle {
     case translucent
     case black
     case negative
+    case primaryWithShadow
 }
 
 extension EnvironmentValues {
@@ -175,6 +182,17 @@ struct hSectionContainerStyleModifier: ViewModifier {
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        case .primaryWithShadow:
+            content.background(
+                hBackgroundColor.primary
+            )
+            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXXL, corners: maskedCorners))
+            .hCardShadow()
+            .overlay(
+                RoundedRectangle(cornerRadius: .cornerRadiusXXL)
+                    .inset(by: 0.5)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+            )
         case .negative:
             content.background(
                 hFillColor.Opaque.negative
