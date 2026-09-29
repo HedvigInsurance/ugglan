@@ -168,6 +168,8 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
     }
 
     func chargeOutstandingPayment() async throws {}
+
+    func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {}
 }
 
 extension PaymentData {

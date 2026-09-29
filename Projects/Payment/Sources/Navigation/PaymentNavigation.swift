@@ -9,7 +9,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
     public var connectPaymentVm = ConnectPaymentViewModel()
     let paymentsRouter = NavigationRouter()
-
+    @Published var showChooseDefaultPaymentMethod = false
     public init() {}
 }
 
@@ -64,6 +64,12 @@ public struct PaymentsNavigation: View {
         }
         .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
+        .detent(
+            presented: $paymentsNavigationVm.showChooseDefaultPaymentMethod,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            PaymentsChooseDefaultScreen()
+        }
     }
 }
 

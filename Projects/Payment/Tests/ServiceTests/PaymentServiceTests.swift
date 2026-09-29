@@ -204,4 +204,28 @@ final class PaymentServiceTests: XCTestCase {
             assert(mockService.events.first == .chargeOutstandingPayment)
         }
     }
+
+    func testSetDefaultPaymentMethodSuccess() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            setDefaultPaymentMethod: {}
+        )
+        sut = mockService
+
+        try await mockService.setDefaultPaymentMethod(.swish(phoneNumber: "0701231231"))
+        assert(mockService.events.first == .setDefaultPaymentMethod)
+    }
+
+    func testSetDefaultPaymentMethodFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            setDefaultPaymentMethod: { throw PaymentError.missingDataError(message: "error") }
+        )
+        sut = mockService
+
+        do {
+            try await mockService.setDefaultPaymentMethod(.swish(phoneNumber: "0701231231"))
+            XCTFail("Expected setDefaultPaymentMethod to throw")
+        } catch {
+            assert(mockService.events.first == .setDefaultPaymentMethod)
+        }
+    }
 }
