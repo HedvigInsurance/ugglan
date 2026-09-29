@@ -174,7 +174,7 @@ public struct PaymentDetailsView: View {
     }
 
     private func bankDetails(data: ConnectedPaymentMethod) -> some View {
-        PaymentMethodView(data: data, withDate: false)
+        PaymentMethodInfoView(data: data, withDate: false)
             .hWithoutHorizontalPadding([.section, .row, .divider])
     }
 }

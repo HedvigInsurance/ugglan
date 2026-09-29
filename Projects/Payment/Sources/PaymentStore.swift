@@ -49,7 +49,7 @@ public final class PaymentStore: AppStore {
         guard let paymentStatusData else { return false }
         switch paymentStatusData.layout {
         case .qasaOnly: return paymentStatusData.hasAnyPayoutMethod
-        case .other: return paymentStatusData.hasAnyPayoutMethod && showsPayinSection
+        case .other: return paymentStatusData.hasAnyPayoutMethod
         }
     }
 
