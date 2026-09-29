@@ -74,12 +74,95 @@ struct PaymentMethodPickerGraphic: View {
     }
 }
 
-#Preview("Nothing picked") {
-    PaymentMethodPickerGraphic(selected: nil)
-        .padding(.padding32)
+struct StatusBadge: View {
+    enum Kind {
+        case external
+        case success
+        case failure
+    }
+
+    let kind: Kind
+
+    var body: some View {
+        Circle()
+            .fill(color)
+            .frame(width: 24, height: 24)
+            .overlay {
+                glyph
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 12)
+                    .foregroundColor(hTextColor.Opaque.negative)
+            }
+    }
+
+    @MainActor
+    @hColorBuilder
+    private var color: some hColor {
+        switch kind {
+        case .external:
+            hSignalColor.Blue.element
+        case .success:
+            hSignalColor.Green.element
+        case .failure:
+            hSignalColor.Amber.element
+        }
+    }
+
+    private var glyph: Image {
+        switch kind {
+        case .external: hCoreUIAssets.arrowNorthEast.view
+        case .success: hCoreUIAssets.checkmark.view
+        case .failure: hCoreUIAssets.warning.view
+        }
+    }
 }
 
-#Preview("Swish picked") {
-    PaymentMethodPickerGraphic(selected: .swish)
-        .padding(.padding32)
+struct SwishPillow: View {
+    private let size: CGFloat = 74
+
+    var body: some View {
+        hBackgroundColor.primary
+            .frame(width: size, height: size)
+            .overlay {
+                hCoreUIAssets.swish.view
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 39)
+            }
+            .paymentMethodTile()
+    }
+}
+
+struct PaymentConnectionPairGraphic: View {
+    let provider: PaymentProvider
+    let outcome: StatusBadge.Kind
+
+    var body: some View {
+        HStack(spacing: .padding16) {
+            provider.chooseDefaultImage(size: 74)
+                .paymentMethodTile()
+            DotsActivityIndicator(.standard, animated: false)
+                .useDarkColor
+            hCoreUIAssets.bigPillowBlack.view
+                .resizable()
+                .frame(width: 74, height: 74)
+                .overlay(alignment: .topTrailing) {
+                    StatusBadge(kind: outcome)
+                        .offset(x: .padding8, y: -.padding8)
+                }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+#Preview {
+    VStack(spacing: .padding32) {
+        PaymentMethodPickerGraphic(selected: nil)
+        PaymentMethodPickerGraphic(selected: .swish)
+        SwishPillow()
+        PaymentConnectionPairGraphic(provider: .swish, outcome: .success)
+        PaymentConnectionPairGraphic(provider: .swish, outcome: .failure)
+    }
+    .padding(.padding32)
 }

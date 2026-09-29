@@ -118,6 +118,7 @@ final class PaymentServiceTests: XCTestCase {
     func testSetupPaymentMethodSuccess() async {
         let expectedResult = PaymentSetupResult(
             status: .pending,
+            orderId: "order-1",
             url: "https://hedvig.se/trustly",
             errorMessage: nil
         )
@@ -133,6 +134,17 @@ final class PaymentServiceTests: XCTestCase {
             .trustly
         )
         assert(result == expectedResult)
+    }
+
+    func testGetPaymentSetupStatusSuccess() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentSetupStatus: { .active }
+        )
+        sut = mockService
+
+        let status = try await mockService.getPaymentSetupStatus(orderId: "order-1")
+        assert(status == .active)
+        assert(mockService.events == [.getPaymentSetupStatus])
     }
 
     func testFetchMissedPaymentDataSuccess() async throws {

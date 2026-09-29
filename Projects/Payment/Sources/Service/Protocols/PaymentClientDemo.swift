@@ -161,7 +161,8 @@ public class hPaymentClientDemo: hPaymentClient {
                 ),
             ],
             missingConnection: nil,
-            layout: .other
+            layout: .other,
+            memberPhoneNumber: "0735328847"
         )
     }
 
@@ -221,7 +222,12 @@ public class hPaymentClientDemo: hPaymentClient {
 
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         try await Task.sleep(for: .seconds(1))
-        return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
+        return .init(status: .pending, orderId: nil, url: "https://example.com/setup", errorMessage: nil)
+    }
+
+    public func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        try await Task.sleep(for: .seconds(3))
+        return .active
     }
 
     public func chargeOutstandingPayment() async throws {

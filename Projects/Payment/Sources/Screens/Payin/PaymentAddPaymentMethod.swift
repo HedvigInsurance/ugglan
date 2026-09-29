@@ -7,40 +7,20 @@ struct PaymentAddPaymentMethod: View {
     @AppObservedObject var store: PaymentStore
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selected: AvailablePaymentMethod?
+    @State private var selected: PaymentProvider?
     @State private var providerToSetUp: PaymentProvider?
-    @StateObject private var setupRouter = NavigationRouter()
+    @State private var connectedProvider: PaymentProvider?
 
     var body: some View {
         hForm {
-            PaymentMethodPickerGraphic(selected: selected?.provider)
-                .padding(.vertical, .padding64)
+            formContent
         }
         .hFormAttachToBottom {
-            if let methods = store.paymentStatusData?.availablePayinMethods {
-                hSection {
-                    hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
-                        PaymentMethodRow(payin: method, selection: $selected)
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-            }
-            hSection {
-                VStack(spacing: .padding8) {
-                    hButton(.large, .primary, content: .init(title: L10n.paymentConnectTitle)) {
-                        connect()
-                    }
-                    .disabled(selected == nil)
-                    hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
-                        dismiss()
-                    }
-                }
-            }
-            .sectionContainerStyle(.transparent)
+            bottomContent
         }
         .hFormTitle(
-            title: .init(.small, .body1, L10n.paymentConnectTitle, alignment: .center),
-            subTitle: .init(.small, .body1, L10n.paymentConnectSubtitle, alignment: .center)
+            title: .init(.small, .body1, title, alignment: .center),
+            subTitle: .init(.small, .body1, subtitle, alignment: .center)
         )
         .hFormContentPosition(.compact)
         .detent(
@@ -48,37 +28,112 @@ struct PaymentAddPaymentMethod: View {
             presentationStyle: providerToSetUp?.payinSetupPresentationStyle ?? .detent(style: [.large]),
             options: .constant(providerToSetUp?.payinSetupPresentationOptions ?? [])
         ) { provider in
-            let onSuccess = {
-                providerToSetUp = nil
-                dismiss()
-                Toasts.success()
-                PaymentStore.refreshStatusDetached()
-            }
             switch provider {
             case .trustly:
-                DirectDebitSetup(router: setupRouter, onSuccess: onSuccess)
-            case .swish, .nordea, .invoice, .unknown:
-                UpdateAppScreen {}
-                    .withAlertDismiss()
+                DirectDebitSetup(onSuccess: { connected(provider) })
+            case .swish:
+                SwishPayinSetupScreen(
+                    phoneNumber: store.paymentStatusData?.memberPhoneNumber,
+                    onSuccess: { connected(provider) }
+                )
+            case .nordea, .invoice, .unknown:
+                UpdateAppScreen {}.withAlertDismiss()
             }
         }
     }
 
-    /// Swish has no pay-in setup flow yet: `PaymentMethodSetupType` only exposes `.trustly`,
-    /// `.nordeaPayout` and `.swishPayout`, so there is nothing to present. Route it here once
-    /// the backend gains a pay-in equivalent.
-    private func connect() {
-        guard let provider = selected?.provider else { return }
-        switch provider {
-        case .trustly, .nordea, .invoice, .unknown:
-            providerToSetUp = provider
-        case .swish:
-            break  // TODO: present the Swish pay-in setup flow when it exists.
+    @ViewBuilder
+    private var formContent: some View {
+        if let provider = connectedProvider {
+            PaymentConnectionPairGraphic(provider: provider, outcome: .success)
+                .padding(.vertical, .padding96)
+        } else {
+            PaymentMethodPickerGraphic(selected: selected)
+                .padding(.vertical, .padding64)
         }
+    }
+
+    @ViewBuilder
+    private var bottomContent: some View {
+        if let connectedProvider {
+            confirmationContent(for: connectedProvider)
+        } else {
+            pickerContent
+        }
+    }
+
+    @ViewBuilder
+    private var pickerContent: some View {
+        if let methods = store.paymentStatusData?.availablePayinMethods {
+            hSection {
+                hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
+                    PaymentMethodRow(payin: method.provider, selection: $selected)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        hSection {
+            VStack(spacing: .padding8) {
+                hButton(.large, .primary, content: .init(title: L10n.paymentConnectTitle)) {
+                    providerToSetUp = selected
+                }
+                .disabled(selected == nil)
+                hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
+                    dismiss()
+                }
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    private func confirmationContent(for provider: PaymentProvider) -> some View {
+        VStack(spacing: .padding16) {
+            hText(L10n.paymentChangeFootnote, style: .label)
+                .foregroundColor(hTextColor.Translucent.secondary)
+                .multilineTextAlignment(.center)
+            hSection {
+                hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
+                    dismiss()
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
+    /// The refresh is detached so it outlives the presentation's teardown.
+    private func connected(_ provider: PaymentProvider) {
+        providerToSetUp = nil
+        withAnimation { connectedProvider = provider }
+        PaymentStore.refreshStatusDetached()
+    }
+
+    private var title: String {
+        if let connectedProvider {
+            return connectedTitle(for: connectedProvider)
+        }
+        return L10n.paymentConnectTitle
+    }
+
+    private var subtitle: String {
+        if connectedProvider == .swish {
+            return L10n.paymentSwishSuccessSubtitle
+        }
+        if connectedProvider != nil {
+            return L10n.paymentTrustlySuccessSubtitle
+        }
+        return L10n.paymentConnectSubtitle
+    }
+
+    private func connectedTitle(for provider: PaymentProvider) -> String {
+        if provider == .swish {
+            return L10n.paymentSwishSuccessTitle
+        }
+        return "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
     }
 }
 
-#Preview {
+@MainActor
+private func setUpPreviewStore() {
     let store: PaymentStore = globalAppStateContainer.get()
     store.paymentStatusData = .init(
         status: .needsSetup,
@@ -93,10 +148,15 @@ struct PaymentAddPaymentMethod: View {
             .init(provider: .invoice, supportsPayin: true, supportsPayout: false),
         ],
         missingConnection: .payin,
-        layout: .other
+        layout: .other,
+        memberPhoneNumber: "0735328847"
     )
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+}
+
+#Preview("Pick a method") {
+    setUpPreviewStore()
     return PaymentAddPaymentMethod()
 }
