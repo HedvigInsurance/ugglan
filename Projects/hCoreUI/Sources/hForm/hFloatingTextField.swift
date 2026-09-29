@@ -82,6 +82,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
+        .geometryGroupIfAvailable()
         .onChange(of: vm.textField) { [weak vm] textField in
             textField?.delegate = vm?.observer
             if focusValue == Value.last {
@@ -412,5 +413,16 @@ extension EnvironmentValues {
 extension View {
     public func hAnimateField(_ animate: Bool) -> some View {
         environment(\.hAnimateField, animate)
+    }
+
+    /// Isolates the field's geometry from its ancestors so parent layout changes
+    /// don't animate the field's own subviews independently.
+    @ViewBuilder
+    func geometryGroupIfAvailable() -> some View {
+        if #available(iOS 17.0, *) {
+            geometryGroup()
+        } else {
+            self
+        }
     }
 }
