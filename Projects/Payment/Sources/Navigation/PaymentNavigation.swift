@@ -35,8 +35,8 @@ public struct PaymentsNavigation: View {
                         CampaignNavigation()
                     case .history:
                         PaymentHistoryView()
-                    case .paymentMethod:
-                        PaymentMethodScreen()
+                    case let .paymentMethod(provider):
+                        PaymentMethodScreen(paymentProvider: provider)
                     case .payoutMethod:
                         PayoutSelectedMethodScreen()
                     case .paymentMethods:
@@ -94,7 +94,7 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-    case paymentMethod
+    case paymentMethod(provider: PaymentProvider)
     case payoutMethod
     case paymentMethods
 

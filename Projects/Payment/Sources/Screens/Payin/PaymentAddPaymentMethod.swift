@@ -23,22 +23,11 @@ struct PaymentAddPaymentMethod: View {
             subTitle: .init(.small, .body1, subtitle, alignment: .center)
         )
         .hFormContentPosition(.compact)
-        .detent(
-            item: $providerToSetUp,
-            presentationStyle: providerToSetUp?.payinSetupPresentationStyle ?? .detent(style: [.large]),
-            options: .constant(providerToSetUp?.payinSetupPresentationOptions ?? [])
+        .handlePaymentSetup(
+            for: $providerToSetUp,
+            phoneNumber: store.paymentStatusData?.memberPhoneNumber
         ) { provider in
-            switch provider {
-            case .trustly:
-                DirectDebitSetup(onSuccess: { connected(provider) })
-            case .swish:
-                SwishPayinSetupScreen(
-                    phoneNumber: store.paymentStatusData?.memberPhoneNumber,
-                    onSuccess: { connected(provider) }
-                )
-            case .nordea, .invoice, .unknown:
-                UpdateAppScreen {}.withAlertDismiss()
-            }
+            withAnimation { connectedProvider = provider }
         }
     }
 
@@ -98,13 +87,6 @@ struct PaymentAddPaymentMethod: View {
             }
             .sectionContainerStyle(.transparent)
         }
-    }
-
-    /// The refresh is detached so it outlives the presentation's teardown.
-    private func connected(_ provider: PaymentProvider) {
-        providerToSetUp = nil
-        withAnimation { connectedProvider = provider }
-        PaymentStore.refreshStatusDetached()
     }
 
     private var title: String {
