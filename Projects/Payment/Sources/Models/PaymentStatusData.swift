@@ -79,11 +79,11 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         layout != .qasaOnly
     }
 
-    func payinMethod(for provider: PaymentProvider) -> (method: ConnectedPaymentMethod, isProcessing: Bool)? {
-        let methods = (payinMethods + [defaultPayinMethod].compactMap { $0 }).filter { $0.provider == provider }
+    func connectedPaymentMethod(for provider: PaymentProvider) -> ConnectedPaymentMethod? {
+        let methods = (payinMethods + [defaultPayinMethod]).compactMap({ $0 }).filter({ $0.provider == provider })
         let connected = methods.first(where: { $0.status == .active }) ?? methods.first
         guard let connected else { return nil }
-        return (connected, methods.contains(where: { $0.status == .pending }))
+        return connected
     }
 }
 

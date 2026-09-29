@@ -137,6 +137,10 @@ public struct PaymentsView: View {
                 .sectionContainerStyle(.transparent)
             }
             hSection {
+                if let payinMethods = store.paymentStatusData?.payinMethods, payinMethods.hasMethodInProgress {
+                    InfoCard(text: L10n.paymentMethodPending, type: .neutral)
+                }
+
                 if store.paymentStatusData?.showsHistoricalSections ?? false {
                     hRow {
                         hCoreUIAssets.campaign.view
