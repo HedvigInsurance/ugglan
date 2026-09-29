@@ -50,6 +50,20 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
+    var activePayinMethods: [ConnectedPaymentMethod] {
+        payinMethods.filter { $0.status == .active }
+    }
+
+    /// Partitioned rather than sorted so the remaining methods keep their backend order.
+    var selectablePayinMethods: [ConnectedPaymentMethod] {
+        let methods = payinMethods.filter { !$0.isPending }
+        return methods.filter(\.isDefault) + methods.filter { !$0.isDefault }
+    }
+
+    var canChooseDefaultPayinMethod: Bool {
+        activePayinMethods.count >= 2
+    }
+
     public var defaultOrFirstDefaultPayoutMethod: ConnectedPaymentMethod? {
         defaultPayoutMethod ?? payoutMethods.first(where: (\.isDefault))
     }
