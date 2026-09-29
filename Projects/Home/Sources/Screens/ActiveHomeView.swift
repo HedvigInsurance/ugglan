@@ -144,7 +144,7 @@ private struct HomeSheetContent: View {
         VStack(spacing: .padding40) {
             if bottomVm.showsConnectPaymentCard {
                 ConnectPaymentCardView(onConnectPayment: {
-                    navigationVm.connectPaymentVm.set()
+                    navigationVm.isAddPaymentMethodPresented = true
                 })
             }
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)

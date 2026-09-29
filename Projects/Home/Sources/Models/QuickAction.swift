@@ -37,7 +37,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
         case .firstVet: L10n.hcQuickActionsFirstvetSubtitle
         case .editInsurance: L10n.hcQuickActionsEditInsuranceSubtitle
         case .travelInsurance: L10n.hcQuickActionsTravelCertificateSubtitle
-        case .connectPayments: L10n.hcQuickActionsPaymentsSubtitle
+        case .connectPayments: L10n.hcQuickActionsPaymentsSubtitle2
         case .changeAddress: L10n.hcQuickActionsChangeAddressSubtitle
         case .editCoInsured: L10n.hcQuickActionsCoInsuredSubtitle
         case .editCoOwners: L10n.editCoownerSubtitle  // TODO: use lokalise hcQuickAction?

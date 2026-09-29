@@ -11,6 +11,14 @@ extension View {
     ) -> some View {
         modifier(PaymentSetupDetent(provider: provider, phoneNumber: phoneNumber, onSuccess: onSuccess))
     }
+
+    public func handleSwishPayinSetup(presented: Binding<Bool>) -> some View {
+        modifier(PayinSetupDeepLinkDetent(provider: .swish, presented: presented))
+    }
+
+    public func handleDirectDebitSetup(presented: Binding<Bool>) -> some View {
+        modifier(PayinSetupDeepLinkDetent(provider: .trustly, presented: presented))
+    }
 }
 
 struct PaymentSetupDetent: ViewModifier {
@@ -25,14 +33,7 @@ struct PaymentSetupDetent: ViewModifier {
                 presentationStyle: provider?.payinSetupPresentationStyle ?? .detent(style: [.large]),
                 options: .constant(provider?.payinSetupPresentationOptions ?? [])
             ) { presented in
-                switch presented {
-                case .trustly:
-                    DirectDebitSetup(onSuccess: { connected(presented) })
-                case .swish:
-                    SwishPayinSetupScreen(phoneNumber: phoneNumber, onSuccess: { connected(presented) })
-                case .nordea, .invoice, .unknown:
-                    UpdateAppScreen {}.withAlertDismiss()
-                }
+                PayinSetupScreen(provider: presented, phoneNumber: phoneNumber) { connected(presented) }
             }
     }
 
@@ -40,5 +41,49 @@ struct PaymentSetupDetent: ViewModifier {
         self.provider = nil
         onSuccess(provider)
         PaymentStore.refreshStatusDetached()
+    }
+}
+
+/// `.alwaysOpenOnTop` because a deep link can arrive while something else is already showing.
+private struct PayinSetupDeepLinkDetent: ViewModifier {
+    let provider: PaymentProvider
+    @Binding var presented: Bool
+    /// The deep link carries no phone number of its own, so the flow falls back to the one
+    /// fetched with the payment methods.
+    @AppState private var store: PaymentStore
+
+    func body(content: Content) -> some View {
+        content
+            .detent(
+                presented: $presented,
+                presentationStyle: provider.payinSetupPresentationStyle,
+                options: .constant(provider.payinSetupPresentationOptions.union(.alwaysOpenOnTop))
+            ) {
+                PayinSetupScreen(provider: provider, phoneNumber: store.paymentStatusData?.memberPhoneNumber) {
+                    connected()
+                }
+            }
+    }
+
+    private func connected() {
+        presented = false
+        PaymentStore.refreshStatusDetached()
+    }
+}
+
+private struct PayinSetupScreen: View {
+    let provider: PaymentProvider
+    let phoneNumber: String?
+    let onSuccess: () -> Void
+
+    var body: some View {
+        switch provider {
+        case .trustly:
+            DirectDebitSetup(onSuccess: onSuccess)
+        case .swish:
+            SwishPayinSetupScreen(phoneNumber: phoneNumber, onSuccess: { onSuccess() })
+        case .nordea, .invoice, .unknown:
+            UpdateAppScreen {}.withAlertDismiss()
+        }
     }
 }
