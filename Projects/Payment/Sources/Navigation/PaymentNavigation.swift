@@ -7,7 +7,6 @@ import hCoreUI
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
-    public var connectPaymentVm = ConnectPaymentViewModel()
     let paymentsRouter = NavigationRouter()
     @Published var showChooseDefaultPaymentMethod = false
     @Published var showAddPaymentMethod = false
@@ -30,18 +29,7 @@ public struct PaymentsNavigation: View {
                     PaymentDetailsView(data: paymentData)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
-                    switch routerAction {
-                    case .discounts:
-                        CampaignNavigation()
-                    case .history:
-                        PaymentHistoryView()
-                    case let .paymentMethod(provider):
-                        PaymentMethodScreen(paymentProvider: provider)
-                    case .payoutMethod:
-                        PayoutSelectedMethodScreen()
-                    case .paymentMethods:
-                        PaymentMethodsScreen()
-                    }
+                    paymentsDestination(for: routerAction)
                 }
                 .routerDestination(for: PayoutRouterActions.self) { routerAction in
                     switch routerAction {
@@ -63,21 +51,46 @@ public struct PaymentsNavigation: View {
                     .navigationTitle(L10n.paymentsPaymentOverdueTitle)
                 }
         }
-        .environmentObject(paymentsNavigationVm)
-        .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
-        .detent(
-            presented: $paymentsNavigationVm.showChooseDefaultPaymentMethod,
-            presentationStyle: .detent(style: [.height])
-        ) {
-            PaymentsChooseDefaultScreen()
-        }
-        .detent(
-            presented: $paymentsNavigationVm.showAddPaymentMethod,
-            presentationStyle: .detent(style: [.height]),
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            PaymentAddPaymentMethod()
-        }
+        .withPaymentsPresentations(paymentsNavigationVm)
+    }
+}
+
+@MainActor
+@ViewBuilder
+func paymentsDestination(for routerAction: PaymentsRouterAction) -> some View {
+    switch routerAction {
+    case .discounts:
+        CampaignNavigation()
+    case .history:
+        PaymentHistoryView()
+    case let .paymentMethod(provider):
+        PaymentMethodScreen(paymentProvider: provider)
+    case .payoutMethod:
+        PayoutSelectedMethodScreen()
+    case .paymentMethods:
+        PaymentMethodsScreen()
+    }
+}
+
+extension View {
+    func withPaymentsPresentations(_ vm: PaymentsNavigationViewModel) -> some View {
+        modifier(PaymentsPresentations(vm: vm))
+    }
+}
+
+private struct PaymentsPresentations: ViewModifier {
+    @ObservedObject var vm: PaymentsNavigationViewModel
+
+    func body(content: Content) -> some View {
+        content
+            .environmentObject(vm)
+            .detent(
+                presented: $vm.showChooseDefaultPaymentMethod,
+                presentationStyle: .detent(style: [.height])
+            ) {
+                PaymentsChooseDefaultScreen()
+            }
+            .handleAddPaymentMethod(presented: $vm.showAddPaymentMethod)
     }
 }
 
