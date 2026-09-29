@@ -170,7 +170,7 @@ struct MissedPaymentScreen: View {
                 value: missedPaymentdata.paymentData.payment.date.displayDate
             )
             infoRow(
-                label: L10n.bankPayoutMethodCardTitle,
+                label: missedPaymentdata.paymentMethodData.titleForMissedPayment,
                 value: missedPaymentdata.paymentMethodData.info
             )
         }
