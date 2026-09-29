@@ -34,7 +34,7 @@ public struct PaymentAddPaymentMethod: View {
     }
 
     public init(
-        heading: Heading,
+        heading: Heading? = nil,
         phoneNumber: String? = nil,
         connectedProvider: PaymentProvider? = nil,
         onFinished: @escaping (_ provider: PaymentProvider) -> Void

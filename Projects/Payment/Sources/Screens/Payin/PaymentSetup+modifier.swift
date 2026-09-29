@@ -7,9 +7,17 @@ extension View {
     func handlePaymentSetup(
         for provider: Binding<PaymentProvider?>,
         phoneNumber: String? = nil,
+        showSuccess: Bool = false,
         onSuccess: @escaping (PaymentProvider) -> Void = { _ in }
     ) -> some View {
-        modifier(PaymentSetupDetent(provider: provider, phoneNumber: phoneNumber, onSuccess: onSuccess))
+        modifier(
+            PaymentSetupDetent(
+                provider: provider,
+                phoneNumber: phoneNumber,
+                showSuccess: showSuccess,
+                onSuccess: onSuccess
+            )
+        )
     }
 
     public func handleSwishPayinSetup(presented: Binding<Bool>) -> some View {
@@ -24,22 +32,49 @@ extension View {
 struct PaymentSetupDetent: ViewModifier {
     @Binding var provider: PaymentProvider?
     let phoneNumber: String?
+    let showSuccess: Bool
+    var additionalOptions: DetentPresentationOption = []
     let onSuccess: (PaymentProvider) -> Void
+    @State private var connectedProvider: PaymentProvider?
 
     func body(content: Content) -> some View {
         content
             .detent(
                 item: $provider,
                 presentationStyle: provider?.payinSetupPresentationStyle ?? .detent(style: [.large]),
-                options: .constant(provider?.payinSetupPresentationOptions ?? [])
+                options: .constant((provider?.payinSetupPresentationOptions ?? []).union(additionalOptions))
             ) { presented in
-                PayinSetupScreen(provider: presented, phoneNumber: phoneNumber) { connected(presented) }
+                PayinSetupScreen(provider: presented, phoneNumber: phoneNumber) { setupSucceeded(presented) }
+            }
+            // Not dismissable by swipe, so Continue is always what finishes the flow and refreshes.
+            .detent(
+                item: $connectedProvider,
+                options: .constant([.alwaysOpenOnTop, .disableDismissOnScroll])
+            ) { connected in
+                PaymentAddPaymentMethod(connectedProvider: connected) { provider in
+                    finish(provider)
+                }
+                .hFormContentPosition(.compact)
             }
     }
 
-    private func connected(_ provider: PaymentProvider) {
-        self.provider = nil
-        onSuccess(provider)
+    private func setupSucceeded(_ connected: PaymentProvider) {
+        guard showSuccess else {
+            finish(connected)
+            return
+        }
+        Task {
+            provider = nil
+            // Let the setup detent finish dismissing before presenting the confirmation.
+            await delay(0.1)
+            connectedProvider = connected
+        }
+    }
+
+    private func finish(_ connected: PaymentProvider) {
+        provider = nil
+        connectedProvider = nil
+        onSuccess(connected)
         PaymentStore.refreshStatusDetached()
     }
 }
@@ -54,20 +89,18 @@ private struct PayinSetupDeepLinkDetent: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .detent(
-                presented: $presented,
-                presentationStyle: provider.payinSetupPresentationStyle,
-                options: .constant(provider.payinSetupPresentationOptions.union(.alwaysOpenOnTop))
-            ) {
-                PayinSetupScreen(provider: provider, phoneNumber: store.paymentStatusData?.memberPhoneNumber) {
-                    connected()
-                }
-            }
-    }
-
-    private func connected() {
-        presented = false
-        PaymentStore.refreshStatusDetached()
+            .modifier(
+                PaymentSetupDetent(
+                    provider: Binding(
+                        get: { presented ? provider : nil },
+                        set: { presented = $0 != nil }
+                    ),
+                    phoneNumber: store.paymentStatusData?.memberPhoneNumber,
+                    showSuccess: true,
+                    additionalOptions: .alwaysOpenOnTop,
+                    onSuccess: { _ in }
+                )
+            )
     }
 }
 

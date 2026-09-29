@@ -84,7 +84,6 @@ struct PaymentMethodPickerGraphic: View {
 
 struct StatusBadge: View {
     enum Kind {
-        case external
         case success
         case failure
     }
@@ -97,9 +96,6 @@ struct StatusBadge: View {
             .frame(width: 24, height: 24)
             .overlay {
                 glyph
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 12)
                     .foregroundColor(hTextColor.Opaque.negative)
             }
     }
@@ -108,8 +104,6 @@ struct StatusBadge: View {
     @hColorBuilder
     private var color: some hColor {
         switch kind {
-        case .external:
-            hSignalColor.Blue.element
         case .success:
             hSignalColor.Green.element
         case .failure:
@@ -117,12 +111,19 @@ struct StatusBadge: View {
         }
     }
 
-    private var glyph: Image {
+    @ViewBuilder
+    private var glyph: some View {
         switch kind {
-        case .external: hCoreUIAssets.arrowNorthEast.view
-        case .success: hCoreUIAssets.checkmark.view
-        case .failure: hCoreUIAssets.warning.view
+        case .success: icon(hCoreUIAssets.checkmark.view)
+        case .failure: hText("!", style: .label).hWithoutFontMultiplier.accessibilityHidden(true)
         }
+    }
+
+    private func icon(_ image: Image) -> some View {
+        image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 14)
     }
 }
 

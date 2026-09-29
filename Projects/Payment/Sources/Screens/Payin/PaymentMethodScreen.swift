@@ -33,7 +33,7 @@ struct PaymentMethodScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber)
+            .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber, showSuccess: true)
             .detent(
                 item: $methodToRemove,
                 presentationStyle: .detent(style: [.height])
