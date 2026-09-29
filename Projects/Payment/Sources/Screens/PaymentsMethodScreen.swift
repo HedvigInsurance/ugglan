@@ -64,17 +64,15 @@ struct PaymentMethodScreen: View {
                 status: .active,
                 chargingDay: 27,
                 defaultPayinMethod: .init(
-                    provider: .invoice,
                     status: .active,
                     isDefault: true,
-                    details: .invoice(delivery: .kivra, email: nil)
+                    method: .invoice(delivery: .kivra)
                 ),
                 payinMethods: [
                     .init(
-                        provider: .invoice,
                         status: .active,
                         isDefault: true,
-                        details: .invoice(delivery: .kivra, email: nil)
+                        method: .invoice(delivery: .kivra)
                     )
                 ],
                 defaultPayoutMethod: nil,
@@ -88,17 +86,15 @@ struct PaymentMethodScreen: View {
                 status: .active,
                 chargingDay: 27,
                 defaultPayinMethod: .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "*****123", bank: "Nordea")
+                    method: .trustly(bankAccount: .init(account: "*****123", bank: "Nordea"))
                 ),
                 payinMethods: [
                     .init(
-                        provider: .trustly,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "*****123", bank: "Nordea")
+                        method: .trustly(bankAccount: .init(account: "*****123", bank: "Nordea"))
                     )
                 ],
                 defaultPayoutMethod: nil,
@@ -120,7 +116,7 @@ struct PaymentMethodView: View {
         let info: String?
     }
 
-    init(data: PaymentMethodData, chargingDay: Int? = nil, withDate: Bool) {
+    init(data: ConnectedPaymentMethod, chargingDay: Int? = nil, withDate: Bool) {
         self.items = {
             var rows: [PaymentInfoItem] = []
             if let paymentMethodLabel = data.provider.paymentMethodLabel {
@@ -136,24 +132,28 @@ struct PaymentMethodView: View {
                 )
             }
 
-            switch data.details {
-            case let .bankAccount(account, bank):
-                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: account, info: nil))
-                rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bank, info: nil))
+            switch data.method {
+            case .trustly(let bankAccount), .nordea(let bankAccount):
+                if let bankAccount {
+                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: bankAccount.account, info: nil))
+                    rows.append(PaymentInfoItem(title: L10n.myPaymentBankRowLabel, value: bankAccount.bank, info: nil))
+                }
             case .swish(let phoneNumber):
-                rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: phoneNumber, info: nil))
-            case let .invoice(delivery, email):
+                if let phoneNumber {
+                    rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: phoneNumber, info: nil))
+                }
+            case .invoice(let delivery):
                 switch delivery {
                 case .kivra:
                     rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: "Kivra", info: nil))
-                case .mail:
+                case .email(let email):
                     if let email {
                         rows.append(PaymentInfoItem(title: L10n.paymentsAccount, value: email, info: nil))
                     }
-                case .unknown:
+                case .unknown, nil:
                     break
                 }
-            case nil:
+            case .unknown:
                 break
             }
             return rows
