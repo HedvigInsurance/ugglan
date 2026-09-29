@@ -186,6 +186,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
             .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
             .padding(.top, hFormTitle.title.type.topMargin)
+            .padding(.horizontal, hFormTitle.title.type.horizontalMargin)
             .padding(
                 .bottom,
                 verticalSizeClass == .compact
@@ -327,25 +328,25 @@ public enum HFormTitleSpacingType {
 
     var topMargin: CGFloat {
         switch self {
-        case .standard:
-            return 56
-        case .small:
-            return 16
-        case .navigationLike:
-            return 36
-        case .none:
-            return 0
+        case .standard: 56
+        case .small: 16
+        case .navigationLike: 36
+        case .none: 0
         }
     }
 
     var bottomMargin: CGFloat {
         switch self {
-        case .standard:
-            return 64
-        case .navigationLike:
-            return 24
-        case .small, .none:
-            return 0
+        case .standard: 64
+        case .navigationLike: 24
+        case .small, .none: 0
+        }
+    }
+
+    var horizontalMargin: CGFloat {
+        switch self {
+        case .navigationLike: 24
+        default: 0
         }
     }
 }

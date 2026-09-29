@@ -33,6 +33,11 @@ public class hPaymentService {
     }
 
     @Log(.error)
+    public func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        try await client.getPaymentSetupStatus(orderId: orderId)
+    }
+
+    @Log(.error)
     public func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
         try await client.setDefaultPaymentMethod(method)
     }
