@@ -14,7 +14,7 @@ struct PaymentMethodScreen: View {
 
     var body: some View {
         if let statusData = store.paymentStatusData,
-            let (method, isProcessing) = statusData.payinMethod(for: paymentProvider)
+            let method = statusData.connectedPaymentMethod(for: paymentProvider)
         {
             hForm {
                 hSection {
@@ -29,7 +29,7 @@ struct PaymentMethodScreen: View {
             }
             .hFormAttachToBottom {
                 hSection {
-                    actions(for: method, isProcessing: isProcessing)
+                    actions(for: method)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -56,23 +56,23 @@ struct PaymentMethodScreen: View {
     }
 
     @ViewBuilder
-    private func actions(for method: ConnectedPaymentMethod, isProcessing: Bool) -> some View {
+    private func actions(for method: ConnectedPaymentMethod) -> some View {
         switch paymentProvider {
         case .trustly:
-            changeableMethod(method, isProcessing: isProcessing) {
+            changeableMethod(method) {
                 hButton(.large, .secondary, content: .init(title: L10n.myPaymentDirectDebitReplaceButton)) {
                     providerToSetUp = paymentProvider
                 }
             }
         case .swish:
-            changeableMethod(method, isProcessing: isProcessing) {
+            changeableMethod(method) {
                 hButton(.large, .secondary, content: .init(title: L10n.paymentSwishChangeNumber)) {
                     providerToSetUp = paymentProvider
                 }
             }
         case .invoice:
             // Invoices are delivered by Kivra and cannot be changed here, only removed.
-            changeableMethod(method, isProcessing: isProcessing) {}
+            changeableMethod(method) {}
         case .nordea, .unknown:
             EmptyView()
         }
@@ -80,17 +80,11 @@ struct PaymentMethodScreen: View {
 
     private func changeableMethod<Change: View>(
         _ method: ConnectedPaymentMethod,
-        isProcessing: Bool,
         @ViewBuilder change: () -> Change
     ) -> some View {
-        VStack(spacing: .padding16) {
-            if isProcessing {
-                InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
-            }
-            VStack(spacing: .padding8) {
-                change()
-                removeButton(for: method)
-            }
+        VStack(spacing: .padding8) {
+            change()
+            removeButton(for: method)
         }
     }
 
