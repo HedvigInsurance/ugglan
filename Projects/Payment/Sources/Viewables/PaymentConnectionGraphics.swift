@@ -31,13 +31,21 @@ private struct PaymentMethodTileStyle: ViewModifier {
 struct PaymentMethodPickerGraphic: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    var direction: PaymentDirection = .payin
     let selected: PaymentProvider?
 
     var body: some View {
         HStack(spacing: .padding16) {
-            methodSlot
-            dots
-            pillow
+            switch direction {
+            case .payin:
+                methodSlot
+                dots
+                pillow
+            case .payout:
+                pillow
+                dots
+                methodSlot
+            }
         }
         .animation(reduceMotion ? .none : .easeInOut, value: selected)
         .accessibilityHidden(true)
@@ -137,22 +145,45 @@ struct SwishPillow: View {
 struct PaymentConnectionPairGraphic: View {
     let provider: PaymentProvider
     let outcome: StatusBadge.Kind
+    var direction: PaymentDirection = .payin
 
     var body: some View {
         HStack(spacing: .padding16) {
-            provider.chooseDefaultImage(size: 74)
-                .paymentMethodTile()
-            DotsActivityIndicator(.standard, animated: false)
-                .useDarkColor
-            hCoreUIAssets.bigPillowBlack.view
-                .resizable()
-                .frame(width: 74, height: 74)
-                .overlay(alignment: .topTrailing) {
-                    StatusBadge(kind: outcome)
-                        .offset(x: .padding8, y: -.padding8)
-                }
+            switch direction {
+            case .payin:
+                methodTile
+                dots
+                badged(pillowTile)
+            case .payout:
+                pillowTile
+                dots
+                badged(methodTile)
+            }
         }
         .accessibilityHidden(true)
+    }
+
+    private var methodTile: some View {
+        provider.chooseDefaultImage(size: 74)
+            .paymentMethodTile()
+    }
+
+    private var pillowTile: some View {
+        hCoreUIAssets.bigPillowBlack.view
+            .resizable()
+            .frame(width: 74, height: 74)
+    }
+
+    private var dots: some View {
+        DotsActivityIndicator(.standard, animated: false)
+            .useDarkColor
+    }
+
+    private func badged(_ tile: some View) -> some View {
+        tile.overlay(alignment: .topTrailing) {
+            StatusBadge(kind: outcome)
+                .offset(x: .padding8, y: -.padding8)
+        }
     }
 }
 
@@ -163,6 +194,8 @@ struct PaymentConnectionPairGraphic: View {
         SwishPillow()
         PaymentConnectionPairGraphic(provider: .swish, outcome: .success)
         PaymentConnectionPairGraphic(provider: .swish, outcome: .failure)
+        PaymentMethodPickerGraphic(direction: .payout, selected: .nordea)
+        PaymentConnectionPairGraphic(provider: .nordea, outcome: .success, direction: .payout)
     }
     .padding(.padding32)
 }

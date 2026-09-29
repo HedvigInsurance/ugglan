@@ -180,7 +180,7 @@ public struct PaymentsView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { router.push(PaymentsRouterAction.payoutMethod) }
+                    .onTap { router.push(PayoutRouterActions.selectedPayoutMethod) }
                 }
             }
             .sectionContainerStyle(.transparent)
