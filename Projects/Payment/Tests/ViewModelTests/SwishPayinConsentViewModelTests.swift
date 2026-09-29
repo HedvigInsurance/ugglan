@@ -18,7 +18,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
 
     private func makeViewModel(
         orderId: String? = "order-1",
-        url: String? = "https://example.com/setup",
+        url: String? = PaymentTestURL.setup,
         state: SwishConsentState = .waiting,
         pollTimeout: TimeInterval = 1
     ) -> SwishPayinConsentViewModel {
@@ -38,7 +38,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
 
-        let vm = makeViewModel(url: "https://example.com/setup")
+        let vm = makeViewModel(url: PaymentTestURL.setup)
 
         XCTAssertNotNil(vm.qrImage)
         XCTAssertEqual(vm.state, .waiting)
@@ -189,7 +189,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
     func testTryAgainUpdatesQRImageFromResultUrlSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {
-                .init(status: .active, orderId: nil, url: "https://example.com/retry", errorMessage: nil)
+                .init(status: .active, orderId: nil, url: PaymentTestURL.retry, errorMessage: nil)
             }
         )
         sut = mockService
@@ -237,7 +237,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
                 .init(
                     status: .pending,
                     orderId: "order-2",
-                    url: "https://example.com/setup",
+                    url: PaymentTestURL.setup,
                     errorMessage: "number not connected to Swish"
                 )
             },
@@ -271,7 +271,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
     func testTryAgainPendingResultPollsUntilActiveSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {
-                .init(status: .pending, orderId: "order-2", url: "https://example.com/setup", errorMessage: nil)
+                .init(status: .pending, orderId: "order-2", url: PaymentTestURL.setup, errorMessage: nil)
             },
             fetchPaymentSetupStatus: { .active }
         )
@@ -289,7 +289,7 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
     func testTryAgainPendingResultPollsUntilFailedFailure() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {
-                .init(status: .pending, orderId: "order-2", url: "https://example.com/setup", errorMessage: nil)
+                .init(status: .pending, orderId: "order-2", url: PaymentTestURL.setup, errorMessage: nil)
             },
             fetchPaymentSetupStatus: { .failed }
         )

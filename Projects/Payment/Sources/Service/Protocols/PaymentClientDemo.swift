@@ -225,7 +225,7 @@ public class hPaymentClientDemo: hPaymentClient {
         return .init(status: .pending, orderId: nil, url: "https://example.com/setup", errorMessage: nil)
     }
 
-    public func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+    public func getPaymentSetupStatus(orderId _: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
         try await Task.sleep(for: .seconds(3))
         return .active
     }
@@ -238,11 +238,11 @@ public class hPaymentClientDemo: hPaymentClient {
         nil
     }
 
-    public func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
+    public func setDefaultPaymentMethod(_: PaymentMethod) async throws {
         try await Task.sleep(for: .seconds(1))
     }
 
-    public func removePaymentMethod(_ provider: PaymentProvider) async throws {
+    public func removePaymentMethod(_: PaymentProvider) async throws {
         try await Task.sleep(for: .seconds(1))
     }
 }
