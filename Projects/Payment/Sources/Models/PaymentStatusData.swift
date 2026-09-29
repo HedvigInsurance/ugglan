@@ -38,6 +38,10 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         availableMethods.filter((\.supportsPayout))
     }
 
+    var availablePayinMethods: [AvailablePaymentMethod] {
+        availableMethods.filter((\.supportsPayin))
+    }
+
     var hasAnyPayoutMethod: Bool {
         !availablePayoutMethods.isEmpty || defaultOrFirstDefaultPayoutMethod != nil
     }
