@@ -133,7 +133,7 @@ public struct PaymentsView: View {
             {
                 hSection {
                     PaymentMethodRow(paymentMethod, showsPrimaryLabel: false, allowsTapWhenPending: true) {
-                        router.push(PaymentsRouterAction.paymentMethod)
+                        router.push(PaymentsRouterAction.paymentMethod(provider: paymentMethod.provider))
                     }
                 }
                 .withHeader(title: L10n.paymentMethodTitle)
