@@ -9,6 +9,7 @@ extension View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             PaymentAddPaymentMethod()
+                .hFormContentPosition(.compact)
         }
     }
 }
