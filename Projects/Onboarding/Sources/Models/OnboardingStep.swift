@@ -1,6 +1,7 @@
 import Contracts
 import CrossSell
 import Foundation
+import Payment
 import hCoreUI
 
 public enum OnboardingStep: Hashable, Sendable {
@@ -12,7 +13,7 @@ public enum OnboardingStep: Hashable, Sendable {
     case coOwners(contracts: [OnboardingContract])
     case petChipIds(contracts: [OnboardingContract])
     case inviteFriend(discountCode: String, monthlyDiscountPerReferral: String)
-    case connectPayment(isConnected: Bool)
+    case connectPayment(isConnected: Bool, paymentProvider: PaymentProvider?)
     case crossSell(_ crossSells: [CrossSell])
 }
 
