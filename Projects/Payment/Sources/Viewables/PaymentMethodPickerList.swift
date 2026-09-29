@@ -54,7 +54,7 @@ private func previewPicker(
         .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
     ]
     return hForm {
-        PaymentMethodPickerGraphic(direction: direction, selected: selected)
+        PaymentConnectionGraphic(direction: direction, provider: selected)
             .padding(.vertical, .padding64)
     }
     .hFormAttachToBottom {

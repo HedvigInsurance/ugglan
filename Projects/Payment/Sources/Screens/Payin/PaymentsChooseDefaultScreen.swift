@@ -12,7 +12,7 @@ struct PaymentsChooseDefaultScreen: View {
 
     var body: some View {
         hForm {
-            PaymentMethodPickerGraphic(selected: currentDefault?.provider)
+            PaymentConnectionGraphic(provider: currentDefault?.provider)
                 .padding(.vertical, .padding64)
         }
         .hFormAttachToBottom {

@@ -76,13 +76,12 @@ public struct PaymentAddPaymentMethod: View {
 
     @ViewBuilder
     private var formContent: some View {
-        if let provider = connectedProvider {
-            PaymentConnectionPairGraphic(provider: provider, outcome: .success)
-                .padding(.vertical, .padding96)
-        } else {
-            PaymentMethodPickerGraphic(direction: .payin, selected: selected)
-                .padding(.vertical, .padding64)
-        }
+        PaymentConnectionGraphic(
+            direction: .payin,
+            provider: connectedProvider ?? selected,
+            outcome: connectedProvider != nil ? .success : nil
+        )
+        .padding(.vertical, connectedProvider != nil ? .padding96 : .padding64)
     }
 
     @ViewBuilder

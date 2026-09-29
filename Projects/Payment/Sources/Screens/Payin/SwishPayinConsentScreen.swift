@@ -49,7 +49,7 @@ struct SwishPayinConsentScreen: View {
                         }
                     }
                 case .failed:
-                    PaymentConnectionPairGraphic(provider: .swish, outcome: .failure)
+                    PaymentConnectionGraphic(provider: .swish, outcome: .failure)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)

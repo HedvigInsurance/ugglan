@@ -28,11 +28,14 @@ private struct PaymentMethodTileStyle: ViewModifier {
     }
 }
 
-struct PaymentMethodPickerGraphic: View {
+struct PaymentConnectionGraphic: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var direction: PaymentDirection = .payin
-    let selected: PaymentProvider?
+    let provider: PaymentProvider?
+    /// `nil` while the user is still picking (animated dots, no badge);
+    /// non-nil once the connection has a result, badging the trailing tile.
+    var outcome: StatusBadge.Kind? = nil
 
     var body: some View {
         HStack(spacing: .padding16) {
@@ -40,20 +43,21 @@ struct PaymentMethodPickerGraphic: View {
             case .payin:
                 methodSlot
                 dots
-                pillow
+                badged(pillow)
             case .payout:
                 pillow
                 dots
-                methodSlot
+                badged(methodSlot)
             }
         }
-        .animation(reduceMotion ? .none : .easeInOut, value: selected)
+        .animation(reduceMotion ? .none : .easeInOut, value: provider)
+        .animation(reduceMotion ? .none : .easeInOut, value: outcome)
         .accessibilityHidden(true)
     }
 
     private var methodSlot: some View {
         Group {
-            if let provider = selected {
+            if let provider {
                 provider.chooseDefaultImage(size: 74)
             } else {
                 hBackgroundColor.primary
@@ -71,7 +75,7 @@ struct PaymentMethodPickerGraphic: View {
     }
 
     private var dots: some View {
-        DotsActivityIndicator(.standard)
+        DotsActivityIndicator(.standard, animated: outcome == nil)
             .useDarkColor
     }
 
@@ -79,6 +83,16 @@ struct PaymentMethodPickerGraphic: View {
         hCoreUIAssets.bigPillowBlack.view
             .resizable()
             .frame(width: 74, height: 74)
+    }
+
+    private func badged(_ tile: some View) -> some View {
+        tile.overlay(alignment: .topTrailing) {
+            if let outcome {
+                StatusBadge(kind: outcome)
+                    .offset(x: .padding8, y: -.padding8)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
     }
 }
 
@@ -123,7 +137,7 @@ struct StatusBadge: View {
         image
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 14)
+            .frame(width: 18)
     }
 }
 
@@ -143,60 +157,15 @@ struct SwishPillow: View {
     }
 }
 
-struct PaymentConnectionPairGraphic: View {
-    let provider: PaymentProvider
-    let outcome: StatusBadge.Kind
-    var direction: PaymentDirection = .payin
-
-    var body: some View {
-        HStack(spacing: .padding16) {
-            switch direction {
-            case .payin:
-                methodTile
-                dots
-                badged(pillowTile)
-            case .payout:
-                pillowTile
-                dots
-                badged(methodTile)
-            }
-        }
-        .accessibilityHidden(true)
-    }
-
-    private var methodTile: some View {
-        provider.chooseDefaultImage(size: 74)
-            .paymentMethodTile()
-    }
-
-    private var pillowTile: some View {
-        hCoreUIAssets.bigPillowBlack.view
-            .resizable()
-            .frame(width: 74, height: 74)
-    }
-
-    private var dots: some View {
-        DotsActivityIndicator(.standard, animated: false)
-            .useDarkColor
-    }
-
-    private func badged(_ tile: some View) -> some View {
-        tile.overlay(alignment: .topTrailing) {
-            StatusBadge(kind: outcome)
-                .offset(x: .padding8, y: -.padding8)
-        }
-    }
-}
-
 #Preview {
     VStack(spacing: .padding32) {
-        PaymentMethodPickerGraphic(selected: nil)
-        PaymentMethodPickerGraphic(selected: .swish)
+        PaymentConnectionGraphic(provider: nil)
+        PaymentConnectionGraphic(provider: .swish)
         SwishPillow()
-        PaymentConnectionPairGraphic(provider: .swish, outcome: .success)
-        PaymentConnectionPairGraphic(provider: .swish, outcome: .failure)
-        PaymentMethodPickerGraphic(direction: .payout, selected: .nordea)
-        PaymentConnectionPairGraphic(provider: .nordea, outcome: .success, direction: .payout)
+        PaymentConnectionGraphic(provider: .swish, outcome: .success)
+        PaymentConnectionGraphic(provider: .swish, outcome: .failure)
+        PaymentConnectionGraphic(direction: .payout, provider: .nordea)
+        PaymentConnectionGraphic(direction: .payout, provider: .nordea, outcome: .success)
     }
     .padding(.padding32)
 }
