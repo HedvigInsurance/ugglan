@@ -39,6 +39,9 @@ struct HomeBottomScrollView: View {
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
     @Published var todos = [Todo]()
+    /// Drives the standalone `ConnectPaymentCardView`, which sits above the claims card rather
+    /// than in the carousel — hence a flag instead of an `InfoCardType`.
+    @Published var showsConnectPaymentCard = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var localItems = Set<InfoCardView>() {
@@ -100,14 +103,11 @@ class HomeBottomScrollViewModel: ObservableObject {
         let missingPayin = status?.missingConnection == .payin
         let missingPayout = status?.missingConnection == .payout
         let showsPayin = missingPayin && [MemberContractState.active, MemberContractState.future].contains(userStatus)
-        let terminationDueToMissedPaymentsDate: String? =
-            if case let .terminatingDueToMissedPayments(date) = status?.status { date } else { nil }
         let isTerminatingDueToMissedPayments =
             if case .terminatingDueToMissedPayments = status?.status { true } else { false }
         let showsPayout = missingPayout && !missingPayin
 
-        handleTodo(.paymentOverdue(date: terminationDueToMissedPaymentsDate), with: isTerminatingDueToMissedPayments)
-        handleTodo(.paymentMethodMissing, with: showsPayin && !isTerminatingDueToMissedPayments)
+        withAnimation { showsConnectPaymentCard = showsPayin || isTerminatingDueToMissedPayments }
         handleTodo(.payoutMethodMissing, with: showsPayout)
     }
 

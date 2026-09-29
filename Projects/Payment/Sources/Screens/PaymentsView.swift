@@ -37,11 +37,6 @@ public struct PaymentsView: View {
             .hButtonIsLoading(false)
         }
         .hSetScrollBounce(to: true)
-        .hFormAttachToBottom {
-            if store.showsConnectPayment {
-                ConnectPaymentBottomView()
-            }
-        }
         .onPullToRefresh {
             await store.fetchAllPaymentData(forceUpdate: true)
         }
@@ -49,7 +44,11 @@ public struct PaymentsView: View {
 
     private var payments: some View {
         VStack(spacing: .padding8) {
-            if let missedPaymentData = store.missedPaymentData {
+            if store.showsConnectPayment {
+                ConnectPaymentCardView(onConnectPayment: {
+                    paymentNavigationVm.showAddPaymentMethod = true
+                })
+            } else if let missedPaymentData = store.missedPaymentData {
                 MissedPaymentCardView(
                     amountDue: missedPaymentData.paymentData.payment.net,
                     onReviewPayment: {
@@ -82,12 +81,6 @@ public struct PaymentsView: View {
                     hText(L10n.paymentsNoPaymentsInProgress)
                 }
                 .padding(.vertical, .padding32)
-            }
-            if store.showsConnectPayment {
-                hSection {
-                    ConnectPaymentCardView()
-                        .environmentObject(paymentNavigationVm.connectPaymentVm)
-                }
             }
         }
     }
