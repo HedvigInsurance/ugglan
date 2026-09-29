@@ -22,6 +22,7 @@ struct PaymentMethodsScreen: View {
                 hSection {
                     VStack(spacing: .padding8) {
                         hButton(.large, .secondary, content: .init(title: L10n.payoutAddPayoutMethod)) {
+                            paymentsNavigationVM.showAddPaymentMethod = true
                         }
                         hButton(.large, .ghost, content: .init(title: L10n.paymentChoosePrimaryButton)) {
                             paymentsNavigationVM.showChooseDefaultPaymentMethod = true

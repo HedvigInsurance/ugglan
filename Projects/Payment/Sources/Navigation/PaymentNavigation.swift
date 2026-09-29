@@ -10,6 +10,7 @@ public class PaymentsNavigationViewModel: ObservableObject {
     public var connectPaymentVm = ConnectPaymentViewModel()
     let paymentsRouter = NavigationRouter()
     @Published var showChooseDefaultPaymentMethod = false
+    @Published var showAddPaymentMethod = false
     public init() {}
 }
 
@@ -69,6 +70,12 @@ public struct PaymentsNavigation: View {
             presentationStyle: .detent(style: [.height])
         ) {
             PaymentsChooseDefaultScreen()
+        }
+        .detent(
+            presented: $paymentsNavigationVm.showAddPaymentMethod,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            PaymentAddPaymentMethod()
         }
     }
 }
