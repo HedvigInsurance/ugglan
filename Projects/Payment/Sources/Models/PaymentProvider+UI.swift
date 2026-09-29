@@ -146,10 +146,9 @@ extension PaymentProvider {
     @MainActor
     @ViewBuilder
     public func chooseDefaultImage(size: CGFloat = 74) -> some View {
-        switch self {
-        case .trustly:
+        if self == .trustly {
             trustlyTile(size: size, background: hBackgroundColor.primary, logo: hTextColor.Opaque.primary)
-        default:
+        } else {
             image(size: size)
         }
     }

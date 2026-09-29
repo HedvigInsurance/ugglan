@@ -3,6 +3,12 @@ import hCore
 
 @testable import Payment
 
+/// Placeholder endpoints the payment mocks hand back in place of a real provider URL.
+enum PaymentTestURL {
+    static let setup = "https://example.com/setup"
+    static let retry = "https://example.com/retry"
+}
+
 @MainActor
 
 struct MockPaymentData {
@@ -65,7 +71,7 @@ struct MockPaymentData {
             .init()
         },
         fetchSetupPaymentMethod: @escaping FetchSetupPaymentMethod = {
-            .init(status: .pending, orderId: "order-1", url: "https://example.com/setup", errorMessage: nil)
+            .init(status: .pending, orderId: "order-1", url: PaymentTestURL.setup, errorMessage: nil)
         },
         fetchPaymentSetupStatus: @escaping FetchPaymentSetupStatus = { .active },
         fetchMissedPaymentData: @escaping FetchMissedPaymentData = { nil },
@@ -142,7 +148,7 @@ class MockPaymentService: hPaymentClient {
         fetchMissedPaymentData: @escaping FetchMissedPaymentData,
         chargeOutstandingPayment: @escaping ChargeOutstandingPayment,
         setDefaultPaymentMethod: @escaping SetDefaultPaymentMethod,
-        removePaymentMethod: @escaping RemovePaymentMethod = {}
+        removePaymentMethod: @escaping RemovePaymentMethod
     ) {
         self.fetchPaymentData = fetchPaymentData
         self.fetchPaymentStatusData = fetchPaymentStatusData
@@ -187,7 +193,7 @@ class MockPaymentService: hPaymentClient {
         return data
     }
 
-    func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+    func getPaymentSetupStatus(orderId _: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
         events.append(.getPaymentSetupStatus)
         let status = try await fetchPaymentSetupStatus()
         return status
@@ -204,7 +210,7 @@ class MockPaymentService: hPaymentClient {
         try await chargeOutstandingPaymentClosure()
     }
 
-    func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
+    func setDefaultPaymentMethod(_: PaymentMethod) async throws {
         events.append(.setDefaultPaymentMethod)
         try await setDefaultPaymentMethodClosure()
     }

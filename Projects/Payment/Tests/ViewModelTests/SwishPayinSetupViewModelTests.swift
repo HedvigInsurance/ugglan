@@ -120,7 +120,7 @@ final class SwishPayinSetupViewModelTests: XCTestCase {
         let expectedResult = PaymentSetupResult(
             status: .pending,
             orderId: "order-1",
-            url: "https://example.com/setup",
+            url: PaymentTestURL.setup,
             errorMessage: nil
         )
         let mockService = MockPaymentData.createMockPaymentService(

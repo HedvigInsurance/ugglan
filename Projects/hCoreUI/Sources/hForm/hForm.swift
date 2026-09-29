@@ -344,10 +344,7 @@ public enum HFormTitleSpacingType {
     }
 
     var horizontalMargin: CGFloat {
-        switch self {
-        case .navigationLike: 24
-        default: 0
-        }
+        self == .navigationLike ? 24 : 0
     }
 }
 
