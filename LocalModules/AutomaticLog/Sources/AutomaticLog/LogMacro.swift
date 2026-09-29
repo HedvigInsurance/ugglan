@@ -9,7 +9,12 @@ public struct LogOptions: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
+    /// Logs the call and its return value when the function completes successfully.
     public static let output = LogOptions(rawValue: 1 << 0)
+
+    /// Logs the call and the thrown error when the function fails. On its own it stays
+    /// completely silent otherwise — nothing is logged for a successful call, and a
+    /// non-throwing function logs nothing at all.
     public static let error = LogOptions(rawValue: 1 << 1)
 
     public static let all: LogOptions = [.output, .error]
