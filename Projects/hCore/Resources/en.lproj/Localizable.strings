@@ -509,6 +509,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_PERIOD_FULL" = "Full period";
 "PAYMENTS_PROCESSING_PAYMENT" = "Processing payment";
 "PAYMENTS_REFERRAL_DISCOUNT" = "Referral discount";
+"PAYMENTS_RETRY_INFO" = "We couldn't collect your payment and will try again automatically. Make sure there's enough in your account before the next attempt.";
 "PAYMENTS_SUBTOTAL" = "Subtotal";
 "PAYMENTS_SWISH_NUMBER" = "Phone number";
 "PAYMENTS_UPCOMING_PAYMENT" = "Upcoming payment";
@@ -523,6 +524,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_HISTORY_TITLE" = "Payment history";
 "PAYMENT_METHODS_EMPTY" = "No payment method added. Add one to pay for your insurance.";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
+"PAYMENT_METHOD_PENDING" = "It can take a few days for your new payment method to take effect.";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Connected";
@@ -901,7 +903,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "important_message.hide" = "Hide";
 "important_message.read_more" = "Read more";
 /* Figma page iOS Release 1 */
-"info_card_missing_payment.body" = "For your insurance to stay active, you need to connect a payment method";
+"info_card_missing_payment.body" = "For your insurance to stay active, you need to connect a payment method.";
 "info_card_missing_payment.missing_payments_body" = "Your insurance will be terminated due to multiple failed payment attempts. Send a message through the app before %1$@ to avoid termination.";
 "insurance_certificate_title" = "Insurance certificate";
 /* Figma */
