@@ -87,6 +87,7 @@ public final class PaymentStore: AppStore {
     }
 
     public func fetchPaymentStatus() async {
+        print("fetchPaymentStatus")
         isFetchingPaymentStatus = true
         do {
             paymentStatusData = try await paymentService.getPaymentStatusData()

@@ -418,7 +418,7 @@ extension View {
     /// Isolates the field's geometry from its ancestors so parent layout changes
     /// don't animate the field's own subviews independently.
     @ViewBuilder
-    func geometryGroupIfAvailable() -> some View {
+    public func geometryGroupIfAvailable() -> some View {
         if #available(iOS 17.0, *) {
             geometryGroup()
         } else {

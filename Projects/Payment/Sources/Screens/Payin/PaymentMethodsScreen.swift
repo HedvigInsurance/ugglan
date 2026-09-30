@@ -50,7 +50,7 @@ struct PaymentMethodsScreen: View {
                     .sectionContainerStyle(.transparent)
                     .padding(.top, .padding8)
                 }
-                .hFormAttachToBottom {
+                .hFormAlwaysAttachToBottom {
                     hSection {
                         VStack(spacing: .padding8) {
                             hButton(.large, .secondary, content: .init(title: L10n.paymentAddMethodButton)) {
@@ -64,6 +64,10 @@ struct PaymentMethodsScreen: View {
                         }
                     }
                     .sectionContainerStyle(.transparent)
+                }
+                .hSetScrollBounce(to: true)
+                .onPullToRefresh {
+                    await store.fetchPaymentStatus()
                 }
             }
         }

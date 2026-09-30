@@ -90,7 +90,7 @@ struct SwishPayinConsentScreen: View {
     private var primaryButton: some View {
         switch vm.state {
         case .waiting:
-            if vm.canOpenSwish {
+            if vm.showOpenSwishButton {
                 hButton(.large, .primary, content: .init(title: L10n.paymentOpenSwishButton)) {
                     await vm.reopenSwish()
                 }
@@ -114,7 +114,7 @@ struct SwishPayinConsentScreen: View {
     /// Cancel is promoted to the primary slot when no other action is offered.
     private var cancelButtonType: hButtonConfigurationType {
         switch vm.state {
-        case .waiting: vm.canOpenSwish ? .ghost : .primary
+        case .waiting: vm.showOpenSwishButton ? .ghost : .primary
         case .failed: .ghost
         }
     }
@@ -146,7 +146,7 @@ class SwishPayinConsentViewModel: ObservableObject {
     @Published var state: SwishConsentState
     @Published var isRetrying = false
     @Published private(set) var qrImage: UIImage?
-
+    @Published private(set) var showOpenSwishButton = false
     /// Resolved once per presentation rather than per render: `canOpenURL` is a system call,
     /// and a member who leaves to install Swish comes back to a freshly built screen.
     let canOpenSwish: Bool
@@ -178,6 +178,12 @@ class SwishPayinConsentViewModel: ObservableObject {
         self.pollTimeout = pollTimeout
         // `didSet` doesn't fire during init, so seed the first code by hand.
         self.qrImage = Self.generateQRImage(from: url)
+        Task {
+            if let url = url, SwishDeepLink.canOpen {
+                await SwishDeepLink.open(url)
+                showOpenSwishButton = false
+            }
+        }
     }
 
     private static func generateQRImage(from url: String?) -> UIImage? {
@@ -186,6 +192,7 @@ class SwishPayinConsentViewModel: ObservableObject {
 
     func reopenSwish() async {
         await SwishDeepLink.open(url)
+        showOpenSwishButton = false
     }
 
     func pollUntilSettled() async -> Bool {
@@ -231,6 +238,7 @@ class SwishPayinConsentViewModel: ObservableObject {
             let result = try await paymentService.setupPaymentMethod(.swishPayin(phoneNumber: phoneNumber))
             orderId = result.orderId
             url = result.url
+            showOpenSwishButton = true
             // The waiting layout takes over from here, so stop showing the button as loading.
             withAnimation { isRetrying = false }
 

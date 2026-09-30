@@ -96,7 +96,7 @@ struct PayoutChangeMethodScreen: View {
 
     private var formTitle: hTitle {
         .init(
-            .small,
+            .navigationLike,
             .body1,
             connectedProvider == nil ? L10n.payoutSelectPayoutMethod : L10n.paymentPayoutBankSuccessTitle,
             alignment: .center

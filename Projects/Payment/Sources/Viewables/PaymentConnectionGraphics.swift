@@ -53,6 +53,7 @@ struct PaymentConnectionGraphic: View {
         .animation(reduceMotion ? .none : .easeInOut, value: provider)
         .animation(reduceMotion ? .none : .easeInOut, value: outcome)
         .accessibilityHidden(true)
+        .geometryGroupIfAvailable()
     }
 
     private var methodSlot: some View {
