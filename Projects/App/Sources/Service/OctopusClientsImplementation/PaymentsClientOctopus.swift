@@ -88,8 +88,8 @@ extension PaymentNoticeData {
     init(data: OctopusGraphQL.PaymentNoticesQuery.Data) {
         self.init(
             memberId: data.currentMember.id,
-            preChargeNoticeId: "124",
-            retryChargeNoticeId: nil
+            preChargeNoticeId: data.currentMember.showPreChargeNotice,
+            retryChargeNoticeId: data.currentMember.showRetryChargeNotice
         )
     }
 }
