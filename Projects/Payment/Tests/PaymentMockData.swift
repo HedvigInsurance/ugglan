@@ -59,7 +59,7 @@ struct MockPaymentData {
             )
         },
         fetchPaymentNoticeData: @escaping FetchPaymentNoticeData = {
-            .init(showPreChargeNotice: false, showRetryChargeNotice: false)
+            .init(memberId: "memberId", preChargeNoticeId: nil, retryChargeNoticeId: nil)
         },
         fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
             .init()

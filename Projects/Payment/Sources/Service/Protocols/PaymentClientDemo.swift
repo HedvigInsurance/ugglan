@@ -170,7 +170,7 @@ public class hPaymentClientDemo: hPaymentClient {
 
     public func getPaymentNoticeData() async throws -> PaymentNoticeData {
         try await Task.sleep(for: .seconds(1))
-        return .init(showPreChargeNotice: true, showRetryChargeNotice: false)
+        return .init(memberId: "memberId", preChargeNoticeId: nil, retryChargeNoticeId: nil)
     }
 
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {

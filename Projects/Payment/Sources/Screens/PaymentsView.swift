@@ -22,6 +22,7 @@ public struct PaymentsView: View {
                 )
             )
             .onAppear {
+                store.markPaymentNoticeSeen()
                 vm.fetchData()
             }
     }
@@ -57,7 +58,7 @@ public struct PaymentsView: View {
                 )
                 .padding(.bottom, .padding8)
             }
-            if store.paymentNoticeData?.showRetryChargeNotice == true {
+            if store.showsRetryChargeNotice {
                 hSection {
                     InfoCard(text: L10n.paymentsRetryInfo, type: .neutral)
                 }
