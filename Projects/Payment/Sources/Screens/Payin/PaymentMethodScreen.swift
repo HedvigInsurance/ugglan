@@ -27,13 +27,17 @@ struct PaymentMethodScreen: View {
                 )
                 .hWithoutHorizontalPadding([.row, .divider])
             }
-            .hFormAttachToBottom {
+            .hFormAlwaysAttachToBottom {
                 hSection {
                     actions(for: method)
                 }
                 .sectionContainerStyle(.transparent)
             }
             .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber, showSuccess: true)
+            .hSetScrollBounce(to: true)
+            .onPullToRefresh {
+                await store.fetchPaymentStatus()
+            }
             .detent(
                 item: $methodToRemove,
                 presentationStyle: .detent(style: [.height])
