@@ -24,13 +24,15 @@ extension UITabBarController {
         else { return }
 
         tabBar.layoutIfNeeded()
-        guard let buttonView = findTabButton(in: tabBar, at: tabIndex) else { return }
-
-        guard let badge else {
-            buttonView.viewWithTag(Self.badgeDotTag)?.removeFromSuperview()
-            return
+        // iOS 26 renders the selected tab from a separate copy of the buttons layered above the
+        // regular ones, so the dot has to live on every copy or it vanishes when the tab is selected.
+        for buttonView in findTabButtons(in: tabBar, at: tabIndex) {
+            if let badge {
+                addOrRecolorBadgeDot(in: buttonView, color: badge.color)
+            } else {
+                buttonView.viewWithTag(Self.badgeDotTag)?.removeFromSuperview()
+            }
         }
-        addOrRecolorBadgeDot(in: buttonView, color: badge.color)
     }
 
     private func addOrRecolorBadgeDot(in buttonView: UIView, color: UIColor) {
@@ -58,22 +60,31 @@ extension UITabBarController {
         ])
     }
 
-    private func findTabButton(in tabBar: UITabBar, at index: Int) -> UIView? {
-        // iOS 26: buttons inside _UITabBarPlatterView → ContentView
+    private func findTabButtons(in tabBar: UITabBar, at index: Int) -> [UIView] {
+        // iOS 26: buttons live inside _UITabBarPlatterView, once per content view
+        // (regular + selected copies), possibly nested at different depths.
         if let platterView = tabBar.subviews.first(where: {
             String(describing: type(of: $0)).contains("PlatterView")
-        }),
-            let contentView = platterView.subviews.first(where: {
-                String(describing: type(of: $0)) == "ContentView"
-            })
-        {
-            let buttons = sortedButtons(in: contentView, matching: "TabButton")
-            return index < buttons.count ? buttons[index] : nil
+        }) {
+            return buttonContainers(in: platterView, matching: "TabButton")
+                .compactMap { container in
+                    let buttons = sortedButtons(in: container, matching: "TabButton")
+                    return index < buttons.count ? buttons[index] : nil
+                }
         }
 
         // iOS 18: buttons are direct children of UITabBar
         let buttons = sortedButtons(in: tabBar, matching: "UITabBarButton")
-        return index < buttons.count ? buttons[index] : nil
+        return index < buttons.count ? [buttons[index]] : []
+    }
+
+    /// Every view under `root` whose direct children include tab buttons.
+    private func buttonContainers(in root: UIView, matching typeName: String) -> [UIView] {
+        let containsButtons = root.subviews.contains { String(describing: type(of: $0)).contains(typeName) }
+        let nested = root.subviews
+            .filter { !String(describing: type(of: $0)).contains(typeName) }
+            .flatMap { buttonContainers(in: $0, matching: typeName) }
+        return (containsButtons ? [root] : []) + nested
     }
 
     private func sortedButtons(in container: UIView, matching typeName: String) -> [UIView] {

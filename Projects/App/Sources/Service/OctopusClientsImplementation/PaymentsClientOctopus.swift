@@ -87,8 +87,9 @@ extension PaymentStatusData {
 extension PaymentNoticeData {
     init(data: OctopusGraphQL.PaymentNoticesQuery.Data) {
         self.init(
-            showPreChargeNotice: data.currentMember.showPreChargeNotice,
-            showRetryChargeNotice: data.currentMember.showRetryChargeNotice
+            memberId: data.currentMember.id,
+            preChargeNoticeId: "124",
+            retryChargeNoticeId: nil
         )
     }
 }

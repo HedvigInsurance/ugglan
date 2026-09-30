@@ -152,7 +152,7 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
     }
 
     func getPaymentNoticeData() async throws -> PaymentNoticeData {
-        .init(showPreChargeNotice: false, showRetryChargeNotice: false)
+        .init(memberId: "memberId", preChargeNoticeId: nil, retryChargeNoticeId: nil)
     }
 
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {

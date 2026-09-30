@@ -11,9 +11,11 @@ public final class PaymentStore: AppStore {
     @Published public internal(set) var paymentDataFetchedAt: Date?
     @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
     @Published public internal(set) var paymentStatusData: PaymentStatusData?
-    @Published public internal(set) var paymentNoticeData: PaymentNoticeData?
+    @Published public internal(set) var showsRetryChargeNotice: Bool = false
+    @Published public internal(set) var showsPaymentBadge: Bool = false
     @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
     @Published public internal(set) var missedPaymentData: MissedPaymentData?
+    private var paymentNoticeData: PaymentNoticeData?
 
     @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
 
@@ -118,11 +120,27 @@ public final class PaymentStore: AppStore {
         let isStale = Self.isStale(paymentNoticeDataFetchedAt, after: Self.paymentNoticeDataCacheDuration)
         guard forceUpdate || isStale else { return }
         do {
-            paymentNoticeData = try await paymentService.getPaymentNoticeData()
+            let noticeData = try await paymentService.getPaymentNoticeData()
+            updatePaymentNotice(with: noticeData)
             paymentNoticeDataFetchedAt = Date()
         } catch {
             // Notices only drive the tab badge — keep the last known value and stay silent.
         }
+    }
+
+    private func updatePaymentNotice(with noticeData: PaymentNoticeData) {
+        paymentNoticeData = noticeData
+        showsPaymentBadge = PaymentNoticeBadgeTracker().shouldShowBadge(for: noticeData)
+        showsRetryChargeNotice = noticeData.hasRetryChargeNotice
+    }
+
+    /// Clears the Payments tab badge until a different notice arrives.
+    public func markPaymentNoticeSeen() {
+        guard showsPaymentBadge else { return }
+        if let paymentNoticeData {
+            PaymentNoticeBadgeTracker().markSeen(paymentNoticeData)
+        }
+        showsPaymentBadge = false
     }
 
     public func getHistory() async {
