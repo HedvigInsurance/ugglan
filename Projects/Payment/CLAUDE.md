@@ -17,7 +17,7 @@ Payments tab and everything around a member's payment methods: pay-in setup and 
 ### Navigation and entry points
 - `Sources/Navigation/PaymentNavigation.swift` — `PaymentsNavigation` (`hNavigationStack` + `NavigationRouter`), `PaymentsNavigationViewModel`, `PaymentsRouterAction` (`.discounts`, `.history`, `.paymentMethod(provider:)`, `.paymentMethods`), shared `paymentsDestination(for:)`, and `.withPaymentsPresentations(_:)` (environment object + choose-default and add-method sheets).
 - `Sources/Navigation/PayoutNavigation.swift` — standalone payout stack; `PayoutRouterActions.selectedPayoutMethod` is the only route (the picker is a sheet).
-- Public presentation modifiers, all detents: `.handleAddPaymentMethod(presented:)` (`Payin/PaymentAddPaymentMethod+modifier.swift`), `.handlePaymentMethods(presented:)` (`Payin/PaymentMethods+modifier.swift`, wraps the list in its own stack), `.handleSwishPayinSetup(presented:)` / `.handleDirectDebitSetup(presented:)` (`Payin/PaymentSetup+modifier.swift`, deep-link entries that open the provider's setup directly), `.handleMissedPayment(data:)`. Internal: `.handlePayinSetup(for:phoneNumber:additionalOptions:completion:)` opens the provider's setup screen (with `completion: .showConfirmation`, followed by a non-swipeable `PaymentAddPaymentMethod` confirmation; the deep-link entries reuse it), `.handleChangePayoutMethod(presented:)` the payout picker.
+- Public presentation modifiers, all detents: `.handleAddPaymentMethod(presented:)` (`Payin/PaymentAddPaymentMethod+modifier.swift`), `.handlePaymentMethods(presented:)` (`Payin/PaymentMethods+modifier.swift`, wraps the list in its own stack), `.handlePayinSetupDeepLink(provider:)` (`Payin/PaymentSetup+modifier.swift`, the deep-link entry that opens one provider's setup directly), `.handleMissedPayment(data:)`. Internal: `.handlePayinSetup(for:phoneNumber:additionalOptions:completion:)` opens the provider's setup screen (with `completion: .showConfirmation`, followed by a non-swipeable `PaymentAddPaymentMethod` confirmation; the deep-link entries reuse it), `.handleChangePayoutMethod(presented:)` the payout picker.
 
 ### Pay-in (`Sources/Screens/Payin/`)
 - `PaymentMethodsScreen.swift` — connected pay-in methods; empty state offers to add one; "choose primary" only with 2+ active methods.
@@ -49,7 +49,7 @@ Payments tab and everything around a member's payment methods: pay-in setup and 
 
 ## Deep links
 
-`connect-payment` → `.handlePaymentMethods`, `connect-swish` → `.handleSwishPayinSetup`, `direct-debit` → `.handleDirectDebitSetup` (straight into the Trustly web view); all wired in `LoggedInNavigation` through `HomeNavigationViewModel` flags.
+`connect-payment` → `.handlePaymentMethods`. `connect-swish` and `direct-debit` both go through `.handlePayinSetupDeepLink`, setting `HomeNavigationViewModel.payinSetupProvider` to `.swish` / `.trustly` (trustly lands straight in the web view). All wired in `LoggedInNavigation`.
 
 ## Gotchas
 

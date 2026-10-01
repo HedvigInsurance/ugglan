@@ -80,7 +80,7 @@ class PushNotificationHandler {
     }
 
     private func handleConnectDirectDebit() {
-        viewModel?.homeNavigationVm.isDirectDebitSetupPresented = true
+        viewModel?.homeNavigationVm.payinSetupProvider = .trustly
     }
 
     private func handlePaymentFailed() {
@@ -225,7 +225,7 @@ class DeepLinkHandler {
         case .forever:
             dismissAndSelectTab(2)
         case .directDebit:
-            viewModel?.homeNavigationVm.isDirectDebitSetupPresented = true
+            viewModel?.homeNavigationVm.payinSetupProvider = .trustly
         case .profile:
             dismissAndSelectTab(4)
         case .insurances:
@@ -295,7 +295,7 @@ class DeepLinkHandler {
         case .connectPayment:
             viewModel?.homeNavigationVm.isPaymentMethodsPresented = true
         case .connectSwish:
-            viewModel?.homeNavigationVm.isSwishPayinSetupPresented = true
+            viewModel?.homeNavigationVm.payinSetupProvider = .swish
         }
     }
 
@@ -737,8 +737,7 @@ struct HomeTab: View {
         .environmentObject(homeNavigationVm)
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)
         .handlePaymentMethods(presented: $homeNavigationVm.isPaymentMethodsPresented)
-        .handleSwishPayinSetup(presented: $homeNavigationVm.isSwishPayinSetupPresented)
-        .handleDirectDebitSetup(presented: $homeNavigationVm.isDirectDebitSetupPresented)
+        .handlePayinSetupDeepLink(provider: $homeNavigationVm.payinSetupProvider)
         .handleEditStakeholders(with: homeNavigationVm.editStakeholdersVm)
         .handleClaimFlow(
             startInput: $homeNavigationVm.claimsAutomationStartInput

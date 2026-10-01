@@ -91,8 +91,8 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isPayoutMethodPresented = false
     @Published public var isAddPaymentMethodPresented = false
     @Published public var isPaymentMethodsPresented = false
-    @Published public var isSwishPayinSetupPresented = false
-    @Published public var isDirectDebitSetupPresented = false
+    /// The provider whose pay-in setup a deep link asked for, or `nil` for none.
+    @Published public var payinSetupProvider: PaymentProvider?
     @Published public var isForeverPresented = false
     @Published public var isUpcomingPaymentPresented: PaymentData?
 

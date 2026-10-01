@@ -28,12 +28,10 @@ extension View {
         )
     }
 
-    public func handleSwishPayinSetup(presented: Binding<Bool>) -> some View {
-        modifier(PayinSetupDeepLinkDetent(provider: .swish, presented: presented))
-    }
-
-    public func handleDirectDebitSetup(presented: Binding<Bool>) -> some View {
-        modifier(PayinSetupDeepLinkDetent(provider: .trustly, presented: presented))
+    /// Opens a provider's pay-in setup directly, for the deep links that name one. Setting the
+    /// binding is the whole trigger, so two deep links can never arm two setups at once.
+    public func handlePayinSetupDeepLink(provider: Binding<PaymentProvider?>) -> some View {
+        modifier(PayinSetupDeepLinkDetent(provider: provider))
     }
 }
 
@@ -90,8 +88,7 @@ private struct PayinSetupDetent: ViewModifier {
 }
 
 private struct PayinSetupDeepLinkDetent: ViewModifier {
-    let provider: PaymentProvider
-    @Binding var presented: Bool
+    @Binding var provider: PaymentProvider?
     /// The deep link carries no phone number of its own, so the flow falls back to the one
     /// fetched with the payment methods.
     @AppState private var store: PaymentStore
@@ -99,10 +96,7 @@ private struct PayinSetupDeepLinkDetent: ViewModifier {
     func body(content: Content) -> some View {
         content
             .handlePayinSetup(
-                for: Binding(
-                    get: { presented ? provider : nil },
-                    set: { presented = $0 != nil }
-                ),
+                for: $provider,
                 phoneNumber: store.paymentStatusData?.memberPhoneNumber,
                 // A deep link can arrive while something else is already showing.
                 additionalOptions: .alwaysOpenOnTop,
