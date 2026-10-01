@@ -4,8 +4,6 @@ import hCoreUI
 
 struct SwishExplanationScreen: View {
     @Environment(\.dismiss) private var dismiss
-    /// The text beside it scales, so a fixed glyph shrinks away next to it at large sizes.
-    @ScaledMetric(relativeTo: .body) private var iconSize: CGFloat = 24
 
     var body: some View {
         hForm {
@@ -32,14 +30,12 @@ struct SwishExplanationScreen: View {
     }
 
     private func itemView(_ item: SwishExplanationItem) -> some View {
-        HStack(alignment: .top, spacing: .padding12) {
-            VStack(alignment: .leading, spacing: .padding2) {
-                hText(item.title)
-                hText(item.text)
-                    .foregroundColor(hTextColor.Translucent.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: .padding2) {
+            hText(item.title)
+            hText(item.text)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)
     }
 }

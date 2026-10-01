@@ -44,7 +44,7 @@ public struct PaymentsView: View {
 
     private var payments: some View {
         VStack(spacing: .padding8) {
-            if store.showsConnectPayment {
+            if store.connectPaymentPrompt != nil {
                 ConnectPaymentCardView(onConnectPayment: {
                     paymentNavigationVm.showAddPaymentMethod = true
                 })

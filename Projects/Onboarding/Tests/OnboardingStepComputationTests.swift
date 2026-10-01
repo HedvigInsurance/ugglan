@@ -90,7 +90,7 @@ final class OnboardingStepComputationTests: XCTestCase {
             isPaymentConnected: false,
             crossSells: []
         )
-        XCTAssertTrue(steps.contains(.connectPayment(isConnected: false, paymentProvider: nil)))
+        XCTAssertTrue(steps.contains(.connectPayment(connectedProvider: nil)))
     }
 
     func testCrossSellStepShownWhenCrossSellsExist() {
@@ -183,7 +183,7 @@ final class OnboardingStepComputationTests: XCTestCase {
                 .coOwners(contracts: [.init(contract: contract)]),
                 .petChipIds(contracts: [.init(contract: contract)]),
                 .theme,
-                .connectPayment(isConnected: false, paymentProvider: nil),
+                .connectPayment(connectedProvider: nil),
                 .crossSell([.mock]),
             ]
         )

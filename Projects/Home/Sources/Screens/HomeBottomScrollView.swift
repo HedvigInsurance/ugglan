@@ -86,28 +86,39 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handlePayments() {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         let homeStore: HomeStore = globalAppStateContainer.get()
-        let needsPaymentSetupPublisher = paymentStore.$paymentStatusData
-            .removeDuplicates()
-        let memberStatePublisher = homeStore.$memberContractState
-            .removeDuplicates()
 
-        Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] paymentStatus, memberState in
-                self?.setConnectPayments(for: memberState, status: paymentStatus)
-            })
-            .store(in: &cancellables)
+        Publishers.CombineLatest3(
+            paymentStore.$paymentStatusData.removeDuplicates(),
+            paymentStore.$paymentData.removeDuplicates(),
+            homeStore.$memberContractState.removeDuplicates()
+        )
+        .receive(on: RunLoop.main)
+        .sink(receiveValue: { [weak self] paymentStatus, _, memberState in
+            self?
+                .setConnectPayments(
+                    prompt: paymentStore.connectPaymentPrompt,
+                    for: memberState,
+                    status: paymentStatus
+                )
+        })
+        .store(in: &cancellables)
     }
 
-    private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
-        let missingPayin = status?.missingConnection == .payin
-        let missingPayout = status?.missingConnection == .payout
-        let showsPayin = missingPayin && [MemberContractState.active, MemberContractState.future].contains(userStatus)
-        let isTerminatingDueToMissedPayments =
-            if case .terminatingDueToMissedPayments = status?.status { true } else { false }
-        let showsPayout = missingPayout && !missingPayin
+    private func setConnectPayments(
+        prompt: ConnectPaymentPrompt?,
+        for userStatus: MemberContractState?,
+        status: PaymentStatusData?
+    ) {
+        let isActiveOrFuture = [MemberContractState.active, MemberContractState.future].contains(userStatus)
+        let showsCard =
+            switch prompt {
+            case .missedPayments: true
+            case .needsSetup: isActiveOrFuture
+            case nil: false
+            }
+        let showsPayout = status?.missingConnection == .payout
 
-        withAnimation { showsConnectPaymentCard = showsPayin || isTerminatingDueToMissedPayments }
+        withAnimation { showsConnectPaymentCard = showsCard }
         handleTodo(.payoutMethodMissing, with: showsPayout)
     }
 

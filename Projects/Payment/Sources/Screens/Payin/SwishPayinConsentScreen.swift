@@ -49,7 +49,7 @@ struct SwishPayinConsentScreen: View {
                         }
                     }
                 case .failed:
-                    PaymentConnectionPairGraphic(provider: .swish, outcome: .failure)
+                    PaymentConnectionGraphic(provider: .swish, outcome: .failure)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
@@ -62,7 +62,7 @@ struct SwishPayinConsentScreen: View {
         .hFormAttachToBottom {
             bottomContent
         }
-        .task {
+        .task(id: vm.pollAttempt) {
             if await vm.pollUntilSettled() {
                 await onConnected()
             }
@@ -90,16 +90,14 @@ struct SwishPayinConsentScreen: View {
     private var primaryButton: some View {
         switch vm.state {
         case .waiting:
-            if vm.canOpenSwish {
+            if vm.showOpenSwishButton {
                 hButton(.large, .primary, content: .init(title: L10n.paymentOpenSwishButton)) {
                     await vm.reopenSwish()
                 }
             }
         case .failed:
             hButton(.large, .primary, content: .init(title: L10n.generalRetry)) {
-                if await vm.tryAgain() {
-                    await onConnected()
-                }
+                await vm.requestNewOrder()
             }
             .hButtonIsLoading(vm.isRetrying)
         }
@@ -114,7 +112,7 @@ struct SwishPayinConsentScreen: View {
     /// Cancel is promoted to the primary slot when no other action is offered.
     private var cancelButtonType: hButtonConfigurationType {
         switch vm.state {
-        case .waiting: vm.canOpenSwish ? .ghost : .primary
+        case .waiting: vm.showOpenSwishButton ? .ghost : .primary
         case .failed: .ghost
         }
     }
@@ -146,7 +144,8 @@ class SwishPayinConsentViewModel: ObservableObject {
     @Published var state: SwishConsentState
     @Published var isRetrying = false
     @Published private(set) var qrImage: UIImage?
-
+    @Published private(set) var pollAttempt = 0
+    @Published private(set) var showOpenSwishButton = false
     /// Resolved once per presentation rather than per render: `canOpenURL` is a system call,
     /// and a member who leaves to install Swish comes back to a freshly built screen.
     let canOpenSwish: Bool
@@ -178,6 +177,9 @@ class SwishPayinConsentViewModel: ObservableObject {
         self.pollTimeout = pollTimeout
         // `didSet` doesn't fire during init, so seed the first code by hand.
         self.qrImage = Self.generateQRImage(from: url)
+        if let url, canOpenSwish {
+            Task { await SwishDeepLink.open(url) }
+        }
     }
 
     private static func generateQRImage(from url: String?) -> UIImage? {
@@ -186,6 +188,7 @@ class SwishPayinConsentViewModel: ObservableObject {
 
     func reopenSwish() async {
         await SwishDeepLink.open(url)
+        showOpenSwishButton = false
     }
 
     func pollUntilSettled() async -> Bool {
@@ -193,11 +196,6 @@ class SwishPayinConsentViewModel: ObservableObject {
         let deadline = Date().addingTimeInterval(pollTimeout)
 
         while state == .waiting, Date() < deadline {
-            do {
-                try await Task.sleep(for: .seconds(pollInterval))
-            } catch {
-                return false  // the screen went away
-            }
             do {
                 let status = try await paymentService.getPaymentSetupStatus(orderId: orderId)
                 switch status {
@@ -207,11 +205,16 @@ class SwishPayinConsentViewModel: ObservableObject {
                     withAnimation { state = .failed(error: nil) }
                     return false
                 case .pending, .unknown:
-                    continue
+                    break
                 }
             } catch {
                 withAnimation { state = .failed(error: error.localizedDescription) }
                 return false
+            }
+            do {
+                try await Task.sleep(for: .seconds(pollInterval))
+            } catch {
+                return false  // cancelled: the screen went away
             }
         }
 
@@ -221,34 +224,25 @@ class SwishPayinConsentViewModel: ObservableObject {
         return false
     }
 
-    func tryAgain() async -> Bool {
-        withAnimation {
-            isRetrying = true
-            state = .waiting
-        }
+    func requestNewOrder() async {
+        withAnimation { isRetrying = true }
+        defer { withAnimation { isRetrying = false } }
 
         do {
             let result = try await paymentService.setupPaymentMethod(.swishPayin(phoneNumber: phoneNumber))
             orderId = result.orderId
             url = result.url
-            // The waiting layout takes over from here, so stop showing the button as loading.
-            withAnimation { isRetrying = false }
 
             if result.status == .failed || result.errorMessage != nil {
                 withAnimation { state = .failed(error: result.errorMessage) }
-                return false
+                return
             }
-            if result.status == .active {
-                return true
-            }
+            showOpenSwishButton = canOpenSwish
+            withAnimation { state = .waiting }
+            pollAttempt += 1
         } catch {
-            withAnimation {
-                isRetrying = false
-                state = .failed(error: error.localizedDescription)
-            }
-            return false
+            withAnimation { state = .failed(error: error.localizedDescription) }
         }
-        return await pollUntilSettled()
     }
 }
 
@@ -302,7 +296,7 @@ enum SwishQRCode {
         }
 
         let format = UIGraphicsImageRendererFormat()
-        format.scale = 2
+        format.scale = 1
         let side = CGFloat(count) * moduleSize
         let image = UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format)
             .image { _ in

@@ -138,11 +138,6 @@ private struct SwishPayinPhoneNumberScreen: View {
             if result.status == .active {
                 await onSuccess?()
             } else {
-                // Swish is where the consent is actually approved, so go there first when it
-                // is installed; the waiting screen is what the member comes back to.
-                if SwishDeepLink.canOpen {
-                    await SwishDeepLink.open(result.url)
-                }
                 router.push(
                     SwishPayinRoute.consent(
                         phoneNumber: vm.unmaskedPhoneNumber,
