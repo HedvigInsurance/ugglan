@@ -5,7 +5,6 @@ import hCoreUI
 
 /// What happens once a provider's pay-in setup succeeds.
 enum PayinSetupCompletion {
-    /// Dismiss the setup and show a non-swipeable `AddPaymentMethodScreen` confirmation.
     case showConfirmation
     /// Dismiss the setup and hand the connected provider to the caller.
     case custom((PaymentProvider) -> Void)
@@ -28,8 +27,6 @@ extension View {
         )
     }
 
-    /// Opens a provider's pay-in setup directly, for the deep links that name one. Setting the
-    /// binding is the whole trigger, so two deep links can never arm two setups at once.
     public func handlePayinSetupDeepLink(provider: Binding<PaymentProvider?>) -> some View {
         modifier(PayinSetupDeepLinkDetent(provider: provider))
     }

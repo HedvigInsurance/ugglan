@@ -2,8 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// Confirm one change to one payment method: a hero, the method the change applies to, an error
-/// slot, and a confirm/cancel pair. Shared by "make this the primary method" and "remove it".
 struct PaymentMethodActionSheet<Hero: View>: View {
     @StateObject private var vm: PaymentActionViewModel
     @Environment(\.dismiss) private var dismiss

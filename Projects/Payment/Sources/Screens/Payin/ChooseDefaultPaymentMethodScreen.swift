@@ -19,8 +19,6 @@ struct ChooseDefaultPaymentMethodScreen: View {
             if let data = store.paymentStatusData?.selectablePayinMethods {
                 hSection {
                     hRadioOptionList(data, spacing: .padding8) { element in
-                        // The method already in use is shown, not offered: there is nothing to
-                        // choose about the one that is primary today.
                         if element.isDefault {
                             PaymentMethodRow(primary: element)
                         } else {

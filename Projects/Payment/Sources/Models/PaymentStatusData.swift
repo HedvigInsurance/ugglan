@@ -263,8 +263,6 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case unknown
 }
 
-/// What the connect-payment card should say, or `nil` for no card. Derived once by
-/// `PaymentStore.connectPaymentPrompt`.
 public enum ConnectPaymentPrompt: Equatable, Sendable, Hashable {
     case missedPayments(date: String)
     case needsSetup

@@ -1,8 +1,6 @@
 import SwiftUI
 import hCore
 
-/// A one-shot mutation on one connected payment method: run it, expose loading and any error.
-/// The operation is injected rather than subclassed, so the sheet driving it stays a single view.
 @MainActor
 class PaymentActionViewModel: ObservableObject {
     @Published var processingState: ProcessingState = .success
@@ -42,14 +40,12 @@ class PaymentActionViewModel: ObservableObject {
 }
 
 extension PaymentActionViewModel {
-    /// Makes the method the member's primary pay-in method.
     static func setDefault(_ method: ConnectedPaymentMethod) -> PaymentActionViewModel {
         .init(method: method) { method, service in
             try await service.setDefaultPaymentMethod(method.method)
         }
     }
 
-    /// Drops the method's provider from the member's pay-in methods.
     static func remove(_ method: ConnectedPaymentMethod) -> PaymentActionViewModel {
         .init(method: method) { method, service in
             try await service.removePaymentMethod(method.provider)

@@ -58,13 +58,10 @@ extension ConnectedPaymentMethod {
         status == .pending
     }
 
-    /// How the method reads as a row: the provider over the account or number it uses.
     var item: ItemModel {
         .init(title: title, subTitle: isPending ? L10n.referralPendingStatusLabel : subtitle)
     }
 
-    /// How the method reads in the overdue breakdown, where it is one labelled value rather
-    /// than a row — Trustly is the member's bank there, not "direct debit".
     var missedPaymentRow: (label: String, value: String) {
         (titleForMissedPayment, info)
     }

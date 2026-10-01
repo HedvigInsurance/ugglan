@@ -83,7 +83,6 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .payout: L10n.payoutPageHeading
         case .manualCharge: L10n.paymentsPaymentOverdueTitle
         case .connectPayment: L10n.paymentConnectTitle
-        // A brand name rather than copy, the same way `PaymentProvider.displayName` spells it.
         case .connectSwish: "Swish"
         }
     }

@@ -52,9 +52,6 @@ public final class PaymentStore: AppStore {
             || (paymentData != nil && paymentStatusData.defaultOrFirstDefaultPayinMethod == nil)
     }
 
-    /// The single decision about the connect-payment card: `nil` means no card at all. Hosts
-    /// render what this returns rather than each re-deriving when a card is warranted — Home
-    /// adds only its own member-state gate, which `PaymentStore` cannot see.
     public var connectPaymentPrompt: ConnectPaymentPrompt? {
         guard let paymentStatusData else { return nil }
         if case let .terminatingDueToMissedPayments(date) = paymentStatusData.status {
@@ -85,9 +82,6 @@ public final class PaymentStore: AppStore {
         isLoadingPaymentData = false
     }
 
-    /// Several screens refresh on appear and every setup completion refreshes detached, so the
-    /// same query gets asked for twice within milliseconds. One in flight is enough — matching
-    /// `load(forceUpdate:)`, which already guards on its own loading flag.
     public func fetchPaymentStatus() async {
         guard !isFetchingPaymentStatus else { return }
         isFetchingPaymentStatus = true

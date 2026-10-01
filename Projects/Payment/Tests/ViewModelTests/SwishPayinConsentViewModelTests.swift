@@ -148,9 +148,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertTrue(mockService.events.allSatisfy { $0 == .getPaymentSetupStatus })
     }
 
-    // MARK: - requestNewOrder
-
-    /// The first attempt hands the member straight to Swish, so nothing is offered until a retry.
     func testOpenSwishButtonHiddenBeforeRetry() {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
@@ -160,10 +157,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertFalse(vm.showOpenSwishButton)
     }
 
-    // MARK: - requestNewOrder
-
-    /// Whether Swish is installed is a device fact the test host cannot set, so this pins the
-    /// rule itself: a retry offers the button exactly when there is an app to open.
     func testRequestNewOrderOffersOpenSwishOnlyWhenSwishIsInstalled() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {
@@ -210,8 +203,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         }
     }
 
-    /// The retry button carries the spinner, and it only exists in `.failed` — so the screen has
-    /// to stay failed for the length of the call rather than flipping to waiting on tap.
     func testRequestNewOrderStaysFailedWhileSetupRuns() async {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
@@ -228,8 +219,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertEqual(vm.state, .waiting)
     }
 
-    /// The waiting layout renders `qrImage`, so the new order's code must be in place before the
-    /// screen switches to it — otherwise the member is briefly shown the code that just failed.
     func testRequestNewOrderUpdatesQRImageBeforeLeavingFailed() async {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
@@ -327,8 +316,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertEqual(mockService.events, [.setupPaymentMethod])
     }
 
-    /// The hand-off: `requestNewOrder` only re-arms `pollAttempt`, and the poll the screen
-    /// restarts picks up the *new* order id — the view model starts without one here.
     func testRequestNewOrderHandsOffToPollingSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {

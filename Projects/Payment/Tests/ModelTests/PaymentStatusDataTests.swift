@@ -13,8 +13,6 @@ final class PaymentStatusDataTests: XCTestCase {
         )
     }
 
-    /// Deliberately calls the initialiser rather than the test builder: the default being
-    /// checked is the model's own.
     func testMemberPhoneNumberDefaultsToNil() {
         let statusData: PaymentStatusData = .init(
             status: .needsSetup,

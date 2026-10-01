@@ -2,11 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// The shared "pick a provider → connect → confirm" screen, used in both directions.
-///
-/// Picker and confirmation share one `hForm` on purpose: `PaymentConnectionGraphic` animates on
-/// `provider` and `outcome`, so it has to stay mounted for the hand-off to morph in place rather
-/// than cut. Each direction keeps its own setup presentation, applied as a modifier from outside.
 struct PaymentConnectFlowView: View {
     let direction: PaymentDirection
     let methods: [AvailablePaymentMethod]
@@ -17,7 +12,6 @@ struct PaymentConnectFlowView: View {
     @Binding var selected: PaymentProvider?
     let connectedProvider: PaymentProvider?
     let onConnect: () -> Void
-    /// `nil` hides Cancel, for a picker a surrounding flow already owns the way out of.
     let onCancel: (() -> Void)?
     let onContinue: () -> Void
 

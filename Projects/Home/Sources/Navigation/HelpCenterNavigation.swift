@@ -47,8 +47,6 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
     case startView
 }
 
-/// Holds the quick-actions view model so only this modifier re-evaluates when one of its flags
-/// changes — observing it on `HelpCenterNavigation` itself rebuilt the whole stack instead.
 private struct PaymentMethodsFromQuickActions: ViewModifier {
     @ObservedObject var vm: QuickActionsViewModel
 

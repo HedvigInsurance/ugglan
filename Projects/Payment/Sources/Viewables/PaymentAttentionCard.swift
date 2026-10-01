@@ -2,9 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// The red-flagged card the payments tab and Home show when something needs the member's
-/// attention: a warning icon, a two-line header, a body, and one full-width button. The
-/// overdue-payment and missing-pay-in-method cards are the same card with different copy.
 struct PaymentAttentionCard: View {
     let title: String
     let subtitle: String

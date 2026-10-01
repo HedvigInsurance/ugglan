@@ -87,8 +87,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         let homeStore: HomeStore = globalAppStateContainer.get()
 
-        // `connectPaymentPrompt` reads both of the store's payment values, so both have to be
-        // observed or the card goes stale when only the upcoming payment changes.
         Publishers.CombineLatest3(
             paymentStore.$paymentStatusData.removeDuplicates(),
             paymentStore.$paymentData.removeDuplicates(),
@@ -106,8 +104,6 @@ class HomeBottomScrollViewModel: ObservableObject {
         .store(in: &cancellables)
     }
 
-    /// Whether a card is warranted at all is `PaymentStore`'s call; Home adds only the member
-    /// states it shows one in, which `PaymentStore` has no way to see.
     private func setConnectPayments(
         prompt: ConnectPaymentPrompt?,
         for userStatus: MemberContractState?,

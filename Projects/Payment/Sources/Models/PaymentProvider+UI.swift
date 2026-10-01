@@ -53,8 +53,6 @@ extension PaymentProvider {
 
     /// What we call the provider when the direction doesn't matter. `payinTitle` and `payoutTitle`
     /// both build on this so a rename only has to happen in one place.
-    /// The provider's brand name. Direction-specific titles are what screens should ask for;
-    /// this is the fallback they are built from.
     var displayName: String {
         switch self {
         case .trustly: return "Trustly"

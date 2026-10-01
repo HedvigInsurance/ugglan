@@ -124,8 +124,6 @@ final class StorePaymentStatusTests: XCTestCase {
         XCTAssertNil(store.fetchPaymentStatusError)
     }
 
-    /// Screens refresh on appear while setup completions refresh detached, so overlapping calls
-    /// are routine. Only one should reach the backend.
     func testConcurrentFetchPaymentStatusQueriesOnce() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: {

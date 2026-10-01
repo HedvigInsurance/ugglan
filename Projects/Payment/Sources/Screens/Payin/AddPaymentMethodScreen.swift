@@ -105,7 +105,6 @@ public struct AddPaymentMethodScreen: View {
         )
     }
 
-    /// A hosted flow brings its own heading, so the title shrinks and follows the host's alignment.
     private func title(_ text: String) -> hTitle {
         .init(heading == nil ? .navigationLike : .small, .body1, text, alignment: heading?.alignment ?? .center)
     }

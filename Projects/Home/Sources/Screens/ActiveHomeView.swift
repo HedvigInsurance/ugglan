@@ -131,8 +131,6 @@ private struct HeroBackgroundView: View {
     }
 }
 
-/// Owns the `HomeNavigationViewModel` reference on its own so the whole sheet body does not
-/// re-evaluate every time any of that view model's sheet flags changes.
 private struct ConnectPaymentCardSection: View {
     @EnvironmentObject private var navigationVm: HomeNavigationViewModel
 

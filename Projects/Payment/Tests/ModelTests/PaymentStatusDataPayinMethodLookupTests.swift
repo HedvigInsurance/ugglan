@@ -8,8 +8,6 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
     private let swish = PaymentTestMethod.swish
     private let invoice = PaymentTestMethod.invoice
 
-    /// These tests are about what happens when `defaultPayinMethod` and the list disagree, so
-    /// the default is always passed in on its own rather than derived from the list.
     private func makeStatusData(
         defaultPayinMethod: ConnectedPaymentMethod? = nil,
         payinMethods: [ConnectedPaymentMethod]
@@ -88,8 +86,6 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         XCTAssertEqual(result, defaultSwish)
     }
 
-    /// `defaultPayinMethod` and the list can disagree on status for one provider; the active
-    /// entry wins the lookup, and keeps its own `isDefault` rather than the default field's.
     func testPayinMethodPrefersActiveListedMethodOverPendingDefault() throws {
         let pendingDefaultSwish = swish.connected(status: .pending, isDefault: true)
         let activeSwish = swish.connected()

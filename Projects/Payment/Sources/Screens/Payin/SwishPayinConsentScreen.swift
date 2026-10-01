@@ -144,10 +144,7 @@ class SwishPayinConsentViewModel: ObservableObject {
     @Published var state: SwishConsentState
     @Published var isRetrying = false
     @Published private(set) var qrImage: UIImage?
-    /// Bumped when a retry produces a new order, which re-arms the screen's polling `.task`.
     @Published private(set) var pollAttempt = 0
-    /// Only a retry offers this. The first attempt hands the member straight to Swish, so there
-    /// is nothing left to offer until they come back and ask for a new order.
     @Published private(set) var showOpenSwishButton = false
     /// Resolved once per presentation rather than per render: `canOpenURL` is a system call,
     /// and a member who leaves to install Swish comes back to a freshly built screen.
@@ -227,11 +224,6 @@ class SwishPayinConsentViewModel: ObservableObject {
         return false
     }
 
-    /// Asks for a fresh order, then hands polling back to the screen's `.task`, which is
-    /// cancelled when the screen goes away — a poll started from the button would outlive it.
-    ///
-    /// Stays `.failed` until the new order is in hand: the retry button carries the spinner and
-    /// only exists in that state, and the waiting layout would otherwise render the dead QR code.
     func requestNewOrder() async {
         withAnimation { isRetrying = true }
         defer { withAnimation { isRetrying = false } }
@@ -245,8 +237,6 @@ class SwishPayinConsentViewModel: ObservableObject {
                 withAnimation { state = .failed(error: result.errorMessage) }
                 return
             }
-            // A retry does not hand the member off the way the first attempt did, so offer the
-            // way in — but only when there is an app to open.
             showOpenSwishButton = canOpenSwish
             withAnimation { state = .waiting }
             pollAttempt += 1
@@ -306,8 +296,6 @@ enum SwishQRCode {
         }
 
         let format = UIGraphicsImageRendererFormat()
-        // A module is already 12pt wide, so a ~77-module code is a ~920pt bitmap for a 180pt
-        // view. Scaling that up again cost ~13MB and bought nothing the screen can show.
         format.scale = 1
         let side = CGFloat(count) * moduleSize
         let image = UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format)

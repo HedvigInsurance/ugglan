@@ -8,8 +8,6 @@ final class PaymentStatusDataPayinSelectionTests: XCTestCase {
     private let swish = PaymentTestMethod.swish
     private let invoice = PaymentTestMethod.invoice
 
-    /// These tests describe the normal shape, where the backend keeps the default inside the
-    /// list; the lookup tests cover the case where the separate field disagrees with it.
     private func makeStatusData(payinMethods: [ConnectedPaymentMethod]) -> PaymentStatusData {
         .test(defaultPayinMethod: payinMethods.first(where: \.isDefault), payinMethods: payinMethods)
     }

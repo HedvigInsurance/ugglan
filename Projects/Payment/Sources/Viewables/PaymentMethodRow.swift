@@ -2,11 +2,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// A method the member can tap through to, optionally badged as the primary one.
-///
-/// A pending method is *inert* rather than disabled: it takes no taps, so the row never fires a
-/// haptic for an action that isn't there, but it keeps its colours because it is the screen's
-/// content rather than a control someone is being kept away from.
 struct PaymentMethodRow: View {
     private let method: ConnectedPaymentMethod
     private let accessory: hRadioOptionAccessory
@@ -29,8 +24,6 @@ struct PaymentMethodRow: View {
         self.onTap = onTap
     }
 
-    /// A method shown as context rather than an action — the one already in use. Inert and
-    /// badged primary, with no accessory to suggest there is anywhere to go.
     init(primary method: ConnectedPaymentMethod) {
         self.method = method
         self.accessory = .none
@@ -61,8 +54,6 @@ struct PaymentMethodRow: View {
     }
 }
 
-/// A method as one option in a radio list. A pending method *is* disabled here: it is an option
-/// the member cannot choose yet, which is exactly what disabled styling says.
 struct PaymentMethodSelectableRow<Value: Hashable>: View {
     private let item: ItemModel
     private let provider: PaymentProvider
@@ -116,7 +107,6 @@ extension PaymentMethodSelectableRow where Value == PaymentProvider {
     }
 }
 
-/// A method shown only to be read, with a padlock in place of an accessory.
 struct PaymentMethodLockedRow: View {
     private let method: ConnectedPaymentMethod
 
@@ -135,8 +125,6 @@ struct PaymentMethodLockedRow: View {
                     .accessibilityHidden(true)
             },
             leading: {
-                // The row stays enabled so the text keeps its colours, so the logo is faded
-                // here rather than by `hRadioOption`'s disabled styling.
                 method.provider.image()
                     .opacity(0.4)
             }

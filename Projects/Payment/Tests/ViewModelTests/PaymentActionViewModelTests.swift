@@ -3,8 +3,6 @@ import hCore
 
 @testable import Payment
 
-/// `PaymentActionViewModel` runs one injected mutation, so the loading/error machinery is tested
-/// once here and each factory is checked only for calling the right service method.
 @MainActor
 final class PaymentActionViewModelTests: XCTestCase {
     weak var sut: MockPaymentService?
@@ -27,8 +25,6 @@ final class PaymentActionViewModelTests: XCTestCase {
 
         XCTAssertNil(sut)
     }
-
-    // MARK: - perform
 
     func testInitialStateNotLoadingWithoutError() {
         let mockService = MockPaymentData.createMockPaymentService()
@@ -105,8 +101,6 @@ final class PaymentActionViewModelTests: XCTestCase {
         XCTAssertEqual(mockService.events, [.removePaymentMethod, .removePaymentMethod])
     }
 
-    // MARK: - remove
-
     func testRemoveSendsTheMethodsProviderSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: {})
         sut = mockService
@@ -127,8 +121,6 @@ final class PaymentActionViewModelTests: XCTestCase {
         XCTAssertTrue(result)
         XCTAssertEqual(mockService.removedProviders, [.trustly])
     }
-
-    // MARK: - setDefault
 
     func testSetDefaultCallsSetDefaultPaymentMethodSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(setDefaultPaymentMethod: {})
