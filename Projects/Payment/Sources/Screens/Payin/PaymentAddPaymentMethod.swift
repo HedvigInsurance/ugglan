@@ -54,13 +54,19 @@ public struct PaymentAddPaymentMethod: View {
     }
 
     public var body: some View {
-        hForm {
-            formContent
-        }
-        .hFormAttachToBottom {
-            bottomContent
-        }
-        .hFormTitle(title: formTitle, subTitle: formSubTitle)
+        PaymentConnectFlowView(
+            direction: .payin,
+            methods: store.paymentStatusData?.availablePayinMethods ?? [],
+            title: formTitle,
+            subTitle: formSubTitle,
+            connectTitle: L10n.paymentConnectTitle,
+            confirmationFootnote: L10n.paymentChangeFootnote,
+            selected: $selected,
+            connectedProvider: connectedProvider,
+            onConnect: { providerToSetUp = selected },
+            onCancel: isHostedInFlow ? nil : { dismiss() },
+            onContinue: { connectedProvider.map(finish(with:)) }
+        )
         .handlePayinSetup(
             for: $providerToSetUp,
             phoneNumber: prefilledPhoneNumber,
@@ -78,50 +84,6 @@ public struct PaymentAddPaymentMethod: View {
         }
     }
 
-    @ViewBuilder
-    private var formContent: some View {
-        PaymentConnectionGraphic(
-            direction: .payin,
-            provider: connectedProvider ?? selected,
-            outcome: connectedProvider != nil ? .success : nil
-        )
-        .padding(.vertical, connectedProvider != nil ? .padding96 : .padding64)
-    }
-
-    @ViewBuilder
-    private var bottomContent: some View {
-        if let connectedProvider {
-            confirmationContent(for: connectedProvider)
-        } else {
-            pickerContent
-        }
-    }
-
-    private var pickerContent: some View {
-        PaymentMethodPickerList(
-            methods: store.paymentStatusData?.availablePayinMethods ?? [],
-            direction: .payin,
-            selected: $selected,
-            connectTitle: L10n.paymentConnectTitle,
-            onConnect: { providerToSetUp = selected },
-            onCancel: isHostedInFlow ? nil : { dismiss() }
-        )
-    }
-
-    private func confirmationContent(for provider: PaymentProvider) -> some View {
-        VStack(spacing: .padding16) {
-            hText(L10n.paymentChangeFootnote, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .multilineTextAlignment(.center)
-            hSection {
-                hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
-                    finish(with: provider)
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-
     private func finish(with provider: PaymentProvider) {
         if let onFinished {
             onFinished(provider)
@@ -130,36 +92,28 @@ public struct PaymentAddPaymentMethod: View {
         }
     }
 
-    private var headingAlignment: Alignment {
-        heading?.alignment ?? .center
-    }
-
     private var formTitle: hTitle {
-        if let connectedProvider {
-            return title(connectedTitle(for: connectedProvider))
-        }
-        return title(heading?.title ?? L10n.paymentConnectTitle)
+        title(connectedProvider.map(connectedTitle(for:)) ?? heading?.title ?? L10n.paymentConnectTitle)
     }
 
     private var formSubTitle: hTitle {
-        if connectedProvider == .swish {
-            return title(L10n.paymentSwishSuccessSubtitle)
+        guard let connectedProvider else {
+            return title(heading?.subTitle ?? L10n.paymentConnectSubtitle)
         }
-        if connectedProvider != nil {
-            return title(L10n.paymentTrustlySuccessSubtitle)
-        }
-        return title(heading?.subTitle ?? L10n.paymentConnectSubtitle)
+        return title(
+            connectedProvider == .swish ? L10n.paymentSwishSuccessSubtitle : L10n.paymentTrustlySuccessSubtitle
+        )
     }
 
+    /// A hosted flow brings its own heading, so the title shrinks and follows the host's alignment.
     private func title(_ text: String) -> hTitle {
-        .init(heading == nil ? .navigationLike : .small, .body1, text, alignment: headingAlignment)
+        .init(heading == nil ? .navigationLike : .small, .body1, text, alignment: heading?.alignment ?? .center)
     }
 
     private func connectedTitle(for provider: PaymentProvider) -> String {
-        if provider == .swish {
-            return L10n.paymentSwishSuccessTitle
-        }
-        return "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
+        provider == .swish
+            ? L10n.paymentSwishSuccessTitle
+            : "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
     }
 }
 
