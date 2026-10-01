@@ -2,51 +2,22 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentRemoveMethodScreen: View {
-    @StateObject private var vm: PaymentRemoveMethodViewModel
-    @Environment(\.dismiss) private var dismiss
-    private let onSuccess: () -> Void
-
-    init(method: ConnectedPaymentMethod, onSuccess: @escaping () -> Void) {
-        _vm = StateObject(wrappedValue: PaymentRemoveMethodViewModel(method: method))
-        self.onSuccess = onSuccess
-    }
+struct RemovePaymentMethodScreen: View {
+    let method: ConnectedPaymentMethod
+    let onSuccess: () -> Void
 
     var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: .padding16) {
-                    RemovedMethodGraphic(provider: vm.method.provider)
-                        .padding(.vertical, .padding64)
-                    PaymentMethodRow(vm.method, accessory: .none)
-                    VStack(spacing: .padding8) {
-                        if let errorMessage = vm.errorMessage {
-                            PaymentErrorLabel(message: errorMessage)
-                        }
-                        confirmButton
-                        hButton(.large, .ghost, content: .init(title: L10n.generalCancelButton)) {
-                            dismiss()
-                        }
-                    }
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .hFormTitle(
+        PaymentMethodActionSheet(
+            vm: .remove(method),
             title: .init(.small, .body1, L10n.paymentRemoveTitle, alignment: .center),
-            subTitle: .init(.small, .body1, L10n.paymentRemoveSubtitle, alignment: .center)
+            subTitle: .init(.small, .body1, L10n.paymentRemoveSubtitle, alignment: .center),
+            confirmTitle: L10n.removeConfirmationButton,
+            hero: {
+                RemovedMethodGraphic(provider: method.provider)
+                    .padding(.vertical, .padding64)
+            },
+            onSuccess: onSuccess
         )
-        .hFormContentPosition(.compact)
-        .disabled(vm.isLoading)
-    }
-
-    private var confirmButton: some View {
-        hButton(.large, .primary, content: .init(title: L10n.removeConfirmationButton)) {
-            if await vm.remove() {
-                onSuccess()
-            }
-        }
-        .hButtonIsLoading(vm.isLoading)
     }
 }
 
@@ -116,25 +87,11 @@ extension PaymentProvider {
     }
 }
 
-@MainActor
-class PaymentRemoveMethodViewModel: PaymentActionViewModel {
-    let method: ConnectedPaymentMethod
-
-    init(method: ConnectedPaymentMethod) {
-        self.method = method
-        super.init()
-    }
-
-    func remove() async -> Bool {
-        await perform { try await paymentService.removePaymentMethod(method.provider) }
-    }
-}
-
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-    return PaymentRemoveMethodScreen(
+    return RemovePaymentMethodScreen(
         method: .init(
             status: .active,
             isDefault: true,

@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentsChooseDefaultScreen: View {
+struct ChooseDefaultPaymentMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @Environment(\.dismiss) private var dismiss
 
@@ -12,14 +12,18 @@ struct PaymentsChooseDefaultScreen: View {
 
     var body: some View {
         hForm {
-            PaymentMethodPickerGraphic(selected: currentDefault?.provider)
+            PaymentConnectionGraphic(provider: currentDefault?.provider)
                 .padding(.vertical, .padding64)
         }
         .hFormAttachToBottom {
             if let data = store.paymentStatusData?.selectablePayinMethods {
                 hSection {
                     hRadioOptionList(data, spacing: .padding8) { element in
-                        PaymentMethodRow(element, selection: $currentDefault)
+                        if element.isDefault {
+                            PaymentMethodRow(primary: element)
+                        } else {
+                            PaymentMethodSelectableRow(element, selection: $currentDefault)
+                        }
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -46,7 +50,7 @@ struct PaymentsChooseDefaultScreen: View {
             item: $methodToConfirm,
             presentationStyle: .detent(style: [.height])
         ) { method in
-            PaymentsConfirmDefaultScreen(method: method) {
+            ConfirmDefaultPaymentMethodScreen(method: method) {
                 methodToConfirm = nil
                 dismiss()
                 PaymentStore.refreshStatusDetached()
@@ -91,5 +95,5 @@ struct PaymentsChooseDefaultScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-    return PaymentsChooseDefaultScreen()
+    return ChooseDefaultPaymentMethodScreen()
 }

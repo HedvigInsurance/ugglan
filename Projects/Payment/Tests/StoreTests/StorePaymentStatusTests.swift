@@ -124,6 +124,35 @@ final class StorePaymentStatusTests: XCTestCase {
         XCTAssertNil(store.fetchPaymentStatusError)
     }
 
+    func testConcurrentFetchPaymentStatusQueriesOnce() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentStatusData: {
+                await delay(0.05)
+                return .init(
+                    status: .active,
+                    chargingDay: nil,
+                    defaultPayinMethod: nil,
+                    payinMethods: [],
+                    defaultPayoutMethod: nil,
+                    payoutMethods: [],
+                    availableMethods: [],
+                    missingConnection: nil,
+                    layout: .other
+                )
+            }
+        )
+        sut = mockService
+        let store = PaymentStore()
+        self.store = store
+
+        async let first: () = store.fetchPaymentStatus()
+        async let second: () = store.fetchPaymentStatus()
+        _ = await (first, second)
+
+        XCTAssertEqual(mockService.events, [.getPaymentStatusData])
+        XCTAssertFalse(store.isFetchingPaymentStatus)
+    }
+
     func testFetchPaymentStatusFailureKeepsMemberPhoneNumber() async throws {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: {

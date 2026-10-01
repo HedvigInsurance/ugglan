@@ -131,21 +131,28 @@ private struct HeroBackgroundView: View {
     }
 }
 
+private struct ConnectPaymentCardSection: View {
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+
+    var body: some View {
+        ConnectPaymentCardView(onConnectPayment: {
+            navigationVm.isAddPaymentMethodPresented = true
+        })
+    }
+}
+
 private struct HomeSheetContent: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
     @ObservedObject var bottomVm: HomeBottomScrollViewModel
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
     let contentFadeHeight: CGFloat
     let bottomOverscrollExtension: CGFloat
 
     var body: some View {
         VStack(spacing: .padding40) {
             if bottomVm.showsConnectPaymentCard {
-                ConnectPaymentCardView(onConnectPayment: {
-                    navigationVm.isAddPaymentMethodPresented = true
-                })
+                ConnectPaymentCardSection()
             }
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection

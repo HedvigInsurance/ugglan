@@ -17,7 +17,7 @@ struct PaymentMethodPickerList: View {
             if !methods.isEmpty {
                 hSection {
                     hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
-                        PaymentMethodRow(method.provider, direction: direction, selection: $selected)
+                        PaymentMethodSelectableRow(method.provider, direction: direction, selection: $selected)
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -54,7 +54,7 @@ private func previewPicker(
         .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
     ]
     return hForm {
-        PaymentMethodPickerGraphic(direction: direction, selected: selected)
+        PaymentConnectionGraphic(direction: direction, provider: selected)
             .padding(.vertical, .padding64)
     }
     .hFormAttachToBottom {

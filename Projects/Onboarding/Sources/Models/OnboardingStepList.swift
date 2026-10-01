@@ -81,7 +81,7 @@ public enum OnboardingStepList {
 
         steps.append(.theme)
         if !isPaymentConnected {
-            steps.append(.connectPayment(isConnected: false, paymentProvider: nil))
+            steps.append(.connectPayment(connectedProvider: nil))
         }
         if !crossSells.isEmpty {
             steps.append(.crossSell(crossSells))

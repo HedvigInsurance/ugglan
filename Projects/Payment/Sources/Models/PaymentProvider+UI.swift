@@ -53,7 +53,7 @@ extension PaymentProvider {
 
     /// What we call the provider when the direction doesn't matter. `payinTitle` and `payoutTitle`
     /// both build on this so a rename only has to happen in one place.
-    public var displayName: String {
+    var displayName: String {
         switch self {
         case .trustly: return "Trustly"
         case .swish: return "Swish"

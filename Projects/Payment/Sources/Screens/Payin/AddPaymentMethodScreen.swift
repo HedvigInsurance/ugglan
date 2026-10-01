@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct PaymentAddPaymentMethod: View {
+public struct AddPaymentMethodScreen: View {
     public struct Heading {
         let title: String
         let subTitle: String
@@ -34,7 +34,7 @@ public struct PaymentAddPaymentMethod: View {
     }
 
     public init(
-        heading: Heading,
+        heading: Heading? = nil,
         phoneNumber: String? = nil,
         connectedProvider: PaymentProvider? = nil,
         onFinished: @escaping (_ provider: PaymentProvider) -> Void
@@ -54,16 +54,26 @@ public struct PaymentAddPaymentMethod: View {
     }
 
     public var body: some View {
-        hForm {
-            formContent
-        }
-        .hFormAttachToBottom {
-            bottomContent
-        }
-        .hFormTitle(title: formTitle, subTitle: formSubTitle)
-        .handlePaymentSetup(for: $providerToSetUp, phoneNumber: prefilledPhoneNumber) { provider in
-            withAnimation { connectedProvider = provider }
-        }
+        PaymentConnectFlowView(
+            direction: .payin,
+            methods: store.paymentStatusData?.availablePayinMethods ?? [],
+            title: formTitle,
+            subTitle: formSubTitle,
+            connectTitle: L10n.paymentConnectTitle,
+            confirmationFootnote: L10n.paymentChangeFootnote,
+            selected: $selected,
+            connectedProvider: connectedProvider,
+            onConnect: { providerToSetUp = selected },
+            onCancel: isHostedInFlow ? nil : { dismiss() },
+            onContinue: { connectedProvider.map(finish(with:)) }
+        )
+        .handlePayinSetup(
+            for: $providerToSetUp,
+            phoneNumber: prefilledPhoneNumber,
+            completion: .custom { provider in
+                withAnimation { connectedProvider = provider }
+            }
+        )
         .task {
             // The picker lists what the backend offers, so a host that opens this screen
             // without having loaded the status has nothing to show until it is fetched.
@@ -71,51 +81,6 @@ public struct PaymentAddPaymentMethod: View {
             if connectedProvider == nil, store.paymentStatusData == nil {
                 await store.fetchPaymentStatus()
             }
-        }
-    }
-
-    @ViewBuilder
-    private var formContent: some View {
-        if let provider = connectedProvider {
-            PaymentConnectionPairGraphic(provider: provider, outcome: .success)
-                .padding(.vertical, .padding96)
-        } else {
-            PaymentMethodPickerGraphic(direction: .payin, selected: selected)
-                .padding(.vertical, .padding64)
-        }
-    }
-
-    @ViewBuilder
-    private var bottomContent: some View {
-        if let connectedProvider {
-            confirmationContent(for: connectedProvider)
-        } else {
-            pickerContent
-        }
-    }
-
-    private var pickerContent: some View {
-        PaymentMethodPickerList(
-            methods: store.paymentStatusData?.availablePayinMethods ?? [],
-            direction: .payin,
-            selected: $selected,
-            connectTitle: L10n.paymentConnectTitle,
-            onConnect: { providerToSetUp = selected },
-            onCancel: isHostedInFlow ? nil : { dismiss() }
-        )
-    }
-
-    private func confirmationContent(for provider: PaymentProvider) -> some View {
-        VStack(spacing: .padding16) {
-            hText(L10n.paymentChangeFootnote, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .multilineTextAlignment(.center)
-            hSection {
-                hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
-                    finish(with: provider)
-                }
-            }
-            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -127,36 +92,40 @@ public struct PaymentAddPaymentMethod: View {
         }
     }
 
-    private var headingAlignment: Alignment {
-        heading?.alignment ?? .center
-    }
-
     private var formTitle: hTitle {
-        if let connectedProvider {
-            return title(connectedTitle(for: connectedProvider))
-        }
-        return title(heading?.title ?? L10n.paymentConnectTitle)
+        title(connectedProvider.map(connectedTitle(for:)) ?? heading?.title ?? L10n.paymentConnectTitle)
     }
 
     private var formSubTitle: hTitle {
-        if connectedProvider == .swish {
-            return title(L10n.paymentSwishSuccessSubtitle)
+        guard let connectedProvider else {
+            return title(heading?.subTitle ?? L10n.paymentConnectSubtitle)
         }
-        if connectedProvider != nil {
-            return title(L10n.paymentTrustlySuccessSubtitle)
-        }
-        return title(heading?.subTitle ?? L10n.paymentConnectSubtitle)
+        return title(
+            connectedProvider == .swish ? L10n.paymentSwishSuccessSubtitle : L10n.paymentTrustlySuccessSubtitle
+        )
     }
 
     private func title(_ text: String) -> hTitle {
-        .init(heading == nil ? .navigationLike : .small, .body1, text, alignment: headingAlignment)
+        .init(heading == nil ? .navigationLike : .small, .body1, text, alignment: heading?.alignment ?? .center)
     }
 
     private func connectedTitle(for provider: PaymentProvider) -> String {
-        if provider == .swish {
-            return L10n.paymentSwishSuccessTitle
+        provider == .swish
+            ? L10n.paymentSwishSuccessTitle
+            : "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
+    }
+}
+
+extension View {
+    public func handleAddPaymentMethod(presented: Binding<Bool>) -> some View {
+        detent(
+            presented: presented,
+            presentationStyle: .detent(style: [.height]),
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            AddPaymentMethodScreen()
+                .hFormContentPosition(.compact)
         }
-        return "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
     }
 }
 
@@ -186,12 +155,12 @@ private func setUpPreviewStore() {
 
 #Preview("Pick a method") {
     setUpPreviewStore()
-    return PaymentAddPaymentMethod()
+    return AddPaymentMethodScreen()
 }
 
 #Preview("Hosted by a flow") {
     setUpPreviewStore()
-    return PaymentAddPaymentMethod(
+    return AddPaymentMethodScreen(
         heading: .init(
             title: "Connect payment",
             subTitle: "Set up how you want to pay",
