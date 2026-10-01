@@ -9,8 +9,8 @@ struct RemovePaymentMethodScreen: View {
     var body: some View {
         PaymentMethodActionSheet(
             vm: .remove(method),
-            title: .init(.small, .body1, L10n.paymentRemoveTitle, alignment: .center),
-            subTitle: .init(.small, .body1, L10n.paymentRemoveSubtitle, alignment: .center),
+            title: .init(.navigationLike, .body1, L10n.paymentRemoveTitle, alignment: .center),
+            subTitle: .init(.navigationLike, .body1, L10n.paymentRemoveSubtitle, alignment: .center),
             confirmTitle: L10n.removeConfirmationButton,
             hero: {
                 RemovedMethodGraphic(provider: method.provider)
