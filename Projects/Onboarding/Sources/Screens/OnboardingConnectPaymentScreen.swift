@@ -18,7 +18,7 @@ struct OnboardingConnectPaymentScreen: View {
         ) { provider in
             // Connecting is the only way on from here, so the step is done and connected.
             vm.markPaymentConnected(provider: provider)
-            vm.advance(after: .connectPayment(isConnected: true, paymentProvider: provider))
+            vm.advance(after: .connectPayment(connectedProvider: provider))
         }
         .hFormContentPosition(.center)
     }
@@ -26,14 +26,14 @@ struct OnboardingConnectPaymentScreen: View {
 
 #Preview("Not connected") {
     let model = OnboardingNavigationViewModel()
-    model.steps = [.connectPayment(isConnected: false, paymentProvider: nil)]
+    model.steps = [.connectPayment(connectedProvider: nil)]
     return OnboardingConnectPaymentScreen()
         .environmentObject(model)
 }
 
 #Preview("Already connected") {
     let model = OnboardingNavigationViewModel()
-    model.steps = [.connectPayment(isConnected: true, paymentProvider: .swish)]
+    model.steps = [.connectPayment(connectedProvider: .swish)]
     return OnboardingConnectPaymentScreen()
         .environmentObject(model)
 }

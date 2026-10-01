@@ -104,6 +104,8 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         XCTAssertEqual(result, defaultSwish)
     }
 
+    /// `defaultPayinMethod` and the list can disagree on status for one provider; the active
+    /// entry wins the lookup, and keeps its own `isDefault` rather than the default field's.
     func testPayinMethodPrefersActiveListedMethodOverPendingDefault() throws {
         let pendingDefaultSwish = makeMethod(swish, status: .pending, isDefault: true)
         let activeSwish = makeMethod(swish)
@@ -112,5 +114,13 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
 
         XCTAssertEqual(result, activeSwish)
+    }
+
+    func testDefaultOrFirstDefaultFallsBackToTheListWithoutADefaultField() {
+        let activeTrustly = makeMethod(trustly)
+        let defaultSwish = makeMethod(swish, isDefault: true)
+        let statusData = makeStatusData(payinMethods: [activeTrustly, defaultSwish])
+
+        XCTAssertEqual(statusData.defaultOrFirstDefaultPayinMethod, defaultSwish)
     }
 }

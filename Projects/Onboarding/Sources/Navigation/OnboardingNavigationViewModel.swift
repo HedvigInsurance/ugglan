@@ -87,17 +87,18 @@ extension OnboardingNavigationViewModel {
 
 // MARK: - Connect-payment step
 extension OnboardingNavigationViewModel {
+    /// At most one `connectPayment` step exists, so the first one's payload is the answer.
     var connectedPaymentProvider: PaymentProvider? {
-        for case let .connectPayment(true, provider) in steps { return provider }
+        for case let .connectPayment(provider) in steps { return provider }
         return nil
     }
 
-    /// Payment was connected — flip the `connectPayment` step's `isConnected` flag so the
-    /// step's state reflects reality.
+    /// Payment was connected — record the provider on the `connectPayment` step so the step's
+    /// state reflects reality.
     func markPaymentConnected(provider: PaymentProvider) {
         steps = steps.map { step in
             guard case .connectPayment = step else { return step }
-            return .connectPayment(isConnected: true, paymentProvider: provider)
+            return .connectPayment(connectedProvider: provider)
         }
     }
 }

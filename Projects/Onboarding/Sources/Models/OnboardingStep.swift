@@ -13,7 +13,8 @@ public enum OnboardingStep: Hashable, Sendable {
     case coOwners(contracts: [OnboardingContract])
     case petChipIds(contracts: [OnboardingContract])
     case inviteFriend(discountCode: String, monthlyDiscountPerReferral: String)
-    case connectPayment(isConnected: Bool, paymentProvider: PaymentProvider?)
+    /// `nil` until the member connects a method — "connected" is exactly "has a provider".
+    case connectPayment(connectedProvider: PaymentProvider?)
     case crossSell(_ crossSells: [CrossSell])
 }
 

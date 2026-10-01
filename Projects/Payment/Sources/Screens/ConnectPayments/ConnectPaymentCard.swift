@@ -13,14 +13,15 @@ public struct ConnectPaymentCardView: View {
     }
 
     public var body: some View {
-        if let status = store.paymentStatusData?.status {
-            statusCard(for: status)
+        if let prompt = store.connectPaymentPrompt {
+            card(for: prompt)
         }
     }
 
     @ViewBuilder
-    private func statusCard(for status: PayinMethodStatus) -> some View {
-        if case let .terminatingDueToMissedPayments(date) = status {
+    private func card(for prompt: ConnectPaymentPrompt) -> some View {
+        switch prompt {
+        case let .missedPayments(date):
             PaymentAttentionCard(
                 title: L10n.homeTodoPaymentOverdueTitle,
                 subtitle: L10n.homeTodoRequiresActionSubtitle,
@@ -29,7 +30,7 @@ public struct ConnectPaymentCardView: View {
             ) {
                 NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
             }
-        } else if status == .needsSetup || store.showsConnectPayment {
+        case .needsSetup:
             PaymentAttentionCard(
                 title: L10n.homeTodoMissingPaymentMethodTitle,
                 subtitle: L10n.homeTodoRequiresActionSubtitle,

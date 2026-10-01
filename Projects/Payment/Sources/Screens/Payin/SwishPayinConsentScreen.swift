@@ -227,13 +227,13 @@ class SwishPayinConsentViewModel: ObservableObject {
         return false
     }
 
-    /// Asks for a fresh order and hands polling back to the screen's `.task`, which is cancelled
-    /// when the screen goes away — a poll started from the button would outlive it.
+    /// Asks for a fresh order, then hands polling back to the screen's `.task`, which is
+    /// cancelled when the screen goes away — a poll started from the button would outlive it.
+    ///
+    /// Stays `.failed` until the new order is in hand: the retry button carries the spinner and
+    /// only exists in that state, and the waiting layout would otherwise render the dead QR code.
     func requestNewOrder() async {
-        withAnimation {
-            isRetrying = true
-            state = .waiting
-        }
+        withAnimation { isRetrying = true }
         defer { withAnimation { isRetrying = false } }
 
         do {
@@ -248,6 +248,7 @@ class SwishPayinConsentViewModel: ObservableObject {
             // A retry does not hand the member off the way the first attempt did, so offer the
             // way in — but only when there is an app to open.
             showOpenSwishButton = canOpenSwish
+            withAnimation { state = .waiting }
             pollAttempt += 1
         } catch {
             withAnimation { state = .failed(error: error.localizedDescription) }

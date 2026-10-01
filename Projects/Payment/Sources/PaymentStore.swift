@@ -64,6 +64,17 @@ public final class PaymentStore: AppStore {
             || (paymentData != nil && paymentStatusData.defaultOrFirstDefaultPayinMethod == nil)
     }
 
+    /// The single decision about the connect-payment card: `nil` means no card at all. Hosts
+    /// render what this returns rather than each re-deriving when a card is warranted — Home
+    /// adds only its own member-state gate, which `PaymentStore` cannot see.
+    public var connectPaymentPrompt: ConnectPaymentPrompt? {
+        guard let paymentStatusData else { return nil }
+        if case let .terminatingDueToMissedPayments(date) = paymentStatusData.status {
+            return .missedPayments(date: date)
+        }
+        return showsConnectPayment ? .needsSetup : nil
+    }
+
     var showsConnectPayout: Bool {
         paymentStatusData?.missingConnection == .payout && !showsConnectPayment
     }

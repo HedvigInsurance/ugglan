@@ -210,19 +210,39 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         }
     }
 
-    func testRequestNewOrderRetryingWhileSetupRuns() async {
+    /// The retry button carries the spinner, and it only exists in `.failed` — so the screen has
+    /// to stay failed for the length of the call rather than flipping to waiting on tap.
+    func testRequestNewOrderStaysFailedWhileSetupRuns() async {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
 
         let vm = makeViewModel(state: .failed(error: "earlier failure"))
         mockService.fetchSetupPaymentMethod = { [weak vm] in
             XCTAssertEqual(vm?.isRetrying, true)
-            XCTAssertEqual(vm?.state, .waiting)
+            XCTAssertEqual(vm?.state, .failed(error: "earlier failure"))
             return .init(status: .active, orderId: nil, url: nil, errorMessage: nil)
         }
         await vm.requestNewOrder()
 
         XCTAssertFalse(vm.isRetrying)
+        XCTAssertEqual(vm.state, .waiting)
+    }
+
+    /// The waiting layout renders `qrImage`, so the new order's code must be in place before the
+    /// screen switches to it — otherwise the member is briefly shown the code that just failed.
+    func testRequestNewOrderUpdatesQRImageBeforeLeavingFailed() async {
+        let mockService = MockPaymentData.createMockPaymentService()
+        sut = mockService
+
+        let vm = makeViewModel(url: nil, state: .failed(error: nil))
+        mockService.fetchSetupPaymentMethod = { [weak vm] in
+            XCTAssertNil(vm?.qrImage, "the retry's code cannot exist before the call returns")
+            return .init(status: .pending, orderId: "order-2", url: PaymentTestURL.retry, errorMessage: nil)
+        }
+        await vm.requestNewOrder()
+
+        XCTAssertNotNil(vm.qrImage)
+        XCTAssertEqual(vm.state, .waiting)
     }
 
     func testRequestNewOrderUpdatesQRImageFromResultUrlSuccess() async {
