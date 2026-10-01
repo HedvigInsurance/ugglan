@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentMethodsScreen: View {
+struct PaymentMethodListScreen: View {
     @AppObservedObject private var store: PaymentStore
     @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
     @EnvironmentObject private var router: NavigationRouter
@@ -104,7 +104,7 @@ struct PaymentMethodsScreen: View {
     )
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return PaymentMethodsScreen()
+    return PaymentMethodListScreen()
         .environmentObject(PaymentsNavigationViewModel())
         .task {
             await delay(3)

@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentsChooseDefaultScreen: View {
+struct ChooseDefaultPaymentMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @Environment(\.dismiss) private var dismiss
 
@@ -46,7 +46,7 @@ struct PaymentsChooseDefaultScreen: View {
             item: $methodToConfirm,
             presentationStyle: .detent(style: [.height])
         ) { method in
-            PaymentsConfirmDefaultScreen(method: method) {
+            ConfirmDefaultPaymentMethodScreen(method: method) {
                 methodToConfirm = nil
                 dismiss()
                 PaymentStore.refreshStatusDetached()
@@ -91,5 +91,5 @@ struct PaymentsChooseDefaultScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-    return PaymentsChooseDefaultScreen()
+    return ChooseDefaultPaymentMethodScreen()
 }

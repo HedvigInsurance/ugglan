@@ -17,13 +17,13 @@ Payments tab and everything around a member's payment methods: pay-in setup and 
 ### Navigation and entry points
 - `Sources/Navigation/PaymentNavigation.swift` — `PaymentsNavigation` (`hNavigationStack` + `NavigationRouter`), `PaymentsNavigationViewModel`, `PaymentsRouterAction` (`.discounts`, `.history`, `.paymentMethod(provider:)`, `.paymentMethods`), shared `paymentsDestination(for:)`, and `.withPaymentsPresentations(_:)` (environment object + choose-default and add-method sheets).
 - `Sources/Navigation/PayoutNavigation.swift` — standalone payout stack; `PayoutRouterActions.selectedPayoutMethod` is the only route (the picker is a sheet).
-- Public presentation modifiers, all detents: `.handleAddPaymentMethod(presented:)` (`Payin/PaymentAddPaymentMethod+modifier.swift`), `.handlePaymentMethods(presented:)` (`Payin/PaymentMethods+modifier.swift`, wraps the list in its own stack), `.handlePayinSetupDeepLink(provider:)` (`Payin/PaymentSetup+modifier.swift`, the deep-link entry that opens one provider's setup directly), `.handleMissedPayment(data:)`. Internal: `.handlePayinSetup(for:phoneNumber:additionalOptions:completion:)` opens the provider's setup screen (with `completion: .showConfirmation`, followed by a non-swipeable `PaymentAddPaymentMethod` confirmation; the deep-link entries reuse it), `.handleChangePayoutMethod(presented:)` the payout picker.
+- Public presentation modifiers, all detents: `.handleAddPaymentMethod(presented:)` (`Payin/AddPaymentMethodScreen.swift`), `.handlePaymentMethods(presented:)` (`Payin/PaymentMethodsNavigation.swift`, wraps the list in its own stack), `.handlePayinSetupDeepLink(provider:)` (`Payin/PayinSetup+modifier.swift`, the deep-link entry that opens one provider's setup directly), `.handleMissedPayment(data:)`. Internal: `.handlePayinSetup(for:phoneNumber:additionalOptions:completion:)` opens the provider's setup screen (with `completion: .showConfirmation`, followed by a non-swipeable `AddPaymentMethodScreen` confirmation; the deep-link entries reuse it), `.handleChangePayoutMethod(presented:)` the payout picker.
 
 ### Pay-in (`Sources/Screens/Payin/`)
-- `PaymentMethodsScreen.swift` — connected pay-in methods; empty state offers to add one; "choose primary" only with 2+ active methods.
-- `PaymentMethodScreen.swift` — one provider's method: info rows, change (Trustly/Swish) and remove; the default method can't be removed (InfoView instead).
-- `PaymentAddPaymentMethod.swift` — `public`. Supplies the pay-in half of `PaymentConnectFlowView` (copy, `availablePayinMethods`, `.handlePayinSetup`). Standalone in a detent, or hosted by a flow with a `Heading`, prefilled `phoneNumber`, `connectedProvider` and `onFinished` (Onboarding).
-- `PaymentsChooseDefaultScreen.swift` — pick the primary method. `PaymentsConfirmDefaultScreen.swift` and `PaymentRemoveMethodScreen.swift` are thin wrappers over `PaymentMethodActionSheet`, supplying their hero, copy and `PaymentActionViewModel` factory.
+- `PaymentMethodListScreen.swift` — connected pay-in methods; empty state offers to add one; "choose primary" only with 2+ active methods.
+- `PaymentMethodDetailScreen.swift` — one provider's method: info rows, change (Trustly/Swish) and remove; the default method can't be removed (InfoView instead).
+- `AddPaymentMethodScreen.swift` — `public`. Supplies the pay-in half of `PaymentConnectFlowView` (copy, `availablePayinMethods`, `.handlePayinSetup`). Standalone in a detent, or hosted by a flow with a `Heading`, prefilled `phoneNumber`, `connectedProvider` and `onFinished` (Onboarding).
+- `ChooseDefaultPaymentMethodScreen.swift` — pick the primary method. `ConfirmDefaultPaymentMethodScreen.swift` and `RemovePaymentMethodScreen.swift` are thin wrappers over `PaymentMethodActionSheet`, supplying their hero, copy and `PaymentActionViewModel` factory.
 - `SwishPayinSetupScreen.swift` — own `NavigationRouter`; phone entry, then `SwishPayinRoute.consent`. `SwishPayinConsentScreen.swift` — QR code for the Swish URL, "Open Swish" when installed, polls `getPaymentSetupStatus(orderId:)` every 2 s for up to 120 s, retry on failure. `SwishExplanationScreen.swift` — the "how recurring Swish works" sheet.
 
 ### Payout (`Sources/Screens/Payout/`)
@@ -45,7 +45,7 @@ Payments tab and everything around a member's payment methods: pay-in setup and 
 ## Dependencies
 
 - Imports: hCore, hCoreUI, AppStateContainer, CampaignUI, Combine, WebKit (Trustly), CoreImage (QR), UIKit (Swish deep link).
-- Depended on by: App, Home (cards, deep links), Onboarding (hosts `PaymentAddPaymentMethod`).
+- Depended on by: App, Home (cards, deep links), Onboarding (hosts `AddPaymentMethodScreen`).
 
 ## Deep links
 
@@ -64,4 +64,4 @@ Payments tab and everything around a member's payment methods: pay-in setup and 
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` sits in `Service/Protocols/`.
 - **`DirectDebitSetup`** is a `UIViewRepresentable` around `WKWebView` bridged by `TrustlyScriptHandler`.
 - **`PayinMethodStatus.hasFailed`** is true only for `.addedtoFuture`.
-- **Kivra** methods can only be removed, not changed, from `PaymentMethodScreen`.
+- **Kivra** methods can only be removed, not changed, from `PaymentMethodDetailScreen`.

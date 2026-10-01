@@ -7,7 +7,7 @@ struct OnboardingConnectPaymentScreen: View {
     @EnvironmentObject var vm: OnboardingNavigationViewModel
 
     var body: some View {
-        PaymentAddPaymentMethod(
+        AddPaymentMethodScreen(
             heading: .init(
                 title: L10n.onboardingConnectPaymentTitle,
                 subTitle: L10n.onboardingConnectPaymentSubtitle,

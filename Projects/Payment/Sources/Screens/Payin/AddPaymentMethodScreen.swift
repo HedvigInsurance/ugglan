@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct PaymentAddPaymentMethod: View {
+public struct AddPaymentMethodScreen: View {
     public struct Heading {
         let title: String
         let subTitle: String
@@ -117,6 +117,19 @@ public struct PaymentAddPaymentMethod: View {
     }
 }
 
+extension View {
+    public func handleAddPaymentMethod(presented: Binding<Bool>) -> some View {
+        detent(
+            presented: presented,
+            presentationStyle: .detent(style: [.height]),
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            AddPaymentMethodScreen()
+                .hFormContentPosition(.compact)
+        }
+    }
+}
+
 @MainActor
 private func setUpPreviewStore() {
     let store: PaymentStore = globalAppStateContainer.get()
@@ -143,12 +156,12 @@ private func setUpPreviewStore() {
 
 #Preview("Pick a method") {
     setUpPreviewStore()
-    return PaymentAddPaymentMethod()
+    return AddPaymentMethodScreen()
 }
 
 #Preview("Hosted by a flow") {
     setUpPreviewStore()
-    return PaymentAddPaymentMethod(
+    return AddPaymentMethodScreen(
         heading: .init(
             title: "Connect payment",
             subTitle: "Set up how you want to pay",

@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentsConfirmDefaultScreen: View {
+struct ConfirmDefaultPaymentMethodScreen: View {
     let method: ConnectedPaymentMethod
     let onSuccess: () -> Void
 
@@ -24,7 +24,7 @@ struct PaymentsConfirmDefaultScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-    return PaymentsConfirmDefaultScreen(
+    return ConfirmDefaultPaymentMethodScreen(
         method: .init(
             status: .active,
             isDefault: false,

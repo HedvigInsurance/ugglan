@@ -5,7 +5,7 @@ import hCoreUI
 
 /// What happens once a provider's pay-in setup succeeds.
 enum PayinSetupCompletion {
-    /// Dismiss the setup and show a non-swipeable `PaymentAddPaymentMethod` confirmation.
+    /// Dismiss the setup and show a non-swipeable `AddPaymentMethodScreen` confirmation.
     case showConfirmation
     /// Dismiss the setup and hand the connected provider to the caller.
     case custom((PaymentProvider) -> Void)
@@ -56,7 +56,7 @@ private struct PayinSetupDetent: ViewModifier {
                 item: $connectedProvider,
                 options: .constant([.alwaysOpenOnTop, .disableDismissOnScroll])
             ) { connected in
-                PaymentAddPaymentMethod(connectedProvider: connected) { provider in
+                AddPaymentMethodScreen(connectedProvider: connected) { provider in
                     finish(provider)
                 }
                 .hFormContentPosition(.compact)

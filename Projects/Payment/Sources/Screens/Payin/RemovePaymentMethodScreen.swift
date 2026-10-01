@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentRemoveMethodScreen: View {
+struct RemovePaymentMethodScreen: View {
     let method: ConnectedPaymentMethod
     let onSuccess: () -> Void
 
@@ -91,7 +91,7 @@ extension PaymentProvider {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-    return PaymentRemoveMethodScreen(
+    return RemovePaymentMethodScreen(
         method: .init(
             status: .active,
             isDefault: true,

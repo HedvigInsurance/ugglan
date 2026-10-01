@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentMethodScreen: View {
+struct PaymentMethodDetailScreen: View {
     @AppObservedObject private var store: PaymentStore
     @EnvironmentObject private var router: NavigationRouter
     @State private var providerToSetUp: PaymentProvider?
@@ -46,7 +46,7 @@ struct PaymentMethodScreen: View {
                 item: $methodToRemove,
                 presentationStyle: .detent(style: [.height])
             ) { method in
-                PaymentRemoveMethodScreen(method: method) {
+                RemovePaymentMethodScreen(method: method) {
                     methodToRemove = nil
                     // The method is gone, so this screen has nothing left to show.
                     router.pop()
@@ -145,7 +145,7 @@ fileprivate struct PreviewData {
 
 #Preview("Invoice") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .invoice(delivery: .kivra))
-    return PaymentMethodScreen(paymentProvider: .invoice)
+    return PaymentMethodDetailScreen(paymentProvider: .invoice)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
         .environmentObject(NavigationRouter())
@@ -154,7 +154,7 @@ fileprivate struct PreviewData {
 #Preview("Trustly") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .trustly(bankAccount: .init(account: "account", bank: "bank")))
-    return PaymentMethodScreen(paymentProvider: .trustly)
+    return PaymentMethodDetailScreen(paymentProvider: .trustly)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
         .environmentObject(NavigationRouter())
@@ -162,7 +162,7 @@ fileprivate struct PreviewData {
 
 #Preview("Swish") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .swish(phoneNumber: "0700123456"))
-    return PaymentMethodScreen(paymentProvider: .swish)
+    return PaymentMethodDetailScreen(paymentProvider: .swish)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
         .environmentObject(NavigationRouter())
@@ -171,7 +171,7 @@ fileprivate struct PreviewData {
 #Preview("Nordea") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .nordea(bankAccount: .init(account: "Nordea Account", bank: "Nordea")))
-    return PaymentMethodScreen(paymentProvider: .nordea)
+    return PaymentMethodDetailScreen(paymentProvider: .nordea)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
         .environmentObject(NavigationRouter())
@@ -179,7 +179,7 @@ fileprivate struct PreviewData {
 
 #Preview("Unknown") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .unknown)
-    return PaymentMethodScreen(paymentProvider: .unknown)
+    return PaymentMethodDetailScreen(paymentProvider: .unknown)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
         .environmentObject(NavigationRouter())
