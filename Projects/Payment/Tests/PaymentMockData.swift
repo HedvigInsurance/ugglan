@@ -9,6 +9,50 @@ enum PaymentTestURL {
     static let retry = "https://example.com/retry"
 }
 
+/// The connected methods the model tests build their fixtures from.
+enum PaymentTestMethod {
+    static let trustly = PaymentMethod.trustly(bankAccount: .init(account: "1234", bank: "Bank"))
+    static let swish = PaymentMethod.swish(phoneNumber: "0735328847")
+    static let invoice = PaymentMethod.invoice(delivery: .kivra)
+}
+
+extension PaymentMethod {
+    /// Wraps this method as a connected one, so fixtures read `swish.connected(isDefault: true)`.
+    func connected(status: PaymentMethodStatus = .active, isDefault: Bool = false) -> ConnectedPaymentMethod {
+        .init(status: status, isDefault: isDefault, method: self)
+    }
+}
+
+extension PaymentStatusData {
+    /// Defaults everything a given test does not care about, so each one only spells out the
+    /// fields it is actually about.
+    static func test(
+        status: PayinMethodStatus = .active,
+        chargingDay: Int? = 27,
+        defaultPayinMethod: ConnectedPaymentMethod? = nil,
+        payinMethods: [ConnectedPaymentMethod] = [],
+        defaultPayoutMethod: ConnectedPaymentMethod? = nil,
+        payoutMethods: [ConnectedPaymentMethod] = [],
+        availableMethods: [AvailablePaymentMethod] = [],
+        missingConnection: MissingPaymentConnection? = nil,
+        layout: PaymentLayout = .other,
+        memberPhoneNumber: String? = nil
+    ) -> PaymentStatusData {
+        .init(
+            status: status,
+            chargingDay: chargingDay,
+            defaultPayinMethod: defaultPayinMethod,
+            payinMethods: payinMethods,
+            defaultPayoutMethod: defaultPayoutMethod,
+            payoutMethods: payoutMethods,
+            availableMethods: availableMethods,
+            missingConnection: missingConnection,
+            layout: layout,
+            memberPhoneNumber: memberPhoneNumber
+        )
+    }
+}
+
 @MainActor
 
 struct MockPaymentData {
