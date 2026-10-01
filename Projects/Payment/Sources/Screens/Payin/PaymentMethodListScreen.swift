@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentMethodsScreen: View {
+struct PaymentMethodListScreen: View {
     @AppObservedObject private var store: PaymentStore
     @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
     @EnvironmentObject private var router: NavigationRouter
@@ -50,7 +50,7 @@ struct PaymentMethodsScreen: View {
                     .sectionContainerStyle(.transparent)
                     .padding(.top, .padding8)
                 }
-                .hFormAttachToBottom {
+                .hFormAlwaysAttachToBottom {
                     hSection {
                         VStack(spacing: .padding8) {
                             hButton(.large, .secondary, content: .init(title: L10n.paymentAddMethodButton)) {
@@ -64,6 +64,10 @@ struct PaymentMethodsScreen: View {
                         }
                     }
                     .sectionContainerStyle(.transparent)
+                }
+                .hSetScrollBounce(to: true)
+                .onPullToRefresh {
+                    await store.fetchPaymentStatus()
                 }
             }
         }
@@ -100,7 +104,7 @@ struct PaymentMethodsScreen: View {
     )
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return PaymentMethodsScreen()
+    return PaymentMethodListScreen()
         .environmentObject(PaymentsNavigationViewModel())
         .task {
             await delay(3)

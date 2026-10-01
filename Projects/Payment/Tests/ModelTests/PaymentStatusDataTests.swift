@@ -5,16 +5,10 @@
 @MainActor
 final class PaymentStatusDataTests: XCTestCase {
     private func makeStatusData(memberPhoneNumber: String?) -> PaymentStatusData {
-        .init(
+        .test(
             status: .needsSetup,
-            chargingDay: 27,
-            defaultPayinMethod: nil,
-            payinMethods: [],
-            defaultPayoutMethod: nil,
-            payoutMethods: [],
             availableMethods: [.init(provider: .swish, supportsPayin: true, supportsPayout: true)],
             missingConnection: .payin,
-            layout: .other,
             memberPhoneNumber: memberPhoneNumber
         )
     }

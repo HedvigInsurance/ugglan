@@ -80,7 +80,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     }
 
     func connectedPaymentMethod(for provider: PaymentProvider) -> ConnectedPaymentMethod? {
-        let methods = (payinMethods + [defaultPayinMethod]).compactMap({ $0 }).filter({ $0.provider == provider })
+        let methods = ([defaultPayinMethod] + payinMethods).compactMap({ $0 }).filter({ $0.provider == provider })
         let connected = methods.first(where: { $0.status == .active }) ?? methods.first
         guard let connected else { return nil }
         return connected
@@ -261,4 +261,9 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case pending
     case terminatingDueToMissedPayments(date: String)
     case unknown
+}
+
+public enum ConnectPaymentPrompt: Equatable, Sendable, Hashable {
+    case missedPayments(date: String)
+    case needsSetup
 }

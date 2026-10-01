@@ -57,20 +57,11 @@ struct hRadioOptionMetrics {
     }
 
     var topPadding: CGFloat {
-        switch size {
-        case .small:
-            return 15
-        case .large:
-            return 16
-        case .medium:
-            return 19
-        case .extraLarge:
-            return 20
-        }
+        size.topPadding
     }
 
     var bottomPadding: CGFloat {
-        topPadding + 2
+        size.bottomPadding
     }
 
     /// A 40pt icon is taller than the text line, so icon rows inset less.

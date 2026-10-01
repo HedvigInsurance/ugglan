@@ -62,9 +62,9 @@ func paymentsDestination(for routerAction: PaymentsRouterAction) -> some View {
     case .history:
         PaymentHistoryView()
     case let .paymentMethod(provider):
-        PaymentMethodScreen(paymentProvider: provider)
+        PaymentMethodDetailScreen(paymentProvider: provider)
     case .paymentMethods:
-        PaymentMethodsScreen()
+        PaymentMethodListScreen()
     }
 }
 
@@ -84,7 +84,7 @@ private struct PaymentsPresentations: ViewModifier {
                 presented: $vm.showChooseDefaultPaymentMethod,
                 presentationStyle: .detent(style: [.height])
             ) {
-                PaymentsChooseDefaultScreen()
+                ChooseDefaultPaymentMethodScreen()
             }
             .handleAddPaymentMethod(presented: $vm.showAddPaymentMethod)
     }
@@ -114,9 +114,9 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
         case .history:
             return .init(describing: PaymentHistoryView.self)
         case .paymentMethod:
-            return .init(describing: PaymentMethodScreen.self)
+            return .init(describing: PaymentMethodDetailScreen.self)
         case .paymentMethods:
-            return .init(describing: PaymentMethodsScreen.self)
+            return .init(describing: PaymentMethodListScreen.self)
         }
     }
 
