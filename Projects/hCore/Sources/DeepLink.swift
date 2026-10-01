@@ -73,7 +73,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .changeTier: L10n.InsuranceDetails.changeCoverage
         case .travelAddon: L10n.addonTravelDisplayName
         case .editCoInsured: L10n.hcQuickActionsEditCoinsured
-        case .editCoOwners: L10n.editCoownerTitle
+        case .editCoOwners: L10n.editCoownerTitle  // TODO: fix lokalise?
         case .claimDetails: L10n.ClaimStatus.ClaimDetails.title
         case .insuranceEvidence: L10n.InsuranceEvidence.documentTitle
         case .submitClaim: L10n.embarkSubmitClaim

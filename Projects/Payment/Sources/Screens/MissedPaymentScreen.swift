@@ -169,10 +169,8 @@ struct MissedPaymentScreen: View {
                 label: L10n.paymentsPaymentOverdueDetailsDueDate,
                 value: missedPaymentdata.paymentData.payment.date.displayDate
             )
-            infoRow(
-                label: missedPaymentdata.paymentMethodData.titleForMissedPayment,
-                value: missedPaymentdata.paymentMethodData.info
-            )
+            let methodRow = missedPaymentdata.paymentMethodData.missedPaymentRow
+            infoRow(label: methodRow.label, value: methodRow.value)
         }
     }
 

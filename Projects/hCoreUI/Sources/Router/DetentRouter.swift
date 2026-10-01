@@ -203,8 +203,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
         if presentationStyle == .center {
             content()
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
-                .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
-                .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2))
+                .hCardShadow()
         } else {
             content()
         }

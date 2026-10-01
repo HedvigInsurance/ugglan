@@ -262,3 +262,8 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case terminatingDueToMissedPayments(date: String)
     case unknown
 }
+
+public enum ConnectPaymentPrompt: Equatable, Sendable, Hashable {
+    case missedPayments(date: String)
+    case needsSetup
+}

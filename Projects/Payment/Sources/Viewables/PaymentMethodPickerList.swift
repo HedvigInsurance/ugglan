@@ -17,7 +17,7 @@ struct PaymentMethodPickerList: View {
             if !methods.isEmpty {
                 hSection {
                     hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
-                        PaymentMethodRow(method.provider, direction: direction, selection: $selected)
+                        PaymentMethodSelectableRow(method.provider, direction: direction, selection: $selected)
                     }
                 }
                 .sectionContainerStyle(.transparent)

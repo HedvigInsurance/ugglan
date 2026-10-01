@@ -5,7 +5,6 @@ import hCoreUI
 
 /// What happens once a provider's pay-in setup succeeds.
 enum PayinSetupCompletion {
-    /// Dismiss the setup and show a non-swipeable `PaymentAddPaymentMethod` confirmation.
     case showConfirmation
     /// Dismiss the setup and hand the connected provider to the caller.
     case custom((PaymentProvider) -> Void)
@@ -28,12 +27,8 @@ extension View {
         )
     }
 
-    public func handleSwishPayinSetup(presented: Binding<Bool>) -> some View {
-        modifier(PayinSetupDeepLinkDetent(provider: .swish, presented: presented))
-    }
-
-    public func handleDirectDebitSetup(presented: Binding<Bool>) -> some View {
-        modifier(PayinSetupDeepLinkDetent(provider: .trustly, presented: presented))
+    public func handlePayinSetupDeepLink(provider: Binding<PaymentProvider?>) -> some View {
+        modifier(PayinSetupDeepLinkDetent(provider: provider))
     }
 }
 
@@ -58,7 +53,7 @@ private struct PayinSetupDetent: ViewModifier {
                 item: $connectedProvider,
                 options: .constant([.alwaysOpenOnTop, .disableDismissOnScroll])
             ) { connected in
-                PaymentAddPaymentMethod(connectedProvider: connected) { provider in
+                AddPaymentMethodScreen(connectedProvider: connected) { provider in
                     finish(provider)
                 }
                 .hFormContentPosition(.compact)
@@ -90,8 +85,7 @@ private struct PayinSetupDetent: ViewModifier {
 }
 
 private struct PayinSetupDeepLinkDetent: ViewModifier {
-    let provider: PaymentProvider
-    @Binding var presented: Bool
+    @Binding var provider: PaymentProvider?
     /// The deep link carries no phone number of its own, so the flow falls back to the one
     /// fetched with the payment methods.
     @AppState private var store: PaymentStore
@@ -99,10 +93,7 @@ private struct PayinSetupDeepLinkDetent: ViewModifier {
     func body(content: Content) -> some View {
         content
             .handlePayinSetup(
-                for: Binding(
-                    get: { presented ? provider : nil },
-                    set: { presented = $0 != nil }
-                ),
+                for: $provider,
                 phoneNumber: store.paymentStatusData?.memberPhoneNumber,
                 // A deep link can arrive while something else is already showing.
                 additionalOptions: .alwaysOpenOnTop,

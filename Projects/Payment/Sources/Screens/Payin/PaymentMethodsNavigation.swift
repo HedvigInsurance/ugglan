@@ -24,7 +24,7 @@ private struct PaymentMethodsNavigation: View {
             options: .extendedNavigationWidth,
             tracking: PaymentMethodsDetentType.paymentMethods
         ) {
-            PaymentMethodsScreen()
+            PaymentMethodListScreen()
                 .navigationTitle(L10n.paymentMethodsTitle)
                 .withDismissButton()
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
@@ -42,6 +42,6 @@ private enum PaymentMethodsDetentType: TrackingViewNameProtocol {
     case paymentMethods
 
     var nameForTracking: String {
-        .init(describing: PaymentMethodsScreen.self)
+        .init(describing: PaymentMethodListScreen.self)
     }
 }

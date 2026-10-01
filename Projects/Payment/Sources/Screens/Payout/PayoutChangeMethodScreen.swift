@@ -12,13 +12,18 @@ struct PayoutChangeMethodScreen: View {
     @State private var connectedProvider: PaymentProvider?
 
     var body: some View {
-        hForm {
-            formContent
-        }
-        .hFormTitle(title: formTitle, subTitle: nil)
-        .hFormAttachToBottom {
-            bottomContent
-        }
+        PaymentConnectFlowView(
+            direction: .payout,
+            methods: store.paymentStatusData?.availablePayoutMethods ?? [],
+            title: formTitle,
+            connectTitle: L10n.generalContinueButton,
+            confirmationFootnote: L10n.onboardingConnectPaymentSwitchAccountsLater,
+            selected: $selected,
+            connectedProvider: connectedProvider,
+            onConnect: { showConnectPayoutMethod = selected },
+            onCancel: { router.dismiss() },
+            onContinue: { router.dismiss() }
+        )
         .task {
             // Reached straight from a deep link as well as from the payout screen, so the list
             // can't assume someone else has already fetched the status.
@@ -54,46 +59,6 @@ struct PayoutChangeMethodScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var formContent: some View {
-        PaymentConnectionGraphic(
-            direction: .payout,
-            provider: connectedProvider ?? selected,
-            outcome: connectedProvider != nil ? .success : nil
-        )
-        .padding(.vertical, connectedProvider != nil ? .padding96 : .padding64)
-    }
-
-    @ViewBuilder
-    private var bottomContent: some View {
-        if connectedProvider != nil {
-            confirmationContent
-        } else {
-            PaymentMethodPickerList(
-                methods: store.paymentStatusData?.availablePayoutMethods ?? [],
-                direction: .payout,
-                selected: $selected,
-                connectTitle: L10n.generalContinueButton,
-                onConnect: { showConnectPayoutMethod = selected },
-                onCancel: { router.dismiss() }
-            )
-        }
-    }
-
-    private var confirmationContent: some View {
-        VStack(spacing: .padding16) {
-            hText(L10n.onboardingConnectPaymentSwitchAccountsLater, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .multilineTextAlignment(.center)
-            hSection {
-                hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
-                    router.dismiss()
-                }
-            }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-
     private var formTitle: hTitle {
         .init(
             .navigationLike,
@@ -101,6 +66,23 @@ struct PayoutChangeMethodScreen: View {
             connectedProvider == nil ? L10n.payoutSelectPayoutMethod : L10n.paymentPayoutBankSuccessTitle,
             alignment: .center
         )
+    }
+}
+
+extension View {
+    func handleChangePayoutMethod(presented: Binding<Bool>) -> some View {
+        detent(
+            presented: presented,
+            presentationStyle: .detent(style: [.height]),
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            PayoutChangeMethodScreen()
+                .hFormContentPosition(.compact)
+                .embededInNavigation(
+                    options: [.navigationBarHidden],
+                    tracking: String(describing: PayoutChangeMethodScreen.self)
+                )
+        }
     }
 }
 
