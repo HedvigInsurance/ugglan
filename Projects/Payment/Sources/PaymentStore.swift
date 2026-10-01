@@ -37,20 +37,8 @@ public final class PaymentStore: AppStore {
         }
     }
 
-    var showsChangePayinMethod: Bool {
-        guard let paymentStatusData else { return false }
-        switch paymentStatusData.layout {
-        case .qasaOnly: return paymentData != nil
-        case .other: return paymentStatusData.hasAnyPayinMethod
-        }
-    }
-
     var showsPayoutSection: Bool {
-        guard let paymentStatusData else { return false }
-        switch paymentStatusData.layout {
-        case .qasaOnly: return paymentStatusData.hasAnyPayoutMethod
-        case .other: return paymentStatusData.hasAnyPayoutMethod
-        }
+        paymentStatusData?.hasAnyPayoutMethod ?? false
     }
 
     var showsNoPaymentsInProgress: Bool {

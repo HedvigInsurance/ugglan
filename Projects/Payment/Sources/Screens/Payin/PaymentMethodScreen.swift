@@ -5,7 +5,7 @@ import hCoreUI
 
 struct PaymentMethodScreen: View {
     @AppObservedObject private var store: PaymentStore
-    @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
+    @EnvironmentObject private var router: NavigationRouter
     @State private var providerToSetUp: PaymentProvider?
     @State private var methodToRemove: ConnectedPaymentMethod?
     @State private var cantRemoveInfo: InfoViewModel?
@@ -49,7 +49,7 @@ struct PaymentMethodScreen: View {
                 PaymentRemoveMethodScreen(method: method) {
                     methodToRemove = nil
                     // The method is gone, so this screen has nothing left to show.
-                    paymentsNavigationVM.paymentsRouter.pop()
+                    router.pop()
                     PaymentStore.refreshStatusDetached()
                 }
             }
@@ -148,6 +148,7 @@ fileprivate struct PreviewData {
     return PaymentMethodScreen(paymentProvider: .invoice)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
+        .environmentObject(NavigationRouter())
 }
 
 #Preview("Trustly") {
@@ -156,6 +157,7 @@ fileprivate struct PreviewData {
     return PaymentMethodScreen(paymentProvider: .trustly)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
+        .environmentObject(NavigationRouter())
 }
 
 #Preview("Swish") {
@@ -163,6 +165,7 @@ fileprivate struct PreviewData {
     return PaymentMethodScreen(paymentProvider: .swish)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
+        .environmentObject(NavigationRouter())
 }
 
 #Preview("Nordea") {
@@ -171,6 +174,7 @@ fileprivate struct PreviewData {
     return PaymentMethodScreen(paymentProvider: .nordea)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
+        .environmentObject(NavigationRouter())
 }
 
 #Preview("Unknown") {
@@ -178,4 +182,5 @@ fileprivate struct PreviewData {
     return PaymentMethodScreen(paymentProvider: .unknown)
         .environmentObject(store)
         .environmentObject(PaymentsNavigationViewModel())
+        .environmentObject(NavigationRouter())
 }
