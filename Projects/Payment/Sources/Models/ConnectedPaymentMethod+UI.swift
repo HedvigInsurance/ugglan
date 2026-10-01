@@ -2,7 +2,7 @@ import hCore
 import hCoreUI
 
 extension ConnectedPaymentMethod {
-    var title: String {
+    private var title: String {
         switch method {
         case .trustly:
             L10n.myPaymentBankRowLabel
@@ -21,7 +21,7 @@ extension ConnectedPaymentMethod {
         }
     }
 
-    var titleForMissedPayment: String {
+    private var titleForMissedPayment: String {
         switch method {
         case .trustly:
             L10n.bankPayoutMethodCardTitle
@@ -30,7 +30,7 @@ extension ConnectedPaymentMethod {
         }
     }
 
-    var info: String {
+    private var info: String {
         switch method {
         case .trustly, .nordea:
             method.bankAccount?.account ?? ""
@@ -43,7 +43,7 @@ extension ConnectedPaymentMethod {
         }
     }
 
-    var subtitle: String? {
+    private var subtitle: String? {
         switch method {
         case .trustly, .nordea:
             method.bankAccount.map { "\($0.bank) \($0.account)" }
@@ -58,7 +58,14 @@ extension ConnectedPaymentMethod {
         status == .pending
     }
 
+    /// How the method reads as a row: the provider over the account or number it uses.
     var item: ItemModel {
         .init(title: title, subTitle: isPending ? L10n.referralPendingStatusLabel : subtitle)
+    }
+
+    /// How the method reads in the overdue breakdown, where it is one labelled value rather
+    /// than a row — Trustly is the member's bank there, not "direct debit".
+    var missedPaymentRow: (label: String, value: String) {
+        (titleForMissedPayment, info)
     }
 }

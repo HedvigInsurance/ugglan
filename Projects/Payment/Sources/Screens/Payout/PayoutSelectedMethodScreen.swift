@@ -86,7 +86,7 @@ public struct PayoutSelectedMethodScreen: View {
             VStack(spacing: .padding8) {
                 if let payoutMethod = paymentStatusData.defaultOrFirstDefaultPayoutMethod {
                     hSection {
-                        PaymentMethodRow(locked: payoutMethod)
+                        PaymentMethodLockedRow(payoutMethod)
                     }
                     .sectionContainerStyle(.transparent)
                 }
