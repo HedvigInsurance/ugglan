@@ -32,13 +32,44 @@ public enum RecommendedCrossSell: Codable, Equatable, Hashable, Sendable, Identi
         }
     }
 
-    /// Optional banner text. Both insurance and addon recommendations may omit it,
-    /// in which case callers fall back to a default.
+    public var title: String {
+        switch self {
+        case let .insurance(insurance): return insurance.title
+        case let .addon(addon): return addon.title
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case let .insurance(insurance): return insurance.description
+        case let .addon(addon): return addon.description
+        }
+    }
+
+    public var buttonTitle: String {
+        switch self {
+        case let .insurance(insurance): return insurance.buttonTitle
+        case let .addon(addon): return addon.buttonText
+        }
+    }
+
     public var bannerText: String? {
         switch self {
         case let .insurance(insurance): return insurance.bannerText
         case let .addon(addon): return addon.bannerText
         }
+    }
+
+    public var destination: Destination {
+        switch self {
+        case let .insurance(insurance): return .storeURL(insurance.webActionURL)
+        case let .addon(addon): return .deepLink(addon.deepLink)
+        }
+    }
+
+    public enum Destination: Equatable, Sendable {
+        case storeURL(String?)
+        case deepLink(String)
     }
 }
 

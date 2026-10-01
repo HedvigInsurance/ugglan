@@ -15,6 +15,7 @@ public protocol ConversationClient {
         newerToken: String?
     ) async throws -> ConversationMessagesData
     func send(message: Message, for conversationId: String) async throws -> Message
+    func hideCrossSales(for conversationId: String) async throws
 }
 
 public struct ConversationMessagesData {
@@ -29,6 +30,7 @@ public struct ConversationMessagesData {
     let claimType: String?
     let claimId: String?
     let responseIsBeingGenerated: Bool
+    let showCrossSales: Bool
     public init(
         messages: [Message],
         banner: Markdown?,
@@ -40,7 +42,8 @@ public struct ConversationMessagesData {
         hasClaim: Bool,
         claimType: String?,
         claimId: String?,
-        responseIsBeingGenerated: Bool
+        responseIsBeingGenerated: Bool,
+        showCrossSales: Bool = false
     ) {
         self.messages = messages
         self.banner = banner
@@ -53,6 +56,7 @@ public struct ConversationMessagesData {
         self.claimType = claimType
         self.claimId = claimId
         self.responseIsBeingGenerated = responseIsBeingGenerated
+        self.showCrossSales = showCrossSales
     }
 
     var screenTitle: String {

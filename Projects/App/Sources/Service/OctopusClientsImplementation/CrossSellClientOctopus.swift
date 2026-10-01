@@ -105,6 +105,7 @@ extension CrossSellSource {
         case .home: .home
         case .insurances: .insurances
         case .onboarding: .onboarding
+        case .inChat: .inChatXSell
         }
     }
 
@@ -118,6 +119,7 @@ extension CrossSellSource {
         case .home: nil
         case .insurances: nil
         case .onboarding: nil
+        case .inChat: nil
         }
     }
 
@@ -125,7 +127,7 @@ extension CrossSellSource {
         switch self {
         case let .changeTier(contractId), let .movingFlow(contractId): contractId
         case let .closedClaim(_, contractId): contractId
-        case .homeXSell, .addon, .home, .insurances, .onboarding: nil
+        case .homeXSell, .addon, .home, .insurances, .onboarding, .inChat: nil
         }
     }
 

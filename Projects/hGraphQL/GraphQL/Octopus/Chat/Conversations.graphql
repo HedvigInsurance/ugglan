@@ -17,6 +17,7 @@ query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerTo
         ... MessagePageFragment
     }
 	responseIsBeingGenerated
+    showCrossSales
     statusMessage
     createdAt
     isLegacy
@@ -41,6 +42,13 @@ mutation ConversationSendMessage($input: ConversationSendMessageInput!) {
 mutation ConversationStart($input: ConversationStartInput!) {
   conversationStart(input: $input) {
     ...ConversationFragment
+  }
+}
+
+mutation ConversationHideCrossSales($id: UUID!) {
+  conversationHideCrossSales(id: $id) {
+    id
+    showCrossSales
   }
 }
 

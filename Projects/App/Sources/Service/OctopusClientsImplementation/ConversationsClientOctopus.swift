@@ -112,8 +112,14 @@ class ConversationClientOctopus: ConversationClient {
             hasClaim: hasClaim,
             claimType: conversation.claim?.claimType,
             claimId: conversation.claim?.id,
-            responseIsBeingGenerated: conversation.responseIsBeingGenerated
+            responseIsBeingGenerated: conversation.responseIsBeingGenerated,
+            showCrossSales: conversation.showCrossSales
         )
+    }
+
+    func hideCrossSales(for conversationId: String) async throws {
+        let mutation = hGraphQL.OctopusGraphQL.ConversationHideCrossSalesMutation(id: conversationId)
+        _ = try await octopus.client.mutation(mutation: mutation)
     }
 }
 
