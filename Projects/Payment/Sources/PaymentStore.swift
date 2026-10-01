@@ -97,7 +97,11 @@ public final class PaymentStore: AppStore {
         isLoadingPaymentData = false
     }
 
+    /// Several screens refresh on appear and every setup completion refreshes detached, so the
+    /// same query gets asked for twice within milliseconds. One in flight is enough — matching
+    /// `load(forceUpdate:)`, which already guards on its own loading flag.
     public func fetchPaymentStatus() async {
+        guard !isFetchingPaymentStatus else { return }
         isFetchingPaymentStatus = true
         do {
             paymentStatusData = try await paymentService.getPaymentStatusData()

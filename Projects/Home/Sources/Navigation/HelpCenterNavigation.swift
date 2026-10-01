@@ -47,9 +47,18 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
     case startView
 }
 
+/// Holds the quick-actions view model so only this modifier re-evaluates when one of its flags
+/// changes — observing it on `HelpCenterNavigation` itself rebuilt the whole stack instead.
+private struct PaymentMethodsFromQuickActions: ViewModifier {
+    @ObservedObject var vm: QuickActionsViewModel
+
+    func body(content: Content) -> some View {
+        content.handlePaymentMethods(presented: $vm.isPaymentsPresented)
+    }
+}
+
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
-    @ObservedObject var quickActionsVm: QuickActionsViewModel
 
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
 
@@ -58,7 +67,6 @@ public struct HelpCenterNavigation<Content: View>: View {
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
         self.helpCenterVm = helpCenterVm
-        self.quickActionsVm = helpCenterVm.quickActionsVm
         self.redirect = redirect
     }
 
@@ -95,7 +103,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         .ignoresSafeArea()
                 }
             }
-            .handlePaymentMethods(presented: $quickActionsVm.isPaymentsPresented)
+            .modifier(PaymentMethodsFromQuickActions(vm: helpCenterVm.quickActionsVm))
             .task(id: helpCenterVm.pendingPuppyGuideRoute) {
                 guard let route = helpCenterVm.pendingPuppyGuideRoute else { return }
                 helpCenterVm.router.popToRoot()

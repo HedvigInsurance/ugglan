@@ -306,7 +306,9 @@ enum SwishQRCode {
         }
 
         let format = UIGraphicsImageRendererFormat()
-        format.scale = 2
+        // A module is already 12pt wide, so a ~77-module code is a ~920pt bitmap for a 180pt
+        // view. Scaling that up again cost ~13MB and bought nothing the screen can show.
+        format.scale = 1
         let side = CGFloat(count) * moduleSize
         let image = UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format)
             .image { _ in
