@@ -3,19 +3,27 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+/// What happens once a provider's pay-in setup succeeds.
+enum PayinSetupCompletion {
+    /// Dismiss the setup and show a non-swipeable `PaymentAddPaymentMethod` confirmation.
+    case showConfirmation
+    /// Dismiss the setup and hand the connected provider to the caller.
+    case custom((PaymentProvider) -> Void)
+}
+
 extension View {
-    func handlePaymentSetup(
+    func handlePayinSetup(
         for provider: Binding<PaymentProvider?>,
         phoneNumber: String? = nil,
-        showSuccess: Bool = false,
-        onSuccess: @escaping (PaymentProvider) -> Void = { _ in }
+        additionalOptions: DetentPresentationOption = [],
+        completion: PayinSetupCompletion
     ) -> some View {
         modifier(
-            PaymentSetupDetent(
+            PayinSetupDetent(
                 provider: provider,
                 phoneNumber: phoneNumber,
-                showSuccess: showSuccess,
-                onSuccess: onSuccess
+                additionalOptions: additionalOptions,
+                completion: completion
             )
         )
     }
@@ -29,12 +37,11 @@ extension View {
     }
 }
 
-struct PaymentSetupDetent: ViewModifier {
+private struct PayinSetupDetent: ViewModifier {
     @Binding var provider: PaymentProvider?
     let phoneNumber: String?
-    let showSuccess: Bool
-    var additionalOptions: DetentPresentationOption = []
-    let onSuccess: (PaymentProvider) -> Void
+    let additionalOptions: DetentPresentationOption
+    let completion: PayinSetupCompletion
     @State private var connectedProvider: PaymentProvider?
 
     func body(content: Content) -> some View {
@@ -59,27 +66,29 @@ struct PaymentSetupDetent: ViewModifier {
     }
 
     private func setupSucceeded(_ connected: PaymentProvider) {
-        guard showSuccess else {
+        switch completion {
+        case .custom:
             finish(connected)
-            return
-        }
-        Task {
-            provider = nil
-            // Let the setup detent finish dismissing before presenting the confirmation.
-            await delay(0.1)
-            connectedProvider = connected
+        case .showConfirmation:
+            Task {
+                provider = nil
+                // Let the setup detent finish dismissing before presenting the confirmation.
+                await delay(0.1)
+                connectedProvider = connected
+            }
         }
     }
 
     private func finish(_ connected: PaymentProvider) {
         provider = nil
         connectedProvider = nil
-        onSuccess(connected)
+        if case let .custom(onSuccess) = completion {
+            onSuccess(connected)
+        }
         PaymentStore.refreshStatusDetached()
     }
 }
 
-/// `.alwaysOpenOnTop` because a deep link can arrive while something else is already showing.
 private struct PayinSetupDeepLinkDetent: ViewModifier {
     let provider: PaymentProvider
     @Binding var presented: Bool
@@ -89,17 +98,15 @@ private struct PayinSetupDeepLinkDetent: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .modifier(
-                PaymentSetupDetent(
-                    provider: Binding(
-                        get: { presented ? provider : nil },
-                        set: { presented = $0 != nil }
-                    ),
-                    phoneNumber: store.paymentStatusData?.memberPhoneNumber,
-                    showSuccess: true,
-                    additionalOptions: .alwaysOpenOnTop,
-                    onSuccess: { _ in }
-                )
+            .handlePayinSetup(
+                for: Binding(
+                    get: { presented ? provider : nil },
+                    set: { presented = $0 != nil }
+                ),
+                phoneNumber: store.paymentStatusData?.memberPhoneNumber,
+                // A deep link can arrive while something else is already showing.
+                additionalOptions: .alwaysOpenOnTop,
+                completion: .showConfirmation
             )
     }
 }
@@ -114,7 +121,7 @@ private struct PayinSetupScreen: View {
         case .trustly:
             DirectDebitSetup(onSuccess: onSuccess)
         case .swish:
-            SwishPayinSetupScreen(phoneNumber: phoneNumber, onSuccess: { onSuccess() })
+            SwishPayinSetupScreen(phoneNumber: phoneNumber, onSuccess: onSuccess)
         case .nordea, .invoice, .unknown:
             UpdateAppScreen {}.withAlertDismiss()
         }

@@ -61,9 +61,13 @@ public struct PaymentAddPaymentMethod: View {
             bottomContent
         }
         .hFormTitle(title: formTitle, subTitle: formSubTitle)
-        .handlePaymentSetup(for: $providerToSetUp, phoneNumber: prefilledPhoneNumber) { provider in
-            withAnimation { connectedProvider = provider }
-        }
+        .handlePayinSetup(
+            for: $providerToSetUp,
+            phoneNumber: prefilledPhoneNumber,
+            completion: .custom { provider in
+                withAnimation { connectedProvider = provider }
+            }
+        )
         .task {
             // The picker lists what the backend offers, so a host that opens this screen
             // without having loaded the status has nothing to show until it is fetched.

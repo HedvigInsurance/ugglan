@@ -33,7 +33,11 @@ struct PaymentMethodScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .handlePaymentSetup(for: $providerToSetUp, phoneNumber: statusData.memberPhoneNumber, showSuccess: true)
+            .handlePayinSetup(
+                for: $providerToSetUp,
+                phoneNumber: statusData.memberPhoneNumber,
+                completion: .showConfirmation
+            )
             .hSetScrollBounce(to: true)
             .onPullToRefresh {
                 await store.fetchPaymentStatus()
