@@ -525,6 +525,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_METHODS_EMPTY" = "Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
 "PAYMENT_METHOD_PENDING" = "Det kan ta några dagar innan din nya betalningsmetod börjar gälla.";
+"PAYMENT_METHOD_REQUIRED_FOOTNOTE" = "Krävs för att din försäkring ska vara aktiv";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Kopplad";
