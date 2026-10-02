@@ -7,15 +7,18 @@ public struct ChatScreen: View {
     @ObservedObject var vm: ChatScreenViewModel
     @ObservedObject var conversationVm: ChatConversationViewModel
     @ObservedObject var messageVm: ChatMessageViewModel
+    @ObservedObject var crossSellVm: ChatCrossSellViewModel
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
     @State private var isTargetedForDropdown = false
+    @AccessibilityFocusState private var isChatInputFocused: Bool
     public init(
         vm: ChatScreenViewModel
     ) {
         self.vm = vm
         messageVm = vm.messageVm
         conversationVm = vm.messageVm.conversationVm
+        crossSellVm = vm.messageVm.crossSellVm
     }
 
     public var body: some View {
@@ -24,9 +27,9 @@ public struct ChatScreen: View {
             messagesContainer(with: proxy)
                 .flippedUpsideDown()
                 .padding(.bottom, -8)
-            infoCard
+            bottomBanner
                 .padding(.bottom, -8)
-            ChatInputView(vm: vm.chatInputVm)
+            ChatInputView(vm: vm.chatInputVm, a11yFocus: $isChatInputFocused)
                 .padding(.bottom, .padding16)
                 .layoutPriority(1)
         }
@@ -40,6 +43,24 @@ public struct ChatScreen: View {
             )
         )
         .trackVisibility(as: ChatScreen.self)
+        .onChange(of: crossSellVm.recommended?.id) { id in
+            // Answering the prompt removes the button that VoiceOver is focused on, which
+            // would otherwise throw focus back to the top of the conversation with no
+            // confirmation that the tap did anything. Guarding on nil keeps the banner
+            // appearing from stealing focus.
+            if id == nil {
+                isChatInputFocused = true
+            } else {
+                // Nothing in the layout moves when a poll inserts the prompt, so VoiceOver
+                // would stay silent on a card the member can act on. The wait lets the
+                // insertion settle -- an announcement posted into it is dropped, not queued.
+                let announcement = crossSellVm.voiceOverAnnouncement
+                Task {
+                    await delay(0.25)
+                    UIAccessibility.post(notification: .announcement, argument: announcement)
+                }
+            }
+        }
     }
 
     @ViewBuilder
@@ -168,30 +189,82 @@ public struct ChatScreen: View {
         .foregroundColor(hTextColor.Opaque.secondary)
     }
 
+    // Three independent elements share the slot above the input. An offer takes the slot
+    // away from the status message, but sits alongside the closed notice, which tells the
+    // member nobody will reply. All three hide while the keyboard is up; the offer and the
+    // closed notice come back when it is dismissed, while the status message rides on
+    // `shouldShowBanner`, which latches off for the session.
+    //
+    // offer | status | closed | shows               | after keyboard open/close
+    // ------+--------+--------+---------------------+--------------------------
+    //   -   |   -    |   -    | nothing             | nothing
+    //   -   |   x    |   -    | Info                | nothing
+    //   -   |   -    |   x    | ClosedInfo          | ClosedInfo
+    //   -   |   x    |   x    | ClosedInfo          | ClosedInfo
+    //   x   |   -    |   -    | Banner              | Banner
+    //   x   |   x    |   -    | Banner              | Banner
+    //   x   |   -    |   x    | Banner + ClosedInfo | Banner + ClosedInfo
+    //   x   |   x    |   x    | Banner + ClosedInfo | Banner + ClosedInfo
+    //
+    // Each element is its own conditional rather than a branch of one `if`, so SwiftUI
+    // keeps their identities separate and can transition one without reinserting another.
     @ViewBuilder
-    private var infoCard: some View {
-        if conversationVm.shouldShowBanner {
-            if let banner = conversationVm.banner {
-                InfoCard(text: "", type: .info)
-                    .hInfoCardCustomView {
-                        MarkdownView(
-                            config: .init(
-                                text: (conversationVm.conversationStatus == .closed)
-                                    ? L10n.chatConversationClosedInfo : banner,
-                                fontStyle: .label,
-                                color: hSignalColor.Blue.text,
-                                linkColor: hSignalColor.Blue.text,
-                                linkUnderlineStyle: .single,
-                                isSelectable: false
-                            ) { url in
-                                NotificationCenter.default.post(name: .openDeepLink, object: url)
-                            }
-                        )
-                    }
-                    .hInfoCardLayoutStyle(.bannerStyle)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
+    private var bottomBanner: some View {
+        VStack(spacing: 0) {
+            if showsCrossSell {
+                hSection {
+                    ChatCrossSellBanner(vm: crossSellVm)
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.bottom, .padding16)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+            if showsClosedInfo {
+                infoCard(text: L10n.chatConversationClosedInfo)
+            }
+            if showsStatusInfo, let banner = conversationVm.banner {
+                infoCard(text: banner)
             }
         }
+        .animation(.spring, value: showsCrossSell)
+        .animation(.spring, value: showsClosedInfo)
+        .animation(.spring, value: showsStatusInfo)
+
+        .frame(maxWidth: .infinity)
+    }
+
+    private var showsCrossSell: Bool {
+        crossSellVm.recommended != nil && !conversationVm.isKeyboardShown
+    }
+
+    private var showsClosedInfo: Bool {
+        conversationVm.conversationStatus == .closed && !conversationVm.isKeyboardShown
+    }
+
+    private var showsStatusInfo: Bool {
+        crossSellVm.recommended == nil
+            && conversationVm.conversationStatus != .closed
+            && conversationVm.shouldShowBanner
+    }
+
+    private func infoCard(text: Markdown) -> some View {
+        InfoCard(text: "", type: .info)
+            .hInfoCardCustomView {
+                MarkdownView(
+                    config: .init(
+                        text: text,
+                        fontStyle: .label,
+                        color: hSignalColor.Blue.text,
+                        linkColor: hSignalColor.Blue.text,
+                        linkUnderlineStyle: .single,
+                        isSelectable: false
+                    ) { url in
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    }
+                )
+            }
+            .hInfoCardLayoutStyle(.bannerStyle)
+            .transition(.opacity)
     }
 }
 
