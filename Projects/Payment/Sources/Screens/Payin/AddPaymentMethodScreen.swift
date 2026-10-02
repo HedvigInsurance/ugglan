@@ -52,7 +52,6 @@ public struct AddPaymentMethodScreen: View {
             title: formTitle,
             subTitle: formSubTitle,
             connectTitle: L10n.paymentConnectTitle,
-            confirmationFootnote: L10n.paymentChangeFootnote,
             selected: $selected,
             connectedProvider: connectedProvider,
             onConnect: { providerToSetUp = selected },
