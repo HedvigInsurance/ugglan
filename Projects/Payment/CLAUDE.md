@@ -29,8 +29,8 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 - `Sources/Screens/ConnectPayments/ConnectPayment+modifier.swift` — `.handleConnectPayment(with:)` modifier that presents the connect-payment detent based on `ConnectPaymentViewModel`.
 - `Sources/Screens/ConnectPayments/ConnectPaymentCard.swift` — Card content shown inside the connect-payment detent.
 - `Sources/Screens/ConnectPayments/ConnectPaymentBottomView.swift` — Bottom button content for the connect-payment sheet.
-- `Sources/Screens/ConnectPayments/DirectDebitSetup.swift` — `UIViewRepresentable` wrapping `WKWebView` for Trustly/Adyen flows.
-- `Sources/Screens/ConnectPayments/TrustlyScriptHandler.swift` — Bridges Trustly JS messages back to Swift.
+- `Sources/Screens/ConnectPayments/DirectDebitSetup.swift` — `UIViewRepresentable` hosting the `TrustlyIosSdk` `TrustlyWKWebView` for the Trustly flow.
+- `Sources/Screens/ConnectPayments/TrustlyWebViewCoordinator.swift` — `WKUIDelegate` filling the two gaps the SDK leaves: loading state and `target="_blank"` links.
 - `Sources/Screens/ConnectPayments/DirectDebitResult.swift` — Result/feedback view after a setup attempt.
 
 ### Payout (Nordea / Swish)
@@ -73,7 +73,7 @@ Manages payment information display, payin method setup (Trustly/Kivra/Adyen), p
 - **`PaymentDetailsView` is public**: Home presents it as a detent for its Upcoming payment tile.
 - **`PaymentStore` is the source of truth.** Setup screens (Nordea/Swish/Trustly) maintain their own local state and trigger `store.fetchPaymentStatus()` on success via `globalAppStateContainer.get()`.
 - **Demo client path is non-standard**: `PaymentClientDemo.swift` is in `Service/Protocols/` instead of `Service/DemoImplementation/`. Other modules put demo clients under `DemoImplementation/`.
-- **`DirectDebitSetup`** is a UIKit `UIViewRepresentable` wrapping `WKWebView`; uses `TrustlyScriptHandler` for JS↔Swift bridging and Combine-based state synchronization. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.
+- **`DirectDebitSetup`** hosts `TrustlyIosSdk`'s `TrustlyWKWebView`. Success/error/abort and the BankID hand-off all arrive as checkout events on the SDK's bridge — **do not re-add URL sniffing or a `bankid://` scheme handler**; Android has none either. The SDK's inner `WKWebView` is `internal`, so it is reached via `subviews`, and it ships with a fixed frame and no constraints, hence the `autoresizingMask`. Feature flag `isConnectPaymentEnabled` short-circuits the flow when disabled.
 - **`ConnectPaymentViewModel`** is held at navigation level so it survives view dismissals; `SetupType` is determined at runtime based on `PaymentProvider`.
 - **`PayinMethodStatus.hasFailed`** only returns true for `.addedtoFuture` (outstanding charge), not for arbitrary error states.
 - **Overdue charge action**: `hPaymentClient.chargeOutstandingPayment()` is the API used by `MissedPaymentScreen` to trigger a re-charge; success bubbles back through the screen's `onSuccess` closure, popping back to the payments root.
