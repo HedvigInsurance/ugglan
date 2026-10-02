@@ -150,12 +150,7 @@ struct SwishPayinConsentScreen: View {
     private var bottomContent: some View {
         hSection {
             VStack(spacing: .padding16) {
-                VStack(spacing: 0) {
-                    helpLink
-                    hText(L10n.paymentChangeFootnote, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .multilineTextAlignment(.center)
-                }
+                helpLink
                 VStack(spacing: .padding8) {
                     primaryButton
                     cancelButton

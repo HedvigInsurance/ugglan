@@ -9,7 +9,7 @@ struct PaymentConnectFlowView: View {
     let title: hTitle
     var subTitle: hTitle? = nil
     let connectTitle: String
-    let confirmationFootnote: String
+    var confirmationFootnote: String? = nil
     @Binding var selected: PaymentProvider?
     let connectedProvider: PaymentProvider?
     let onConnect: () -> Void
@@ -56,9 +56,11 @@ struct PaymentConnectFlowView: View {
 
     private var confirmationContent: some View {
         VStack(spacing: .padding16) {
-            hText(confirmationFootnote, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .multilineTextAlignment(.center)
+            if let confirmationFootnote {
+                hText(confirmationFootnote, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .multilineTextAlignment(.center)
+            }
             hSection {
                 hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
                     onContinue()
