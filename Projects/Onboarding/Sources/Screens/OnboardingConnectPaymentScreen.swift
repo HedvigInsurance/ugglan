@@ -13,7 +13,6 @@ struct OnboardingConnectPaymentScreen: View {
                 subTitle: L10n.onboardingConnectPaymentSubtitle,
                 alignment: .leading
             ),
-            phoneNumber: vm.enteredPhoneNumber,
             connectedProvider: vm.connectedPaymentProvider
         ) { provider in
             // Connecting is the only way on from here, so the step is done and connected.

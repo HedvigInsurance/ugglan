@@ -24,29 +24,21 @@ public struct AddPaymentMethodScreen: View {
     @State private var connectedProvider: PaymentProvider?
 
     private let heading: Heading?
-    private let phoneNumber: String?
     private let onFinished: ((_ provider: PaymentProvider) -> Void)?
 
     public init() {
         self.heading = nil
-        self.phoneNumber = nil
         self.onFinished = nil
     }
 
     public init(
         heading: Heading? = nil,
-        phoneNumber: String? = nil,
         connectedProvider: PaymentProvider? = nil,
         onFinished: @escaping (_ provider: PaymentProvider) -> Void
     ) {
         self.heading = heading
-        self.phoneNumber = phoneNumber
         self.onFinished = onFinished
         _connectedProvider = State(initialValue: connectedProvider)
-    }
-
-    private var prefilledPhoneNumber: String? {
-        phoneNumber ?? store.paymentStatusData?.memberPhoneNumber
     }
 
     private var isHostedInFlow: Bool {
@@ -69,7 +61,7 @@ public struct AddPaymentMethodScreen: View {
         )
         .handlePayinSetup(
             for: $providerToSetUp,
-            phoneNumber: prefilledPhoneNumber,
+            canChangeMethod: true,
             completion: .custom { provider in
                 withAnimation { connectedProvider = provider }
             }
@@ -145,8 +137,7 @@ private func setUpPreviewStore() {
             .init(provider: .invoice, supportsPayin: true, supportsPayout: false),
         ],
         missingConnection: .payin,
-        layout: .other,
-        memberPhoneNumber: "0735328847"
+        layout: .other
     )
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })

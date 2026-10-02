@@ -1,4 +1,3 @@
-import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -13,15 +12,15 @@ enum PayinSetupCompletion {
 extension View {
     func handlePayinSetup(
         for provider: Binding<PaymentProvider?>,
-        phoneNumber: String? = nil,
         additionalOptions: DetentPresentationOption = [],
+        canChangeMethod: Bool = false,
         completion: PayinSetupCompletion
     ) -> some View {
         modifier(
             PayinSetupDetent(
                 provider: provider,
-                phoneNumber: phoneNumber,
                 additionalOptions: additionalOptions,
+                canChangeMethod: canChangeMethod,
                 completion: completion
             )
         )
@@ -34,8 +33,9 @@ extension View {
 
 private struct PayinSetupDetent: ViewModifier {
     @Binding var provider: PaymentProvider?
-    let phoneNumber: String?
     let additionalOptions: DetentPresentationOption
+    /// Whether the setup was opened from a method picker the member can go back to.
+    let canChangeMethod: Bool
     let completion: PayinSetupCompletion
     @State private var connectedProvider: PaymentProvider?
 
@@ -46,7 +46,7 @@ private struct PayinSetupDetent: ViewModifier {
                 presentationStyle: provider?.payinSetupPresentationStyle ?? .detent(style: [.large]),
                 options: .constant((provider?.payinSetupPresentationOptions ?? []).union(additionalOptions))
             ) { presented in
-                PayinSetupScreen(provider: presented, phoneNumber: phoneNumber) { setupSucceeded(presented) }
+                PayinSetupScreen(provider: presented, canChangeMethod: canChangeMethod) { setupSucceeded(presented) }
             }
             // Not dismissable by swipe, so Continue is always what finishes the flow and refreshes.
             .detent(
@@ -75,26 +75,25 @@ private struct PayinSetupDetent: ViewModifier {
     }
 
     private func finish(_ connected: PaymentProvider) {
-        provider = nil
-        connectedProvider = nil
         if case let .custom(onSuccess) = completion {
             onSuccess(connected)
         }
         PaymentStore.refreshStatusDetached()
+        Task {
+            await delay(0.15)
+            provider = nil
+            connectedProvider = nil
+        }
     }
 }
 
 private struct PayinSetupDeepLinkDetent: ViewModifier {
     @Binding var provider: PaymentProvider?
-    /// The deep link carries no phone number of its own, so the flow falls back to the one
-    /// fetched with the payment methods.
-    @AppState private var store: PaymentStore
 
     func body(content: Content) -> some View {
         content
             .handlePayinSetup(
                 for: $provider,
-                phoneNumber: store.paymentStatusData?.memberPhoneNumber,
                 // A deep link can arrive while something else is already showing.
                 additionalOptions: .alwaysOpenOnTop,
                 completion: .showConfirmation
@@ -104,7 +103,7 @@ private struct PayinSetupDeepLinkDetent: ViewModifier {
 
 private struct PayinSetupScreen: View {
     let provider: PaymentProvider
-    let phoneNumber: String?
+    let canChangeMethod: Bool
     let onSuccess: () -> Void
 
     var body: some View {
@@ -112,7 +111,7 @@ private struct PayinSetupScreen: View {
         case .trustly:
             DirectDebitSetup(onSuccess: onSuccess)
         case .swish:
-            SwishPayinSetupScreen(phoneNumber: phoneNumber, onSuccess: onSuccess)
+            SwishPayinConsentScreen(canChangeMethod: canChangeMethod, onConnected: { onSuccess() })
         case .nordea, .invoice, .unknown:
             UpdateAppScreen {}.withAlertDismiss()
         }

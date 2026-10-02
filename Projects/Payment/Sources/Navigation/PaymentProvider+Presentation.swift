@@ -5,9 +5,9 @@ import hCoreUI
 extension PaymentProvider {
     var payinSetupPresentationStyle: DetentPresentationStyle {
         switch self {
-        case .trustly, .unknown, .invoice, .swish:
+        case .trustly, .unknown, .invoice:
             return .detent(style: [.large])
-        case .nordea:
+        case .swish, .nordea:
             return .detent(style: [.height])
         }
     }

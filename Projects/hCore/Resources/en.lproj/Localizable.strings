@@ -525,6 +525,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_METHODS_EMPTY" = "No payment method added. Add one to pay for your insurance.";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
 "PAYMENT_METHOD_PENDING" = "It can take a few days for your new payment method to take effect.";
+"PAYMENT_METHOD_REQUIRED_FOOTNOTE" = "Required to keep your insurance active";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
 "PAYMENT_OPTION_CONNECTED_LABEL" = "Connected";
@@ -649,6 +650,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SWISH_EXPLANATION_ITEM_2_TITLE" = "Payouts straight to Swish";
 "SWISH_EXPLANATION_ITEM_3_TEXT" = "Switch or remove your payment method in settings.";
 "SWISH_EXPLANATION_ITEM_3_TITLE" = "Change anytime";
+"SWISH_INFO_BOX" = "By choosing Swish, you agree that your premium will be charged automatically via Swish every month. We'll notify you in the Hedvig app before each payment.";
 /* Figma page iOS Release 1 */
 "TAB_HOME_TITLE" = "Home";
 /* Figma page iOS Release 1 */

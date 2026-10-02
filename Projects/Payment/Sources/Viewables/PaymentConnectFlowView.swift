@@ -1,3 +1,4 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,7 +15,7 @@ struct PaymentConnectFlowView: View {
     let onConnect: () -> Void
     let onCancel: (() -> Void)?
     let onContinue: () -> Void
-
+    @AppObservedObject private var store: PaymentStore
     var body: some View {
         hForm {
             PaymentConnectionGraphic(
@@ -35,14 +36,21 @@ struct PaymentConnectFlowView: View {
         if connectedProvider != nil {
             confirmationContent
         } else {
-            PaymentMethodPickerList(
-                methods: methods,
-                direction: direction,
-                selected: $selected,
-                connectTitle: connectTitle,
-                onConnect: onConnect,
-                onCancel: onCancel
-            )
+            VStack(spacing: .padding16) {
+                if store.paymentStatusData?.hasAnyPayinMethod == false {
+                    hText(L10n.paymentMethodRequiredFootnote, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                PaymentMethodPickerList(
+                    methods: methods,
+                    direction: direction,
+                    selected: $selected,
+                    connectTitle: connectTitle,
+                    onConnect: onConnect,
+                    onCancel: onCancel
+                )
+            }
         }
     }
 
