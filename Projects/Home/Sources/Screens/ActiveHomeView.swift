@@ -131,6 +131,16 @@ private struct HeroBackgroundView: View {
     }
 }
 
+private struct ConnectPaymentCardSection: View {
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+
+    var body: some View {
+        ConnectPaymentCardView(onConnectPayment: {
+            navigationVm.isAddPaymentMethodPresented = true
+        })
+    }
+}
+
 private struct HomeSheetContent: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
@@ -141,6 +151,9 @@ private struct HomeSheetContent: View {
 
     var body: some View {
         VStack(spacing: .padding40) {
+            if bottomVm.showsConnectPaymentCard {
+                ConnectPaymentCardSection()
+            }
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)

@@ -7,17 +7,21 @@ public struct PayoutSelectedMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @State private var showChangePayoutMethod = false
 
     public var body: some View {
-        if let paymentStatusData = store.paymentStatusData {
-            if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
-                existingPayoutView(paymentStatusData: paymentStatusData)
-            } else if paymentStatusData.availablePayoutMethods.isEmpty {
-                missingPayinView
-            } else {
-                missingPayoutView(paymentStatusData: paymentStatusData)
+        Group {
+            if let paymentStatusData = store.paymentStatusData {
+                if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
+                    existingPayoutView(paymentStatusData: paymentStatusData)
+                } else if paymentStatusData.availablePayoutMethods.isEmpty {
+                    missingPayinView
+                } else {
+                    missingPayoutView(paymentStatusData: paymentStatusData)
+                }
             }
         }
+        .handleChangePayoutMethod(presented: $showChangePayoutMethod)
     }
 
     private func missingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
@@ -68,7 +72,7 @@ public struct PayoutSelectedMethodScreen: View {
                     content: .init(title: L10n.profilePaymentConnectDirectDebitButton)
                 ) {
                     router.dismiss()
-                    paymentsNavigationVm.connectPaymentVm.set()
+                    paymentsNavigationVm.showAddPaymentMethod = true
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -80,23 +84,11 @@ public struct PayoutSelectedMethodScreen: View {
     private func existingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
         hForm {
             VStack(spacing: .padding8) {
-                if let displayValue = paymentStatusData.payoutAccountDisplayValue,
-                    let displayTitle = paymentStatusData.payoutAccountDisplayTitle
-                {
+                if let payoutMethod = paymentStatusData.defaultOrFirstDefaultPayoutMethod {
                     hSection {
-                        hFloatingField(
-                            value: displayValue,
-                            placeholder: displayTitle,
-                            error: nil,
-                            onTap: {}
-                        )
-                        .hFieldTrailingView {
-                            hCoreUIAssets.lock.view
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                        }
-                        .hBackgroundOption(option: [.locked])
-                        .disabled(true)
+                        PaymentMethodLockedRow(payoutMethod)
                     }
+                    .sectionContainerStyle(.transparent)
                 }
             }
             .padding(.top, .padding16)
@@ -104,7 +96,7 @@ public struct PayoutSelectedMethodScreen: View {
         .hFormAttachToBottom {
             if paymentStatusData.payoutMethods.hasMethodInProgress {
                 hSection {
-                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .neutral)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -122,7 +114,7 @@ public struct PayoutSelectedMethodScreen: View {
                     .primary,
                     content: .init(title: title)
                 ) {
-                    router.push(PayoutRouterActions.changePayoutMethod)
+                    showChangePayoutMethod = true
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -131,39 +123,6 @@ public struct PayoutSelectedMethodScreen: View {
 }
 
 extension PaymentStatusData {
-    fileprivate var payoutAccountDisplayValue: String? {
-        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
-        switch method.details {
-        case .bankAccount(let account, _):
-            return "\(account)"
-        case .swish(let phoneNumber):
-            return "\(phoneNumber)"
-        case .invoice:
-            return method.provider.payoutTitle
-        case nil:
-            return ""
-        }
-    }
-
-    fileprivate var payoutAccountDisplayTitle: String? {
-        guard let method = defaultOrFirstDefaultPayoutMethod else { return nil }
-        guard let details = method.details else { return method.provider.payoutTitle }
-        let sufix: String? = {
-            switch details {
-            case .invoice:
-                return nil
-            case .swish:
-                return nil
-            case .bankAccount(_, let bank):
-                return bank
-            }
-        }()
-        if let sufix {
-            return method.provider.payoutTitle + " - " + sufix
-        }
-        return method.provider.payoutTitle
-    }
-
     fileprivate var showChangeButton: Bool {
         !availablePayoutMethods.isEmpty
     }
@@ -177,34 +136,32 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    provider: .nordea,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                    method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                 ),
                 payinMethods: [
                     .init(
-                        provider: .nordea,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    provider: .nordea,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(
-                        account: "3300-920123132",
-                        bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                    method: .nordea(
+                        bankAccount: .init(
+                            account: "3300-920123132",
+                            bank: "Nordea LONG NAME LONG LONG LONG LONG l"
+                        )
                     )
                 ),
                 payoutMethods: [
                     .init(
-                        provider: .nordea,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 availableMethods: [
@@ -232,31 +189,27 @@ extension PaymentStatusData {
                 status: .active,
                 chargingDay: nil,
                 defaultPayinMethod: .init(
-                    provider: .invoice,
                     status: .active,
                     isDefault: true,
-                    details: .invoice(delivery: .kivra, email: nil)
+                    method: .invoice(delivery: .kivra)
                 ),
                 payinMethods: [
                     .init(
-                        provider: .invoice,
                         status: .active,
                         isDefault: true,
-                        details: .invoice(delivery: .kivra, email: nil)
+                        method: .invoice(delivery: .kivra)
                     )
                 ],
                 defaultPayoutMethod: .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG")
+                    method: .trustly(bankAccount: .init(account: "2343242324", bank: "LONG bANK NAME THAT IS LONG"))
                 ),
                 payoutMethods: [
                     .init(
-                        provider: .trustly,
                         status: .active,
                         isDefault: true,
-                        details: .bankAccount(account: "3300-920123132", bank: "Nordea")
+                        method: .trustly(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
                     )
                 ],
                 availableMethods: [

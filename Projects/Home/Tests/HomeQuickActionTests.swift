@@ -163,7 +163,15 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
         throw PaymentError.missingDataError(message: "unused")
     }
 
+    func getPaymentSetupStatus(orderId _: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        .unknown
+    }
+
     func chargeOutstandingPayment() async throws {}
+
+    func setDefaultPaymentMethod(_: PaymentMethod) async throws {}
+
+    func removePaymentMethod(_: PaymentProvider) async throws {}
 }
 
 extension PaymentData {

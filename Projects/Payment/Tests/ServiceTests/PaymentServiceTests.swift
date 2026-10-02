@@ -71,17 +71,15 @@ final class PaymentServiceTests: XCTestCase {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "descriptor", bank: "displayName")
+                method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
             ),
             payinMethods: [
                 .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "descriptor", bank: "displayName")
+                    method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
                 )
             ],
             defaultPayoutMethod: nil,
@@ -120,6 +118,7 @@ final class PaymentServiceTests: XCTestCase {
     func testSetupPaymentMethodSuccess() async {
         let expectedResult = PaymentSetupResult(
             status: .pending,
+            orderId: "order-1",
             url: "https://hedvig.se/trustly",
             errorMessage: nil
         )
@@ -135,6 +134,17 @@ final class PaymentServiceTests: XCTestCase {
             .trustly
         )
         assert(result == expectedResult)
+    }
+
+    func testGetPaymentSetupStatusSuccess() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentSetupStatus: { .active }
+        )
+        sut = mockService
+
+        let status = try await mockService.getPaymentSetupStatus(orderId: "order-1")
+        assert(status == .active)
+        assert(mockService.events == [.getPaymentSetupStatus])
     }
 
     func testFetchMissedPaymentDataSuccess() async throws {
@@ -156,10 +166,9 @@ final class PaymentServiceTests: XCTestCase {
                 addedToThePayment: nil
             ),
             paymentMethodData: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "descriptor", bank: "displayName")
+                method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
             )
         )
 
@@ -205,6 +214,30 @@ final class PaymentServiceTests: XCTestCase {
             XCTFail("Expected chargeOutstandingPayment to throw")
         } catch {
             assert(mockService.events.first == .chargeOutstandingPayment)
+        }
+    }
+
+    func testSetDefaultPaymentMethodSuccess() async throws {
+        let mockService = MockPaymentData.createMockPaymentService(
+            setDefaultPaymentMethod: {}
+        )
+        sut = mockService
+
+        try await mockService.setDefaultPaymentMethod(.swish(phoneNumber: "0701231231"))
+        assert(mockService.events.first == .setDefaultPaymentMethod)
+    }
+
+    func testSetDefaultPaymentMethodFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            setDefaultPaymentMethod: { throw PaymentError.missingDataError(message: "error") }
+        )
+        sut = mockService
+
+        do {
+            try await mockService.setDefaultPaymentMethod(.swish(phoneNumber: "0701231231"))
+            XCTFail("Expected setDefaultPaymentMethod to throw")
+        } catch {
+            assert(mockService.events.first == .setDefaultPaymentMethod)
         }
     }
 }

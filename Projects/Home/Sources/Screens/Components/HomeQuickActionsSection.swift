@@ -93,8 +93,7 @@ private struct HomeQuickActionTile: View {
                 RoundedRectangle(cornerRadius: .cornerRadiusXL)
                     .stroke(hBorderColor.primary, lineWidth: 1)
             }
-            .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-            .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+            .hCardShadow()
         }
         .buttonStyle(HomeQuickActionTileStyle())
         .accessibilityElement(children: .combine)

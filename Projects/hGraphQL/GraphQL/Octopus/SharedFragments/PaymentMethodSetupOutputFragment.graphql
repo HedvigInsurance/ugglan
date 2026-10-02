@@ -1,5 +1,6 @@
 fragment PaymentMethodSetupOutputFragment on PaymentMethodSetupOutput {
     status
+    orderId
     url
     error {
         message

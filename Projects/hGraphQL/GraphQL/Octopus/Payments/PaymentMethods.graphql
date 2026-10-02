@@ -1,6 +1,7 @@
-query PaymentMethods {
+query PaymentMethods($version: Int!) {
     currentMember {
-        paymentMethods {
+        phoneNumber
+        paymentMethods(version: $version) {
             payinMethods {
                 ...MemberPaymentMethodFragment
             }

@@ -4,24 +4,26 @@ import hCore
 public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public var status: PayinMethodStatus
     let chargingDay: Int?
-    private let defaultPayinMethod: PaymentMethodData?
-    let payinMethods: [PaymentMethodData]
-    private let defaultPayoutMethod: PaymentMethodData?
-    let payoutMethods: [PaymentMethodData]
+    private let defaultPayinMethod: ConnectedPaymentMethod?
+    let payinMethods: [ConnectedPaymentMethod]
+    private let defaultPayoutMethod: ConnectedPaymentMethod?
+    let payoutMethods: [ConnectedPaymentMethod]
     public let availableMethods: [AvailablePaymentMethod]
     public let missingConnection: MissingPaymentConnection?
     public let layout: PaymentLayout
+    public let memberPhoneNumber: String?
 
     public init(
         status: PayinMethodStatus,
         chargingDay: Int?,
-        defaultPayinMethod: PaymentMethodData?,
-        payinMethods: [PaymentMethodData],
-        defaultPayoutMethod: PaymentMethodData?,
-        payoutMethods: [PaymentMethodData],
+        defaultPayinMethod: ConnectedPaymentMethod?,
+        payinMethods: [ConnectedPaymentMethod],
+        defaultPayoutMethod: ConnectedPaymentMethod?,
+        payoutMethods: [ConnectedPaymentMethod],
         availableMethods: [AvailablePaymentMethod],
         missingConnection: MissingPaymentConnection?,
-        layout: PaymentLayout
+        layout: PaymentLayout,
+        memberPhoneNumber: String? = nil
     ) {
         self.status = status
         self.chargingDay = chargingDay
@@ -32,10 +34,15 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.defaultPayoutMethod = defaultPayoutMethod
         self.missingConnection = missingConnection
         self.layout = layout
+        self.memberPhoneNumber = memberPhoneNumber
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
         availableMethods.filter((\.supportsPayout))
+    }
+
+    var availablePayinMethods: [AvailablePaymentMethod] {
+        availableMethods.filter((\.supportsPayin))
     }
 
     var hasAnyPayoutMethod: Bool {
@@ -46,16 +53,37 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         !payinMethods.isEmpty || defaultOrFirstDefaultPayinMethod != nil
     }
 
-    public var defaultOrFirstDefaultPayoutMethod: PaymentMethodData? {
+    var activePayinMethods: [ConnectedPaymentMethod] {
+        payinMethods.filter { $0.status == .active }
+    }
+
+    /// Partitioned rather than sorted so the remaining methods keep their backend order.
+    var selectablePayinMethods: [ConnectedPaymentMethod] {
+        let methods = payinMethods.filter { !$0.isPending }
+        return methods.filter(\.isDefault) + methods.filter { !$0.isDefault }
+    }
+
+    var canChooseDefaultPayinMethod: Bool {
+        activePayinMethods.count >= 2
+    }
+
+    public var defaultOrFirstDefaultPayoutMethod: ConnectedPaymentMethod? {
         defaultPayoutMethod ?? payoutMethods.first(where: (\.isDefault))
     }
 
-    public var defaultOrFirstDefaultPayinMethod: PaymentMethodData? {
+    public var defaultOrFirstDefaultPayinMethod: ConnectedPaymentMethod? {
         defaultPayinMethod ?? payinMethods.first(where: (\.isDefault))
     }
 
     var showsHistoricalSections: Bool {
         layout != .qasaOnly
+    }
+
+    func connectedPaymentMethod(for provider: PaymentProvider) -> ConnectedPaymentMethod? {
+        let methods = ([defaultPayinMethod] + payinMethods).compactMap({ $0 }).filter({ $0.provider == provider })
+        let connected = methods.first(where: { $0.status == .active }) ?? methods.first
+        guard let connected else { return nil }
+        return connected
     }
 }
 
@@ -73,46 +101,32 @@ public enum PaymentLayout: Codable, Equatable, Sendable, Hashable {
     }
 }
 
-extension Sequence where Element == PaymentMethodData {
+extension Sequence where Element == ConnectedPaymentMethod {
     var hasMethodInProgress: Bool {
-        !self.filter({ $0.status == .pending && $0.isDefault == true }).isEmpty
+        contains(where: { $0.status == .pending && $0.isDefault })
     }
 }
 
-extension PaymentMethodData {
-    var info: String {
-        switch self.details {
-        case .bankAccount(let account, _):
-            return "\(account)"
-        case .swish(let phoneNumber):
-            return "\(phoneNumber)"
-        case .invoice:
-            return self.provider.payoutTitle
-        case nil:
-            return ""
-        }
-    }
-}
-
-public struct PaymentMethodData: Codable, Equatable, Sendable, Hashable, Identifiable {
+public struct ConnectedPaymentMethod: Codable, Equatable, Sendable, Hashable, Identifiable {
     public var id: String {
         provider.asString + status.asString
     }
-    public let provider: PaymentProvider
     public let status: PaymentMethodStatus
     public let isDefault: Bool
-    public let details: PaymentMethodDetails?
+    public let method: PaymentMethod
+
+    public var provider: PaymentProvider {
+        method.provider
+    }
 
     public init(
-        provider: PaymentProvider,
         status: PaymentMethodStatus,
         isDefault: Bool,
-        details: PaymentMethodDetails?
+        method: PaymentMethod
     ) {
-        self.provider = provider
         self.status = status
         self.isDefault = isDefault
-        self.details = details
+        self.method = method
     }
 }
 
@@ -122,7 +136,7 @@ public enum PaymentMethodStatus: Codable, Equatable, Sendable, Hashable {
     case unknown
 }
 
-public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable {
+public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiable, CaseIterable {
     public var id: String {
         self.asString
     }
@@ -133,15 +147,61 @@ public enum PaymentProvider: Codable, Equatable, Sendable, Hashable, Identifiabl
     case unknown
 }
 
-public enum PaymentMethodDetails: Codable, Equatable, Sendable, Hashable {
-    case invoice(delivery: InvoiceDelivery, email: String?)
-    case swish(phoneNumber: String)
-    case bankAccount(account: String, bank: String)
+enum PaymentDirection {
+    case payin
+    case payout
+}
+
+public enum PaymentMethod: Codable, Equatable, Sendable, Hashable {
+    case trustly(bankAccount: BankAccount?)
+    case nordea(bankAccount: BankAccount?)
+    case swish(phoneNumber: String?)
+    case invoice(delivery: InvoiceDelivery?)
+    case unknown
+
+    public struct BankAccount: Codable, Equatable, Sendable, Hashable {
+        public let account: String
+        public let bank: String
+
+        public init(account: String, bank: String) {
+            self.account = account
+            self.bank = bank
+        }
+    }
 
     public enum InvoiceDelivery: Codable, Equatable, Sendable, Hashable {
         case kivra
-        case mail
+        case email(String?)
         case unknown
+    }
+
+    public var provider: PaymentProvider {
+        switch self {
+        case .trustly: .trustly
+        case .nordea: .nordea
+        case .swish: .swish
+        case .invoice: .invoice
+        case .unknown: .unknown
+        }
+    }
+
+    /// The bank account behind the methods that have one, so callers don't repeat the
+    /// `.trustly`/`.nordea` pattern match every time they only need the account or the bank.
+    public var bankAccount: BankAccount? {
+        switch self {
+        case .trustly(let bankAccount), .nordea(let bankAccount): bankAccount
+        case .swish, .invoice, .unknown: nil
+        }
+    }
+
+    public init(provider: PaymentProvider) {
+        switch provider {
+        case .trustly: self = .trustly(bankAccount: nil)
+        case .nordea: self = .nordea(bankAccount: nil)
+        case .swish: self = .swish(phoneNumber: nil)
+        case .invoice: self = .invoice(delivery: nil)
+        case .unknown: self = .unknown
+        }
     }
 }
 
@@ -165,15 +225,18 @@ public enum PaymentMethodSetupType: Sendable {
     case trustly
     case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
+    case swishPayin(phoneNumber: String)
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {
     public let status: PaymentSetupStatus
+    public let orderId: String?
     public let url: String?
     public let errorMessage: String?
 
-    public init(status: PaymentSetupStatus, url: String?, errorMessage: String?) {
+    public init(status: PaymentSetupStatus, orderId: String?, url: String?, errorMessage: String?) {
         self.status = status
+        self.orderId = orderId
         self.url = url
         self.errorMessage = errorMessage
     }
@@ -183,55 +246,6 @@ public struct PaymentSetupResult: Codable, Equatable, Sendable {
         case pending
         case failed
         case unknown
-    }
-}
-
-extension PaymentProvider {
-    public static func from(providerString: String?) -> PaymentProvider {
-        guard let provider = providerString?.lowercased() else { return .unknown }
-        if provider == "kivra" || provider == "invoice" {
-            return .invoice
-        } else if provider.hasPrefix("trustly") {
-            return .trustly
-        } else if provider == "swish" {
-            return .swish
-        } else if provider == "nordea" {
-            return .nordea
-        } else {
-            return .unknown
-        }
-    }
-
-    public func infoText(for dueDate: String) -> String? {
-        switch self {
-        case .trustly: L10n.paymentsPaymentDueInfo(dueDate)
-        case .invoice: L10n.kivraPaymentInfo
-        default: nil
-        }
-    }
-
-    public var infoText: String? {
-        switch self {
-        case .trustly: L10n.paymentsPaymentDetailsInfoDescription
-        case .invoice: L10n.kivraPaymentInfo
-        default: nil
-        }
-    }
-
-    public var paymentMethodLabel: String? {
-        switch self {
-        case .trustly: L10n.paymentsAutogiroLabel
-        case .invoice: L10n.paymentsInvoice
-        case .swish, .nordea, .unknown: nil
-        }
-    }
-
-    public var infoTextForPendingStatus: String? {
-        switch self {
-        case .trustly: L10n.paymentsInProgress
-        case .invoice: L10n.paymentsInProgressKivra
-        case .swish, .nordea, .unknown: nil
-        }
     }
 }
 
@@ -247,13 +261,9 @@ public enum PayinMethodStatus: Codable, Equatable, Sendable, Hashable {
     case pending
     case terminatingDueToMissedPayments(date: String)
     case unknown
+}
 
-    var connectButtonTitle: String {
-        switch self {
-        case .active, .pending:
-            return L10n.myPaymentDirectDebitReplaceButton
-        case .needsSetup, .unknown, .noNeedToConnect, .terminatingDueToMissedPayments:
-            return L10n.myPaymentDirectDebitButton
-        }
-    }
+public enum ConnectPaymentPrompt: Equatable, Sendable, Hashable {
+    case missedPayments(date: String)
+    case needsSetup
 }

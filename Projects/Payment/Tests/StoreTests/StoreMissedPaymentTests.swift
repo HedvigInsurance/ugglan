@@ -36,10 +36,9 @@ final class StoreMissedPaymentTests: XCTestCase {
                 addedToThePayment: nil
             ),
             paymentMethodData: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "descriptor", bank: "displayName")
+                method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
             )
         )
 

@@ -34,8 +34,7 @@ public struct AddonPillowView: View {
                         .foregroundColor(hFillColor.Opaque.primary)
                 }
         }
-        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: true)
-        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: true)
+        .hCardShadow()
     }
 }
 
