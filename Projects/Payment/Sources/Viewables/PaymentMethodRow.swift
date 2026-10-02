@@ -80,14 +80,7 @@ struct PaymentMethodSelectableRow<Value: Hashable>: View {
             hRadioOption(value: value, selection: selection, item: item) {
                 provider.image()
             }
-            if provider == .swish && selection.wrappedValue == value {
-                InfoCard(text: L10n.swishInfoBox, type: .neutral)
-                    .transition(
-                        .asymmetric(insertion: .push(from: .top), removal: .push(from: .top)).combined(with: .opacity)
-                    )
-            }
         }
-        .animation(.default, value: selection.wrappedValue)
         .disabled(isDisabled)
     }
 }
