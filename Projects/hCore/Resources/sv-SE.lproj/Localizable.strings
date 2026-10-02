@@ -650,6 +650,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SWISH_EXPLANATION_ITEM_2_TITLE" = "Utbetalningar direkt";
 "SWISH_EXPLANATION_ITEM_3_TEXT" = "Du kan byta eller ta bort betalningsmetod i inställningar.";
 "SWISH_EXPLANATION_ITEM_3_TITLE" = "Byt när du vill";
+"SWISH_INFO_BOX" = "Genom att välja Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.";
 /* Figma page iOS Release 1 */
 "TAB_HOME_TITLE" = "Hem";
 /* Figma page iOS Release 1 */

@@ -73,7 +73,6 @@ struct OnboardingPhoneScreen: View, KeyboardReadable {
                     hSaveButton(.primary) {
                         if await phoneVm.save() {
                             UIApplication.dismissKeyboard()
-                            vm.enteredPhoneNumber = phoneVm.phone
                             vm.advance(after: .phoneNumber(phoneNumber: phoneNumber))
                         }
                     }
