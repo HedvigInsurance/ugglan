@@ -1,0 +1,7 @@
+query PaymentNotices {
+    currentMember {
+        id
+        showPreChargeNotice
+        showRetryChargeNotice
+    }
+}

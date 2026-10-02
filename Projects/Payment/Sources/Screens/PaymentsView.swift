@@ -22,6 +22,7 @@ public struct PaymentsView: View {
                 )
             )
             .onAppear {
+                store.markPaymentNoticeSeen()
                 vm.fetchData()
             }
     }
@@ -42,10 +43,7 @@ public struct PaymentsView: View {
             }
         }
         .onPullToRefresh {
-            async let fetchStatus: () = store.fetchPaymentStatus()
-            async let load: () = store.load(forceUpdate: true)
-            async let missedPayment: () = store.getMissedPayment()
-            _ = await (fetchStatus, load, missedPayment)
+            await store.fetchAllPaymentData(forceUpdate: true)
         }
     }
 
@@ -60,11 +58,17 @@ public struct PaymentsView: View {
                 )
                 .padding(.bottom, .padding8)
             }
+            if store.showsRetryChargeNotice {
+                hSection {
+                    InfoCard(text: L10n.paymentsRetryInfo, type: .neutral)
+                }
+            }
             if !store.ongoingPaymentData.isEmpty {
                 ForEach(store.ongoingPaymentData, id: \.id) { paymentData in
                     PaymentView(paymentData: paymentData)
                 }
             }
+
             if let upcomingPayment = store.paymentData {
                 PaymentView(paymentData: upcomingPayment)
             }
@@ -213,10 +217,7 @@ public class PaymentsViewModel: ObservableObject {
         fetchTask?.cancel()
         let store = self.store
         fetchTask = Task {
-            async let load: () = store.load()
-            async let fetchStatus: () = store.fetchPaymentStatus()
-            async let missedPayment: () = store.getMissedPayment()
-            _ = await (load, fetchStatus, missedPayment)
+            await store.fetchAllPaymentData()
         }
     }
 }

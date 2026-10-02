@@ -84,6 +84,16 @@ extension PaymentStatusData {
     }
 }
 
+extension PaymentNoticeData {
+    init(data: OctopusGraphQL.PaymentNoticesQuery.Data) {
+        self.init(
+            memberId: data.currentMember.id,
+            preChargeNoticeId: data.currentMember.showPreChargeNotice,
+            retryChargeNoticeId: data.currentMember.showRetryChargeNotice
+        )
+    }
+}
+
 extension Payment.MissingPaymentConnection {
     init?(graphQL: GraphQLEnum<OctopusGraphQL.MissingPaymentConnection>?) {
         switch graphQL {
@@ -178,6 +188,12 @@ class hPaymentClientOctopus: hPaymentClient {
         let query = OctopusGraphQL.PaymentMethodsQuery()
         let data = try await octopus.client.fetch(query: query)
         return PaymentStatusData(data: data)
+    }
+
+    func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        let query = OctopusGraphQL.PaymentNoticesQuery()
+        let data = try await octopus.client.fetch(query: query)
+        return PaymentNoticeData(data: data)
     }
 
     func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
