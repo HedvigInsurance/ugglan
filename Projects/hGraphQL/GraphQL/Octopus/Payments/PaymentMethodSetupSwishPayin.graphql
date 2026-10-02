@@ -1,5 +1,5 @@
-mutation PaymentMethodSetupSwishPayin($input: PaymentMethodSetupSwishInput!) {
-  paymentMethodSetupSwishPayin(input: $input) {
+mutation PaymentMethodSetupSwishPayin {
+  paymentMethodSetupSwishPayin {
       ...PaymentMethodSetupOutputFragment
   }
 }

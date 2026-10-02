@@ -11,7 +11,6 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
     public let availableMethods: [AvailablePaymentMethod]
     public let missingConnection: MissingPaymentConnection?
     public let layout: PaymentLayout
-    public let memberPhoneNumber: String?
 
     public init(
         status: PayinMethodStatus,
@@ -22,8 +21,7 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         payoutMethods: [ConnectedPaymentMethod],
         availableMethods: [AvailablePaymentMethod],
         missingConnection: MissingPaymentConnection?,
-        layout: PaymentLayout,
-        memberPhoneNumber: String? = nil
+        layout: PaymentLayout
     ) {
         self.status = status
         self.chargingDay = chargingDay
@@ -34,7 +32,6 @@ public struct PaymentStatusData: Codable, Equatable, Sendable, Hashable {
         self.defaultPayoutMethod = defaultPayoutMethod
         self.missingConnection = missingConnection
         self.layout = layout
-        self.memberPhoneNumber = memberPhoneNumber
     }
 
     var availablePayoutMethods: [AvailablePaymentMethod] {
@@ -225,7 +222,7 @@ public enum PaymentMethodSetupType: Sendable {
     case trustly
     case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
-    case swishPayin(phoneNumber: String)
+    case swishPayin
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {

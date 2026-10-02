@@ -1,3 +1,4 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,13 +9,13 @@ struct PaymentConnectFlowView: View {
     let title: hTitle
     var subTitle: hTitle? = nil
     let connectTitle: String
-    let confirmationFootnote: String
+    var confirmationFootnote: String? = nil
     @Binding var selected: PaymentProvider?
     let connectedProvider: PaymentProvider?
     let onConnect: () -> Void
     let onCancel: (() -> Void)?
     let onContinue: () -> Void
-
+    @AppObservedObject private var store: PaymentStore
     var body: some View {
         hForm {
             PaymentConnectionGraphic(
@@ -35,22 +36,31 @@ struct PaymentConnectFlowView: View {
         if connectedProvider != nil {
             confirmationContent
         } else {
-            PaymentMethodPickerList(
-                methods: methods,
-                direction: direction,
-                selected: $selected,
-                connectTitle: connectTitle,
-                onConnect: onConnect,
-                onCancel: onCancel
-            )
+            VStack(spacing: .padding16) {
+                if store.paymentStatusData?.hasAnyPayinMethod == false {
+                    hText(L10n.paymentMethodRequiredFootnote, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                PaymentMethodPickerList(
+                    methods: methods,
+                    direction: direction,
+                    selected: $selected,
+                    connectTitle: connectTitle,
+                    onConnect: onConnect,
+                    onCancel: onCancel
+                )
+            }
         }
     }
 
     private var confirmationContent: some View {
         VStack(spacing: .padding16) {
-            hText(confirmationFootnote, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .multilineTextAlignment(.center)
+            if let confirmationFootnote {
+                hText(confirmationFootnote, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .multilineTextAlignment(.center)
+            }
             hSection {
                 hButton(.large, .primary, content: .init(title: L10n.generalContinueButton)) {
                     onContinue()

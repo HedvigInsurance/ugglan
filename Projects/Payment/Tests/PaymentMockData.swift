@@ -31,8 +31,7 @@ extension PaymentStatusData {
         payoutMethods: [ConnectedPaymentMethod] = [],
         availableMethods: [AvailablePaymentMethod] = [],
         missingConnection: MissingPaymentConnection? = nil,
-        layout: PaymentLayout = .other,
-        memberPhoneNumber: String? = nil
+        layout: PaymentLayout = .other
     ) -> PaymentStatusData {
         .init(
             status: status,
@@ -43,8 +42,7 @@ extension PaymentStatusData {
             payoutMethods: payoutMethods,
             availableMethods: availableMethods,
             missingConnection: missingConnection,
-            layout: layout,
-            memberPhoneNumber: memberPhoneNumber
+            layout: layout
         )
     }
 }
@@ -244,16 +242,5 @@ class MockPaymentService: hPaymentClient {
         events.append(.removePaymentMethod)
         removedProviders.append(provider)
         try await removePaymentMethodClosure()
-    }
-}
-
-extension PaymentMethodSetupType {
-    var phoneNumber: String? {
-        switch self {
-        case let .swishPayin(phoneNumber), let .swishPayout(phoneNumber):
-            return phoneNumber
-        case .trustly, .nordeaPayout:
-            return nil
-        }
     }
 }

@@ -7,8 +7,6 @@ import hCore
 final class SwishPayinConsentViewModelTests: XCTestCase {
     weak var sut: MockPaymentService?
 
-    private let phoneNumber = "0735328847"
-
     override func tearDown() async throws {
         Dependencies.shared.remove(for: hPaymentClient.self)
         await delay(0.00001)
@@ -23,7 +21,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         pollTimeout: TimeInterval = 1
     ) -> SwishPayinConsentViewModel {
         SwishPayinConsentViewModel(
-            phoneNumber: phoneNumber,
             orderId: orderId,
             url: url,
             state: state,
@@ -52,6 +49,151 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         let vm = makeViewModel(url: nil)
 
         XCTAssertNil(vm.qrImage)
+    }
+
+    // MARK: - connect
+
+    func testConnectFetchesAnOrderThenPollsSuccess() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchSetupPaymentMethod: {
+                .init(status: .pending, orderId: "order-1", url: PaymentTestURL.setup, errorMessage: nil)
+            },
+            fetchPaymentSetupStatus: { .active }
+        )
+        sut = mockService
+
+        let vm = makeViewModel(orderId: nil, url: nil, state: .loading)
+        let result = await vm.connect()
+
+        XCTAssertTrue(result)
+        XCTAssertEqual(vm.state, .waiting)
+        XCTAssertNotNil(vm.qrImage)
+        XCTAssertEqual(mockService.events, [.setupPaymentMethod, .getPaymentSetupStatus])
+    }
+
+    /// The first order is fetched inside the run that then polls it, so it must not re-arm the
+    /// view's task.
+    func testConnectDoesNotRearmPollingForTheFirstOrder() async {
+        let mockService = MockPaymentData.createMockPaymentService(fetchPaymentSetupStatus: { .active })
+        sut = mockService
+
+        let vm = makeViewModel(orderId: nil, url: nil, state: .loading)
+        _ = await vm.connect()
+
+        XCTAssertEqual(vm.pollAttempt, 0)
+    }
+
+    func testConnectAlreadyActiveSetupSkipsPollingSuccess() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchSetupPaymentMethod: { .init(status: .active, orderId: nil, url: nil, errorMessage: nil) }
+        )
+        sut = mockService
+
+        let vm = makeViewModel(orderId: nil, url: nil, state: .loading)
+        let result = await vm.connect()
+
+        XCTAssertTrue(result)
+        XCTAssertEqual(mockService.events, [.setupPaymentMethod])
+    }
+
+    func testConnectFailedSetupFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchSetupPaymentMethod: {
+                .init(status: .failed, orderId: nil, url: nil, errorMessage: "number not connected to Swish")
+            }
+        )
+        sut = mockService
+
+        let vm = makeViewModel(orderId: nil, url: nil, state: .loading)
+        let result = await vm.connect()
+
+        XCTAssertFalse(result)
+        XCTAssertEqual(vm.state, .failed(error: "number not connected to Swish"))
+        XCTAssertEqual(mockService.events, [.setupPaymentMethod])
+    }
+
+    func testConnectServiceErrorFailure() async {
+        let error = PaymentError.missingDataError(message: "error")
+        let mockService = MockPaymentData.createMockPaymentService(fetchSetupPaymentMethod: { throw error })
+        sut = mockService
+
+        let vm = makeViewModel(orderId: nil, url: nil, state: .loading)
+        let result = await vm.connect()
+
+        XCTAssertFalse(result)
+        XCTAssertEqual(vm.state, .failed(error: error.localizedDescription))
+        XCTAssertEqual(mockService.events, [.setupPaymentMethod])
+    }
+
+    /// A retry fetched its own order, so the pass it re-arms goes straight to polling.
+    func testConnectWithAnExistingOrderSkipsSetup() async {
+        let mockService = MockPaymentData.createMockPaymentService(fetchPaymentSetupStatus: { .active })
+        sut = mockService
+
+        let vm = makeViewModel(state: .waiting)
+        let result = await vm.connect()
+
+        XCTAssertTrue(result)
+        XCTAssertEqual(mockService.events, [.getPaymentSetupStatus])
+    }
+
+    // MARK: - openSwish
+
+    func testOpenSwishMovesToApproving() async {
+        let mockService = MockPaymentData.createMockPaymentService()
+        sut = mockService
+
+        let vm = makeViewModel(url: nil)
+
+        await vm.openSwish()
+
+        XCTAssertEqual(vm.state, .approving)
+        XCTAssertTrue(mockService.events.isEmpty)
+    }
+
+    /// Leaving for Swish must not stop the wait it was meant to start.
+    func testPollUntilSettledKeepsGoingWhileApproving() async {
+        var statuses: [PaymentSetupResult.PaymentSetupStatus] = [.pending, .active]
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchPaymentSetupStatus: { statuses.isEmpty ? .active : statuses.removeFirst() }
+        )
+        sut = mockService
+
+        let vm = makeViewModel(state: .approving)
+        let result = await vm.pollUntilSettled()
+
+        XCTAssertTrue(result)
+        XCTAssertEqual(vm.state, .approving)
+        XCTAssertEqual(mockService.events, [.getPaymentSetupStatus, .getPaymentSetupStatus])
+    }
+
+    func testPollUntilSettledTimeoutWhileApprovingFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(fetchPaymentSetupStatus: { .pending })
+        sut = mockService
+
+        let vm = makeViewModel(state: .approving, pollTimeout: 0.02)
+        let result = await vm.pollUntilSettled()
+
+        XCTAssertFalse(result)
+        XCTAssertEqual(vm.state, .failed(error: nil))
+    }
+
+    func testRequestNewOrderBringsBackTheCode() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchSetupPaymentMethod: {
+                .init(status: .pending, orderId: "order-2", url: PaymentTestURL.retry, errorMessage: nil)
+            }
+        )
+        sut = mockService
+
+        let vm = makeViewModel(url: nil)
+        await vm.openSwish()
+        XCTAssertEqual(vm.state, .approving)
+
+        await vm.requestNewOrder()
+
+        XCTAssertEqual(vm.state, .waiting)
+        XCTAssertNotNil(vm.qrImage)
     }
 
     // MARK: - pollUntilSettled
@@ -148,41 +290,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertTrue(mockService.events.allSatisfy { $0 == .getPaymentSetupStatus })
     }
 
-    func testOpenSwishButtonHiddenBeforeRetry() {
-        let mockService = MockPaymentData.createMockPaymentService()
-        sut = mockService
-
-        let vm = makeViewModel(url: PaymentTestURL.setup)
-
-        XCTAssertFalse(vm.showOpenSwishButton)
-    }
-
-    func testRequestNewOrderOffersOpenSwishOnlyWhenSwishIsInstalled() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchSetupPaymentMethod: {
-                .init(status: .pending, orderId: "order-2", url: PaymentTestURL.setup, errorMessage: nil)
-            }
-        )
-        sut = mockService
-
-        let vm = makeViewModel(state: .failed(error: nil))
-        await vm.requestNewOrder()
-
-        XCTAssertEqual(vm.showOpenSwishButton, vm.canOpenSwish)
-    }
-
-    func testRequestNewOrderFailedResultDoesNotOfferOpenSwish() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchSetupPaymentMethod: { .init(status: .failed, orderId: nil, url: nil, errorMessage: nil) }
-        )
-        sut = mockService
-
-        let vm = makeViewModel(state: .failed(error: nil))
-        await vm.requestNewOrder()
-
-        XCTAssertFalse(vm.showOpenSwishButton)
-    }
-
     func testRequestNewOrderActiveResultArmsPolling() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: { .init(status: .active, orderId: nil, url: nil, errorMessage: nil) }
@@ -196,7 +303,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isRetrying)
         XCTAssertEqual(vm.state, .waiting)
         XCTAssertEqual(mockService.events, [.setupPaymentMethod])
-        XCTAssertEqual(mockService.lastSetupType?.phoneNumber, phoneNumber)
         guard case .swishPayin? = mockService.lastSetupType else {
             XCTFail("Expected a Swish payin setup")
             return

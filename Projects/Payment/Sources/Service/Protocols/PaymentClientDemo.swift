@@ -161,8 +161,7 @@ public class hPaymentClientDemo: hPaymentClient {
                 ),
             ],
             missingConnection: nil,
-            layout: .other,
-            memberPhoneNumber: "0735328847"
+            layout: .other
         )
     }
 
