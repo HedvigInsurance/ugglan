@@ -262,7 +262,6 @@ class SwishPayinConsentViewModel: ObservableObject {
     private let paymentService = hPaymentService()
 
     private let pollInterval: TimeInterval
-    private let pollTimeout: TimeInterval
 
     /// `orderId` and `url` seed a screen that already has an order, for previews and tests. The
     /// flow itself starts empty and fetches one.
@@ -270,15 +269,13 @@ class SwishPayinConsentViewModel: ObservableObject {
         orderId: String? = nil,
         url: String? = nil,
         state: SwishConsentState = .loading,
-        pollInterval: TimeInterval = 2,
-        pollTimeout: TimeInterval = 120
+        pollInterval: TimeInterval = 2
     ) {
         self.canOpenSwish = SwishDeepLink.canOpen
         self.orderId = orderId
         self.url = url
         self.state = state
         self.pollInterval = pollInterval
-        self.pollTimeout = pollTimeout
         // `didSet` doesn't fire during init, so seed the first code by hand.
         self.qrImage = Self.generateQRImage(from: url)
     }
@@ -297,9 +294,9 @@ class SwishPayinConsentViewModel: ObservableObject {
         return await pollUntilSettled()
     }
 
-    /// Returns true when setup came back already connected, which leaves nothing to wait for
-    /// and no order to poll.
-    private func requestFirstOrder() async -> Bool {
+    /// Fetches an order and stores it, parking the screen on a failure. Returns the status while
+    /// there is still something to wait for, and nil once the screen has been failed.
+    private func requestOrder() async -> PaymentSetupResult.PaymentSetupStatus? {
         do {
             let result = try await paymentService.setupPaymentMethod(.swishPayin)
             orderId = result.orderId
@@ -307,16 +304,23 @@ class SwishPayinConsentViewModel: ObservableObject {
 
             if result.status == .failed || result.errorMessage != nil {
                 withAnimation { state = .failed(error: result.errorMessage) }
-                return false
+                return nil
             }
-            if result.status == .active { return true }
-
-            withAnimation { state = .waiting }
-            return false
+            return result.status
         } catch {
             withAnimation { state = .failed(error: error.localizedDescription) }
-            return false
+            return nil
         }
+    }
+
+    /// Returns true when setup came back already connected, which leaves nothing to wait for
+    /// and no order to poll.
+    private func requestFirstOrder() async -> Bool {
+        guard let status = await requestOrder() else { return false }
+        if status == .active { return true }
+
+        withAnimation { state = .waiting }
+        return false
     }
 
     /// Leaving for Swish is always the member's own tap, and the button stays put afterwards:
@@ -332,11 +336,13 @@ class SwishPayinConsentViewModel: ObservableObject {
         await SwishDeepLink.open(swishUrl)
     }
 
+    /// Waits for as long as the screen is up: approving in Swish is the member's own errand and
+    /// has no deadline of ours, so the only way out other than a settled order is the task being
+    /// cancelled when the screen goes away.
     func pollUntilSettled() async -> Bool {
         guard state.isAwaitingApproval, let orderId else { return false }
-        let deadline = Date().addingTimeInterval(pollTimeout)
 
-        while state.isAwaitingApproval, Date() < deadline {
+        while state.isAwaitingApproval {
             do {
                 let status = try await paymentService.getPaymentSetupStatus(orderId: orderId)
                 switch status {
@@ -359,9 +365,6 @@ class SwishPayinConsentViewModel: ObservableObject {
             }
         }
 
-        if state.isAwaitingApproval {
-            withAnimation { state = .failed(error: nil) }
-        }
         return false
     }
 
@@ -370,21 +373,11 @@ class SwishPayinConsentViewModel: ObservableObject {
         withAnimation { isRetrying = true }
         defer { withAnimation { isRetrying = false } }
 
-        do {
-            let result = try await paymentService.setupPaymentMethod(.swishPayin)
-            orderId = result.orderId
-            url = result.url
-
-            if result.status == .failed || result.errorMessage != nil {
-                withAnimation { state = .failed(error: result.errorMessage) }
-                return
-            }
-            // Back to `.waiting`: a new order means a new code the member hasn't used yet.
-            withAnimation { state = .waiting }
-            pollAttempt += 1
-        } catch {
-            withAnimation { state = .failed(error: error.localizedDescription) }
-        }
+        guard await requestOrder() != nil else { return }
+        // Back to `.waiting`: a new order means a new code the member hasn't used yet, and one
+        // that came back already active settles on the re-armed task's first poll.
+        withAnimation { state = .waiting }
+        pollAttempt += 1
     }
 }
 

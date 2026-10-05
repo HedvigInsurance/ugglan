@@ -17,15 +17,13 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
     private func makeViewModel(
         orderId: String? = "order-1",
         url: String? = PaymentTestURL.setup,
-        state: SwishConsentState = .waiting,
-        pollTimeout: TimeInterval = 1
+        state: SwishConsentState = .waiting
     ) -> SwishPayinConsentViewModel {
         SwishPayinConsentViewModel(
             orderId: orderId,
             url: url,
             state: state,
-            pollInterval: 0.001,
-            pollTimeout: pollTimeout
+            pollInterval: 0.001
         )
     }
 
@@ -167,17 +165,6 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         XCTAssertEqual(mockService.events, [.getPaymentSetupStatus, .getPaymentSetupStatus])
     }
 
-    func testPollUntilSettledTimeoutWhileApprovingFailure() async {
-        let mockService = MockPaymentData.createMockPaymentService(fetchPaymentSetupStatus: { .pending })
-        sut = mockService
-
-        let vm = makeViewModel(state: .approving, pollTimeout: 0.02)
-        let result = await vm.pollUntilSettled()
-
-        XCTAssertFalse(result)
-        XCTAssertEqual(vm.state, .failed(error: nil))
-    }
-
     func testRequestNewOrderBringsBackTheCode() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: {
@@ -277,15 +264,20 @@ final class SwishPayinConsentViewModelTests: XCTestCase {
         )
     }
 
-    func testPollUntilSettledTimeoutFailure() async {
+    /// A pending order no longer runs out of time, so the wait ends only when the screen goes
+    /// away — and it leaves the state alone on the way out, rather than reporting a failure.
+    func testPollUntilSettledPendingRunsUntilCancelled() async {
         let mockService = MockPaymentData.createMockPaymentService(fetchPaymentSetupStatus: { .pending })
         sut = mockService
 
-        let vm = makeViewModel(pollTimeout: 0.02)
-        let result = await vm.pollUntilSettled()
+        let vm = makeViewModel()
+        let poll = Task { await vm.pollUntilSettled() }
+        await delay(0.02)
+        poll.cancel()
+        let result = await poll.value
 
         XCTAssertFalse(result)
-        XCTAssertEqual(vm.state, .failed(error: nil))
+        XCTAssertEqual(vm.state, .waiting)
         XCTAssertFalse(mockService.events.isEmpty)
         XCTAssertTrue(mockService.events.allSatisfy { $0 == .getPaymentSetupStatus })
     }
