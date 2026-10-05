@@ -101,6 +101,10 @@ public final class PaymentStore: AppStore {
         isLoadingPaymentData = false
     }
 
+    public func resetPaymentDataFetchedAt() {
+        paymentDataFetchedAt = nil
+    }
+
     public func fetchPaymentStatus() async {
         guard !isFetchingPaymentStatus else { return }
         isFetchingPaymentStatus = true

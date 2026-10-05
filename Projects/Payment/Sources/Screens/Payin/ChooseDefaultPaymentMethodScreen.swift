@@ -51,6 +51,8 @@ struct ChooseDefaultPaymentMethodScreen: View {
             presentationStyle: .detent(style: [.height])
         ) { method in
             ConfirmDefaultPaymentMethodScreen(method: method) {
+                let store: PaymentStore = globalAppStateContainer.get()
+                store.resetPaymentDataFetchedAt()
                 methodToConfirm = nil
                 dismiss()
                 PaymentStore.refreshStatusDetached()
