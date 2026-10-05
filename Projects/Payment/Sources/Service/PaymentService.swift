@@ -18,6 +18,11 @@ public class hPaymentService {
     }
 
     @Log(.error)
+    public func getPaymentNoticeData() async throws -> PaymentNoticeData {
+        try await client.getPaymentNoticeData()
+    }
+
+    @Log(.error)
     public func getPaymentHistoryData() async throws -> [PaymentHistoryListData] {
         try await client.getPaymentHistoryData()
     }

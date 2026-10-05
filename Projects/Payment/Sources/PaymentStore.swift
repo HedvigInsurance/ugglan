@@ -11,8 +11,13 @@ public final class PaymentStore: AppStore {
     @Published public internal(set) var paymentDataFetchedAt: Date?
     @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
     @Published public internal(set) var paymentStatusData: PaymentStatusData?
+    @Published public internal(set) var showsRetryChargeNotice: Bool = false
+    @Published public internal(set) var showsPaymentBadge: Bool = false
     @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
     @Published public internal(set) var missedPaymentData: MissedPaymentData?
+    private var paymentNoticeData: PaymentNoticeData?
+
+    @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
 
     @Transient @Published public private(set) var isLoadingPaymentData: Bool = false
     @Transient @Published public private(set) var isFetchingPaymentStatus: Bool = false
@@ -69,9 +74,23 @@ public final class PaymentStore: AppStore {
     }
 
     private static let paymentDataCacheDuration: TimeInterval = 30 * 60
+    private static let paymentNoticeDataCacheDuration: TimeInterval = 15 * 60
+
+    private static func isStale(_ fetchedAt: Date?, after duration: TimeInterval) -> Bool {
+        fetchedAt.map { -$0.timeIntervalSinceNow > duration } ?? true
+    }
+
+    /// Everything the payments screen renders, fetched concurrently.
+    func fetchAllPaymentData(forceUpdate: Bool = false) async {
+        async let load: () = load(forceUpdate: forceUpdate)
+        async let noticeData: () = fetchPaymentNoticeData(forceUpdate: forceUpdate)
+        async let status: () = fetchPaymentStatus()
+        async let missedPayment: () = getMissedPayment()
+        _ = await (load, noticeData, status, missedPayment)
+    }
 
     public func load(forceUpdate: Bool = false) async {
-        let isStale = paymentDataFetchedAt.map { -$0.timeIntervalSinceNow > Self.paymentDataCacheDuration } ?? true
+        let isStale = Self.isStale(paymentDataFetchedAt, after: Self.paymentDataCacheDuration)
         guard forceUpdate || (!isLoadingPaymentData && isStale) else { return }
         isLoadingPaymentData = true
         do {
@@ -95,6 +114,33 @@ public final class PaymentStore: AppStore {
             fetchPaymentStatusError = L10n.General.errorBody
         }
         isFetchingPaymentStatus = false
+    }
+
+    public func fetchPaymentNoticeData(forceUpdate: Bool = false) async {
+        let isStale = Self.isStale(paymentNoticeDataFetchedAt, after: Self.paymentNoticeDataCacheDuration)
+        guard forceUpdate || isStale else { return }
+        do {
+            let noticeData = try await paymentService.getPaymentNoticeData()
+            updatePaymentNotice(with: noticeData)
+            paymentNoticeDataFetchedAt = Date()
+        } catch {
+            // Notices only drive the tab badge — keep the last known value and stay silent.
+        }
+    }
+
+    private func updatePaymentNotice(with noticeData: PaymentNoticeData) {
+        paymentNoticeData = noticeData
+        showsPaymentBadge = PaymentNoticeBadgeTracker().shouldShowBadge(for: noticeData)
+        showsRetryChargeNotice = noticeData.hasRetryChargeNotice
+    }
+
+    /// Clears the Payments tab badge until a different notice arrives.
+    public func markPaymentNoticeSeen() {
+        guard showsPaymentBadge else { return }
+        if let paymentNoticeData {
+            PaymentNoticeBadgeTracker().markSeen(paymentNoticeData)
+        }
+        showsPaymentBadge = false
     }
 
     public func getHistory() async {

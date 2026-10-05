@@ -938,6 +938,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isAnalyticsConsentPresented = false
     @Published var missedPaymentData: MissedPaymentData?
     @Published var hasMissedPayment = false
+    private var showsPaymentBadge = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var cancellables = Set<AnyCancellable>()
@@ -977,9 +978,23 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        paymentStore.$showsPaymentBadge
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] showsPaymentBadge in
+                self?.showsPaymentBadge = showsPaymentBadge
+                self?.updatePaymentsBadge()
+            }
+            .store(in: &cancellables)
+
         $selectedTab
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
+                // The glass tab bar may rebuild its selected-button copy on selection, dropping the dot.
+                Task { @MainActor [weak self] in
+                    self?.updatePaymentsBadge()
+                }
                 if self?.selectedTab == self?.previousTab,
                     let nav = self?.tabBar?.selectedViewController?.children
                         .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
@@ -997,8 +1012,15 @@ class LoggedInNavigationViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+    /// A missed payment outranks a charge notice — only one dot fits on the tab.
+    private var paymentsBadge: UITabBarController.BadgeDot? {
+        if hasMissedPayment { return .red }
+        if showsPaymentBadge { return .blue }
+        return nil
+    }
+
     private func updatePaymentsBadge() {
-        tabBar?.updateBadgeDot(visible: hasMissedPayment, forTabTitled: L10n.tabPaymentsTitle)
+        tabBar?.updateBadgeDot(paymentsBadge, forTabTitled: L10n.tabPaymentsTitle)
     }
 
     private func setupObservers() {
