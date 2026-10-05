@@ -57,22 +57,29 @@ struct PaymentConnectionGraphic: View {
     }
 
     private var methodSlot: some View {
-        Group {
-            if let provider {
-                provider.chooseDefaultImage(size: 74)
-            } else {
-                hBackgroundColor.primary
-                    .frame(width: 74, height: 74)
-                    .overlay {
-                        hCoreUIAssets.plus.view
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 36)
-                            .foregroundColor(hSignalColor.Grey.element)
-                    }
-            }
+        ZStack {
+            methodContent
         }
+        .frame(width: 74, height: 74)
         .paymentMethodTile()
+        .geometryGroupIfAvailable()
+    }
+
+    @ViewBuilder
+    private var methodContent: some View {
+        if let provider {
+            provider.chooseDefaultImage(size: 74)
+        } else {
+            hBackgroundColor.primary
+                .frame(width: 74, height: 74)
+                .overlay {
+                    hCoreUIAssets.plus.view
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 37)
+                        .foregroundColor(hSignalColor.Grey.element)
+                }
+        }
     }
 
     private var dots: some View {

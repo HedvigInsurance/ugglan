@@ -70,60 +70,6 @@ final class StorePaymentStatusTests: XCTestCase {
         assert(mockService.events.first == .getPaymentStatusData)
     }
 
-    func testFetchPaymentStatusWithMemberPhoneNumberSuccess() async throws {
-        let statusData: PaymentStatusData = .init(
-            status: .needsSetup,
-            chargingDay: 27,
-            defaultPayinMethod: nil,
-            payinMethods: [],
-            defaultPayoutMethod: nil,
-            payoutMethods: [],
-            availableMethods: [.init(provider: .swish, supportsPayin: true, supportsPayout: true)],
-            missingConnection: .payin,
-            layout: .other,
-            memberPhoneNumber: "0735328847"
-        )
-
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentStatusData: { statusData }
-        )
-        sut = mockService
-        let store = PaymentStore()
-        self.store = store
-        await store.fetchPaymentStatus()
-
-        XCTAssertEqual(store.paymentStatusData?.memberPhoneNumber, "0735328847")
-        XCTAssertEqual(store.paymentStatusData, statusData)
-        XCTAssertNil(store.fetchPaymentStatusError)
-        XCTAssertEqual(mockService.events, [.getPaymentStatusData])
-    }
-
-    func testFetchPaymentStatusWithoutMemberPhoneNumberSuccess() async throws {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentStatusData: {
-                .init(
-                    status: .needsSetup,
-                    chargingDay: nil,
-                    defaultPayinMethod: nil,
-                    payinMethods: [],
-                    defaultPayoutMethod: nil,
-                    payoutMethods: [],
-                    availableMethods: [],
-                    missingConnection: .payin,
-                    layout: .other
-                )
-            }
-        )
-        sut = mockService
-        let store = PaymentStore()
-        self.store = store
-        await store.fetchPaymentStatus()
-
-        XCTAssertNotNil(store.paymentStatusData)
-        XCTAssertNil(store.paymentStatusData?.memberPhoneNumber)
-        XCTAssertNil(store.fetchPaymentStatusError)
-    }
-
     func testConcurrentFetchPaymentStatusQueriesOnce() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: {
@@ -153,22 +99,20 @@ final class StorePaymentStatusTests: XCTestCase {
         XCTAssertFalse(store.isFetchingPaymentStatus)
     }
 
-    func testFetchPaymentStatusFailureKeepsMemberPhoneNumber() async throws {
+    func testFetchPaymentStatusFailureKeepsPreviousData() async throws {
+        let statusData: PaymentStatusData = .init(
+            status: .needsSetup,
+            chargingDay: 27,
+            defaultPayinMethod: nil,
+            payinMethods: [],
+            defaultPayoutMethod: nil,
+            payoutMethods: [],
+            availableMethods: [],
+            missingConnection: .payin,
+            layout: .other
+        )
         let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentStatusData: {
-                .init(
-                    status: .needsSetup,
-                    chargingDay: nil,
-                    defaultPayinMethod: nil,
-                    payinMethods: [],
-                    defaultPayoutMethod: nil,
-                    payoutMethods: [],
-                    availableMethods: [],
-                    missingConnection: .payin,
-                    layout: .other,
-                    memberPhoneNumber: "0735328847"
-                )
-            }
+            fetchPaymentStatusData: { statusData }
         )
         sut = mockService
         let store = PaymentStore()
@@ -179,7 +123,7 @@ final class StorePaymentStatusTests: XCTestCase {
         await store.fetchPaymentStatus()
 
         XCTAssertNotNil(store.fetchPaymentStatusError)
-        XCTAssertEqual(store.paymentStatusData?.memberPhoneNumber, "0735328847")
+        XCTAssertEqual(store.paymentStatusData, statusData)
         XCTAssertEqual(mockService.events, [.getPaymentStatusData, .getPaymentStatusData])
     }
 }

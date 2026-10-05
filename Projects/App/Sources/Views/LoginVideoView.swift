@@ -43,12 +43,13 @@ private class PlayerUIView: UIView {
             object: player.currentItem
         )
 
-        let audioSession = AVAudioSession.sharedInstance()
-
-        do {
-            try audioSession.setCategory(.playback, mode: .default, options: .mixWithOthers)
-            try audioSession.setActive(true)
-        } catch {}
+        Task.detached(priority: .userInitiated) {
+            let audioSession = AVAudioSession.sharedInstance()
+            do {
+                try audioSession.setCategory(.playback, mode: .default, options: .mixWithOthers)
+                try audioSession.setActive(true)
+            } catch {}
+        }
 
         // Start the movie
         player.playImmediately(atRate: 1)

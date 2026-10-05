@@ -76,8 +76,10 @@ struct PaymentMethodSelectableRow<Value: Hashable>: View {
     }
 
     var body: some View {
-        hRadioOption(value: value, selection: selection, item: item) {
-            provider.image()
+        VStack {
+            hRadioOption(value: value, selection: selection, item: item) {
+                provider.image()
+            }
         }
         .disabled(isDisabled)
     }

@@ -9,7 +9,7 @@ struct PaymentMethodPickerList: View {
     let connectTitle: String
     let onConnect: () -> Void
     let onCancel: (() -> Void)?
-
+    @Environment(\.hFormContentPosition) var hFormContentPosition
     var body: some View {
         VStack(spacing: .padding16) {
             // Nothing to pick from until the status has been fetched, and an empty list would
@@ -22,8 +22,22 @@ struct PaymentMethodPickerList: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+
             hSection {
                 VStack(spacing: .padding8) {
+                    if selected == .swish {
+                        if hFormContentPosition == .center {
+                            InfoCard(text: L10n.swishInfoBox, type: .neutral)
+                                .padding(.top, -.padding8)
+                                .padding(.bottom, .padding8)
+                                .transition(.move(edge: .bottom))
+                        } else {
+                            InfoCard(text: L10n.swishInfoBox, type: .neutral)
+                                .padding(.top, -.padding8)
+                                .padding(.bottom, .padding8)
+                        }
+                    }
+
                     hButton(.large, .primary, content: .init(title: connectTitle)) {
                         onConnect()
                     }

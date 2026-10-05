@@ -26,8 +26,6 @@ class OnboardingNavigationViewModel: ObservableObject {
 
     @Published var missingPetChipIdInput: MissingPetChipIdInput?
 
-    @Published var enteredPhoneNumber: String?
-
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)

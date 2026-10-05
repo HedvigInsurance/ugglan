@@ -79,8 +79,7 @@ extension PaymentStatusData {
             payoutMethods: payoutMethods,
             availableMethods: availableMethods,
             missingConnection: missingConnection,
-            layout: .init(contractTypes: allContractTypes),
-            memberPhoneNumber: data.currentMember.phoneNumber
+            layout: .init(contractTypes: allContractTypes)
         )
     }
 }
@@ -256,11 +255,8 @@ class hPaymentClientOctopus: hPaymentClient {
             let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayoutMutation(input: input)
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayout.fragments.paymentMethodSetupOutputFragment.toPaymentSetupResult()
-        case let .swishPayin(phoneNumber):
-            let input = OctopusGraphQL.PaymentMethodSetupSwishInput(
-                phoneNumber: phoneNumber
-            )
-            let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayinMutation(input: input)
+        case .swishPayin:
+            let mutation = OctopusGraphQL.PaymentMethodSetupSwishPayinMutation()
             let data = try await octopus.client.mutation(mutation: mutation)!
             return data.paymentMethodSetupSwishPayin.fragments.paymentMethodSetupOutputFragment
                 .toPaymentSetupResult()

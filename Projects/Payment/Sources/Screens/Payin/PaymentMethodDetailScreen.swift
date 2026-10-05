@@ -35,7 +35,6 @@ struct PaymentMethodDetailScreen: View {
             }
             .handlePayinSetup(
                 for: $providerToSetUp,
-                phoneNumber: statusData.memberPhoneNumber,
                 completion: .showConfirmation
             )
             .hSetScrollBounce(to: true)
