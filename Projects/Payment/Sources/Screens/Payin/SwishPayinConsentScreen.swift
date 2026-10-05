@@ -1,5 +1,6 @@
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -27,7 +28,7 @@ struct SwishPayinConsentScreen: View {
     /// Side of the QR code, held by the loading indicator too so the sheet doesn't resize when
     /// the code lands.
     private static let codeSide: CGFloat = 180
-    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @SwiftUI.Environment(\.verticalSizeClass) var verticalSizeClass
 
     @StateObject private var vm: SwishPayinConsentViewModel
     @StateObject private var router = NavigationRouter()
@@ -322,7 +323,13 @@ class SwishPayinConsentViewModel: ObservableObject {
     /// an app switch that doesn't take needs somewhere to try again from.
     func openSwish() async {
         withAnimation { state = .approving }
-        await SwishDeepLink.open(url)
+        let returnUrl = Environment.current.deepLinkUrl.absoluteString
+            .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+        var swishComponents = url.flatMap(URLComponents.init(string:))
+        let existingQueryItems = swishComponents?.percentEncodedQueryItems ?? []
+        swishComponents?.percentEncodedQueryItems = existingQueryItems + [URLQueryItem(name: "ret", value: returnUrl)]
+        let swishUrl = swishComponents?.url?.absoluteString
+        await SwishDeepLink.open(swishUrl)
     }
 
     func pollUntilSettled() async -> Bool {
