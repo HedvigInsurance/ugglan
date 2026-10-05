@@ -58,6 +58,7 @@ public struct AddPaymentMethodScreen: View {
             onCancel: isHostedInFlow ? nil : { dismiss() },
             onContinue: { connectedProvider.map(finish(with:)) }
         )
+        .animation(.default, value: selected)
         .handlePayinSetup(
             for: $providerToSetUp,
             canChangeMethod: true,
