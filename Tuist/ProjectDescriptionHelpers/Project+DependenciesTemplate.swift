@@ -43,6 +43,7 @@ public enum ExternalDependencies: CaseIterable {
     case automaticLog
     case rive
     case firebaseAnalytics
+    case trustlyIosSdk
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -142,6 +143,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/firebase/firebase-ios-sdk", .upToNextMajor(from: "12.0.0"))
             ]
+        case .trustlyIosSdk:
+            return [
+                .package(url: "https://github.com/trustly/TrustlyIosSdk.git", .upToNextMajor(from: "4.0.1"))
+            ]
         }
     }
 
@@ -228,6 +233,8 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "FirebaseAnalytics"),
                 .package(product: "FirebaseCore"),
             ]
+        case .trustlyIosSdk:
+            return [.package(product: "TrustlyIosSdk")]
         }
     }
 }
