@@ -103,6 +103,7 @@ public struct hRadioOption<Value>: View where Value: Hashable {
             .accessibilityAddTraits(.isButton)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
             .accessibilityValue(selectionAccessibilityValue)
+            .geometryGroupIfAvailable()
     }
 
     @ViewBuilder
