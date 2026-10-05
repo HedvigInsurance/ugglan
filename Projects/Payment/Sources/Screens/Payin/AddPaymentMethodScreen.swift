@@ -102,9 +102,14 @@ public struct AddPaymentMethodScreen: View {
     }
 
     private func connectedTitle(for provider: PaymentProvider) -> String {
-        provider == .swish
-            ? L10n.paymentSwishSuccessTitle
-            : "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
+        switch provider {
+        case .trustly:
+            L10n.PayInConfirmationDirectDebit.headline
+        case .swish:
+            L10n.paymentSwishSuccessTitle
+        default:
+            "\(provider.payinTitle) \(L10n.paymentOptionConnectedLabel)"
+        }
     }
 }
 

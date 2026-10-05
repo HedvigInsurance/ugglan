@@ -485,6 +485,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_NO_PAYMENTS_IN_PROGRESS" = "Du har inga pågående betalningar";
 "PAYMENTS_OUTSTANDING_PAYMENT" = "Utebliven betalning";
 "PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION" = "Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.";
+/* some copy for info icon for swish in charge details */
+"PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION" = "";
 "PAYMENTS_PAYMENT_DUE" = "Förfallodag";
 "PAYMENTS_PAYMENT_DUE_INFO" = "Om du uppdaterar ditt bankkonto nära den %1$@ kan det ta några extra dagar innan pengarna dras.";
 "PAYMENTS_PAYMENT_FAILED" = "Denna betalning misslyckades och lades till i din betalning den %1$@ .";
@@ -525,6 +527,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_METHODS_EMPTY" = "Ingen betalningsmetod tillagd. Lägg till en för att betala din försäkring.";
 "PAYMENT_METHODS_TITLE" = "Betalningsmetoder";
 "PAYMENT_METHOD_PENDING" = "Det kan ta några dagar innan din nya betalningsmetod börjar gälla.";
+"PAYMENT_METHOD_PENDING_STATUS_LABEL" = "Behandlas";
 "PAYMENT_METHOD_REQUIRED_FOOTNOTE" = "Krävs för att din försäkring ska vara aktiv";
 "PAYMENT_METHOD_TITLE" = "Betalningsmetod";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Öppna Swish";
@@ -537,20 +540,20 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_LABEL" = "Förvald";
 "PAYMENT_PRIMARY_SUBTITLE" = "Den här metoden används för dina månadsbetalningar";
 "PAYMENT_PRIMARY_TITLE" = "Välj betalningsmetod";
-"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Det här är din förvalda betalningsmetod. Välj en annan innan du tar bort den.";
+"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "Det här är din förvalda betalningsmetod. Välj en annan eller lägg till en ny innan du tar bort denna.";
 "PAYMENT_REMOVE_PRIMARY_TITLE" = "Kan inte tas bort just nu";
 "PAYMENT_REMOVE_SUBTITLE" = "Du kan lägga till den igen när som helst";
 "PAYMENT_REMOVE_TITLE" = "Ta bort betalningsmetod";
 "PAYMENT_SWISH_APPROVE_TITLE" = "Godkänn kopplingen i Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Byt telefonnummer";
-"PAYMENT_SWISH_EXPLANATION_BUTTON" = "Mer om återkommande betalningar";
+"PAYMENT_SWISH_EXPLANATION_BUTTON" = "Läs mer om återkommande betalningar";
 "PAYMENT_SWISH_FAILURE_TITLE" = "Vi kunde inte koppla Swish";
 "PAYMENT_SWISH_SUBTITLE" = "Använd numret du har kopplat till Swish";
 "PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Betalningen dras automatiskt från ditt konto varje månad. Vi meddelar dig i Hedvig-appen före varje betalning.";
 "PAYMENT_SWISH_SUCCESS_TITLE" = "Swish är nu kopplat";
 "PAYMENT_SWISH_TITLE" = "Bekräfta ditt Swish-nummer";
 "PAYMENT_TRUSTLY_FAILURE_TITLE" = "Kopplingen misslyckades";
-"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Vi aviserar dig i appen varje månad";
+"PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Vi meddelar dig i appen varje månad";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
@@ -586,7 +589,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Inte nu";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_OK" = "Slå på";
 "PUSH_NOTIFICATIONS_ALERT_TITLE" = "Notiser";
-"REFERRAL_PENDING_STATUS_LABEL" = "Avvaktar...";
+"REFERRAL_PENDING_STATUS_LABEL" = "Väntar";
 "REFERRAL_SMS_MESSAGE" = "Hej! Skaffa Hedvig med min tipslänk så får vi båda %1$@ rabatt på månadskostnaden. Följ länken: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inaktiv";
 "REMOVE_ADDON_BUTTON_TITLE" = "Ta bort tillägg";
@@ -650,7 +653,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "SWISH_EXPLANATION_ITEM_2_TITLE" = "Utbetalningar direkt";
 "SWISH_EXPLANATION_ITEM_3_TEXT" = "Du kan byta eller ta bort betalningsmetod i inställningar.";
 "SWISH_EXPLANATION_ITEM_3_TITLE" = "Byt när du vill";
-"SWISH_INFO_BOX" = "Genom att välja Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.";
+"SWISH_INFO_BOX" = "När du väljer Swish godkänner du att din premie dras automatiskt via Swish varje månad. Vi meddelar dig i Hedvig-appen innan varje betalning.";
 /* Figma page iOS Release 1 */
 "TAB_HOME_TITLE" = "Hem";
 /* Figma page iOS Release 1 */
@@ -961,6 +964,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "pay_in_confirmation.continue_button" = "Fortsätt";
 /* Figma page Pay-In Flow */
 "pay_in_confirmation.headline" = "Autogiro är anslutet!";
+/* Figma page Pay-In Flow */
+"pay_in_confirmation_direct_debit.headline" = "Bankkontot är kopplat";
 /* Figma page Pay-In Flow */
 "pay_in_error.headline" = "Oj, något gick fel...";
 /* Figma page Pay-In Flow */

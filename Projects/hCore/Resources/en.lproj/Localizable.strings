@@ -485,6 +485,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_NO_PAYMENTS_IN_PROGRESS" = "You have no payments in progress";
 "PAYMENTS_OUTSTANDING_PAYMENT" = "Outstanding payment";
 "PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION" = "Our monthly payment is processed using digital direct debit (Autogiro) through our payment partner Trustly. Your price is based on several factors, including aspects related to you, your belongings, your lifestyle, and where you live.";
+/* some copy for info icon for swish in charge details */
+"PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION" = "";
 "PAYMENTS_PAYMENT_DUE" = "Payment due";
 "PAYMENTS_PAYMENT_DUE_INFO" = "If you update your bank account close to the %1$@, the withdrawal might take a few extra days.";
 "PAYMENTS_PAYMENT_FAILED" = "This payment failed and was added to your payment on %1$@.";
@@ -525,6 +527,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_METHODS_EMPTY" = "No payment method added. Add one to pay for your insurance.";
 "PAYMENT_METHODS_TITLE" = "Payment methods";
 "PAYMENT_METHOD_PENDING" = "It can take a few days for your new payment method to take effect.";
+"PAYMENT_METHOD_PENDING_STATUS_LABEL" = "Pending";
 "PAYMENT_METHOD_REQUIRED_FOOTNOTE" = "Required to keep your insurance active";
 "PAYMENT_METHOD_TITLE" = "Payment method";
 "PAYMENT_OPEN_SWISH_BUTTON" = "Open Swish";
@@ -537,13 +540,13 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_PRIMARY_LABEL" = "Primary";
 "PAYMENT_PRIMARY_SUBTITLE" = "This method will be used for your monthly payments";
 "PAYMENT_PRIMARY_TITLE" = "Choose payment method";
-"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "This is your primary payment method. Choose another one before removing it.";
+"PAYMENT_REMOVE_PRIMARY_SUBTITLE" = "This is your primary payment method. Choose another one or add a new one before removing it.";
 "PAYMENT_REMOVE_PRIMARY_TITLE" = "Can't be removed right now";
 "PAYMENT_REMOVE_SUBTITLE" = "You can add it back any time";
 "PAYMENT_REMOVE_TITLE" = "Remove payment method";
 "PAYMENT_SWISH_APPROVE_TITLE" = "Approve the connection in Swish";
 "PAYMENT_SWISH_CHANGE_NUMBER" = "Change phone number";
-"PAYMENT_SWISH_EXPLANATION_BUTTON" = "About recurring payments";
+"PAYMENT_SWISH_EXPLANATION_BUTTON" = "Read more about recurring payments";
 "PAYMENT_SWISH_FAILURE_TITLE" = "We couldn't connect Swish";
 "PAYMENT_SWISH_SUBTITLE" = "Use the number linked to your Swish";
 "PAYMENT_SWISH_SUCCESS_SUBTITLE" = "Your account is charged automatically each month. We’ll notify you in the Hedvig app before each payment.";
@@ -586,7 +589,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Not now";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_OK" = "Activate";
 "PUSH_NOTIFICATIONS_ALERT_TITLE" = "Notifications";
-"REFERRAL_PENDING_STATUS_LABEL" = "Pending...";
+"REFERRAL_PENDING_STATUS_LABEL" = "Pending";
 "REFERRAL_SMS_MESSAGE" = "Hey! Get Hedvig using my link and we both get %1$@ per month discount on the monthly cost. Follow the link: %2$@";
 "REFERRAL_TERMINATED_STATUS_LABEL" = "Inactive";
 "REMOVE_ADDON_BUTTON_TITLE" = "Remove addon";
@@ -961,6 +964,8 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "pay_in_confirmation.continue_button" = "Continue";
 /* Figma page Pay-In Flow */
 "pay_in_confirmation.headline" = "Payment method connected!";
+/* Figma page Pay-In Flow */
+"pay_in_confirmation_direct_debit.headline" = "Bank account connected";
 /* Figma page Pay-In Flow */
 "pay_in_error.headline" = "Ouch, something went wrong...";
 /* Figma page Pay-In Flow */

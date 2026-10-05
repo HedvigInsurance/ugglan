@@ -73,9 +73,6 @@ struct PaymentMethodDetailScreen: View {
             }
         case .swish:
             changeableMethod(method) {
-                hButton(.large, .secondary, content: .init(title: L10n.paymentSwishChangeNumber)) {
-                    providerToSetUp = paymentProvider
-                }
             }
         case .invoice:
             // Invoices are delivered by Kivra and cannot be changed here, only removed.
