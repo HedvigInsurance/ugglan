@@ -25,7 +25,7 @@ struct PaymentMethodPickerList: View {
 
             hSection {
                 VStack(spacing: .padding8) {
-                    if selected == .swish {
+                    if direction == .payin, selected == .swish {
                         if hFormContentPosition == .center {
                             InfoCard(text: L10n.swishInfoBox, type: .neutral)
                                 .padding(.top, -.padding8)
