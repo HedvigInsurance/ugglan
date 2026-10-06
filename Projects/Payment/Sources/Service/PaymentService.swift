@@ -36,4 +36,19 @@ public class hPaymentService {
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         try await client.setupPaymentMethod(type)
     }
+
+    @Log(.error)
+    public func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        try await client.getPaymentSetupStatus(orderId: orderId)
+    }
+
+    @Log(.error)
+    public func setDefaultPaymentMethod(_ method: PaymentMethod) async throws {
+        try await client.setDefaultPaymentMethod(method)
+    }
+
+    @Log(.error)
+    public func removePaymentMethod(_ provider: PaymentProvider) async throws {
+        try await client.removePaymentMethod(provider)
+    }
 }

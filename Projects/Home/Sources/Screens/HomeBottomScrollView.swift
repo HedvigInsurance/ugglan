@@ -39,6 +39,9 @@ struct HomeBottomScrollView: View {
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
     @Published var todos = [Todo]()
+    /// Drives the standalone `ConnectPaymentCardView`, which sits above the claims card rather
+    /// than in the carousel — hence a flag instead of an `InfoCardType`.
+    @Published var showsConnectPaymentCard = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     private var localItems = Set<InfoCardView>() {
@@ -83,31 +86,39 @@ class HomeBottomScrollViewModel: ObservableObject {
     private func handlePayments() {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         let homeStore: HomeStore = globalAppStateContainer.get()
-        let needsPaymentSetupPublisher = paymentStore.$paymentStatusData
-            .removeDuplicates()
-        let memberStatePublisher = homeStore.$memberContractState
-            .removeDuplicates()
 
-        Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
-            .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] paymentStatus, memberState in
-                self?.setConnectPayments(for: memberState, status: paymentStatus)
-            })
-            .store(in: &cancellables)
+        Publishers.CombineLatest3(
+            paymentStore.$paymentStatusData.removeDuplicates(),
+            paymentStore.$paymentData.removeDuplicates(),
+            homeStore.$memberContractState.removeDuplicates()
+        )
+        .receive(on: RunLoop.main)
+        .sink(receiveValue: { [weak self] paymentStatus, _, memberState in
+            self?
+                .setConnectPayments(
+                    prompt: paymentStore.connectPaymentPrompt,
+                    for: memberState,
+                    status: paymentStatus
+                )
+        })
+        .store(in: &cancellables)
     }
 
-    private func setConnectPayments(for userStatus: MemberContractState?, status: PaymentStatusData?) {
-        let missingPayin = status?.missingConnection == .payin
-        let missingPayout = status?.missingConnection == .payout
-        let showsPayin = missingPayin && [MemberContractState.active, MemberContractState.future].contains(userStatus)
-        let terminationDueToMissedPaymentsDate: String? =
-            if case let .terminatingDueToMissedPayments(date) = status?.status { date } else { nil }
-        let isTerminatingDueToMissedPayments =
-            if case .terminatingDueToMissedPayments = status?.status { true } else { false }
-        let showsPayout = missingPayout && !missingPayin
+    private func setConnectPayments(
+        prompt: ConnectPaymentPrompt?,
+        for userStatus: MemberContractState?,
+        status: PaymentStatusData?
+    ) {
+        let isActiveOrFuture = [MemberContractState.active, MemberContractState.future].contains(userStatus)
+        let showsCard =
+            switch prompt {
+            case .missedPayments: true
+            case .needsSetup: isActiveOrFuture
+            case nil: false
+            }
+        let showsPayout = status?.missingConnection == .payout
 
-        handleTodo(.paymentOverdue(date: terminationDueToMissedPaymentsDate), with: isTerminatingDueToMissedPayments)
-        handleTodo(.paymentMethodMissing, with: showsPayin && !isTerminatingDueToMissedPayments)
+        withAnimation { showsConnectPaymentCard = showsCard }
         handleTodo(.payoutMethodMissing, with: showsPayout)
     }
 

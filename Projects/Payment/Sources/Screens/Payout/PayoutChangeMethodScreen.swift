@@ -7,58 +7,49 @@ struct PayoutChangeMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
     @StateObject private var paymentMethodRouter = NavigationRouter()
+    @State private var selected: PaymentProvider?
     @State private var showConnectPayoutMethod: PaymentProvider?
+    @State private var connectedProvider: PaymentProvider?
 
     var body: some View {
-        hForm {
-            if let paymentStatusData = store.paymentStatusData {
-                VStack(spacing: .padding4) {
-                    ForEach(paymentStatusData.availablePayoutMethods, id: \.provider) { method in
-                        hSection {
-                            hRow {
-                                VStack(alignment: .leading, spacing: .padding4) {
-                                    hText(method.provider.payoutTitle)
-                                    hText(method.provider.payoutSubtitle, style: .label)
-                                        .foregroundColor(hTextColor.Translucent.secondary)
-                                }
-                                Spacer()
-                            }
-                            .withChevronAccessory
-                            .onTap {
-                                showConnectPayoutMethod = method.provider
-                            }
-                        }
-                    }
-                }
+        PaymentConnectFlowView(
+            direction: .payout,
+            methods: store.paymentStatusData?.availablePayoutMethods ?? [],
+            title: formTitle,
+            connectTitle: L10n.generalContinueButton,
+            confirmationFootnote: L10n.onboardingConnectPaymentSwitchAccountsLater,
+            selected: $selected,
+            connectedProvider: connectedProvider,
+            onConnect: { showConnectPayoutMethod = selected },
+            onCancel: { router.dismiss() },
+            onContinue: { router.dismiss() }
+        )
+        .task {
+            // Reached straight from a deep link as well as from the payout screen, so the list
+            // can't assume someone else has already fetched the status.
+            if store.paymentStatusData == nil {
+                await store.fetchPaymentStatus()
             }
         }
         .detent(
             item: $showConnectPayoutMethod,
-            presentationStyle: showConnectPayoutMethod?.detentPresentationStyle ?? .detent(style: [.large]),
-            options: .constant(showConnectPayoutMethod?.options ?? [])
-        ) { [weak router, weak paymentMethodRouter] paymentProvider in
-            let onSuccess = { [weak paymentMethodRouter] in
-                let store: PaymentStore = globalAppStateContainer.get()
-                Task { await store.fetchPaymentStatus() }
-                paymentMethodRouter?.dismiss()
-                router?.pop()
-                Toasts.success()
+            presentationStyle: showConnectPayoutMethod?.payoutSetupPresentationStyle ?? .detent(style: [.large]),
+            options: .constant(showConnectPayoutMethod?.payoutSetupPresentationOptions ?? [])
+        ) { paymentProvider in
+            let onSuccess = {
+                PaymentStore.refreshStatusDetached()
+                paymentMethodRouter.dismiss()
+                connectedProvider = paymentProvider
             }
             switch paymentProvider {
             case .nordea:
                 NordeaPayoutSetupScreen(onSuccess: onSuccess)
                     .navigationTitle(PaymentProvider.nordea.payoutTitle)
-                    .embededInNavigation(
-                        router: paymentMethodRouter ?? NavigationRouter(),
-                        tracking: PaymentProvider.nordea
-                    )
+                    .embededInNavigation(router: paymentMethodRouter, tracking: PaymentProvider.nordea)
             case .swish:
                 SwishPayoutSetupScreen(onSuccess: onSuccess)
                     .navigationTitle(PaymentProvider.swish.payoutTitle)
-                    .embededInNavigation(
-                        router: paymentMethodRouter ?? NavigationRouter(),
-                        tracking: PaymentProvider.swish
-                    )
+                    .embededInNavigation(router: paymentMethodRouter, tracking: PaymentProvider.swish)
             case .trustly:
                 DirectDebitSetup(router: paymentMethodRouter, onSuccess: onSuccess)
             case .invoice, .unknown:
@@ -67,34 +58,36 @@ struct PayoutChangeMethodScreen: View {
             }
         }
     }
+
+    private var formTitle: hTitle {
+        .init(
+            .navigationLike,
+            .body1,
+            connectedProvider == nil ? L10n.payoutSelectPayoutMethod : L10n.paymentPayoutBankSuccessTitle,
+            alignment: .center
+        )
+    }
 }
 
-extension PaymentProvider {
-    var payoutTitle: String {
-        switch self {
-        case .nordea: return L10n.bankPayoutMethodCardTitle
-        case .swish: return "Swish"
-        case .trustly: return "Trustly"
-        case .invoice: return L10n.paymentsInvoice
-        case .unknown: return ""
-        }
-    }
-
-    var payoutSubtitle: String {
-        switch self {
-        case .nordea: return L10n.bankPayoutMethodCardDescription
-        case .swish: return L10n.payoutMethodSwishDescription
-        case .trustly: return L10n.payoutMethodTrustlyDescription
-        case .invoice: return L10n.payoutMethodInvoiceDescription
-        case .unknown: return ""
+extension View {
+    func handleChangePayoutMethod(presented: Binding<Bool>) -> some View {
+        detent(
+            presented: presented,
+            presentationStyle: .detent(style: [.height]),
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            PayoutChangeMethodScreen()
+                .hFormContentPosition(.compact)
+                .embededInNavigation(
+                    options: [.navigationBarHidden],
+                    tracking: String(describing: PayoutChangeMethodScreen.self)
+                )
         }
     }
 }
 
 #Preview {
     PayoutChangeMethodScreen()
-        .environmentObject(NavigationRouter())
-        .environmentObject(PaymentsNavigationViewModel())
         .onAppear {
             let store: PaymentStore = globalAppStateContainer.get()
             store.paymentStatusData = .init(
@@ -113,27 +106,6 @@ extension PaymentProvider {
                 layout: .other
             )
         }
-}
-
-@MainActor
-extension PaymentProvider {
-    fileprivate var detentPresentationStyle: DetentPresentationStyle {
-        switch self {
-        case .trustly, .unknown, .invoice:
-            return .detent(style: [.large])
-        case .swish, .nordea:
-            return .detent(style: [.height])
-        }
-    }
-
-    fileprivate var options: DetentPresentationOption {
-        switch self {
-        case .trustly:
-            return [.disableDismissOnScroll, .withoutGrabber]
-        case .swish, .nordea, .unknown, .invoice:
-            return []
-        }
-    }
 }
 
 @MainActor

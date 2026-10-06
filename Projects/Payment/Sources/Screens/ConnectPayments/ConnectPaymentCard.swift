@@ -6,46 +6,58 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @AppObservedObject var store: PaymentStore
-    @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
-    public init() {}
+    private let onConnectPayment: () -> Void
+
+    public init(onConnectPayment: @escaping () -> Void) {
+        self.onConnectPayment = onConnectPayment
+    }
+
     public var body: some View {
-        if let status = store.paymentStatusData?.status {
-            getStatusInfoView(from: status)
+        if let prompt = store.connectPaymentPrompt {
+            card(for: prompt)
         }
     }
 
     @ViewBuilder
-    func getStatusInfoView(from status: PayinMethodStatus) -> some View {
-        if case let .terminatingDueToMissedPayments(date) = status {
-            InfoCard(
-                text: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
-                type: .attention
-            )
-            .buttons(
-                [
-                    .init(
-                        buttonTitle: L10n.General.chatButton,
-                        buttonAction: {
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                        }
-                    )
-                ]
-            )
-        } else if status == .needsSetup || store.showsConnectPayment {
-            InfoCard(
-                text: L10n.InfoCardMissingPayment.body,
-                type: .attention
-            )
-            .buttons(
-                [
-                    .init(
-                        buttonTitle: L10n.PayInExplainer.buttonText,
-                        buttonAction: { [weak connectPaymentVm] in
-                            connectPaymentVm?.set()
-                        }
-                    )
-                ]
+    private func card(for prompt: ConnectPaymentPrompt) -> some View {
+        switch prompt {
+        case let .missedPayments(date):
+            PaymentAttentionCard(
+                title: L10n.homeTodoPaymentOverdueTitle,
+                subtitle: L10n.homeTodoRequiresActionSubtitle,
+                message: L10n.InfoCardMissingPayment.missingPaymentsBody(date),
+                buttonTitle: L10n.General.chatButton
+            ) {
+                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+            }
+        case .needsSetup:
+            PaymentAttentionCard(
+                title: L10n.homeTodoMissingPaymentMethodTitle,
+                subtitle: L10n.homeTodoRequiresActionSubtitle,
+                message: L10n.InfoCardMissingPayment.body,
+                buttonTitle: L10n.PayInExplainer.buttonText,
+                action: onConnectPayment
             )
         }
     }
+}
+
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+
+    let store: PaymentStore = globalAppStateContainer.get()
+    store.paymentStatusData = .init(
+        status: .needsSetup,
+        chargingDay: nil,
+        defaultPayinMethod: nil,
+        payinMethods: [],
+        defaultPayoutMethod: nil,
+        payoutMethods: [],
+        availableMethods: [],
+        missingConnection: .payin,
+        layout: .other
+    )
+
+    return ConnectPaymentCardView(onConnectPayment: {})
 }

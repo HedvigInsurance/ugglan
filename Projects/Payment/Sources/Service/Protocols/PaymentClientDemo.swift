@@ -61,10 +61,9 @@ public class hPaymentClientDemo: hPaymentClient {
                 referralDiscount: nil,
                 amountPerReferral: .sek(10),
                 payinMethod: .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "****124124", bank: "Handelsbanken")
+                    method: .trustly(bankAccount: .init(account: "****124124", bank: "Handelsbanken"))
                 ),
                 addedToThePayment: nil
             ),
@@ -136,17 +135,15 @@ public class hPaymentClientDemo: hPaymentClient {
             status: .active,
             chargingDay: 27,
             defaultPayinMethod: .init(
-                provider: .trustly,
                 status: .active,
                 isDefault: true,
-                details: .bankAccount(account: "****1234", bank: "Connected bank")
+                method: .trustly(bankAccount: .init(account: "****1234", bank: "Handelsbanken"))
             ),
             payinMethods: [
                 .init(
-                    provider: .trustly,
                     status: .active,
                     isDefault: true,
-                    details: .bankAccount(account: "****1234", bank: "Connected bank")
+                    method: .trustly(bankAccount: .init(account: "****1234", bank: "Handelsbanken"))
                 )
             ],
             defaultPayoutMethod: nil,
@@ -229,7 +226,12 @@ public class hPaymentClientDemo: hPaymentClient {
 
     public func setupPaymentMethod(_ type: PaymentMethodSetupType) async throws -> PaymentSetupResult {
         try await Task.sleep(for: .seconds(1))
-        return .init(status: .pending, url: "https://example.com/setup", errorMessage: nil)
+        return .init(status: .pending, orderId: nil, url: "https://example.com/setup", errorMessage: nil)
+    }
+
+    public func getPaymentSetupStatus(orderId _: String) async throws -> PaymentSetupResult.PaymentSetupStatus {
+        try await Task.sleep(for: .seconds(3))
+        return .active
     }
 
     public func chargeOutstandingPayment() async throws {
@@ -238,5 +240,13 @@ public class hPaymentClientDemo: hPaymentClient {
 
     public func getMissedPaymentData() async throws -> MissedPaymentData? {
         nil
+    }
+
+    public func setDefaultPaymentMethod(_: PaymentMethod) async throws {
+        try await Task.sleep(for: .seconds(1))
+    }
+
+    public func removePaymentMethod(_: PaymentProvider) async throws {
+        try await Task.sleep(for: .seconds(1))
     }
 }

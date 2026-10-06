@@ -89,6 +89,9 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isAddonPresented: ChangeAddonInput?
     @Published public var isHelpCenterPresented = false
     @Published public var isPayoutMethodPresented = false
+    @Published public var isAddPaymentMethodPresented = false
+    @Published public var isPaymentMethodsPresented = false
+    @Published public var payinSetupProvider: PaymentProvider?
     @Published public var isForeverPresented = false
     @Published public var isUpcomingPaymentPresented: PaymentData?
 
@@ -107,7 +110,6 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public var connectPaymentVm = ConnectPaymentViewModel()
     public var editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )

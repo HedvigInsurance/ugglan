@@ -7,9 +7,9 @@ import hCoreUI
 @MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
     private var paymentStoreSubscription: AnyCancellable?
-    public var connectPaymentVm = ConnectPaymentViewModel()
     let paymentsRouter = NavigationRouter()
-
+    @Published var showChooseDefaultPaymentMethod = false
+    @Published var showAddPaymentMethod = false
     public init() {}
 }
 
@@ -29,23 +29,12 @@ public struct PaymentsNavigation: View {
                     PaymentDetailsView(data: paymentData)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
-                    switch routerAction {
-                    case .discounts:
-                        CampaignNavigation()
-                    case .history:
-                        PaymentHistoryView()
-                    case .paymentMethod:
-                        PaymentMethodScreen()
-                    case .payoutMethod:
-                        PayoutSelectedMethodScreen()
-                    }
+                    paymentsDestination(for: routerAction)
                 }
                 .routerDestination(for: PayoutRouterActions.self) { routerAction in
                     switch routerAction {
                     case .selectedPayoutMethod:
                         PayoutSelectedMethodScreen()
-                    case .changePayoutMethod:
-                        PayoutChangeMethodScreen()
                     }
                 }
                 .routerDestination(for: MissedPaymentData.self) { item in
@@ -60,8 +49,44 @@ public struct PaymentsNavigation: View {
                     .navigationTitle(L10n.paymentsPaymentOverdueTitle)
                 }
         }
-        .environmentObject(paymentsNavigationVm)
-        .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
+        .withPaymentsPresentations(paymentsNavigationVm)
+    }
+}
+
+@MainActor
+@ViewBuilder
+func paymentsDestination(for routerAction: PaymentsRouterAction) -> some View {
+    switch routerAction {
+    case .discounts:
+        CampaignNavigation()
+    case .history:
+        PaymentHistoryView()
+    case let .paymentMethod(provider):
+        PaymentMethodDetailScreen(paymentProvider: provider)
+    case .paymentMethods:
+        PaymentMethodListScreen()
+    }
+}
+
+extension View {
+    func withPaymentsPresentations(_ vm: PaymentsNavigationViewModel) -> some View {
+        modifier(PaymentsPresentations(vm: vm))
+    }
+}
+
+private struct PaymentsPresentations: ViewModifier {
+    @ObservedObject var vm: PaymentsNavigationViewModel
+
+    func body(content: Content) -> some View {
+        content
+            .environmentObject(vm)
+            .detent(
+                presented: $vm.showChooseDefaultPaymentMethod,
+                presentationStyle: .detent(style: [.height])
+            ) {
+                ChooseDefaultPaymentMethodScreen()
+            }
+            .handleAddPaymentMethod(presented: $vm.showAddPaymentMethod)
     }
 }
 
@@ -79,8 +104,8 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitleProtocol {
     case discounts
     case history
-    case paymentMethod
-    case payoutMethod
+    case paymentMethod(provider: PaymentProvider)
+    case paymentMethods
 
     var nameForTracking: String {
         switch self {
@@ -89,9 +114,9 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
         case .history:
             return .init(describing: PaymentHistoryView.self)
         case .paymentMethod:
-            return .init(describing: PaymentMethodScreen.self)
-        case .payoutMethod:
-            return .init(describing: PayoutSelectedMethodScreen.self)
+            return .init(describing: PaymentMethodDetailScreen.self)
+        case .paymentMethods:
+            return .init(describing: PaymentMethodListScreen.self)
         }
     }
 
@@ -102,9 +127,9 @@ enum PaymentsRouterAction: Hashable, TrackingViewNameProtocol, NavigationTitlePr
         case .history:
             return L10n.paymentHistoryTitle
         case .paymentMethod:
-            return L10n.PaymentDetails.NavigationBar.title
-        case .payoutMethod:
-            return L10n.payoutPageHeading
+            return L10n.paymentMethodTitle
+        case .paymentMethods:
+            return L10n.paymentMethodsTitle
         }
     }
 }

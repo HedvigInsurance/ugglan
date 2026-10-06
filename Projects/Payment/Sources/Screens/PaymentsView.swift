@@ -29,7 +29,7 @@ public struct PaymentsView: View {
 
     private var successView: some View {
         hForm {
-            VStack(spacing: .padding8) {
+            VStack(spacing: .padding16) {
                 payments
                 PaymentsMenuView()
             }
@@ -37,11 +37,6 @@ public struct PaymentsView: View {
             .hButtonIsLoading(false)
         }
         .hSetScrollBounce(to: true)
-        .hFormAttachToBottom {
-            if store.showsConnectPayment {
-                ConnectPaymentBottomView()
-            }
-        }
         .onPullToRefresh {
             await store.fetchAllPaymentData(forceUpdate: true)
         }
@@ -49,7 +44,11 @@ public struct PaymentsView: View {
 
     private var payments: some View {
         VStack(spacing: .padding8) {
-            if let missedPaymentData = store.missedPaymentData {
+            if store.connectPaymentPrompt != nil {
+                ConnectPaymentCardView(onConnectPayment: {
+                    paymentNavigationVm.showAddPaymentMethod = true
+                })
+            } else if let missedPaymentData = store.missedPaymentData {
                 MissedPaymentCardView(
                     amountDue: missedPaymentData.paymentData.payment.net,
                     onReviewPayment: {
@@ -82,12 +81,6 @@ public struct PaymentsView: View {
                     hText(L10n.paymentsNoPaymentsInProgress)
                 }
                 .padding(.vertical, .padding32)
-            }
-            if store.showsConnectPayment {
-                hSection {
-                    ConnectPaymentCardView()
-                        .environmentObject(paymentNavigationVm.connectPaymentVm)
-                }
             }
         }
     }
@@ -123,6 +116,7 @@ public struct PaymentsView: View {
                     router.push(paymentData)
                 }
             }
+            .sectionContainerStyle(.primaryWithShadow)
         }
     }
 
@@ -131,9 +125,23 @@ public struct PaymentsView: View {
         @EnvironmentObject var router: NavigationRouter
 
         var body: some View {
-            let showsHistoricalSections = store.paymentStatusData?.showsHistoricalSections ?? false
+            if store.showsPayinSection,
+                let paymentMethod = store.paymentStatusData?.defaultOrFirstDefaultPayinMethod
+            {
+                hSection {
+                    PaymentMethodRow(paymentMethod, showsPrimaryLabel: false, allowsTapWhenPending: true) {
+                        router.push(PaymentsRouterAction.paymentMethod(provider: paymentMethod.provider))
+                    }
+                }
+                .withHeader(title: L10n.paymentMethodTitle)
+                .sectionContainerStyle(.transparent)
+            }
             hSection {
-                if showsHistoricalSections {
+                if let payinMethods = store.paymentStatusData?.payinMethods, payinMethods.hasMethodInProgress {
+                    InfoCard(text: L10n.paymentMethodPending, type: .neutral)
+                }
+
+                if store.paymentStatusData?.showsHistoricalSections ?? false {
                     hRow {
                         hCoreUIAssets.campaign.view
                             .foregroundColor(hSignalColor.Green.element)
@@ -159,13 +167,11 @@ public struct PaymentsView: View {
                     hRow {
                         hCoreUIAssets.payments.view
                             .foregroundColor(hTextColor.Opaque.primary)
-                        hText(L10n.PaymentDetails.NavigationBar.title)
+                        hText(L10n.paymentMethodsTitle)
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap {
-                        router.push(PaymentsRouterAction.paymentMethod)
-                    }
+                    .onTap { router.push(PaymentsRouterAction.paymentMethods) }
                 }
 
                 if store.showsConnectPayout {
@@ -182,7 +188,7 @@ public struct PaymentsView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap { router.push(PaymentsRouterAction.payoutMethod) }
+                    .onTap { router.push(PayoutRouterActions.selectedPayoutMethod) }
                 }
             }
             .sectionContainerStyle(.transparent)

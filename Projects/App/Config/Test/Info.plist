@@ -60,6 +60,7 @@
 		<string>googlegmail</string>
 		<string>ms-outlook</string>
 		<string>bankid</string>
+		<string>swish</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

@@ -42,20 +42,8 @@ public final class PaymentStore: AppStore {
         }
     }
 
-    var showsChangePayinMethod: Bool {
-        guard let paymentStatusData else { return false }
-        switch paymentStatusData.layout {
-        case .qasaOnly: return paymentData != nil
-        case .other: return paymentStatusData.hasAnyPayinMethod
-        }
-    }
-
     var showsPayoutSection: Bool {
-        guard let paymentStatusData else { return false }
-        switch paymentStatusData.layout {
-        case .qasaOnly: return paymentStatusData.hasAnyPayoutMethod
-        case .other: return paymentStatusData.hasAnyPayoutMethod && showsPayinSection
-        }
+        paymentStatusData?.hasAnyPayoutMethod ?? false
     }
 
     var showsNoPaymentsInProgress: Bool {
@@ -67,6 +55,14 @@ public final class PaymentStore: AppStore {
         guard let paymentStatusData, paymentStatusData.layout != .qasaOnly else { return false }
         return paymentStatusData.missingConnection == .payin
             || (paymentData != nil && paymentStatusData.defaultOrFirstDefaultPayinMethod == nil)
+    }
+
+    public var connectPaymentPrompt: ConnectPaymentPrompt? {
+        guard let paymentStatusData else { return nil }
+        if case let .terminatingDueToMissedPayments(date) = paymentStatusData.status {
+            return .missedPayments(date: date)
+        }
+        return showsConnectPayment ? .needsSetup : nil
     }
 
     var showsConnectPayout: Bool {
@@ -105,7 +101,12 @@ public final class PaymentStore: AppStore {
         isLoadingPaymentData = false
     }
 
+    public func resetPaymentDataFetchedAt() {
+        paymentDataFetchedAt = nil
+    }
+
     public func fetchPaymentStatus() async {
+        guard !isFetchingPaymentStatus else { return }
         isFetchingPaymentStatus = true
         do {
             paymentStatusData = try await paymentService.getPaymentStatusData()
@@ -141,6 +142,14 @@ public final class PaymentStore: AppStore {
             PaymentNoticeBadgeTracker().markSeen(paymentNoticeData)
         }
         showsPaymentBadge = false
+    }
+
+    /// Detached so a refresh kicked off from a sheet's completion outlives that sheet's teardown.
+    static func refreshStatusDetached() {
+        Task {
+            let store: PaymentStore = globalAppStateContainer.get()
+            await store.fetchPaymentStatus()
+        }
     }
 
     public func getHistory() async {
