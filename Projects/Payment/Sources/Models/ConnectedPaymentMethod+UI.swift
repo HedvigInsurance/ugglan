@@ -59,7 +59,7 @@ extension ConnectedPaymentMethod {
     }
 
     var item: ItemModel {
-        .init(title: title, subTitle: isPending ? L10n.referralPendingStatusLabel : subtitle)
+        .init(title: title, subTitle: isPending ? L10n.paymentMethodPendingStatusLabel : subtitle)
     }
 
     var missedPaymentRow: (label: String, value: String) {

@@ -271,12 +271,12 @@ class hPaymentClientOctopus: hPaymentClient {
         switch result.status {
         case .case(.active): return .active
         case .case(.pending): return .pending
-        case .case(.failed): return .failed
-        default:
+        case .case(.failed):
             if let message = result.error?.message {
                 throw PaymentError.missingDataError(message: message)
             }
-            return .unknown
+            return .failed
+        default: return .unknown
         }
     }
 
