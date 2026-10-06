@@ -53,7 +53,7 @@ private struct PayinSetupDetent: ViewModifier {
                 item: $connectedProvider,
                 options: .constant([.alwaysOpenOnTop, .disableDismissOnScroll])
             ) { connected in
-                AddPaymentMethodScreen(connectedProvider: connected) { provider in
+                AddPaymentMethodScreen(connectedProvider: connected, confirmationFootnote: nil) { provider in
                     finish(provider)
                 }
                 .hFormContentPosition(.compact)

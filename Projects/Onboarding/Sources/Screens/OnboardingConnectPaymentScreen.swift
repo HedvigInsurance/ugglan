@@ -13,7 +13,8 @@ struct OnboardingConnectPaymentScreen: View {
                 subTitle: L10n.onboardingConnectPaymentSubtitle,
                 alignment: .leading
             ),
-            connectedProvider: vm.connectedPaymentProvider
+            connectedProvider: vm.connectedPaymentProvider,
+            confirmationFootnote: L10n.onboardingConnectPaymentSwitchAccountsLater
         ) { provider in
             // Connecting is the only way on from here, so the step is done and connected.
             vm.markPaymentConnected(provider: provider)

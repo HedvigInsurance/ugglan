@@ -17,7 +17,6 @@ struct PayoutChangeMethodScreen: View {
             methods: store.paymentStatusData?.availablePayoutMethods ?? [],
             title: formTitle,
             connectTitle: L10n.generalContinueButton,
-            confirmationFootnote: L10n.onboardingConnectPaymentSwitchAccountsLater,
             selected: $selected,
             connectedProvider: connectedProvider,
             onConnect: { showConnectPayoutMethod = selected },

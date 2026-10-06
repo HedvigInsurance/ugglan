@@ -24,20 +24,24 @@ public struct AddPaymentMethodScreen: View {
     @State private var connectedProvider: PaymentProvider?
 
     private let heading: Heading?
+    private let confirmationFootnote: String?
     private let onFinished: ((_ provider: PaymentProvider) -> Void)?
 
     public init() {
         self.heading = nil
         self.onFinished = nil
+        self.confirmationFootnote = nil
     }
 
     public init(
         heading: Heading? = nil,
         connectedProvider: PaymentProvider? = nil,
+        confirmationFootnote: String?,
         onFinished: @escaping (_ provider: PaymentProvider) -> Void
     ) {
         self.heading = heading
         self.onFinished = onFinished
+        self.confirmationFootnote = confirmationFootnote
         _connectedProvider = State(initialValue: connectedProvider)
     }
 
@@ -52,6 +56,7 @@ public struct AddPaymentMethodScreen: View {
             title: formTitle,
             subTitle: formSubTitle,
             connectTitle: L10n.paymentConnectTitle,
+            confirmationFootnote: confirmationFootnote,
             selected: $selected,
             connectedProvider: connectedProvider,
             onConnect: { providerToSetUp = selected },
@@ -162,6 +167,7 @@ private func setUpPreviewStore() {
             subTitle: "Set up how you want to pay",
             alignment: .leading
         ),
+        confirmationFootnote: nil,
         onFinished: { _ in }
     )
 }
