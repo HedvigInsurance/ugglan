@@ -5,6 +5,7 @@ import hCoreUI
 
 struct HomeOngoingQuotesSection: View {
     let quotes: [OngoingQuote]
+    let onDismiss: (String) -> Void
     @StateObject private var scrollVm = InfoCardScrollViewModel(spacing: .padding16)
 
     var body: some View {
@@ -16,36 +17,41 @@ struct HomeOngoingQuotesSection: View {
     }
 
     @ViewBuilder private var cards: some View {
-        hSection {
-            if quotes.count == 1, let quote = quotes.first {
-                OngoingQuoteCard(quote: quote)
-            } else {
-                InfoCardScrollView(items: .constant(quotes), vm: scrollVm) { quote in
-                    OngoingQuoteCard(quote: quote)
-                }
+        if quotes.count == 1, let quote = quotes.first {
+            card(for: quote)
+        } else {
+            InfoCardScrollView(items: .constant(quotes), vm: scrollVm) { quote in
+                card(for: quote)
             }
         }
-        .sectionContainerStyle(.transparent)
+    }
+
+    private func card(for quote: OngoingQuote) -> some View {
+        OngoingQuoteCard(quote: quote) { onDismiss(quote.id) }
     }
 }
 
 private struct OngoingQuoteCard: View {
     let quote: OngoingQuote
+    let onDismiss: () -> Void
     @State private var isLoading = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: .padding16) {
-            HStack(spacing: .padding12) {
-                pillow
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(quote.title, style: .heading1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    if let secondaryText = quote.secondaryText {
-                        hText(secondaryText, style: .heading1)
-                            .foregroundColor(hTextColor.Opaque.secondary)
+            HStack(alignment: .top, spacing: 0) {
+                HStack(spacing: .padding12) {
+                    pillow
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(quote.title, style: .heading1)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        if let secondaryText = quote.secondaryText {
+                            hText(secondaryText, style: .heading1)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
                     }
                 }
                 Spacer(minLength: 0)
+                dismissButton
             }
             hButton(.medium, .secondary, content: .init(title: L10n.generalContinueButton)) { resume() }
                 .hButtonTakeFullWidth(true)
@@ -65,8 +71,25 @@ private struct OngoingQuoteCard: View {
         .onTapGesture { resume() }
         .accessibilityAddTraits(.isButton)
         .accessibilityAction(.default) { resume() }
+        .accessibilityAction(named: L10n.General.remove) { onDismiss() }
         .hButtonIsLoading(isLoading)
         .disabled(isLoading)
+    }
+
+    private var dismissButton: some View {
+        Button(action: onDismiss) {
+            hCoreUIAssets.closeSmall.view
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(hTextColor.Opaque.secondary)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .padding(.trailing, -.padding12)
+        .padding(.top, -.padding12)
+        .buttonStyle(.plain)
+        .accessibilityLabel(L10n.General.remove)
+        .accessibilityHidden(true)
     }
 
     private var pillow: some View {
@@ -85,8 +108,8 @@ private struct OngoingQuoteCard: View {
             isLoading = true
             await delay(2)
             log.addUserAction(
-                type: .click,
-                name: "home ongoing quote",
+                type: .custom,
+                name: "homeQuoteClicked",
                 attributes: ["quoteId": quote.id]
             )
             await Dependencies.urlOpener.open(quote.resumeUrl)
@@ -97,7 +120,7 @@ private struct OngoingQuoteCard: View {
 
 #Preview("One quote") {
     hForm {
-        HomeOngoingQuotesSection(quotes: [.previewQuote(id: "1")])
+        HomeOngoingQuotesSection(quotes: [.previewQuote(id: "1")], onDismiss: { _ in })
     }
 }
 
@@ -108,14 +131,15 @@ private struct OngoingQuoteCard: View {
                 .previewQuote(id: "1"),
                 .previewQuote(id: "2", title: "Car Insurance + Accident Insurance"),
                 .previewQuote(id: "3", title: "Accident Insurance"),
-            ]
+            ],
+            onDismiss: { _ in }
         )
     }
 }
 
 #Preview("One quote - accessibility3") {
     hForm {
-        HomeOngoingQuotesSection(quotes: [.previewQuote(id: "1")])
+        HomeOngoingQuotesSection(quotes: [.previewQuote(id: "1")], onDismiss: { _ in })
     }
     .environment(\.dynamicTypeSize, .accessibility3)
 }

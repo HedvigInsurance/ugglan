@@ -12,12 +12,14 @@ final class HomeTests: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         globalAppStateContainer.clearPersistence()
+        UserDefaults.standard.removeObject(forKey: DismissedOngoingQuotesTracker.storageKey)
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         sut = nil
     }
 
     override func tearDown() async throws {
+        UserDefaults.standard.removeObject(forKey: DismissedOngoingQuotesTracker.storageKey)
         Dependencies.shared.remove(for: HomeClient.self)
         await delay(0.0000001)
 
@@ -179,6 +181,129 @@ final class HomeTests: XCTestCase {
 
         XCTAssertNotEqual(withPrice.secondaryText, "Studio apartment, Stockholm")
         XCTAssertEqual(withoutPrice.secondaryText, "Studio apartment, Stockholm")
+    }
+
+    func testFetchOngoingQuotesHidesQuotesTheMemberAlreadyDismissed() async {
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchMemberState()
+        DismissedOngoingQuotesTracker().dismiss(quoteId: "1", forMember: store.memberInfo!.id)
+
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes.map(\.id), ["2"])
+    }
+
+    func testDismissOngoingQuoteHidesItImmediatelyAndStaysHiddenAfterARefetch() async {
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchMemberState()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+            store.dismissOngoingQuote(id: "1")
+
+            XCTAssertEqual(store.ongoingQuotes.map(\.id), ["2"])
+
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes.map(\.id), ["2"])
+    }
+
+    func testQuotesDismissedByAnotherMemberAreStillShown() async {
+        let quotes = [Self.makeOngoingQuote(id: "1")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        DismissedOngoingQuotesTracker().dismiss(quoteId: "1", forMember: "some-other-member")
+
+        let store = HomeStore()
+        await store.fetchMemberState()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes.map(\.id), ["1"])
+    }
+
+    func testDismissOngoingQuoteBeforeTheMemberIdArrivesIsNotRemembered() async {
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        XCTAssertNil(store.memberInfo)
+
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+            store.dismissOngoingQuote(id: "1")
+
+            XCTAssertEqual(store.ongoingQuotes.map(\.id), ["2"])
+
+            await store.fetchMemberState()
+            await store.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes.map(\.id), ["1", "2"])
+        XCTAssertTrue(DismissedOngoingQuotesTracker().dismissedIds(forMember: "id").isEmpty)
+    }
+
+    func testQuotesDismissedEarlierAreHiddenWhenTheMemberIdArrivesAfterTheFetch() async {
+        let memberState: MemberState = .init(
+            memberInfo: .init(id: "member-1", firstName: "Test", isContactInfoUpdateNeeded: false),
+            contracts: [],
+            contractState: .active,
+            futureState: .none
+        )
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(
+            fetchMemberState: { memberState },
+            fetchOngoingQuotes: { quotes }
+        )
+        sut = mockService
+
+        DismissedOngoingQuotesTracker().dismiss(quoteId: "1", forMember: "member-1")
+
+        let store = HomeStore()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+            XCTAssertEqual(store.ongoingQuotes.map(\.id), ["1", "2"])
+
+            await store.fetchMemberState()
+        }
+
+        XCTAssertEqual(store.ongoingQuotes.map(\.id), ["2"])
+    }
+
+    func testDismissedQuotesStayHiddenForAStoreBuiltFromScratch() async {
+        let quotes = [Self.makeOngoingQuote(id: "1"), Self.makeOngoingQuote(id: "2")]
+        let mockService = MockData.createMockHomeService(fetchOngoingQuotes: { quotes })
+        sut = mockService
+
+        let store = HomeStore()
+        await store.fetchMemberState()
+        await withOngoingQuotesFlag(enabled: true) {
+            await store.fetchOngoingQuotes()
+            store.dismissOngoingQuote(id: "1")
+        }
+
+        globalAppStateContainer.clearPersistence()
+
+        let storeAfterRelaunch = HomeStore()
+        await storeAfterRelaunch.fetchMemberState()
+        await withOngoingQuotesFlag(enabled: true) {
+            await storeAfterRelaunch.fetchOngoingQuotes()
+        }
+
+        XCTAssertEqual(storeAfterRelaunch.ongoingQuotes.map(\.id), ["2"])
     }
 
     private func withOngoingQuotesFlag(enabled: Bool, _ body: () async -> Void) async {

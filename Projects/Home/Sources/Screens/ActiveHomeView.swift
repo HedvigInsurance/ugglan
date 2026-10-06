@@ -157,7 +157,9 @@ private struct HomeSheetContent: View {
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection
             TodoList(todos: bottomVm.todos)
-            HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes)
+            HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes) { quoteId in
+                withAnimation { homeStore.dismissOngoingQuote(id: quoteId) }
+            }
             HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
             HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
             HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
