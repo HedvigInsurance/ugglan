@@ -60,6 +60,7 @@ public final class HomeStore: AppStore {
     @Transient @Published public private(set) var fetchMemberStateError: String?
 
     @Transient private var cancellables = Set<AnyCancellable>()
+    private let dismissedQuotes = DismissedOngoingQuotesTracker()
 
     public var upcomingRenewalContracts: [HomeContract] {
         contracts.filter { $0.upcomingRenewal != nil }
@@ -89,6 +90,12 @@ public final class HomeStore: AppStore {
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in Task { await self?.fetchOngoingQuotes() } }
+            .store(in: &cancellables)
+
+        $memberInfo
+            .compactMap { $0?.id }
+            .removeDuplicates()
+            .sink { [weak self] memberId in self?.hideDismissedQuotes(forMember: memberId) }
             .store(in: &cancellables)
 
         let paymentStore: PaymentStore = globalAppStateContainer.get()
@@ -154,6 +161,20 @@ public final class HomeStore: AppStore {
             return
         }
         ongoingQuotes = (try? await homeService.getOngoingQuotes()) ?? []
+        if let memberId = memberInfo?.id { hideDismissedQuotes(forMember: memberId) }
+    }
+
+    public func dismissOngoingQuote(id: String) {
+        if let memberId = memberInfo?.id {
+            dismissedQuotes.dismiss(quoteId: id, forMember: memberId)
+        }
+        ongoingQuotes.removeAll { $0.id == id }
+    }
+
+    private func hideDismissedQuotes(forMember memberId: String) {
+        let dismissedIds = dismissedQuotes.dismissedIds(forMember: memberId)
+        guard !dismissedIds.isEmpty else { return }
+        ongoingQuotes.removeAll { dismissedIds.contains($0.id) }
     }
 
     public func fetchFAQ() async {
