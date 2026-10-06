@@ -49,7 +49,8 @@ public struct InfoCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, .padding12)
-        .padding(.horizontal, .padding16)
+        .padding(.leading, .padding12)
+        .padding(.trailing, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: buttonsConfig?.count ?? 0 != 1 ? .contain : .combine)
