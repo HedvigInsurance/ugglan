@@ -484,9 +484,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENTS_NO_HISTORY_DATA" = "Du har ingen betalningshistorik";
 "PAYMENTS_NO_PAYMENTS_IN_PROGRESS" = "Du har inga pågående betalningar";
 "PAYMENTS_OUTSTANDING_PAYMENT" = "Utebliven betalning";
-"PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION" = "Vår månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.";
+"PAYMENTS_PAYMENT_DETAILS_INFO_DESCRIPTION" = "Din månadsbetalning behandlas med digitalt autogiro genom vår betalningspartner Trustly. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.";
 /* some copy for info icon for swish in charge details */
-"PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION" = "";
+"PAYMENTS_PAYMENT_DETAILS_SWISH_DESCRIPTION" = "Din månadsbetalning dras automatiskt via Swish. Ditt pris baseras på flera olika faktorer som bland annat har att göra med dig, dina saker, hur du lever och var du bor.";
 "PAYMENTS_PAYMENT_DUE" = "Förfallodag";
 "PAYMENTS_PAYMENT_DUE_INFO" = "Om du uppdaterar ditt bankkonto nära den %1$@ kan det ta några extra dagar innan pengarna dras.";
 "PAYMENTS_PAYMENT_FAILED" = "Denna betalning misslyckades och lades till i din betalning den %1$@ .";

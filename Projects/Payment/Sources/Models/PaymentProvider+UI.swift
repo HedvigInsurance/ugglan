@@ -29,6 +29,7 @@ extension PaymentProvider {
     public var infoText: String? {
         switch self {
         case .trustly: L10n.paymentsPaymentDetailsInfoDescription
+        case .swish: L10n.paymentsPaymentDetailsSwishDescription
         case .invoice: L10n.kivraPaymentInfo
         default: nil
         }
