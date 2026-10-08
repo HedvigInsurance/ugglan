@@ -472,6 +472,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "OS_VERSION_TOO_LOW_BODY" = "%@ stöds inte. Uppdatera till det senaste operativsystemet för att kunna använda Hedvig-appen.";
 "OS_VERSION_TOO_LOW_TITLE" = "Ditt operativsystem måste uppdateras";
 "PAYMENTS_ACCOUNT" = "Konto";
+"PAYMENTS_ADD_SWISH_PAYOUT_INFO" = "Jag bekräftar att det här är mitt eget Swish-nummer, kopplat till mitt personnummer.";
 "PAYMENTS_AMOUNT_TO_PAY" = "Att betala";
 "PAYMENTS_AUTOGIRO_LABEL" = "Autogiro";
 "PAYMENTS_DISCOUNTS_SECTION_TITLE" = "Rabatter";

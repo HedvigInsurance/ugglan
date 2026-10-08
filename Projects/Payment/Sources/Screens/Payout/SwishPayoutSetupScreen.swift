@@ -13,8 +13,9 @@ struct SwishPayoutSetupScreen: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding4) {
+            VStack(spacing: .padding8) {
                 phoneNumberField
+                confirmation
             }
         }
         .hFormContentPosition(.compact)
@@ -33,6 +34,16 @@ struct SwishPayoutSetupScreen: View {
                 focusValue: .phoneNumber,
                 placeholder: L10n.phoneNumberRowTitle,
                 error: $vm.phoneNumberError
+            )
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    private var confirmation: some View {
+        hSection {
+            PaymentConfirmationCard(
+                message: L10n.paymentsAddSwishPayoutInfo,
+                isConfirmed: $vm.hasConfirmedNumber
             )
         }
         .sectionContainerStyle(.transparent)
@@ -60,6 +71,7 @@ struct SwishPayoutSetupScreen: View {
             }
         }
         .hButtonIsLoading(vm.isLoading)
+        .disabled(vm.isSaveDisabled)
     }
 }
 
@@ -72,6 +84,7 @@ extension SwishPayoutSetupScreen: TrackingViewNameProtocol {
 @MainActor
 class SwishPayoutSetupViewModel: ObservableObject {
     @Published var phoneNumber: String = ""
+    @Published var hasConfirmedNumber: Bool = false
     @Published var focusedField: SwishPayoutField?
     @Published var phoneNumberError: String?
     @Published var isLoading: Bool = false
@@ -79,6 +92,12 @@ class SwishPayoutSetupViewModel: ObservableObject {
 
     private let paymentService = hPaymentService()
     private let phoneNumberMasking = Masking(type: .phoneNumber)
+
+    // A payout destination is only as good as the member's word that it is theirs, so the
+    // confirmation gates saving rather than being validated after the fact.
+    var isSaveDisabled: Bool {
+        !hasConfirmedNumber
+    }
 
     func save() async -> Bool {
         withAnimation {

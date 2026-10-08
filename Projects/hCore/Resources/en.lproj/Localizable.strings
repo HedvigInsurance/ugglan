@@ -472,6 +472,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "OS_VERSION_TOO_LOW_BODY" = "%@ is not supported. Update to the latest operating system to use the Hedvig app.";
 "OS_VERSION_TOO_LOW_TITLE" = "Your iOS needs to be updated";
 "PAYMENTS_ACCOUNT" = "Account";
+"PAYMENTS_ADD_SWISH_PAYOUT_INFO" = "I confirm this is my own Swish number, connected to my personal identity number.";
 "PAYMENTS_AMOUNT_TO_PAY" = "Amount to pay";
 "PAYMENTS_AUTOGIRO_LABEL" = "Direct debit";
 "PAYMENTS_DISCOUNTS_SECTION_TITLE" = "Discounts";
