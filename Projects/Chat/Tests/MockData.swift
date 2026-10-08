@@ -1,6 +1,7 @@
 import Addons
 import CrossSell
 import Foundation
+import Logger
 import hCore
 
 @testable import Chat
@@ -72,6 +73,15 @@ struct MockData {
         Dependencies.shared.add(module: Module { () -> ConversationClient in client })
         return client
     }
+
+    // `log` is a mutable global rather than an injected dependency, so the funnel is observed
+    // by swapping it for the duration of a test. The caller restores it in tearDown.
+    @discardableResult
+    static func createMockLogger() -> MockLogger {
+        let logger = MockLogger()
+        log = logger
+        return logger
+    }
 }
 
 @MainActor
@@ -111,6 +121,34 @@ class MockConversationClient: ConversationClient {
     func hideCrossSales(for conversationId: String) async throws {
         hiddenCrossSalesIds.append(conversationId)
     }
+}
+
+class MockLogger: Logging {
+    // Values are flattened to String so the funnel attributes can be compared directly.
+    var userActions = [(name: String, attributes: [String: String])]()
+
+    func addUserAction(
+        type _: LoggingAction,
+        name: String,
+        error _: Error?,
+        attributes: [AttributeKey: AttributeValue]?
+    ) {
+        userActions.append((name, (attributes ?? [:]).mapValues { String(describing: $0) }))
+    }
+
+    func debug(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func info(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func notice(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func warn(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func error(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func critical(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
 }
 
 class MockURLOpener: URLOpener {
