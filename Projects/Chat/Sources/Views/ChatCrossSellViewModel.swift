@@ -10,8 +10,6 @@ public class ChatCrossSellViewModel: ObservableObject {
     @Inject private var crossSellClient: CrossSellClient
     private let chatService: ChatServiceProtocol
 
-    private(set) var conversationId = ""
-
     // The gate repeats on every five-second poll and an empty response is final, so the
     // fetch is latched: an ineligible member costs no cross-sell requests at all, and an
     // eligible one costs exactly one.
@@ -39,7 +37,6 @@ public class ChatCrossSellViewModel: ObservableObject {
     func handle(showCrossSales: Bool, conversationId: String) async {
         guard showCrossSales, !hasFetched, !hasRetired, !conversationId.isEmpty else { return }
         hasFetched = true
-        self.conversationId = conversationId
 
         guard let crossSells = try? await crossSellClient.getCrossSell(source: .inChat),
             let recommended = crossSells.recommended
@@ -48,18 +45,21 @@ public class ChatCrossSellViewModel: ObservableObject {
         withAnimation {
             self.recommended = recommended
         }
+        track(.prompted)
     }
 
     func dismiss() async {
         guard recommended != nil else { return }
-        retire()
+        retire(event: .dismissed)
         try? await chatService.hideCrossSales()
     }
 
     func open() async {
         guard let recommended else { return }
         let destination = recommended.destination
-        retire()
+        // Recorded before the member leaves for the store, so a click is never lost to the
+        // app being backgrounded.
+        retire(event: .clicked)
         await open(destination)
         try? await chatService.hideCrossSales()
     }
@@ -67,11 +67,23 @@ public class ChatCrossSellViewModel: ObservableObject {
     // Hides the prompt before the mutation runs: the member should not wait on the network,
     // and a failed call must not make the prompt reappear on the next poll. The server call
     // is idempotent, so the only cost of losing it is that the prompt returns next session.
-    private func retire() {
+    private func retire(event: InChatCrossSellTrackingEvent) {
         hasRetired = true
+        track(event)
         withAnimation {
             recommended = nil
         }
+    }
+
+    // Mirrors Android's `logInChatCrossSell`: one action name with the variant in an "event"
+    // attribute, so both platforms answer a single query. A second name or a renamed key here
+    // halves the funnel rather than failing.
+    private func track(_ event: InChatCrossSellTrackingEvent) {
+        let name = "inChatCrossSell"
+        let attributes: [String: any Encodable] = [
+            "event": event.rawValue
+        ]
+        log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
     }
 
     private func open(_ destination: RecommendedCrossSell.Destination) async {
@@ -86,4 +98,12 @@ public class ChatCrossSellViewModel: ObservableObject {
             }
         }
     }
+}
+
+// Raw values are the attribute values the funnel groups on; they mirror Android's
+// `InChatCrossSellTrackingEvent`.
+enum InChatCrossSellTrackingEvent: String {
+    case prompted
+    case dismissed
+    case clicked
 }

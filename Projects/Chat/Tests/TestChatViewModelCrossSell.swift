@@ -1,4 +1,5 @@
 import CrossSell
+import Logger
 @preconcurrency import XCTest
 import hCore
 
@@ -7,8 +8,19 @@ import hCore
 @MainActor
 final class TestChatViewModelCrossSell: XCTestCase {
     weak var sut: MockConversationService?
+    private var logger: MockLogger!
+    private var originalLog: (any Logging)!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        originalLog = log
+        logger = MockData.createMockLogger()
+    }
+
     override func tearDown() async throws {
         try await super.tearDown()
+        log = originalLog
+        logger = nil
         Dependencies.shared.remove(for: CrossSellClient.self)
         Dependencies.shared.remove(for: URLOpener.self)
         Dependencies.shared.remove(for: ConversationClient.self)
@@ -176,6 +188,41 @@ final class TestChatViewModelCrossSell: XCTestCase {
         XCTAssertEqual(opener.openedURLs.map(\.absoluteString), ["https://www.hedvig.com/se/car"])
         XCTAssertNil(model.messageVm.crossSellVm.recommended)
         XCTAssertTrue(mockService.events.contains(.hideCrossSales))
+        sut = mockService
+    }
+
+    func testPromptedAndDismissedShareOneFunnelEvent() async {
+        MockData.createMockCrossSellClient()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        // The screen logs "Chat open" from its initialiser; only the prompt's own
+        // funnel is under test here.
+        logger.userActions.removeAll()
+        await model.messageVm.fetchMessages()
+        await model.messageVm.crossSellVm.dismiss()
+        // Android reads the same funnel off one action name with the variant in "event";
+        // a second name or a renamed key here halves it instead of failing.
+        XCTAssertEqual(logger.userActions.map(\.name), ["inChatCrossSell", "inChatCrossSell"])
+        XCTAssertEqual(logger.userActions.first?.attributes, ["event": "prompted"])
+        XCTAssertEqual(logger.userActions.last?.attributes, ["event": "dismissed"])
+        sut = mockService
+    }
+
+    func testClickedIsRecordedBeforeTheMemberLeaves() async {
+        MockData.createMockCrossSellClient()
+        MockData.createMockURLOpener()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        // The screen logs "Chat open" from its initialiser; only the prompt's own
+        // funnel is under test here.
+        logger.userActions.removeAll()
+        await model.messageVm.fetchMessages()
+        await model.messageVm.crossSellVm.open()
+        XCTAssertEqual(logger.userActions.map { $0.attributes["event"] }, ["prompted", "clicked"])
         sut = mockService
     }
 
