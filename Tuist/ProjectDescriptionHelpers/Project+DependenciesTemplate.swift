@@ -89,7 +89,7 @@ public enum ExternalDependencies: CaseIterable {
         case .umbrella:
             if isLocalUmbrellaMode { return [] }
             return [
-                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20260910144924"))
+                .package(url: "https://github.com/HedvigInsurance/umbrella.git", .exact("0.0.20261007091044"))
             ]
         case .kmpNativeCoroutines:
             return [
