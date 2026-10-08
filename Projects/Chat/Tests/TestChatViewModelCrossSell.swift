@@ -197,6 +197,9 @@ final class TestChatViewModelCrossSell: XCTestCase {
             fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
+        // The screen logs "Chat open" from its initialiser; only the prompt's own
+        // funnel is under test here.
+        logger.userActions.removeAll()
         await model.messageVm.fetchMessages()
         await model.messageVm.crossSellVm.dismiss()
         // Android reads the same funnel off one action name with the variant in "event";
@@ -214,6 +217,9 @@ final class TestChatViewModelCrossSell: XCTestCase {
             fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
+        // The screen logs "Chat open" from its initialiser; only the prompt's own
+        // funnel is under test here.
+        logger.userActions.removeAll()
         await model.messageVm.fetchMessages()
         await model.messageVm.crossSellVm.open()
         XCTAssertEqual(logger.userActions.map { $0.attributes["event"] }, ["prompted", "clicked"])
