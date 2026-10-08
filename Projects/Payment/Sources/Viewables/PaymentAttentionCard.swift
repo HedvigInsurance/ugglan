@@ -19,7 +19,7 @@ struct PaymentAttentionCard: View {
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                hButton(.small, .primary, content: .init(title: buttonTitle)) { action() }
+                hButton(.medium, .primary, content: .init(title: buttonTitle)) { action() }
                     .hButtonTakeFullWidth(true)
             }
             .padding(.padding16)
