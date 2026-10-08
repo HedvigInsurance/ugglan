@@ -4,6 +4,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
+    @Inject private var eventTrackingClient: EventTrackingClient
     let addonService = AddonsService()
     @Published var submittingState: ProcessingState = .loading
     @Published var addonOfferCost: ItemCost?
@@ -72,6 +73,7 @@ public class ChangeAddonViewModel: ObservableObject {
                 selectedAddonIds: Set(selectedAddonIds.map(\.id))
             )
             logAddonEvent()
+            trackAddonPurchased()
             withAnimation {
                 self.submittingState = .success
             }
@@ -192,8 +194,41 @@ extension ChangeAddonViewModel {
             )
         }
     }
+
+    // Upgrading an add-on the member already had counts as a purchase, so this fires for upgrades too.
+    // addonActivateOffer returns no transaction id, so the accepted quote id stands in for one.
+    fileprivate func trackAddonPurchased() {
+        selectedAddons.forEach { addon in
+            let price = addon.cost.premium.net
+            eventTrackingClient.trackEvent(
+                name: "addon_purchased",
+                parameters: [
+                    "user_flow": offer.source.analyticsUserFlow,
+                    "addon_type": addon.addonVariant.product,
+                    "contract_id": offer.contractInfo.contractId,
+                    "price": Double(price.amount) ?? 0,
+                    "currency": price.currency,
+                    "transaction_id": offer.quote.quoteId,
+                ]
+            )
+        }
+    }
+
     private enum AddonEventType: String, Codable {
         case addonPurchased = "ADDON_PURCHASED"
         case addonUpgraded = "ADDON_UPGRADED"
+    }
+}
+
+extension AddonSource {
+    fileprivate var analyticsUserFlow: String {
+        switch self {
+        case .insurances: "insurance_screen"
+        case .contractDetail: "contract_detail"
+        case .homeScreen: "home_screen"
+        case .homeCrossSellSheet: "insurance_card"
+        case .travelCertificates: "travel_certificate"
+        case .deeplink: "deeplink"
+        }
     }
 }

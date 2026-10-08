@@ -28,7 +28,7 @@ Handles insurance addon discovery, purchase, and removal. Supports both toggleab
 - Public entry for removal via `View.handleRemoveAddons(input:)` modifier with `RemoveAddonInput?`.
 - `ChangeAddonNavigation` uses `RouterHost` with `routerDestination` for landing -> summary flow. Detents for sub-option selection, learn-more, PDF preview, and info.
 - `RemoveAddonNavigation` follows the same pattern for the removal flow.
-- `AddonSource` enum tracks where the addon flow was initiated from (insurances tab, travel certificates, cross sell, deeplink).
+- `AddonSource` enum tracks where the addon flow was initiated from (insurances tab, contract detail, home screen, home cross-sell sheet, travel certificates, deeplink). Its raw values mirror Android's `AddonBannerSource` so the Datadog `flow` attribute is queryable across platforms; `analyticsUserFlow` in `ChangeAddonViewModel` maps each case to the Firebase `addon_purchased` `user_flow` value.
 
 ## Gotchas
 - The `OctopusImplementation/` directory (`Sources/Service/OctopusImplementation/AddonsService.swift`) is located inside this module rather than in the central `hGraphQL` project where other Octopus implementations live. This is inconsistent with the rest of the codebase.
