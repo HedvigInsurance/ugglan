@@ -14,7 +14,6 @@ struct SwishPayoutSetupScreen: View {
     var body: some View {
         hForm {
             VStack(spacing: .padding16) {
-                //                connectionGraphic
                 phoneNumberField
                 confirmation
             }
@@ -24,11 +23,6 @@ struct SwishPayoutSetupScreen: View {
             bottomContent
         }
         .disabled(vm.isLoading)
-    }
-
-    private var connectionGraphic: some View {
-        PaymentConnectionGraphic(direction: .payout, provider: .swish)
-            .padding(.vertical, .padding32)
     }
 
     private var phoneNumberField: some View {
