@@ -13,6 +13,7 @@ public class ChatConversationViewModel: ObservableObject {
     @Published var shouldShowBanner = true
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
+    @Published var isKeyboardShown = false
 }
 
 @MainActor
@@ -20,6 +21,7 @@ public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
     weak var chatNavigationVm: ChatNavigationViewModel?
     let conversationVm: ChatConversationViewModel
+    let crossSellVm: ChatCrossSellViewModel
     private var hasNext: Bool?
     var haveSentAMessage = false
     private var sendingMessagesIds = [String]()
@@ -44,6 +46,7 @@ public class ChatMessageViewModel: ObservableObject {
     ) {
         self.chatService = chatService
         conversationVm = .init()
+        crossSellVm = .init(chatService: chatService)
     }
 
     @MainActor
@@ -124,6 +127,10 @@ public class ChatMessageViewModel: ObservableObject {
                 conversationVm.title = chatData.title ?? L10n.chatTitle
                 conversationVm.subTitle = chatData.subtitle
                 conversationVm.claimId = chatData.claimId
+                await crossSellVm.handle(
+                    showCrossSales: chatData.showCrossSales,
+                    conversationId: chatData.conversationId
+                )
             } catch _ {
                 // We ignore this errors since we will fetch this every 5 seconds
             }
@@ -322,6 +329,9 @@ public class ChatScreenViewModel: ObservableObject {
                         self?.messageVm.conversationVm.shouldShowBanner = shouldShowBanner
                     }
                 }
+                // The cross-sell prompt yields to the keyboard only, and unlike the two
+                // info cards it comes back when the keyboard goes away.
+                self?.messageVm.conversationVm.isKeyboardShown = isKeyboardShown
             }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

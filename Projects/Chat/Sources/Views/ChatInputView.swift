@@ -8,6 +8,10 @@ import hCoreUI
 
 struct ChatInputView: View {
     @StateObject var vm: ChatInputViewModel
+    // Attached to the text field rather than to this view: the body is a stack of a
+    // divider and three controls, and a binding on the whole thing propagates to every
+    // descendant, leaving the focused element unspecified.
+    let a11yFocus: AccessibilityFocusState<Bool>.Binding
     @FocusState private var isInputFocused: Bool
 
     var body: some View {
@@ -21,7 +25,8 @@ struct ChatInputView: View {
                         .frame(maxHeight: .infinity)
                 }
                 .fixedSize(horizontal: false, vertical: true)
-                .padding([.horizontal, .top], .padding8)
+                .padding(.top, .padding8)
+                .padding(.horizontal, .padding16)
                 .animation(.easeInOut(duration: 0.2), value: vm.inputText)
 
                 if vm.showBottomMenu {
@@ -61,6 +66,7 @@ struct ChatInputView: View {
                 .tint(hTextColor.Opaque.primary)
                 .lineLimit(1...5)
                 .focused($isInputFocused)
+                .accessibilityFocused(a11yFocus)
                 .padding(.horizontal, .padding8)
                 .frame(minHeight: 40)
                 .onChange(of: isInputFocused) { newValue in
@@ -136,9 +142,17 @@ struct ChatInputView: View {
 }
 
 #Preview {
-    VStack {
-        Spacer()
-        ChatInputView(vm: .init())
+    ChatInputViewPreview()
+}
+
+private struct ChatInputViewPreview: View {
+    @AccessibilityFocusState private var a11yFocus: Bool
+
+    var body: some View {
+        VStack {
+            Spacer()
+            ChatInputView(vm: .init(), a11yFocus: $a11yFocus)
+        }
     }
 }
 

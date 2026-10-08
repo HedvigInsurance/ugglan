@@ -1,3 +1,5 @@
+import Addons
+import CrossSell
 import Foundation
 import hCore
 
@@ -47,6 +49,24 @@ struct MockData {
     }
 
     @discardableResult
+    static func createMockCrossSellClient(
+        fetchCrossSell: @escaping FetchCrossSell = { _ in
+            .init(recommended: .insurance(.mockInChat), others: [])
+        }
+    ) -> MockCrossSellClient {
+        let service = MockCrossSellClient(fetchCrossSell: fetchCrossSell)
+        Dependencies.shared.add(module: Module { () -> CrossSellClient in service })
+        return service
+    }
+
+    @discardableResult
+    static func createMockURLOpener() -> MockURLOpener {
+        let opener = MockURLOpener()
+        Dependencies.shared.add(module: Module { () -> URLOpener in opener })
+        return opener
+    }
+
+    @discardableResult
     static func createMockConversationClient(showCrossSales: Bool = false) -> MockConversationClient {
         let client = MockConversationClient(showCrossSales: showCrossSales)
         Dependencies.shared.add(module: Module { () -> ConversationClient in client })
@@ -90,6 +110,57 @@ class MockConversationClient: ConversationClient {
 
     func hideCrossSales(for conversationId: String) async throws {
         hiddenCrossSalesIds.append(conversationId)
+    }
+}
+
+class MockURLOpener: URLOpener {
+    var openedURLs = [URL]()
+
+    func open(_ url: URL) async {
+        openedURLs.append(url)
+    }
+}
+
+typealias FetchCrossSell = (CrossSellSource) async throws -> CrossSells
+
+extension CrossSell {
+    static var mockInChat: CrossSell {
+        .init(
+            id: "cross-sell-1",
+            title: "Car insurance",
+            description: "Insure your car with Hedvig.",
+            buttonTitle: "See your price",
+            webActionURL: "https://www.hedvig.com/se/car",
+            bannerText: "Get a 15% bundle discount",
+            buttonText: "Get a quote",
+            imageUrl: nil,
+            buttonDescription: "Activate your discount by taking out one more insurance.",
+            discountPercent: 15
+        )
+    }
+}
+
+class MockCrossSellClient: CrossSellClient {
+    var events = [Event]()
+    var fetchCrossSell: FetchCrossSell
+
+    enum Event {
+        case getCrossSell
+        case getAddonBanners
+    }
+
+    init(fetchCrossSell: @escaping FetchCrossSell) {
+        self.fetchCrossSell = fetchCrossSell
+    }
+
+    func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
+        events.append(.getCrossSell)
+        return try await fetchCrossSell(source)
+    }
+
+    func getAddonBanners(source _: AddonSource) async throws -> [AddonBanner] {
+        events.append(.getAddonBanners)
+        return []
     }
 }
 
