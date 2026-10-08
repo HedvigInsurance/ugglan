@@ -71,7 +71,7 @@ struct PaymentConfirmationCard: View {
         if isConfirmed {
             hTextColor.Opaque.primary.colorFor(.light, .base)
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Opaque.primary
         }
     }
 
