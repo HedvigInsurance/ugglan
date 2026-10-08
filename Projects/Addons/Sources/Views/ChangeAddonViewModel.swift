@@ -174,12 +174,17 @@ extension ItemDiscount {
 
 //MARK: Log purchase
 extension ChangeAddonViewModel {
+    // A selectable add-on replaces the tier the member already has. Toggleable add-ons sit next to the ones
+    // already active, so buying one is never an upgrade.
+    fileprivate var isUpgrade: Bool {
+        switch offer.quote.addonOfferContent {
+        case .selectable: !offer.quote.activeAddons.isEmpty
+        case .toggleable: false
+        }
+    }
+
     fileprivate func logAddonEvent() {
-        let eventType: AddonEventType =
-            switch offer.quote.addonOfferContent {
-            case .selectable: offer.quote.activeAddons.isEmpty ? .addonPurchased : .addonUpgraded
-            case .toggleable: .addonPurchased
-            }
+        let eventType: AddonEventType = isUpgrade ? .addonUpgraded : .addonPurchased
 
         selectedAddons.forEach { addon in
             let logInfo = AddonLogInfo(
@@ -196,7 +201,6 @@ extension ChangeAddonViewModel {
     }
 
     // Upgrading an add-on the member already had counts as a purchase, so this fires for upgrades too.
-    // addonActivateOffer returns no transaction id, so the accepted quote id stands in for one.
     fileprivate func trackAddonPurchased() {
         selectedAddons.forEach { addon in
             let price = addon.cost.premium.net
@@ -208,7 +212,8 @@ extension ChangeAddonViewModel {
                     "contract_id": offer.contractInfo.contractId,
                     "price": Double(price.amount) ?? 0,
                     "currency": price.currency,
-                    "transaction_id": offer.quote.quoteId,
+                    "quote_id": offer.quote.quoteId,
+                    "purchase_type": isUpgrade ? "upgrade" : "new",
                 ]
             )
         }
@@ -224,9 +229,8 @@ extension AddonSource {
     fileprivate var analyticsUserFlow: String {
         switch self {
         case .insurances: "insurance_screen"
-        case .contractDetail: "contract_detail"
-        case .homeScreen: "home_screen"
-        case .homeCrossSellSheet: "insurance_card"
+        case .contractDetail: "insurance_card"
+        case .homeScreen, .homeCrossSellSheet: "home"
         case .travelCertificates: "travel_certificate"
         case .deeplink: "deeplink"
         }
