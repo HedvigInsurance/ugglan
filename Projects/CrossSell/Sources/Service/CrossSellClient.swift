@@ -17,6 +17,7 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
     case home
     case insurances
     case onboarding
+    case inChat
 
     public var rawValue: RawValue {
         switch self {
@@ -28,6 +29,7 @@ public enum CrossSellSource: Codable, Equatable, Sendable {
         case .home: "home"
         case .insurances: "insurances"
         case .onboarding: "onboarding"
+        case .inChat: "inChat"
         }
     }
 }

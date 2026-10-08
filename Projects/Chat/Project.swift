@@ -4,6 +4,6 @@ import ProjectDescriptionHelpers
 let project = Project.framework(
     name: "Chat",
     targets: Set([.framework, .example, .tests]),
-    projects: ["hCore", "hCoreUI", "Contracts"],
+    projects: ["hCore", "hCoreUI", "Contracts", "CrossSell"],
     sdks: []
 )

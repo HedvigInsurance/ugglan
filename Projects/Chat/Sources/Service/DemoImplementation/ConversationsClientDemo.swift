@@ -86,7 +86,8 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
             hasClaim: false,
             claimType: nil,
             claimId: nil,
-            responseIsBeingGenerated: false
+            responseIsBeingGenerated: false,
+            showCrossSales: true
         )
     }
 
@@ -110,4 +111,6 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         }
         return message
     }
+
+    public func hideCrossSales(for conversationId: String) async throws {}
 }
