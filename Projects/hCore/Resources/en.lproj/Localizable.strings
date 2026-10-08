@@ -316,6 +316,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_DISABLED" = "Disabled";
 "GENERAL_ENABLED" = "Enabled";
 "GENERAL_GO_TO" = "Go to %1$@";
+"GENERAL_NO_THANKS" = "No thanks";
 "GENERAL_RETRY" = "Try again";
 "GENERAL_TODAY" = "Today";
 "GENERAL_TRY_AGAIN" = "Please try again";
@@ -446,7 +447,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "You can change accounts later in settings";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "You need to connect a payment method to keep your insurance active";
-"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can switch accounts later in settings";
+"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "You can change your payment method later in Payments";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Connect payment method";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Go to the app";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "You get a 15%% bundle discount when you have two or more insurances with us";
