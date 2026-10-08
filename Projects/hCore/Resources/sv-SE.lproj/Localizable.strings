@@ -316,6 +316,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_DISABLED" = "Inaktiverad";
 "GENERAL_ENABLED" = "Aktiverad";
 "GENERAL_GO_TO" = "Gå till %1$@";
+"GENERAL_NO_THANKS" = "Nej tack";
 "GENERAL_RETRY" = "Försök igen";
 "GENERAL_TODAY" = "Idag";
 "GENERAL_TRY_AGAIN" = "Försök igen";
@@ -446,7 +447,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_CONNECT_PAYMENT_BANK_LABEL" = "Bank";
 "ONBOARDING_CONNECT_PAYMENT_FOOTNOTE" = "Du behöver lägga till ett betalsätt för att din försäkring ska fortsätta gälla";
 "ONBOARDING_CONNECT_PAYMENT_SUBTITLE" = "Du behöver lägga till en betalningsmetod för att din försäkring ska fortsätta gälla";
-"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta konto senare i inställningar";
+"ONBOARDING_CONNECT_PAYMENT_SWITCH_ACCOUNTS_LATER" = "Du kan byta betalningsmetod senare under Betalningar";
 "ONBOARDING_CONNECT_PAYMENT_TITLE" = "Koppla betalning";
 "ONBOARDING_CONTINUE_TO_APP_BUTTON" = "Till appen";
 "ONBOARDING_CROSS_SELL_SUBTITLE" = "Du får 15%% samlingsrabatt när du har två eller fler försäkringar";
