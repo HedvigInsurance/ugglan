@@ -13,7 +13,7 @@ struct SwishPayoutSetupScreen: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding16) {
+            VStack(spacing: .padding8) {
                 phoneNumberField
                 confirmation
             }
