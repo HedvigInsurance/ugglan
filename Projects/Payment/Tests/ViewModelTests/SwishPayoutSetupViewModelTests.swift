@@ -26,7 +26,7 @@ final class SwishPayoutSetupViewModelTests: XCTestCase {
         return vm
     }
 
-    /// `PaymentMethodSetupType` is not Equatable, so the number has to be unwrapped to be compared.
+    // `PaymentMethodSetupType` is not Equatable, so the number has to be unwrapped to be compared.
     private func swishPayoutPhoneNumber(from type: PaymentMethodSetupType?) -> String? {
         guard case .swishPayout(let phoneNumber)? = type else { return nil }
         return phoneNumber
@@ -71,8 +71,8 @@ final class SwishPayoutSetupViewModelTests: XCTestCase {
         XCTAssertTrue(vm.isSaveDisabled)
     }
 
-    /// The phone number is not part of the gate — an empty form with a ticked box still offers Save
-    /// and fails on validation instead, so the member is told what is wrong.
+    // The phone number is not part of the gate — an empty form with a ticked box still offers Save
+    // and fails on validation instead, so the member is told what is wrong.
     func testSaveEnabledWithoutAPhoneNumber() {
         let mockService = MockPaymentData.createMockPaymentService()
         sut = mockService
@@ -222,8 +222,8 @@ final class SwishPayoutSetupViewModelTests: XCTestCase {
         XCTAssertEqual(mockService.events, [.setupPaymentMethod])
     }
 
-    /// Only `errorMessage` decides the outcome — the status is not read — so a failed result that
-    /// carries no message still saves. Pinned as current behaviour, not as an endorsement.
+    // Only `errorMessage` decides the outcome — the status is not read — so a failed result that
+    // carries no message still saves. Pinned as current behaviour, not as an endorsement.
     func testSaveFailedResultWithoutMessageSuccess() async {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchSetupPaymentMethod: { .init(status: .failed, orderId: nil, url: nil, errorMessage: nil) }

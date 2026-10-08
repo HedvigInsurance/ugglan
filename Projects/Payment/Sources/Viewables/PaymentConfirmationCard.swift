@@ -2,15 +2,15 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// Derived from hCoreUI's `ImportantInformationView` with the title/subtitle header dropped: the
-/// message is the whole card, so the card itself carries the tap, the state and the one VoiceOver
-/// element rather than nesting a confirmation row inside an explanatory one.
+// Derived from hCoreUI's `ImportantInformationView` with the title/subtitle header dropped: the
+// message is the whole card, so the card itself carries the tap, the state and the one VoiceOver
+// element rather than nesting a confirmation row inside an explanatory one.
 struct PaymentConfirmationCard: View {
     let message: String
     @Binding var isConfirmed: Bool
 
-    /// The message is a full sentence rather than a two-word "I understand", so the box tracks the
-    /// text instead of staying at a fixed 24pt while the label grows to 2.5x.
+    // The message is a full sentence rather than a two-word "I understand", so the box tracks the
+    // text instead of staying at a fixed 24pt while the label grows to 2.5x.
     @ScaledMetric private var checkboxSize: CGFloat = 24
 
     private static let toggleAnimationDuration: CGFloat = 0.2
@@ -40,8 +40,8 @@ struct PaymentConfirmationCard: View {
         .accessibilityValue(isConfirmed ? L10n.voiceoverAccepted : L10n.voiceoverNotAccepted)
     }
 
-    /// Forced light, as in `ImportantInformationView`, where the checkbox inherits it from the
-    /// confirmation row. Without it the same tokens would resolve differently in dark mode.
+    // Forced light, as in `ImportantInformationView`, where the checkbox inherits it from the
+    // confirmation row. Without it the same tokens would resolve differently in dark mode.
     @ViewBuilder
     private var checkbox: some View {
         if isConfirmed {
@@ -64,8 +64,8 @@ struct PaymentConfirmationCard: View {
         }
     }
 
-    /// The card turns a light green in both schemes, so the confirmed text is pinned to its light
-    /// resolution rather than flipping to white on a light fill.
+    // The card turns a light green in both schemes, so the confirmed text is pinned to its light
+    // resolution rather than flipping to white on a light fill.
     @hColorBuilder
     private var messageTextColor: some hColor {
         if isConfirmed {

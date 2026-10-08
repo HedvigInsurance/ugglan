@@ -93,8 +93,8 @@ class SwishPayoutSetupViewModel: ObservableObject {
     private let paymentService = hPaymentService()
     private let phoneNumberMasking = Masking(type: .phoneNumber)
 
-    /// A payout destination is only as good as the member's word that it is theirs, so the
-    /// confirmation gates saving rather than being validated after the fact.
+    // A payout destination is only as good as the member's word that it is theirs, so the
+    // confirmation gates saving rather than being validated after the fact.
     var isSaveDisabled: Bool {
         !hasConfirmedNumber
     }
