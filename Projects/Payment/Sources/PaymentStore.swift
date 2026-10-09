@@ -1,4 +1,5 @@
 import AppStateContainer
+import Combine
 import Foundation
 import hCore
 
@@ -18,6 +19,7 @@ public final class PaymentStore: AppStore {
     private var paymentNoticeData: PaymentNoticeData?
 
     @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
+    @Transient public internal(set) var missedPaymentDataFetchedAt: Date?
 
     @Transient @Published public private(set) var isLoadingPaymentData: Bool = false
     @Transient @Published public private(set) var isFetchingPaymentStatus: Bool = false
@@ -29,7 +31,17 @@ public final class PaymentStore: AppStore {
     @Transient @Published public private(set) var loadHistoryError: String?
     @Transient @Published public private(set) var loadMissedPaymentError: String?
 
-    public init() {}
+    @Transient private var cancellables = Set<AnyCancellable>()
+
+    public init() {
+        NotificationCenter.default
+            .publisher(for: .didChargeOutstandingPayment)
+            .sink { [weak self] _ in
+                self?.missedPaymentData = nil
+                self?.missedPaymentDataFetchedAt = nil
+            }
+            .store(in: &cancellables)
+    }
 
     var showsPayinSection: Bool {
         guard let paymentStatusData else { return false }
@@ -71,6 +83,7 @@ public final class PaymentStore: AppStore {
 
     private static let paymentDataCacheDuration: TimeInterval = 30 * 60
     private static let paymentNoticeDataCacheDuration: TimeInterval = 15 * 60
+    private static let missedPaymentDataCacheDuration: TimeInterval = 30 * 60
 
     private static func isStale(_ fetchedAt: Date?, after duration: TimeInterval) -> Bool {
         fetchedAt.map { -$0.timeIntervalSinceNow > duration } ?? true
@@ -81,7 +94,7 @@ public final class PaymentStore: AppStore {
         async let load: () = load(forceUpdate: forceUpdate)
         async let noticeData: () = fetchPaymentNoticeData(forceUpdate: forceUpdate)
         async let status: () = fetchPaymentStatus()
-        async let missedPayment: () = getMissedPayment()
+        async let missedPayment: () = getMissedPayment(forceUpdate: forceUpdate)
         _ = await (load, noticeData, status, missedPayment)
     }
 
@@ -163,10 +176,13 @@ public final class PaymentStore: AppStore {
         isLoadingHistory = false
     }
 
-    public func getMissedPayment() async {
+    public func getMissedPayment(forceUpdate: Bool = false) async {
+        let isStale = Self.isStale(missedPaymentDataFetchedAt, after: Self.missedPaymentDataCacheDuration)
+        guard forceUpdate || (!isLoadingMissedPayment && isStale) else { return }
         isLoadingMissedPayment = true
         do {
             missedPaymentData = try await paymentService.getMissedPaymentData()
+            missedPaymentDataFetchedAt = Date()
             loadMissedPaymentError = nil
         } catch {
             missedPaymentData = nil

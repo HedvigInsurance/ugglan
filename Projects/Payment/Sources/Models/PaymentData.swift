@@ -38,7 +38,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable, Identifiable 
 
     public struct PaymentStack: Codable, Equatable, Hashable, Sendable {
         let gross: MonetaryAmount
-        let net: MonetaryAmount
+        public let net: MonetaryAmount
         let carriedAdjustment: MonetaryAmount?
         let settlementAdjustment: MonetaryAmount?
         public let date: ServerBasedDate

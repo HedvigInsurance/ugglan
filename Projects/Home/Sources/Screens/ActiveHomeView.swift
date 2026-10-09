@@ -145,6 +145,8 @@ private struct HomeSheetContent: View {
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
+    @AppObservedObject private var paymentStore: PaymentStore
+
     @ObservedObject var bottomVm: HomeBottomScrollViewModel
     let contentFadeHeight: CGFloat
     let bottomOverscrollExtension: CGFloat
@@ -153,6 +155,14 @@ private struct HomeSheetContent: View {
         VStack(spacing: .padding40) {
             if bottomVm.showsConnectPaymentCard {
                 ConnectPaymentCardSection()
+            } else if let missedPaymentData = paymentStore.missedPaymentData {
+                MissedPaymentCardView(
+                    amountDue: missedPaymentData.paymentData.payment.net,
+                    buttonType: .secondary,
+                    onReviewPayment: {
+                        NotificationCenter.default.post(name: .openDeepLink, object: DeepLink.manualCharge.url)
+                    }
+                )
             }
             ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
             infoMessagesCarouselSection

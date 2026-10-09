@@ -38,7 +38,6 @@ public final class HomeStore: AppStore {
 
     @Published public private(set) var memberContractState: MemberContractState = .loading
     @Published public private(set) var memberInfo: MemberInfo?
-    @Published public private(set) var hasMissedCharge: Bool = false
     @Published public private(set) var futureStatus: FutureStatus = .none
     @Published public private(set) var contracts: [HomeContract] = []
     @Published public private(set) var importantMessages: [ImportantMessage] = []
@@ -71,11 +70,6 @@ public final class HomeStore: AppStore {
         crossSellStore.$hasNewOffer
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
-            .store(in: &cancellables)
-
-        NotificationCenter.default
-            .publisher(for: .didChargeOutstandingPayment)
-            .sink { [weak self] _ in self?.hasMissedCharge = false }
             .store(in: &cancellables)
 
         FeatureFlags.shared.$data
@@ -130,10 +124,6 @@ public final class HomeStore: AppStore {
         } catch {
             fetchMemberStateError = L10n.General.errorBody
         }
-    }
-
-    public func fetchMissedCharge() async {
-        hasMissedCharge = (try? await homeService.getHasMissedCharge()) ?? false
     }
 
     public func fetchImportantMessages() async {
@@ -213,10 +203,6 @@ public final class HomeStore: AppStore {
 
     public func hideImportantMessage(id: String) {
         hidenImportantMessages.append(id)
-    }
-
-    public func clearMissedCharge() {
-        hasMissedCharge = false
     }
 
     public func getImportantMessageToShow() -> [ImportantMessage] {

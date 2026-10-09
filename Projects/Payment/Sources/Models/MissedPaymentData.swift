@@ -4,7 +4,7 @@ import hCoreUI
 public struct MissedPaymentData: Codable, Equatable, Sendable, Hashable, Identifiable {
     public var id: String { paymentData.id }
 
-    let paymentData: PaymentData
+    public let paymentData: PaymentData
     let paymentMethodData: ConnectedPaymentMethod
 
     public init(paymentData: PaymentData, paymentMethodData: ConnectedPaymentMethod) {

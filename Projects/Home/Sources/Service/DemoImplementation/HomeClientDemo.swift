@@ -16,10 +16,6 @@ public class HomeClientDemo: HomeClient {
         )
     }
 
-    public func getHasMissedCharge() async throws -> Bool {
-        false
-    }
-
     public func getQuickActions() async throws -> [QuickAction] {
         []
     }

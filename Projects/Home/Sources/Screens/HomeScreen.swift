@@ -37,7 +37,6 @@ class HomeVM: ObservableObject {
 
     init() {
         addObserverForApplicationDidBecomeActive()
-        Task { await homeStore.fetchMissedCharge() }
     }
 
     func fetchHomeState() {
@@ -45,7 +44,6 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
         Task { await homeStore.fetchOngoingQuotes() }
-        if homeStore.hasMissedCharge { Task { await homeStore.fetchMissedCharge() } }
         Task { await homeStore.fetchChatNotifications() }
         Task { await crossSellStore.fetchHomeCrossSells() }
         Task { await crossSellStore.fetchAddonBanners() }
@@ -56,6 +54,8 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchChatNotifications() }
         Task { await claimsStore.fetchActiveClaims() }
         Task { await claimsStore.fetchClaimInProgress() }
+        Task { await paymentStore.getMissedPayment() }
+
         chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
