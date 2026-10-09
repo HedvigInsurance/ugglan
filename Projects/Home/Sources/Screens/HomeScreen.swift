@@ -37,7 +37,6 @@ class HomeVM: ObservableObject {
 
     init() {
         addObserverForApplicationDidBecomeActive()
-        Task { await paymentStore.getMissedPayment() }
     }
 
     func fetchHomeState() {
