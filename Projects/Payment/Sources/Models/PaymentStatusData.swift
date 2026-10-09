@@ -237,6 +237,8 @@ extension PaymentMethodSetupType: MaskedValue {
             return "nordeaPayout(accountNumber: \(AutomaticLog.maskedLogDescription(accountNumber)))"
         case let .swishPayout(phoneNumber):
             return "swishPayout(phoneNumber: \(AutomaticLog.maskedLogDescription(phoneNumber)))"
+        case .swishPayin:
+            return "swishPayin"
         }
     }
 }
