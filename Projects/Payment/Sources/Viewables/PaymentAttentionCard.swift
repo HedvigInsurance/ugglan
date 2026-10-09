@@ -7,6 +7,7 @@ struct PaymentAttentionCard: View {
     let subtitle: String
     let message: String
     let buttonTitle: String
+    var buttonType: hButtonConfigurationType = .primary
     let action: () -> Void
 
     var body: some View {
@@ -19,7 +20,7 @@ struct PaymentAttentionCard: View {
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                hButton(.medium, .primary, content: .init(title: buttonTitle)) { action() }
+                hButton(.medium, buttonType, content: .init(title: buttonTitle)) { action() }
                     .hButtonTakeFullWidth(true)
             }
             .padding(.padding16)

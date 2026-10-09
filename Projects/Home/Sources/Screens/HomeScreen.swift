@@ -56,6 +56,8 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchChatNotifications() }
         Task { await claimsStore.fetchActiveClaims() }
         Task { await claimsStore.fetchClaimInProgress() }
+        Task { await paymentStore.getMissedPayment() }
+
         chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
             .receive(on: RunLoop.main)
