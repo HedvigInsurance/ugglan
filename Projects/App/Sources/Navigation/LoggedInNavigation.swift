@@ -302,7 +302,7 @@ class DeepLinkHandler {
     private func handleManualCharge() {
         Task { [weak viewModel] in
             let paymentStore: PaymentStore = globalAppStateContainer.get()
-            await paymentStore.getMissedPayment()
+            await paymentStore.getMissedPayment(forceUpdate: true)
 
             if paymentStore.loadMissedPaymentError != nil {
                 Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
@@ -974,17 +974,17 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        let homeStore: HomeStore = globalAppStateContainer.get()
-        homeStore.$hasMissedCharge
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        paymentStore.$missedPaymentData
+            .map { $0 != nil }
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] hasMissedCharge in
-                self?.hasMissedPayment = hasMissedCharge
+            .sink { [weak self] hasMissedPayment in
+                self?.hasMissedPayment = hasMissedPayment
                 self?.updatePaymentsBadge()
             }
             .store(in: &cancellables)
 
-        let paymentStore: PaymentStore = globalAppStateContainer.get()
         paymentStore.$showsPaymentBadge
             .removeDuplicates()
             .receive(on: RunLoop.main)

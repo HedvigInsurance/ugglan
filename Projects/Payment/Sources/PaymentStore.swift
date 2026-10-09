@@ -1,4 +1,5 @@
 import AppStateContainer
+import Combine
 import Foundation
 import hCore
 
@@ -30,7 +31,17 @@ public final class PaymentStore: AppStore {
     @Transient @Published public private(set) var loadHistoryError: String?
     @Transient @Published public private(set) var loadMissedPaymentError: String?
 
-    public init() {}
+    @Transient private var cancellables = Set<AnyCancellable>()
+
+    public init() {
+        NotificationCenter.default
+            .publisher(for: .didChargeOutstandingPayment)
+            .sink { [weak self] _ in
+                self?.missedPaymentData = nil
+                self?.missedPaymentDataFetchedAt = nil
+            }
+            .store(in: &cancellables)
+    }
 
     var showsPayinSection: Bool {
         guard let paymentStatusData else { return false }

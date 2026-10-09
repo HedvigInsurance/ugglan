@@ -37,7 +37,7 @@ class HomeVM: ObservableObject {
 
     init() {
         addObserverForApplicationDidBecomeActive()
-        Task { await homeStore.fetchMissedCharge() }
+        Task { await paymentStore.getMissedPayment() }
     }
 
     func fetchHomeState() {
@@ -45,7 +45,6 @@ class HomeVM: ObservableObject {
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
         Task { await homeStore.fetchOngoingQuotes() }
-        if homeStore.hasMissedCharge { Task { await homeStore.fetchMissedCharge() } }
         Task { await homeStore.fetchChatNotifications() }
         Task { await crossSellStore.fetchHomeCrossSells() }
         Task { await crossSellStore.fetchAddonBanners() }
