@@ -5,6 +5,7 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CHANGED_FILES="$@"
 REPORT_FILE="accessibility-report.md"
 ISSUES_FOUND=0
@@ -56,18 +57,16 @@ check_file() {
     fi
 
     # Check 1: onTapGesture without accessibility traits
-    # Look for .accessibilityAddTraits(.isButton) within 10 lines after the onTapGesture
-    if grep -n "\.onTapGesture" "$scan_file" > /dev/null 2>&1; then
-        local lines
-        lines=$(grep -n "\.onTapGesture" "$scan_file" | cut -d: -f1)
-        for line_num in $lines; do
-            local end_line=$((line_num + 10))
-            # Look for .accessibilityAddTraits(.isButton) within next 10 lines
-            if ! sed -n "${line_num},${end_line}p" "$scan_file" | grep -q "accessibilityAddTraits(.isButton)"; then
-                issues+=("⚠️  Line $line_num: \`.onTapGesture\` without \`.accessibilityAddTraits(.isButton)\`")
-                ((file_issues++))
-            fi
-        done
+    # Delegated so the checker and the auto-fixer share one definition of
+    # "already handled" - a conditional `.accessibilityAddTraits(x ? .isButton : [])`
+    # counts, which a literal string search misses. Previews are skipped by the
+    # scanner itself, so it reads the original file rather than $scan_file.
+    if grep -q "\.onTapGesture" "$file"; then
+        while IFS=$'\t' read -r line_num kind message; do
+            [[ -z "$line_num" ]] && continue
+            issues+=("⚠️  Line $line_num: $message")
+            file_issues=$((file_issues + 1))
+        done < <(python3 "$SCRIPT_DIR/accessibility-tap-gesture.py" --check "$file")
     fi
 
     # Check 2: Icon-only Buttons (Image without Text/label)

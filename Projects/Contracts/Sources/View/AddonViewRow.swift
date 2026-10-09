@@ -51,6 +51,7 @@ struct AddonViewRow: View {
         }
         .containerShape(.rect)
         .onTapGesture(perform: action)
+        .accessibilityAddTraits(.isButton)
         .accessibilityElement(children: .combine)
     }
 }
