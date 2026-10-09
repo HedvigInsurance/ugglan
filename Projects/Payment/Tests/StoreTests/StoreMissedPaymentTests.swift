@@ -79,4 +79,43 @@ final class StoreMissedPaymentTests: XCTestCase {
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getMissedPaymentData)
     }
+
+    func testGetMissedPaymentRefetchesAfterFailure() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchMissedPaymentData: { throw PaymentError.missingDataError(message: "error") }
+        )
+        let store = PaymentStore()
+        self.store = store
+
+        await store.getMissedPayment()
+        XCTAssertNotNil(store.loadMissedPaymentError)
+
+        mockService.fetchMissedPaymentData = { nil }
+        await store.getMissedPayment()
+
+        XCTAssertEqual(mockService.events.count, 2)
+        XCTAssertNil(store.loadMissedPaymentError)
+    }
+
+    func testGetMissedPaymentSkipsServiceWhileDataIsFresh() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchMissedPaymentData: { nil }
+        )
+        let store = PaymentStore()
+        self.store = store
+        await store.getMissedPayment()
+        await store.getMissedPayment()
+        XCTAssertEqual(mockService.events.count, 1)
+    }
+
+    func testGetMissedPaymentWithForceUpdateBypassesFreshness() async {
+        let mockService = MockPaymentData.createMockPaymentService(
+            fetchMissedPaymentData: { nil }
+        )
+        let store = PaymentStore()
+        self.store = store
+        await store.getMissedPayment()
+        await store.getMissedPayment(forceUpdate: true)
+        XCTAssertEqual(mockService.events.count, 2)
+    }
 }

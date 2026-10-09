@@ -186,6 +186,7 @@ public final class PaymentStore: AppStore {
             loadMissedPaymentError = nil
         } catch {
             missedPaymentData = nil
+            missedPaymentDataFetchedAt = nil
             loadMissedPaymentError = L10n.General.errorBody
         }
         isLoadingMissedPayment = false
