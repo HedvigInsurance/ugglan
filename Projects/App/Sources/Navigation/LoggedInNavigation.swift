@@ -302,7 +302,7 @@ class DeepLinkHandler {
     private func handleManualCharge() {
         Task { [weak viewModel] in
             let paymentStore: PaymentStore = globalAppStateContainer.get()
-            await paymentStore.getMissedPayment(forceUpdate: true)
+            await paymentStore.getMissedPayment()
 
             if paymentStore.loadMissedPaymentError != nil {
                 Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
