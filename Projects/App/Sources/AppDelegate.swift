@@ -26,6 +26,7 @@ import hGraphQL
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
+    private var isForcingLogout = false
     let applicationLaunchTimestamp: Date = Date()
 
     let window: UIWindow = {
@@ -201,18 +202,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         log.info("Starting app")
 
         forceLogoutHook = { [weak self] in
-            if ApplicationState.currentState != .notLoggedIn {
-                self?.dismissAllVCs()
-                DispatchQueue.main.async {
-                    ApplicationState.preserveState(.notLoggedIn)
-                    ApplicationState.state = .notLoggedIn
+            // currentState only flips inside the async block below, so it cannot hold off
+            // callers that arrive before it runs — isForcingLogout covers that window.
+            guard let self, !self.isForcingLogout, ApplicationState.currentState != .notLoggedIn else {
+                return
+            }
+            self.isForcingLogout = true
+            self.dismissAllVCs()
+            DispatchQueue.main.async { [weak self] in
+                ApplicationState.preserveState(.notLoggedIn)
+                ApplicationState.state = .notLoggedIn
 
-                    let toast = ToastBar(
-                        type: .neutral,
-                        text: L10n.forceLogoutMessageTitle
-                    )
-                    Toasts.shared.displayToastBar(toast: toast)
-                }
+                let toast = ToastBar(
+                    type: .neutral,
+                    text: L10n.forceLogoutMessageTitle
+                )
+                Toasts.shared.displayToastBar(toast: toast)
+                self?.isForcingLogout = false
             }
         }
     }
