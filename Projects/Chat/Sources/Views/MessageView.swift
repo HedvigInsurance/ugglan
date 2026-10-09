@@ -32,7 +32,6 @@ struct MessageView: View {
                 }
             }
         }
-        .accessibilityAddTraits(.isButton)
         .accessibilityAddTraits(
             {
                 if case .failed = message.status {

@@ -90,3 +90,7 @@ swift_files.txt
 
 # Worktrees
 .worktrees/
+
+# Python bytecode from scripts/accessibility
+__pycache__/
+*.pyc

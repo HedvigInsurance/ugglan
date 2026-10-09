@@ -105,7 +105,7 @@ Text("Label")
 - Test with the largest accessibility text sizes
 - Test in high contrast / dark mode
 - Use Accessibility Inspector for missing labels, low contrast, and incorrect focus order
-- Run `scripts/check-accessibility.sh` locally before PR
+- Run `scripts/accessibility/check-accessibility.sh` locally before PR
 - Verify swipe order matches visual reading order on every screen
 - Confirm all buttons and interactive elements announce their role (`.isButton`, `.isLink`)
 - Check that loading/progress states are announced via `.announcement`
@@ -118,22 +118,31 @@ Text("Label")
 
 Two GitHub Actions workflows enforce accessibility:
 
-- **AccessibilityCheck.yml** runs on every PR that touches `.swift` files. It runs `scripts/check-accessibility.sh` on the changed files and comments on the PR if issues are found.
+- **AccessibilityCheck.yml** runs on every PR that touches `.swift` files. It runs `scripts/accessibility/check-accessibility.sh` on the changed files and comments on the PR if issues are found.
 - **WeeklyAccessibilityAudit.yml** runs every Friday at 11:00 AM UTC. It scans all Swift files in `Projects/` (excluding tests), runs both the checker and auto-fixer, creates a PR with auto-fixes, and files a GitHub issue for remaining manual fixes.
 
 ## Required Rules
 
-The CI checker (`scripts/check-accessibility.sh`) skips test files (`*Test.swift`, `Tests/`) and strips `PreviewProvider` blocks before scanning. Five rules are enforced:
+The CI checker (`scripts/accessibility/check-accessibility.sh`) skips test files (`*Test.swift`, `Tests/`) and strips `PreviewProvider` blocks before scanning. Five rules are enforced:
 
-### Rule 1: `.onTapGesture` requires `.accessibilityAddTraits(.isButton)`
+### Rule 1: `.onTapGesture` requires `.accessibilityAddTraits`
 
-The checker looks for `.accessibilityAddTraits(.isButton)` within 10 lines after `.onTapGesture`.
+`scripts/accessibility/accessibility-tap-gesture.py` walks the modifier chain the `.onTapGesture`
+belongs to — past the end of its closure, however long — and passes the view if
+anything in that chain sets `accessibilityAddTraits`, whatever form the argument
+takes. A conditional tap must gate the trait on the same condition, otherwise
+VoiceOver announces a button that does nothing.
 
 ```swift
 // Correct
 Text("Edit")
     .onTapGesture { viewModel.edit() }
     .accessibilityAddTraits(.isButton)
+
+// Correct - the tap only acts sometimes, so the trait does too
+mainView
+    .onTapGesture { onSelected?() }
+    .accessibilityAddTraits(onSelected != nil ? .isButton : [])
 
 // Violation - missing trait
 Text("Edit")
@@ -194,11 +203,15 @@ Toggle(isOn: $isEnabled) { Text(L10n.settingLabel) }
 
 ## Auto-fix
 
-The auto-fixer (`scripts/auto-fix-accessibility.sh`) currently handles one rule automatically:
+The auto-fixer (`scripts/accessibility/auto-fix-accessibility.sh`) currently handles one rule automatically:
 
 - Adds `.accessibilityAddTraits(.isButton)` after `.onTapGesture` closures (both single-line and multi-line)
-- Uses Python for proper brace matching and preserves indentation
-- Skips files containing `PreviewProvider`
+- Shares `scripts/accessibility/accessibility-tap-gesture.py` with the checker, so the two can
+  never disagree about what counts as already handled
+- Rewrites a view only when nothing in its modifier chain sets traits **and** the
+  tap fires unconditionally; a tap guarded by `if`/`guard`/`switch` is reported
+  for manual review instead, because the trait has to be gated the same way
+- Skips `#Preview` and `PreviewProvider` blocks, but still scans the rest of the file
 - Creates backups before modifying files
 
 All other rules require manual fixes.
@@ -240,15 +253,15 @@ func accessibilityText(segment: ItemStatus) -> String? {
 
 Check specific files:
 ```bash
-scripts/check-accessibility.sh path/to/File1.swift path/to/File2.swift
+scripts/accessibility/check-accessibility.sh path/to/File1.swift path/to/File2.swift
 ```
 
 Auto-fix specific files:
 ```bash
-scripts/auto-fix-accessibility.sh path/to/File1.swift path/to/File2.swift
+scripts/accessibility/auto-fix-accessibility.sh path/to/File1.swift path/to/File2.swift
 ```
 
 Scan all project files:
 ```bash
-scripts/auto-fix-accessibility.sh  # no arguments scans Projects/
+scripts/accessibility/auto-fix-accessibility.sh  # no arguments scans Projects/
 ```

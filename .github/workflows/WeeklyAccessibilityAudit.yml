@@ -32,9 +32,9 @@ jobs:
       - name: Run Accessibility Check
         id: check
         run: |
-          chmod +x scripts/check-accessibility.sh
+          chmod +x scripts/accessibility/check-accessibility.sh
           echo "Running accessibility check on $(wc -l < swift_files.txt) files..."
-          cat swift_files.txt | xargs scripts/check-accessibility.sh
+          cat swift_files.txt | xargs scripts/accessibility/check-accessibility.sh
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
@@ -48,8 +48,8 @@ jobs:
         if: steps.check.outcome == 'failure'
         run: |
           echo "Running auto-fix on $(wc -l < swift_files.txt) files..."
-          chmod +x scripts/auto-fix-accessibility.sh
-          cat swift_files.txt | xargs scripts/auto-fix-accessibility.sh
+          chmod +x scripts/accessibility/auto-fix-accessibility.sh
+          cat swift_files.txt | xargs scripts/accessibility/auto-fix-accessibility.sh
 
           # Check if any files were changed
           echo "Checking git status..."
@@ -68,7 +68,7 @@ jobs:
         if: steps.autofix.outputs.fixes_applied == 'true'
         run: |
           echo "Re-running accessibility check after auto-fix..."
-          cat swift_files.txt | xargs scripts/check-accessibility.sh
+          cat swift_files.txt | xargs scripts/accessibility/check-accessibility.sh
           # Ensure report file exists even if script fails early
           if [ ! -f accessibility-report.md ]; then
             echo "## 🔍 Accessibility Check Report" > accessibility-report.md
@@ -86,10 +86,8 @@ jobs:
           commit-message: |
             fix: Auto-fix accessibility issues
 
-            Applied automated accessibility fixes:
-            - Added .accessibilityAddTraits(.isButton) to .onTapGesture
-            - Added .accessibilityHidden(true) to decorative images
-            - Added TODO comments for images needing manual review
+            Added .accessibilityAddTraits(.isButton) to views whose .onTapGesture
+            fires unconditionally and that set no accessibility traits of their own.
 
             Co-Authored-By: GitHub Actions <actions@github.com>
           branch: automated/accessibility-fixes-${{ github.run_id }}
@@ -103,20 +101,14 @@ jobs:
             **Workflow Run:** [View Details](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
             **Scan Date:** ${{ github.event.repository.updated_at }}
 
-            ### 🔧 Fixes Applied
-
-            The following automated fixes were applied:
+            ### 🔧 Fix Applied
 
             ✅ **Added `.accessibilityAddTraits(.isButton)` to `.onTapGesture`**
             - Makes tappable views behave like buttons for VoiceOver users
-
-            ✅ **Added `.accessibilityHidden(true)` to decorative icons**
-            - Hides purely visual elements from screen readers
-            - Only applied to common decorative patterns (chevrons, arrows, etc.)
-
-            ⚠️ **Added TODO comments for images needing review**
-            - Images that need manual `.accessibilityLabel()` assignment
-            - Review these and add appropriate L10n keys
+            - Applied only where the tap fires unconditionally and the view sets no
+              accessibility traits of its own. A tap guarded by `if`/`guard`/`switch`
+              needs the trait under that same condition, so those are reported below
+              rather than rewritten.
 
             ### 📊 Remaining Issues
 
@@ -125,8 +117,8 @@ jobs:
             ### ✅ Review Checklist
 
             Before merging, please verify:
-            - [ ] Auto-generated `.accessibilityHidden(true)` applied only to decorative elements
-            - [ ] Review TODO comments and add proper `.accessibilityLabel()` with L10n keys
+            - [ ] Each view that gained `.isButton` really is tappable on every tap
+            - [ ] No view ended up with two `.accessibilityAddTraits` doing the same job
             - [ ] Test with VoiceOver to ensure fixes work correctly
             - [ ] Check that no unintended changes were made
 
@@ -212,7 +204,7 @@ jobs:
             **Steps:**
             ${fixesApplied ? '1. Review the auto-fix PR and merge it\n            2. Review the issues listed above\n            3. Add appropriate \`.accessibilityLabel()\` using L10n keys' : '1. Review the issues listed above\n            2. Add appropriate \`.accessibilityLabel()\` using L10n keys'}
             ${fixesApplied ? '4' : '3'}. Test with VoiceOver to verify fixes
-            ${fixesApplied ? '5' : '4'}. Run \`./scripts/check-accessibility.sh\` locally before committing
+            ${fixesApplied ? '5' : '4'}. Run \`./scripts/accessibility/check-accessibility.sh\` locally before committing
 
             ### 🔗 Resources
             - [Accessibility Workflow Documentation](docs/accessibility-workflow.md)

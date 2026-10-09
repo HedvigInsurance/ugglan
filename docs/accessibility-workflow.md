@@ -41,16 +41,16 @@ We have two automated workflows to ensure accessibility compliance:
 
 ### Auto-Fix Capabilities
 
-The workflow automatically fixes:
+The workflow automatically fixes one thing:
 
 ✅ **Adds `.accessibilityAddTraits(.isButton)` to `.onTapGesture`**
 - Makes tappable views behave properly for VoiceOver
+- Only where the tap fires unconditionally and the view sets no accessibility
+  traits of its own
 
-✅ **Adds `.accessibilityHidden(true)` to decorative icons**
-- Only for common patterns (chevrons, arrows, info icons, etc.)
-
-⚠️ **Adds TODO comments for images needing manual labels**
-- Flags images that require human judgment and L10n keys
+A tap guarded by `if`/`guard`/`switch` is never rewritten: the trait has to be
+gated on the same condition, which is a judgement call. Those sites are listed in
+the audit issue instead. Every other rule is report-only.
 
 ### Manual Fixes Required
 
@@ -157,8 +157,8 @@ HStack {
 
 - **PR Check Workflow**: `.github/workflows/AccessibilityCheck.yml`
 - **Weekly Audit Workflow**: `.github/workflows/WeeklyAccessibilityAudit.yml`
-- **Accessibility Checker Script**: `scripts/check-accessibility.sh`
-- **Auto-Fix Script**: `scripts/auto-fix-accessibility.sh`
+- **Accessibility Checker Script**: `scripts/accessibility/check-accessibility.sh`
+- **Auto-Fix Script**: `scripts/accessibility/auto-fix-accessibility.sh`
 - **Documentation**: `docs/accessibility-workflow.md` (this file)
 
 ## Manual Usage
@@ -169,10 +169,10 @@ You can run the accessibility checker locally:
 
 ```bash
 # Check specific files
-./scripts/check-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
+./scripts/accessibility/check-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
 
 # Check all Swift files in a directory
-find Projects/MyModule -name "*.swift" | xargs ./scripts/check-accessibility.sh
+find Projects/MyModule -name "*.swift" | xargs ./scripts/accessibility/check-accessibility.sh
 ```
 
 ### Run Auto-Fix Locally
@@ -181,19 +181,19 @@ You can run the auto-fix script locally before committing:
 
 ```bash
 # Auto-fix specific files
-./scripts/auto-fix-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
+./scripts/accessibility/auto-fix-accessibility.sh "Projects/MyModule/Sources/MyView.swift"
 
 # Auto-fix all Swift files in a directory
-./scripts/auto-fix-accessibility.sh $(find Projects/MyModule -name "*.swift" -type f | grep -v Test)
+./scripts/accessibility/auto-fix-accessibility.sh $(find Projects/MyModule -name "*.swift" -type f | grep -v Test)
 
 # Auto-fix all Swift files in the project
-./scripts/auto-fix-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+./scripts/accessibility/auto-fix-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
 ```
 
 **Then verify the fixes:**
 ```bash
 # Re-run the checker to see remaining issues
-./scripts/check-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
+./scripts/accessibility/check-accessibility.sh $(find Projects -name "*.swift" -type f | grep -v Test)
 
 # Review the changes
 git diff
@@ -244,7 +244,7 @@ Common cron patterns:
 Found an issue or have suggestions? The workflow checks for common patterns but may need updates as new accessibility requirements emerge.
 
 To add new checks:
-1. Edit `scripts/check-accessibility.sh`
+1. Edit `scripts/accessibility/check-accessibility.sh`
 2. Add pattern matching for the new issue
 3. Test locally before committing
 4. Update this documentation

@@ -21,11 +21,11 @@ You are an accessibility reviewer for the Hedvig iOS app (SwiftUI). Your job is 
 6. **Phase 2**: Perform deep accessibility review (VoiceOver, dynamic type, touch targets, labels, navigation, contrast)
 7. Report findings with severity levels
 8. Apply fixes, preserving existing indentation and code style
-9. Run `scripts/check-accessibility.sh <files>` to validate CI rules pass
+9. Run `scripts/accessibility/check-accessibility.sh <files>` to validate CI rules pass
 
 ## Phase 1: CI-Enforced Rules
 
-These 5 rules are checked by `scripts/check-accessibility.sh` and enforced in CI.
+These 5 rules are checked by `scripts/accessibility/check-accessibility.sh` and enforced in CI.
 
 ### Rule 1: `.onTapGesture` needs `.accessibilityAddTraits(.isButton)`
 - Search for `.onTapGesture` in the file
@@ -116,7 +116,7 @@ Report each finding with one of these severities:
 
 After applying fixes, run the CI checker:
 ```bash
-scripts/check-accessibility.sh path/to/FixedFile.swift
+scripts/accessibility/check-accessibility.sh path/to/FixedFile.swift
 ```
 
 For the full accessibility guide, see `CLAUDE-accessibility.md` at the repo root.
