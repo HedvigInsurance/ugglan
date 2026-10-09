@@ -67,7 +67,6 @@ struct ContractTable: View {
                         CrossSellingView()
                             .padding(.top, .padding8)
                         addonBannersView
-                        movingToANewHomeView
                         if !(store.terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
                                 hButton(
@@ -234,24 +233,6 @@ struct ContractTable: View {
             }
             .withHeader(title: L10n.insuranceAddonsSubheading)
             .sectionContainerStyle(.transparent)
-        }
-    }
-
-    @ViewBuilder
-    private var movingToANewHomeView: some View {
-        if !store.activeContracts.filter({ $0.supportsAddressChange && !$0.isTerminated }).isEmpty {
-            hSection {
-                InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
-                    .buttons([
-                        .init(
-                            buttonTitle: L10n.insurancesTabMovingFlowInfoButtonTitle,
-                            buttonAction: {
-                                contractsNavigationVm.isChangeAddressPresented = true
-                            }
-                        )
-                    ])
-            }
-            .hCardShadow()
         }
     }
 }
