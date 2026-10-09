@@ -43,12 +43,12 @@ private class PlayerUIView: UIView {
             object: player.currentItem
         )
 
+        // The category must be set before playback starts or the implicit activation
+        // ducks other apps' audio; only setActive is slow enough to need its own thread.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
+
         Task.detached(priority: .userInitiated) {
-            let audioSession = AVAudioSession.sharedInstance()
-            do {
-                try audioSession.setCategory(.playback, mode: .default, options: .mixWithOthers)
-                try audioSession.setActive(true)
-            } catch {}
+            try? AVAudioSession.sharedInstance().setActive(true)
         }
 
         // Start the movie
