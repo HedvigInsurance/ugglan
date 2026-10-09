@@ -60,23 +60,52 @@ final class AddonsViewModelTests: XCTestCase {
             contractId: "travelContractId",
             price: 59,
             currency: "SEK",
-            transactionId: "quoteId1"
+            quoteId: "quoteId1",
+            purchaseType: "new"
         )
     }
 
-    func testSubmitAddonsTracksOneEventPerSelectedAddon() async throws {
+    func testSubmitSelectableUpgradeFromContractDetailTracksUpgrade() async throws {
         let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
         let mockEventTracker = MockData.createMockEventTrackingClient()
 
         sut = mockService
         eventTracker = mockEventTracker
 
-        let model = ChangeAddonViewModel(offer: testCarOfferNoActive.with(source: .homeScreen))
+        let model = ChangeAddonViewModel(offer: testTravelOffer45Days.with(source: .contractDetail))
 
         vm = model
 
-        model.selectAddon(addon: carQuoteSjalvrisk)
+        await model.submitAddons()
+
+        assert(model.submittingState == .success)
+
+        XCTAssertEqual(mockEventTracker.trackedEvents.count, 1)
+        assertAddonPurchased(
+            mockEventTracker.trackedEvents[0],
+            userFlow: "insurance_card",
+            addonType: "travel",
+            contractId: "travelContractId",
+            price: 67,
+            currency: "SEK",
+            quoteId: "quoteId2",
+            purchaseType: "upgrade"
+        )
+    }
+
+    func testSubmitToggleableAddonsNextToActiveOneTracksNewPurchasePerAddon() async throws {
+        let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+        let mockEventTracker = MockData.createMockEventTrackingClient()
+
+        sut = mockService
+        eventTracker = mockEventTracker
+
+        let model = ChangeAddonViewModel(offer: testCarAddonRisk.with(source: .homeCrossSellSheet))
+
+        vm = model
+
         model.selectAddon(addon: carQuoteHyrbil)
+        model.selectAddon(addon: carQuoteDrulle)
         await model.submitAddons()
 
         assert(model.submittingState == .success)
@@ -84,21 +113,23 @@ final class AddonsViewModelTests: XCTestCase {
         XCTAssertEqual(mockEventTracker.trackedEvents.count, 2)
         assertAddonPurchased(
             mockEventTracker.trackedEvents[0],
-            userFlow: "home_screen",
-            addonType: "car_addon",
-            contractId: "carContractId",
-            price: 50,
-            currency: "SEK",
-            transactionId: "carQuoteId1"
-        )
-        assertAddonPurchased(
-            mockEventTracker.trackedEvents[1],
-            userFlow: "home_screen",
+            userFlow: "home",
             addonType: "car_addon",
             contractId: "carContractId",
             price: 33,
             currency: "SEK",
-            transactionId: "carQuoteId1"
+            quoteId: "carQuoteId2",
+            purchaseType: "new"
+        )
+        assertAddonPurchased(
+            mockEventTracker.trackedEvents[1],
+            userFlow: "home",
+            addonType: "car_addon",
+            contractId: "carContractId",
+            price: 25,
+            currency: "SEK",
+            quoteId: "carQuoteId2",
+            purchaseType: "new"
         )
     }
 
@@ -189,7 +220,8 @@ final class AddonsViewModelTests: XCTestCase {
         contractId: String,
         price: Double,
         currency: String,
-        transactionId: String,
+        quoteId: String,
+        purchaseType: String,
         line: UInt = #line
     ) {
         XCTAssertEqual(event.name, "addon_purchased", line: line)
@@ -198,6 +230,7 @@ final class AddonsViewModelTests: XCTestCase {
         XCTAssertEqual(event.parameters["contract_id"] as? String, contractId, line: line)
         XCTAssertEqual(event.parameters["price"] as? Double, price, line: line)
         XCTAssertEqual(event.parameters["currency"] as? String, currency, line: line)
-        XCTAssertEqual(event.parameters["transaction_id"] as? String, transactionId, line: line)
+        XCTAssertEqual(event.parameters["quote_id"] as? String, quoteId, line: line)
+        XCTAssertEqual(event.parameters["purchase_type"] as? String, purchaseType, line: line)
     }
 }
