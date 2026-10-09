@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -223,6 +224,23 @@ public enum PaymentMethodSetupType: Sendable {
     case nordeaPayout(accountNumber: String)
     case swishPayout(phoneNumber: String)
     case swishPayin
+}
+
+extension PaymentMethodSetupType: MaskedValue {
+    /// An associated value cannot carry `@Masked`, so the masking is written out here:
+    /// the payout destination never reaches the log, while the case itself stays readable.
+    public var maskedDescription: String {
+        switch self {
+        case .trustly:
+            return "trustly"
+        case let .nordeaPayout(accountNumber):
+            return "nordeaPayout(accountNumber: \(AutomaticLog.maskedLogDescription(accountNumber)))"
+        case let .swishPayout(phoneNumber):
+            return "swishPayout(phoneNumber: \(AutomaticLog.maskedLogDescription(phoneNumber)))"
+        case .swishPayin:
+            return "swishPayin"
+        }
+    }
 }
 
 public struct PaymentSetupResult: Codable, Equatable, Sendable {
