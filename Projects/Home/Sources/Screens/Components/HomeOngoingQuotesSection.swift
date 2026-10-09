@@ -88,8 +88,8 @@ private struct OngoingQuoteCard: View {
         .padding(.trailing, -.padding12)
         .padding(.top, -.padding12)
         .buttonStyle(.plain)
-        .accessibilityLabel(L10n.General.remove)
         .accessibilityHidden(true)
+        .accessibilityAddTraits(.isButton)
     }
 
     private var pillow: some View {
