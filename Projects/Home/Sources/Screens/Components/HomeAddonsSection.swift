@@ -17,7 +17,7 @@ struct HomeAddonsSection: View {
                 VStack(spacing: .padding8) {
                     ForEach(addonBanners, id: \.self) { banner in
                         let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
-                        let input = ChangeAddonInput(addonSource: .crossSell, contractInfos: contractInfos)
+                        let input = ChangeAddonInput(addonSource: .homeScreen, contractInfos: contractInfos)
                         CrossSellRow(
                             title: banner.displayTitle,
                             subtitle: banner.displayDescription,

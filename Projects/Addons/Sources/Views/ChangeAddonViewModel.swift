@@ -4,6 +4,7 @@ import hCoreUI
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
+    @Inject private var eventTrackingClient: EventTrackingClient
     let addonService = AddonsService()
     @Published var submittingState: ProcessingState = .loading
     @Published var addonOfferCost: ItemCost?
@@ -72,6 +73,7 @@ public class ChangeAddonViewModel: ObservableObject {
                 selectedAddonIds: Set(selectedAddonIds.map(\.id))
             )
             logAddonEvent()
+            trackAddonPurchased()
             withAnimation {
                 self.submittingState = .success
             }
@@ -172,12 +174,17 @@ extension ItemDiscount {
 
 //MARK: Log purchase
 extension ChangeAddonViewModel {
+    // A selectable add-on replaces the tier the member already has. Toggleable add-ons sit next to the ones
+    // already active, so buying one is never an upgrade.
+    fileprivate var isUpgrade: Bool {
+        switch offer.quote.addonOfferContent {
+        case .selectable: !offer.quote.activeAddons.isEmpty
+        case .toggleable: false
+        }
+    }
+
     fileprivate func logAddonEvent() {
-        let eventType: AddonEventType =
-            switch offer.quote.addonOfferContent {
-            case .selectable: offer.quote.activeAddons.isEmpty ? .addonPurchased : .addonUpgraded
-            case .toggleable: .addonPurchased
-            }
+        let eventType: AddonEventType = isUpgrade ? .addonUpgraded : .addonPurchased
 
         selectedAddons.forEach { addon in
             let logInfo = AddonLogInfo(
@@ -192,8 +199,40 @@ extension ChangeAddonViewModel {
             )
         }
     }
+
+    // Upgrading an add-on the member already had counts as a purchase, so this fires for upgrades too.
+    fileprivate func trackAddonPurchased() {
+        selectedAddons.forEach { addon in
+            let price = addon.cost.premium.net
+            eventTrackingClient.trackEvent(
+                name: "addon_purchased",
+                parameters: [
+                    "user_flow": offer.source.analyticsUserFlow,
+                    "addon_type": addon.addonVariant.product,
+                    "contract_id": offer.contractInfo.contractId,
+                    "price": Double(price.amount) ?? 0,
+                    "currency": price.currency,
+                    "quote_id": offer.quote.quoteId,
+                    "purchase_type": isUpgrade ? "upgrade" : "new",
+                ]
+            )
+        }
+    }
+
     private enum AddonEventType: String, Codable {
         case addonPurchased = "ADDON_PURCHASED"
         case addonUpgraded = "ADDON_UPGRADED"
+    }
+}
+
+extension AddonSource {
+    fileprivate var analyticsUserFlow: String {
+        switch self {
+        case .insurances: "insurance_screen"
+        case .contractDetail: "insurance_card"
+        case .homeScreen, .homeCrossSellSheet: "home"
+        case .travelCertificates: "travel_certificate"
+        case .deeplink: "deeplink"
+        }
     }
 }

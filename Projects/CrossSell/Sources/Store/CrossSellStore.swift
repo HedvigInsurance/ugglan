@@ -34,7 +34,7 @@ public final class CrossSellStore: AppStore {
 
     public func fetchAddonBanners() async {
         do {
-            addonBanners = try await crossSellService.getAddonBanners(source: .crossSell)
+            addonBanners = try await crossSellService.getAddonBanners(source: .homeScreen)
             fetchAddonBannersError = nil
         } catch {
             addonBanners = []

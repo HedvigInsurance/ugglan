@@ -114,7 +114,7 @@ struct AddonActionSheet: View {
         switch type {
         case .upgrade:
             contractsNavigationVm.isAddonPresented = .init(
-                addonSource: .insurances,
+                addonSource: .contractDetail,
                 contractInfos: [addonAction.contract.asAddonContractInfo],
                 preselectedAddonTitle: addonAction.displayName
             )

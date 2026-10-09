@@ -716,7 +716,7 @@ struct HomeTab: View {
     /// and the flow's input needs contract data the CrossSell module cannot reach.
     private func presentAddon(for banner: AddonBanner) {
         let contractInfos = contractStore.getAddonContractInfosFor(contractIds: banner.contractIds)
-        homeNavigationVm.isAddonPresented = .init(addonSource: .crossSell, contractInfos: contractInfos)
+        homeNavigationVm.isAddonPresented = .init(addonSource: .homeCrossSellSheet, contractInfos: contractInfos)
     }
 
     var body: some View {

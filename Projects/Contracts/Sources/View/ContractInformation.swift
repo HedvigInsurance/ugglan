@@ -123,7 +123,7 @@ struct ContractInformationView: View {
     private func presentAddonUpgrade(contract: Contract, addonDisplayName: String) {
         withAnimation(.easeInOut(duration: 0.2)) {
             contractsNavigationVm.isAddonPresented = .init(
-                addonSource: .insurances,
+                addonSource: .contractDetail,
                 contractInfos: [contract.asAddonContractInfo],
                 preselectedAddonTitle: addonDisplayName
             )

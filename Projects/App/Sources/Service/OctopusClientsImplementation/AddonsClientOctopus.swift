@@ -147,7 +147,8 @@ extension AddonSource {
     public var flows: [GraphQLEnum<OctopusGraphQL.AddonFlow>] {
         let rawFlows: [OctopusGraphQL.AddonFlow] =
             switch self {
-            case .insurances, .crossSell: [.appTravelPlusSellOnly, .appCarPlus]
+            case .insurances, .contractDetail, .homeScreen, .homeCrossSellSheet:
+                [.appTravelPlusSellOnly, .appCarPlus]
             case .travelCertificates: [.appTravelPlusSellOrUpgrade]
             case .deeplink: [.appTravelPlusSellOrUpgrade, .appCarPlus]
             }

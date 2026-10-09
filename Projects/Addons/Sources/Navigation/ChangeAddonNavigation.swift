@@ -22,8 +22,10 @@ public struct ChangeAddonInput: Identifiable, Equatable, Sendable {
 
 public enum AddonSource: String, Codable, Sendable {
     case insurances = "INSURANCES_TAB"
+    case contractDetail = "CONTRACT_DETAIL"
+    case homeScreen = "HOME_SCREEN"
+    case homeCrossSellSheet = "HOME_CROSS_SELL_SHEET"
     case travelCertificates = "TRAVEL_CERTIFICATES"
-    case crossSell = "CROSS_SELL"
     case deeplink = "DEEPLINK"
 }
 

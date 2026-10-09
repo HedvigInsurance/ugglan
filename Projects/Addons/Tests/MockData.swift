@@ -28,6 +28,50 @@ struct MockData {
         Dependencies.shared.add(module: Module { () -> AddonsClient in service })
         return service
     }
+
+    @discardableResult
+    static func createMockEventTrackingClient() -> MockEventTrackingClient {
+        let client = MockEventTrackingClient()
+        Dependencies.shared.add(module: Module { () -> EventTrackingClient in client })
+        return client
+    }
+}
+
+extension AddonOffer {
+    func with(source: AddonSource) -> AddonOffer {
+        .init(
+            contractInfo: contractInfo,
+            source: source,
+            pageTitle: pageTitle,
+            pageDescription: pageDescription,
+            quote: quote,
+            currentTotalCost: currentTotalCost,
+            infoMessage: infoMessage,
+            whatsIncludedPageTitle: whatsIncludedPageTitle,
+            whatsIncludedPageDescription: whatsIncludedPageDescription
+        )
+    }
+}
+
+class MockEventTrackingClient: EventTrackingClient {
+    var trackedEvents = [TrackedEvent]()
+
+    struct TrackedEvent {
+        let name: String
+        let parameters: [String: Any]
+    }
+
+    func setCollectionEnabled(_ enabled: Bool) {}
+
+    func trackEvent(name: String, parameters: [String: Any]?) {
+        trackedEvents.append(.init(name: name, parameters: parameters ?? [:]))
+    }
+
+    func trackScreen(name: String, parameters: [String: Any]?) {}
+
+    func setUserId(_ userId: String?) {}
+
+    func setUserProperty(name: String, value: String?) {}
 }
 
 typealias FetchAddonOffer = (AddonContractInfo, AddonSource) async throws -> AddonOfferData
