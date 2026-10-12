@@ -146,4 +146,29 @@ final class PaymentActionViewModelTests: XCTestCase {
         XCTAssertEqual(vm.errorMessage, error.localizedDescription)
         XCTAssertEqual(mockService.events, [.setDefaultPaymentMethod])
     }
+
+    func testSetDefaultPayoutCallsSetDefaultPayoutMethodSuccess() async {
+        let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: {})
+        sut = mockService
+
+        let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
+        let result = await vm.perform()
+
+        XCTAssertTrue(result)
+        XCTAssertEqual(vm.processingState, .success)
+        XCTAssertEqual(mockService.events, [.setDefaultPayoutMethod])
+    }
+
+    func testSetDefaultPayoutServiceErrorFailure() async {
+        let error = PaymentError.missingDataError(message: "error")
+        let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: { throw error })
+        sut = mockService
+
+        let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
+        let result = await vm.perform()
+
+        XCTAssertFalse(result)
+        XCTAssertEqual(vm.errorMessage, error.localizedDescription)
+        XCTAssertEqual(mockService.events, [.setDefaultPayoutMethod])
+    }
 }
