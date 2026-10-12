@@ -118,7 +118,7 @@ extension PaymentMethodSelectableRow where Value == PaymentProvider {
     }
 }
 
-#Preview{
+#Preview {
     let trustly = ConnectedPaymentMethod(
         status: .active,
         isDefault: true,

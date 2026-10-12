@@ -79,7 +79,7 @@ extension PaymentDirection {
     }
 }
 
-#Preview{
+#Preview {
     let store: PaymentStore = globalAppStateContainer.get()
     store.paymentStatusData = .init(
         status: .active,

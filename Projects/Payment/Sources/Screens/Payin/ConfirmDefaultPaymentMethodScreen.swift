@@ -37,7 +37,7 @@ struct ConfirmDefaultPaymentMethodScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
