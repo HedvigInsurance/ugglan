@@ -6,18 +6,17 @@ import hCoreUI
 struct ChooseDefaultPaymentMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @Environment(\.dismiss) private var dismiss
-    var direction: PaymentDirection = .payin
 
     @State private var currentDefault: ConnectedPaymentMethod?
     @State private var methodToConfirm: ConnectedPaymentMethod?
 
     var body: some View {
         hForm {
-            PaymentConnectionGraphic(direction: direction, provider: currentDefault?.provider)
+            PaymentConnectionGraphic(provider: currentDefault?.provider)
                 .padding(.vertical, .padding64)
         }
         .hFormAttachToBottom {
-            if let data = store.paymentStatusData?.selectableMethods(for: direction) {
+            if let data = store.paymentStatusData?.selectablePayinMethods {
                 hSection {
                     hRadioOptionList(data, spacing: .padding8) { element in
                         if element.isDefault {
@@ -43,15 +42,15 @@ struct ChooseDefaultPaymentMethodScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .hFormTitle(
-            title: .init(.small, .body1, direction.chooseDefaultTitle, alignment: .center),
-            subTitle: .init(.small, .body1, direction.chooseDefaultSubtitle, alignment: .center)
+            title: .init(.small, .body1, L10n.paymentPrimaryTitle, alignment: .center),
+            subTitle: .init(.small, .body1, L10n.paymentPrimarySubtitle, alignment: .center)
         )
         .hFormContentPosition(.compact)
         .detent(
             item: $methodToConfirm,
             presentationStyle: .detent(style: [.height])
         ) { method in
-            ConfirmDefaultPaymentMethodScreen(method: method, direction: direction) {
+            ConfirmDefaultPaymentMethodScreen(method: method) {
                 let store: PaymentStore = globalAppStateContainer.get()
                 store.resetPaymentDataFetchedAt()
                 methodToConfirm = nil
@@ -62,24 +61,7 @@ struct ChooseDefaultPaymentMethodScreen: View {
     }
 }
 
-extension PaymentDirection {
-    fileprivate var chooseDefaultTitle: String {
-        switch self {
-        case .payin: L10n.paymentPrimaryTitle
-        case .payout: L10n.payoutSelectPayoutMethod
-        }
-    }
-
-    fileprivate var chooseDefaultSubtitle: String {
-        switch self {
-        case .payin: L10n.paymentPrimarySubtitle
-        // TODO: Add "This method will be used for your payouts" / "Den här metoden används för dina utbetalningar" to Lokalise
-        case .payout: "This method will be used for your payouts"
-        }
-    }
-}
-
-#Preview{
+#Preview {
     let store: PaymentStore = globalAppStateContainer.get()
     store.paymentStatusData = .init(
         status: .active,

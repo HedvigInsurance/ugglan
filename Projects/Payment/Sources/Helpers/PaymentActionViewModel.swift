@@ -46,12 +46,6 @@ extension PaymentActionViewModel {
         }
     }
 
-    static func setDefaultPayout(_ method: ConnectedPaymentMethod) -> PaymentActionViewModel {
-        .init(method: method) { method, service in
-            try await service.setDefaultPayoutMethod(method.method)
-        }
-    }
-
     static func remove(_ method: ConnectedPaymentMethod) -> PaymentActionViewModel {
         .init(method: method) { method, service in
             try await service.removePaymentMethod(method.provider)

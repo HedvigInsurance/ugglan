@@ -115,7 +115,6 @@ struct MockPaymentData {
         fetchMissedPaymentData: @escaping FetchMissedPaymentData = { nil },
         chargeOutstandingPayment: @escaping ChargeOutstandingPayment = {},
         setDefaultPaymentMethod: @escaping SetDefaultPaymentMethod = {},
-        setDefaultPayoutMethod: @escaping SetDefaultPaymentMethod = {},
         removePaymentMethod: @escaping RemovePaymentMethod = {}
     ) -> MockPaymentService {
         let service = MockPaymentService(
@@ -128,7 +127,6 @@ struct MockPaymentData {
             fetchMissedPaymentData: fetchMissedPaymentData,
             chargeOutstandingPayment: chargeOutstandingPayment,
             setDefaultPaymentMethod: setDefaultPaymentMethod,
-            setDefaultPayoutMethod: setDefaultPayoutMethod,
             removePaymentMethod: removePaymentMethod
         )
         Dependencies.shared.add(module: Module { () -> hPaymentClient in service })
@@ -159,7 +157,6 @@ class MockPaymentService: hPaymentClient {
     var fetchMissedPaymentData: FetchMissedPaymentData
     var chargeOutstandingPaymentClosure: ChargeOutstandingPayment
     var setDefaultPaymentMethodClosure: SetDefaultPaymentMethod
-    var setDefaultPayoutMethodClosure: SetDefaultPaymentMethod
     var removePaymentMethodClosure: RemovePaymentMethod
 
     var setupTypes = [PaymentMethodSetupType]()
@@ -176,7 +173,6 @@ class MockPaymentService: hPaymentClient {
         case getMissedPaymentData
         case chargeOutstandingPayment
         case setDefaultPaymentMethod
-        case setDefaultPayoutMethod
         case removePaymentMethod
     }
 
@@ -190,7 +186,6 @@ class MockPaymentService: hPaymentClient {
         fetchMissedPaymentData: @escaping FetchMissedPaymentData,
         chargeOutstandingPayment: @escaping ChargeOutstandingPayment,
         setDefaultPaymentMethod: @escaping SetDefaultPaymentMethod,
-        setDefaultPayoutMethod: @escaping SetDefaultPaymentMethod,
         removePaymentMethod: @escaping RemovePaymentMethod
     ) {
         self.fetchPaymentData = fetchPaymentData
@@ -202,7 +197,6 @@ class MockPaymentService: hPaymentClient {
         self.fetchMissedPaymentData = fetchMissedPaymentData
         self.chargeOutstandingPaymentClosure = chargeOutstandingPayment
         self.setDefaultPaymentMethodClosure = setDefaultPaymentMethod
-        self.setDefaultPayoutMethodClosure = setDefaultPayoutMethod
         self.removePaymentMethodClosure = removePaymentMethod
     }
 
@@ -257,11 +251,6 @@ class MockPaymentService: hPaymentClient {
     func setDefaultPaymentMethod(_: PaymentMethod) async throws {
         events.append(.setDefaultPaymentMethod)
         try await setDefaultPaymentMethodClosure()
-    }
-
-    func setDefaultPayoutMethod(_: PaymentMethod) async throws {
-        events.append(.setDefaultPayoutMethod)
-        try await setDefaultPayoutMethodClosure()
     }
 
     func removePaymentMethod(_ provider: PaymentProvider) async throws {

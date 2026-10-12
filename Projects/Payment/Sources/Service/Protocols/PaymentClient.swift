@@ -11,7 +11,6 @@ public protocol hPaymentClient: Sendable {
     func getPaymentSetupStatus(orderId: String) async throws -> PaymentSetupResult.PaymentSetupStatus
     func chargeOutstandingPayment() async throws
     func setDefaultPaymentMethod(_ method: PaymentMethod) async throws
-    func setDefaultPayoutMethod(_ method: PaymentMethod) async throws
     func removePaymentMethod(_ provider: PaymentProvider) async throws
 }
 

@@ -175,8 +175,6 @@ private final class MockPaymentClient: hPaymentClient, @unchecked Sendable {
 
     func setDefaultPaymentMethod(_: PaymentMethod) async throws {}
 
-    func setDefaultPayoutMethod(_: PaymentMethod) async throws {}
-
     func removePaymentMethod(_: PaymentProvider) async throws {}
 }
 

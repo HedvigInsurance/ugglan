@@ -8,12 +8,11 @@ public struct PayoutSelectedMethodScreen: View {
     @EnvironmentObject var router: NavigationRouter
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
     @State private var showChangePayoutMethod = false
-    @State private var showChooseDefaultPayoutMethod = false
 
     public var body: some View {
         Group {
             if let paymentStatusData = store.paymentStatusData {
-                if !paymentStatusData.displayedPayoutMethods.isEmpty {
+                if paymentStatusData.defaultOrFirstDefaultPayoutMethod != nil {
                     existingPayoutView(paymentStatusData: paymentStatusData)
                 } else if paymentStatusData.availablePayoutMethods.isEmpty {
                     missingPayinView
@@ -23,12 +22,6 @@ public struct PayoutSelectedMethodScreen: View {
             }
         }
         .handleChangePayoutMethod(presented: $showChangePayoutMethod)
-        .detent(
-            presented: $showChooseDefaultPayoutMethod,
-            presentationStyle: .detent(style: [.height])
-        ) {
-            ChooseDefaultPaymentMethodScreen(direction: .payout)
-        }
     }
 
     private func missingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
@@ -91,40 +84,24 @@ public struct PayoutSelectedMethodScreen: View {
     private func existingPayoutView(paymentStatusData: PaymentStatusData) -> some View {
         hForm {
             VStack(spacing: .padding8) {
-                hSection {
-                    hRadioOptionList(paymentStatusData.displayedPayoutMethods, spacing: .padding8) { method in
-                        PaymentMethodRow(readOnly: method)
+                if let payoutMethod = paymentStatusData.defaultOrFirstDefaultPayoutMethod {
+                    hSection {
+                        PaymentMethodLockedRow(payoutMethod)
                     }
-                }
-                hSection {
-                    if paymentStatusData.payoutMethods.hasMethodInProgress {
-                        InfoCard(text: L10n.paymentMethodPending, type: .neutral)
-                    }
+                    .sectionContainerStyle(.transparent)
                 }
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.top, .padding8)
+            .padding(.top, .padding16)
         }
-        .hFormAlwaysAttachToBottom {
-            hSection {
-                VStack(spacing: .padding8) {
-                    if paymentStatusData.showChangeButton {
-                        hButton(.large, .secondary, content: .init(title: L10n.payoutAddPayoutMethod)) {
-                            showChangePayoutMethod = true
-                        }
-                    }
-                    if paymentStatusData.canChooseDefaultPayoutMethod {
-                        hButton(.large, .ghost, content: .init(title: L10n.paymentChoosePrimaryButton)) {
-                            showChooseDefaultPayoutMethod = true
-                        }
-                    }
+        .hFormAttachToBottom {
+            if paymentStatusData.payoutMethods.hasMethodInProgress {
+                hSection {
+                    InfoCard(text: L10n.myPaymentUpdatingMessage, type: .neutral)
                 }
+                .sectionContainerStyle(.transparent)
             }
-            .sectionContainerStyle(.transparent)
-        }
-        .hSetScrollBounce(to: true)
-        .onPullToRefresh {
-            await store.fetchPaymentStatus()
+
+            changePayoutButton(paymentStatusData: paymentStatusData, title: L10n.changePayoutMethodButtonLabel)
         }
     }
 
@@ -149,13 +126,8 @@ extension PaymentStatusData {
     fileprivate var showChangeButton: Bool {
         !availablePayoutMethods.isEmpty
     }
-
-    /// Falls back to the default method on its own for a response that reports it outside the list.
-    fileprivate var displayedPayoutMethods: [ConnectedPaymentMethod] {
-        payoutMethods.isEmpty ? [defaultOrFirstDefaultPayoutMethod].compactMap { $0 } : payoutMethods
-    }
 }
-#Preview{
+#Preview {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {
@@ -190,12 +162,7 @@ extension PaymentStatusData {
                         status: .active,
                         isDefault: true,
                         method: .nordea(bankAccount: .init(account: "3300-920123132", bank: "Nordea"))
-                    ),
-                    .init(
-                        status: .active,
-                        isDefault: false,
-                        method: .swish(phoneNumber: "0701231231")
-                    ),
+                    )
                 ],
                 availableMethods: [
                     .init(provider: .nordea, supportsPayin: false, supportsPayout: true),
@@ -208,12 +175,12 @@ extension PaymentStatusData {
         }
 }
 
-#Preview("Kivra - no change button"){
+#Preview("Kivra - no change button") {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
 }
 
-#Preview("PayoutSelectedMethodScreen - no default payout"){
+#Preview("PayoutSelectedMethodScreen - no default payout") {
     PayoutSelectedMethodScreen()
         .environmentObject(NavigationRouter())
         .onAppear {
