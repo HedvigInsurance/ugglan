@@ -557,6 +557,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_TRUSTLY_FAILURE_TITLE" = "Connection failed";
 "PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "We'll notify you in the app each month";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Add payout method";
+"PAYOUT_CHOOSE_METHOD_SUBTITLE" = "This method will be used for your payouts";
+"PAYOUT_CONFIRMATION_INFO" = "Your next payout will be made via %1$@";
+"PAYOUT_CONFIRMATION_TITLE" = "Confirm payout method";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direct payment via Invoice";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Instant payout with Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Payout via Trustly";

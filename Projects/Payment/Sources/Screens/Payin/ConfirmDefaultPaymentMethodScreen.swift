@@ -23,16 +23,14 @@ struct ConfirmDefaultPaymentMethodScreen: View {
     private var confirmTitle: String {
         switch direction {
         case .payin: L10n.paymentPrimaryConfirmTitle
-        // TODO: Add "Confirm payout method" / "Bekräfta utbetalningsmetod" to Lokalise
-        case .payout: "Confirm payout method"
+        case .payout: L10n.payoutConfirmationTitle
         }
     }
 
     private var warning: String {
         switch direction {
         case .payin: L10n.paymentConfirmPrimaryWarning(method.provider.payinTitle)
-        // TODO: Add "Your next payout will be made via %1$@" / "Din nästa utbetalning görs via %1$@" to Lokalise
-        case .payout: "Your next payout will be made via \(method.provider.payoutTitle)"
+        case .payout: L10n.payoutConfirmationInfo(method.provider.payoutTitle)
         }
     }
 }

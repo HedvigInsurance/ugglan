@@ -557,6 +557,9 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PAYMENT_TRUSTLY_FAILURE_TITLE" = "Kopplingen misslyckades";
 "PAYMENT_TRUSTLY_SUCCESS_SUBTITLE" = "Vi meddelar dig i appen varje månad";
 "PAYOUT_ADD_PAYOUT_METHOD" = "Lägg till utbetalningsmetod";
+"PAYOUT_CHOOSE_METHOD_SUBTITLE" = "Den här metoden används för dina utbetalningar";
+"PAYOUT_CONFIRMATION_INFO" = "Din nästa utbetalning görs via %1$@";
+"PAYOUT_CONFIRMATION_TITLE" = "Bekräfta utbetalningsmetod";
 "PAYOUT_METHOD_INVOICE_DESCRIPTION" = "Direktutbetalning via Faktura";
 "PAYOUT_METHOD_SWISH_DESCRIPTION" = "Snabb utbetalning med Swish";
 "PAYOUT_METHOD_TRUSTLY_DESCRIPTION" = "Utbetalning via Trustly";

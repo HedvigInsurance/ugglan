@@ -73,8 +73,7 @@ extension PaymentDirection {
     fileprivate var chooseDefaultSubtitle: String {
         switch self {
         case .payin: L10n.paymentPrimarySubtitle
-        // TODO: Add "This method will be used for your payouts" / "Den här metoden används för dina utbetalningar" to Lokalise
-        case .payout: "This method will be used for your payouts"
+        case .payout: L10n.payoutChooseMethodSubtitle
         }
     }
 }
