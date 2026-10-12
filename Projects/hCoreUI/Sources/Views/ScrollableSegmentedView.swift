@@ -158,6 +158,41 @@ public struct ScrollableSegmentedView<Content: View>: View {
             }
         }
         .frame(height: vm.currentHeight == 0 ? nil : vm.currentHeight)
+        .overlay {
+            safeAreaEdgeBlur
+                .padding(.vertical, -.padding32)
+        }
+    }
+
+    private var safeAreaEdgeBlur: some View {
+        GeometryReader { geo in
+            HStack(spacing: 0) {
+                edgeBlur(at: .leading)
+                    .frame(width: geo.safeAreaInsets.leading)
+                Spacer(minLength: 0)
+                edgeBlur(at: .trailing)
+                    .frame(width: geo.safeAreaInsets.trailing)
+            }
+            .ignoresSafeArea(.container, edges: .horizontal)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    private func edgeBlur(at edge: HorizontalEdge) -> some View {
+        Rectangle()
+            .fill(hBackgroundColor.primary)
+            .mask {
+                LinearGradient(
+                    stops: [
+                        .init(color: .black, location: 0),
+                        .init(color: .black.opacity(0.8), location: 0.8),
+                        .init(color: .clear, location: 1),
+                    ],
+                    startPoint: edge == .leading ? .leading : .trailing,
+                    endPoint: edge == .leading ? .trailing : .leading
+                )
+            }
     }
 }
 
@@ -200,7 +235,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                     let sortedTitlePositions =
                         rects
                         .compactMap(\.origin.x)
-                    let offset = value.x
+                    let offset = value.x + self.leadingContentInset
                     let lowerBoundry = allOffsets.lastIndex(where: { $0 <= offset })
                     let upperBoundry = allOffsets.firstIndex(where: { $0 >= offset })
                     let previousSelectedIndicatorOffset = self.selectedIndicatorOffset
@@ -295,10 +330,17 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         pageModels.enumerated().compactMap { CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) }
     }
 
+    var leadingContentInset: CGFloat {
+        horizontalScrollView?.adjustedContentInset.left ?? 0
+    }
+
     @MainActor
     func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
-        horizontalScrollView?
-            .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
+        guard let horizontalScrollView else { return }
+        horizontalScrollView.setContentOffset(
+            .init(x: offset - leadingContentInset, y: horizontalScrollView.contentOffset.y),
+            animated: withAnimation
+        )
     }
 
     @MainActor
@@ -324,7 +366,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            scrollToNearestWith(offset: scrollView.contentOffset.x)
+            scrollToNearestWith(offset: scrollView.contentOffset.x + leadingContentInset)
         }
     }
 
@@ -349,7 +391,7 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
                     scrollTo = offsets[max(currentIndex - 1, 0)]
                     useAnimationEarlier = true
                 } else {
-                    scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+                    scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x + leadingContentInset)
                 }
             }
             if useAnimationEarlier {
@@ -358,6 +400,7 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
                     setSelectedTab(with: idToScrollTo)
                 }
             }
+            let leadingInset = leadingContentInset
             DispatchQueue.main.async { [weak scrollView] in
                 UIView.animate(
                     withDuration: 0.2,
@@ -367,7 +410,7 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
                         UIView.AnimationOptions.allowAnimatedContent,
                     ],
                     animations: {
-                        scrollView?.contentOffset.x = scrollTo
+                        scrollView?.contentOffset.x = scrollTo - leadingInset
                     },
                     completion: { [self] _ in
                         if !useAnimationEarlier {
