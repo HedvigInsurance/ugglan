@@ -25,7 +25,7 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **hContinueButton** -- Pre-configured large primary button with localized "Continue" text
 - **hCancelButton** -- Pre-configured cancel button
 - **hSaveButton** -- Pre-configured save button
-- **ToolbarButtonView** -- Toolbar-positioned button for navigation bars, with tooltip support
+- **ToolbarButtonView** -- Toolbar-positioned button for navigation bars, with tooltip support. Its tooltip direction comes from the `\.tooltipDirection` environment value, which `setToolbar`/`setToolbarLeading`/`setToolbarTrailing`/`setHomeNavigationBars` resolve via `.resolveTooltipDirection()`: next to a system toolbar column (iPhone Duo) tooltips open sideways away from the column, everywhere else below the button
 
 ### Text & Typography
 - **hText** -- Styled text view; applies the Hedvig font for the given `HFontTextStyle`; falls back to environment default style or `.body1`

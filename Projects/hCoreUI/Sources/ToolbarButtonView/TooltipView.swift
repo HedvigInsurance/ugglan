@@ -15,6 +15,73 @@ public enum TooltipDirection: Sendable {
     case trailing
 }
 
+extension TooltipDirection {
+    /// Next to a system toolbar column there is no room under the buttons, so tooltips open
+    /// sideways, away from the column and into the content: a column on the right puts them on
+    /// the buttons' left, a column on the left puts them on the right.
+    public init(awayFrom systemToolbarEdge: HorizontalEdge?) {
+        guard let systemToolbarEdge else {
+            self = .below
+            return
+        }
+        self = systemToolbarEdge == .trailing ? .leading : .trailing
+    }
+}
+
+private struct TooltipDirectionKey: EnvironmentKey {
+    static let defaultValue: TooltipDirection = .below
+}
+
+extension EnvironmentValues {
+    /// Which way the toolbar buttons below this point open their tooltips. Set by
+    /// `resolveTooltipDirection()`, so no screen has to work the direction out for itself.
+    public var tooltipDirection: TooltipDirection {
+        get { self[TooltipDirectionKey.self] }
+        set { self[TooltipDirectionKey.self] = newValue }
+    }
+}
+
+/// Reports the horizontal screen edge a system toolbar column takes up, and nil wherever the
+/// toolbar is not a column down the side of the screen.
+private struct SystemToolbarEdgeReader: ViewModifier {
+    @State private var systemToolbarEdge: HorizontalEdge?
+    let onChange: (HorizontalEdge?) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .onGeometryChange(
+                for: HorizontalEdge?.self,
+                of: { proxy in
+                    // A regular iPhone in landscape insets both sides alike, around the sensor
+                    // housing and the edge across from it. A system toolbar column insets only
+                    // the side it is on, folded or unfolded, so the one-sided inset is the column.
+                    let insets = proxy.safeAreaInsets
+                    guard insets.leading.isFinite, insets.trailing.isFinite else { return nil }
+                    let difference = insets.trailing - insets.leading
+                    if difference > 1 { return .trailing }
+                    if difference < -1 { return .leading }
+                    return nil
+                }
+            ) {
+                systemToolbarEdge = $0
+            }
+            .onAppear { onChange(systemToolbarEdge) }
+            .onChange(of: systemToolbarEdge) { onChange($0) }
+    }
+}
+
+/// Measures the screen once and hands every toolbar button under it the same direction.
+private struct ResolvedTooltipDirection: ViewModifier {
+    @State private var direction: TooltipDirection = .below
+
+    func body(content: Content) -> some View {
+        content
+            .onSystemToolbarEdgeChange { direction = .init(awayFrom: $0) }
+            // Outside the content's own `.toolbar`, so its items inherit the value too.
+            .environment(\.tooltipDirection, direction)
+    }
+}
+
 extension View {
     public func showTooltip(
         type: ToolbarOptionType,
@@ -22,6 +89,19 @@ extension View {
         direction: TooltipDirection = .below
     ) -> some View {
         modifier(TooltipViewModifier(type: type, placement: placement, direction: direction))
+    }
+
+    /// Calls back with the screen edge occupied by a system toolbar column, as on iPhone Duo,
+    /// and with nil wherever the toolbar is a normal bar along the top.
+    public func onSystemToolbarEdgeChange(perform action: @escaping (HorizontalEdge?) -> Void) -> some View {
+        modifier(SystemToolbarEdgeReader(onChange: action))
+    }
+
+    /// Points the tooltips of every toolbar button in this subtree away from a system toolbar
+    /// column. Applied wherever a screen sets its toolbar, so the buttons need no direction of
+    /// their own; override a single button with `.environment(\.tooltipDirection, _)`.
+    public func resolveTooltipDirection() -> some View {
+        modifier(ResolvedTooltipDirection())
     }
 }
 
@@ -74,12 +154,12 @@ struct TooltipView: View {
     /// How far the triangle's tip reaches out from the tooltip's edge.
     private let triangleHeight: CGFloat = 6
     private let trianglePadding: CGFloat = .padding16
-    /// The width the offset math assumes for the button the tooltip is anchored to.
+    /// The size the placement assumes for the button the tooltip hangs off. The view the
+    /// tooltip is a background of is only as big as the icon, while the button a member sees
+    /// and taps is this much.
     private let anchorSize: CGFloat = 44
 
     @State private var isTooltipVisible: Bool = false
-    @State private var xOffset: CGFloat = 0
-    @State private var yOffset: CGFloat = 0
     @State private var autoHideTask: Task<Void, Never>?
     @StateObject private var toolTipManager = ToolTipManager.shared
 
@@ -94,34 +174,31 @@ struct TooltipView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack {
-            if isTooltipVisible {
-                tooltipBody
-                    .fixedSize()
-                    .transition(
-                        .scale(scale: 0, anchor: transitionAnchor)
-                            .combined(with: .opacity)
-                    )
-                    .offset(x: xOffset, y: yOffset)
-                    .onAppear(perform: startAutoHideTimer)
-            }
-        }
-        .background {
-            // GeometryReader for offset calculation (invisible)
-            tooltipContent
-                .background {
-                    GeometryReader { proxy in
-                        Color.clear
-                            .onAppear { updateOffsets(proxy: proxy) }
-                            .onChange(of: proxy.size) { _ in updateOffsets(proxy: proxy) }
-                    }
+        // The button's own frame, which the tooltip hangs off of.
+        Color.clear
+            .allowsHitTesting(false)
+            .overlay {
+                if isTooltipVisible {
+                    tooltipBody
+                        .fixedSize()
+                        .transition(
+                            .scale(scale: 0, anchor: transitionAnchor)
+                                .combined(with: .opacity)
+                        )
+                        // A zero-width frame at the button's centre pins the tooltip's near edge
+                        // there, whatever its width, so it sits in place from its first frame and
+                        // only ever grows away from the button. Measuring the width to compute an
+                        // offset instead gets it wrong until the tooltip has drawn once, and the
+                        // tooltip visibly slides over from that first guess.
+                        .frame(width: 0, alignment: pinnedEdge)
+                        .offset(offset)
+                        .onAppear(perform: startAutoHideTimer)
                 }
-                .opacity(0)
-        }
-        .onAppear(perform: showTooltipWithDelay)
-        .onDisappear {
-            autoHideTask?.cancel()
-        }
+            }
+            .onAppear(perform: showTooltipWithDelay)
+            .onDisappear {
+                autoHideTask?.cancel()
+            }
     }
 
     // MARK: - Tooltip Layout
@@ -144,6 +221,41 @@ struct TooltipView: View {
                 sideTriangle(pointing: .leading)
                 tooltipContent
             }
+        }
+    }
+
+    // MARK: - Placement
+
+    /// The tooltip's edge that is pinned to the button's centre.
+    private var pinnedEdge: Alignment {
+        switch direction {
+        case .below:
+            // The edge whose triangle points at the button.
+            placement == .trailing ? .trailing : .leading
+        case .leading:
+            .trailing
+        case .trailing:
+            .leading
+        }
+    }
+
+    /// Moves the pinned edge from the button's centre to where it belongs. Constant, because
+    /// it depends only on the button and the triangle, never on the tooltip's own size.
+    private var offset: CGSize {
+        let halfButton = anchorSize / 2
+        switch direction {
+        case .below:
+            // Out to the button's edge, which leaves the triangle — inset by the same half
+            // button — over the button's centre.
+            return CGSize(
+                width: placement == .trailing ? halfButton : -halfButton,
+                height: type.offsetForToolTip + (40 - type.offsetForToolTip) / 2
+            )
+        case .leading:
+            // Out to the button's edge, so the triangle's tip touches it.
+            return CGSize(width: -halfButton, height: 0)
+        case .trailing:
+            return CGSize(width: halfButton, height: 0)
         }
     }
 
@@ -188,28 +300,6 @@ struct TooltipView: View {
             .foregroundColor(type.tooltipTextColor)
             .background(type.tooltipBackgroundColor)
             .cornerRadius(.cornerRadiusS)
-    }
-
-    // MARK: - Offset Calculation
-
-    private func updateOffsets(proxy: GeometryProxy) {
-        switch direction {
-        case .below:
-            let imageSize = type.imageSize
-            if placement == .trailing {
-                xOffset = -(proxy.size.width - imageSize) / 2 + (anchorSize - imageSize) / 2
-            } else {
-                xOffset = (proxy.size.width - imageSize) / 2 - (anchorSize - imageSize) / 2
-            }
-            yOffset = type.offsetForToolTip + (40 - type.offsetForToolTip) / 2
-        case .leading, .trailing:
-            // The tooltip is centred on the button, so move it sideways by half of each until
-            // the triangle's tip touches the button's edge. `proxy` measures the text box alone.
-            let tooltipWidth = proxy.size.width + triangleHeight
-            let distance = (tooltipWidth + anchorSize) / 2
-            xOffset = direction == .leading ? -distance : distance
-            yOffset = 0
-        }
     }
 
     // MARK: - Tooltip Animation & Timer
@@ -289,17 +379,39 @@ struct Triangle: Shape {
     }
 }
 
-#Preview {
-    VStack {
-        TooltipView(type: .travelCertificate, placement: .trailing)
+/// Stands in for the toolbar button the tooltip hangs off, at the size the placement assumes.
+private struct TooltipAnchorPreview: View {
+    let placement: ListToolBarPlacement
+    let direction: TooltipDirection
+
+    var body: some View {
+        Circle()
+            .fill(hFillColor.Opaque.secondary)
+            .frame(width: 44, height: 44)
+            .background {
+                TooltipView(type: .travelCertificate, placement: placement, direction: direction)
+            }
     }
 }
 
-#Preview("Sideways") {
-    HStack(spacing: 200) {
-        TooltipView(type: .travelCertificate, placement: .trailing, direction: .leading)
-        TooltipView(type: .travelCertificate, placement: .trailing, direction: .trailing)
+#Preview("Below") {
+    VStack(spacing: 120) {
+        TooltipAnchorPreview(placement: .leading, direction: .below)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        TooltipAnchorPreview(placement: .trailing, direction: .below)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
+    .padding(.horizontal, .padding16)
+}
+
+#Preview("Sideways") {
+    VStack(spacing: 80) {
+        TooltipAnchorPreview(placement: .trailing, direction: .leading)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        TooltipAnchorPreview(placement: .leading, direction: .trailing)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .padding(.horizontal, .padding16)
 }
 
 @MainActor

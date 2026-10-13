@@ -17,9 +17,9 @@ struct ActiveHomeView: View {
     @State private var scrollOffset: CGFloat = 0
     @State private var navBarHeight: CGFloat = 0
 
-    /// The horizontal safe area edge that carries an inset, if any. On iPhone Duo the system
-    /// toolbar is a column down one side of the screen, and that column is exactly this inset.
-    @State private var insetHorizontalEdge: HorizontalEdge?
+    /// Whether the system toolbar is a column down one side of the screen, as on iPhone Duo,
+    /// rather than a normal bar along the top.
+    @State private var isSystemToolbarOnSide = false
 
     private let scrollSpace = "homeScroll"
 
@@ -120,26 +120,18 @@ struct ActiveHomeView: View {
                 }
             }
         }
-        .onGeometryChange(
-            for: HorizontalEdge?.self,
-            of: { proxy in
-                let insets = proxy.safeAreaInsets
-                if insets.trailing > 0, insets.trailing.isFinite { return .trailing }
-                if insets.leading > 0, insets.leading.isFinite { return .leading }
-                return nil
-            }
-        ) {
-            insetHorizontalEdge = $0
-        }
+        .onSystemToolbarEdgeChange { isSystemToolbarOnSide = $0 != nil }
         .background { HeroBackgroundView() }
         // With the system toolbar down the side, the floating overlay has no top edge to sit on,
         // so the same buttons become real navigation bar items instead. Everywhere else the bar
         // stays hidden and the overlay above does the job. `HomeTab` must not set the bar's
         // visibility itself: a value set outside this view swallows the switch made here.
+        // Folded, the column is too short for more than one button, so the options share one
+        // menu button rather than spilling into the system's overflow menu, which shows them empty.
         .setHomeNavigationBars(
             with: isSystemToolbarOnSide ? $homeStore.toolbarOptionTypes : .constant([]),
             action: toolbarAction,
-            tooltipDirection: tooltipDirection
+            collapsesIntoMenu: verticalSizeClass == .compact
         )
         .toolbar(isSystemToolbarOnSide ? .visible : .hidden, for: .navigationBar)
     }
@@ -147,21 +139,6 @@ struct ActiveHomeView: View {
     private var showNavigation: Bool {
         guard greetingHeight > 0 else { return true }
         return scrollOffset + greetingHeight - navBarHeight > 0
-    }
-
-    /// A regular iPhone only ever has a horizontal safe area inset in landscape, where the
-    /// vertical size class is compact, so an inset in a regular vertical size class means the
-    /// system toolbar itself is on the side, as on iPhone Duo.
-    private var isSystemToolbarOnSide: Bool {
-        verticalSizeClass == .regular && insetHorizontalEdge != nil
-    }
-
-    /// Next to a system toolbar column there is no room under the buttons, so tooltips open
-    /// sideways, away from the column and into the content: a column on the right puts them on
-    /// the buttons' left, a column on the left puts them on the right.
-    private var tooltipDirection: TooltipDirection {
-        guard isSystemToolbarOnSide, let insetHorizontalEdge else { return .below }
-        return insetHorizontalEdge == .trailing ? .leading : .trailing
     }
 
     private var toolbarAction: (ToolbarOptionType) -> Void {
