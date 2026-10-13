@@ -1,0 +1,5 @@
+mutation PaymentMethodSetDefaultPayout($provider: MemberPaymentProvider!) {
+  paymentMethodSetDefaultPayout(provider: $provider) {
+    message
+  }
+}

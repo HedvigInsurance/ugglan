@@ -32,6 +32,15 @@ struct PaymentMethodRow: View {
         self.onTap = {}
     }
 
+    /// For a list whose rows lead nowhere, such as the payout methods, which have no detail screen.
+    init(readOnly method: ConnectedPaymentMethod) {
+        self.method = method
+        self.accessory = .none
+        self.showsPrimaryLabel = method.isDefault && !method.isPending
+        self.isInert = true
+        self.onTap = {}
+    }
+
     var body: some View {
         hRadioOption<Never>(
             item: method.item,
@@ -109,33 +118,6 @@ extension PaymentMethodSelectableRow where Value == PaymentProvider {
     }
 }
 
-struct PaymentMethodLockedRow: View {
-    private let method: ConnectedPaymentMethod
-
-    init(_ method: ConnectedPaymentMethod) {
-        self.method = method
-    }
-
-    var body: some View {
-        hRadioOption<Never>(
-            item: method.item,
-            accessory: .none,
-            onTap: {},
-            trailing: {
-                hCoreUIAssets.lock.view
-                    .foregroundColor(hTextColor.Translucent.secondary)
-                    .accessibilityHidden(true)
-            },
-            leading: {
-                method.provider.image()
-                    .opacity(0.4)
-            }
-        )
-        .allowsHitTesting(false)
-        .accessibilityRemoveTraits(.isButton)
-    }
-}
-
 #Preview {
     let trustly = ConnectedPaymentMethod(
         status: .active,
@@ -163,7 +145,7 @@ struct PaymentMethodLockedRow: View {
                 PaymentMethodRow(pendingSwish)
                 PaymentMethodRow(primary: trustly)
                 PaymentMethodSelectableRow(swish, selection: .constant(trustly))
-                PaymentMethodLockedRow(swish)
+                PaymentMethodRow(readOnly: swish)
                 PaymentMethodSelectableRow(.invoice, direction: .payin, selection: .constant(nil))
                 PaymentMethodSelectableRow(.swish, direction: .payout, selection: .constant(nil))
             }

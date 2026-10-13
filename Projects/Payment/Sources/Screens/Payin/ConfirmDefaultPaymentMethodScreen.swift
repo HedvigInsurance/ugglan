@@ -4,19 +4,34 @@ import hCoreUI
 
 struct ConfirmDefaultPaymentMethodScreen: View {
     let method: ConnectedPaymentMethod
+    var direction: PaymentDirection = .payin
     let onSuccess: () -> Void
 
     var body: some View {
         PaymentMethodActionSheet(
-            vm: .setDefault(method),
-            title: .init(.navigationLike, .body1, L10n.paymentPrimaryConfirmTitle, alignment: .center),
+            vm: direction == .payin ? .setDefault(method) : .setDefaultPayout(method),
+            title: .init(.navigationLike, .body1, confirmTitle, alignment: .center),
             showsPrimaryLabel: true,
             confirmTitle: L10n.generalConfirm,
             hero: {
-                InfoCard(text: L10n.paymentConfirmPrimaryWarning(method.provider.payinTitle), type: .info)
+                InfoCard(text: warning, type: .info)
             },
             onSuccess: onSuccess
         )
+    }
+
+    private var confirmTitle: String {
+        switch direction {
+        case .payin: L10n.paymentPrimaryConfirmTitle
+        case .payout: L10n.payoutConfirmationTitle
+        }
+    }
+
+    private var warning: String {
+        switch direction {
+        case .payin: L10n.paymentConfirmPrimaryWarning(method.provider.payinTitle)
+        case .payout: L10n.payoutConfirmationInfo(method.provider.payoutTitle)
+        }
     }
 }
 
