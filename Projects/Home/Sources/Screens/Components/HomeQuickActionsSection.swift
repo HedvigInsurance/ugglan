@@ -34,7 +34,7 @@ struct HomeQuickActionsSection: View {
                     .frame(width: tileWidth)
                 }
             }
-            .padding(.horizontal, .padding16)
+            .withSectionPadding()
             .fixedSize(horizontal: false, vertical: true)
         }
         .disableScrollClipCompat()

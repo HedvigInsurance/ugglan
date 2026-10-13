@@ -9,11 +9,17 @@ import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
+    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @StateObject private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
     @State private var navBarHeight: CGFloat = 0
+
+    /// Whether the system toolbar is a column down one side of the screen, as on iPhone Duo,
+    /// rather than a normal bar along the top.
+    @State private var isSystemToolbarOnSide = false
 
     private let scrollSpace = "homeScroll"
 
@@ -99,25 +105,56 @@ struct ActiveHomeView: View {
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
             .overlay(alignment: .topTrailing) {
-                HomeNavigationBar()
-                    .padding(.vertical, .padding4)
-                    .onGeometryChange(for: CGFloat.self, of: \.size.height) {
-                        navBarHeight = $0.isFinite ? $0 : 0
-                    }
-                    .opacity(showNavigation ? 1 : 0)
-                    .offset(y: showNavigation ? 0 : -30)
-                    // Animate only when the bar's visibility flips, not on every scroll tick.
-                    // `scrollOffset` mutates each frame, which re-animated the toolbar's Liquid
-                    // Glass shape continuously and trips the iOS 26 SDF renderer (SDFStyle crash).
-                    .animation(.easeInOut(duration: 0.2), value: showNavigation)
+                if !isSystemToolbarOnSide {
+                    HomeNavigationBar(action: toolbarAction)
+                        .padding(.vertical, .padding4)
+                        .onGeometryChange(for: CGFloat.self, of: \.size.height) {
+                            navBarHeight = $0.isFinite ? $0 : 0
+                        }
+                        .opacity(showNavigation ? 1 : 0)
+                        .offset(y: showNavigation ? 0 : -30)
+                        // Animate only when the bar's visibility flips, not on every scroll tick.
+                        // `scrollOffset` mutates each frame, which re-animated the toolbar's Liquid
+                        // Glass shape continuously and trips the iOS 26 SDF renderer (SDFStyle crash).
+                        .animation(.easeInOut(duration: 0.2), value: showNavigation)
+                }
             }
         }
+        .onSystemToolbarEdgeChange { isSystemToolbarOnSide = $0 != nil }
         .background { HeroBackgroundView() }
+        // With the system toolbar down the side, the floating overlay has no top edge to sit on,
+        // so the same buttons become real navigation bar items instead. Everywhere else the bar
+        // stays hidden and the overlay above does the job. `HomeTab` must not set the bar's
+        // visibility itself: a value set outside this view swallows the switch made here.
+        // Folded, the column is too short for more than one button, so the options share one
+        // menu button rather than spilling into the system's overflow menu, which shows them empty.
+        .setHomeNavigationBars(
+            with: isSystemToolbarOnSide ? $homeStore.toolbarOptionTypes : .constant([]),
+            action: toolbarAction,
+            collapsesIntoMenu: verticalSizeClass == .compact
+        )
+        .toolbar(isSystemToolbarOnSide ? .visible : .hidden, for: .navigationBar)
     }
 
     private var showNavigation: Bool {
         guard greetingHeight > 0 else { return true }
         return scrollOffset + greetingHeight - navBarHeight > 0
+    }
+
+    private var toolbarAction: (ToolbarOptionType) -> Void {
+        { [weak navigationVm, weak homeStore] type in
+            switch type {
+            case .crossSell:
+                NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
+            case .firstVet:
+                navigationVm?.quickActionsVm
+                    .perform(.firstVet(partners: homeStore?.quickActions.firstVetPartners ?? []))
+            case .chat:
+                navigationVm?.router.push(HomeRouterAction.inbox)
+            case .travelCertificate, .insuranceEvidence:
+                break
+            }
+        }
     }
 }
 
@@ -213,7 +250,7 @@ private struct TopFadeMask: View {
 
 private struct HomeNavigationBar: View {
     @AppObservedObject private var homeStore: HomeStore
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    let action: (ToolbarOptionType) -> Void
 
     var body: some View {
         if !homeStore.toolbarOptionTypes.isEmpty {
@@ -241,18 +278,7 @@ private struct HomeNavigationBar: View {
         let button = ToolbarButtonView(
             type: type,
             placement: .trailing,
-            action: { [weak navigationVm] type in
-                switch type {
-                case .crossSell:
-                    NotificationCenter.default.post(name: .openCrossSell, object: CrossSellInfo(type: .homeXSell))
-                case .firstVet:
-                    navigationVm?.quickActionsVm
-                        .perform(.firstVet(partners: homeStore.quickActions.firstVetPartners ?? []))
-                case .chat: navigationVm?.router.push(HomeRouterAction.inbox)
-                case .travelCertificate, .insuranceEvidence:
-                    break
-                }
-            },
+            action: action,
             size: .padding40 + .padding4
         )
         if #available(iOS 26.0, *) {

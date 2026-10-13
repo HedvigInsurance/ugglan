@@ -36,7 +36,7 @@ struct HomeActionChips: View {
             }
         }
         .sectionContainerStyle(.transparent)
-        .padding(.bottom, .padding16)
+        .padding(.vertical, .padding16)
     }
 
     private enum ChipStyle {
