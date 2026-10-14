@@ -6,7 +6,8 @@ import hCore
 class DefaultURLOpener: URLOpener {
     @Inject private var authorizationCodeClient: AuthorizationCodeClient
 
-    @Log
+    // Opened URLs can carry a credential (BankID autostart token, quote resume links), so the URL is masked.
+    @Log(masked: ["url"])
     public func open(_ url: URL) async {
         let urlToOpen = url.requiresAuthorization ? await urlWithAuthorizationCode(url) : url
         await UIApplication.shared.open(urlToOpen)

@@ -45,9 +45,10 @@ public struct ClaimFileUploadResponse: Codable, Sendable {
     public let file: FileUpload?
 }
 
+@Loggable
 public struct FileUpload: Codable, Sendable {
     public let fileId: String
-    public let name: String
+    @Masked public let name: String
     public let mimeType: String
-    public let url: String
+    @Masked public let url: String
 }

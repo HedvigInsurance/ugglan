@@ -300,9 +300,10 @@ public struct Agreement: Codable, Hashable, Sendable, Identifiable {
     }
 }
 
+@Loggable
 public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     let displayTitle: String
-    let displayValue: String
+    @Masked let displayValue: String
     let displaySubtitle: String?
     let id: String
     public init(

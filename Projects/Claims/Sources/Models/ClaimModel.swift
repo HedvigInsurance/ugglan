@@ -157,13 +157,14 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         }
     }
 
+    @Loggable
     public struct ClaimDisplayItem: Codable, Equatable, Hashable, Sendable, Identifiable {
         public var id: String {
             displayTitle
         }
 
         let displayTitle: String
-        let displayValue: String
+        @Masked let displayValue: String
 
         public init(displayTitle: String, displayValue: String) {
             self.displayTitle = displayTitle

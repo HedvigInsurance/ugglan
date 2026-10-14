@@ -27,7 +27,7 @@ public struct TravelInsuranceFormDTO: Encodable {
 public struct CoInsuredDto: Encodable {
     public let fullName: String
     @Masked public let personalNumber: String?
-    public let birthDate: String?
+    @Masked public let birthDate: String?
 }
 
 public enum TravelInsuranceError {

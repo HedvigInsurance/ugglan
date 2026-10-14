@@ -53,7 +53,7 @@ private struct Credentials {
         "exchanged \(refreshToken.count) for \(id)"
     }
 
-    @Log(.error, masked: ["token"])
+    @Log(masked: ["token"])
     func register(for token: String) async throws {
         _ = token
     }

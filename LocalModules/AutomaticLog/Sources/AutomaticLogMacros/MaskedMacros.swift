@@ -131,7 +131,7 @@ public struct LoggableMacro: ExtensionMacro {
             try ExtensionDeclSyntax(
                 """
                 extension \(type.trimmed): AutomaticLog.MaskedFieldsProviding {
-                    \(raw: accessLevel)static let maskedLogFields: Set<String> = [\(raw: elements)]
+                    \(raw: accessLevel)nonisolated static let maskedLogFields: Set<String> = [\(raw: elements)]
                 }
                 """
             )

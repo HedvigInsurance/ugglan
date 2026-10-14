@@ -9,7 +9,7 @@ public struct Stakeholder: Codable, Hashable, Equatable, Sendable {
     public let hasMissingInfo: Bool
     public var firstName: String?
     public var lastName: String?
-    public var birthDate: String?
+    @Masked public var birthDate: String?
     public let activatesOn: ServerBasedDate?
     public let terminatesOn: ServerBasedDate?
     public var isTerminated: Bool {

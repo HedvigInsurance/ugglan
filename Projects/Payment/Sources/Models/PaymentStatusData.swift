@@ -178,8 +178,9 @@ public enum PaymentMethod: Codable, Equatable, Sendable, Hashable {
     case invoice(delivery: InvoiceDelivery?)
     case unknown
 
+    @Loggable
     public struct BankAccount: Codable, Equatable, Sendable, Hashable {
-        public let account: String
+        @Masked public let account: String
         public let bank: String
 
         public init(account: String, bank: String) {
@@ -220,6 +221,38 @@ public enum PaymentMethod: Codable, Equatable, Sendable, Hashable {
         case .swish: self = .swish(phoneNumber: nil)
         case .invoice: self = .invoice(delivery: nil)
         case .unknown: self = .unknown
+        }
+    }
+}
+
+extension PaymentMethod: MaskedValue {
+    // An associated value cannot carry `@Masked`, so the masking is written out here:
+    // the member's payment details never reach the log, while the case itself stays readable.
+    public var maskedDescription: String {
+        switch self {
+        case let .trustly(bankAccount):
+            return "trustly(bankAccount: \(AutomaticLog.logDescription(bankAccount as Any)))"
+        case let .nordea(bankAccount):
+            return "nordea(bankAccount: \(AutomaticLog.logDescription(bankAccount as Any)))"
+        case let .swish(phoneNumber):
+            return "swish(phoneNumber: \(AutomaticLog.maskedLogDescription(phoneNumber as Any)))"
+        case let .invoice(delivery):
+            return "invoice(delivery: \(AutomaticLog.logDescription(delivery as Any)))"
+        case .unknown:
+            return "unknown"
+        }
+    }
+}
+
+extension PaymentMethod.InvoiceDelivery: MaskedValue {
+    public var maskedDescription: String {
+        switch self {
+        case .kivra:
+            return "kivra"
+        case let .email(email):
+            return "email(\(AutomaticLog.maskedLogDescription(email as Any)))"
+        case .unknown:
+            return "unknown"
         }
     }
 }

@@ -183,7 +183,7 @@ class BankIDViewModel: ObservableObject {
         }
         let urlScheme = Bundle.main.urlScheme ?? ""
         if let url = URL(string: "bankid:///?autostarttoken=\(token)&redirect=\(urlScheme)://bankid") {
-            log.info("BANK ID APP started", error: nil, attributes: ["token": token])
+            log.info("BANK ID APP started", error: nil, attributes: nil)
             if UIApplication.shared.canOpenURL(url) {
                 Task { await Dependencies.urlOpener.open(url) }
             }

@@ -30,7 +30,7 @@ final class LoggableExpansionTests: XCTestCase {
                 }
 
                 extension Member: AutomaticLog.MaskedFieldsProviding {
-                    public static let maskedLogFields: Set<String> = ["email", "phone"]
+                    public nonisolated static let maskedLogFields: Set<String> = ["email", "phone"]
                 }
                 """,
             macros: testMacros

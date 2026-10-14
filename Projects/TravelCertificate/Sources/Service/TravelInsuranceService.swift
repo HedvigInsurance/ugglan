@@ -12,7 +12,8 @@ public class TravelInsuranceService {
         try await service.getSpecifications()
     }
 
-    @Log
+    // The result is the signed certificate URL and cannot be annotated, so the output is not logged.
+    @Log(.error)
     public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         try await service.submitForm(dto: dto)
     }

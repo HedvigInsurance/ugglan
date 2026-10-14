@@ -106,6 +106,20 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
     }
 }
 
+extension FileSource: MaskedValue {
+    // The URL is a signed link to the member's file, so only the case and the mime type are logged.
+    public var maskedDescription: String {
+        switch self {
+        case let .data(data):
+            return "data(\(data.count) bytes)"
+        case let .url(url, mimeType):
+            return "url(url: \(AutomaticLog.maskedLogDescription(url)), mimeType: \(mimeType))"
+        case .localFile:
+            return "localFile"
+        }
+    }
+}
+
 extension File {
     public init?(from url: URL) {
         guard let data = FileManager.default.contents(atPath: url.relativePath) else { return nil }

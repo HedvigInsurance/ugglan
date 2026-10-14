@@ -39,15 +39,16 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var fullName: String
     @Masked var personalNumber: String? = nil
-    var birthDate: String? = nil
+    @Masked var birthDate: String? = nil
 }
 
+@Loggable
 @MainActor
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     let date: Date
     let valid: Bool
-    let url: URL
+    @Masked let url: URL
 
     public init?(id: String, date: Date, valid: Bool, url: URL?) {
         guard let url = url else { return nil }
