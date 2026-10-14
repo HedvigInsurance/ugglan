@@ -1,13 +1,15 @@
+import AutomaticLog
 import Foundation
 import SwiftUI
 import hCore
 
+@Loggable
 public struct Stakeholder: Codable, Hashable, Equatable, Sendable {
-    public let SSN: String?
+    @Masked public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?
     public var lastName: String?
-    public var birthDate: String?
+    @Masked public var birthDate: String?
     public let activatesOn: ServerBasedDate?
     public let terminatesOn: ServerBasedDate?
     public var isTerminated: Bool {

@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -30,12 +31,13 @@ public struct DiscountsDataForInsurance: Codable, Identifiable, Hashable, Sendab
     }
 }
 
+@Loggable
 public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public static func == (lhs: Discount, rhs: Discount) -> Bool {
         lhs.id == rhs.id
     }
     public let id: String
-    public let code: String
+    @Masked public let code: String
     public let displayValue: String
     public let description: String?
     public let type: DiscountType
@@ -87,10 +89,11 @@ public struct ReferralsData: Equatable, Codable, Sendable {
     }
 }
 
+@Loggable
 public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     public let name: String
-    public let code: String?
+    @Masked public let code: String?
     public let description: String
     public let activeDiscount: MonetaryAmount?
 

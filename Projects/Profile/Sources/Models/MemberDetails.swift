@@ -1,9 +1,11 @@
+import AutomaticLog
 import Foundation
 
+@Loggable
 public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var id: String
-    public var phone: String?
-    public var email: String?
+    @Masked public var phone: String?
+    @Masked public var email: String?
     public var firstName: String
     public var lastName: String
     let isTravelCertificateEnabled: Bool

@@ -10,6 +10,7 @@ public protocol ChatServiceProtocol {
     func hideCrossSales() async throws
 }
 
+@LogAll(.error)
 public class ConversationService: ChatServiceProtocol {
     @Inject var client: ConversationClient
 
@@ -21,7 +22,6 @@ public class ConversationService: ChatServiceProtocol {
         self.conversationId = conversationId
     }
 
-    @Log
     public func getNewMessages() async throws -> ChatData {
         let data = try await client.getConversationMessages(
             for: conversationId,
@@ -46,7 +46,6 @@ public class ConversationService: ChatServiceProtocol {
         )
     }
 
-    @Log
     public func getPreviousMessages() async throws -> ChatData {
         let data = try await client.getConversationMessages(
             for: conversationId,
@@ -67,12 +66,10 @@ public class ConversationService: ChatServiceProtocol {
             showCrossSales: data.showCrossSales
         )
     }
-
     public func send(message: Message) async throws -> Message {
         try await client.send(message: message, for: conversationId)
     }
 
-    @Log
     public func hideCrossSales() async throws {
         try await client.hideCrossSales(for: conversationId)
     }
@@ -125,7 +122,7 @@ public class NewConversationService: ChatServiceProtocol {
         )
     }
 
-    @Log
+    @Log(masked: ["message"])
     public func send(message: Message) async throws -> Message {
         if conversationService == nil, generatingConversation == false {
             generatingConversation = true

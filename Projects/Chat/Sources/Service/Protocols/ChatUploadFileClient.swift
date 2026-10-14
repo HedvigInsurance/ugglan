@@ -1,3 +1,4 @@
+import AutomaticLog
 import Foundation
 import hCore
 
@@ -9,6 +10,7 @@ public protocol ChatFileUploaderClient {
     ) async throws -> [ChatUploadFileResponseModel]
 }
 
+@Loggable
 public struct ChatUploadFileResponseModel: Decodable, Sendable {
-    public let uploadToken: String
+    @Masked public let uploadToken: String
 }
