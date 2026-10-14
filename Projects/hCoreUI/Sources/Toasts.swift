@@ -30,11 +30,14 @@ public struct ToastBar {
 
     public struct ToastBarAction {
         let actionText: String
+        let action: () -> Void
 
         public init(
-            actionText: String
+            actionText: String,
+            action: @escaping () -> Void
         ) {
             self.actionText = actionText
+            self.action = action
         }
     }
 }
@@ -49,6 +52,16 @@ public struct ToastBarView: View {
     }
 
     public var body: some View {
+        if let action = toastModel.action {
+            toastView
+                .onTapGesture { action.action() }
+                .accessibilityAddTraits(.isButton)
+        } else {
+            toastView
+        }
+    }
+
+    private var toastView: some View {
         hSection {
             HStack(spacing: .padding8) {
                 toastModel.icon
@@ -95,7 +108,10 @@ public struct ToastBarView: View {
                 toastModel: .init(
                     type: .info,
                     text: "testing toast bar action",
-                    action: .init(actionText: "action")
+                    action: .init(
+                        actionText: "action",
+                        action: {}
+                    )
                 )
             )
         }
