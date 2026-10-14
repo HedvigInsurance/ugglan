@@ -77,7 +77,7 @@ struct MissedPaymentScreen: View {
             StateView(
                 type: isTerminatingDueToMissedPayments ? .error : .success,
                 title: L10n.paymentsPaymentInProgress,
-                bodyText: L10n.paymentsPaymentInProgressDescription,
+                bodyText: missedPaymentdata.paymentMethodData.paymentInProgressDescription,
                 formPosition: .center
             )
             .hStateViewButtonConfig(
