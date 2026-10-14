@@ -40,10 +40,6 @@ OTHER_SWIFT_FLAGS = -D DEBUG
 // This enables conditional compilation with #if DEBUG
 SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG
 
-// Whether to strip debugging symbols when copying the built product to its
-// final installation location
-STRIP_INSTALLED_PRODUCT = NO
-
 // The optimization level (-Onone, -O, -Osize) for the produced Swift binary
 SWIFT_OPTIMIZATION_LEVEL = -Onone
 

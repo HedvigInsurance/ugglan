@@ -165,6 +165,10 @@ GCC_VERSION = com.apple.compilers.llvm.clang.1_0
 GCC_TREAT_WARNINGS_AS_ERRORS = YES
 SWIFT_TREAT_WARNINGS_AS_ERRORS = YES
 
+// Generate Swift symbols for strings in String Catalogs. Xcode 27 recommends this for every
+// project; there are no catalogs yet, so it is a no-op until one is added.
+STRING_CATALOG_GENERATE_SYMBOLS = YES
+
 // Whether to warn about 64-bit values being implicitly shortened to 32 bits
 GCC_WARN_64_TO_32_BIT_CONVERSION = YES
 
