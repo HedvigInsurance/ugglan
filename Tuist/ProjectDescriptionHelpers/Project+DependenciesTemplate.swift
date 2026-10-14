@@ -244,6 +244,7 @@ extension Project {
         name: String,
         externalDependencies: [ExternalDependencies],
         sdks: [String] = [],
+        deploymentTargets: DeploymentTargets = .iOS("16.0"),
         scripts: [TargetScript] = []
     ) -> Project {
         let frameworkConfigurations: [Configuration] = [
@@ -295,7 +296,7 @@ extension Project {
                     destinations: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTargets: .iOS("16.0"),
+                    deploymentTargets: deploymentTargets,
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
