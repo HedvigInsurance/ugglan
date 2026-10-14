@@ -116,3 +116,7 @@ public macro Loggable() = #externalMacro(module: "AutomaticLogMacros", type: "Lo
 @attached(body)
 public macro Log(_ options: LogOptions = .all, masked: [String] = []) =
     #externalMacro(module: "AutomaticLogMacros", type: "AutomaticLog")
+
+@attached(memberAttribute)
+public macro LogAll(_ options: LogOptions = .all, masked: [String] = []) =
+    #externalMacro(module: "AutomaticLogMacros", type: "LogAllMacro")

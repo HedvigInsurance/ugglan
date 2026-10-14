@@ -392,5 +392,6 @@ struct AutomaticLogPlugin: CompilerPlugin {
         AutomaticLog.self,
         MaskedMacro.self,
         LoggableMacro.self,
+        LogAllMacro.self,
     ]
 }
