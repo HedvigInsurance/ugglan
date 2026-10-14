@@ -9,9 +9,9 @@ import SwiftSyntaxMacros
 public struct LogAllMacro: MemberAttributeMacro {
     public static func expansion(
         of node: AttributeSyntax,
-        attachedTo declaration: some DeclGroupSyntax,
+        attachedTo _: some DeclGroupSyntax,
         providingAttributesFor member: some DeclSyntaxProtocol,
-        in context: some MacroExpansionContext
+        in _: some MacroExpansionContext
     ) throws -> [AttributeSyntax] {
         guard let funcDecl = member.as(FunctionDeclSyntax.self),
             funcDecl.body != nil,

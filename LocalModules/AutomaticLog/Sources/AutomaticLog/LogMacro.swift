@@ -34,18 +34,18 @@ public protocol MaskedValue {
 }
 
 public func logDescription(_ value: Any) -> String {
-    _describe(value)
+    describe(value)
 }
 
 public func maskedLogDescription(_ value: Any) -> String {
-    _mask(value)
+    mask(value)
 }
 
-private func _mask(_ value: Any) -> String {
+private func mask(_ value: Any) -> String {
     let mirror = Mirror(reflecting: value)
     if mirror.displayStyle == .optional {
         if let child = mirror.children.first {
-            return _mask(child.value)
+            return mask(child.value)
         }
         return "nil"
     }
@@ -53,7 +53,7 @@ private func _mask(_ value: Any) -> String {
     return String(repeating: "*", count: length)
 }
 
-private func _describe(_ value: Any) -> String {
+private func describe(_ value: Any) -> String {
     // Checked here rather than at each call site, so a type that masks itself keeps masking
     // wherever it sits: a property, an array element, a dictionary value.
     if let masked = value as? MaskedValue {
@@ -69,21 +69,21 @@ private func _describe(_ value: Any) -> String {
     switch mirror.displayStyle {
     case .optional:
         if let child = mirror.children.first {
-            return _describe(child.value)
+            return describe(child.value)
         }
         return "nil"
 
     case .collection, .set:
-        let parts = mirror.children.map { _describe($0.value) }
+        let parts = mirror.children.map { describe($0.value) }
         return "[\(parts.joined(separator: ", "))]"
 
     case .dictionary:
         let parts = mirror.children.map { child -> String in
             let pairChildren = Array(Mirror(reflecting: child.value).children)
             if pairChildren.count == 2 {
-                return "\(String(describing: pairChildren[0].value)): \(_describe(pairChildren[1].value))"
+                return "\(String(describing: pairChildren[0].value)): \(describe(pairChildren[1].value))"
             }
-            return _describe(child.value)
+            return describe(child.value)
         }
         return "[\(parts.joined(separator: ", "))]"
 
@@ -92,15 +92,15 @@ private func _describe(_ value: Any) -> String {
         var parts: [String] = []
         for child in mirror.children {
             guard let label = child.label else {
-                parts.append(_describe(child.value))
+                parts.append(describe(child.value))
                 continue
             }
             // @Published and property wrappers store under a leading underscore.
             let name = label.hasPrefix("_") ? String(label.dropFirst()) : label
             if maskedFields.contains(name) {
-                parts.append("\(name): \(_mask(child.value))")
+                parts.append("\(name): \(mask(child.value))")
             } else {
-                parts.append("\(name): \(_describe(child.value))")
+                parts.append("\(name): \(describe(child.value))")
             }
         }
         return "\(type(of: value))(\(parts.joined(separator: ", ")))"

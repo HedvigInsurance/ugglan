@@ -98,7 +98,7 @@ public struct LoggableMacro: ExtensionMacro {
         of node: AttributeSyntax,
         attachedTo declaration: some DeclGroupSyntax,
         providingExtensionsOf type: some TypeSyntaxProtocol,
-        conformingTo protocols: [TypeSyntax],
+        conformingTo _: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [ExtensionDeclSyntax] {
         // Nothing to add when the conformance is spelled out on the type itself, in which
@@ -151,8 +151,8 @@ public struct LoggableMacro: ExtensionMacro {
         }
     }
 
-    private static func isMaskedAttribute(_ attribute: AttributeListSyntax.Element) -> Bool {
-        guard case .attribute(let attribute) = attribute else { return false }
+    private static func isMaskedAttribute(_ element: AttributeListSyntax.Element) -> Bool {
+        guard case .attribute(let attribute) = element else { return false }
         let name = attribute.attributeName.trimmedDescription
         return name == "Masked" || name.hasSuffix(".Masked")
     }
