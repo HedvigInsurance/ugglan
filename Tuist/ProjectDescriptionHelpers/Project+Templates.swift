@@ -205,7 +205,8 @@ extension Project {
                         "CODE_SIGN_STYLE": "automatic",
 
                     ],
-                    configurations: appConfigurations
+                    configurations: appConfigurations,
+                    defaultSettings: .app
                 )
             )
 

@@ -173,7 +173,7 @@ let project = Project(
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
-            settings: .settings(configurations: ugglanConfigurations)
+            settings: .settings(configurations: ugglanConfigurations, defaultSettings: .app)
         ),
         Target.target(
             name: "AppTests",
@@ -239,7 +239,7 @@ let project = Project(
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: prodAppDependencies,
-            settings: .settings(configurations: hedvigConfigurations)
+            settings: .settings(configurations: hedvigConfigurations, defaultSettings: .app)
         ),
         Target.target(
             name: "NotificationService",
