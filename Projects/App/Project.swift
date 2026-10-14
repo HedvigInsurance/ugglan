@@ -173,14 +173,14 @@ let project = Project(
             entitlements: "Config/Test/Ugglan.entitlements",
             scripts: targetScripts,
             dependencies: devAppDependencies,
-            settings: .settings(configurations: ugglanConfigurations)
+            settings: .settings(configurations: ugglanConfigurations, defaultSettings: .app)
         ),
         Target.target(
             name: "AppTests",
             destinations: .iOS,
             product: .unitTests,
             bundleId: "com.hedvig.AppTests",
-            deploymentTargets: .iOS("16.0"),
+            deploymentTargets: .tests,
             infoPlist: .default,
             sources: .sourceFilesList(globs: [.glob("Tests/**", excluding: ["Tests/UITests/**"])]),
             resources: [],
@@ -202,7 +202,7 @@ let project = Project(
             destinations: .iOS,
             product: .uiTests,
             bundleId: "com.hedvig.AppUITests",
-            deploymentTargets: .iOS("16.0"),
+            deploymentTargets: .tests,
             infoPlist: .default,
             sources: .sourceFilesList(globs: [.glob("Tests/UITests/**")]),
             resources: [],
@@ -239,7 +239,7 @@ let project = Project(
             entitlements: "Config/Production/Hedvig.entitlements",
             scripts: targetScripts,
             dependencies: prodAppDependencies,
-            settings: .settings(configurations: hedvigConfigurations)
+            settings: .settings(configurations: hedvigConfigurations, defaultSettings: .app)
         ),
         Target.target(
             name: "NotificationService",

@@ -306,16 +306,16 @@ private struct ClaimStepErrorAlertModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onChange(of: step.state.showError) { value in
+            .onChange(of: step.state.showError) { [weak step, weak router] value in
                 if value {
                     alertVm.alertModel = .init(
                         type: .error,
-                        message: step.state.error?.localizedDescription ?? "",
+                        message: step?.state.error?.localizedDescription ?? "",
                         // Stored on alertVm: neither closure may capture this view.
-                        action: { [weak step] in
+                        action: {
                             step?.submitResponse()
                         },
-                        onClose: { [weak step, weak router] in
+                        onClose: {
                             if let claimError = step?.state.error as? ClaimIntentError {
                                 switch claimError {
                                 case .unknownStep, .unknownField:

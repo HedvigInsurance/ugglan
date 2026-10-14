@@ -137,7 +137,7 @@ extension Project {
                 destinations: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTargets: .iOS("16.0"),
+                deploymentTargets: .tests,
                 infoPlist: .default,
                 buildableFolders: ["Tests"],
                 dependencies: [
@@ -205,7 +205,8 @@ extension Project {
                         "CODE_SIGN_STYLE": "automatic",
 
                     ],
-                    configurations: appConfigurations
+                    configurations: appConfigurations,
+                    defaultSettings: .app
                 )
             )
 
