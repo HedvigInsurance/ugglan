@@ -241,15 +241,13 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             )
             ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
         case let error as AuthTokenResultError:
-            log.error("Refreshing failed \(error.errorMessage), forcing logout")
             switch error {
             case _ as AuthTokenResultErrorIOError:
+                // A network failure is retried on the next request, it does not log the member out.
+                log.info("Refreshing token postponed, network unavailable: \(error.errorMessage)")
                 throw AuthError.networkIssue
-            case _ as AuthTokenResultErrorBackendErrorResponse:
-                throw AuthError.refreshFailed
-            case _ as AuthTokenResultErrorUnknownError:
-                throw AuthError.refreshFailed
             default:
+                log.error("Refreshing failed \(error.errorMessage), forcing logout")
                 throw AuthError.refreshFailed
             }
         default:

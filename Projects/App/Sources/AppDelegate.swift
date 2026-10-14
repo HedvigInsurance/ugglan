@@ -26,6 +26,7 @@ import hGraphQL
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
+    private var isForcingLogout = false
     let applicationLaunchTimestamp: Date = Date()
 
     let window: UIWindow = {
@@ -156,6 +157,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Installed before the Kotlin graph exists so no request can reach TokenRefresher while
+        // forceLogoutHook is still the no-op default; its latch would pin that default for the session.
+        TokenRefresher.shared.onRefresh = { token in
+            let authService = AuthenticationService()
+            try await authService.exchange(refreshToken: token)
+        }
+        forceLogoutHook = { [weak self] in
+            // currentState only flips inside the async block below, so it cannot hold off
+            // callers that arrive before it runs — isForcingLogout covers that window.
+            guard let self, !self.isForcingLogout, ApplicationState.currentState != .notLoggedIn else {
+                return
+            }
+            self.isForcingLogout = true
+            self.dismissAllVCs()
+            DispatchQueue.main.async { [weak self] in
+                ApplicationState.preserveState(.notLoggedIn)
+                ApplicationState.state = .notLoggedIn
+
+                let toast = ToastBar(
+                    type: .neutral,
+                    text: L10n.forceLogoutMessageTitle
+                )
+                Toasts.shared.displayToastBar(toast: toast)
+                self?.isForcingLogout = false
+            }
+        }
         Main_nativeKt.doInitDiGraph(
             accessTokenFetcher: IosAccessTokenFetcher(),
             deviceIdFetcher: IosDeviceIdFetcher(),
@@ -178,10 +205,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func initialSetup() async {
         await setupSession()
-        TokenRefresher.shared.onRefresh = { token in
-            let authService = AuthenticationService()
-            try await authService.exchange(refreshToken: token)
-        }
         let config = Logger.Configuration(
             service: "ios",
             networkInfoEnabled: true,
@@ -199,22 +222,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         log.info("Starting app")
-
-        forceLogoutHook = { [weak self] in
-            if ApplicationState.currentState != .notLoggedIn {
-                self?.dismissAllVCs()
-                DispatchQueue.main.async {
-                    ApplicationState.preserveState(.notLoggedIn)
-                    ApplicationState.state = .notLoggedIn
-
-                    let toast = ToastBar(
-                        type: .neutral,
-                        text: L10n.forceLogoutMessageTitle
-                    )
-                    Toasts.shared.displayToastBar(toast: toast)
-                }
-            }
-        }
     }
 
     private func dismissAllVCs() {

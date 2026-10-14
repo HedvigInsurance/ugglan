@@ -137,6 +137,7 @@ extension ApolloClient {
 
     public static func saveToken(token: OAuthorizationToken) {
         KeychainHelper.standard.save(token, key: "oAuthorizationToken")
+        TokenRefresher.shared.tokenWasStored()
     }
 
     public static func retreiveMembersWithDeleteRequests() -> Set<String> {
