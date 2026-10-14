@@ -65,4 +65,15 @@ extension ConnectedPaymentMethod {
     var missedPaymentRow: (label: String, value: String) {
         (titleForMissedPayment, info)
     }
+
+    var paymentInProgressDescription: String {
+        switch provider {
+        case .swish:
+            L10n.paymentsPaymentInProgressSwishDescription
+        case .trustly:
+            L10n.paymentsPaymentInProgressTrustlyDescription
+        case .nordea, .invoice, .unknown:
+            L10n.paymentsPaymentInProgressDescription
+        }
+    }
 }
