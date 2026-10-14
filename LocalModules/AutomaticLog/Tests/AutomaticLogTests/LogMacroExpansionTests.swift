@@ -85,6 +85,31 @@ final class LogMacroExpansionTests: XCTestCase {
         )
     }
 
+    func testEnclosingLogAllMaskedNamesAreInherited() {
+        assertMacroExpansion(
+            """
+            @LogAll(masked: ["token", "missing"])
+            struct Service {
+                @Log
+                func exchange(token: String, id: String) {
+                    handle(id)
+                }
+            }
+            """,
+            expandedSource: """
+                @LogAll(masked: ["token", "missing"])
+                struct Service {
+                    func exchange(token: String, id: String) {
+                        let _logArgs: [String: String] = ["token": AutomaticLog.maskedLogDescription(token as Any), "id": AutomaticLog.logDescription(id as Any)]
+                        handle(id)
+                        AutomaticLog.loginClosure("✅ Service exchange(\\(String(describing: _logArgs)))")
+                    }
+                }
+                """,
+            macros: testMacros
+        )
+    }
+
     func testUnknownMaskedNameIsAnError() {
         assertMacroExpansion(
             """

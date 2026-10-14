@@ -56,6 +56,24 @@ public struct AutomaticLog: BodyMacro {
         }
     }
 
+    /// The `masked:` names of a `@LogAll` on the enclosing declaration. They are unioned with the
+    /// function's own list, so a function-level `@Log` can override the options but never drop a mask.
+    private static func inheritedMaskedNames(in context: some MacroExpansionContext) -> [String] {
+        guard let enclosing = context.lexicalContext.lazy.compactMap({ $0.asProtocol(DeclGroupSyntax.self) }).first
+        else {
+            return []
+        }
+
+        for element in enclosing.attributes {
+            guard case .attribute(let attribute) = element else { continue }
+            let name = attribute.attributeName.trimmedDescription
+            if name == "LogAll" || name.hasSuffix(".LogAll") {
+                return parseMaskedNames(from: attribute)
+            }
+        }
+        return []
+    }
+
     /// A name in `masked:` that is not a parameter would silently log a secret in plain
     /// text, so a rename or a typo has to fail the build.
     private static func validate(
@@ -95,8 +113,15 @@ public struct AutomaticLog: BodyMacro {
         }
 
         let options = parseLogOptions(from: attribute)
-        let maskedNames = parseMaskedNames(from: attribute)
-        validate(maskedNames: maskedNames, of: funcDecl, attribute: attribute, in: context)
+        let ownMaskedNames = parseMaskedNames(from: attribute)
+        validate(maskedNames: ownMaskedNames, of: funcDecl, attribute: attribute, in: context)
+        // A type-wide list is not expected to match every function, so only the names this
+        // function actually has are inherited.
+        let parameterNames = funcDecl.signature.parameterClause.parameters
+            .map { ($0.secondName ?? $0.firstName).text }
+        let inheritedMaskedNames = inheritedMaskedNames(in: context)
+            .filter { parameterNames.contains($0) && !ownMaskedNames.contains($0) }
+        let maskedNames = ownMaskedNames + inheritedMaskedNames
         let metadata = extractFunctionMetadata(
             from: funcDecl,
             in: context,

@@ -2,8 +2,10 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-// Type-level `@LogAll` forwards `@Log` onto every `func` member. A member that carries its own
-// `@Log` is left alone, so the function-level annotation always wins.
+// Type-level `@LogAll` forwards `@Log` with the same options onto every `func` member. A member
+// that carries its own `@Log` is left alone, so its options win. The `masked:` names are not
+// forwarded: the `@Log` body macro reads them off the enclosing declaration itself, which is
+// what lets a function-level `@Log` override the options without dropping a mask.
 public struct LogAllMacro: MemberAttributeMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -18,23 +20,10 @@ public struct LogAllMacro: MemberAttributeMacro {
             return []
         }
 
-        let parameterNames = funcDecl.signature.parameterClause.parameters
-            .map { ($0.secondName ?? $0.firstName).text }
-
-        var arguments: [String] = []
-        if let labeled = node.arguments?.as(LabeledExprListSyntax.self) {
-            if let options = labeled.first(where: { $0.label == nil }) {
-                arguments.append(options.expression.trimmedDescription)
-            }
-            // A type-wide list is not expected to match every function, and `@Log` rejects a
-            // name that is not a parameter, so only the names this function has are forwarded.
-            let masked = maskedNames(in: labeled).filter { parameterNames.contains($0) }
-            if !masked.isEmpty {
-                arguments.append("masked: [\(masked.map { "\"\($0)\"" }.joined(separator: ", "))]")
-            }
-        }
-
-        let argumentList = arguments.isEmpty ? "" : "(\(arguments.joined(separator: ", ")))"
+        let options = node.arguments?.as(LabeledExprListSyntax.self)?
+            .first(where: { $0.label == nil })?
+            .expression.trimmedDescription
+        let argumentList = options.map { "(\($0))" } ?? ""
         return [AttributeSyntax(stringLiteral: "@Log\(argumentList)")]
     }
 
@@ -43,17 +32,6 @@ public struct LogAllMacro: MemberAttributeMacro {
             guard case .attribute(let attribute) = element else { return false }
             let name = attribute.attributeName.trimmedDescription
             return name == "Log" || name.hasSuffix(".Log")
-        }
-    }
-
-    private static func maskedNames(in arguments: LabeledExprListSyntax) -> [String] {
-        guard let masked = arguments.first(where: { $0.label?.text == "masked" }),
-            let array = masked.expression.as(ArrayExprSyntax.self)
-        else {
-            return []
-        }
-        return array.elements.compactMap {
-            $0.expression.as(StringLiteralExprSyntax.self)?.representedLiteralValue
         }
     }
 }

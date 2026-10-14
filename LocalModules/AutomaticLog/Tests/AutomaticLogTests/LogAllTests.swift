@@ -18,7 +18,21 @@ private struct TypeLevelService {
         "quiet-\(id)"
     }
 
+    @Log(.error)
+    func failing(token: String) throws {
+        throw TypeLevelError.rejected
+    }
+
+    @Log(masked: ["id"])
+    func both(token: String, id: String) -> Int {
+        token.count + id.count
+    }
+
     var computed: Int { 1 }
+}
+
+private enum TypeLevelError: Error {
+    case rejected
 }
 
 final class LogAllTests: XCTestCase {
@@ -54,5 +68,23 @@ final class LogAllTests: XCTestCase {
         _ = try TypeLevelService().quiet(id: "1")
 
         XCTAssertEqual(capturedLogs.count, 0, "\(capturedLogs)")
+    }
+
+    func testFunctionLevelLogKeepsTheTypeLevelMask() {
+        XCTAssertThrowsError(try TypeLevelService().failing(token: "secret"))
+
+        XCTAssertEqual(capturedLogs.count, 1)
+        XCTAssertFalse(capturedLogs[0].contains("secret"), capturedLogs[0])
+        XCTAssertTrue(capturedLogs[0].contains("\"token\": \"******\""), capturedLogs[0])
+    }
+
+    func testOwnAndTypeLevelMasksAreUnioned() {
+        _ = TypeLevelService().both(token: "secret", id: "42")
+
+        XCTAssertEqual(capturedLogs.count, 1)
+        XCTAssertFalse(capturedLogs[0].contains("secret"), capturedLogs[0])
+        XCTAssertFalse(capturedLogs[0].contains("42"), capturedLogs[0])
+        XCTAssertTrue(capturedLogs[0].contains("\"token\": \"******\""), capturedLogs[0])
+        XCTAssertTrue(capturedLogs[0].contains("\"id\": \"**\""), capturedLogs[0])
     }
 }

@@ -5,7 +5,7 @@ import XCTest
 @testable import AutomaticLogMacros
 
 final class LogAllExpansionTests: XCTestCase {
-    func testLogAllForwardsLogOntoFunctionsWithoutTheirOwn() {
+    func testLogAllForwardsOptionsOntoFunctionsWithoutTheirOwn() {
         assertMacroExpansion(
             """
             @LogAll(.error, masked: ["token"])
@@ -24,7 +24,7 @@ final class LogAllExpansionTests: XCTestCase {
             """,
             expandedSource: """
                 struct Service {
-                    @Log(.error, masked: ["token"])
+                    @Log(.error)
                     func exchange(token: String, id: String) {
                         handle(id)
                     }
