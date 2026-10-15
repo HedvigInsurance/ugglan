@@ -162,7 +162,7 @@ enum MacroDiagnostic: DiagnosticMessage {
             return "@PersistableStore can only be applied to a class"
         case .missingExplicitType(let name):
             return
-                "@PersistableStore requires an explicit type annotation on '\(name)' (e.g. `@Published var \(name): Bool = false`)"
+                "@PersistableStore requires an explicit type annotation on '\(name)' (e.g. `var \(name): Bool = false`)"
         }
     }
 

@@ -3,7 +3,7 @@
 Main application entry point for the Hedvig iOS app. Manages root navigation (logged-in vs logged-out), dependency injection for all feature modules, deep link routing, push notification handling, and Datadog analytics/tracking setup.
 
 ## Architecture
-- Pattern: Mixed. The root `MainNavigation` uses a SwiftUI `App` with `MainNavigationViewModel` (ObservableObject). Sub-components use `@Inject` for services and `@AppObservedObject` / `@AppState` for accessing shared `AppStore` instances. The app-level `UgglanStore` is a minimal `AppStore` holding the `isDemoMode` flag.
+- Pattern: Mixed. The root `MainNavigation` uses a SwiftUI `App` with `MainNavigationViewModel` (`@Observable`). Sub-components use `@Inject` for services and `@AppObservedObject` / `@AppState` for accessing shared `AppStore` instances. The app-level `UgglanStore` is a minimal `AppStore` holding the `isDemoMode` flag.
 - Key services: `AnalyticsClient` (analytics/user tracking), `NotificationClient` (push token registration). Both have protocol, OctopusImplementation, and DemoImplementation within this module.
 - Data flow: `AppDelegate` performs initial setup (session, Apollo client, Datadog, feature flags). `MainNavigationViewModel` observes `ApplicationState` to switch between logged-in, logged-out, and impersonation states. `LoggedInNavigationViewModel` manages tab selection and all modal presentation state. `DI.initAndRegisterClient()` registers all service implementations (demo or Octopus) into the global `Dependencies` container.
 
