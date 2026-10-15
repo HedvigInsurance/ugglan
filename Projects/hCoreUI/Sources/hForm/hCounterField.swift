@@ -134,7 +134,6 @@ public struct hCounterField: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: Int = 1
     let counerWithPlaceholder = hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) {

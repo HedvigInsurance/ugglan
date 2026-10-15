@@ -126,7 +126,6 @@ struct ContractDetails: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var isExpanded = ["id1"]
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
