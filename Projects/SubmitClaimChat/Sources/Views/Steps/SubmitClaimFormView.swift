@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimFormView: View {
-    @ObservedObject var viewModel: SubmitClaimFormStep
+    @Bindable var viewModel: SubmitClaimFormStep
     var body: some View {
         hSection {
             VStack(spacing: .padding8) {
@@ -110,8 +110,8 @@ private enum SubmitClaimModalType: TrackingViewNameProtocol {
 }
 
 struct FormFieldView: View {
-    @ObservedObject var viewModel: SubmitClaimFormStep
-    @ObservedObject var fieldViewModel: FormStepValue
+    @Bindable var viewModel: SubmitClaimFormStep
+    @Bindable var fieldViewModel: FormStepValue
     @AccessibilityFocusState var isForFieldFocused: String?
     let field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField
 
@@ -323,7 +323,7 @@ struct FormFieldView: View {
 }
 
 struct SubmitClaimFormResultView: View {
-    @ObservedObject var viewModel: SubmitClaimFormStep
+    @Bindable var viewModel: SubmitClaimFormStep
     var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
             let allValuesAreSkipped = viewModel.getAllValuesToShow().allSatisfy(\.skipped)

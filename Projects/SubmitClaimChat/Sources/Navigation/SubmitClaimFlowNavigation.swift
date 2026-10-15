@@ -21,7 +21,7 @@ public struct SubmitClaimChatInput: Equatable, Identifiable {
 }
 
 struct SubmitClaimFlowNavigation: View {
-    @StateObject var viewModel: SubmitClaimChatViewModel
+    @State var viewModel: SubmitClaimChatViewModel
     @InjectObservableObject var featureFlags: FeatureFlags
 
     init(
@@ -29,7 +29,7 @@ struct SubmitClaimFlowNavigation: View {
         disableAnimations: Bool
     ) {
         disableSubmitChatClaimAnimations = disableAnimations
-        _viewModel = StateObject(
+        _viewModel = State(
             wrappedValue: .init(startInput: startInput)
         )
     }
@@ -65,8 +65,8 @@ struct SubmitClaimFlowNavigation: View {
                     isResumeClaimEnabled: featureFlags.isResumeClaimEnabled
                 )
         }
-        .environmentObject(viewModel)
-        .environmentObject(viewModel.scrollCoordinator)
+        .environment(viewModel)
+        .environment(viewModel.scrollCoordinator)
     }
 }
 

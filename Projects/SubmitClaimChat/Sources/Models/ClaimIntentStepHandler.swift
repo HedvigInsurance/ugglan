@@ -1,10 +1,11 @@
 import Foundation
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
 
 @MainActor
-class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
+class ClaimIntentStepHandler: Observable, @MainActor Identifiable {
     struct StepUIState {
         var isLoading = false
         var isEnabled = true
@@ -24,7 +25,24 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var showLoadingAnimation = true
     }
 
-    @Published var state = StepUIState()
+    // Observation is wired by hand instead of with @Observable because the macro only
+    // transforms the properties of the class it is attached to. Every property declared in
+    // one of this class's subclasses would stop updating the UI, with nothing to compile
+    // against. The registrar is shared with the subclasses for that reason.
+    let observationRegistrar = ObservationRegistrar()
+
+    @ObservationIgnored private var _state = StepUIState()
+    var state: StepUIState {
+        get {
+            observationRegistrar.access(self, keyPath: \ClaimIntentStepHandler.state)
+            return _state
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \ClaimIntentStepHandler.state) {
+                _state = newValue
+            }
+        }
+    }
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMessageSender { .member }

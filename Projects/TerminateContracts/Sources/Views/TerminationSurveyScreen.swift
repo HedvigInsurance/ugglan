@@ -1,11 +1,10 @@
-import Combine
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct TerminationSurveyScreen: View {
-    @ObservedObject var vm: SurveyScreenViewModel
-    @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
+    @Bindable var vm: SurveyScreenViewModel
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationFlowNavigationViewModel
 
     var body: some View {
         hForm {
@@ -104,22 +103,23 @@ struct TerminationSurveyScreen: View {
 }
 
 @MainActor
-class SurveyScreenViewModel: ObservableObject {
+@Observable
+class SurveyScreenViewModel {
     let options: [TerminationSurveyOption]
     let subtitleType: SurveyScreenSubtitleType
-    var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
-    private var feedbackTextCancellable: AnyCancellable?
+    @ObservationIgnored var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
+    @ObservationIgnored private var feedbackTextWatcher: ObservationWatcher?
 
-    @Published var continueEnabled = false
+    var continueEnabled = false
 
-    @Published var selected: String? {
+    var selected: String? {
         didSet {
             handleSelection(of: selected)
         }
     }
 
-    @Published var selectedOption: TerminationSurveyOption?
-    @Published var selectedFeedBackViewModel: TerminationFlowSurveyStepFeedBackViewModel? {
+    var selectedOption: TerminationSurveyOption?
+    var selectedFeedBackViewModel: TerminationFlowSurveyStepFeedBackViewModel? {
         didSet {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
                 self?.checkContinueButtonStatus()
@@ -151,13 +151,13 @@ class SurveyScreenViewModel: ObservableObject {
             self.selectedOption = selectedOption
             self.selectedFeedBackViewModel = selectedFeedBackViewModel
         }
-        feedbackTextCancellable = selectedFeedBackViewModel?.$text
-            .dropFirst()
-            .sink { [weak self] _ in
-                DispatchQueue.main.async {
-                    self?.checkContinueButtonStatus()
-                }
+        feedbackTextWatcher = selectedFeedBackViewModel.map { feedBackViewModel in
+            ObservationWatcher { [weak feedBackViewModel] in
+                _ = feedBackViewModel?.text
+            } onChange: { [weak self] in
+                self?.checkContinueButtonStatus()
             }
+        }
         checkContinueButtonStatus()
     }
 
@@ -210,12 +210,12 @@ class SurveyScreenViewModel: ObservableObject {
     return NavigationView {
         TerminationSurveyScreen(vm: .init(options: options, subtitleType: .default))
             .navigationBarTitleDisplayMode(.inline)
-            .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
+            .environment(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
     }
 }
 
 struct TerminationFlowSurveyStepFeedBackView: View {
-    @ObservedObject var vm: TerminationFlowSurveyStepFeedBackViewModel
+    @Bindable var vm: TerminationFlowSurveyStepFeedBackViewModel
     var body: some View {
         hTextView(
             selectedValue: vm.text,
@@ -231,10 +231,11 @@ struct TerminationFlowSurveyStepFeedBackView: View {
     }
 }
 
-class TerminationFlowSurveyStepFeedBackViewModel: ObservableObject {
-    @Published var text: String
-    @Published var required: Bool
-    @Published var error: String?
+@Observable
+class TerminationFlowSurveyStepFeedBackViewModel {
+    var text: String
+    var required: Bool
+    var error: String?
 
     init(required: Bool) {
         text = ""

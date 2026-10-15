@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimSingleSelectView: View {
-    @ObservedObject var viewModel: SubmitClaimSingleSelectStep
+    let viewModel: SubmitClaimSingleSelectStep
     @State private var showOptions = false
 
     public var body: some View {
@@ -122,7 +122,7 @@ extension AnyTransition {
 }
 
 struct SubmitClaimSingleSelectResultView: View {
-    @ObservedObject var viewModel: SubmitClaimSingleSelectStep
+    let viewModel: SubmitClaimSingleSelectStep
     var body: some View {
         if let id = viewModel.selectedOptionId, let option = viewModel.model.options.first(where: { $0.id == id }) {
             hPill(

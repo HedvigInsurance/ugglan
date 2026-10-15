@@ -6,7 +6,7 @@ import hCoreUI
 public struct PayoutSelectedMethodScreen: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @Environment(PaymentsNavigationViewModel.self) var paymentsNavigationVm
     @State private var showChangePayoutMethod = false
     @State private var showChooseDefaultPayoutMethod = false
 

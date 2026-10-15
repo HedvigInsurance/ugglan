@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct RemoveAddonScreen: View {
-    @EnvironmentObject var navigationVm: RemoveAddonNavigationViewModel
-    @ObservedObject var vm: RemoveAddonViewModel
+    @Environment(RemoveAddonNavigationViewModel.self) var navigationVm
+    @Bindable var vm: RemoveAddonViewModel
 
     init(_ removeAddonVm: RemoveAddonViewModel) {
         self.vm = removeAddonVm
@@ -72,6 +72,6 @@ struct RemoveAddonScreen: View {
     let offer = AddonRemoveOfferWithSelectedItems(offer: testRemoveOffer, preselectedAddons: .init(), cost: nil)
     let navigationViewModel = RemoveAddonNavigationViewModel(offer)
     return RemoveAddonScreen(.init(offer))
-        .environmentObject(navigationViewModel.removeAddonVm)
-        .environmentObject(navigationViewModel)
+        .environment(navigationViewModel.removeAddonVm)
+        .environment(navigationViewModel)
 }

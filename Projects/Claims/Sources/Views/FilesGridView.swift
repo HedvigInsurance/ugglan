@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct FilesGridView: View {
-    @ObservedObject var vm: FileGridViewModel
+    @Bindable var vm: FileGridViewModel
     @Environment(\.hFileGridAlignment) var alignment
 
     public init(
@@ -79,17 +79,18 @@ public struct FilesGridView: View {
 }
 
 @MainActor
-public class FileGridViewModel: ObservableObject {
-    @Published public var files: [File] {
+@Observable
+public class FileGridViewModel {
+    public var files: [File] {
         didSet {
             setColumns()
         }
     }
-    @Published public var options: ClaimFilesViewModel.ClaimFilesViewOptions
-    @Published var fileModel: FileUrlModel?
+    public var options: ClaimFilesViewModel.ClaimFilesViewOptions
+    var fileModel: FileUrlModel?
 
-    @Published private(set) var columns: [GridItem] = []
-    public var onDelete: ((_ file: File) -> Void)?
+    private(set) var columns: [GridItem] = []
+    @ObservationIgnored public var onDelete: ((_ file: File) -> Void)?
 
     public init(
         files: [File],

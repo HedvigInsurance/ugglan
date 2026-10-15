@@ -2,14 +2,17 @@
 
 ## ViewModel Pattern (Primary)
 
-`@MainActor` classes conforming to `ObservableObject`. Services injected with `@Inject`; state exposed via `@Published` properties. Views bind with `@StateObject` (owning) or `@ObservedObject` (non-owning).
+`@MainActor @Observable` classes. Services injected with `@Inject`; state is plain stored properties. A view owns its view model with `@State`, takes an injected one with `@Bindable` (or a plain `let` when it needs no bindings), and reads a shared one with `@Environment(T.self)`.
+
+Mark a stored property `@ObservationIgnored` when a view should not re-render for it — services, cancellables, delegates and child view models. `@Observable` tracks every stored property, so anything that is not view state needs saying so explicitly.
 
 ```swift
 @MainActor
-public class SomeViewModel: ObservableObject {
-    @Inject var someClient: SomeClientProtocol
-    @Published var items: [Item] = []
-    @Published var isLoading = false
+@Observable
+public class SomeViewModel {
+    @ObservationIgnored @Inject var someClient: SomeClientProtocol
+    var items: [Item] = []
+    var isLoading = false
 
     func fetchItems() async {
         isLoading = true

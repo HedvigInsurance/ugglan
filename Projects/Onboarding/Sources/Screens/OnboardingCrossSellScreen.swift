@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct OnboardingCrossSellScreen: View {
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
     var body: some View {
         hForm {
             CrossSellStackComponent(crossSells: vm.crossSells)
@@ -68,5 +68,5 @@ struct OnboardingCrossSellScreen: View {
         )
     ]
     return OnboardingCrossSellScreen()
-        .environmentObject(viewModel)
+        .environment(viewModel)
 }

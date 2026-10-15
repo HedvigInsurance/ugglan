@@ -11,7 +11,7 @@ extension View {
 }
 
 struct EditStakeholders: ViewModifier {
-    @ObservedObject var vm: EditStakeholdersViewModel
+    @Bindable var vm: EditStakeholdersViewModel
     @State var errorRouter = NavigationRouter()
     func body(content: Content) -> some View {
         content
@@ -26,7 +26,7 @@ struct EditStakeholders: ViewModifier {
                         configs: contractsSupportingStakeholders,
                         stakeholderType: stakeholderType,
                     )
-                    .environmentObject(vm)
+                    .environment(vm)
                 } else {
                     getEditStakeholdersNavigation(stakeholderModel: stakeholderModel)
                 }
@@ -74,7 +74,7 @@ struct EditStakeholders: ViewModifier {
                 config: contract,
                 openSpecificScreen: stakeholderModel.openSpecificScreen
             )
-            .environmentObject(vm)
+            .environment(vm)
         }
     }
 
@@ -84,7 +84,7 @@ struct EditStakeholders: ViewModifier {
         EditStakeholdersAlertNavigation(
             config: missingContractConfig
         )
-        .environmentObject(vm)
+        .environment(vm)
     }
 }
 

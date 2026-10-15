@@ -3,7 +3,7 @@ import SwiftUI
 
 public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable {
     @ViewBuilder var content: () -> Content
-    @ObservedObject var vm: ModalPresentationSourceWrapperViewModel
+    let vm: ModalPresentationSourceWrapperViewModel
 
     public init(content: @escaping () -> Content, vm: ModalPresentationSourceWrapperViewModel) {
         self.content = content
@@ -25,8 +25,9 @@ public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable
 }
 
 @MainActor
-public class ModalPresentationSourceWrapperViewModel: ObservableObject {
-    weak var view: UIView?
+@Observable
+public class ModalPresentationSourceWrapperViewModel {
+    @ObservationIgnored weak var view: UIView?
 
     public init() {}
 

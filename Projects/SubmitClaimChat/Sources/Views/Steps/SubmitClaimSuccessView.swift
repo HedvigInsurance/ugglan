@@ -58,7 +58,7 @@ public struct SubmitClaimSuccessView: View {
     return SubmitClaimSuccessView(
         model: model
     )
-    .environmentObject(
+    .environment(
         SubmitClaimChatViewModel.init(
             startInput: .init(
                 input: .init(type: .regular(hasInProgress: true)),

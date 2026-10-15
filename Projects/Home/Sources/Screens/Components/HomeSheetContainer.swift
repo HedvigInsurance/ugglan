@@ -47,5 +47,5 @@ struct HomeSheetContainer: View {
     setUpHomeSheetContainerPreview()
 
     return HomeSheetContainer()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }

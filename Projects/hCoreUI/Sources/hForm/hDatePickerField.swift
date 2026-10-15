@@ -1,8 +1,9 @@
 import SwiftUI
 import hCore
 
-public class hDatePickerFieldNavigationModel: ObservableObject {
-    @Published var isDatePickerPresented: DatePickerViewModel?
+@Observable
+public class hDatePickerFieldNavigationModel {
+    var isDatePickerPresented: DatePickerViewModel?
 }
 
 public struct hDatePickerField: View {
@@ -21,7 +22,7 @@ public struct hDatePickerField: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
 
-    @StateObject var datePickerNavigationModel = hDatePickerFieldNavigationModel()
+    @State var datePickerNavigationModel = hDatePickerFieldNavigationModel()
     @EnvironmentObject var router: NavigationRouter
 
     public var shouldMoveLabel: Binding<Bool> {

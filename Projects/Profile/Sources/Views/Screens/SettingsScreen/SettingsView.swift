@@ -6,8 +6,8 @@ import hCoreUI
 
 struct SettingsView: View {
     @AppObservedObject var store: ProfileStore
-    @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
-    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    @State var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
     @AppStorage(ThemeOption.storageKey) private var themeRawValue = ThemeOption.system.rawValue
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var analyticsConsentGiven: Bool?
     @InjectObservableObject var featureFlags: FeatureFlags
@@ -46,7 +46,7 @@ struct SettingsView: View {
                         }
                     )
                     MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
-                        .environmentObject(profileNavigationVm)
+                        .environment(profileNavigationVm)
                     if featureFlags.isAnalyticsEnabled {
                         hFloatingField(
                             value: analyticsConsentGiven == true

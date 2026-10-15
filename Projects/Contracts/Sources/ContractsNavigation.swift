@@ -10,7 +10,7 @@ import hCore
 import hCoreUI
 
 public struct ContractsNavigation<Content: View>: View {
-    @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
+    @Bindable var contractsNavigationVm: ContractsNavigationViewModel
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
     var redirectAction: (_ action: RedirectAction) -> Void
     private let contractStore: ContractStore = globalAppStateContainer.get()
@@ -27,18 +27,18 @@ public struct ContractsNavigation<Content: View>: View {
     public var body: some View {
         hNavigationStack(router: contractsNavigationVm.contractsRouter, tracking: self) {
             Contracts(showTerminated: false)
-                .environmentObject(contractsNavigationVm)
+                .environment(contractsNavigationVm)
                 .navigationTitle(L10n.InsurancesTab.title)
                 .routerDestination(for: Contract.self) { contract in
                     ContractDetail(id: contract.id)
-                        .environmentObject(contractsNavigationVm)
+                        .environment(contractsNavigationVm)
                         .navigationTitle(contract.currentAgreement?.productVariant.displayName ?? "")
                 }
                 .routerDestination(for: ContractsRouterType.self) { type in
                     switch type {
                     case .terminatedContracts:
                         Contracts(showTerminated: true)
-                            .environmentObject(contractsNavigationVm)
+                            .environment(contractsNavigationVm)
                     }
                 }
         }
@@ -136,7 +136,7 @@ public struct ContractsNavigation<Content: View>: View {
                 options: [.navigationType(type: .large), .extendedNavigationWidth],
                 tracking: ContractsDetentType.upcomingChanges
             )
-            .environmentObject(contractsNavigationVm)
+            .environment(contractsNavigationVm)
         }
         .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
         .detent(item: $contractsNavigationVm.addonActionPresented) { addonAction in
@@ -162,23 +162,24 @@ public struct ContractsNavigation<Content: View>: View {
 }
 
 @MainActor
-public class ContractsNavigationViewModel: ObservableObject {
+@Observable
+public class ContractsNavigationViewModel {
     public let contractsRouter = NavigationRouter()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
-    @Published public var insurableLimit: InsurableLimits?
-    @Published public var document: hPDFDocument?
-    @Published public var editStakeholderConfig: StakeholdersConfig?
-    @Published public var editStakeholderMissingAlert: StakeholdersConfig?
-    @Published public var missingPetChipIdInput: MissingPetChipIdInput?
-    @Published public var changeYourInformationContract: Contract?
-    @Published public var insuranceUpdate: Agreement?
-    @Published public var isChangeAddressPresented = false
-    @Published public var changeTierInput: ChangeTierInput?
-    @Published public var isAddonPresented: ChangeAddonInput?
-    @Published public var isRemoveAddonPresented: RemoveAddonInput?
-    @Published public var addonActionPresented: AddonAction?
-    @Published public var isActiveTab = false
+    public var insurableLimit: InsurableLimits?
+    public var document: hPDFDocument?
+    public var editStakeholderConfig: StakeholdersConfig?
+    public var editStakeholderMissingAlert: StakeholdersConfig?
+    public var missingPetChipIdInput: MissingPetChipIdInput?
+    public var changeYourInformationContract: Contract?
+    public var insuranceUpdate: Agreement?
+    public var isChangeAddressPresented = false
+    public var changeTierInput: ChangeTierInput?
+    public var isAddonPresented: ChangeAddonInput?
+    public var isRemoveAddonPresented: RemoveAddonInput?
+    public var addonActionPresented: AddonAction?
+    public var isActiveTab = false
 
     public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)

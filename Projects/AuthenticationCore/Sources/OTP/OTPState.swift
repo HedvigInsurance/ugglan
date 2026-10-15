@@ -1,16 +1,18 @@
 import Foundation
+import Observation
 
-public class OTPState: ObservableObject {
-    @Published public var isLoading = false
-    @Published public var isResending = false
-    @Published public var resendUrl: URL? = nil
-    @Published public var verifyUrl: URL? = nil
-    @Published public var code: String
-    @Published public var codeErrorMessage: String? = nil
-    @Published public var otpInputErrorMessage: String? = nil
-    @Published public var input: String
-    @Published public var maskedEmail: String? = nil
-    @Published public var canResendAt: Date? = nil
+@Observable
+public class OTPState {
+    public var isLoading = false
+    public var isResending = false
+    public var resendUrl: URL? = nil
+    public var verifyUrl: URL? = nil
+    public var code: String
+    public var codeErrorMessage: String? = nil
+    public var otpInputErrorMessage: String? = nil
+    public var input: String
+    public var maskedEmail: String? = nil
+    public var canResendAt: Date? = nil
 
     public init(
         isLoading: Bool = false,

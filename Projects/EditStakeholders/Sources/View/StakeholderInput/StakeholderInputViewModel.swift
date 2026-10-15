@@ -5,22 +5,23 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class StakeholderInputViewModel: ObservableObject {
-    @Published var personalData: PersonalData
-    @Published var noSSN = false
-    @Published var SSNError: String?
-    @Published var nameFetchedFromSSN: Bool = false
-    @Published var isLoading: Bool = false
-    @Published var intentViewState: ProcessingState = .success
-    @Published var enterManually: Bool = false
-    @Published var showInfoForMissingSSN = false
-    @Published var SSN: String
-    @Published var birthday: String
-    @Published var type: StakeholderInputType?
-    @Published var actionType: StakeholderAction
+@Observable
+public class StakeholderInputViewModel {
+    var personalData: PersonalData
+    var noSSN = false
+    var SSNError: String?
+    var nameFetchedFromSSN: Bool = false
+    var isLoading: Bool = false
+    var intentViewState: ProcessingState = .success
+    var enterManually: Bool = false
+    var showInfoForMissingSSN = false
+    var SSN: String
+    var birthday: String
+    var type: StakeholderInputType?
+    var actionType: StakeholderAction
     let contractId: String
     let stakeholderModel: Stakeholder
-    var editStakeholdersService = EditStakeholdersService()
+    @ObservationIgnored var editStakeholdersService = EditStakeholdersService()
 
     func showErrorView(inputError: String?) -> Bool {
         SSNError ?? inputError != nil

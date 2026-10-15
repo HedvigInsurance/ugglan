@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct BankIDLoginQRView: View {
-    @StateObject var vm = BankIDViewModel()
+    @State var vm = BankIDViewModel()
     @EnvironmentObject var router: NavigationRouter
 
     private var onStartDemoMode: () async -> Void
@@ -119,17 +119,18 @@ public struct BankIDLoginQRView: View {
 }
 
 @MainActor
-class BankIDViewModel: ObservableObject {
-    @Published var showAlert: Bool = false
-    @Published var token: String?
-    @Published var image: UIImage?
-    @Published var hasBankIdApp = false
-    @Published var isLoading = true
-    @Published var hasAlreadyOpenedBankId = false
-    private var seBankIdState: SEBankIDState = .init()
-    var authenticationService = AuthenticationService()
-    private var observeLoginTask: AnyCancellable?
-    var router: NavigationRouter?
+@Observable
+class BankIDViewModel {
+    var showAlert: Bool = false
+    var token: String?
+    var image: UIImage?
+    var hasBankIdApp = false
+    var isLoading = true
+    var hasAlreadyOpenedBankId = false
+    @ObservationIgnored private var seBankIdState: SEBankIDState = .init()
+    @ObservationIgnored var authenticationService = AuthenticationService()
+    @ObservationIgnored private var observeLoginTask: AnyCancellable?
+    @ObservationIgnored var router: NavigationRouter?
     init() {
         checkIfCanOpenBankId()
     }

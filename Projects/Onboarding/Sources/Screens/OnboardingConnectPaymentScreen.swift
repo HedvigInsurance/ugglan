@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct OnboardingConnectPaymentScreen: View {
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
 
     var body: some View {
         AddPaymentMethodScreen(
@@ -28,12 +28,12 @@ struct OnboardingConnectPaymentScreen: View {
     let model = OnboardingNavigationViewModel()
     model.steps = [.connectPayment(connectedProvider: nil)]
     return OnboardingConnectPaymentScreen()
-        .environmentObject(model)
+        .environment(model)
 }
 
 #Preview("Already connected") {
     let model = OnboardingNavigationViewModel()
     model.steps = [.connectPayment(connectedProvider: .swish)]
     return OnboardingConnectPaymentScreen()
-        .environmentObject(model)
+        .environment(model)
 }

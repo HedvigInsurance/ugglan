@@ -3,7 +3,7 @@
 Handles insurance plan tier upgrades and downgrades. Users can compare coverage tiers, select deductible levels, preview price changes, and commit tier changes.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`). `ChangeTierService` uses `@Inject var client: ChangeTierClient`.
+- Pattern: ViewModel (`@MainActor @Observable class`). `ChangeTierService` uses `@Inject var client: ChangeTierClient`.
 - Key services: `ChangeTierClient` (protocol), `ChangeTierService` (thin wrapper with `@Log` macro), `ChangeTierQuoteDataProvider` (protocol for external cost calculation, e.g. from MoveFlow)
 - Data flow: `ChangeTierViewModel` fetches tier data via `ChangeTierService`, maintains selected tier/quote/addon state, and calculates totals. `ChangeTierNavigationViewModel` manages navigation state and detent presentations.
 

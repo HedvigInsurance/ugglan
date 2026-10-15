@@ -4,17 +4,18 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ChangeTierNavigationViewModel: ObservableObject {
-    @Published public var isEditTierPresented: EditTypeModel?
-    @Published public var isCompareTiersPresented = false
-    @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var document: hPDFDocument?
-    @Published public var isInfoViewPresented: InfoViewDataModel? = nil
+@Observable
+public class ChangeTierNavigationViewModel {
+    public var isEditTierPresented: EditTypeModel?
+    public var isCompareTiersPresented = false
+    public var isInsurableLimitPresented: InsurableLimits?
+    public var document: hPDFDocument?
+    public var isInfoViewPresented: InfoViewDataModel? = nil
     let useOwnNavigation: Bool
     let router: NavigationRouter
 
     // NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
-    var vm: ChangeTierViewModel!
+    @ObservationIgnored var vm: ChangeTierViewModel!
 
     let changeTierContractsInput: ChangeTierContractsInput?
 
@@ -178,13 +179,13 @@ public enum ChangeTierSource: Codable {
 }
 
 public struct ChangeTierNavigation: View {
-    @StateObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @State var changeTierNavigationVm: ChangeTierNavigationViewModel
     public init(
         input: ChangeTierInput,
         dataProvider: ChangeTierQuoteDataProvider? = nil,
         router: NavigationRouter? = nil
     ) {
-        _changeTierNavigationVm = StateObject(
+        _changeTierNavigationVm = State(
             wrappedValue: .init(
                 router: router,
                 vm: .init(
@@ -198,7 +199,7 @@ public struct ChangeTierNavigation: View {
     public init(
         input: ChangeTierContractsInput
     ) {
-        _changeTierNavigationVm = StateObject(
+        _changeTierNavigationVm = State(
             wrappedValue: .init(
                 changeTierContractsInput: input
             )
@@ -219,7 +220,7 @@ public struct ChangeTierNavigation: View {
                 wrapperHost
             }
         }
-        .environmentObject(changeTierNavigationVm)
+        .environment(changeTierNavigationVm)
         .detent(
             item: $changeTierNavigationVm.isEditTierPresented
         ) { model in
@@ -232,7 +233,7 @@ public struct ChangeTierNavigation: View {
                 options: [.navigationType(type: .large), .navigationBarHidden],
                 tracking: ChangeTierTrackingType.edit(type: model.type)
             )
-            .environmentObject(changeTierNavigationVm)
+            .environment(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.isInsurableLimitPresented,
@@ -256,7 +257,7 @@ public struct ChangeTierNavigation: View {
                 options: .extendedNavigationWidth,
                 tracking: ChangeTierTrackingType.compareTier
             )
-            .environmentObject(changeTierNavigationVm)
+            .environment(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.document,

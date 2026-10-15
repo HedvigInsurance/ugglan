@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 struct NotLoggedInView: View {
-    @ObservedObject var vm: NotLoggedViewModel
+    let vm: NotLoggedViewModel
     init(
         vm: NotLoggedViewModel
     ) {
@@ -79,25 +79,25 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 @MainActor
-class NotLoggedViewModel: ObservableObject {
-    @Published var bootStrapped: Bool = false
-    @Published var viewState: ViewState = .loading
-    @Published var showLanguagePicker = false
-    @Published var showLogin = false
+@Observable
+class NotLoggedViewModel {
+    var bootStrapped: Bool = false
+    var viewState: ViewState = .loading
+    var showLanguagePicker = false
+    var showLogin = false
     let router = NavigationRouter()
-    var onLoad: () -> Void = {}
-    var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored var onLoad: () -> Void = {}
+    @ObservationIgnored var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var bootStrapWatcher: ObservationWatcher?
 
     init() {
-        $bootStrapped
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                if value {
-                    self?.viewState = .language
-                    self?.onLoad()
-                }
-            }
-            .store(in: &cancellables)
+        bootStrapWatcher = ObservationWatcher { [weak self] in
+            _ = self?.bootStrapped
+        } onChange: { [weak self] in
+            guard let self, self.bootStrapped else { return }
+            self.viewState = .language
+            self.onLoad()
+        }
 
         bootStrapped = true
 

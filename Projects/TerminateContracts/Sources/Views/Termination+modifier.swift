@@ -13,7 +13,7 @@ extension View {
 }
 
 struct TerminateInsurance: ViewModifier {
-    @ObservedObject var vm: TerminateInsuranceViewModel
+    @Bindable var vm: TerminateInsuranceViewModel
 
     @State var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 

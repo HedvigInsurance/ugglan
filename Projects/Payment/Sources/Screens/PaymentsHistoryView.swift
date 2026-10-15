@@ -8,7 +8,7 @@ import hCoreUI
 public struct PaymentHistoryView: View {
     @EnvironmentObject var router: NavigationRouter
     @AppObservedObject var store: PaymentStore
-    @StateObject var vm = PaymentsHistoryViewModel()
+    @State var vm = PaymentsHistoryViewModel()
 
     public var body: some View {
         successView.loading($vm.viewState)
@@ -117,9 +117,11 @@ public struct PaymentHistoryView: View {
 }
 
 @MainActor
-public class PaymentsHistoryViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: PaymentStore
+@Observable
+public class PaymentsHistoryViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: PaymentStore
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
         store.$isLoadingHistory
@@ -130,7 +132,10 @@ public class PaymentsHistoryViewModel: ObservableObject {
                 if let error { return .error(errorMessage: error) }
                 return .success
             }
-            .assign(to: &$viewState)
+            .sink { [weak self] state in
+                self?.viewState = state
+            }
+            .store(in: &cancellables)
     }
 }
 

@@ -9,7 +9,7 @@ import hCoreUI
 struct HomeAddonsSection: View {
     let addonBanners: [AddonBanner]
     @AppObservedObject private var contractStore: ContractStore
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) private var navigationVm
 
     var body: some View {
         if !addonBanners.isEmpty {
@@ -49,5 +49,5 @@ struct HomeAddonsSection: View {
             )
         ]
     )
-    .environmentObject(HomeNavigationViewModel())
+    .environment(HomeNavigationViewModel())
 }

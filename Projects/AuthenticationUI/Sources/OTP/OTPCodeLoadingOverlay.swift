@@ -3,7 +3,7 @@ import SwiftUI
 import hCoreUI
 
 struct OTPCodeLoadingOverlay: View {
-    @ObservedObject var otpVM: OTPState
+    let otpVM: OTPState
 
     var body: some View {
         if otpVM.isLoading {
