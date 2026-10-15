@@ -37,7 +37,7 @@ struct HomeQuickActionsSection: View {
             .withSectionPadding()
             .fixedSize(horizontal: false, vertical: true)
         }
-        .disableScrollClipCompat()
+        .scrollClipDisabled()
     }
 
     private func perform(_ action: HomeQuickAction) async {

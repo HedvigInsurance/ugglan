@@ -1,6 +1,5 @@
 import XCTest
 
-@available(iOS 17.0, *)
 @MainActor
 class AccessibilityTests: XCTestCase {
     let XCUIAccessibilityAuditIssuesKey = "XCUIAccessibilityAuditIssuesKey"
