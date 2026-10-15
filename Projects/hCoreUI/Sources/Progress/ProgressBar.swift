@@ -29,7 +29,7 @@ struct ProgressBarView: ViewModifier {
                     setupProgressView(for: navigationController)
                 }
             }
-            .onChange(of: progress) { newProgress in
+            .onChange(of: progress) { _, newProgress in
                 progressView?.isHidden = newProgress == nil
                 if let newProgress {
                     progressView?.setProgress(newProgress, animated: true)
@@ -109,7 +109,7 @@ struct StepProgressBarView: ViewModifier {
                     handleStackView(with: progress)
                 }
             }
-            .onChange(of: progress) { newProgress in
+            .onChange(of: progress) { _, newProgress in
                 handleStackView(with: newProgress)
             }
     }

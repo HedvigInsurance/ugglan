@@ -499,7 +499,7 @@ struct LoggedInNavigation: View {
             paymentsTab
             profileTab
         }
-        .onChange(of: vm.selectedTab) { newTab in
+        .onChange(of: vm.selectedTab) { _, newTab in
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
         }
         .handleLoggedInPresentations(with: vm)

@@ -19,8 +19,10 @@ public struct ColorAnimationView<InitialColor: hColor, AnimationColor: hColor>: 
     public var body: some View {
         backgroundColor
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-            .onChange(of: animationTrigger) { _ in
-                if #available(iOS 17.0, *) {
+            .onChange(of: animationTrigger) {
+                withAnimation {
+                    showAnimation = true
+                } completion: {
                     withAnimation {
                         showAnimation = true
                     } completion: {

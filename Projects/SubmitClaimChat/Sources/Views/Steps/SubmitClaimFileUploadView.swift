@@ -17,7 +17,7 @@ struct SubmitClaimFileUploadView: View {
 
     var body: some View {
         showFilesView
-            .onChange(of: fileUploadVm.hasFiles) { hasFiles in
+            .onChange(of: fileUploadVm.hasFiles) { _, hasFiles in
                 viewModel.setDisableSkip(to: hasFiles)
             }
     }

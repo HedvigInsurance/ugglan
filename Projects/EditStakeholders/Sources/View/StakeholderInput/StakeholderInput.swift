@@ -172,7 +172,7 @@ struct AddStakeholderFieldsView: View {
         }
         .disabled(vm.isLoading)
         .sectionContainerStyle(.transparent)
-        .onChange(of: vm.SSN) { _ in
+        .onChange(of: vm.SSN) {
             vm.nameFetchedFromSSN = false
         }
     }
@@ -206,14 +206,11 @@ struct AddStakeholderFieldsView: View {
             title: L10n.contractAddCoinsuredNoSsn,
             isOn: $vm.noSSN
         )
-        .onChange(
-            of: vm.noSSN,
-            perform: { value in
-                vm.SSN = ""
-                if !value {
-                    withAnimation {
-                        vm.showInfoForMissingSSN = false
-                    }
+        .onChange(of: vm.noSSN) { _, value in
+            vm.SSN = ""
+            if !value {
+                withAnimation {
+                    vm.showInfoForMissingSSN = false
                 }
             }
         )

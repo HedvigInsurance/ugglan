@@ -79,7 +79,7 @@ public struct OTPCodeEntryView: View {
             OTPCodeLoadingOverlay(otpVM: otpVM)
         )
         .sectionContainerStyle(.transparent)
-        .onChange(of: otpVM.code) { _ in
+        .onChange(of: otpVM.code) {
             vm.check(otpState: otpVM)
         }
         .onAppear {

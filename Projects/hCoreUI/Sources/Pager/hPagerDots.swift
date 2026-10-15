@@ -78,7 +78,7 @@ public struct hPagerDotsBinded: View {
                     .frame(minWidth: proxy.size.width)
                 }
                 .scrollDisabled(true)
-                .onChange(of: currentIndex) { newValue in
+                .onChange(of: currentIndex) { _, newValue in
                     withAnimation {
                         scrollProxy.scrollTo(newValue, anchor: .center)
                     }

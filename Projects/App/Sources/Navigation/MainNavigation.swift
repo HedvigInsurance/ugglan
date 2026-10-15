@@ -47,7 +47,7 @@ struct MainNavigation: App {
             .onOpenURL { url in
                 handle(url: url)
             }
-            .onChange(of: state) { _ in
+            .onChange(of: state) {
                 vm.state = state
             }
         }

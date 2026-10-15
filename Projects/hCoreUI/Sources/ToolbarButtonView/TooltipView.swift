@@ -66,7 +66,7 @@ private struct SystemToolbarEdgeReader: ViewModifier {
                 systemToolbarEdge = $0
             }
             .onAppear { onChange(systemToolbarEdge) }
-            .onChange(of: systemToolbarEdge) { onChange($0) }
+            .onChange(of: systemToolbarEdge) { onChange($1) }
     }
 }
 
@@ -123,7 +123,7 @@ struct TooltipViewModifier: ViewModifier {
                     )
                 }
             }
-            .onChange(of: toolTipManager.displayedTooltip) { newValue in
+            .onChange(of: toolTipManager.displayedTooltip) { _, newValue in
                 withAnimation {
                     showTooltip = newValue == type
                 }
