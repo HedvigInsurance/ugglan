@@ -6,7 +6,7 @@ struct AddonSelectSubOptionScreen: View {
     let changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let selectable: AddonOfferSelectable
     @State var selectedAddon: AddonOfferQuote?
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     init(
         selectable: AddonOfferSelectable,

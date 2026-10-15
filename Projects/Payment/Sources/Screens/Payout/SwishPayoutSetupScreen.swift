@@ -4,7 +4,7 @@ import hCoreUI
 
 struct SwishPayoutSetupScreen: View {
     @State private var vm = SwishPayoutSetupViewModel()
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     let onSuccess: (() -> Void)?
 
     init(onSuccess: (() -> Void)? = nil) {
@@ -154,5 +154,5 @@ enum SwishPayoutField: hTextFieldFocusStateCompliant {
 
 #Preview {
     SwishPayoutSetupScreen()
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }

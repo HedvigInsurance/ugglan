@@ -31,7 +31,7 @@ struct MissedPaymentScreen: View {
     let missedPaymentdata: MissedPaymentData
     @AppObservedObject var paymentStore: PaymentStore
     @State private var vm = PaymentOverdueScreenViewModel()
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     let onSuccess: () -> Void
 
     var body: some View {
@@ -295,5 +295,5 @@ class PaymentOverdueScreenViewModel {
         ),
         onSuccess: {}
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
 }
