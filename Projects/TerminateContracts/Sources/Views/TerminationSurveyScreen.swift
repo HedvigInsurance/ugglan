@@ -152,7 +152,7 @@ class SurveyScreenViewModel {
             self.selectedOption = selectedOption
             self.selectedFeedBackViewModel = selectedFeedBackViewModel
         }
-        feedbackTextCancellable = selectedFeedBackViewModel?.$text
+        feedbackTextCancellable = selectedFeedBackViewModel?.publisher(for: \.text)
             .dropFirst()
             .sink { [weak self] _ in
                 DispatchQueue.main.async {

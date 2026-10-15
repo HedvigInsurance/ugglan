@@ -238,15 +238,16 @@ struct ContractTable: View {
 }
 
 @MainActor
-public class ContractTableViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: ContractStore
-    @Inject var service: FetchContractsClient
-    @Published var addonBanners: [AddonBanner] = []
-    private var cancellables = Set<AnyCancellable>()
+@Observable
+public class ContractTableViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: ContractStore
+    @ObservationIgnored @Inject var service: FetchContractsClient
+    var addonBanners: [AddonBanner] = []
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     init() {
-        store.$isFetchingContracts
-            .combineLatest(store.$fetchContractsError)
+        store.publisher(for: \.isFetchingContracts)
+            .combineLatest(store.publisher(for: \.fetchContractsError))
             .receive(on: RunLoop.main)
             .sink { [weak self] isFetching, error in
                 if isFetching {

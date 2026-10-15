@@ -61,8 +61,11 @@ public struct Module {
 
 @MainActor
 @propertyWrapper
-public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
-    @StateObject private var stateObject: T
+public struct InjectObservableObject<T: AnyObject & Observable>: DynamicProperty {
+    /// `State(wrappedValue:)` evaluates its argument eagerly, unlike the autoclosure `StateObject` took,
+    /// so resolving in `init` would run before e.g. `MainNavigation.init` has registered the dependency.
+    /// The box defers resolution to first access and keeps that instance for the view's lifetime.
+    @State private var box = LazyResolvedBox<T>()
 
     public init() {}
 
@@ -76,5 +79,6 @@ public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
 }
 
 @MainActor
+private final class LazyResolvedBox<T: AnyObject> {
     lazy var object: T = Dependencies.shared.resolve()
 }

@@ -198,14 +198,16 @@ public struct PaymentsView: View {
 }
 
 @MainActor
-public class PaymentsViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: PaymentStore
-    private var fetchTask: Task<Void, Never>?
+@Observable
+public class PaymentsViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: PaymentStore
+    @ObservationIgnored private var fetchTask: Task<Void, Never>?
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
-        store.$isFetchingPaymentStatus
-            .combineLatest(store.$fetchPaymentStatusError)
+        store.publisher(for: \.isFetchingPaymentStatus)
+            .combineLatest(store.publisher(for: \.fetchPaymentStatusError))
             .receive(on: RunLoop.main)
             .map { isLoading, error in
                 if isLoading { return .loading }

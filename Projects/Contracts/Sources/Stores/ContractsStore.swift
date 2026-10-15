@@ -15,8 +15,8 @@ public final class ContractStore: AppStore {
     public private(set) var terminatedContracts: [Contract] = []
     public private(set) var pendingContracts: [Contract] = []
 
-    @Transient @Published public private(set) var fetchContractsError: String?
-    @Transient @Published public private(set) var isFetchingContracts: Bool = false
+    @Transient public private(set) var fetchContractsError: String?
+    @Transient public private(set) var isFetchingContracts: Bool = false
 
     public init() {}
 

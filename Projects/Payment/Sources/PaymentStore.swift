@@ -20,20 +20,20 @@ public final class PaymentStore: AppStore {
     public internal(set) var missedPaymentData: MissedPaymentData?
     @ObservationIgnored private var paymentNoticeData: PaymentNoticeData?
 
-    @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
-    @Transient public internal(set) var missedPaymentDataFetchedAt: Date?
+    @ObservationIgnored @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
+    @ObservationIgnored @Transient public internal(set) var missedPaymentDataFetchedAt: Date?
 
-    @Transient @Published public private(set) var isLoadingPaymentData: Bool = false
-    @Transient @Published public private(set) var isFetchingPaymentStatus: Bool = false
-    @Transient @Published public private(set) var isLoadingHistory: Bool = false
-    @Transient @Published public private(set) var isLoadingMissedPayment: Bool = false
+    @Transient public private(set) var isLoadingPaymentData: Bool = false
+    @Transient public private(set) var isFetchingPaymentStatus: Bool = false
+    @Transient public private(set) var isLoadingHistory: Bool = false
+    @Transient public private(set) var isLoadingMissedPayment: Bool = false
 
-    @Transient @Published public private(set) var loadPaymentDataError: String?
-    @Transient @Published public private(set) var fetchPaymentStatusError: String?
-    @Transient @Published public private(set) var loadHistoryError: String?
-    @Transient @Published public private(set) var loadMissedPaymentError: String?
+    @Transient public private(set) var loadPaymentDataError: String?
+    @Transient public private(set) var fetchPaymentStatusError: String?
+    @Transient public private(set) var loadHistoryError: String?
+    @Transient public private(set) var loadMissedPaymentError: String?
 
-    @Transient private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
         NotificationCenter.default

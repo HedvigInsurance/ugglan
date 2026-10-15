@@ -26,15 +26,63 @@ public class SomeViewModel {
 }
 ```
 
-Navigation ViewModels hold both a router and `@Published` navigation state, passed down as `@ObservedObject`.
+Navigation ViewModels hold both a router and navigation state, passed down with `@Bindable` or through `@Environment`. Because `@Environment` has no projected value, a view that needs `$model.someProperty` off an injected model opens its `body` with a local `@Bindable var model = model`.
+
+Nothing in the repo uses `ObservableObject`, `@Published` or `objectWillChange`.
+
+Observation has no `combineLatest`, `removeDuplicates` or `debounce`, so when a chain needs them, bridge the property instead of reimplementing the chain:
+
+```swift
+store.publisher(for: \.activeContracts)
+    .combineLatest(featureFlags.publisher(for: \.data))
+    .removeDuplicates()
+    .sink { ... }
+```
+
+`publisher(for:)` replays the current value on subscribe, as `@Published` did, so an existing `dropFirst()` still means what it meant.
+
+### Watching an observable from outside a view
+
+SwiftUI tracks property reads inside `body` on its own. Anywhere else — a view model reacting to another view model — use `ObservationWatcher` from hCore and hold it like an `AnyCancellable`:
+
+```swift
+tabWatcher = ObservationWatcher { [weak self] in
+    _ = self?.selectedTab
+} onChange: { [weak self] in
+    self?.updateBadge()
+}
+```
+
+`withObservationTracking` fires once and then stops, so the watcher re-arms itself after every change. Its callback runs on the next main-actor turn, because observation reports a change *before* it is applied and the new value is not readable yet. That also means it cannot catch a value that is set and cleared within one turn; something that transient needs a hook in the setter itself.
+
+### Observation in a class hierarchy
+
+`@Observable` only transforms the properties of the class it is attached to, so a subclass's own stored properties stop updating the UI, and nothing fails to compile. `ClaimIntentStepHandler` therefore conforms to `Observable` by hand: the base holds an `ObservationRegistrar` its subclasses share, and each observable property is computed over a private backing store.
+
+```swift
+@ObservationIgnored private var _selectedOption: String?
+var selectedOption: String? {
+    get {
+        observationRegistrar.access(self, keyPath: \SubmitClaimFileUploadStep.selectedOption)
+        return _selectedOption
+    }
+    set {
+        observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFileUploadStep.selectedOption) {
+            _selectedOption = newValue
+        }
+    }
+}
+```
+
+A property that had `willSet` or `didSet` keeps that logic inline in the setter, capturing `oldValue` before the mutation. Prefer composition over a new observable base class; this pattern exists because the hierarchy was already there.
 
 ## AppStore (Shared App-Wide State)
 
 For state that needs to be shared across views and survive view lifecycles — typically modelling a feature domain (claims, contracts, payments) rather than a single screen's state. Backed by the `AppStateContainer` module.
 
-- Conform to `AppStore` (which inherits from `ObservableObject`)
+- Conform to `AppStore` (which inherits from `Observable`)
 - Mark the class `@MainActor` and apply the `@PersistableStore` macro to opt into on-disk persistence
-- State as `@Published` properties; mark anything that should NOT be persisted with `@Transient` (errors, loading flags, etc.)
+- State as plain stored properties; mark anything that should NOT be persisted with `@Transient` (errors, loading flags, etc.)
 
 ```swift
 @MainActor
@@ -44,8 +92,8 @@ public final class SomeStore: AppStore {
 
     public internal(set) var items: [Item] = []
 
-    @Transient @Published public private(set) var isFetching: Bool = false
-    @Transient @Published public private(set) var fetchError: String?
+    @Transient public private(set) var isFetching: Bool = false
+    @Transient public private(set) var fetchError: String?
 
     public init() {}
 
@@ -62,11 +110,11 @@ public final class SomeStore: AppStore {
 }
 ```
 
-Reading a store from a SwiftUI view: `@AppObservedObject var store: SomeStore` (acts like `@StateObject`, but resolves the shared instance from `globalAppStateContainer`).
+Reading a store from a SwiftUI view: `@AppObservedObject var store: SomeStore` (holds it in `@State`, resolved from `globalAppStateContainer`; `$store.property` gives a binding).
 
 Reading a store from a ViewModel or non-View context: `@AppState private var store: SomeStore` (non-observing accessor) or `let store: SomeStore = globalAppStateContainer.get()`.
 
-Persistence is opt-in via `@PersistableStore`: the macro synthesises a `Snapshot` type from non-`@Transient` `@Published` properties and writes a debounced JSON blob to Application Support. Call `globalAppStateContainer.clearPersistence()` to wipe (e.g. on logout) and `globalAppStateContainer.reset()` to drop in-memory store instances.
+Persistence is opt-in via `@PersistableStore`: the macro synthesises a `Snapshot` type from non-`@Transient` stored properties and writes a debounced JSON blob to Application Support. Call `globalAppStateContainer.clearPersistence()` to wipe (e.g. on logout) and `globalAppStateContainer.reset()` to drop in-memory store instances.
 
 ## Navigation
 

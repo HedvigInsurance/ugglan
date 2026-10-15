@@ -16,7 +16,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `Dependencies/Dependencies.swift` -- `Dependencies` container, `Module` registration, `@Inject` and `@InjectObservableObject` property wrappers
 
 ### Feature Flags
-- `FeatureFlags/FeatureFlagsProtocol.swift` -- `FeatureFlagsClient` protocol, `FeatureData` struct, `FeatureFlags` ObservableObject singleton
+- `FeatureFlags/FeatureFlagsProtocol.swift` -- `FeatureFlagsClient` protocol, `FeatureData` struct, `FeatureFlags` `@Observable` singleton
 - `FeatureFlags/FeatureFlagUnleash.swift` -- Production Unleash-backed implementation of `FeatureFlagsClient`
 - `FeatureFlags/FeatureFlagsDemo.swift` -- Demo/testing implementation that returns all flags disabled with `isDemoMode = true`
 
@@ -126,14 +126,14 @@ Foundational module providing dependency injection, shared models, localization,
 
 ### Property Wrappers
 - `@Inject<Value>` -- Resolves a dependency from the DI container at access time
-- `@InjectObservableObject<T>` -- Resolves an ObservableObject and wraps it in @StateObject for SwiftUI
+- `@InjectObservableObject<T>` -- Resolves an `@Observable` object from the DI container on first access (not at init, so it is safe as an `App` property ahead of DI setup) and holds it in `@State`
 - `@Transient<Value>` -- Codable wrapper that only encodes the default value (transient field)
 - `@OptionalTransient<Value>` -- Like @Transient but the wrapped value is optional
 
 ### Key Types
 - `Dependencies` -- Singleton DI container; register with `add(module:)`, resolve with `resolve()`
 - `Module` -- DI registration unit wrapping a factory closure
-- `FeatureFlags` -- ObservableObject singleton exposing `@Published` booleans for each feature flag
+- `FeatureFlags` -- `@Observable` singleton exposing a `FeatureData` value for each feature flag
 - `ApplicationState` -- Persisted app screen state and locale preferences
 - `ApplicationContext` -- Actor for login state with Combine publisher
 - `DeepLink` -- Enum of all deep link destinations with URL parsing

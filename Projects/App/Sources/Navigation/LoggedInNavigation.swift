@@ -976,7 +976,7 @@ class LoggedInNavigationViewModel {
             .store(in: &cancellables)
 
         let paymentStore: PaymentStore = globalAppStateContainer.get()
-        paymentStore.$missedPaymentData
+        paymentStore.publisher(for: \.missedPaymentData)
             .map { $0 != nil }
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -986,7 +986,7 @@ class LoggedInNavigationViewModel {
             }
             .store(in: &cancellables)
 
-        paymentStore.$showsPaymentBadge
+        paymentStore.publisher(for: \.showsPaymentBadge)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] showsPaymentBadge in

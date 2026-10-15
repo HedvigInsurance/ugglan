@@ -433,10 +433,11 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 }
 
 @MainActor
-public class ClaimDetailViewModel: ObservableObject {
-    @AppState var store: ClaimsStore
-    @Published public var document: hPDFDocument? = nil
-    @Published private(set) var claim: ClaimModel? {
+@Observable
+public class ClaimDetailViewModel {
+    @ObservationIgnored @AppState var store: ClaimsStore
+    public var document: hPDFDocument? = nil
+    private(set) var claim: ClaimModel? {
         didSet {
             setupToolbarOptionType(for: claim)
             if let url = URL(string: claim?.signedAudioURL) {

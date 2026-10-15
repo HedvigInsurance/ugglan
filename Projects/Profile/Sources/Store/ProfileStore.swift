@@ -19,9 +19,9 @@ public final class ProfileStore: AppStore {
     public private(set) var canCreateInsuranceEvidence: Bool = false
     public private(set) var canCreateTravelInsurance: Bool = false
 
-    @Transient @Published public private(set) var fetchProfileStateError: String?
-    @Transient @Published public private(set) var fetchMemberDetailsError: String?
-    @Transient @Published public private(set) var updateLanguageError: String?
+    @Transient public private(set) var fetchProfileStateError: String?
+    @Transient public private(set) var fetchMemberDetailsError: String?
+    @Transient public private(set) var updateLanguageError: String?
 
     public init() {
         Task { [weak self] in
