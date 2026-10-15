@@ -25,14 +25,14 @@ public class DeleteAccountViewModel {
         hasActiveClaims = self.claimsStore.hasActiveClaims
         hasActiveContracts = self.contractsStore.hasActiveContracts
 
-        claimsStore.$activeClaims
+        claimsStore.publisher(for: \.activeClaims)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.hasActiveClaims = claimsStore.hasActiveClaims
             }
             .store(in: &cancellables)
 
-        contractsStore.$activeContracts
+        contractsStore.publisher(for: \.activeContracts)
             .map { !$0.isEmpty }
             .receive(on: RunLoop.main)
             .sink { [weak self] value in

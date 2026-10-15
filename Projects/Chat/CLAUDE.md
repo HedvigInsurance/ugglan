@@ -3,7 +3,7 @@
 The Chat module provides the customer support messaging interface. It includes an inbox view listing all conversations, individual chat screens with real-time message polling, file/image upload and sharing, message retry on failure, and push notification prompting.
 
 ## Architecture
-- **Mixed pattern**: The primary chat UI uses the ViewModel pattern (`ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel` -- all `@MainActor class: ObservableObject`). There is also a small `ChatStore: AppStore` (`AppStateContainer`) used specifically for persisting failed messages per conversation and tracking the push-notification-permission flag.
+- **Mixed pattern**: The primary chat UI uses the ViewModel pattern (`ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel` -- all `@MainActor @Observable class`). There is also a small `ChatStore: AppStore` (`AppStateContainer`) used specifically for persisting failed messages per conversation and tracking the push-notification-permission flag.
 - **Key services**:
   - `ChatServiceProtocol` -- abstraction for fetching/sending messages within a conversation. Has two concrete implementations: `ConversationService` (existing conversation by ID) and `NewConversationService` (creates a conversation on first message send).
   - `ConversationClient` -- protocol for the raw API operations (get messages with pagination tokens, send message).

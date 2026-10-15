@@ -251,14 +251,14 @@ class HelpCenterStartViewModel: NSObject {
     override init() {
         super.init()
         let store: HomeStore = globalAppStateContainer.get()
-        store.$quickActions
+        store.publisher(for: \.quickActions)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
                 self?.quickActions = quickActions
             }
             .store(in: &cancellables)
-        store.$helpCenterFAQModel
+        store.publisher(for: \.helpCenterFAQModel)
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self, weak store] helpCenterFaqModel in

@@ -1,3 +1,4 @@
+import Combine
 import Observation
 
 @MainActor
@@ -32,5 +33,27 @@ public final class ObservationWatcher {
                 self.arm()
             }
         }
+    }
+}
+
+extension Observable where Self: AnyObject {
+    /// A publisher for one property of an observable object, so an existing Combine chain can keep
+    /// its operators. Observation has no `combineLatest`, `removeDuplicates` or `debounce`.
+    ///
+    /// It replays the current value on subscribe, as the old Combine-backed properties did, so a
+    /// `dropFirst()` still means what it used to. The watcher lives as long as the pipeline.
+    @MainActor
+    public func publisher<V>(for keyPath: KeyPath<Self, V>) -> AnyPublisher<V, Never> {
+        let subject = CurrentValueSubject<V, Never>(self[keyPath: keyPath])
+        let watcher = ObservationWatcher { [weak self] in
+            _ = self?[keyPath: keyPath]
+        } onChange: { [weak self] in
+            guard let self else { return }
+            subject.send(self[keyPath: keyPath])
+        }
+        return
+            subject
+            .handleEvents(receiveCancel: { _ = watcher })
+            .eraseToAnyPublisher()
     }
 }

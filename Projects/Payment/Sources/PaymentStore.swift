@@ -1,37 +1,39 @@
 import AppStateContainer
 import Combine
 import Foundation
+import Observation
 import hCore
 
 @MainActor
 @PersistableStore
+@Observable
 public final class PaymentStore: AppStore {
-    @Inject private var paymentService: hPaymentClient
+    @ObservationIgnored @Inject private var paymentService: hPaymentClient
 
-    @Published public internal(set) var paymentData: PaymentData?
-    @Published public internal(set) var paymentDataFetchedAt: Date?
-    @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
-    @Published public internal(set) var paymentStatusData: PaymentStatusData?
-    @Published public internal(set) var showsRetryChargeNotice: Bool = false
-    @Published public internal(set) var showsPaymentBadge: Bool = false
-    @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
-    @Published public internal(set) var missedPaymentData: MissedPaymentData?
-    private var paymentNoticeData: PaymentNoticeData?
+    public internal(set) var paymentData: PaymentData?
+    public internal(set) var paymentDataFetchedAt: Date?
+    public internal(set) var ongoingPaymentData: [PaymentData] = []
+    public internal(set) var paymentStatusData: PaymentStatusData?
+    public internal(set) var showsRetryChargeNotice: Bool = false
+    public internal(set) var showsPaymentBadge: Bool = false
+    public internal(set) var paymentHistory: [PaymentHistoryListData] = []
+    public internal(set) var missedPaymentData: MissedPaymentData?
+    @ObservationIgnored private var paymentNoticeData: PaymentNoticeData?
 
-    @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
-    @Transient public internal(set) var missedPaymentDataFetchedAt: Date?
+    @ObservationIgnored @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
+    @ObservationIgnored @Transient public internal(set) var missedPaymentDataFetchedAt: Date?
 
-    @Transient @Published public private(set) var isLoadingPaymentData: Bool = false
-    @Transient @Published public private(set) var isFetchingPaymentStatus: Bool = false
-    @Transient @Published public private(set) var isLoadingHistory: Bool = false
-    @Transient @Published public private(set) var isLoadingMissedPayment: Bool = false
+    @Transient public private(set) var isLoadingPaymentData: Bool = false
+    @Transient public private(set) var isFetchingPaymentStatus: Bool = false
+    @Transient public private(set) var isLoadingHistory: Bool = false
+    @Transient public private(set) var isLoadingMissedPayment: Bool = false
 
-    @Transient @Published public private(set) var loadPaymentDataError: String?
-    @Transient @Published public private(set) var fetchPaymentStatusError: String?
-    @Transient @Published public private(set) var loadHistoryError: String?
-    @Transient @Published public private(set) var loadMissedPaymentError: String?
+    @Transient public private(set) var loadPaymentDataError: String?
+    @Transient public private(set) var fetchPaymentStatusError: String?
+    @Transient public private(set) var loadHistoryError: String?
+    @Transient public private(set) var loadMissedPaymentError: String?
 
-    @Transient private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
         NotificationCenter.default
