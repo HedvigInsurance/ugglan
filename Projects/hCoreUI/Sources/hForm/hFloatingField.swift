@@ -111,7 +111,6 @@ public struct hFloatingField: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value = "S"
 

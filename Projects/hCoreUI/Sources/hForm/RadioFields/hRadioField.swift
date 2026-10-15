@@ -71,7 +71,6 @@ public struct hRadioField<T>: View where T: Equatable {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var error: String?
     @Previewable @State var value: String?

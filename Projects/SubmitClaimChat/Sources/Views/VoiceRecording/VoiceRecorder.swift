@@ -272,42 +272,22 @@ public final class VoiceRecorder: ObservableObject {
     @discardableResult
     private func requestMicrophonePermission() async -> Bool {
         await withCheckedContinuation { continuation in
-            if #available(iOS 17.0, *) {
-                AVAudioApplication.requestRecordPermission { granted in
-                    continuation.resume(returning: granted)
-                }
-            } else {
-                AVAudioSession.sharedInstance()
-                    .requestRecordPermission { granted in
-                        continuation.resume(returning: granted)
-                    }
+            AVAudioApplication.requestRecordPermission { granted in
+                continuation.resume(returning: granted)
             }
         }
     }
 
     private func microphonePermissionStatus() -> PermissionStatus {
-        if #available(iOS 17.0, *) {
-            switch AVAudioApplication.shared.recordPermission {
-            case .undetermined:
-                return .undetermined
-            case .denied:
-                return .denied
-            case .granted:
-                return .granted
-            @unknown default:
-                return .denied
-            }
-        } else {
-            switch AVAudioSession.sharedInstance().recordPermission {
-            case .undetermined:
-                return .undetermined
-            case .denied:
-                return .denied
-            case .granted:
-                return .granted
-            @unknown default:
-                return .denied
-            }
+        switch AVAudioApplication.shared.recordPermission {
+        case .undetermined:
+            return .undetermined
+        case .denied:
+            return .denied
+        case .granted:
+            return .granted
+        @unknown default:
+            return .denied
         }
     }
 

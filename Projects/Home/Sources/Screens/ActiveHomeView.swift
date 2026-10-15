@@ -291,11 +291,7 @@ private struct HomeNavigationBar: View {
 
 extension View {
     @ViewBuilder
-    func disableScrollClipCompat() -> some View {
-        if #available(iOS 17.0, *) {
-            self.scrollClipDisabled()
         } else {
-            self.introspect(.scrollView, on: .iOS(.v16)) { scrollView in
                 scrollView.clipsToBounds = false
             }
         }

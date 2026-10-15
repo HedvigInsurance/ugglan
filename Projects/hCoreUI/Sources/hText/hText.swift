@@ -186,7 +186,6 @@ public struct hFontModifier: ViewModifier {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: String = "Ss"
     @Previewable @State var error: String?

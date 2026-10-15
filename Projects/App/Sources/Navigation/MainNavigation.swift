@@ -147,14 +147,7 @@ class MainNavigationViewModel: ObservableObject {
                 default:
                     break
                 }
-                if state == .notLoggedIn, #unavailable(iOS 17.0) {
-                    // On iOS 16 only: swap to the login tree WITHOUT animation. Animating this
-                    // transition keeps the entire logged-in hierarchy alive inside a single
-                    // transaction and tears the deeply-nested tree (ActiveHomeView) down in one
-                    // synchronous recursive pass, overflowing the main-thread stack (recursive
-                    // `_swift_release_dealloc`). iOS 17+ changed SwiftUI's teardown codegen and
-                    // handles it, so keep the animation there. The launch/login screen covers
-                    // this transition visually regardless.
+                withAnimation {
                     self.stateToShow = state
                 } else {
                     withAnimation {
