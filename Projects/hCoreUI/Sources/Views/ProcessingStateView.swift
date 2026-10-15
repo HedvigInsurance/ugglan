@@ -245,7 +245,7 @@ private struct TrackErrorState: ViewModifier {
         .onAppear {
             checkForError()
         }
-        .onChange(of: processingState) { _ in
+        .onChange(of: processingState) {
             checkForError()
         }
     }

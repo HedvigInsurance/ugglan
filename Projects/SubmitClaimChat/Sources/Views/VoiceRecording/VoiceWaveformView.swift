@@ -35,16 +35,16 @@ public struct VoiceWaveformView: View {
             .onAppear {
                 width = geometry.size.width
             }
-            .onChange(of: geometry.size) { size in
+            .onChange(of: geometry.size) { _, size in
                 width = size.width
             }
-            .onChange(of: width) { value in
+            .onChange(of: width) { _, value in
                 updateHeights()
             }
-            .onChange(of: audioLevels) { _ in
+            .onChange(of: audioLevels) {
                 updateHeights()
             }
-            .onChange(of: isRecording) { isRecording in
+            .onChange(of: isRecording) { _, isRecording in
                 updateHeights()
             }
         }

@@ -129,7 +129,7 @@ struct VoiceRecordingCardContent: View {
                         .onAppear {
                             timerHeight = proxy.size.height
                         }
-                        .onChange(of: proxy.size) { value in
+                        .onChange(of: proxy.size) { _, value in
                             timerHeight = value.height
                         }
                 }
@@ -150,7 +150,7 @@ struct VoiceRecordingCardContent: View {
                     .onAppear {
                         waveformWidth = geo.size.width
                     }
-                    .onChange(of: geo.size) { size in
+                    .onChange(of: geo.size) { _, size in
                         waveformWidth = size.width
                     }
             }

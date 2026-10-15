@@ -62,7 +62,7 @@ struct ClaimFlowLauncher: ViewModifier {
                 // onChange misses a value set before the view attaches (e.g. cold-start deep link).
                 handleStartInput(startInput)
             }
-            .onChange(of: startInput) { value in
+            .onChange(of: startInput) { _, value in
                 handleStartInput(value)
             }
             .alert(

@@ -53,7 +53,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatab
                             await vm.updateWidth(with: proxy.size.width)
                         }
                     }
-                    .onChange(of: proxy.size) { size in
+                    .onChange(of: proxy.size) { _, size in
                         Task {
                             await vm.updateWidth(with: size.width)
                         }
@@ -63,7 +63,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatab
         .onAppear {
             vm.updateItems(count: items.count)
         }
-        .onChange(of: items) { value in
+        .onChange(of: items) { _, value in
             vm.updateItems(count: value.count)
         }
     }

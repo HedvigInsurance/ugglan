@@ -34,13 +34,13 @@ struct SubmitClaimTextCard: View {
                 isFocused = true
             }
         }
-        .onChange(of: isFocused) { isFocused in
+        .onChange(of: isFocused) { _, isFocused in
             if isFocused { onFocus() }
         }
-        .onChange(of: viewModel.state.isLoading) { isLoading in
+        .onChange(of: viewModel.state.isLoading) { _, isLoading in
             if isLoading { isFocused = false }
         }
-        .onChange(of: viewModel.state.isEnabled) { isEnabled in
+        .onChange(of: viewModel.state.isEnabled) { _, isEnabled in
             if !isEnabled { isFocused = false }
         }
     }
