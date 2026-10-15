@@ -25,7 +25,7 @@ final class TerminationFlowNavigationViewModelRetainTests: XCTestCase {
         try await super.tearDown()
     }
 
-    func testViewModelIsReleasedWhileItsRouterLives() {
+    func testViewModelIsReleasedWhileItsRouterLives() async {
         var vm: TerminationFlowNavigationViewModel? = .init(
             config: MockTerminationData.testConfig,
             surveyData: MockTerminationData.terminateSurveyData,
@@ -33,43 +33,41 @@ final class TerminationFlowNavigationViewModelRetainTests: XCTestCase {
         )
         weak let weakVm = vm
         // The router is handed to hNavigationStack and outlives the view model in production. Its
-        // $routeTypes subject keeps the stored sink subscribed, so holding the router past the drop
-        // is what makes a strong capture inside that sink observable.
+        // observation registrar keeps the armed onChange closure, so holding the router past the drop
+        // is what makes a strong capture inside that closure observable.
         let router = vm!.router
-
-        settleRouterPathSync()
 
         router.push(TerminationFlowFinalRouterActions.success)
         XCTAssertEqual(router.routeTypes.count, 1, "push must record the pushed route type")
 
-        XCTAssertTrue(pumpUntilFinalRouteProgressIsNil(vm!), "the $routeTypes sink never saw the pushed route")
+        let sawFinalRoute = await yieldUntilFinalRouteProgressIsNil(vm!)
+        XCTAssertTrue(sawFinalRoute, "the routeTypes observation never saw the pushed route")
 
         vm = nil
 
-        XCTAssertNil(weakVm, "the $routeTypes sink stored on the view model must not capture it strongly")
+        XCTAssertNil(weakVm, "the routeTypes observation must not capture the view model strongly")
         _ = router
     }
 
-    func testMultiConfigViewModelIsReleasedWhileItsRouterLives() {
+    func testMultiConfigViewModelIsReleasedWhileItsRouterLives() async {
         var vm: TerminationFlowNavigationViewModel? = .init(
             configs: [MockTerminationData.testConfig],
             terminateInsuranceViewModel: nil
         )
         weak let weakVm = vm
-        // The select-insurance init installs its own byte-identical $routeTypes sink, so it needs its
+        // The select-insurance init arms its own routeTypes observation, so it needs its
         // own guard: a strong capture there leaks every multi-contract flow the user opens.
         let router = vm!.router
-
-        settleRouterPathSync()
 
         router.push(TerminationFlowFinalRouterActions.success)
         XCTAssertEqual(router.routeTypes.count, 1, "push must record the pushed route type")
 
-        XCTAssertTrue(pumpUntilFinalRouteProgressIsNil(vm!), "the $routeTypes sink never saw the pushed route")
+        let sawFinalRoute = await yieldUntilFinalRouteProgressIsNil(vm!)
+        XCTAssertTrue(sawFinalRoute, "the routeTypes observation never saw the pushed route")
 
         vm = nil
 
-        XCTAssertNil(weakVm, "the $routeTypes sink stored on the view model must not capture it strongly")
+        XCTAssertNil(weakVm, "the routeTypes observation must not capture the view model strongly")
         _ = router
     }
 
@@ -81,11 +79,8 @@ final class TerminationFlowNavigationViewModelRetainTests: XCTestCase {
         )
         weak let weakVm = vm
 
-        // Drain the deliveries the two initializer subscriptions queued, so nothing but the task is
-        // still pending at the drop. Pumping after fetchNotification would instead let the task body
+        // Kept synchronous on purpose: suspending after fetchNotification would let the task body
         // start and hold a strong self across its await, which is exactly what must not be measured.
-        settleRouterPathSync()
-
         vm!.fetchNotification(for: Date())
         // The task handle is the storage under test, so it is held past the drop: while the task has
         // not started, only the closure it carries can keep the view model alive.
@@ -101,28 +96,15 @@ final class TerminationFlowNavigationViewModelRetainTests: XCTestCase {
         notificationTask?.cancel()
     }
 
-    /// Lets the deliveries queued by a freshly built view model land before the test pushes anything.
-    /// NavigationRouter.init subscribes to its own `$path` with `receive(on: RunLoop.main)`, so the
-    /// initial empty path is already queued when the view model is constructed. It has to arrive
-    /// while `routeTypes` is still empty: arriving after a push, it sees `newPath.count (0) <
-    /// routeTypes.count (1)` and truncates `routeTypes` back to empty. `updateProgress()` reads that
-    /// live array, so without this turn it never takes the final-route branch and every test's
-    /// precondition would be unreachable.
-    private func settleRouterPathSync() {
-        let settled = expectation(description: "router path sync settled")
-        RunLoop.main.perform { settled.fulfill() }
-        wait(for: [settled], timeout: 1)
-    }
-
-    /// Pumps bounded run-loop turns until the stored sink has demonstrably run, rather than sleeping
-    /// blind: `progress` starts at 0 and only `updateProgress()` can turn it nil (it saw a final
-    /// route), so a nil progress proves the closure under test really executed.
-    private func pumpUntilFinalRouteProgressIsNil(_ vm: TerminationFlowNavigationViewModel) -> Bool {
-        for turn in 1...10 {
+    /// Suspends in bounded steps until the routeTypes observation has demonstrably run, rather than
+    /// sleeping blind: `progress` starts at 0 and only `updateProgress()` can turn it nil (it saw a
+    /// final route), so a nil progress proves the closure under test really executed. The onChange
+    /// hops to the main actor through a Task, which cannot start while a synchronous test body holds
+    /// the main actor, so this has to await rather than pump the run loop with `wait(for:)`.
+    private func yieldUntilFinalRouteProgressIsNil(_ vm: TerminationFlowNavigationViewModel) async -> Bool {
+        for _ in 1...10 {
             if vm.progress == nil { return true }
-            let pumped = expectation(description: "run loop turn \(turn)")
-            RunLoop.main.perform { pumped.fulfill() }
-            wait(for: [pumped], timeout: 1)
+            try? await Task.sleep(for: .seconds(0.01))
         }
         return vm.progress == nil
     }
