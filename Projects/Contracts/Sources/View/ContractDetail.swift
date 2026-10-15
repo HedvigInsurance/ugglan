@@ -26,7 +26,7 @@ public struct ContractDetail: View {
     @EnvironmentObject var navigationRouter: NavigationRouter
     var id: String
 
-    @StateObject var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
+    @State var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
         pageModels: ContractDetailsViews.allCases.compactMap { .init(id: $0.id, title: $0.title) }
     )
 

@@ -2,8 +2,9 @@ import SwiftUI
 import hCore
 
 @MainActor
-class PaymentActionViewModel: ObservableObject {
-    @Published var processingState: ProcessingState = .success
+@Observable
+class PaymentActionViewModel {
+    var processingState: ProcessingState = .success
     let method: ConnectedPaymentMethod
 
     private let paymentService = hPaymentService()

@@ -1,12 +1,36 @@
 import Claims
 import Combine
 import Environment
+import Observation
 import SwiftUI
 import hCore
 
 final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
-    @Published var selectedOption: String?
-    @Published var showFileSourcePicker = false
+    @ObservationIgnored private var _selectedOption: String?
+    var selectedOption: String? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFileUploadStep.selectedOption)
+            return _selectedOption
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFileUploadStep.selectedOption) {
+                _selectedOption = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _showFileSourcePicker = false
+    var showFileSourcePicker: Bool {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFileUploadStep.showFileSourcePicker)
+            return _showFileSourcePicker
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFileUploadStep.showFileSourcePicker) {
+                _showFileSourcePicker = newValue
+            }
+        }
+    }
 
     let model: ClaimIntentStepContentFileUpload
     let fileUploadVm: FilesUploadViewModel
@@ -57,23 +81,25 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
 }
 
 @MainActor
-public class FilesUploadViewModel: ObservableObject {
+@Observable
+public class FilesUploadViewModel {
     private enum TaskResult {
         case sleep
         case response(FileUploadResponseModel)
     }
 
-    @Published var hasFiles: Bool = false
-    @Published var isLoading: Bool = false
-    @Published var progress: Double = 0
-    var uploadProgress: Double = 0
-    var timerProgress: Double = 0
+    var hasFiles: Bool = false
+    var isLoading: Bool = false
+    var progress: Double = 0
+    @ObservationIgnored var uploadProgress: Double = 0
+    @ObservationIgnored var timerProgress: Double = 0
     let uploadDelayDuration: TimeInterval = 1.5
 
-    @Inject private var uploadClient: hSubmitClaimFileUploadClient
+    @ObservationIgnored @Inject private var uploadClient: hSubmitClaimFileUploadClient
     let fileGridViewModel: FileGridViewModel
-    private var delayTimer: AnyCancellable?
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var delayTimer: AnyCancellable?
+    @ObservationIgnored private var filesWatcher: ObservationWatcher?
+    @ObservationIgnored private var loadingWatcher: ObservationWatcher?
 
     public init(
         model: FileUploadModel
@@ -95,16 +121,20 @@ public class FilesUploadViewModel: ObservableObject {
         fileGridViewModel.onDelete = { [weak self] file in
             self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
         }
-        fileGridViewModel.$files
-            .sink { [weak self] files in
-                self?.hasFiles = !files.isEmpty
-            }
-            .store(in: &cancellables)
-
-        $isLoading.sink { [weak self] state in
-            self?.fileGridViewModel.update(options: state ? [.loading] : [.add, .delete])
+        let fileGridViewModel = fileGridViewModel
+        filesWatcher = ObservationWatcher {
+            _ = fileGridViewModel.files
+        } onChange: { [weak self] in
+            self?.hasFiles = !fileGridViewModel.files.isEmpty
         }
-        .store(in: &cancellables)
+
+        loadingWatcher = ObservationWatcher { [weak self] in
+            _ = self?.isLoading
+        } onChange: { [weak self] in
+            guard let self else { return }
+            let state = self.isLoading
+            self.fileGridViewModel.update(options: state ? [.loading] : [.add, .delete])
+        }
     }
 
     func addFiles(with files: [File]) {

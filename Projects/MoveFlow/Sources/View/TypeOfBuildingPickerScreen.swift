@@ -2,8 +2,8 @@ import SwiftUI
 import hCoreUI
 
 struct TypeOfBuildingPickerScreen: View {
-    @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @ObservedObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
+    let movingFlowNavigationVm: MovingFlowNavigationViewModel
+    let addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
     let itemPickerConfig: ItemConfig<ExtraBuildingType>
     init(
         currentlySelected: ExtraBuildingType?,

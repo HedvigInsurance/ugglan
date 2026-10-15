@@ -5,7 +5,7 @@ import hCoreUI
 struct UpcomingChangesScreen: View {
     let agreement: Agreement
     private let date: String
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
 
     init(
         agreement: Agreement

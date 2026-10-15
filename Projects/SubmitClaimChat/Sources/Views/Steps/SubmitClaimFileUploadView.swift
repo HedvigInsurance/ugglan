@@ -5,8 +5,8 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimFileUploadView: View {
-    @ObservedObject var viewModel: SubmitClaimFileUploadStep
-    @ObservedObject var fileUploadVm: FilesUploadViewModel
+    @Bindable var viewModel: SubmitClaimFileUploadStep
+    let fileUploadVm: FilesUploadViewModel
 
     init(
         viewModel: SubmitClaimFileUploadStep
@@ -199,7 +199,7 @@ public struct FileModel: Codable, Equatable, Hashable, Sendable {
 }
 
 struct SubmitClaimFileUploadResultView: View {
-    @ObservedObject var viewModel: FileGridViewModel
+    @Bindable var viewModel: FileGridViewModel
     @State private var fileModel: FileUrlModel?
     var body: some View {
         VStack(alignment: .trailing) {

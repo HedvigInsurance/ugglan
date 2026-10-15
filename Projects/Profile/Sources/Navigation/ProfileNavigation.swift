@@ -7,14 +7,15 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ProfileNavigationViewModel: ObservableObject {
-    @Published public var isDeleteAccountPresented: MemberDetails?
-    @Published var isDeleteAccountRequestedPresented: MemberDetails?
-    @Published var isDeleteAccountAlreadyRequestedPresented = false
-    @Published public var isLanguagePickerPresented = false
-    @Published public var isThemePickerPresented = false
-    @Published public var isConfirmEmailPreferencesPresented = false
-    @Published public var isCreateInsuranceEvidencePresented = false
+@Observable
+public class ProfileNavigationViewModel {
+    public var isDeleteAccountPresented: MemberDetails?
+    var isDeleteAccountRequestedPresented: MemberDetails?
+    var isDeleteAccountAlreadyRequestedPresented = false
+    public var isLanguagePickerPresented = false
+    public var isThemePickerPresented = false
+    public var isConfirmEmailPreferencesPresented = false
+    public var isCreateInsuranceEvidencePresented = false
     let travelCertificateNavigationViewModel = TravelCertificateNavigationViewModel()
     public let profileRouter = NavigationRouter()
 
@@ -29,7 +30,7 @@ public enum ProfileNavigationDismissAction {
 
 public struct ProfileNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: ProfileRedirectType) -> Content
-    @ObservedObject var profileNavigationViewModel: ProfileNavigationViewModel
+    @Bindable var profileNavigationViewModel: ProfileNavigationViewModel
 
     public init(
         profileNavigationViewModel: ProfileNavigationViewModel,
@@ -61,7 +62,7 @@ public struct ProfileNavigation<Content: View>: View {
                         EuroBonusNavigation(useOwnNavigation: false)
                     case .certificates:
                         CertificatesScreen()
-                            .environmentObject(profileNavigationViewModel)
+                            .environment(profileNavigationViewModel)
                     case .claimHistory:
                         ClaimHistoryScreen { claim in
                             profileNavigationViewModel.profileRouter.push(
@@ -94,7 +95,7 @@ public struct ProfileNavigation<Content: View>: View {
                     }
                 }
         }
-        .environmentObject(profileNavigationViewModel)
+        .environment(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
             options: .constant(.withoutGrabber)

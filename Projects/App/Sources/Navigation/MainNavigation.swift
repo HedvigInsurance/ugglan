@@ -19,7 +19,7 @@ struct MainNavigation: App {
     }
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject var vm = MainNavigationViewModel()
+    @State var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
     @InjectObservableObject var featureFlags: FeatureFlags
 
@@ -47,7 +47,7 @@ struct MainNavigation: App {
             .onOpenURL { url in
                 handle(url: url)
             }
-            .onChange(of: state) { _ in
+            .onChange(of: state) {
                 vm.state = state
             }
         }
@@ -71,7 +71,7 @@ struct MainNavigation: App {
         switch vm.stateToShow {
         case .loggedIn:
             LoggedInNavigation(vm: vm.loggedInVm)
-                .environmentObject(vm)
+                .environment(vm)
         case .impersonation:
             ImpersonationSettings()
                 .trackViewName(name: .init(describing: ImpersonationSettings.self))
@@ -96,18 +96,19 @@ struct MainNavigation: App {
 }
 
 @MainActor
-class MainNavigationViewModel: ObservableObject {
-    @Published var hasLaunchFinished = false
-    private var analyticsService = AnalyticsService()
-    @Published var showLaunchScreen = true
-    lazy var notLoggedInVm = NotLoggedViewModel()
-    var loggedInVm = LoggedInNavigationViewModel()
-    private var pushNotificationCancellable: AnyCancellable?
-    private var deepLinkCancellable: AnyCancellable?
+@Observable
+class MainNavigationViewModel {
+    var hasLaunchFinished = false
+    @ObservationIgnored private var analyticsService = AnalyticsService()
+    var showLaunchScreen = true
+    @ObservationIgnored lazy var notLoggedInVm = NotLoggedViewModel()
+    @ObservationIgnored var loggedInVm = LoggedInNavigationViewModel()
+    @ObservationIgnored private var pushNotificationWatcher: ObservationWatcher?
+    @ObservationIgnored private var deepLinkWatcher: ObservationWatcher?
 
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
-    var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
+    @ObservationIgnored @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    var stateToShow = ApplicationState.currentState ?? .notLoggedIn
+    @ObservationIgnored var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
         didSet {
             Task {
                 switch state {
@@ -147,19 +148,8 @@ class MainNavigationViewModel: ObservableObject {
                 default:
                     break
                 }
-                if state == .notLoggedIn, #unavailable(iOS 17.0) {
-                    // On iOS 16 only: swap to the login tree WITHOUT animation. Animating this
-                    // transition keeps the entire logged-in hierarchy alive inside a single
-                    // transaction and tears the deeply-nested tree (ActiveHomeView) down in one
-                    // synchronous recursive pass, overflowing the main-thread stack (recursive
-                    // `_swift_release_dealloc`). iOS 17+ changed SwiftUI's teardown codegen and
-                    // handles it, so keep the animation there. The launch/login screen covers
-                    // this transition visually regardless.
+                withAnimation {
                     self.stateToShow = state
-                } else {
-                    withAnimation {
-                        self.stateToShow = state
-                    }
                 }
             }
         }
@@ -210,25 +200,36 @@ class MainNavigationViewModel: ObservableObject {
         let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
         /// If the app was launched less than 1 second ago, it's a cold start (e.g. opened via push or deeplink)
         let isColdStart = abs(timeSinceLaunch) < 1
-        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(1)
+        whenLoggedIn(after: isColdStart ? 2 : 1, storingWatcherIn: \.pushNotificationWatcher) { [weak self] in
+            self?.loggedInVm.handle(notification: notification)
+        }
+    }
 
-        pushNotificationCancellable =
-            $stateToShow
-            .map { state -> AnyPublisher<ApplicationState.Screen, Never> in
-                if state == .loggedIn {
-                    return Just(state)
-                        .delay(for: delay, scheduler: RunLoop.main)
-                        .eraseToAnyPublisher()
-                } else {
-                    return Empty().eraseToAnyPublisher()
-                }
+    // The notification can arrive before the logged-in tree exists, so the handler waits for it
+    // and then for `delay`, which gives that tree time to settle. It runs once: the watcher is
+    // dropped as soon as it fires, and skipped entirely when the app is already logged in.
+    private func whenLoggedIn(
+        after delay: Double,
+        storingWatcherIn keyPath: ReferenceWritableKeyPath<MainNavigationViewModel, ObservationWatcher?>,
+        perform action: @escaping @MainActor () -> Void
+    ) {
+        func schedule() {
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(delay))
+                action()
             }
-            .switchToLatest()
-            .first()
-            .sink { [weak self] _ in
-                self?.loggedInVm.handle(notification: notification)
-                self?.pushNotificationCancellable = nil
-            }
+        }
+        guard stateToShow != .loggedIn else {
+            schedule()
+            return
+        }
+        self[keyPath: keyPath] = ObservationWatcher { [weak self] in
+            _ = self?.stateToShow
+        } onChange: { [weak self] in
+            guard let self, self.stateToShow == .loggedIn else { return }
+            self[keyPath: keyPath] = nil
+            schedule()
+        }
     }
 
     @objc func handleDeepLink(notification: Notification) {
@@ -236,25 +237,9 @@ class MainNavigationViewModel: ObservableObject {
 
         let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
         let isColdStart = abs(timeSinceLaunch) < 1
-        let delay: RunLoop.SchedulerTimeType.Stride = isColdStart ? .seconds(2) : .seconds(0.2)
-
-        deepLinkCancellable =
-            $stateToShow
-            .map { state -> AnyPublisher<ApplicationState.Screen, Never> in
-                if state == .loggedIn {
-                    return Just(state)
-                        .delay(for: delay, scheduler: RunLoop.main)
-                        .eraseToAnyPublisher()
-                } else {
-                    return Empty().eraseToAnyPublisher()
-                }
-            }
-            .switchToLatest()
-            .first()
-            .sink { [weak self] _ in
-                self?.loggedInVm.handleDeepLink(deepLinkUrl)
-                self?.deepLinkCancellable = nil
-            }
+        whenLoggedIn(after: isColdStart ? 2 : 0.2, storingWatcherIn: \.deepLinkWatcher) { [weak self] in
+            self?.loggedInVm.handleDeepLink(deepLinkUrl)
+        }
     }
 
     private func hideLaunchScreen() {
@@ -263,7 +248,7 @@ class MainNavigationViewModel: ObservableObject {
         }
     }
 
-    private var featureFlagTask: Task<(), Error>?
+    @ObservationIgnored private var featureFlagTask: Task<(), Error>?
     private func checkForFeatureFlags() {
         featureFlagTask?.cancel()
         featureFlagTask = Task { [weak self] in

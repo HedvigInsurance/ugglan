@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct CertificatesScreen: View {
     @AppObservedObject var store: ProfileStore
-    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
 
     public var body: some View {
         hForm {
@@ -20,7 +20,7 @@ public struct CertificatesScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
             .hWithoutHorizontalPadding([.row, .divider])
-            .environmentObject(profileNavigationVm)
+            .environment(profileNavigationVm)
         }
     }
 }

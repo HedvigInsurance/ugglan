@@ -4,11 +4,12 @@ import hCore
 import hCoreUI
 
 @MainActor
-class RemoveAddonNavigationViewModel: ObservableObject {
+@Observable
+class RemoveAddonNavigationViewModel {
     let router = NavigationRouter()
     let removeAddonVm: RemoveAddonViewModel
-    @Published var isProcessingPresented = false
-    @Published var document: hPDFDocument?
+    var isProcessingPresented = false
+    var document: hPDFDocument?
     let goDirectlyToSummary: Bool
 
     init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
@@ -21,8 +22,8 @@ enum RemoveAddonRouterActions {
     case summary
 }
 public struct RemoveAddonNavigation: View {
-    @StateObject var removeAddonNavigationVm: RemoveAddonNavigationViewModel
-    @ObservedObject var removeAddonVm: RemoveAddonViewModel
+    @State var removeAddonNavigationVm: RemoveAddonNavigationViewModel
+    let removeAddonVm: RemoveAddonViewModel
 
     public init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
         let vm = RemoveAddonNavigationViewModel(removeOffer)
@@ -51,14 +52,14 @@ public struct RemoveAddonNavigation: View {
                     .navigationTitle(L10n.offerUpdateSummaryTitle)
             }
         }
-        .environmentObject(removeAddonNavigationVm)
+        .environment(removeAddonNavigationVm)
         .modally(
             presented: $removeAddonNavigationVm.isProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
             RemoveAddonProcessingScreen(vm: removeAddonVm)
                 .embededInNavigation(tracking: RemoveAddonTrackingType.processing)
-                .environmentObject(removeAddonNavigationVm)
+                .environment(removeAddonNavigationVm)
         }
     }
 }

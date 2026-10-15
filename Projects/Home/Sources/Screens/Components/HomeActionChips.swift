@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 struct HomeActionChips: View {
-    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) var navigationVm
     @AppObservedObject var store: ClaimsStore
     @InjectObservableObject var featureFlags: FeatureFlags
 
@@ -84,5 +84,5 @@ struct HomeActionChips: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
 
-    return HomeActionChips().environmentObject(HomeNavigationViewModel())
+    return HomeActionChips().environment(HomeNavigationViewModel())
 }

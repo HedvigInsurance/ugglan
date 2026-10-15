@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct OnboardingThemeScreen: View {
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
     @State private var themeId: String? = ThemeOption.current.id
 
     var body: some View {
@@ -76,5 +76,5 @@ struct OnboardingThemeScreen: View {
 
 #Preview {
     OnboardingThemeScreen()
-        .environmentObject(OnboardingNavigationViewModel())
+        .environment(OnboardingNavigationViewModel())
 }

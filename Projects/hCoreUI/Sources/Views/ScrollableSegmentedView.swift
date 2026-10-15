@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 
 public struct ScrollableSegmentedView<Content: View>: View {
-    @ObservedObject var vm: ScrollableSegmentedViewModel
+    let vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
     let headerBottomPadding: CGFloat
     @Environment(\.colorScheme) var colorSchema
@@ -197,22 +197,23 @@ public struct ScrollableSegmentedView<Content: View>: View {
 }
 
 @MainActor
-public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
+@Observable
+public class ScrollableSegmentedViewModel: NSObject {
     let pageModels: [PageModel]
-    var heights: [String: CGFloat] = [:]
-    var titlesPositions: [String: CGRect] = [:]
+    @ObservationIgnored var heights: [String: CGFloat] = [:]
+    @ObservationIgnored var titlesPositions: [String: CGRect] = [:]
     let pageSpacing: CGFloat = 0
-    @Published var viewWidth: CGFloat = 0
-    private var horizontalScrollCancellable: AnyCancellable?
-    @Published var selectedIndicatorWidth: CGFloat = 0
-    @Published var selectedIndicatorHeight: CGFloat = 0
-    @Published var selectedIndicatorOffset: CGFloat = 0
-    @Published var currentHeight: CGFloat = 0
-    @Published var currentId: String
+    var viewWidth: CGFloat = 0
+    @ObservationIgnored private var horizontalScrollCancellable: AnyCancellable?
+    var selectedIndicatorWidth: CGFloat = 0
+    var selectedIndicatorHeight: CGFloat = 0
+    var selectedIndicatorOffset: CGFloat = 0
+    var currentHeight: CGFloat = 0
+    var currentId: String
 
-    weak var headerScrollView: UIScrollView?
+    @ObservationIgnored weak var headerScrollView: UIScrollView?
 
-    weak var horizontalScrollView: UIScrollView? {
+    @ObservationIgnored weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
             setSelectedTab(with: currentId, withAnimation: false)

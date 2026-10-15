@@ -16,7 +16,7 @@ extension View {
 }
 
 private struct OnDeinit: ViewModifier {
-    @StateObject var vm = OnDeinitViewModel()
+    @State var vm = OnDeinitViewModel()
     let execute: () -> Void
     func body(content: Content) -> some View {
         content.onAppear { [weak vm] in
@@ -25,8 +25,9 @@ private struct OnDeinit: ViewModifier {
     }
 }
 
-private class OnDeinitViewModel: ObservableObject {
-    var execute: (() -> Void)?
+@Observable
+private class OnDeinitViewModel {
+    @ObservationIgnored var execute: (() -> Void)?
 
     deinit {
         execute?()

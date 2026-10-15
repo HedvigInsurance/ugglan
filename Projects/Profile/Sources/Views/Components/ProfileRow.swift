@@ -3,7 +3,7 @@ import hCoreUI
 
 struct ProfileRow: View {
     @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationViewModel
 
     let row: ProfileRowType
 

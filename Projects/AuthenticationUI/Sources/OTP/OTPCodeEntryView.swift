@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 public struct OTPCodeEntryView: View {
-    @StateObject private var vm = OTPCodeEntryViewModel()
-    @EnvironmentObject var otpVM: OTPState
+    @State private var vm = OTPCodeEntryViewModel()
+    @Environment(OTPState.self) var otpVM
     @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {
             hSection {
                 VStack(spacing: 50) {
@@ -58,7 +59,7 @@ public struct OTPCodeEntryView: View {
                         }
 
                         ResendOTPCode(otpVM: otpVM)
-                            .environmentObject(otpVM)
+                            .environment(otpVM)
                     }
                 }
             }
@@ -73,7 +74,7 @@ public struct OTPCodeEntryView: View {
         }
         .hFormAttachToBottom {
             OpenEmailClientButton()
-                .environmentObject(otpVM)
+                .environment(otpVM)
         }
         .overlay(
             OTPCodeLoadingOverlay(otpVM: otpVM)
@@ -89,10 +90,11 @@ public struct OTPCodeEntryView: View {
 }
 
 @MainActor
-class OTPCodeEntryViewModel: ObservableObject {
-    private var authenticationService = AuthenticationService()
-    @hTextFieldFocusState var focusCodeField: Bool? = true
-    var router: NavigationRouter?
+@Observable
+class OTPCodeEntryViewModel {
+    @ObservationIgnored private var authenticationService = AuthenticationService()
+    @ObservationIgnored @hTextFieldFocusState var focusCodeField: Bool? = true
+    @ObservationIgnored var router: NavigationRouter?
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {

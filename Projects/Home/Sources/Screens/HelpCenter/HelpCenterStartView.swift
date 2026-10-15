@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 public struct HelpCenterStartView: View {
-    @StateObject var vm = HelpCenterStartViewModel()
+    @State var vm = HelpCenterStartViewModel()
     @State private var puppyGuideDisplay: PuppyGuideDisplay?
     @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
@@ -228,17 +228,18 @@ public struct HelpCenterStartView: View {
 }
 
 @MainActor
-class HelpCenterStartViewModel: NSObject, ObservableObject {
-    @Published var helpCenterModel: HelpCenterFAQModel?
-    var didSetInitialSearchAppearance = false
-    @Published var quickActions: [QuickAction] = []
+@Observable
+class HelpCenterStartViewModel: NSObject {
+    var helpCenterModel: HelpCenterFAQModel?
+    @ObservationIgnored var didSetInitialSearchAppearance = false
+    var quickActions: [QuickAction] = []
     // search part
-    @Published var searchResultsQuestions: [FAQModel] = []
-    @Published var searchResultsQuickActions: [QuickAction] = []
-    @Published var searchInProgress = false
-    private var allQuestions: [FAQModel] = []
-    private var cancellables: Set<AnyCancellable> = []
-    lazy var searchController: UISearchController = {
+    var searchResultsQuestions: [FAQModel] = []
+    var searchResultsQuickActions: [QuickAction] = []
+    var searchInProgress = false
+    @ObservationIgnored private var allQuestions: [FAQModel] = []
+    @ObservationIgnored private var cancellables: Set<AnyCancellable> = []
+    @ObservationIgnored lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.delegate = self
         searchController.searchResultsUpdater = self

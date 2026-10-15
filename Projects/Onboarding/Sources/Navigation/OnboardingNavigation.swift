@@ -9,12 +9,12 @@ import hCore
 import hCoreUI
 
 struct OnboardingNavigation: View {
-    @StateObject private var vm = OnboardingNavigationViewModel()
+    @State private var vm = OnboardingNavigationViewModel()
 
     init(steps: [OnboardingStep]) {
         let vm = OnboardingNavigationViewModel()
         vm.steps = steps
-        _vm = StateObject(wrappedValue: vm)
+        _vm = State(wrappedValue: vm)
     }
 
     var body: some View {
@@ -29,7 +29,7 @@ struct OnboardingNavigation: View {
                 }
                 .addStepProgressBar(with: $vm.progress)
         }
-        .environmentObject(vm)
+        .environment(vm)
         .handleEditStakeholders(with: vm.editStakeholdersVm)
         .handleMissingChipIds(input: $vm.missingPetChipIdInput)
     }

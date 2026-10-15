@@ -4,38 +4,39 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ChangeTierViewModel: ObservableObject {
+@Observable
+public class ChangeTierViewModel {
     let dataProvider: ChangeTierQuoteDataProvider?
-    @Published var dataProviderViewState: ProcessingState = .success
+    var dataProviderViewState: ProcessingState = .success
 
     private let service = ChangeTierService()
-    @Published var viewState: ProcessingState = .loading
+    var viewState: ProcessingState = .loading
 
-    @Published var displayEmptyTierMessage: Bool = false
-    @Published var deflection: Deflection?
+    var displayEmptyTierMessage: Bool = false
+    var deflection: Deflection?
 
-    @Published var displayName: String?
-    @Published var exposureName: String?
+    var displayName: String?
+    var exposureName: String?
     private(set) var tiers: [Tier] = []
     private(set) var changeTierInput: ChangeTierInput
-    var activationDate: Date?
-    var typeOfContract: TypeOfContract?
+    @ObservationIgnored var activationDate: Date?
+    @ObservationIgnored var typeOfContract: TypeOfContract?
 
-    @Published var currentTotalCost: Premium?
-    @Published var newTotalCost: Premium?
-    @Published var displayItemList: [QuoteDisplayItem] = []
-    @Published var showCompareCoverage: Bool = false
-    var currentTier: Tier?
-    var currentQuote: Quote?
+    var currentTotalCost: Premium?
+    var newTotalCost: Premium?
+    var displayItemList: [QuoteDisplayItem] = []
+    var showCompareCoverage: Bool = false
+    @ObservationIgnored var currentTier: Tier?
+    @ObservationIgnored var currentQuote: Quote?
 
     // quoteId has multiple AddonQuotes - there will be only one of each type
-    private var relatedAddons: [String: [AddonQuote]] = [:]
-    var addonQuotes: [AddonQuote] = []
-    @Published var canEditTier: Bool = false
-    @Published var canEditDeductible: Bool = false
+    @ObservationIgnored private var relatedAddons: [String: [AddonQuote]] = [:]
+    @ObservationIgnored var addonQuotes: [AddonQuote] = []
+    var canEditTier: Bool = false
+    var canEditDeductible: Bool = false
 
-    @Published var selectedTier: Tier?
-    @Published var selectedQuote: Quote? {
+    var selectedTier: Tier?
+    var selectedQuote: Quote? {
         didSet {
             if let selectedQuote {
                 addonQuotes = relatedAddons[selectedQuote.id] ?? []
@@ -48,9 +49,9 @@ public class ChangeTierViewModel: ObservableObject {
             }
         }
     }
-    @Published var selectedAddon: AddonQuote?
+    var selectedAddon: AddonQuote?
 
-    @Published var excludedAddonTypes: [String] = []
+    var excludedAddonTypes: [String] = []
 
     var shouldShowOldPrice: Bool {
         dataProvider != nil

@@ -3,10 +3,10 @@ import hCore
 import hCoreUI
 
 struct TravelCertificateProcessingScreen: View {
-    @StateObject var vm = ProcessingViewModel()
+    @State var vm = ProcessingViewModel()
     @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var startDateViewModel: StartDateViewModel
-    @EnvironmentObject var whoIsTravelingViewModel: WhoIsTravelingViewModel
+    @Environment(StartDateViewModel.self) var startDateViewModel
+    @Environment(WhoIsTravelingViewModel.self) var whoIsTravelingViewModel
 
     var body: some View {
         ProcessingStateView(
@@ -64,13 +64,14 @@ struct TravelCertificateProcessingScreen: View {
 }
 
 @MainActor
-class ProcessingViewModel: ObservableObject {
-    var service = TravelInsuranceService()
-    @Published var viewState: ProcessingState = .loading
-    @Published var downloadUrl: URL?
-    weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
-    weak var startDateViewModel: StartDateViewModel?
-    var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
+@Observable
+class ProcessingViewModel {
+    @ObservationIgnored var service = TravelInsuranceService()
+    var viewState: ProcessingState = .loading
+    var downloadUrl: URL?
+    @ObservationIgnored weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
+    @ObservationIgnored weak var startDateViewModel: StartDateViewModel?
+    @ObservationIgnored var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
     init() {}
 
     func submit() {
@@ -145,7 +146,7 @@ class ProcessingViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return TravelCertificateProcessingScreen()
-        .environmentObject(
+        .environment(
             WhoIsTravelingViewModel(
                 specification: .init(
                     contractId: "contractId",

@@ -21,7 +21,7 @@ enum OnboardingMissingInfoType {
 
 struct OnboardingMissingInfoScreen: View {
     let type: OnboardingMissingInfoType
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
     private var step: OnboardingStep {
         switch type {
         case .coInsured: .coInsured(contracts: contracts)
@@ -153,7 +153,7 @@ struct OnboardingMissingInfoScreen: View {
 
 #Preview("Co insured") {
     OnboardingMissingInfoScreen(type: .coInsured)
-        .environmentObject(
+        .environment(
             {
                 let vm = OnboardingNavigationViewModel()
                 vm.steps = [
@@ -175,7 +175,7 @@ struct OnboardingMissingInfoScreen: View {
 
 #Preview("Co Owners") {
     OnboardingMissingInfoScreen(type: .coOwner)
-        .environmentObject(
+        .environment(
             {
                 let vm = OnboardingNavigationViewModel()
                 vm.steps = [
@@ -197,7 +197,7 @@ struct OnboardingMissingInfoScreen: View {
 
 #Preview("Pet chip ids") {
     OnboardingMissingInfoScreen(type: .petChipIds)
-        .environmentObject(
+        .environment(
             {
                 let vm = OnboardingNavigationViewModel()
                 vm.steps = [

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct VoiceRecordingCardContent: View {
-    @ObservedObject var voiceRecorder: VoiceRecorder
+    let voiceRecorder: VoiceRecorder
     let onSend: () async throws -> Void
     let onClose: () -> Void
     @State private var waveformWidth: CGFloat = 0
@@ -56,7 +56,7 @@ struct VoiceRecordingCardContent: View {
         .animation(.easeInOut(duration: 0.2), value: voiceRecorder.error)
         .animation(.easeInOut(duration: 0.2), value: voiceRecorder.isSending)
         .disabled(voiceRecorder.isSending)
-        .environmentObject(voiceRecorder)
+        .environment(voiceRecorder)
     }
 
     @hColorBuilder

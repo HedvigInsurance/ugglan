@@ -8,7 +8,7 @@ private let tileWidth: CGFloat = 160
 
 struct HomeQuickActionsSection: View {
     let quickActions: [HomeQuickAction]
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) private var navigationVm
     @State private var actionInFlight: HomeQuickAction?
 
     var body: some View {
@@ -133,5 +133,5 @@ private struct HomeQuickActionTileStyle: ButtonStyle {
             .upcomingPayment,
         ]
     )
-    .environmentObject(HomeNavigationViewModel())
+    .environment(HomeNavigationViewModel())
 }
