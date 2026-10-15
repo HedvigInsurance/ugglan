@@ -75,8 +75,8 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
 }
 
 public struct TravelCertificateNavigation: View {
-    @ObservedObject var vm: TravelCertificateNavigationViewModel
-    @StateObject var router = NavigationRouter()
+    @Bindable var vm: TravelCertificateNavigationViewModel
+    @State var router = NavigationRouter()
 
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool

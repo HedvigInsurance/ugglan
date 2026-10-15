@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 public struct PayoutNavigation: View {
-    @StateObject private var router = NavigationRouter()
-    @EnvironmentObject private var paymentsNavigationVm: PaymentsNavigationViewModel
+    @State private var router = NavigationRouter()
+    @Environment(PaymentsNavigationViewModel.self) private var paymentsNavigationVm
 
     public init() {}
     public var body: some View {

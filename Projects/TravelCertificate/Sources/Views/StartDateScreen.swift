@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct StartDateScreen: View {
-    @ObservedObject var vm: StartDateViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Bindable var vm: StartDateViewModel
+    @Environment(NavigationRouter.self) var router
 
     var body: some View {
         form

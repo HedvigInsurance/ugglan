@@ -25,7 +25,7 @@ public struct HelpCenterQuestionNavigation: View {
 
 struct HelpCenterQuestionView: View {
     private var question: FAQModel
-    @ObservedObject var router: NavigationRouter
+    let router: NavigationRouter
     init(
         question: FAQModel,
         router: NavigationRouter

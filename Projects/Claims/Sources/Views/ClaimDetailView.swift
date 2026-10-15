@@ -8,8 +8,8 @@ import hCore
 import hCoreUI
 
 public struct ClaimDetailView: View {
-    @StateObject var vm: ClaimDetailViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @State var vm: ClaimDetailViewModel
+    @Environment(NavigationRouter.self) var router
 
     public init(
         claim: ClaimModel?,

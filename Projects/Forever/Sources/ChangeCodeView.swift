@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct ChangeCodeView: View {
-    @ObservedObject private var vm: ChangeCodeViewModel
-    @EnvironmentObject private var router: NavigationRouter
+    private let vm: ChangeCodeViewModel
+    @Environment(NavigationRouter.self) private var router
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
@@ -26,7 +26,7 @@ class ChangeCodeViewModel {
     @ObservationIgnored @Inject var foreverService: ForeverClient
     var inputVm: TextInputViewModel
 
-    var router: NavigationRouter?
+    @ObservationIgnored var router: NavigationRouter?
     let foreverVm: ForeverNavigationViewModel?
 
     init(
@@ -68,5 +68,5 @@ class ChangeCodeViewModel {
 
 #Preview {
     ChangeCodeView(foreverNavigationVm: .init())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }

@@ -9,9 +9,9 @@ import hCore
 import hCoreUI
 
 struct LoginNavigation: View {
-    @ObservedObject var vm: NotLoggedViewModel
-    @StateObject private var router = NavigationRouter()
-    @StateObject private var otpState = OTPState()
+    @Bindable var vm: NotLoggedViewModel
+    @State private var router = NavigationRouter()
+    @State private var otpState = OTPState()
 
     var body: some View {
         hNavigationStack(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {

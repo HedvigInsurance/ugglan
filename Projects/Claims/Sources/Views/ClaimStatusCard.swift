@@ -6,7 +6,7 @@ import hCoreUI
 struct ClaimStatusCard: View {
     var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
-    @EnvironmentObject var homeRouter: NavigationRouter
+    @Environment(NavigationRouter.self) var homeRouter
     @State private var showDeleteConfirmation = false
     @State private var showExpiredAlert = false
 

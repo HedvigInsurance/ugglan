@@ -59,9 +59,9 @@ extension EditStakeholdersScreenType {
 struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
-    @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
-    @StateObject var router = NavigationRouter()
-    @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
+    @Bindable private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
+    @State var router = NavigationRouter()
+    @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
 
     init(
         config: StakeholdersConfig,
@@ -128,7 +128,7 @@ struct EditStakeholdersNavigation: View {
         .modally(item: $editStakeholdersNavigationVm.isEditStakeholderSelectPresented) { editConfig in
             let _ = editStakeholdersNavigationVm.stakeholderViewModel.initializeStakeholders(with: editConfig)
             openNewStakeholdersScreen()
-                .environmentObject(router)
+                .environment(router)
         }
         .environment(editStakeholdersNavigationVm)
     }
@@ -198,9 +198,9 @@ struct EditStakeholdersNavigation: View {
 struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
-    @StateObject var router = NavigationRouter()
-    @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
-    @StateObject var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
+    @State var router = NavigationRouter()
+    @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
+    @State var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
     init(
         configs: [StakeholdersConfig],
@@ -239,8 +239,8 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
 
 struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
-    @StateObject var router = NavigationRouter()
-    @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
+    @State var router = NavigationRouter()
+    @Environment(EditStakeholdersViewModel.self) private var editStakeholdersViewModel
 
     init(
         config: StakeholdersConfig

@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 struct MovingFlowHouseScreen: View {
-    @ObservedObject var houseInformationInputvm: HouseInformationInputModel
-    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Bindable var houseInformationInputvm: HouseInformationInputModel
+    @Environment(MovingFlowNavigationViewModel.self) var movingFlowNavigationVm
+    @Environment(NavigationRouter.self) var router
 
     var body: some View {
         form.loadingWithButtonLoading($houseInformationInputvm.viewState)

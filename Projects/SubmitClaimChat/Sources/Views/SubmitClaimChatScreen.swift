@@ -5,10 +5,10 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimChatScreen: View {
-    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
-    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
-    @StateObject var fileUploadVm = FilesUploadViewModel(model: .init())
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(SubmitClaimChatViewModel.self) var viewModel
+    @Environment(ClaimChatScrollCoordinator.self) var scrollCoordinator
+    @State var fileUploadVm = FilesUploadViewModel(model: .init())
+    @Environment(NavigationRouter.self) var router
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
     public init() {}
@@ -291,9 +291,9 @@ private struct CurrentStepView: View {
 }
 
 private struct ClaimStepErrorAlertModifier: ViewModifier {
-    @ObservedObject var step: ClaimIntentStepHandler
-    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
-    @EnvironmentObject var router: NavigationRouter
+    let step: ClaimIntentStepHandler
+    @Environment(SubmitClaimChatScreenAlertViewModel.self) var alertVm
+    @Environment(NavigationRouter.self) var router
 
     func body(content: Content) -> some View {
         content

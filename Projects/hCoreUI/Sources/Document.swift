@@ -40,11 +40,11 @@ public struct PDFPreview: View {
         }
         .navigationTitle(vm.document.displayName)
         .navigationBarTitleDisplayMode(.inline)
+        .withDismissButton()
         .embededInNavigation(
             options: .extendedNavigationWidth,
             tracking: self
         )
-        .withDismissButton()
     }
 
     private var loadingIndicatorView: some View {

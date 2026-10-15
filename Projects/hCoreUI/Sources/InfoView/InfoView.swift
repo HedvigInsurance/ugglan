@@ -12,8 +12,8 @@ public struct InfoViewHolder: View {
     let title: String
     let description: String
     let type: InfoButtonType
-    @StateObject var infoViewNavigationModel = InfoViewNavigationViewModel()
-    @EnvironmentObject var router: NavigationRouter
+    @State var infoViewNavigationModel = InfoViewNavigationViewModel()
+    @Environment(NavigationRouter.self) var router
 
     public init(title: String, description: String, type: InfoButtonType = .regular) {
         self.title = title

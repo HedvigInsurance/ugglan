@@ -5,7 +5,7 @@ import hCoreUI
 
 struct PaymentMethodDetailScreen: View {
     @AppObservedObject private var store: PaymentStore
-    @EnvironmentObject private var router: NavigationRouter
+    @Environment(NavigationRouter.self) private var router
     @State private var providerToSetUp: PaymentProvider?
     @State private var methodToRemove: ConnectedPaymentMethod?
     @State private var cantRemoveInfo: InfoViewModel?
@@ -142,41 +142,41 @@ fileprivate struct PreviewData {
 #Preview("Invoice") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .invoice(delivery: .kivra))
     return PaymentMethodDetailScreen(paymentProvider: .invoice)
-        .environmentObject(store)
-        .environmentObject(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(store)
+        .environment(PaymentsNavigationViewModel())
+        .environment(NavigationRouter())
 }
 
 #Preview("Trustly") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .trustly(bankAccount: .init(account: "account", bank: "bank")))
     return PaymentMethodDetailScreen(paymentProvider: .trustly)
-        .environmentObject(store)
-        .environmentObject(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(store)
+        .environment(PaymentsNavigationViewModel())
+        .environment(NavigationRouter())
 }
 
 #Preview("Swish") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .swish(phoneNumber: "0700123456"))
     return PaymentMethodDetailScreen(paymentProvider: .swish)
-        .environmentObject(store)
-        .environmentObject(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(store)
+        .environment(PaymentsNavigationViewModel())
+        .environment(NavigationRouter())
 }
 
 #Preview("Nordea") {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .nordea(bankAccount: .init(account: "Nordea Account", bank: "Nordea")))
     return PaymentMethodDetailScreen(paymentProvider: .nordea)
-        .environmentObject(store)
-        .environmentObject(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(store)
+        .environment(PaymentsNavigationViewModel())
+        .environment(NavigationRouter())
 }
 
 #Preview("Unknown") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .unknown)
     return PaymentMethodDetailScreen(paymentProvider: .unknown)
-        .environmentObject(store)
-        .environmentObject(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(store)
+        .environment(PaymentsNavigationViewModel())
+        .environment(NavigationRouter())
 }

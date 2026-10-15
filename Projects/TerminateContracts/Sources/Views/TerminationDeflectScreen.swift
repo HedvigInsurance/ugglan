@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct TerminationDeflectScreen: View {
-    @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
+    @Environment(NavigationRouter.self) var router
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationFlowNavigationViewModel
     let content: DeflectScreenContent
 
     var body: some View {
@@ -110,8 +110,8 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoCancelSold)!
     )
-    .environmentObject(NavigationRouter())
-    .environmentObject(
+    .environment(NavigationRouter())
+    .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
             terminateInsuranceViewModel: nil
@@ -123,8 +123,8 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoDecommission)!
     )
-    .environmentObject(NavigationRouter())
-    .environmentObject(
+    .environment(NavigationRouter())
+    .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
             terminateInsuranceViewModel: nil
@@ -136,8 +136,8 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
     )
-    .environmentObject(NavigationRouter())
-    .environmentObject(
+    .environment(NavigationRouter())
+    .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
             terminateInsuranceViewModel: nil
@@ -155,8 +155,8 @@ struct TerminationDeflectScreen: View {
             )
         )!
     )
-    .environmentObject(NavigationRouter())
-    .environmentObject(
+    .environment(NavigationRouter())
+    .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
             terminateInsuranceViewModel: nil

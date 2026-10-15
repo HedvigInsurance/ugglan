@@ -18,8 +18,8 @@ struct ContractTable: View {
     @State private var cardDrawRotation = false
     @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
+    @Environment(NavigationRouter.self) var router
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     private var isExpanded: Bool {

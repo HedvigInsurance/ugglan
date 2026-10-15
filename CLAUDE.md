@@ -121,3 +121,5 @@ After writing/modifying feature code, invoke `@test-agent` for test generation a
 8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple** (OctopusImplementation goes in `Projects/App/Sources/Service/OctopusClientsImplementation/`)
 9. **Do NOT skip `TrackingViewNameProtocol`** on navigation enums
 10. **When requirements are unclear, ask** — do not assume
+11. **Do NOT apply `.withDismissButton()` after `.embededInNavigation(...)`** — it must always come before it in the
+    modifier chain, so the dismiss button is part of the content inside the navigation stack

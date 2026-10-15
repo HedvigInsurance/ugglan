@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct ConfirmTerminationScreen: View {
-    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationNavigationVm
+    @Environment(NavigationRouter.self) var router
     init() {}
 
     var body: some View {

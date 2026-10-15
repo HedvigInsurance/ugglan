@@ -5,8 +5,8 @@ import hCoreUI
 
 struct PaymentMethodListScreen: View {
     @AppObservedObject private var store: PaymentStore
-    @EnvironmentObject private var paymentsNavigationVM: PaymentsNavigationViewModel
-    @EnvironmentObject private var router: NavigationRouter
+    @Environment(PaymentsNavigationViewModel.self) private var paymentsNavigationVM
+    @Environment(NavigationRouter.self) private var router
 
     var body: some View {
         if let statusData = store.paymentStatusData {

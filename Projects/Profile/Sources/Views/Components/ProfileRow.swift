@@ -2,8 +2,8 @@ import SwiftUI
 import hCoreUI
 
 struct ProfileRow: View {
-    @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var profileNavigationViewModel: ProfileNavigationViewModel
+    @Environment(NavigationRouter.self) var router
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationViewModel
 
     let row: ProfileRowType
 
@@ -28,7 +28,7 @@ struct ProfileRow: View {
         .onTap {
             action()
         }
-        .environmentObject(router)
+        .environment(router)
     }
 
     func action() {

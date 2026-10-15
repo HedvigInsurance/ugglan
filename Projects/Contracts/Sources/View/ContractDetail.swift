@@ -23,7 +23,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 
 public struct ContractDetail: View {
     @AppObservedObject var store: ContractStore
-    @EnvironmentObject var navigationRouter: NavigationRouter
+    @Environment(NavigationRouter.self) var navigationRouter
     var id: String
 
     @State var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
