@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct MovingFlowHousingTypeScreen: View {
     @Bindable var vm = MovingFlowHousingTypeViewModel()
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @Bindable var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct MissingStakeholderAlert: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     private var onButtonAction: () -> Void
     let config: StakeholdersConfig
     public init(

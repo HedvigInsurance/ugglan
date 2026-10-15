@@ -6,7 +6,7 @@ import hCoreUI
 
 public struct PaymentsView: View {
     @AppObservedObject var store: PaymentStore
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @Environment(PaymentsNavigationViewModel.self) var paymentNavigationVm
     @State var vm = PaymentsViewModel()
 
@@ -87,7 +87,7 @@ public struct PaymentsView: View {
 
     private struct PaymentView: View {
         let paymentData: PaymentData
-        @EnvironmentObject var router: NavigationRouter
+        @Environment(NavigationRouter.self) var router
         var body: some View {
             hSection {
                 hRow {
@@ -122,7 +122,7 @@ public struct PaymentsView: View {
 
     private struct PaymentsMenuView: View {
         @AppObservedObject var store: PaymentStore
-        @EnvironmentObject var router: NavigationRouter
+        @Environment(NavigationRouter.self) var router
 
         var body: some View {
             if store.showsPayinSection,
@@ -239,5 +239,5 @@ public class PaymentsViewModel: ObservableObject {
     return PaymentsNavigation(
         paymentsNavigationVm: PaymentsNavigationViewModel()
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
 }

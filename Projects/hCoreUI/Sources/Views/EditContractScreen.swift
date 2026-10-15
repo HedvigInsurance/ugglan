@@ -8,7 +8,7 @@ public struct EditContractScreen: View {
     let editTypes: [EditType]
     let isPaymentProtection: Bool
     let onSelectedType: (EditType) -> Void
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     public init(
         editTypes: [EditType],
@@ -94,12 +94,12 @@ public struct EditContractScreen: View {
     @Previewable @State var showBottomSheet: Bool = false
     return hForm {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
-            .environmentObject(NavigationRouter())
+            .environment(NavigationRouter())
         hButton(.large, .primary, content: .init(title: "test")) { showBottomSheet = true }
     }
     .hFormContentPosition(.bottom)
     .detent(presented: $showBottomSheet) {
         EditContractScreen(editTypes: [.changeAddress, .changeTier]) { _ in }
-            .environmentObject(NavigationRouter())
+            .environment(NavigationRouter())
     }
 }

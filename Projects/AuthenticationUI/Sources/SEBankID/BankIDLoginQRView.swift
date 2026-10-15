@@ -6,7 +6,7 @@ import hCoreUI
 
 public struct BankIDLoginQRView: View {
     @State var vm = BankIDViewModel()
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -119,17 +119,18 @@ public struct BankIDLoginQRView: View {
 }
 
 @MainActor
-class BankIDViewModel: ObservableObject {
-    @Published var showAlert: Bool = false
-    @Published var token: String?
-    @Published var image: UIImage?
-    @Published var hasBankIdApp = false
-    @Published var isLoading = true
-    @Published var hasAlreadyOpenedBankId = false
-    private var seBankIdState: SEBankIDState = .init()
-    var authenticationService = AuthenticationService()
-    private var observeLoginTask: AnyCancellable?
-    var router: NavigationRouter?
+@Observable
+class BankIDViewModel {
+    var showAlert: Bool = false
+    var token: String?
+    var image: UIImage?
+    var hasBankIdApp = false
+    var isLoading = true
+    var hasAlreadyOpenedBankId = false
+    @ObservationIgnored private var seBankIdState: SEBankIDState = .init()
+    @ObservationIgnored var authenticationService = AuthenticationService()
+    @ObservationIgnored private var observeLoginTask: AnyCancellable?
+    @ObservationIgnored var router: NavigationRouter?
     init() {
         checkIfCanOpenBankId()
     }
@@ -251,5 +252,5 @@ class BankIDViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return BankIDLoginQRView {}
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }

@@ -29,8 +29,8 @@ class OnboardingNavigationViewModel {
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)
-        routeCountCancellable = router.$routeTypes
-            .receive(on: RunLoop.main)
+        routeCountWatcher = ObservationWatcher { [weak self] in
+            _ = self?.router.routeTypes
         } onChange: { [weak self] in
             self?.updateProgress()
         }

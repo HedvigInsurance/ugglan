@@ -487,8 +487,8 @@ class DeepLinkHandler {
 
 struct LoggedInNavigation: View {
     @Bindable var vm: LoggedInNavigationViewModel
-    @StateObject private var router = NavigationRouter()
-    @StateObject private var foreverRouter = NavigationRouter()
+    @State private var router = NavigationRouter()
+    @State private var foreverRouter = NavigationRouter()
     @SwiftUI.Environment(MainNavigationViewModel.self) private var mainNavigationVm
     private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
@@ -552,7 +552,7 @@ struct LoggedInNavigation: View {
 
     var homeTab: some View {
         HomeTab(homeNavigationVm: vm.homeNavigationVm, loggedInVm: vm)
-            .environmentObject(router)
+            .environment(router)
             .tabItem {
                 vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.view : hCoreUIAssets.homeTab.view
                 hText(L10n.tabHomeTitle)
@@ -612,7 +612,7 @@ struct LoggedInNavigation: View {
 
     var foreverTab: some View {
         ForeverNavigation(useOwnNavigation: true)
-            .environmentObject(foreverRouter)
+            .environment(foreverRouter)
             .tabItem {
                 vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.view : hCoreUIAssets.foreverTab.view
                 hText(L10n.tabReferralsTitle)
@@ -995,26 +995,24 @@ class LoggedInNavigationViewModel {
             }
             .store(in: &cancellables)
 
-        $selectedTab
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                // The glass tab bar may rebuild its selected-button copy on selection, dropping the dot.
-                Task { @MainActor [weak self] in
-                    self?.updatePaymentsBadge()
-                }
-                if self?.selectedTab == self?.previousTab,
-                    let nav = self?.tabBar?.selectedViewController?.children
-                        .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
-                {
-                    if nav.viewControllers.count == 1 {
-                        if let scrollView = nav.viewControllers.first?.view.firstScrollView() {
-                            let topOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
-                            scrollView.setContentOffset(topOffset, animated: true)
-                        }
-                    } else {
-                        nav.popToRootViewController(animated: true)
+        selectedTabWatcher = ObservationWatcher { [weak self] in
+            _ = self?.selectedTab
+        } onChange: { [weak self] in
+            // The glass tab bar may rebuild its selected-button copy on selection, dropping the dot.
+            Task { @MainActor [weak self] in
+                self?.updatePaymentsBadge()
+            }
+            if self?.selectedTab == self?.previousTab,
+                let nav = self?.tabBar?.selectedViewController?.children
+                    .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
+            {
+                if nav.viewControllers.count == 1 {
+                    if let scrollView = nav.viewControllers.first?.view.firstScrollView() {
+                        let topOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
+                        scrollView.setContentOffset(topOffset, animated: true)
                     }
                 } else {
+                    nav.popToRootViewController(animated: true)
                 }
             }
         }

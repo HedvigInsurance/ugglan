@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct MyInfoView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @State var vm = MyInfoViewModel()
     let presentationMode: PresentationMode
 

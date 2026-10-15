@@ -157,11 +157,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         self.initialStep = .router(action: .selectInsurance(configs: configs))
         self.redirectHandler.viewModel = self
 
-        routeCountCancellable = router.$routeTypes
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.updateProgress()
-            }
+        observeRouteCount()
     }
 
     init(
@@ -175,11 +171,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         self.hasSelectInsuranceStep = false
         self.initialStep = .router(action: .survey)
         self.redirectHandler.viewModel = self
-        routeCountCancellable = router.$routeTypes
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.updateProgress()
-            }
+        observeRouteCount()
     }
 
     // MARK: - Survey
@@ -340,9 +332,11 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         }
     }
 
+    // routeTypes is @Observable now, so progress is re-read by re-arming a tracking scope:
     // withObservationTracking fires once per change and has to be renewed each time.
     private func observeRouteCount() {
         withObservationTracking {
+            _ = router.routeTypes
         } onChange: { [weak self] in
             Task { @MainActor in
                 guard let self else { return }

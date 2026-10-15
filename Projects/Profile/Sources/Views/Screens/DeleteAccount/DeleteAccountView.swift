@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct DeleteAccountView: View {
     let vm: DeleteAccountViewModel
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
     let memberDetails: MemberDetails?
     public init(

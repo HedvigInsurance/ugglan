@@ -77,7 +77,7 @@ Two navigation systems exist. Code is migrating from Router to hNavigationStack.
 Wraps SwiftUI `NavigationStack` with `NavigationRouter` for programmatic navigation:
 
 ```swift
-@StateObject private var router = NavigationRouter()
+@State private var router = NavigationRouter()
 
 hNavigationStack(router: router, tracking: self) {
     RootView()

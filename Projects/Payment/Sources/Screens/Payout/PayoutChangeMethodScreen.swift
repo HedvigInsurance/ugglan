@@ -5,8 +5,8 @@ import hCoreUI
 
 struct PayoutChangeMethodScreen: View {
     @AppObservedObject var store: PaymentStore
-    @EnvironmentObject var router: NavigationRouter
-    @StateObject private var paymentMethodRouter = NavigationRouter()
+    @Environment(NavigationRouter.self) var router
+    @State private var paymentMethodRouter = NavigationRouter()
     @State private var selected: PaymentProvider?
     @State private var showConnectPayoutMethod: PaymentProvider?
     @State private var connectedProvider: PaymentProvider?

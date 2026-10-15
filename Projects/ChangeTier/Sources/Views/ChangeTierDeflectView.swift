@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct ChangeTierDeflectView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     let title: String
     let message: String
 
@@ -45,5 +45,5 @@ struct ChangeTierDeflectView: View {
         message:
             "To update your coverage, your car first needs to be registered as active with Transportstyrelsen. Once that’s done, your insurance will be updated automatically."
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
 }

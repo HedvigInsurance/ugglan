@@ -9,7 +9,7 @@ import hCoreUI
 
 public struct ClaimDetailView: View {
     @State var vm: ClaimDetailViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     public init(
         claim: ClaimModel?,
