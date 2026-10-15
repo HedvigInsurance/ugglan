@@ -1,4 +1,3 @@
-import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
@@ -23,23 +22,24 @@ extension String: TrackingViewNameProtocol {
 }
 
 @MainActor
-public class NavigationRouter: ObservableObject {
-    @Published fileprivate var path = NavigationPath()
-    @Published public private(set) var routeTypes: [Any.Type] = []
-    var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
-    private var pathSyncCancellable: AnyCancellable?
-
-    public init() {
-        pathSyncCancellable =
-            $path
-            .receive(on: RunLoop.main)
-            .sink { [weak self] newPath in
-                guard let self else { return }
-                if newPath.count < self.routeTypes.count {
-                    self.routeTypes.removeLast(self.routeTypes.count - newPath.count)
-                }
+@Observable
+public class NavigationRouter {
+    fileprivate var path = NavigationPath() {
+        didSet {
+            // SwiftUI writes `path` itself when the member swipes or taps back, so the parallel
+            // route-type stack is trimmed from here rather than from pop(). Deferred to the next
+            // main-actor turn because that write usually lands inside a view update, and
+            // routeTypes is observed too.
+            Task { @MainActor [weak self] in
+                guard let self, self.path.count < self.routeTypes.count else { return }
+                self.routeTypes.removeLast(self.routeTypes.count - self.path.count)
             }
+        }
     }
+    public private(set) var routeTypes: [Any.Type] = []
+    @ObservationIgnored var onDismiss: ((_ withDismissingAll: Bool) -> Void)?
+
+    public init() {}
 
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         routeTypes.append(T.self)
@@ -107,7 +107,7 @@ private struct NavigationBarVisibilityModifier: ViewModifier {
 }
 
 public struct hNavigationStack<Screen: View>: View {
-    @ObservedObject var router: NavigationRouter
+    @Bindable var router: NavigationRouter
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol
     @ViewBuilder var initialView: () -> Screen
@@ -135,7 +135,7 @@ public struct hNavigationStack<Screen: View>: View {
             hNavigationStack.applyCustomStyling(to: navController, options: options)
             hNavigationStack.wireUpDismiss(navController: navController, router: router)
         }
-        .environmentObject(router)
+        .environment(router)
     }
 
     private static func applyCustomStyling(to navController: UINavigationController, options: RouterOptions) {
@@ -250,13 +250,13 @@ extension View {
 }
 
 private struct EmbededInNavigation: ViewModifier {
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol
 
     init(options: RouterOptions, tracking: TrackingViewNameProtocol, router: NavigationRouter? = nil) {
         if let router {
-            _router = StateObject(wrappedValue: router)
+            _router = State(wrappedValue: router)
         }
         self.options = options
         self.tracking = tracking
@@ -265,7 +265,7 @@ private struct EmbededInNavigation: ViewModifier {
     func body(content: Content) -> some View {
         hNavigationStack(router: router, options: options, tracking: tracking) {
             content
-                .environmentObject(router)
+                .environment(router)
         }
     }
 }

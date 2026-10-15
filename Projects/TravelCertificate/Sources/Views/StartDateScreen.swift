@@ -4,7 +4,7 @@ import hCoreUI
 
 struct StartDateScreen: View {
     @Bindable var vm: StartDateViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     var body: some View {
         form

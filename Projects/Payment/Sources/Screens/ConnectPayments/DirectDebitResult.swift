@@ -31,7 +31,7 @@ enum DirectDebitResultType {
 
 struct DirectDebitResult: View {
     let type: DirectDebitResultType
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     let action: () -> Void
 
     var body: some View {

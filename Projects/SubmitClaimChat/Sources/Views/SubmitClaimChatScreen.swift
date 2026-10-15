@@ -8,7 +8,7 @@ public struct SubmitClaimChatScreen: View {
     @Environment(SubmitClaimChatViewModel.self) var viewModel
     @Environment(ClaimChatScrollCoordinator.self) var scrollCoordinator
     @State var fileUploadVm = FilesUploadViewModel(model: .init())
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
     public init() {}
@@ -293,7 +293,7 @@ private struct CurrentStepView: View {
 private struct ClaimStepErrorAlertModifier: ViewModifier {
     let step: ClaimIntentStepHandler
     @Environment(SubmitClaimChatScreenAlertViewModel.self) var alertVm
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     func body(content: Content) -> some View {
         content

@@ -11,7 +11,7 @@ public struct HelpCenterStartView: View {
     @State private var puppyGuideDisplay: PuppyGuideDisplay?
     @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
     let onQuickAction: (QuickAction) -> Void
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @InjectObservableObject var featureFlags: FeatureFlags
 
     public init(

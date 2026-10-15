@@ -3,7 +3,7 @@ import hCoreUI
 
 struct CancelButton: View {
     @Environment(EditStakeholdersNavigationViewModel.self) private var editStakeholdersNavigation
-    @EnvironmentObject private var router: NavigationRouter
+    @Environment(NavigationRouter.self) private var router
 
     var body: some View {
         hCancelButton {

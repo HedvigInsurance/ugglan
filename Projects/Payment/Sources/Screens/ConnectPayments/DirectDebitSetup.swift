@@ -148,7 +148,7 @@ private class DirectDebitWebview: UIView {
                 router?.dismiss()
             }
         )
-        .environmentObject(router)
+        .environment(router)
 
         if type == .success {
             onSuccess?()
@@ -206,8 +206,8 @@ public struct DirectDebitSetup: View {
 
     @State var activeAlert: AlertType?
 
-    @StateObject private var ownedRouter = NavigationRouter()
-    @ObservedObject private var externalRouter: NavigationRouter
+    @State private var ownedRouter = NavigationRouter()
+    private let externalRouter: NavigationRouter
     private var hasExternalRouter: Bool
     var router: NavigationRouter { hasExternalRouter ? externalRouter : ownedRouter }
     private let isReplacingExistingMethod: Bool
@@ -222,7 +222,7 @@ public struct DirectDebitSetup: View {
             .contains(store.paymentStatusData?.status ?? .active)
         self.onSuccess = onSuccess
         self.hasExternalRouter = router != nil
-        self._externalRouter = ObservedObject(wrappedValue: router ?? NavigationRouter())
+        self.externalRouter = router ?? NavigationRouter()
     }
 
     public var body: some View {
