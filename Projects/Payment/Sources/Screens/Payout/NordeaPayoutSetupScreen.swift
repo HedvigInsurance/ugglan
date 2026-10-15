@@ -5,7 +5,7 @@ import hCoreUI
 
 struct NordeaPayoutSetupScreen: View {
     @State private var vm = NordeaPayoutSetupViewModel()
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     let onSuccess: (() -> Void)?
 
     init(onSuccess: (() -> Void)? = nil) {
@@ -161,5 +161,5 @@ enum NordeaPayoutField: hTextFieldFocusStateCompliant {
 
 #Preview {
     NordeaPayoutSetupScreen()
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }

@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct LoginErrorView: View {
     let message: String
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     public init(message: String) {
         self.message = message

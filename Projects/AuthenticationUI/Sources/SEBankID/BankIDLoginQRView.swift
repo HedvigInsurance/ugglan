@@ -6,7 +6,7 @@ import hCoreUI
 
 public struct BankIDLoginQRView: View {
     @State var vm = BankIDViewModel()
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -252,5 +252,5 @@ class BankIDViewModel {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return BankIDLoginQRView {}
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
