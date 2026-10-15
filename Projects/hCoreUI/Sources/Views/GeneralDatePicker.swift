@@ -96,7 +96,6 @@ public struct DatePickerView: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("DatePickerView") {
     @Previewable @State var date = Date()
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
@@ -274,7 +273,6 @@ public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainA
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("hDatePickerField") {
     @Previewable @State var dateForSmallWithRealDate: Date? = Date()
     @Previewable @State var dateForSmall: Date?

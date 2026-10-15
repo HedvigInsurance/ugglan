@@ -5,17 +5,15 @@ import hCore
 
 @MainActor
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
-    if #available(iOS 17.0, *) {
-        let grabberKey = ["_", "setWants", "Grabber:"]
-        let selector = NSSelectorFromString(grabberKey.joined())
-        if let presentationController = presentationController as? UISheetPresentationController {
-            presentationController.prefersGrabberVisible = value
-        } else if presentationController.responds(to: selector) {
-            if value {
-                presentationController.perform(selector, with: value)
-            } else {
-                presentationController.perform(selector, with: nil)
-            }
+    let grabberKey = ["_", "setWants", "Grabber:"]
+    let selector = NSSelectorFromString(grabberKey.joined())
+    if let presentationController = presentationController as? UISheetPresentationController {
+        presentationController.prefersGrabberVisible = value
+    } else if presentationController.responds(to: selector) {
+        if value {
+            presentationController.perform(selector, with: value)
+        } else {
+            presentationController.perform(selector, with: nil)
         }
     }
 }
@@ -447,9 +445,7 @@ public class BlurredSheetPresentationController: UISheetPresentationController {
         useBlur: Bool
     ) {
         super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        if #available(iOS 17.0, *) {
-            prefersPageSizing = false
-        }
+        prefersPageSizing = false
         effectView = useBlur ? PassThroughEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterial)) : nil
         effectView?.clipsToBounds = true
         self.presentedViewController.view.layer.cornerRadius = 16

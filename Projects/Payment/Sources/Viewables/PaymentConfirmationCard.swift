@@ -90,7 +90,6 @@ struct PaymentConfirmationCard: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("Not confirmed") {
     @Previewable @State var isConfirmed = false
     Localization.Locale.currentLocale.send(.en_SE)
@@ -100,7 +99,6 @@ struct PaymentConfirmationCard: View {
     .sectionContainerStyle(.transparent)
 }
 
-@available(iOS 17.0, *)
 #Preview("Confirmed") {
     @Previewable @State var isConfirmed = true
     Localization.Locale.currentLocale.send(.en_SE)

@@ -238,7 +238,6 @@ class TextFieldVM: ObservableObject {
     @Published var onReturnTap: Date?
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: String = "Text Input"
     @Previewable @State var error: String?
@@ -413,16 +412,5 @@ extension EnvironmentValues {
 extension View {
     public func hAnimateField(_ animate: Bool) -> some View {
         environment(\.hAnimateField, animate)
-    }
-
-    /// Isolates the field's geometry from its ancestors so parent layout changes
-    /// don't animate the field's own subviews independently.
-    @ViewBuilder
-    public func geometryGroupIfAvailable() -> some View {
-        if #available(iOS 17.0, *) {
-            geometryGroup()
-        } else {
-            self
-        }
     }
 }

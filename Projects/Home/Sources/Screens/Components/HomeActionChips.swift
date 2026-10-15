@@ -14,7 +14,7 @@ struct HomeActionChips: View {
         ScrollView(.horizontal, showsIndicators: false) {
             chipsRow
         }
-        .disableScrollClipCompat()
+        .scrollClipDisabled()
     }
 
     private var chipsRow: some View {

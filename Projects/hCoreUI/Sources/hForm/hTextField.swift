@@ -117,7 +117,6 @@ public struct hTextField: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("Masked with Swedish Personal Number", traits: .sizeThatFitsLayout) {
     hTextField(
         masking: Masking(type: .birthDate(minAge: 0)),

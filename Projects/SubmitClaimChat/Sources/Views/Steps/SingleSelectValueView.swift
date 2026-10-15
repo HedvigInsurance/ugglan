@@ -80,7 +80,6 @@ struct SingleSelectValueView: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     VStack {
         SingleSelectValueView(
