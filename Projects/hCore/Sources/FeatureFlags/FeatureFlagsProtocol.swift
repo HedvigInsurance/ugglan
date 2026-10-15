@@ -69,11 +69,12 @@ extension Dependencies {
 
 @MainActor
 @dynamicMemberLookup
-public class FeatureFlags: ObservableObject {
-    public static let shared = FeatureFlags()
-    private var client: FeatureFlagsClient?
-    private var featureDataCancellable: AnyCancellable?
-    @Published public var data: FeatureData = .init(
+@Observable
+public class FeatureFlags {
+    @ObservationIgnored public static let shared = FeatureFlags()
+    @ObservationIgnored private var client: FeatureFlagsClient?
+    @ObservationIgnored private var featureDataCancellable: AnyCancellable?
+    public var data: FeatureData = .init(
         isUpdateNecessary: false,
         isSubmitClaimEnabled: false,
         osVersionTooLow: false,

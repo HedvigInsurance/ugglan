@@ -44,7 +44,7 @@ extension AppDelegate {
 
         let profileStore: ProfileStore = globalAppStateContainer.get()
 
-        profileStore.$memberDetails
+        profileStore.publisher(for: \.memberDetails)
             .map { $0?.id }
             .removeDuplicates()
             .receive(on: RunLoop.main)

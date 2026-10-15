@@ -1,9 +1,9 @@
-import Combine
 import Foundation
+import Observation
 import SwiftUI
 
 @MainActor
-public protocol AppStore: ObservableObject {
+public protocol AppStore: AnyObject, Observable, Sendable {
     init()
 }
 
@@ -17,7 +17,8 @@ public protocol PersistableAppStore: AppStore {
 @MainActor
 public final class AppStateContainer {
     private var stores: [ObjectIdentifier: AnyObject] = [:]
-    private var persistenceCancellables: [ObjectIdentifier: AnyCancellable] = [:]
+    private var persistedStores: Set<ObjectIdentifier> = []
+    private var pendingWrites: [ObjectIdentifier: Task<Void, Never>] = [:]
 
     public nonisolated init() {}
 
@@ -38,14 +39,18 @@ public final class AppStateContainer {
 
     public func register<S: AppStore>(_ store: S) {
         let key = ObjectIdentifier(S.self)
-        persistenceCancellables[key] = nil
+        persistedStores.remove(key)
+        pendingWrites[key]?.cancel()
+        pendingWrites[key] = nil
         stores[key] = store
         attachPersistence(store)
     }
 
     public func reset() {
         stores.removeAll()
-        persistenceCancellables.removeAll()
+        persistedStores.removeAll()
+        pendingWrites.values.forEach { $0.cancel() }
+        pendingWrites.removeAll()
     }
 
     public func clearPersistence(preserving preserved: [any AppStore.Type] = []) {
@@ -86,17 +91,36 @@ public final class AppStateContainer {
     }
 
     private func observe<S: PersistableAppStore>(_ store: S) {
+        persistedStores.insert(ObjectIdentifier(S.self))
+        track(store)
+    }
+
+    /// Writes a snapshot 250ms after the store settles.
+    ///
+    /// Reading `snapshot` inside the tracking scope subscribes to every property it is built from,
+    /// which is exactly the set worth persisting - a `@Transient` property no longer schedules a
+    /// write of bytes that cannot have changed. `withObservationTracking` reports one change and
+    /// then stops, so this arms itself again each time.
+    private func track<S: PersistableAppStore>(_ store: S) {
         let key = ObjectIdentifier(S.self)
         let url = Self.url(for: S.self)
-        persistenceCancellables[key] = store.objectWillChange
-            .debounce(for: .milliseconds(250), scheduler: DispatchQueue.main)
-            .sink { [weak store] _ in
-                guard let store else { return }
-                let snapshot = store.snapshot
-                Task.detached(priority: .background) {
-                    Self.persist(snapshot, to: url)
+        withObservationTracking { [weak store] in
+            _ = store?.snapshot
+        } onChange: { [weak self, weak store] in
+            Task { @MainActor in
+                guard let self, let store, self.persistedStores.contains(key) else { return }
+                self.pendingWrites[key]?.cancel()
+                self.pendingWrites[key] = Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(250))
+                    guard !Task.isCancelled else { return }
+                    let snapshot = store.snapshot
+                    Task.detached(priority: .background) {
+                        Self.persist(snapshot, to: url)
+                    }
                 }
+                self.track(store)
             }
+        }
     }
 
     private nonisolated static func persist<Snapshot: Encodable & Sendable>(_ snapshot: Snapshot, to url: URL) {
@@ -130,17 +154,17 @@ public var globalAppStateContainer = AppStateContainer()
 @MainActor
 @propertyWrapper
 public struct AppObservedObject<T: AppStore>: DynamicProperty {
-    @StateObject private var stateObject: T
+    @State private var store: T
     public init() {
-        _stateObject = StateObject(wrappedValue: globalAppStateContainer.get())
+        _store = State(wrappedValue: globalAppStateContainer.get())
     }
 
     public var wrappedValue: T {
-        stateObject
+        store
     }
 
-    public var projectedValue: ObservedObject<T>.Wrapper {
-        $stateObject
+    public var projectedValue: Bindable<T> {
+        Bindable(store)
     }
 }
 

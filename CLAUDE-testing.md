@@ -93,7 +93,7 @@ func testFetchItemsSuccess() async {
 
 ## Store Testing
 
-`AppStore` instances are plain `@MainActor` `ObservableObject`s — test them by constructing the store, awaiting the async methods, and reading `@Published` properties directly.
+`AppStore` instances are plain `@MainActor` `@Observable` classes — test them by constructing the store, awaiting the async methods, and reading the properties directly.
 
 Reset persistence in setUp so cross-test state doesn't leak via on-disk snapshots:
 
@@ -174,7 +174,7 @@ final class MyViewModelTests: XCTestCase {
 
 - **ViewModels**: Inject mock services via DI, call methods, verify state changes and event tracking
 - **Services**: Mock the client protocol, verify returned data and event tracking
-- **Stores**: Call the store's async methods directly and assert on its `@Published` properties; reset `globalAppStateContainer.clearPersistence()` in setUp
+- **Stores**: Call the store's async methods directly and assert on its properties; reset `globalAppStateContainer.clearPersistence()` in setUp
 - **Not views directly**: UI is not unit tested
 
 ## When to Write Tests

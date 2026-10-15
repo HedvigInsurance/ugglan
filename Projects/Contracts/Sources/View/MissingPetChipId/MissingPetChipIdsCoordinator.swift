@@ -128,8 +128,9 @@ private struct SelectContractInput: Identifiable & Equatable {
 }
 
 @MainActor
-class AddMissingPetChipIdViewModel: ObservableObject {
-    @AppState private var contractStore: ContractStore
+@Observable
+class AddMissingPetChipIdViewModel {
+    @ObservationIgnored @AppState private var contractStore: ContractStore
     private let service = PetChipIdService()
     let router = NavigationRouter()
 

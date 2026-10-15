@@ -486,10 +486,10 @@ class DeepLinkHandler {
 // MARK: - Views
 
 struct LoggedInNavigation: View {
-    @ObservedObject var vm: LoggedInNavigationViewModel
-    @StateObject private var router = NavigationRouter()
-    @StateObject private var foreverRouter = NavigationRouter()
-    @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
+    @Bindable var vm: LoggedInNavigationViewModel
+    @State private var router = NavigationRouter()
+    @State private var foreverRouter = NavigationRouter()
+    @SwiftUI.Environment(MainNavigationViewModel.self) private var mainNavigationVm
     private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
         TabView(selection: $vm.selectedTab) {
@@ -499,7 +499,7 @@ struct LoggedInNavigation: View {
             paymentsTab
             profileTab
         }
-        .onChange(of: vm.selectedTab) { newTab in
+        .onChange(of: vm.selectedTab) { _, newTab in
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
         }
         .handleLoggedInPresentations(with: vm)
@@ -552,7 +552,7 @@ struct LoggedInNavigation: View {
 
     var homeTab: some View {
         HomeTab(homeNavigationVm: vm.homeNavigationVm, loggedInVm: vm)
-            .environmentObject(router)
+            .environment(router)
             .tabItem {
                 vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.view : hCoreUIAssets.homeTab.view
                 hText(L10n.tabHomeTitle)
@@ -612,7 +612,7 @@ struct LoggedInNavigation: View {
 
     var foreverTab: some View {
         ForeverNavigation(useOwnNavigation: true)
-            .environmentObject(foreverRouter)
+            .environment(foreverRouter)
             .tabItem {
                 vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.view : hCoreUIAssets.foreverTab.view
                 hText(L10n.tabReferralsTitle)
@@ -652,7 +652,7 @@ struct LoggedInNavigation: View {
                 DeleteAccountView(
                     vm: model
                 )
-                .environmentObject(vm.profileNavigationVm)
+                .environment(vm.profileNavigationVm)
             case .pickLanguage:
                 LanguagePickerView {
                     // show loading screen since we everything needs to be updated
@@ -707,8 +707,8 @@ struct HandleMoving: View {
 }
 
 struct HomeTab: View {
-    @ObservedObject var homeNavigationVm: HomeNavigationViewModel
-    @ObservedObject var loggedInVm: LoggedInNavigationViewModel
+    @Bindable var homeNavigationVm: HomeNavigationViewModel
+    let loggedInVm: LoggedInNavigationViewModel
     @AppObservedObject private var crossSellStore: CrossSellStore
     @AppObservedObject private var contractStore: ContractStore
 
@@ -730,10 +730,10 @@ struct HomeTab: View {
                 }
                 .routerDestination(for: HomeRouterAction.self) { _ in
                     InboxView()
-                        .environmentObject(homeNavigationVm)
+                        .environment(homeNavigationVm)
                 }
         }
-        .environmentObject(homeNavigationVm)
+        .environment(homeNavigationVm)
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)
         .handlePaymentMethods(presented: $homeNavigationVm.isPaymentMethodsPresented)
         .handlePayinSetupDeepLink(provider: $homeNavigationVm.payinSetupProvider)
@@ -759,7 +759,7 @@ struct HomeTab: View {
             ) { redirectType in
                 quickActionRedirect(for: redirectType)
             }
-            .environmentObject(homeNavigationVm)
+            .environment(homeNavigationVm)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedCenter,
@@ -818,7 +818,7 @@ struct HomeTab: View {
             options: .constant([.alwaysOpenOnTop])
         ) {
             PayoutNavigation()
-                .environmentObject(loggedInVm.paymentsNavigationVm)
+                .environment(loggedInVm.paymentsNavigationVm)
         }
         .detent(
             presented: $homeNavigationVm.isForeverPresented,
@@ -908,14 +908,15 @@ enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 }
 
 @MainActor
-class LoggedInNavigationViewModel: ObservableObject {
-    @Published var selectedTab = 0 {
+@Observable
+class LoggedInNavigationViewModel {
+    var selectedTab = 0 {
         willSet {
             previousTab = selectedTab
         }
     }
 
-    var previousTab: Int = 0
+    @ObservationIgnored var previousTab: Int = 0
 
     // MARK: - Helper Properties
     private let pushNotificationHandler = PushNotificationHandler()
@@ -929,25 +930,26 @@ class LoggedInNavigationViewModel: ObservableObject {
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
-    @Published var isTravelInsurancePresented = false
-    @Published var isMoveContractPresented: MovingFlowSource?
-    @Published var isChangeTierPresented: ChangeTierContractsInput?
-    @Published var isAddonPresented: ChangeAddonInput?
-    @Published var missingPetChipIdInput: MissingPetChipIdInput?
-    @Published var isInsuranceEvidencePresented = false
-    @Published var isEuroBonusPresented = false
-    @Published var isFaqTopicPresented: FaqTopic?
-    @Published var isFaqPresented: FAQModel?
-    @Published var askForPushNotification = false
-    @Published var isReviewContactInfoPresented = false
-    @Published var isAnalyticsConsentPresented = false
-    @Published var missedPaymentData: MissedPaymentData?
-    @Published var hasMissedPayment = false
-    private var showsPaymentBadge = false
+    var isTravelInsurancePresented = false
+    var isMoveContractPresented: MovingFlowSource?
+    var isChangeTierPresented: ChangeTierContractsInput?
+    var isAddonPresented: ChangeAddonInput?
+    var missingPetChipIdInput: MissingPetChipIdInput?
+    var isInsuranceEvidencePresented = false
+    var isEuroBonusPresented = false
+    var isFaqTopicPresented: FaqTopic?
+    var isFaqPresented: FAQModel?
+    var askForPushNotification = false
+    var isReviewContactInfoPresented = false
+    var isAnalyticsConsentPresented = false
+    var missedPaymentData: MissedPaymentData?
+    var hasMissedPayment = false
+    @ObservationIgnored private var showsPaymentBadge = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
-    private var cancellables = Set<AnyCancellable>()
-    weak var tabBar: UITabBarController? {
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var selectedTabWatcher: ObservationWatcher?
+    @ObservationIgnored weak var tabBar: UITabBarController? {
         didSet {
             if #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad {
                 tabBar?.traitOverrides.horizontalSizeClass = .compact
@@ -974,7 +976,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             .store(in: &cancellables)
 
         let paymentStore: PaymentStore = globalAppStateContainer.get()
-        paymentStore.$missedPaymentData
+        paymentStore.publisher(for: \.missedPaymentData)
             .map { $0 != nil }
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -984,7 +986,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        paymentStore.$showsPaymentBadge
+        paymentStore.publisher(for: \.showsPaymentBadge)
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] showsPaymentBadge in
@@ -993,28 +995,27 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        $selectedTab
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                // The glass tab bar may rebuild its selected-button copy on selection, dropping the dot.
-                Task { @MainActor [weak self] in
-                    self?.updatePaymentsBadge()
-                }
-                if self?.selectedTab == self?.previousTab,
-                    let nav = self?.tabBar?.selectedViewController?.children
-                        .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
-                {
-                    if nav.viewControllers.count == 1 {
-                        if let scrollView = nav.viewControllers.first?.view.firstScrollView() {
-                            let topOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
-                            scrollView.setContentOffset(topOffset, animated: true)
-                        }
-                    } else {
-                        nav.popToRootViewController(animated: true)
+        selectedTabWatcher = ObservationWatcher { [weak self] in
+            _ = self?.selectedTab
+        } onChange: { [weak self] in
+            // The glass tab bar may rebuild its selected-button copy on selection, dropping the dot.
+            Task { @MainActor [weak self] in
+                self?.updatePaymentsBadge()
+            }
+            if self?.selectedTab == self?.previousTab,
+                let nav = self?.tabBar?.selectedViewController?.children
+                    .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
+            {
+                if nav.viewControllers.count == 1 {
+                    if let scrollView = nav.viewControllers.first?.view.firstScrollView() {
+                        let topOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
+                        scrollView.setContentOffset(topOffset, animated: true)
                     }
+                } else {
+                    nav.popToRootViewController(animated: true)
                 }
             }
-            .store(in: &cancellables)
+        }
     }
 
     /// A missed payment outranks a charge notice — only one dot fits on the tab.

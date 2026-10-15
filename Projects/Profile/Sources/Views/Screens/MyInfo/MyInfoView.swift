@@ -95,16 +95,20 @@ extension MyInfoView {
 @Observable
 public class MyInfoViewModel {
     private let profileService = ProfileService()
-    @AppState var profileStore: ProfileStore
-    @AppState var homeStore: HomeStore
-    @Published var type: MyInfoViewEditType?
-    @Published var currentPhoneInput: String = ""
-    @Published var phoneError: String?
-    @Published var currentEmailInput: String = ""
-    @Published var emailError: String?
-    @Published var error: String?
-    @Published var viewState: ProcessingState = .success
-    @Published var disabledSaveButton: Bool = false
+    @ObservationIgnored @AppState var profileStore: ProfileStore
+    @ObservationIgnored @AppState var homeStore: HomeStore
+    var type: MyInfoViewEditType?
+    var currentPhoneInput: String = "" {
+        didSet { scheduleValidation() }
+    }
+    var phoneError: String?
+    var currentEmailInput: String = "" {
+        didSet { scheduleValidation() }
+    }
+    var emailError: String?
+    var error: String?
+    var viewState: ProcessingState = .success
+    var disabledSaveButton: Bool = false
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     var showInfoCard: Bool
@@ -116,7 +120,7 @@ public class MyInfoViewModel {
         currentEmailInput = store.memberDetails?.email ?? ""
         isValid()
 
-        store.$memberDetails
+        store.publisher(for: \.memberDetails)
             .receive(on: RunLoop.main)
             .map { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()

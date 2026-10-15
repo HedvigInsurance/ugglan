@@ -22,11 +22,11 @@ public final class ClaimsStore: AppStore {
             setAllActiveClaims()
         }
     }
-    @Published public internal(set) var allActiveClaims: [ActiveClaimType] = []
-    @Transient private var cancellables = Set<AnyCancellable>()
+    public internal(set) var allActiveClaims: [ActiveClaimType] = []
+    @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
-        FeatureFlags.shared.$data
+        FeatureFlags.shared.publisher(for: \.data)
             .map(\.isResumeClaimEnabled)
             .removeDuplicates()
             .dropFirst()

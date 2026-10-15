@@ -117,13 +117,15 @@ public struct PaymentHistoryView: View {
 }
 
 @MainActor
-public class PaymentsHistoryViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: PaymentStore
+@Observable
+public class PaymentsHistoryViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: PaymentStore
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
-        store.$isLoadingHistory
-            .combineLatest(store.$loadHistoryError)
+        store.publisher(for: \.isLoadingHistory)
+            .combineLatest(store.publisher(for: \.loadHistoryError))
             .receive(on: RunLoop.main)
             .map { isLoading, error in
                 if isLoading { return .loading }
