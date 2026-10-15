@@ -38,13 +38,13 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
                 }
             }
         }
-        .onChange(of: item) { newValue in
+        .onChange(of: item) { _, newValue in
             if let item = item {
                 itemToRenderFrom = item
             }
             present = newValue != nil
         }
-        .onChange(of: present) { _ in
+        .onChange(of: present) {
             if !present {
                 item = nil
             }
@@ -79,7 +79,7 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
             .onAppear {
                 handle(isPresent: presented)
             }
-            .onChange(of: presented) { isPresent in
+            .onChange(of: presented) { _, isPresent in
                 handle(isPresent: isPresent)
             }
     }

@@ -30,7 +30,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                     .onAppear {
                         vm.viewWidth = geo.size.width
                     }
-                    .onChange(of: geo.size.width) { width in
+                    .onChange(of: geo.size.width) { _, width in
                         vm.viewWidth = width
                     }
             }
@@ -119,7 +119,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                             let frame = geo.frame(in: .global)
                             vm.updateTitleStartPositions(for: model.id, position: frame)
                         }
-                        .onChange(of: geo.frame(in: .global)) { frame in
+                        .onChange(of: geo.frame(in: .global)) { _, frame in
                             vm.updateTitleStartPositions(for: model.id, position: frame)
                         }
                 }
@@ -140,7 +140,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                                             .onAppear {
                                                 vm.updateContentHeight(for: model.id, height: geo.size.height)
                                             }
-                                            .onChange(of: geo.size.height) { height in
+                                            .onChange(of: geo.size.height) { _, height in
                                                 vm.updateContentHeight(for: model.id, height: height)
                                             }
                                     }
