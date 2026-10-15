@@ -53,7 +53,7 @@ struct PaymentConnectionGraphic: View {
         .animation(reduceMotion ? .none : .easeInOut, value: provider)
         .animation(reduceMotion ? .none : .easeInOut, value: outcome)
         .accessibilityHidden(true)
-        .geometryGroupIfAvailable()
+        .geometryGroup()
     }
 
     private var methodSlot: some View {
@@ -62,7 +62,7 @@ struct PaymentConnectionGraphic: View {
         }
         .frame(width: 74, height: 74)
         .paymentMethodTile()
-        .geometryGroupIfAvailable()
+        .geometryGroup()
     }
 
     @ViewBuilder

@@ -202,7 +202,6 @@ struct hFieldLabel: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: String?
     @Previewable @State var error: String?

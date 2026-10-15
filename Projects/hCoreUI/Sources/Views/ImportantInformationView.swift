@@ -133,7 +133,6 @@ public struct ImportantInformationView: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var isConfirmed = false
     ImportantInformationView(

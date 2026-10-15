@@ -128,7 +128,6 @@ extension hRadioOptionList where Content == AnyView {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("List types") {
     @Previewable @State var selection: String? = "first"
 
@@ -172,7 +171,6 @@ extension hRadioOptionList where Content == AnyView {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("List sizes") {
     @Previewable @State var selection: String? = "first"
 

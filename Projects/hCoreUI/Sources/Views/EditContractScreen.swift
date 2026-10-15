@@ -90,7 +90,6 @@ public struct EditContractScreen: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var showBottomSheet: Bool = false
     return hForm {

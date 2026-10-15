@@ -316,16 +316,9 @@ struct TooltipView: View {
         autoHideTask = Task {
             await delay(4)
             guard !Task.isCancelled else { return }
-            if #available(iOS 17.0, *) {
-                withAnimation(.defaultSpring) {
-                    isTooltipVisible = false
-                } completion: {
-                    toolTipManager.removeTooltip(type)
-                }
-            } else {
-                withAnimation(.defaultSpring) {
-                    isTooltipVisible = false
-                }
+            withAnimation(.defaultSpring) {
+                isTooltipVisible = false
+            } completion: {
                 toolTipManager.removeTooltip(type)
             }
         }
