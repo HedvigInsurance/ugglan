@@ -1,6 +1,7 @@
 import Apollo
 import Combine
 import Foundation
+import Observation
 import SwiftUI
 
 @MainActor
@@ -63,15 +64,13 @@ public struct Module {
 public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
     @StateObject private var stateObject: T
 
-    public init() {
-        _stateObject = StateObject(wrappedValue: Dependencies.shared.resolve())
-    }
+    public init() {}
 
     public var wrappedValue: T {
-        stateObject
+        box.object
     }
 
-    public var projectedValue: ObservedObject<T>.Wrapper {
-        $stateObject
+    public var projectedValue: Bindable<T> {
+        Bindable(box.object)
     }
 }

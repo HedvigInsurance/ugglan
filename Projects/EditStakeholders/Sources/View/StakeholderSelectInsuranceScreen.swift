@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct StakeholderSelectInsuranceScreen: View {
-    @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
-    @ObservedObject private var editStakeholdersViewModel: EditStakeholdersViewModel
+    private let editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
+    private let editStakeholdersViewModel: EditStakeholdersViewModel
     private let router: NavigationRouter
     private let itemPickerConfig: ItemConfig<StakeholdersConfig>
     init(

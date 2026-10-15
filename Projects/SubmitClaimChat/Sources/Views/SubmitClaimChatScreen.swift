@@ -14,6 +14,7 @@ public struct SubmitClaimChatScreen: View {
     public init() {}
 
     public var body: some View {
+        @Bindable var viewModel = viewModel
         scrollContent
             .submitClaimChatScreenAlert(viewModel.alertVm)
             .animation(.defaultSpring, value: viewModel.outcome)
@@ -108,7 +109,7 @@ public struct SubmitClaimChatScreen: View {
             }
             floatingCardView
         }
-        .environmentObject(viewModel.alertVm)
+        .environment(viewModel.alertVm)
     }
 
     @ViewBuilder
@@ -135,7 +136,7 @@ public struct SubmitClaimChatScreen: View {
             }
         }
         .padding(.bottom, .padding16)
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .background {
             if let currentStep = viewModel.currentStep {
                 HiddenWhileFloatingCard(step: currentStep) {
@@ -151,9 +152,9 @@ public struct SubmitClaimChatScreen: View {
 }
 
 private struct ClaimChatDockedInputView: View {
-    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
-    @EnvironmentObject var scrollCoordinator: ClaimChatScrollCoordinator
-    @ObservedObject var step: ClaimIntentStepHandler
+    @Environment(SubmitClaimChatViewModel.self) var viewModel
+    @Environment(ClaimChatScrollCoordinator.self) var scrollCoordinator
+    let step: ClaimIntentStepHandler
     @AccessibilityFocusState private var isCurrentStepFocused: Bool
 
     var body: some View {
@@ -197,7 +198,7 @@ private struct ClaimChatDockedInputView: View {
 }
 
 private struct HiddenWhileFloatingCard<Content: View>: View {
-    @ObservedObject var step: ClaimIntentStepHandler
+    let step: ClaimIntentStepHandler
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -212,8 +213,8 @@ private struct HiddenWhileFloatingCard<Content: View>: View {
 }
 
 private struct ClaimChatFloatingCardView: View {
-    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
-    @ObservedObject var step: ClaimIntentStepHandler
+    @Environment(SubmitClaimChatViewModel.self) var viewModel
+    let step: ClaimIntentStepHandler
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
     var body: some View {
@@ -231,7 +232,7 @@ private struct ClaimChatFloatingCardView: View {
                     }
             }
         }
-        .environmentObject(viewModel)
+        .environment(viewModel)
         .animation(.defaultSpring, value: step.usesFloatingInputCard)
     }
 }
@@ -275,7 +276,7 @@ private struct ClaimChatInputBlurBackground: View {
 }
 
 private struct CurrentStepView: View {
-    @ObservedObject var step: ClaimIntentStepHandler
+    let step: ClaimIntentStepHandler
 
     var body: some View {
         VStack {
@@ -335,8 +336,8 @@ extension View {
 }
 
 struct StepView: View {
-    @EnvironmentObject var viewModel: SubmitClaimChatViewModel
-    @ObservedObject var step: ClaimIntentStepHandler
+    @Environment(SubmitClaimChatViewModel.self) var viewModel
+    let step: ClaimIntentStepHandler
     @AccessibilityFocusState var isAccessibilityFocused: String?
 
     var body: some View {
@@ -396,32 +397,33 @@ extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     )
     return SubmitClaimChatScreen()
         .embededInNavigation(tracking: "")
-        .environmentObject(viewModel)
-        .environmentObject(viewModel.scrollCoordinator)
+        .environment(viewModel)
+        .environment(viewModel.scrollCoordinator)
 }
 
 // MARK: - Main Model
 @MainActor
-final class SubmitClaimChatViewModel: ObservableObject {
-    @Published var error: Error? {
+@Observable
+final class SubmitClaimChatViewModel {
+    var error: Error? {
         didSet {
             showError = error != nil
         }
     }
-    @Published var showError = false
+    var showError = false
     // MARK: - Published UI State
-    @Published var allSteps: [ClaimIntentStepHandler] = [] {
+    var allSteps: [ClaimIntentStepHandler] = [] {
         didSet {
             scrollCoordinator.isInputScrolledOffScreen = false
             recalculateStepHeights()
         }
     }
-    @Published var currentStep: ClaimIntentStepHandler?
-    @Published var currentStepId: String?
-    @Published var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
+    var currentStep: ClaimIntentStepHandler?
+    var currentStepId: String?
+    var scrollTarget: ScrollTarget = .init(id: "", anchor: .bottom)
     let alertVm = SubmitClaimChatScreenAlertViewModel()
     let scrollCoordinator = ClaimChatScrollCoordinator()
-    private var previousTitle: String?
+    @ObservationIgnored private var previousTitle: String?
     var title: String {
         if let newTitle = currentStep?.claimIntent.displayName {
             previousTitle = newTitle
@@ -430,7 +432,7 @@ final class SubmitClaimChatViewModel: ObservableObject {
             return previousTitle ?? L10n.claimChatTitle
         }
     }
-    var stepHeights: [String: CGFloat] = [:] {
+    @ObservationIgnored var stepHeights: [String: CGFloat] = [:] {
         didSet {
             recalculateStepHeights()
         }
@@ -446,9 +448,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
         )
     }
 
-    var totalStepsHeight: CGFloat = 0
-    @Published var lastStepContentHeight: CGFloat = 0
-    @Published var currentStepInputHeight: CGFloat = 0 {
+    @ObservationIgnored var totalStepsHeight: CGFloat = 0
+    var lastStepContentHeight: CGFloat = 0
+    var currentStepInputHeight: CGFloat = 0 {
         didSet {
             if currentStepInputHeight != oldValue {
                 scrollCoordinator.checkForScrollOffset()
@@ -456,9 +458,9 @@ final class SubmitClaimChatViewModel: ObservableObject {
         }
     }
 
-    @Published var outcome: ClaimIntentStepOutcome?
-    @Published var progress: Float?
-    var currentVerticalSizeClass: UserInterfaceSizeClass?
+    var outcome: ClaimIntentStepOutcome?
+    var progress: Float?
+    @ObservationIgnored var currentVerticalSizeClass: UserInterfaceSizeClass?
 
     var shouldShowAIDisclaimer: Bool {
         allSteps.count < 2

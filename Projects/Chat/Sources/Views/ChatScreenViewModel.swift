@@ -5,40 +5,42 @@ import SwiftUI
 import hCore
 
 @MainActor
-public class ChatConversationViewModel: ObservableObject {
-    @Published var conversationStatus: ConversationStatus = .open
-    var conversationId: String?
-    var claimId: String?
-    @Published var banner: Markdown?
-    @Published var shouldShowBanner = true
-    @Published var title: String = L10n.chatTitle
-    @Published var subTitle: String?
-    @Published var isKeyboardShown = false
+@Observable
+public class ChatConversationViewModel {
+    var conversationStatus: ConversationStatus = .open
+    @ObservationIgnored var conversationId: String?
+    @ObservationIgnored var claimId: String?
+    var banner: Markdown?
+    var shouldShowBanner = true
+    var title: String = L10n.chatTitle
+    var subTitle: String?
+    var isKeyboardShown = false
 }
 
 @MainActor
-public class ChatMessageViewModel: ObservableObject {
+@Observable
+public class ChatMessageViewModel {
     let chatService: ChatServiceProtocol
-    weak var chatNavigationVm: ChatNavigationViewModel?
+    @ObservationIgnored weak var chatNavigationVm: ChatNavigationViewModel?
     let conversationVm: ChatConversationViewModel
     let crossSellVm: ChatCrossSellViewModel
-    private var hasNext: Bool?
-    var haveSentAMessage = false
-    private var sendingMessagesIds = [String]()
-    private var addedMessagesIds: [String] = []
+    @ObservationIgnored private var hasNext: Bool?
+    @ObservationIgnored var haveSentAMessage = false
+    @ObservationIgnored private var sendingMessagesIds = [String]()
+    @ObservationIgnored private var addedMessagesIds: [String] = []
 
-    @Published var scrollToMessage: Message?
-    @Published var lastDeliveredMessage: Message?
-    @Published var messages: [Message] = [] {
+    var scrollToMessage: Message?
+    var lastDeliveredMessage: Message?
+    var messages: [Message] = [] {
         didSet {
             if hasAutomation {
                 firstHedvigMessageAfterAutomation = messages.last(where: { $0.sender == .hedvig })
             }
         }
     }
-    @Published var responseIsBeingGenerated: Bool = false
-    @Published var isFetchingPreviousMessages = false
-    private var hasAutomation: Bool = false
+    var responseIsBeingGenerated: Bool = false
+    var isFetchingPreviousMessages = false
+    @ObservationIgnored private var hasAutomation: Bool = false
     private(set) var firstHedvigMessageAfterAutomation: Message?
 
     public init(
@@ -273,11 +275,12 @@ public class ChatMessageViewModel: ObservableObject {
 }
 
 @MainActor
-public class ChatScreenViewModel: ObservableObject {
+@Observable
+public class ChatScreenViewModel {
     let chatInputVm: ChatInputViewModel = .init()
     let messageVm: ChatMessageViewModel
 
-    var scrollCancellable: AnyCancellable?
+    @ObservationIgnored var scrollCancellable: AnyCancellable?
 
     /// Hides the input's bottom menu while the user scrolls. The sink is stored on this object,
     /// so its closure must not hold `self`: the view model would otherwise retain itself.
@@ -292,10 +295,10 @@ public class ChatScreenViewModel: ObservableObject {
             }
     }
 
-    private var pollTimerCancellable: AnyCancellable?
-    var hideBannerCancellable: AnyCancellable?
-    private var openDeepLinkObserver: NSObjectProtocol?
-    private var applicationStateCancellable: [AnyCancellable] = []
+    @ObservationIgnored private var pollTimerCancellable: AnyCancellable?
+    @ObservationIgnored var hideBannerWatcher: ObservationWatcher?
+    @ObservationIgnored private var openDeepLinkObserver: NSObjectProtocol?
+    @ObservationIgnored private var applicationStateCancellable: [AnyCancellable] = []
 
     public init(
         chatService: ChatServiceProtocol
@@ -320,19 +323,23 @@ public class ChatScreenViewModel: ObservableObject {
             }
         }
 
-        hideBannerCancellable = chatInputVm.$showBottomMenu.combineLatest(chatInputVm.$keyboardIsShown)
-            .receive(on: RunLoop.main)
-            .sink { [weak self] showBottomMenu, isKeyboardShown in
-                let shouldShowBanner = !showBottomMenu && !isKeyboardShown
-                if self?.messageVm.conversationVm.shouldShowBanner != false {
-                    withAnimation {
-                        self?.messageVm.conversationVm.shouldShowBanner = shouldShowBanner
-                    }
+        let chatInputVm = chatInputVm
+        hideBannerWatcher = ObservationWatcher {
+            _ = chatInputVm.showBottomMenu
+            _ = chatInputVm.keyboardIsShown
+        } onChange: { [weak self] in
+            let showBottomMenu = chatInputVm.showBottomMenu
+            let isKeyboardShown = chatInputVm.keyboardIsShown
+            let shouldShowBanner = !showBottomMenu && !isKeyboardShown
+            if self?.messageVm.conversationVm.shouldShowBanner != false {
+                withAnimation {
+                    self?.messageVm.conversationVm.shouldShowBanner = shouldShowBanner
                 }
-                // The cross-sell prompt yields to the keyboard only, and unlike the two
-                // info cards it comes back when the keyboard goes away.
-                self?.messageVm.conversationVm.isKeyboardShown = isKeyboardShown
             }
+            // The cross-sell prompt yields to the keyboard only, and unlike the two
+            // info cards it comes back when the keyboard goes away.
+            self?.messageVm.conversationVm.isKeyboardShown = isKeyboardShown
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().askAccordingToTheNumberOfSessions()

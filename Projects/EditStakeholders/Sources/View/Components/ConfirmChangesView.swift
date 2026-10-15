@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct ConfirmChangesView: View {
-    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
+    private let editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    let intentViewModel: IntentViewModel
 
     init(
         editStakeholdersNavigation: EditStakeholdersNavigationViewModel

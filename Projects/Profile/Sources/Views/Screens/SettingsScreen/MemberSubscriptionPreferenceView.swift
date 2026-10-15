@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 struct MemberSubscriptionPreferenceView: View {
-    @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
-    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    let vm: MemberSubscriptionPreferenceViewModel
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
 
     @InjectObservableObject var featureFlags: FeatureFlags
     @ViewBuilder
     var body: some View {
+        @Bindable var profileNavigationVm = profileNavigationVm
         if featureFlags.emailPreferencesEnabled {
             hFloatingField(
                 value: vm.isUnsubscribed ? L10n.General.unsubscribed : L10n.General.subscribed,
@@ -28,7 +29,7 @@ struct MemberSubscriptionPreferenceView: View {
 
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
-                        .environmentObject(profileNavigationVm)
+                        .environment(profileNavigationVm)
                         .embededInNavigation(tracking: ProfileDetentType.emailPreferences)
                 }
             )
@@ -37,14 +38,15 @@ struct MemberSubscriptionPreferenceView: View {
 }
 
 @MainActor
-class MemberSubscriptionPreferenceViewModel: ObservableObject {
-    @Published var memberId: String = ""
-    @Published var isLoading = false
-    @Published var isUnsubscribed = false
+@Observable
+class MemberSubscriptionPreferenceViewModel {
+    var memberId: String = ""
+    var isLoading = false
+    var isUnsubscribed = false
     static let userDefaultsKey = "unsubscribedMembers"
-    @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
-    var profileService = ProfileService()
-    var profileNavigationViewModel: ProfileNavigationViewModel?
+    var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
+    @ObservationIgnored var profileService = ProfileService()
+    @ObservationIgnored var profileNavigationViewModel: ProfileNavigationViewModel?
     let store: ProfileStore = globalAppStateContainer.get()
     init() {}
 

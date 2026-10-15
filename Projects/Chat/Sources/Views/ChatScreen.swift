@@ -4,12 +4,12 @@ import hCore
 import hCoreUI
 
 public struct ChatScreen: View {
-    @ObservedObject var vm: ChatScreenViewModel
-    @ObservedObject var conversationVm: ChatConversationViewModel
-    @ObservedObject var messageVm: ChatMessageViewModel
-    @ObservedObject var crossSellVm: ChatCrossSellViewModel
-    @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
-    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    let vm: ChatScreenViewModel
+    let conversationVm: ChatConversationViewModel
+    let messageVm: ChatMessageViewModel
+    let crossSellVm: ChatCrossSellViewModel
+    @State var chatScrollViewDelegate = ChatScrollViewDelegate()
+    @Environment(ChatNavigationViewModel.self) var chatNavigationVm
     @State private var isTargetedForDropdown = false
     @AccessibilityFocusState private var isChatInputFocused: Bool
     public init(
@@ -269,11 +269,11 @@ public struct ChatScreen: View {
 }
 
 struct ChatScreenModifier: ViewModifier {
-    @ObservedObject var vm: ChatScreenViewModel
-    @ObservedObject var messageVm: ChatMessageViewModel
-    @ObservedObject var conversationVm: ChatConversationViewModel
-    @ObservedObject var chatScrollViewDelegate: ChatScrollViewDelegate
-    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    let vm: ChatScreenViewModel
+    let messageVm: ChatMessageViewModel
+    let conversationVm: ChatConversationViewModel
+    let chatScrollViewDelegate: ChatScrollViewDelegate
+    @Environment(ChatNavigationViewModel.self) var chatNavigationVm
     @Binding var isTargetedForDropdown: Bool
     @State private var showSubtitle = false
     func body(content: Content) -> some View {
@@ -316,7 +316,8 @@ struct ChatScreenModifier: ViewModifier {
     }
 }
 
-class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+@Observable
+class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate {
     let isScrolling = PassthroughSubject<Bool, Never>()
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

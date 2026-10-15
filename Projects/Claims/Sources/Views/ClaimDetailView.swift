@@ -256,7 +256,7 @@ public struct ClaimDetailView: View {
                         TrackPlayerView(
                             audioPlayer: player
                         )
-                        .onReceive(player.objectWillChange.filter { $0.playbackState == .finished }) { _ in }
+                        .onReceive(player.playbackChanges.filter { $0.playbackState == .finished }) { _ in }
                     }
                 }
                 if let fetchError = vm.fetchFilesError {
@@ -445,20 +445,21 @@ public class ClaimDetailViewModel: ObservableObject {
         }
     }
 
-    @Published var showFileSourcePicker = false
+    var showFileSourcePicker = false
 
     private(set) var player: AudioPlayer?
-    private var claimDetailsService: FetchClaimDetailsService
-    @Published var fetchFilesError: String?
-    @Published var claimProcessingState: ProcessingState = .loading
+    @ObservationIgnored private var claimDetailsService: FetchClaimDetailsService
+    var fetchFilesError: String?
+    var claimProcessingState: ProcessingState = .loading
 
-    @Published var hasFiles = false
-    @Published var showFilesView: FilesDto?
-    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
+    var hasFiles = false
+    var showFilesView: FilesDto?
+    var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
 
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var filesWatcher: ObservationWatcher?
     public init(
         claim: ClaimModel?,
         type: ClaimDetailsType
@@ -474,12 +475,12 @@ public class ClaimDetailViewModel: ObservableObject {
             Task {
                 await fetchFiles()
             }
-            fileGridViewModel.$files
-                .sink { _ in
-                } receiveValue: { [weak self] files in
-                    self?.hasFiles = !files.isEmpty
-                }
-                .store(in: &cancellables)
+            let fileGridViewModel = fileGridViewModel
+            filesWatcher = ObservationWatcher {
+                _ = fileGridViewModel.files
+            } onChange: { [weak self] in
+                self?.hasFiles = !fileGridViewModel.files.isEmpty
+            }
             handleClaimChat()
         }
         if let claim {

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
-    @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    let changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let selectable: AddonOfferSelectable
     @State var selectedAddon: AddonOfferQuote?
     @EnvironmentObject var router: NavigationRouter

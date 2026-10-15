@@ -3,13 +3,14 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ChangeAddonViewModel: ObservableObject {
-    @Inject private var eventTrackingClient: EventTrackingClient
+@Observable
+public class ChangeAddonViewModel {
+    @ObservationIgnored @Inject private var eventTrackingClient: EventTrackingClient
     let addonService = AddonsService()
-    @Published var submittingState: ProcessingState = .loading
-    @Published var addonOfferCost: ItemCost?
-    @Published var fetchingCostState: ProcessingState = .success
-    @Published private var selectedAddonIds: Set<String> = []
+    var submittingState: ProcessingState = .loading
+    var addonOfferCost: ItemCost?
+    var fetchingCostState: ProcessingState = .success
+    private var selectedAddonIds: Set<String> = []
     let offer: AddonOffer
 
     init(offer: AddonOffer, preselectedAddonTitle: String? = nil) {

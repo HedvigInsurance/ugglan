@@ -1,22 +1,24 @@
 import AppStateContainer
 import Combine
 import Foundation
+import Observation
 import hCore
 
 @MainActor
 @PersistableStore
+@Observable
 public final class PaymentStore: AppStore {
-    @Inject private var paymentService: hPaymentClient
+    @ObservationIgnored @Inject private var paymentService: hPaymentClient
 
-    @Published public internal(set) var paymentData: PaymentData?
-    @Published public internal(set) var paymentDataFetchedAt: Date?
-    @Published public internal(set) var ongoingPaymentData: [PaymentData] = []
-    @Published public internal(set) var paymentStatusData: PaymentStatusData?
-    @Published public internal(set) var showsRetryChargeNotice: Bool = false
-    @Published public internal(set) var showsPaymentBadge: Bool = false
-    @Published public internal(set) var paymentHistory: [PaymentHistoryListData] = []
-    @Published public internal(set) var missedPaymentData: MissedPaymentData?
-    private var paymentNoticeData: PaymentNoticeData?
+    public internal(set) var paymentData: PaymentData?
+    public internal(set) var paymentDataFetchedAt: Date?
+    public internal(set) var ongoingPaymentData: [PaymentData] = []
+    public internal(set) var paymentStatusData: PaymentStatusData?
+    public internal(set) var showsRetryChargeNotice: Bool = false
+    public internal(set) var showsPaymentBadge: Bool = false
+    public internal(set) var paymentHistory: [PaymentHistoryListData] = []
+    public internal(set) var missedPaymentData: MissedPaymentData?
+    @ObservationIgnored private var paymentNoticeData: PaymentNoticeData?
 
     @Transient public internal(set) var paymentNoticeDataFetchedAt: Date?
     @Transient public internal(set) var missedPaymentDataFetchedAt: Date?

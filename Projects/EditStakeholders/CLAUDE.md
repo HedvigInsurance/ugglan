@@ -3,7 +3,7 @@
 Manages stakeholder editing for insurance contracts (co-insured and co-owners). Supports adding, editing, and removing stakeholders with midterm change intent workflows and SSN-based personal data lookup.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`) -- no `@Inject` on the top-level ViewModels; instead, `EditStakeholdersService` uses `@Inject var service: EditStakeholdersClient`
+- Pattern: ViewModel (`@MainActor @Observable class`) -- no `@Inject` on the top-level ViewModels; instead, `EditStakeholdersService` uses `@Inject var service: EditStakeholdersClient`
 - Key services: `EditStakeholdersClient` (protocol), `EditStakeholdersService` (thin wrapper with logging)
 - Data flow: `EditStakeholdersViewModel` orchestrates contract fetching and determines which navigation model to present. `StakeholdersViewModel` tracks local add/delete/edit state for stakeholders. `IntentViewModel` handles the commit step. Service calls go through `EditStakeholdersService` -> `EditStakeholdersClient`.
 
@@ -22,7 +22,7 @@ Manages stakeholder editing for insurance contracts (co-insured and co-owners). 
 - `EditStakeholdersNavigation`: Main flow using `RouterHost`, presents `StakeholdersScreen` as root. Uses `.modally` and `.detent` for sub-flows (input, select, progress).
 - `EditStakeholdersSelectInsuranceNavigation`: Shown when multiple contracts support stakeholders; user picks which contract to edit.
 - `EditStakeholdersAlertNavigation`: Presents a missing-stakeholder alert that can open the full edit flow.
-- Entered from Contracts module (contract detail) and TravelCertificate (via `EditStakeholdersViewModel` as an `@EnvironmentObject`).
+- Entered from Contracts module (contract detail) and TravelCertificate (via `EditStakeholdersViewModel` as an `@Environment`).
 
 ## Gotchas
 - `EditStakeholdersViewModel` requires an `ExistingStakeholders` conformer at init, which couples it to whichever module provides current stakeholder data (typically ContractStore).

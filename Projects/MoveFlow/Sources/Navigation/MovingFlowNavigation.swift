@@ -108,32 +108,33 @@ class MovingFlowQuoteManager {
 // MARK: - View Model
 
 @MainActor
-public class MovingFlowNavigationViewModel: ObservableObject, ChangeTierQuoteDataProvider {
-    @Inject private var service: MoveFlowClient
+@Observable
+public class MovingFlowNavigationViewModel: ChangeTierQuoteDataProvider {
+    @ObservationIgnored @Inject private var service: MoveFlowClient
 
     // MARK: - Helper Properties
     private let quoteManager = MovingFlowQuoteManager()
 
     // MARK: - UI State
-    @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
-    @Published var document: hPDFDocument?
-    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+    var isAddExtraBuildingPresented: HouseInformationInputModel?
+    var document: hPDFDocument?
+    var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     // MARK: - Properties
-    @Published var viewState: ProcessingState = .loading
-    var errorTitle: String?
-    @Published var moveConfigurationModel: MoveConfigurationModel?
-    @Published var moveQuotesModel: MoveQuotesModel?
-    @Published var addressInputModel = AddressInputModel()
-    @Published var houseInformationInputvm = HouseInformationInputModel()
-    @Published var selectedHomeQuote: MovingFlowQuote?
-    @Published var selectedHomeAddress: MoveAddress?
-    var totalPremium: Premium!
-    var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
-    var removedAddonIds: [String] = []
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored var errorTitle: String?
+    var moveConfigurationModel: MoveConfigurationModel?
+    var moveQuotesModel: MoveQuotesModel?
+    var addressInputModel = AddressInputModel()
+    var houseInformationInputvm = HouseInformationInputModel()
+    var selectedHomeQuote: MovingFlowQuote?
+    var selectedHomeAddress: MoveAddress?
+    @ObservationIgnored var totalPremium: Premium!
+    @ObservationIgnored var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
+    @ObservationIgnored var removedAddonIds: [String] = []
     let source: MovingFlowSource
 
-    fileprivate var initialTrackingType: MovingFlowDetentType?
+    @ObservationIgnored fileprivate var initialTrackingType: MovingFlowDetentType?
 
     init(source: MovingFlowSource = .insurance) {
         self.source = source
@@ -271,7 +272,7 @@ public struct MovingFlowNavigation: View {
         source: MovingFlowSource = .insurance,
         onMoved: @escaping () -> Void
     ) {
-        _movingFlowNavigationVm = StateObject(wrappedValue: MovingFlowNavigationViewModel(source: source))
+        _movingFlowNavigationVm = State(wrappedValue: MovingFlowNavigationViewModel(source: source))
         self.onMoved = onMoved
     }
 
@@ -321,7 +322,7 @@ public struct MovingFlowNavigation: View {
                 )
             )
         )
-        .environmentObject(movingFlowNavigationVm)
+        .environment(movingFlowNavigationVm)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
             presentationStyle: .detent(style: [.height])
@@ -329,7 +330,7 @@ public struct MovingFlowNavigation: View {
             MovingFlowAddExtraBuildingScreen(
                 houseInformationInputVm: houseInformationInputModel
             )
-            .environmentObject(movingFlowNavigationVm)
+            .environment(movingFlowNavigationVm)
             .navigationTitle(L10n.changeAddressAddBuilding)
             .embededInNavigation(
                 options: [.navigationType(type: .large)],

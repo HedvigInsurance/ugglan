@@ -6,17 +6,18 @@ import hCore
 
 @MainActor
 @PersistableStore
+@Observable
 public final class ClaimsStore: AppStore {
-    @Inject private var fetchClaimsClient: hFetchClaimsClient
+    @ObservationIgnored @Inject private var fetchClaimsClient: hFetchClaimsClient
 
-    @Published public internal(set) var activeClaims: [ClaimModel] = [] {
+    public internal(set) var activeClaims: [ClaimModel] = [] {
         didSet {
             setAllActiveClaims()
         }
     }
-    @Published public internal(set) var historyClaims: [ClaimModel] = []
-    @Published public internal(set) var files: [String: [File]] = [:]
-    @Published public var claimInProgress: ClaimInProgressModel? {
+    public internal(set) var historyClaims: [ClaimModel] = []
+    public internal(set) var files: [String: [File]] = [:]
+    public var claimInProgress: ClaimInProgressModel? {
         didSet {
             setAllActiveClaims()
         }

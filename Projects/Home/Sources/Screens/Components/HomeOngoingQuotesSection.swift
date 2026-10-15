@@ -6,7 +6,7 @@ import hCoreUI
 struct HomeOngoingQuotesSection: View {
     let quotes: [OngoingQuote]
     let onDismiss: (String) -> Void
-    @StateObject private var scrollVm = InfoCardScrollViewModel(spacing: .padding16)
+    @State private var scrollVm = InfoCardScrollViewModel(spacing: .padding16)
 
     var body: some View {
         if !quotes.isEmpty {

@@ -42,7 +42,7 @@ struct SwishPayinConsentScreen: View {
         canChangeMethod: Bool = false,
         onConnected: @escaping () async -> Void = {}
     ) {
-        _vm = StateObject(wrappedValue: SwishPayinConsentViewModel(state: state))
+        _vm = State(wrappedValue: SwishPayinConsentViewModel(state: state))
         self.canChangeMethod = canChangeMethod
         self.onConnected = onConnected
     }
@@ -246,17 +246,18 @@ private enum SwishPayinConsentTracking: TrackingViewNameProtocol {
 }
 
 @MainActor
-class SwishPayinConsentViewModel: ObservableObject {
-    @Published var state: SwishConsentState
-    @Published var isRetrying = false
-    @Published private(set) var qrImage: UIImage?
-    @Published private(set) var pollAttempt = 0
+@Observable
+class SwishPayinConsentViewModel {
+    var state: SwishConsentState
+    var isRetrying = false
+    private(set) var qrImage: UIImage?
+    private(set) var pollAttempt = 0
     /// Resolved once per presentation rather than per render: `canOpenURL` is a system call,
     /// and a member who leaves to install Swish comes back to a freshly built screen.
     let canOpenSwish: Bool
 
-    private var orderId: String?
-    private var url: String? {
+    @ObservationIgnored private var orderId: String?
+    @ObservationIgnored private var url: String? {
         didSet { qrImage = Self.generateQRImage(from: url) }
     }
     private let paymentService = hPaymentService()

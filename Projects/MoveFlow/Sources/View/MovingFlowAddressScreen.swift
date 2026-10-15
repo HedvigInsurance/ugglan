@@ -245,7 +245,7 @@ struct MovingFlowAddressScreen: View {
     Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Localization.Locale.currentLocale.send(.en_SE)
-    return VStack { MovingFlowAddressScreen(vm: .init()).environmentObject(MovingFlowNavigationViewModel()) }
+    return VStack { MovingFlowAddressScreen(vm: .init()).environment(MovingFlowNavigationViewModel()) }
 }
 
 enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
@@ -270,21 +270,22 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
 }
 
 @MainActor
-public class AddressInputModel: ObservableObject {
-    @Inject private var service: MoveFlowClient
-    @Published public var address: String = ""
-    @Published public var postalCode: String = ""
-    @Published public var squareArea: String = ""
-    @Published public var nbOfCoInsured: Int = 0
-    @Published public var accessDate: Date?
-    @Published public var isStudent = false
-    @Published var addressError: String?
-    @Published var postalCodeError: String?
-    @Published var squareAreaError: String?
-    @Published var accessDateError: String?
-    @Published var type: MovingFlowNewAddressViewFieldType?
-    @Published public var selectedHousingType: HousingType = .apartment
-    @Published var viewState: ProcessingState = .success
+@Observable
+public class AddressInputModel {
+    @ObservationIgnored @Inject private var service: MoveFlowClient
+    public var address: String = ""
+    public var postalCode: String = ""
+    public var squareArea: String = ""
+    public var nbOfCoInsured: Int = 0
+    public var accessDate: Date?
+    public var isStudent = false
+    var addressError: String?
+    var postalCodeError: String?
+    var squareAreaError: String?
+    var accessDateError: String?
+    var type: MovingFlowNewAddressViewFieldType?
+    public var selectedHousingType: HousingType = .apartment
+    var viewState: ProcessingState = .success
 
     @MainActor
     func requestMoveIntent(

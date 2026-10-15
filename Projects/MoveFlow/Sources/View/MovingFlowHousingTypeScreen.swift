@@ -103,8 +103,9 @@ public struct MovingFlowHousingTypeScreen: View {
 }
 
 @MainActor
-class MovingFlowHousingTypeViewModel: ObservableObject {
-    @Published var selectedHousingType: String? = HousingType.rental.rawValue
+@Observable
+class MovingFlowHousingTypeViewModel {
+    var selectedHousingType: String? = HousingType.rental.rawValue
     init() {}
 }
 

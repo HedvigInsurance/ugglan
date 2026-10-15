@@ -35,17 +35,17 @@ struct LoginNavigation: View {
             BankIDLoginQRView {
                 await handleDemoModeActivation()
             }
-            .environmentObject(otpState)
+            .environment(otpState)
             .withDismissButton()
             .routerDestination(for: AuthenticationRouterType.self) { type in
                 switch type {
                 case .emailLogin:
                     OTPEntryView()
-                        .environmentObject(otpState)
+                        .environment(otpState)
                         .withDismissButton()
                 case .otpCodeEntry:
                     OTPCodeEntryView()
-                        .environmentObject(otpState)
+                        .environment(otpState)
                         .withDismissButton()
                 case let .error(message):
                     LoginErrorView(message: message)

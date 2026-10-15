@@ -6,7 +6,7 @@ struct EditScreen: View {
     @State var selectedItem: String?
     private let vm: ChangeTierViewModel
     private let type: EditTierType
-    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @Environment(ChangeTierNavigationViewModel.self) var changeTierNavigationVm
 
     init(
         selectedItem: String?,

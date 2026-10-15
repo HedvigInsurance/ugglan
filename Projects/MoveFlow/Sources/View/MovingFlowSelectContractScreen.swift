@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct MovingFlowSelectContractScreen: View {
-    @ObservedObject private var navigationVm: MovingFlowNavigationViewModel
+    private let navigationVm: MovingFlowNavigationViewModel
     private let itemPickerConfig: ItemConfig<MoveAddress>
 
     init(

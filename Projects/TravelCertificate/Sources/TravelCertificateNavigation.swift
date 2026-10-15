@@ -8,20 +8,21 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class TravelCertificateNavigationViewModel: ObservableObject {
+@Observable
+public class TravelCertificateNavigationViewModel {
     public init() {}
-    @Published var isDocumentPresented: TravelCertificateModel?
-    @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel? {
+    var isDocumentPresented: TravelCertificateModel?
+    var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel? {
         willSet {
             createNewRouter.popToRoot()
         }
     }
-    @Published var isAddonPresented: ChangeAddonInput?
-    @Published var isInfoViewPresented = false
+    var isAddonPresented: ChangeAddonInput?
+    var isInfoViewPresented = false
     let createNewRouter = NavigationRouter()
 
-    var startDateViewModel: StartDateViewModel?
-    var whoIsTravelingViewModel: WhoIsTravelingViewModel?
+    @ObservationIgnored var startDateViewModel: StartDateViewModel?
+    @ObservationIgnored var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
     public let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
@@ -118,7 +119,7 @@ public struct TravelCertificateNavigation: View {
                 getListScreen
             }
         }
-        .environmentObject(vm)
+        .environment(vm)
         .detent(
             item: $vm.isDocumentPresented,
             presentationStyle: .detent(style: [.large]),
@@ -221,14 +222,14 @@ public struct TravelCertificateNavigation: View {
             vm: vm.whoIsTravelingViewModel!,
             travelCertificateNavigationVm: vm
         )
-        .environmentObject(vm)
+        .environment(vm)
         .addDismissFlow()
     }
 
     private func openProcessingScreen() -> some View {
         TravelCertificateProcessingScreen()
-            .environmentObject(vm.whoIsTravelingViewModel!)
-            .environmentObject(vm.startDateViewModel!)
+            .environment(vm.whoIsTravelingViewModel!)
+            .environment(vm.startDateViewModel!)
     }
 }
 

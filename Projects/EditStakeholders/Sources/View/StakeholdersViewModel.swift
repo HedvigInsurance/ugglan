@@ -2,12 +2,13 @@ import SwiftUI
 import hCoreUI
 
 @MainActor
-class StakeholdersViewModel: ObservableObject {
-    @Published var previousValue = Stakeholder()
-    @Published var stakeholdersAdded: [Stakeholder] = []
-    @Published var stakeholdersDeleted: [Stakeholder] = []
-    var config: StakeholdersConfig
-    @Published var isLoading = false
+@Observable
+class StakeholdersViewModel {
+    var previousValue = Stakeholder()
+    var stakeholdersAdded: [Stakeholder] = []
+    var stakeholdersDeleted: [Stakeholder] = []
+    @ObservationIgnored var config: StakeholdersConfig
+    var isLoading = false
 
     init(stakeholderType: StakeholderType) {
         config = .init(stakeholderType: stakeholderType)

@@ -10,6 +10,7 @@ public struct OTPEntryView: View {
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {
             hSection {
                 VStack(spacing: 50) {

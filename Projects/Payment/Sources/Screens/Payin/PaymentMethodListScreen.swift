@@ -105,7 +105,7 @@ struct PaymentMethodListScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return PaymentMethodListScreen()
-        .environmentObject(PaymentsNavigationViewModel())
+        .environment(PaymentsNavigationViewModel())
         .task {
             await delay(3)
             store.paymentStatusData = .init(

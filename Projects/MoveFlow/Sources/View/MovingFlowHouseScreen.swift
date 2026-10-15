@@ -220,7 +220,7 @@ struct MovingFlowHouseScreen: View {
     Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
-        .environmentObject(MovingFlowNavigationViewModel())
+        .environment(MovingFlowNavigationViewModel())
 }
 
 enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
@@ -252,21 +252,22 @@ public struct ExtraBuildingType: Sendable, Hashable {
 }
 
 @MainActor
-public class HouseInformationInputModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
+@Observable
+public class HouseInformationInputModel: @MainActor Equatable, @MainActor Identifiable {
     public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
         true
     }
-    @Inject private var service: MoveFlowClient
-    @Published var type: MovingFlowHouseFieldType?
-    @Published public var yearOfConstruction: String = ""
-    @Published public var ancillaryArea: String = ""
-    @Published public var bathrooms: Int = 1
-    @Published public var isSubleted = false
-    @Published var yearOfConstructionError: String?
-    @Published var ancillaryAreaError: String?
-    @Published var bathroomsError: String?
-    @Published public var extraBuildings: [ExtraBuilding] = []
-    @Published var viewState: ProcessingState = .success
+    @ObservationIgnored @Inject private var service: MoveFlowClient
+    var type: MovingFlowHouseFieldType?
+    public var yearOfConstruction: String = ""
+    public var ancillaryArea: String = ""
+    public var bathrooms: Int = 1
+    public var isSubleted = false
+    var yearOfConstructionError: String?
+    var ancillaryAreaError: String?
+    var bathroomsError: String?
+    public var extraBuildings: [ExtraBuilding] = []
+    var viewState: ProcessingState = .success
 
     init() {}
 

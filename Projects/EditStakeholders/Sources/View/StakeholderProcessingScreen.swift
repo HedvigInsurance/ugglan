@@ -4,9 +4,9 @@ import hCoreUI
 
 struct StakeholderProcessingScreen: View {
     var showSuccessScreen: Bool
-    @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
-    @ObservedObject private var intentViewModel: IntentViewModel
+    @Environment(EditStakeholdersNavigationViewModel.self) private var editStakeholdersNavigation
+    @Environment(EditStakeholdersViewModel.self) private var editStakeholdersViewModel
+    @Bindable private var intentViewModel: IntentViewModel
     private let router = NavigationRouter()
     init(
         showSuccessScreen: Bool,
@@ -94,6 +94,6 @@ extension StakeholderProcessingScreen: TrackingViewNameProtocol {
         showSuccessScreen: true,
         intentVM: .init()
     )
-    .environmentObject(EditStakeholdersNavigationViewModel(config: .init(stakeholderType: .coInsured)))
-    .environmentObject(EditStakeholdersViewModel(existingStakeholders: MockExistingStakeholders()))
+    .environment(EditStakeholdersNavigationViewModel(config: .init(stakeholderType: .coInsured)))
+    .environment(EditStakeholdersViewModel(existingStakeholders: MockExistingStakeholders()))
 }

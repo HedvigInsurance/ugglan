@@ -1,5 +1,4 @@
 import ChangeTier
-import Combine
 import Environment
 import SwiftUI
 import hCore
@@ -88,7 +87,8 @@ class TerminationRedirectHandler {
 // MARK: - View Model
 
 @MainActor
-class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
+@Observable
+class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Identifiable {
     static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         lhs.id == rhs.id
     }
@@ -100,32 +100,30 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
     private let terminateContractsService = TerminateContractsService()
 
     // MARK: - UI State
-    @Published var isDatePickerPresented = false
-    @Published var isConfirmTerminationPresented = false
-    @Published var isProcessingPresented = false
-    @Published var infoText: String?
-    @Published var redirectActionLoadingState: ProcessingState = .success
-    @Published var notification: TerminationNotification?
-    @Published var confirmTerminationState: ProcessingState = .loading
-    @Published var fetchingSurvey: Bool = false
+    var isDatePickerPresented = false
+    var isConfirmTerminationPresented = false
+    var isProcessingPresented = false
+    var infoText: String?
+    var redirectActionLoadingState: ProcessingState = .success
+    var notification: TerminationNotification?
+    var confirmTerminationState: ProcessingState = .loading
+    var fetchingSurvey: Bool = false
 
     // MARK: - Navigation
     let router = NavigationRouter()
     let initialStep: TerminationFlowActions
 
     // MARK: - Configuration
-    @Published var config: TerminationConfirmConfig?
-    @Published var hasSelectInsuranceStep: Bool = false
-    weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    var config: TerminationConfirmConfig?
+    var hasSelectInsuranceStep: Bool = false
+    @ObservationIgnored weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
 
     // MARK: - Survey State
-    @Published var surveyData: TerminationSurveyData?
-    @Published var selectedOptionId: String?
-    @Published var selectedComment: String?
-    @Published var selectedDate: Date?
-    @Published var progress: Float? = 0
-
-    private var routeCountCancellable: AnyCancellable?
+    var surveyData: TerminationSurveyData?
+    var selectedOptionId: String?
+    var selectedComment: String?
+    var selectedDate: Date?
+    var progress: Float? = 0
 
     var extraCoverage: [ExtraCoverageItem] {
         guard let action = surveyData?.action else { return [] }
@@ -301,7 +299,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
     }
 
     // MARK: - Notification
-    var fetchNotificationTask: Task<Void, Never>?
+    @ObservationIgnored var fetchNotificationTask: Task<Void, Never>?
 
     func fetchNotification(for date: Date?) {
         fetchNotificationTask?.cancel()
@@ -346,7 +344,7 @@ class TerminationFlowNavigationViewModel: ObservableObject, @MainActor Equatable
 // MARK: - Navigation View
 
 struct TerminationFlowNavigation: View {
-    @ObservedObject private var vm: TerminationFlowNavigationViewModel
+    @Bindable private var vm: TerminationFlowNavigationViewModel
     let isFlowPresented: (DismissTerminationAction) -> Void
 
     init(
@@ -416,7 +414,7 @@ struct TerminationFlowNavigation: View {
                 }
         }
         .addProgressBar(with: $vm.progress)
-        .environmentObject(vm)
+        .environment(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
             presentationStyle: .detent(style: [.height])
@@ -428,7 +426,7 @@ struct TerminationFlowNavigation: View {
             presentationStyle: .detent(style: [.height])
         ) {
             openConfirmTerminationScreen()
-                .environmentObject(vm)
+                .environment(vm)
         }
         .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()

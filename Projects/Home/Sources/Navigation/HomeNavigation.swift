@@ -17,7 +17,8 @@ public struct ChatConversation: Equatable, Identifiable, Sendable {
 }
 
 @MainActor
-public class HomeNavigationViewModel: ObservableObject {
+@Observable
+public class HomeNavigationViewModel {
     public static var isChatPresented = false
 
     public init() {
@@ -85,20 +86,20 @@ public class HomeNavigationViewModel: ObservableObject {
     public var router = NavigationRouter()
     public let quickActionsVm = QuickActionsViewModel()
 
-    @Published public var claimsAutomationStartInput: StartClaimInput?
-    @Published public var isAddonPresented: ChangeAddonInput?
-    @Published public var isHelpCenterPresented = false
-    @Published public var isPayoutMethodPresented = false
-    @Published public var isAddPaymentMethodPresented = false
-    @Published public var isPaymentMethodsPresented = false
-    @Published public var payinSetupProvider: PaymentProvider?
-    @Published public var isForeverPresented = false
-    @Published public var isUpcomingPaymentPresented: PaymentData?
+    public var claimsAutomationStartInput: StartClaimInput?
+    public var isAddonPresented: ChangeAddonInput?
+    public var isHelpCenterPresented = false
+    public var isPayoutMethodPresented = false
+    public var isAddPaymentMethodPresented = false
+    public var isPaymentMethodsPresented = false
+    public var payinSetupProvider: PaymentProvider?
+    public var isForeverPresented = false
+    public var isUpcomingPaymentPresented: PaymentData?
 
-    @Published public var navBarItems = NavBarItems()
+    public var navBarItems = NavBarItems()
 
-    @Published public var openChat: ChatConversation?
-    @Published public var openChatOptions: DetentPresentationOption = []
+    public var openChat: ChatConversation?
+    public var openChatOptions: DetentPresentationOption = []
 
     public struct NavBarItems {
         public var isNewOfferPresentedModal: CrossSells?
@@ -110,7 +111,7 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public var editStakeholdersVm = EditStakeholdersViewModel(
+    @ObservationIgnored public var editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
     )
 }

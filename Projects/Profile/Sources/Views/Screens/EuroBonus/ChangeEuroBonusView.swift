@@ -25,7 +25,8 @@ struct ChangeEuroBonusView: View {
 }
 
 @MainActor
-private class ChangeEurobonusViewModel: ObservableObject {
+@Observable
+private class ChangeEurobonusViewModel {
     let inputVm: TextInputViewModel
     var profileService = ProfileService()
     var router: NavigationRouter?

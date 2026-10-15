@@ -1,8 +1,9 @@
 import SwiftUI
 import hCore
 
-public class hDatePickerFieldNavigationModel: ObservableObject {
-    @Published var isDatePickerPresented: DatePickerViewModel?
+@Observable
+public class hDatePickerFieldNavigationModel {
+    var isDatePickerPresented: DatePickerViewModel?
 }
 
 public struct hDatePickerField: View {

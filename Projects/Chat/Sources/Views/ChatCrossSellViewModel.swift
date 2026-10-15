@@ -4,29 +4,30 @@ import SwiftUI
 import hCore
 
 @MainActor
-public class ChatCrossSellViewModel: ObservableObject {
-    @Published private(set) var recommended: RecommendedCrossSell?
+@Observable
+public class ChatCrossSellViewModel {
+    private(set) var recommended: RecommendedCrossSell?
 
-    @Inject private var crossSellClient: CrossSellClient
+    @ObservationIgnored @Inject private var crossSellClient: CrossSellClient
     private let chatService: ChatServiceProtocol
 
     // The gate repeats on every five-second poll and an empty response is final, so the
     // fetch is latched: an ineligible member costs no cross-sell requests at all, and an
     // eligible one costs exactly one.
-    private var hasFetched = false
+    @ObservationIgnored private var hasFetched = false
 
     // Set by either answer. Keeps a late poll from reviving a prompt the member has already
     // dealt with, even if the mutation that records it never reaches the server.
-    private var hasRetired = false
+    @ObservationIgnored private var hasRetired = false
 
     init(chatService: ChatServiceProtocol) {
         self.chatService = chatService
     }
 
-    var title: String { recommended?.title ?? L10n.crossSellBannerText }
-    var subtitle: String? { recommended?.description }
-    var openTitle: String { recommended?.buttonTitle ?? L10n.crossSellButton }
-    var dismissTitle: String { L10n.generalNoThanks }
+    @ObservationIgnored var title: String { recommended?.title ?? L10n.crossSellBannerText }
+    @ObservationIgnored var subtitle: String? { recommended?.description }
+    @ObservationIgnored var openTitle: String { recommended?.buttonTitle ?? L10n.crossSellButton }
+    @ObservationIgnored var dismissTitle: String { L10n.generalNoThanks }
 
     // Spoken when the prompt arrives. Both buttons carry short titles that only make sense
     // under the offer, so the announcement leads with the copy that frames them.

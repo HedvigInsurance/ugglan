@@ -14,7 +14,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    @StateObject fileprivate var vm = hUpdatedFormViewModel()
+    @State fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
     var content: Content
 
@@ -250,11 +250,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 // MARK: View model
 
 @MainActor
-private class hUpdatedFormViewModel: ObservableObject {
-    var keyboardCancellable: AnyCancellable?
-    @Published var keyboardVisible: Bool = false
-    @Published var ignoreKeyboard: Bool = false
-    weak var scrollView: UIScrollView? {
+@Observable
+private class hUpdatedFormViewModel {
+    @ObservationIgnored var keyboardCancellable: AnyCancellable?
+    var keyboardVisible: Bool = false
+    var ignoreKeyboard: Bool = false
+    @ObservationIgnored weak var scrollView: UIScrollView? {
         didSet {
             scrollView?.clipsToBounds = false
             setScrollView()
@@ -262,25 +263,25 @@ private class hUpdatedFormViewModel: ObservableObject {
         }
     }
 
-    weak var vc: UIViewController? {
+    @ObservationIgnored weak var vc: UIViewController? {
         didSet {
             setScrollView()
         }
     }
 
-    var viewHeight: CGFloat = 0 {
+    @ObservationIgnored var viewHeight: CGFloat = 0 {
         didSet {
             setBouces()
         }
     }
 
-    var scrollViewHeight: CGFloat = 0 {
+    @ObservationIgnored var scrollViewHeight: CGFloat = 0 {
         didSet {
             setBouces()
         }
     }
 
-    var scrollBounces: Bool? {
+    @ObservationIgnored var scrollBounces: Bool? {
         didSet {
             setBouces()
         }

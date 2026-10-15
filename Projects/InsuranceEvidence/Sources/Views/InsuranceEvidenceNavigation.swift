@@ -3,17 +3,19 @@ import hCore
 import hCoreUI
 
 @MainActor
-class InsuranceEvidenceNavigationViewModel: ObservableObject {
+@Observable
+class InsuranceEvidenceNavigationViewModel {
     let service = InsuranceEvidenceService()
-    @Published var isInfoViewPresented = false
-    fileprivate lazy var insuranceEvidenceInputScreenViewModel = InsuranceEvidenceInputScreenViewModel(
-        InsuranceEvidenceNavigationViewModel: self
-    )
+    var isInfoViewPresented = false
+    @ObservationIgnored fileprivate lazy var insuranceEvidenceInputScreenViewModel =
+        InsuranceEvidenceInputScreenViewModel(
+            InsuranceEvidenceNavigationViewModel: self
+        )
     let router = NavigationRouter()
 }
 
 public struct InsuranceEvidenceNavigation: View {
-    @StateObject private var vm = InsuranceEvidenceNavigationViewModel()
+    @State private var vm = InsuranceEvidenceNavigationViewModel()
     public init() {}
 
     public var body: some View {

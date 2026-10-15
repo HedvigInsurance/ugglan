@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct EmailPreferencesConfirmView: View {
-    @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
-    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    let vm: MemberSubscriptionPreferenceViewModel
+    @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
 
     var body: some View {
         GenericErrorView(

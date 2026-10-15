@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 
 public struct ProcessingStateView: View {
-    @StateObject var vm = ProcessingViewModel()
+    @State var vm = ProcessingViewModel()
     @Binding var state: ProcessingState
     fileprivate let animationTimings: [AnimationTiming]
     var loadingViewText: String
@@ -153,8 +153,9 @@ private struct AnimationTiming {
     let progress: Float
 }
 
-class ProcessingViewModel: ObservableObject {
-    @Published var progress: Float = 0
+@Observable
+class ProcessingViewModel {
+    var progress: Float = 0
 }
 
 public struct hProgressViewStyle: ProgressViewStyle {

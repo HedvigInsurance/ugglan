@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @StateObject var vm = SetTerminationDateLandingScreenViewModel()
-    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    @State var vm = SetTerminationDateLandingScreenViewModel()
+    let terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         terminationNavigationVm: TerminationFlowNavigationViewModel
@@ -115,8 +115,9 @@ struct SetTerminationDateLandingScreen: View {
 }
 
 @MainActor
-class SetTerminationDateLandingScreenViewModel: ObservableObject {
-    @Published var hasAgreedToTerms: Bool = false
+@Observable
+class SetTerminationDateLandingScreenViewModel {
+    var hasAgreedToTerms: Bool = false
 
     func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
         let hasSetTerminationDate = terminationDate != nil

@@ -66,11 +66,12 @@ struct StartDateScreen: View {
     }
 }
 
-class StartDateViewModel: ObservableObject {
-    @Published var email: String = ""
-    @Published var date: Date
-    @Published var emailError: String?
-    @Published var editValue: StartDateViewEditType?
+@Observable
+class StartDateViewModel {
+    var email: String = ""
+    var date: Date
+    var emailError: String?
+    var editValue: StartDateViewEditType?
     let specification: TravelInsuranceContractSpecification
     init(specification: TravelInsuranceContractSpecification) {
         self.specification = specification

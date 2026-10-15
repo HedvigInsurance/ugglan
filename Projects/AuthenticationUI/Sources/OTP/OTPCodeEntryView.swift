@@ -10,6 +10,7 @@ public struct OTPCodeEntryView: View {
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {
             hSection {
                 VStack(spacing: 50) {
@@ -58,7 +59,7 @@ public struct OTPCodeEntryView: View {
                         }
 
                         ResendOTPCode(otpVM: otpVM)
-                            .environmentObject(otpVM)
+                            .environment(otpVM)
                     }
                 }
             }
@@ -73,7 +74,7 @@ public struct OTPCodeEntryView: View {
         }
         .hFormAttachToBottom {
             OpenEmailClientButton()
-                .environmentObject(otpVM)
+                .environment(otpVM)
         }
         .overlay(
             OTPCodeLoadingOverlay(otpVM: otpVM)

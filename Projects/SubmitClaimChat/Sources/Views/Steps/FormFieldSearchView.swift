@@ -4,12 +4,12 @@ import hCore
 import hCoreUI
 
 struct FormFieldSearchView: View {
-    @StateObject private var vm: FormFieldSearchViewModel
+    @State private var vm: FormFieldSearchViewModel
     private let onSelected: (SingleSelectValue, _ searchInput: String) -> Void
     @EnvironmentObject var router: NavigationRouter
 
     init(model: FormFieldSearchModel, onSelected: @escaping (SingleSelectValue, _ searchInput: String) -> Void) {
-        self._vm = StateObject(
+        self._vm = State(
             wrappedValue: .init(
                 stepId: model.stepId,
                 fieldId: model.id,

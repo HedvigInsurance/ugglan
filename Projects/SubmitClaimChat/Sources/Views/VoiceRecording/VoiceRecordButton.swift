@@ -6,7 +6,7 @@ struct VoiceRecordButton: View {
     @State private var countdownNumber: Int? = nil
     @State private var buttonScale: CGFloat = 1.0
 
-    @EnvironmentObject var voiceRecorder: VoiceRecorder
+    @Environment(VoiceRecorder.self) var voiceRecorder
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
     var body: some View {
         Button(action: handleTap) {

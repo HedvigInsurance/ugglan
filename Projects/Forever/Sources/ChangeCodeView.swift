@@ -21,9 +21,10 @@ struct ChangeCodeView: View {
 }
 
 @MainActor
-class ChangeCodeViewModel: ObservableObject {
-    @Inject var foreverService: ForeverClient
-    @Published var inputVm: TextInputViewModel
+@Observable
+class ChangeCodeViewModel {
+    @ObservationIgnored @Inject var foreverService: ForeverClient
+    var inputVm: TextInputViewModel
 
     var router: NavigationRouter?
     let foreverVm: ForeverNavigationViewModel?

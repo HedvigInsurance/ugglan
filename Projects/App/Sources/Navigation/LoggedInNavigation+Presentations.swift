@@ -24,7 +24,7 @@ extension View {
 }
 
 struct LoggedInPresentations: ViewModifier {
-    @ObservedObject var vm: LoggedInNavigationViewModel
+    @Bindable var vm: LoggedInNavigationViewModel
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
     func body(content: Content) -> some View {

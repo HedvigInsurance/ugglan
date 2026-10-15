@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Observation
 
 @MainActor
 public protocol FeatureFlagsClient {
@@ -88,7 +89,7 @@ public class FeatureFlags: ObservableObject {
         isResumingOngoingShopSessionsEnabled: false
     )
 
-    @Published public var hasFetchedInitialData = false
+    public var hasFetchedInitialData = false
 
     public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
         data[keyPath: keyPath]

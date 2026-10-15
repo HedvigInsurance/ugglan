@@ -92,7 +92,8 @@ extension MyInfoView {
 }
 
 @MainActor
-public class MyInfoViewModel: ObservableObject {
+@Observable
+public class MyInfoViewModel {
     private let profileService = ProfileService()
     @AppState var profileStore: ProfileStore
     @AppState var homeStore: HomeStore
@@ -105,26 +106,15 @@ public class MyInfoViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
     @Published var disabledSaveButton: Bool = false
 
-    private var cancellables = Set<AnyCancellable>()
-    @Published var showInfoCard: Bool
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+    var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalAppStateContainer.get()
         showInfoCard = store.memberDetails?.isContactInfoUpdateNeeded ?? false
         currentPhoneInput = store.memberDetails?.phone ?? ""
         currentEmailInput = store.memberDetails?.email ?? ""
-        $currentPhoneInput
-            .delay(for: 0.05, scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.isValid()
-            }
-            .store(in: &cancellables)
-        $currentEmailInput
-            .delay(for: 0.05, scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.isValid()
-            }
-            .store(in: &cancellables)
+        isValid()
 
         store.$memberDetails
             .receive(on: RunLoop.main)
@@ -134,6 +124,14 @@ public class MyInfoViewModel: ObservableObject {
                 self?.showInfoCard = state ?? false
             }
             .store(in: &cancellables)
+    }
+
+    /// Validates after a short delay so the text field has time to clear its error for the new input first.
+    private func scheduleValidation() {
+        Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(50))
+            self?.isValid()
+        }
     }
 
     func isValid() {

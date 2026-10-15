@@ -5,7 +5,7 @@ import SwiftUI
 public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatable>: View {
     private let content: (cardItem) -> Content
     @Binding var items: [cardItem]
-    @ObservedObject private var vm: InfoCardScrollViewModel
+    @Bindable private var vm: InfoCardScrollViewModel
 
     public init(
         items: Binding<[cardItem]>,
@@ -88,13 +88,14 @@ struct PrioritizedCard<Content: View, cardItem: Identifiable>: View {
 }
 
 @MainActor
-public class InfoCardScrollViewModel: NSObject, ObservableObject {
-    @Published var activeCard = 0
-    @Published var itemsCount: Int = 0
-    @Published var spacing: CGFloat = 0
-    @Published var cardWidth: CGFloat = 0
-    @Published var cardWithSpacing: CGFloat = 0
-    var scrollView: UIScrollView?
+@Observable
+public class InfoCardScrollViewModel: NSObject {
+    var activeCard = 0
+    var itemsCount: Int = 0
+    var spacing: CGFloat = 0
+    var cardWidth: CGFloat = 0
+    var cardWithSpacing: CGFloat = 0
+    @ObservationIgnored var scrollView: UIScrollView?
     public init(
         spacing: CGFloat
     ) {

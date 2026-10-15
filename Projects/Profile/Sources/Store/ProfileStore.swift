@@ -1,21 +1,23 @@
 import AppStateContainer
 import AutomaticLog
 import Foundation
+import Observation
 import UserNotifications
 import hCore
 
 @MainActor
 @PersistableStore
+@Observable
 public final class ProfileStore: AppStore {
-    @Inject private var profileService: ProfileClient
+    @ObservationIgnored @Inject private var profileService: ProfileClient
 
-    @Published public private(set) var partnerData: PartnerData?
-    @Published public private(set) var memberDetails: MemberDetails?
-    @Published public private(set) var pushNotificationStatus: Int?
-    @Published public private(set) var pushNotificationsSnoozeDate: Date?
-    @Published public private(set) var hasTravelCertificates: Bool = false
-    @Published public private(set) var canCreateInsuranceEvidence: Bool = false
-    @Published public private(set) var canCreateTravelInsurance: Bool = false
+    public private(set) var partnerData: PartnerData?
+    public private(set) var memberDetails: MemberDetails?
+    public private(set) var pushNotificationStatus: Int?
+    public private(set) var pushNotificationsSnoozeDate: Date?
+    public private(set) var hasTravelCertificates: Bool = false
+    public private(set) var canCreateInsuranceEvidence: Bool = false
+    public private(set) var canCreateTravelInsurance: Bool = false
 
     @Transient @Published public private(set) var fetchProfileStateError: String?
     @Transient @Published public private(set) var fetchMemberDetailsError: String?

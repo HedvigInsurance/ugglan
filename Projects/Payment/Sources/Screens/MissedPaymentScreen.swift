@@ -228,10 +228,11 @@ struct MissedPaymentScreen: View {
 }
 
 @MainActor
-class PaymentOverdueScreenViewModel: ObservableObject {
+@Observable
+class PaymentOverdueScreenViewModel {
     private let paymentService = hPaymentService()
-    @Published var processingState: ProcessingState = .success
-    @Published var showSuccessScreen = false
+    var processingState: ProcessingState = .success
+    var showSuccessScreen = false
 
     func chargeOutstandingPayment() {
         processingState = .loading

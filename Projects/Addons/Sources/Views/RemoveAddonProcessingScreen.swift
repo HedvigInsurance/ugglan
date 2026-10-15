@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct RemoveAddonProcessingScreen: View {
-    @EnvironmentObject var navigationVm: RemoveAddonNavigationViewModel
-    @ObservedObject var vm: RemoveAddonViewModel
+    @Environment(RemoveAddonNavigationViewModel.self) var navigationVm
+    @Bindable var vm: RemoveAddonViewModel
 
     var body: some View {
         ProcessingStateView(
