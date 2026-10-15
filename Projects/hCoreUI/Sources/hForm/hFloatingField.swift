@@ -68,7 +68,7 @@ public struct hFloatingField: View {
             }
         }
         .accessibilityAddTraits(.isButton)
-        .onChange(of: value) { _ in
+        .onChange(of: value) {
             if isEnabled {
                 startAnimation()
             }

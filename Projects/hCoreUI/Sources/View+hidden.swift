@@ -22,7 +22,7 @@ struct HideViewController: ViewModifier {
                     self.vc = vc
                 }
             }
-            .onChange(of: hide) { [weak vc] _ in
+            .onChange(of: hide) { [weak vc] in
                 if let vc = vc {
                     UIView.animate(withDuration: 0.4) {
                         findProperVC(from: vc)?.view.alpha = hide ? 0 : 1

@@ -108,12 +108,12 @@ struct ContractTable: View {
                 }
             }
             .animation(.easeInOut(duration: 0.3), value: isExpanded)
-            .onChange(of: contractsNavigationVm.isActiveTab) { isActive in
+            .onChange(of: contractsNavigationVm.isActiveTab) { _, isActive in
                 if !isActive {
                     didMemberExpandCards = false
                 }
             }
-            .onChange(of: isExpanded) { expanded in
+            .onChange(of: isExpanded) { _, expanded in
                 withAnimation(.easeIn(duration: 0.2)) {
                     cardDrawRotation = true
                 }

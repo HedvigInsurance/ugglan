@@ -91,7 +91,7 @@ public struct hCounterField: View {
                 textToShow = textForValue(value) ?? ""
             }
         }
-        .onChange(of: textToShow) { value in
+        .onChange(of: textToShow) { _, value in
             shouldMoveLabel = placeholder != "" && value != ""
         }
     }

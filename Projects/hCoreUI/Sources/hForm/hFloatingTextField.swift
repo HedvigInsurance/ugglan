@@ -83,7 +83,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .geometryGroupIfAvailable()
-        .onChange(of: vm.textField) { [weak vm] textField in
+        .onChange(of: vm.textField) { [weak vm] _, textField in
             textField?.delegate = vm?.observer
             if focusValue == Value.last {
                 textField?.returnKeyType = .done
@@ -108,14 +108,14 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 textField?.becomeFirstResponder()
             }
         }
-        .onChange(of: equals) { [weak vm] equals in
+        .onChange(of: equals) { [weak vm] _, equals in
             if equals == focusValue {
                 vm?.textField?.becomeFirstResponder()
             } else if vm?.textField?.isEditing == true {
                 vm?.textField?.resignFirstResponder()
             }
         }
-        .onChange(of: innerValue) { currentValue in
+        .onChange(of: innerValue) { _, currentValue in
             withAnimation {
                 error = nil
             }
@@ -130,7 +130,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             vm.textField?.becomeFirstResponder()
         }
         .accessibilityAddTraits(.isButton)
-        .onChange(of: error) { _ in
+        .onChange(of: error) {
             animate = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                 animate = false
@@ -142,17 +142,17 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .onAppear {
             updateMoveLabel(false)
         }
-        .onChange(of: vm.onBeginEditing) { _ in
+        .onChange(of: vm.onBeginEditing) {
             withAnimation {
                 error = nil
             }
             updateMoveLabel(true)
             equals = focusValue
         }
-        .onChange(of: vm.onDidEndEditing) { _ in
+        .onChange(of: vm.onDidEndEditing) {
             updateMoveLabel(true)
         }
-        .onChange(of: vm.onReturnTap) { [weak vm] _ in
+        .onChange(of: vm.onReturnTap) { [weak vm] in
             if let next = equals?.next {
                 equals = next
             } else {
@@ -162,7 +162,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             updateMoveLabel(true)
             onReturn()
         }
-        .onChange(of: value) { value in
+        .onChange(of: value) { _, value in
             innerValue = value
         }
     }

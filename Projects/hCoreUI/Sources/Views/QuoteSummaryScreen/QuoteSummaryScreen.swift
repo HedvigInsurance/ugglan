@@ -35,7 +35,7 @@ public struct QuoteSummaryScreen: View {
                                 .onAppear {
                                     spacingCoverage = max(totalHeight - proxy.size.height, 0)
                                 }
-                                .onChange(of: proxy.size) { size in
+                                .onChange(of: proxy.size) { _, size in
                                     spacingCoverage = max(totalHeight - size.height, 0)
                                 }
                         }
@@ -61,7 +61,7 @@ public struct QuoteSummaryScreen: View {
                     .onAppear {
                         totalHeight = proxy.size.height
                     }
-                    .onChange(of: proxy.size) { size in
+                    .onChange(of: proxy.size) { _, size in
                         totalHeight = size.height
                     }
             }
