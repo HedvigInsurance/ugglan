@@ -50,7 +50,6 @@ public final class HomeStore: AppStore {
     public private(set) var latestConversationTimeStamp: Date = Date()
     public private(set) var latestChatTimeStamp: Date = Date()
 
-    @Transient public private(set) var homeQuickActions: [HomeQuickAction] = []
     @Transient public private(set) var ongoingQuotes: [OngoingQuote] = []
     @Transient public private(set) var hidenImportantMessages: [String] = []
     @Transient public private(set) var isFetchingQuickActions: Bool = false
@@ -61,6 +60,22 @@ public final class HomeStore: AppStore {
 
     @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
     private let dismissedQuotes = DismissedOngoingQuotesTracker()
+
+    /// Derived rather than stored so it is current as soon as `quickActions` or the payment data changes.
+    public var homeQuickActions: [HomeQuickAction] {
+        let paymentStore: PaymentStore = globalAppStateContainer.get()
+        let editActions = quickActions.editInsuranceActions
+        let tiles: [HomeQuickAction?] = [
+            editActions.map(HomeQuickAction.editInsurance),
+            quickActions.contains(.changeAddress) ? HomeQuickAction.changeAddress : nil,
+            quickActions.contains(.travelInsurance) ? HomeQuickAction.travelCertificate : nil,
+            quickActions.sickAbroadDeflection.map(HomeQuickAction.sickAbroad),
+            editActions?.quickActions.contains(.upgradeCoverage) == true ? HomeQuickAction.upgradeCoverage : nil,
+            HomeQuickAction.inviteFriend,
+            paymentStore.paymentData != nil ? HomeQuickAction.upcomingPayment : nil,
+        ]
+        return tiles.compactMap { $0 }
+    }
 
     public var upcomingRenewalContracts: [HomeContract] {
         contracts.filter { $0.upcomingRenewal != nil }
@@ -86,33 +101,6 @@ public final class HomeStore: AppStore {
             .removeDuplicates()
             .sink { [weak self] _ in Task { await self?.fetchOngoingQuotes() } }
             .store(in: &cancellables)
-
-        publisher(for: \.memberInfo)
-            .compactMap { $0?.id }
-            .removeDuplicates()
-            .sink { [weak self] memberId in self?.hideDismissedQuotes(forMember: memberId) }
-            .store(in: &cancellables)
-
-        let paymentStore: PaymentStore = globalAppStateContainer.get()
-
-        paymentStore.publisher(for: \.paymentData)
-            .combineLatest(publisher(for: \.quickActions)) { upcomingPayment, actions in
-                let editActions = actions.editInsuranceActions
-                let tiles: [HomeQuickAction?] = [
-                    editActions.map(HomeQuickAction.editInsurance),
-                    actions.contains(.changeAddress) ? HomeQuickAction.changeAddress : nil,
-                    actions.contains(.travelInsurance) ? HomeQuickAction.travelCertificate : nil,
-                    actions.sickAbroadDeflection.map(HomeQuickAction.sickAbroad),
-                    editActions?.quickActions.contains(.upgradeCoverage) == true
-                        ? HomeQuickAction.upgradeCoverage : nil,
-                    HomeQuickAction.inviteFriend,
-                    upcomingPayment != nil ? HomeQuickAction.upcomingPayment : nil,
-                ]
-                return tiles.compactMap { $0 }
-            }
-            .removeDuplicates()
-            .sink { [weak self] actions in self?.homeQuickActions = actions }
-            .store(in: &cancellables)
     }
 
     public func fetchMemberState() async {
@@ -122,6 +110,7 @@ public final class HomeStore: AppStore {
             contracts = memberData.contracts
             futureStatus = memberData.futureState
             memberInfo = memberData.memberInfo
+            hideDismissedQuotes(forMember: memberData.memberInfo.id)
             fetchMemberStateError = nil
         } catch {
             fetchMemberStateError = L10n.General.errorBody
