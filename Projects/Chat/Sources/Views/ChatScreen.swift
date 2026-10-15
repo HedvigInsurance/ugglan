@@ -43,7 +43,7 @@ public struct ChatScreen: View {
             )
         )
         .trackVisibility(as: ChatScreen.self)
-        .onChange(of: crossSellVm.recommended?.id) { id in
+        .onChange(of: crossSellVm.recommended?.id) { _, id in
             // Answering the prompt removes the button that VoiceOver is focused on, which
             // would otherwise throw focus back to the top of the conversation with no
             // confirmation that the tap did anything. Guarding on nil keeps the banner
@@ -102,7 +102,7 @@ public struct ChatScreen: View {
                 }
             }
             .padding([.horizontal, .vertical], .padding16)
-            .onChange(of: messageVm.scrollToMessage?.id) { id in
+            .onChange(of: messageVm.scrollToMessage?.id) { _, id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
                 }
