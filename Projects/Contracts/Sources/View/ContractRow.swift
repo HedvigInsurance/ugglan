@@ -179,7 +179,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .onAppear {
             contractRowContentTruncateInternal = contractRowContentTruncate
         }
-        .onChange(of: contractRowContentTruncate) { contractRowContentTruncate in
+        .onChange(of: contractRowContentTruncate) { _, contractRowContentTruncate in
             Task {
                 await delay(1)
                 contractRowContentTruncateInternal = contractRowContentTruncate

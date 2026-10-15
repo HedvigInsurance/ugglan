@@ -69,10 +69,10 @@ struct ChatInputView: View {
                 .accessibilityFocused(a11yFocus)
                 .padding(.horizontal, .padding8)
                 .frame(minHeight: 40)
-                .onChange(of: isInputFocused) { newValue in
+                .onChange(of: isInputFocused) { _, newValue in
                     vm.keyboardIsShown = newValue
                 }
-                .onChange(of: vm.keyboardIsShown) { newValue in
+                .onChange(of: vm.keyboardIsShown) { _, newValue in
                     if isInputFocused != newValue {
                         isInputFocused = newValue
                     }

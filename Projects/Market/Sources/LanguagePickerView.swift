@@ -64,7 +64,7 @@ public struct LanguagePickerView: View {
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }
-        .onChange(of: code) { newValue in
+        .onChange(of: code) { _, newValue in
             if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
                 currentLocale = locale
             }

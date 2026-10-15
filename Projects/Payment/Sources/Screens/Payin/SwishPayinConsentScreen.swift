@@ -86,7 +86,7 @@ struct SwishPayinConsentScreen: View {
         .detent(presented: $showsExplanation, options: .constant(.withoutGrabber)) {
             SwishExplanationScreen()
         }
-        .onChange(of: vm.state) { newState in
+        .onChange(of: vm.state) { _, newState in
             announce(newState)
         }
     }

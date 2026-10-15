@@ -118,7 +118,7 @@ struct FormFieldView: View {
     var body: some View {
         fieldView
             .accessibilityFocused($isForFieldFocused, equals: field.id)
-            .onChange(of: viewModel.currentFieldId) { value in
+            .onChange(of: viewModel.currentFieldId) { _, value in
                 isForFieldFocused = value
             }
     }

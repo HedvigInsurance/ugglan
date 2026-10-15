@@ -79,7 +79,7 @@ public struct ForeverView: View {
                 }
             }
             .hSetScrollBounce(to: true)
-            .onChange(of: scrollTo) { newValue in
+            .onChange(of: scrollTo) { _, newValue in
                 if newValue != 0 {
                     withAnimation {
                         value.scrollTo(newValue, anchor: .top)
@@ -99,7 +99,7 @@ public struct ForeverView: View {
                     .onAppear {
                         totalHeight = proxy.size.height
                     }
-                    .onChange(of: proxy.size) { size in
+                    .onChange(of: proxy.size) { _, size in
                         totalHeight = size.height
                     }
             })
@@ -118,7 +118,7 @@ public struct ForeverView: View {
                     .onAppear {
                         headerHeight = proxy.size.height.rounded()
                     }
-                    .onChange(of: proxy.size) { size in
+                    .onChange(of: proxy.size) { _, size in
                         headerHeight = size.height.rounded()
                     }
             })
@@ -133,7 +133,7 @@ public struct ForeverView: View {
                         .onAppear {
                             discountCodeHeight = proxy.size.height.rounded()
                         }
-                        .onChange(of: proxy.size.height.rounded()) { size in
+                        .onChange(of: proxy.size.height.rounded()) { _, size in
                             discountCodeHeight = size
                         }
                 })

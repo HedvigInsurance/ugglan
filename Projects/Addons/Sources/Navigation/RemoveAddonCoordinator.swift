@@ -15,7 +15,7 @@ private struct RemoveAddonCoordinator: ViewModifier {
             .modally(item: $offerInput) { offerInput in
                 RemoveAddonNavigation(offerInput)
             }
-            .onChange(of: input) { input in
+            .onChange(of: input) { _, input in
                 if let input = input {
                     Task {
                         do {
