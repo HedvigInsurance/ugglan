@@ -31,10 +31,11 @@ struct MovingFlowConfirmScreen: View {
 }
 
 @MainActor
-public class MovingFlowConfirmViewModel: ObservableObject {
-    @Inject private var service: MoveFlowClient
-    @Published var viewState: ProcessingState = .loading
-    @Published var newContractId: String!
+@Observable
+public class MovingFlowConfirmViewModel {
+    @ObservationIgnored @Inject private var service: MoveFlowClient
+    var viewState: ProcessingState = .loading
+    var newContractId: String!
     @MainActor
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async {
         withAnimation {

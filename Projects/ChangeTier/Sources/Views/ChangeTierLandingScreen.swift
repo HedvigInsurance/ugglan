@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 public struct ChangeTierLandingScreen: View {
-    @ObservedObject var vm: ChangeTierViewModel
-    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @Bindable var vm: ChangeTierViewModel
+    @Environment(ChangeTierNavigationViewModel.self) var changeTierNavigationVm
 
     init(
         vm: ChangeTierViewModel
@@ -288,7 +288,7 @@ public struct ChangeTierLandingScreen: View {
             changeTierInput: ChangeTierInput.contractWithSource(data: inputData)
         )
     )
-    .environmentObject(
+    .environment(
         ChangeTierNavigationViewModel(
             changeTierContractsInput: .init(source: .betterCoverage, contracts: [])
         )

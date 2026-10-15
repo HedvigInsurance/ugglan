@@ -42,13 +42,14 @@ struct AddonInfo: Equatable, Identifiable {
 }
 
 @MainActor
-class ChangeAddonNavigationViewModel: ObservableObject {
-    @Published var isLearnMorePresented: AddonInfo?
-    @Published var isSelectableAddonPresented: AddonOfferSelectable?
-    @Published var isAddonProcessingPresented = false
-    @Published var changeAddonVm: ChangeAddonViewModel?
-    @Published var document: hPDFDocument?
-    @Published var activeAddonInfoModel: InfoViewDataModel?
+@Observable
+class ChangeAddonNavigationViewModel {
+    var isLearnMorePresented: AddonInfo?
+    var isSelectableAddonPresented: AddonOfferSelectable?
+    var isAddonProcessingPresented = false
+    var changeAddonVm: ChangeAddonViewModel?
+    var document: hPDFDocument?
+    var activeAddonInfoModel: InfoViewDataModel?
     public let input: ChangeAddonInput
 
     let router = NavigationRouter()
@@ -69,7 +70,7 @@ enum ChangeAddonRouterActions {
 }
 
 struct ChangeAddonNavigation: View {
-    @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    @Bindable var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
     init(input: ChangeAddonInput) {
         changeAddonNavigationVm = .init(input: input)
@@ -104,14 +105,14 @@ struct ChangeAddonNavigation: View {
                 }
             }
         }
-        .environmentObject(changeAddonNavigationVm)
+        .environment(changeAddonNavigationVm)
         .modally(
             presented: $changeAddonNavigationVm.isAddonProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
             AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                 .embededInNavigation(tracking: ChangeAddonTrackingType.processing)
-                .environmentObject(changeAddonNavigationVm)
+                .environment(changeAddonNavigationVm)
         }
         .modally(
             item: $changeAddonNavigationVm.isLearnMorePresented,
@@ -133,7 +134,7 @@ struct ChangeAddonNavigation: View {
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen
                 )
-                .environmentObject(changeAddonNavigationVm)
+                .environment(changeAddonNavigationVm)
         }
         .detent(
             item: $changeAddonNavigationVm.document,

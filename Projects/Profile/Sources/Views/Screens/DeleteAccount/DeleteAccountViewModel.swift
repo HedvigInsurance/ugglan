@@ -3,15 +3,17 @@ import Claims
 import Combine
 import Contracts
 import Foundation
+import Observation
 
 @MainActor
-public class DeleteAccountViewModel: ObservableObject {
+@Observable
+public class DeleteAccountViewModel {
     let claimsStore: ClaimsStore
     let contractsStore: ContractStore
 
-    @Published var hasActiveClaims: Bool = false
-    @Published var hasActiveContracts: Bool = false
-    private var cancellables = Set<AnyCancellable>()
+    var hasActiveClaims: Bool = false
+    var hasActiveContracts: Bool = false
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     public init(
         claimsStore: ClaimsStore,

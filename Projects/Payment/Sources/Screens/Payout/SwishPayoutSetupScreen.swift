@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SwishPayoutSetupScreen: View {
-    @StateObject private var vm = SwishPayoutSetupViewModel()
+    @State private var vm = SwishPayoutSetupViewModel()
     @StateObject var router = NavigationRouter()
     let onSuccess: (() -> Void)?
 
@@ -82,13 +82,14 @@ extension SwishPayoutSetupScreen: TrackingViewNameProtocol {
 }
 
 @MainActor
-class SwishPayoutSetupViewModel: ObservableObject {
-    @Published var phoneNumber: String = ""
-    @Published var hasConfirmedNumber: Bool = false
-    @Published var focusedField: SwishPayoutField?
-    @Published var phoneNumberError: String?
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+@Observable
+class SwishPayoutSetupViewModel {
+    var phoneNumber: String = ""
+    var hasConfirmedNumber: Bool = false
+    var focusedField: SwishPayoutField?
+    var phoneNumberError: String?
+    var isLoading: Bool = false
+    var errorMessage: String?
 
     private let paymentService = hPaymentService()
     private let phoneNumberMasking = Masking(type: .phoneNumber)

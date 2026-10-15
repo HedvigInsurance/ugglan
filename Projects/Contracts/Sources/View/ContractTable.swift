@@ -14,11 +14,11 @@ struct ContractTable: View {
     @State var onlyTerminatedInsurances = false
     @State var bottomContentHeights: [String: CGFloat] = [:]
     @State var cardHeights: [String: CGFloat] = [:]
-    @StateObject var vm = ContractTableViewModel()
+    @State var vm = ContractTableViewModel()
     @State private var cardDrawRotation = false
     @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
     @EnvironmentObject var router: NavigationRouter
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
@@ -238,12 +238,13 @@ struct ContractTable: View {
 }
 
 @MainActor
-public class ContractTableViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: ContractStore
-    @Inject var service: FetchContractsClient
-    @Published var addonBanners: [AddonBanner] = []
-    private var cancellables = Set<AnyCancellable>()
+@Observable
+public class ContractTableViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: ContractStore
+    @ObservationIgnored @Inject var service: FetchContractsClient
+    var addonBanners: [AddonBanner] = []
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     init() {
         store.$isFetchingContracts
             .combineLatest(store.$fetchContractsError)

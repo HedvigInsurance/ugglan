@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct ForeverView: View {
-    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
+    @Environment(ForeverNavigationViewModel.self) var foreverNavigationVm
     @State var scrollTo: Int = -1
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -25,6 +25,7 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
+        @Bindable var foreverNavigationVm = foreverNavigationVm
         successView
             .loading($foreverNavigationVm.viewState)
             .hStateViewButtonConfig(
@@ -153,5 +154,5 @@ public struct ForeverView: View {
         .onAppear {
             Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
         }
-        .environmentObject(vm)
+        .environment(vm)
 }

@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct PaymentMethodActionSheet<Hero: View>: View {
-    @StateObject private var vm: PaymentActionViewModel
+    @State private var vm: PaymentActionViewModel
     @Environment(\.dismiss) private var dismiss
 
     private let title: hTitle
@@ -22,7 +22,7 @@ struct PaymentMethodActionSheet<Hero: View>: View {
         @ViewBuilder hero: () -> Hero,
         onSuccess: @escaping () -> Void
     ) {
-        _vm = StateObject(wrappedValue: vm)
+        _vm = State(wrappedValue: vm)
         self.title = title
         self.subTitle = subTitle
         self.showsPrimaryLabel = showsPrimaryLabel

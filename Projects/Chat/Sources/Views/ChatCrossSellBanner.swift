@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct ChatCrossSellBanner: View {
-    @ObservedObject var vm: ChatCrossSellViewModel
+    let vm: ChatCrossSellViewModel
 
     var body: some View {
         InfoCard(title: vm.title, text: vm.subtitle, type: .campaign)

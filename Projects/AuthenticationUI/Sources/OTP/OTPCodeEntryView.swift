@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 public struct OTPCodeEntryView: View {
-    @StateObject private var vm = OTPCodeEntryViewModel()
-    @EnvironmentObject var otpVM: OTPState
+    @State private var vm = OTPCodeEntryViewModel()
+    @Environment(OTPState.self) var otpVM
     @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {
             hSection {
                 VStack(spacing: 8) {
@@ -47,7 +48,7 @@ public struct OTPCodeEntryView: View {
                     .transition(.opacity)
 
                     ResendOTPCode(otpVM: otpVM)
-                        .environmentObject(otpVM)
+                        .environment(otpVM)
                 }
             }
             .background(
@@ -72,7 +73,7 @@ public struct OTPCodeEntryView: View {
         .hFormContentPosition(.center)
         .hFormAttachToBottom {
             OpenEmailClientButton()
-                .environmentObject(otpVM)
+                .environment(otpVM)
         }
         .overlay(
             OTPCodeLoadingOverlay(otpVM: otpVM)
@@ -90,15 +91,16 @@ public struct OTPCodeEntryView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return OTPCodeEntryView()
-        .environmentObject(OTPState())
+        .environment(OTPState())
         .environmentObject(NavigationRouter())
 }
 
 @MainActor
-class OTPCodeEntryViewModel: ObservableObject {
-    private var authenticationService = AuthenticationService()
-    @hTextFieldFocusState var focusCodeField: Bool? = true
-    var router: NavigationRouter?
+@Observable
+class OTPCodeEntryViewModel {
+    @ObservationIgnored private var authenticationService = AuthenticationService()
+    @ObservationIgnored @hTextFieldFocusState var focusCodeField: Bool? = true
+    @ObservationIgnored var router: NavigationRouter?
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {

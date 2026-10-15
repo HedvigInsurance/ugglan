@@ -57,7 +57,7 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     let content: () -> SwiftUIContent
     @Binding var options: DetentPresentationOption
     let tracking: TrackingViewNameProtocol?
-    @StateObject private var presentationViewModel = PresentationViewModel()
+    @State private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption>,

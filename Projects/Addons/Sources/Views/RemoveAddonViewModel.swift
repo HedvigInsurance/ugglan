@@ -3,13 +3,14 @@ import hCore
 import hCoreUI
 
 @MainActor
-class RemoveAddonViewModel: ObservableObject {
+@Observable
+class RemoveAddonViewModel {
     let addonService = AddonsService()
-    @Published var submittingState: ProcessingState = .loading
-    @Published var removeOffer: AddonRemoveOffer
-    @Published var selectedAddons: Set<ActiveAddon> = []
-    @Published var addonRemoveOfferCost: ItemCost?
-    @Published var fetchingCostState: ProcessingState = .success
+    var submittingState: ProcessingState = .loading
+    var removeOffer: AddonRemoveOffer
+    var selectedAddons: Set<ActiveAddon> = []
+    var addonRemoveOfferCost: ItemCost?
+    var fetchingCostState: ProcessingState = .success
     init(_ removeOffer: AddonRemoveOfferWithSelectedItems) {
         self.removeOffer = removeOffer.offer
         self.selectedAddons = Set(

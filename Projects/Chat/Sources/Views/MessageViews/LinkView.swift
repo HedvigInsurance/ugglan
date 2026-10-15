@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct LinkView: View {
-    @StateObject var vm: LinkViewModel
+    @State var vm: LinkViewModel
     @State var height: CGFloat = 0
     @State var width: CGFloat = 0
     var body: some View {
@@ -59,9 +59,10 @@ struct LinkView: View {
 }
 
 @MainActor
-class LinkViewModel: ObservableObject {
-    @Published var webMetaDataProviderData: WebMetaDataProviderData?
-    @Published var error: String?
+@Observable
+class LinkViewModel {
+    var webMetaDataProviderData: WebMetaDataProviderData?
+    var error: String?
     let url: URL
 
     init(url: URL) {

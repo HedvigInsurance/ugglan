@@ -8,7 +8,7 @@ import hCoreUI
 struct MessageView: View {
     let message: Message
     let conversationStatus: ConversationStatus
-    @ObservedObject var vm: ChatScreenViewModel
+    let vm: ChatScreenViewModel
     @State var showRetryOptions = false
 
     var body: some View {
@@ -166,7 +166,7 @@ struct MessageView: View {
 struct MessageViewConfirmationDialog: ViewModifier {
     let message: Message
     @Binding var showRetryOptions: Bool
-    @ObservedObject var vm: ChatScreenViewModel
+    let vm: ChatScreenViewModel
 
     func body(content: Content) -> some View {
         content

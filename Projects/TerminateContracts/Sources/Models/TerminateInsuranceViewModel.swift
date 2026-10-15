@@ -1,12 +1,14 @@
 import ChangeTier
 import Combine
 import Foundation
+import Observation
 
 @MainActor
-public class TerminateInsuranceViewModel: ObservableObject {
-    @Published var flowNavigationVm: TerminationFlowNavigationViewModel?
-    @Published var changeTierInput: ChangeTierInput?
-    @Published public var isLoading: Bool = false
+@Observable
+public class TerminateInsuranceViewModel {
+    var flowNavigationVm: TerminationFlowNavigationViewModel?
+    var changeTierInput: ChangeTierInput?
+    public var isLoading: Bool = false
     private let service = TerminateContractsService()
     public init() {}
 

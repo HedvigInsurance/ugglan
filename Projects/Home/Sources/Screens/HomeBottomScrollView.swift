@@ -7,8 +7,8 @@ import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @ObservedObject private var vm: HomeBottomScrollViewModel
-    @StateObject private var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
+    @Bindable private var vm: HomeBottomScrollViewModel
+    @State private var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
 
     init(vm: HomeBottomScrollViewModel) {
         self.vm = vm
@@ -36,27 +36,28 @@ struct HomeBottomScrollView: View {
 }
 
 @MainActor
-class HomeBottomScrollViewModel: ObservableObject {
-    @Published var items = [InfoCardView]()
-    @Published var todos = [Todo]()
+@Observable
+class HomeBottomScrollViewModel {
+    var items = [InfoCardView]()
+    var todos = [Todo]()
     /// Drives the standalone `ConnectPaymentCardView`, which sits above the claims card rather
     /// than in the carousel — hence a flag instead of an `InfoCardType`.
-    @Published var showsConnectPaymentCard = false
+    var showsConnectPaymentCard = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
 
-    private var localItems = Set<InfoCardView>() {
+    @ObservationIgnored private var localItems = Set<InfoCardView>() {
         didSet {
             withAnimation { items = localItems.sorted(by: { $0.id < $1.id }) }
         }
     }
 
-    private var localTodos = Set<Todo>() {
+    @ObservationIgnored private var localTodos = Set<Todo>() {
         didSet {
             withAnimation { todos = localTodos.sorted() }
         }
     }
 
-    var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored var cancellables = Set<AnyCancellable>()
 
     init() {
         handlePayments()

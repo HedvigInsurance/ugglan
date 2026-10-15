@@ -12,7 +12,7 @@ import hCore
 import hCoreUI
 
 public struct HomeScreen: View {
-    @StateObject var vm = HomeVM()
+    @State var vm = HomeVM()
 
     public init() {}
 
@@ -26,9 +26,10 @@ public struct HomeScreen: View {
 }
 
 @MainActor
-class HomeVM: ObservableObject {
-    private var chatNotificationsTimerCancellable: AnyCancellable?
-    private var claimsTimerCancellable: AnyCancellable?
+@Observable
+class HomeVM {
+    @ObservationIgnored private var chatNotificationsTimerCancellable: AnyCancellable?
+    @ObservationIgnored private var claimsTimerCancellable: AnyCancellable?
     private let contractStore: ContractStore = globalAppStateContainer.get()
     private let homeStore: HomeStore = globalAppStateContainer.get()
     private let claimsStore: ClaimsStore = globalAppStateContainer.get()
@@ -133,7 +134,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.active, .none)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("ActiveInFuture") {
@@ -142,7 +143,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.future, .activeInFuture(inceptionDate: "2023-11-23"))
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("PendingSwitchable") {
@@ -150,7 +151,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.future, .pendingSwitchable)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("PendingNonswitchable") {
@@ -158,7 +159,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.future, .pendingNonswitchable)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("Terminated") {
@@ -166,7 +167,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.terminated, .pendingSwitchable)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("Loading") {
@@ -174,7 +175,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.loading, .none)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 #Preview("Deleted") {
@@ -183,7 +184,7 @@ class HomeVM: ObservableObject {
     previewMemberState(.active, .pendingSwitchable)
 
     return HomeScreen()
-        .environmentObject(HomeNavigationViewModel())
+        .environment(HomeNavigationViewModel())
 }
 
 public enum HomeRouterAction: TrackingViewNameProtocol, NavigationTitleProtocol {

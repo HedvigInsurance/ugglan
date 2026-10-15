@@ -16,7 +16,7 @@ extension View {
 }
 
 private struct PaymentMethodsNavigation: View {
-    @StateObject private var paymentsNavigationVm = PaymentsNavigationViewModel()
+    @State private var paymentsNavigationVm = PaymentsNavigationViewModel()
     @AppObservedObject var store: PaymentStore
     var body: some View {
         hNavigationStack(

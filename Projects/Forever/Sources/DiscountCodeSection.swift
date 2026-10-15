@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct DiscountCodeSectionView: View {
-    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
+    @Environment(ForeverNavigationViewModel.self) var foreverNavigationVm
 
     var body: some View {
         VStack(spacing: 0) {
@@ -92,5 +92,5 @@ private struct ActionButtons: View {
         .onAppear {
             Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
         }
-        .environmentObject(ForeverNavigationViewModel())
+        .environment(ForeverNavigationViewModel())
 }

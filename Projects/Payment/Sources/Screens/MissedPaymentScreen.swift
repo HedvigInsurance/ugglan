@@ -30,7 +30,7 @@ extension View {
 struct MissedPaymentScreen: View {
     let missedPaymentdata: MissedPaymentData
     @AppObservedObject var paymentStore: PaymentStore
-    @StateObject private var vm = PaymentOverdueScreenViewModel()
+    @State private var vm = PaymentOverdueScreenViewModel()
     @EnvironmentObject var router: NavigationRouter
     let onSuccess: () -> Void
 
@@ -228,10 +228,11 @@ struct MissedPaymentScreen: View {
 }
 
 @MainActor
-class PaymentOverdueScreenViewModel: ObservableObject {
+@Observable
+class PaymentOverdueScreenViewModel {
     private let paymentService = hPaymentService()
-    @Published var processingState: ProcessingState = .success
-    @Published var showSuccessScreen = false
+    var processingState: ProcessingState = .success
+    var showSuccessScreen = false
 
     func chargeOutstandingPayment() {
         processingState = .loading

@@ -3,9 +3,9 @@
 The referral program module. Displays a user's referral code, discount information, pie chart visualization of discounts, and a list of referred friends with their statuses. Users can share their referral code and change it.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`) with `@Inject`. `ForeverNavigationViewModel` uses `@Inject var foreverService: ForeverClient`.
+- Pattern: ViewModel (`@MainActor @Observable class`) with `@Inject`. `ForeverNavigationViewModel` uses `@Inject var foreverService: ForeverClient`.
 - Key services: `ForeverClient` (protocol)
-- Data flow: `ForeverNavigationViewModel` fetches referral data via `ForeverClient`, stores it as `ForeverData`, and manages change-code presentation state. `ForeverView` observes the VM via `@EnvironmentObject` and renders header, discount code section, and invitation table.
+- Data flow: `ForeverNavigationViewModel` fetches referral data via `ForeverClient`, stores it as `ForeverData`, and manages change-code presentation state. `ForeverView` observes the VM via `@Environment` and renders header, discount code section, and invitation table.
 
 ## Key Files
 - Entry point: `ForeverNavigation` in `Sources/Navigation/ForeverNavigation.swift`

@@ -4,11 +4,12 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ForeverNavigationViewModel: ObservableObject {
-    @Published var isChangeCodePresented = false
-    @Published var foreverData: ForeverData?
-    @Inject var foreverService: ForeverClient
-    @Published var viewState: ProcessingState = .loading
+@Observable
+public class ForeverNavigationViewModel {
+    var isChangeCodePresented = false
+    var foreverData: ForeverData?
+    @ObservationIgnored @Inject var foreverService: ForeverClient
+    var viewState: ProcessingState = .loading
 
     func fetchForeverData() async {
         if foreverData == nil {
@@ -59,7 +60,7 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
 public struct ForeverNavigation: View {
     @EnvironmentObject var router: NavigationRouter
     private let changeCodeRouter = NavigationRouter()
-    @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
+    @State var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
 
     public init(useOwnNavigation: Bool) {
@@ -105,7 +106,7 @@ public struct ForeverNavigation: View {
                     tracking: ForeverNavigationDetentType.changeCode
                 )
         }
-        .environmentObject(foreverNavigationVm)
+        .environment(foreverNavigationVm)
     }
 }
 

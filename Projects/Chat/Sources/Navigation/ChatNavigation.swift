@@ -5,10 +5,11 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class ChatNavigationViewModel: ObservableObject {
-    @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
-    @Published var isAskForPushNotificationsPresented = false
-    @Published var isAutomationMessagePresented: InfoViewDataModel?
+@Observable
+public class ChatNavigationViewModel {
+    var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
+    var isAskForPushNotificationsPresented = false
+    var isAutomationMessagePresented: InfoViewDataModel?
     let router = NavigationRouter()
     let chatType: ChatType
     let chatVm: ChatScreenViewModel?
@@ -93,7 +94,7 @@ public enum ChatNavigationViewName: TrackingViewNameProtocol {
 }
 
 public struct ChatNavigation<Content: View>: View {
-    @StateObject private var chatNavigationViewModel: ChatNavigationViewModel
+    @State private var chatNavigationViewModel: ChatNavigationViewModel
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
 
     public init(
@@ -125,7 +126,7 @@ public struct ChatNavigation<Content: View>: View {
                 redirectView(value) {}
             }
         }
-        .environmentObject(chatNavigationViewModel)
+        .environment(chatNavigationViewModel)
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
             presentationStyle: .detent(style: [.large])

@@ -7,8 +7,8 @@ import hCoreUI
 public struct PaymentsView: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
-    @StateObject var vm = PaymentsViewModel()
+    @Environment(PaymentsNavigationViewModel.self) var paymentNavigationVm
+    @State var vm = PaymentsViewModel()
 
     public var body: some View {
         successView
@@ -198,10 +198,12 @@ public struct PaymentsView: View {
 }
 
 @MainActor
-public class PaymentsViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
-    @AppState private var store: PaymentStore
-    private var fetchTask: Task<Void, Never>?
+@Observable
+public class PaymentsViewModel {
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored @AppState private var store: PaymentStore
+    @ObservationIgnored private var fetchTask: Task<Void, Never>?
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
         store.$isFetchingPaymentStatus
@@ -212,7 +214,10 @@ public class PaymentsViewModel: ObservableObject {
                 if let error { return .error(errorMessage: error) }
                 return .success
             }
-            .assign(to: &$viewState)
+            .sink { [weak self] state in
+                self?.viewState = state
+            }
+            .store(in: &cancellables)
     }
 
     /// Fetches all payment data in an unstructured `Task` owned by the ViewModel.

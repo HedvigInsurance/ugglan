@@ -1,35 +1,95 @@
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
 
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
-    @Published var currentFieldId: String?
-    @Published var isDatePickerPresented: DatePickerViewModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
+    @ObservationIgnored private var _currentFieldId: String?
+    var currentFieldId: String? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.currentFieldId)
+            return _currentFieldId
         }
-        didSet {
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.currentFieldId) {
+                _currentFieldId = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _isDatePickerPresented: DatePickerViewModel?
+    var isDatePickerPresented: DatePickerViewModel? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.isDatePickerPresented)
+            return _isDatePickerPresented
+        }
+        set {
+            UIApplication.dismissKeyboard()
+            let oldValue = _isDatePickerPresented
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.isDatePickerPresented) {
+                _isDatePickerPresented = newValue
+            }
             handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
-    @Published var isSelectItemPresented: SingleItemModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
+
+    @ObservationIgnored private var _isSelectItemPresented: SingleItemModel?
+    var isSelectItemPresented: SingleItemModel? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.isSelectItemPresented)
+            return _isSelectItemPresented
         }
-        didSet {
+        set {
+            UIApplication.dismissKeyboard()
+            let oldValue = _isSelectItemPresented
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.isSelectItemPresented) {
+                _isSelectItemPresented = newValue
+            }
             handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
-    @Published var searchFieldPresentation: FormFieldSearchModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
+
+    @ObservationIgnored private var _searchFieldPresentation: FormFieldSearchModel?
+    var searchFieldPresentation: FormFieldSearchModel? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.searchFieldPresentation)
+            return _searchFieldPresentation
         }
-        didSet {
+        set {
+            UIApplication.dismissKeyboard()
+            let oldValue = _searchFieldPresentation
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.searchFieldPresentation) {
+                _searchFieldPresentation = newValue
+            }
             handleFieldPresentation(dismissed: oldValue?.id)
         }
     }
-    @Published var dateForPicker: Date = Date()
-    @Published var formValues: [String: FormStepValue] = [:]
+
+    @ObservationIgnored private var _dateForPicker: Date = Date()
+    var dateForPicker: Date {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.dateForPicker)
+            return _dateForPicker
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.dateForPicker) {
+                _dateForPicker = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _formValues: [String: FormStepValue] = [:]
+    var formValues: [String: FormStepValue] {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.formValues)
+            return _formValues
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.formValues) {
+                _formValues = newValue
+            }
+        }
+    }
 
     let formModel: ClaimIntentStepContentForm
     required init(
@@ -146,28 +206,29 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
     }
 }
 
-final class FormStepValue: ObservableObject {
-    @Published var values: [String] = [] {
+@Observable
+final class FormStepValue {
+    var values: [String] = [] {
         didSet {
             error = nil
         }
     }
-    @Published var value: String = "" {
+    var value: String = "" {
         didSet {
             values = [value]
             error = nil
         }
     }
-    @Published var error: String?
+    var error: String?
     /// Display title for search-selected values (since the value is an opaque ID)
-    @Published var selectedSearchItem: SingleSelectValue? {
+    var selectedSearchItem: SingleSelectValue? {
         didSet {
             if let selectedSearchItem {
                 value = selectedSearchItem.value
             }
         }
     }
-    var lastSearchQuery: String?
+    @ObservationIgnored var lastSearchQuery: String?
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
         let seedValues = field.currentValues.isEmpty ? field.defaultValues : field.currentValues
         self.value = seedValues.first ?? ""
