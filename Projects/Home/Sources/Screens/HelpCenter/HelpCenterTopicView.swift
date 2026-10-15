@@ -29,7 +29,7 @@ public struct HelpCenterTopicNavigation: View {
 
 struct HelpCenterTopicView: View {
     private var topic: FaqTopic
-    @ObservedObject var router: NavigationRouter
+    let router: NavigationRouter
     init(
         topic: FaqTopic,
         router: NavigationRouter

@@ -221,7 +221,7 @@ final class SubmitClaimChatTests: XCTestCase {
                 SubmitClaimChatScreen()
                 .environment(viewModel)
                 .environment(viewModel.scrollCoordinator)
-                .environmentObject(viewModel.router)
+                .environment(viewModel.router)
         )
     }
 

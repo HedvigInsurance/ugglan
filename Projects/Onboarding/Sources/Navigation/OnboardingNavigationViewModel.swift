@@ -1,5 +1,4 @@
 import AppStateContainer
-import Combine
 import Contracts
 import CrossSell
 import EditStakeholders
@@ -14,7 +13,6 @@ class OnboardingNavigationViewModel {
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
-    @ObservationIgnored private var routeCountCancellable: AnyCancellable?
     var steps: [OnboardingStep] = [
         .welcome
     ]
@@ -26,15 +24,16 @@ class OnboardingNavigationViewModel {
     var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
 
     var missingPetChipIdInput: MissingPetChipIdInput?
+    @ObservationIgnored private var routeCountWatcher: ObservationWatcher?
 
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)
-        routeCountCancellable = router.$routeTypes
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.updateProgress()
-            }
+        routeCountWatcher = ObservationWatcher { [weak self] in
+            _ = self?.router.routeTypes
+        } onChange: { [weak self] in
+            self?.updateProgress()
+        }
     }
 
     func advance(after step: OnboardingStep) {

@@ -6,7 +6,7 @@ import hCoreUI
 public struct OTPCodeEntryView: View {
     @State private var vm = OTPCodeEntryViewModel()
     @Environment(OTPState.self) var otpVM
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     public init() {}
 
     public var body: some View {

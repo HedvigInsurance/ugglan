@@ -5,7 +5,7 @@ import hCoreUI
 
 struct PaymentMethodDetailScreen: View {
     @AppObservedObject private var store: PaymentStore
-    @EnvironmentObject private var router: NavigationRouter
+    @Environment(NavigationRouter.self) private var router
     @State private var providerToSetUp: PaymentProvider?
     @State private var methodToRemove: ConnectedPaymentMethod?
     @State private var cantRemoveInfo: InfoViewModel?
@@ -144,7 +144,7 @@ fileprivate struct PreviewData {
     return PaymentMethodDetailScreen(paymentProvider: .invoice)
         .environmentObject(store)
         .environment(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 #Preview("Trustly") {
@@ -153,7 +153,7 @@ fileprivate struct PreviewData {
     return PaymentMethodDetailScreen(paymentProvider: .trustly)
         .environmentObject(store)
         .environment(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 #Preview("Swish") {
@@ -161,7 +161,7 @@ fileprivate struct PreviewData {
     return PaymentMethodDetailScreen(paymentProvider: .swish)
         .environmentObject(store)
         .environment(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 #Preview("Nordea") {
@@ -170,7 +170,7 @@ fileprivate struct PreviewData {
     return PaymentMethodDetailScreen(paymentProvider: .nordea)
         .environmentObject(store)
         .environment(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 #Preview("Unknown") {
@@ -178,5 +178,5 @@ fileprivate struct PreviewData {
     return PaymentMethodDetailScreen(paymentProvider: .unknown)
         .environmentObject(store)
         .environment(PaymentsNavigationViewModel())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }

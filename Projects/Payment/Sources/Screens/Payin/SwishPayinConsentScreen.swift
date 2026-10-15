@@ -31,7 +31,7 @@ struct SwishPayinConsentScreen: View {
     @SwiftUI.Environment(\.verticalSizeClass) var verticalSizeClass
 
     @State private var vm: SwishPayinConsentViewModel
-    @StateObject private var router = NavigationRouter()
+    @State private var router = NavigationRouter()
     @State private var showsExplanation = false
     /// Opened from a method picker, so a failure can send the member back to pick another.
     private let canChangeMethod: Bool
