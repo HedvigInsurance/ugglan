@@ -1,16 +1,18 @@
 import AppStateContainer
 import Foundation
+import Observation
 import hCore
 
 public typealias ConversationId = String
 
 @MainActor
 @PersistableStore
+@Observable
 public final class ChatStore: AppStore {
-    @Published public internal(set) var failedMessages: [ConversationId: [Message]] = [:]
+    public internal(set) var failedMessages: [ConversationId: [Message]] = [:]
 
     @Transient
-    @Published public internal(set) var askedForPushNotificationsPermission: Bool = false
+    public internal(set) var askedForPushNotificationsPermission: Bool = false
 
     public init() {}
 

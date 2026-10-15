@@ -4,7 +4,7 @@ Displays active, pending, and terminated insurance contracts with details on cov
 
 ## Architecture
 
-- **Pattern**: `ContractStore` is an `@PersistableStore`-backed `AppStore` exposing `activeContracts`, `terminatedContracts`, and `pendingContracts` as `@Published` arrays, plus helpers (`contractForId`, `allStakeholders`, `getAddonContractInfosFor`). Navigation coordinated by `ContractsNavigationViewModel`.
+- **Pattern**: `ContractStore` is an `@PersistableStore`-backed `AppStore` exposing `activeContracts`, `terminatedContracts`, and `pendingContracts` as observable arrays, plus helpers (`contractForId`, `allStakeholders`, `getAddonContractInfosFor`). Navigation coordinated by `ContractsNavigationViewModel`.
 - **Key services**: `FetchContractsClient` protocol for fetching active/pending/terminated contracts and addon banners. `FetchContractsClientDemo` provides sample data.
 - **Data flow**: Views observe the store via `@AppObservedObject`. `Contracts.swift` triggers `await store.fetchContracts()` on appear, on pull-to-refresh, and on a 60-second polling timer. `ContractStore` conforms to `ExistingStakeholders` so it can be injected into `EditStakeholdersViewModel`. `ContractsNavigationViewModel` manages navigation state and coordinates modal/detent presentations.
 

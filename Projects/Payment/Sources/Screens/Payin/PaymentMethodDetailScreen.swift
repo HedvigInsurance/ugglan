@@ -142,7 +142,7 @@ fileprivate struct PreviewData {
 #Preview("Invoice") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .invoice(delivery: .kivra))
     return PaymentMethodDetailScreen(paymentProvider: .invoice)
-        .environmentObject(store)
+        .environment(store)
         .environment(PaymentsNavigationViewModel())
         .environment(NavigationRouter())
 }
@@ -151,7 +151,7 @@ fileprivate struct PreviewData {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .trustly(bankAccount: .init(account: "account", bank: "bank")))
     return PaymentMethodDetailScreen(paymentProvider: .trustly)
-        .environmentObject(store)
+        .environment(store)
         .environment(PaymentsNavigationViewModel())
         .environment(NavigationRouter())
 }
@@ -159,7 +159,7 @@ fileprivate struct PreviewData {
 #Preview("Swish") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .swish(phoneNumber: "0700123456"))
     return PaymentMethodDetailScreen(paymentProvider: .swish)
-        .environmentObject(store)
+        .environment(store)
         .environment(PaymentsNavigationViewModel())
         .environment(NavigationRouter())
 }
@@ -168,7 +168,7 @@ fileprivate struct PreviewData {
     let store = PreviewData()
         .getStoreAndInitiateDependancies(for: .nordea(bankAccount: .init(account: "Nordea Account", bank: "Nordea")))
     return PaymentMethodDetailScreen(paymentProvider: .nordea)
-        .environmentObject(store)
+        .environment(store)
         .environment(PaymentsNavigationViewModel())
         .environment(NavigationRouter())
 }
@@ -176,7 +176,7 @@ fileprivate struct PreviewData {
 #Preview("Unknown") {
     let store = PreviewData().getStoreAndInitiateDependancies(for: .unknown)
     return PaymentMethodDetailScreen(paymentProvider: .unknown)
-        .environmentObject(store)
+        .environment(store)
         .environment(PaymentsNavigationViewModel())
         .environment(NavigationRouter())
 }

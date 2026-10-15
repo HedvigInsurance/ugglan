@@ -33,32 +33,33 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 
 @MainActor
 @PersistableStore
+@Observable
 public final class HomeStore: AppStore {
-    @Inject private var homeService: HomeClient
+    @ObservationIgnored @Inject private var homeService: HomeClient
 
-    @Published public private(set) var memberContractState: MemberContractState = .loading
-    @Published public private(set) var memberInfo: MemberInfo?
-    @Published public private(set) var futureStatus: FutureStatus = .none
-    @Published public private(set) var contracts: [HomeContract] = []
-    @Published public private(set) var importantMessages: [ImportantMessage] = []
-    @Published public private(set) var quickActions: [QuickAction] = []
-    @Published public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
-    @Published public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
-    @Published public private(set) var showChatNotification: Bool = false
-    @Published public private(set) var hasSentOrRecievedAtLeastOneMessage: Bool = false
-    @Published public private(set) var latestConversationTimeStamp: Date = Date()
-    @Published public private(set) var latestChatTimeStamp: Date = Date()
+    public private(set) var memberContractState: MemberContractState = .loading
+    public private(set) var memberInfo: MemberInfo?
+    public private(set) var futureStatus: FutureStatus = .none
+    public private(set) var contracts: [HomeContract] = []
+    public private(set) var importantMessages: [ImportantMessage] = []
+    public private(set) var quickActions: [QuickAction] = []
+    public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
+    public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
+    public private(set) var showChatNotification: Bool = false
+    public private(set) var hasSentOrRecievedAtLeastOneMessage: Bool = false
+    public private(set) var latestConversationTimeStamp: Date = Date()
+    public private(set) var latestChatTimeStamp: Date = Date()
 
-    @Transient @Published public private(set) var homeQuickActions: [HomeQuickAction] = []
-    @Transient @Published public private(set) var ongoingQuotes: [OngoingQuote] = []
-    @Transient @Published public private(set) var hidenImportantMessages: [String] = []
-    @Transient @Published public private(set) var isFetchingQuickActions: Bool = false
-    @Transient @Published public private(set) var isFetchingFAQ: Bool = false
-    @Transient @Published public private(set) var fetchQuickActionsError: String?
-    @Transient @Published public private(set) var fetchFAQError: String?
-    @Transient @Published public private(set) var fetchMemberStateError: String?
+    @Transient public private(set) var homeQuickActions: [HomeQuickAction] = []
+    @Transient public private(set) var ongoingQuotes: [OngoingQuote] = []
+    @Transient public private(set) var hidenImportantMessages: [String] = []
+    @Transient public private(set) var isFetchingQuickActions: Bool = false
+    @Transient public private(set) var isFetchingFAQ: Bool = false
+    @Transient public private(set) var fetchQuickActionsError: String?
+    @Transient public private(set) var fetchFAQError: String?
+    @Transient public private(set) var fetchMemberStateError: String?
 
-    @Transient private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
     private let dismissedQuotes = DismissedOngoingQuotesTracker()
 
     public var upcomingRenewalContracts: [HomeContract] {
@@ -67,26 +68,26 @@ public final class HomeStore: AppStore {
 
     public init() {
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
-        crossSellStore.$hasNewOffer
+        crossSellStore.publisher(for: \.hasNewOffer)
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
 
-        FeatureFlags.shared.$data
+        FeatureFlags.shared.publisher(for: \.data)
             .map(\.isNewConversationFromInboxEnabled)
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
 
-        FeatureFlags.shared.$data
+        FeatureFlags.shared.publisher(for: \.data)
             .map(\.isResumingOngoingShopSessionsEnabled)
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in Task { await self?.fetchOngoingQuotes() } }
             .store(in: &cancellables)
 
-        $memberInfo
+        publisher(for: \.memberInfo)
             .compactMap { $0?.id }
             .removeDuplicates()
             .sink { [weak self] memberId in self?.hideDismissedQuotes(forMember: memberId) }
@@ -94,8 +95,8 @@ public final class HomeStore: AppStore {
 
         let paymentStore: PaymentStore = globalAppStateContainer.get()
 
-        paymentStore.$paymentData
-            .combineLatest($quickActions) { upcomingPayment, actions in
+        paymentStore.publisher(for: \.paymentData)
+            .combineLatest(publisher(for: \.quickActions)) { upcomingPayment, actions in
                 let editActions = actions.editInsuranceActions
                 let tiles: [HomeQuickAction?] = [
                     editActions.map(HomeQuickAction.editInsurance),
@@ -110,7 +111,8 @@ public final class HomeStore: AppStore {
                 return tiles.compactMap { $0 }
             }
             .removeDuplicates()
-            .assign(to: &$homeQuickActions)
+            .sink { [weak self] actions in self?.homeQuickActions = actions }
+            .store(in: &cancellables)
     }
 
     public func fetchMemberState() async {

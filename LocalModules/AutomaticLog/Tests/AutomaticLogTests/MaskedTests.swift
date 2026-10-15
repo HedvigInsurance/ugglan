@@ -1,5 +1,4 @@
 import AutomaticLog
-import Combine
 import XCTest
 
 @Loggable
@@ -16,12 +15,18 @@ private struct Stakeholder {
     @Masked let SSN: String?
 }
 
-/// The case `@Masked` exists for: a `@Published` property, which no property wrapper
-/// could have been applied to.
+/// Stands in for any property wrapper: the wrapped value is stored under a leading underscore.
+@propertyWrapper
+private struct Stored<Value> {
+    var wrappedValue: Value
+}
+
+/// The case `@Masked` exists for: a property that already carries a property wrapper, which no
+/// second wrapper could have been applied to.
 @Loggable
-private final class LoginState: ObservableObject {
-    @Published var isLoading = false
-    @Published @Masked var code = "1234"
+private final class LoginState {
+    var isLoading = false
+    @Stored @Masked var code = "1234"
 }
 
 /// An enum case's associated value cannot carry an attribute, so the type masks itself.

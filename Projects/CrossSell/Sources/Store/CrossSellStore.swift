@@ -1,19 +1,21 @@
 import Addons
 import AppStateContainer
 import Foundation
+import Observation
 
 @MainActor
 @PersistableStore
+@Observable
 public final class CrossSellStore: AppStore {
     private let crossSellService = CrossSellService()
 
-    @Published public internal(set) var crossSells: CrossSells?
-    @Published public internal(set) var homeCrossSells: CrossSells?
-    @Published public internal(set) var addonBanners: [AddonBanner] = []
-    @Published public internal(set) var hasNewOffer: Bool = false
+    public internal(set) var crossSells: CrossSells?
+    public internal(set) var homeCrossSells: CrossSells?
+    public internal(set) var addonBanners: [AddonBanner] = []
+    public internal(set) var hasNewOffer: Bool = false
 
-    @Transient @Published public internal(set) var fetchCrossSellError: String?
-    @Transient @Published public internal(set) var fetchAddonBannersError: String?
+    @Transient public internal(set) var fetchCrossSellError: String?
+    @Transient public internal(set) var fetchAddonBannersError: String?
 
     private static let lastSeenRecommendedKey = "lastSeenRecommendedProductId"
     private var lastSeenRecommendedProductId: String? {
