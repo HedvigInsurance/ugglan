@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationSummaryScreen: View {
-    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationNavigationVm
 
     init() {}
 
@@ -174,7 +174,7 @@ struct TerminationSummaryScreen: View {
     )
 
     return TerminationSummaryScreen()
-        .environmentObject(
+        .environment(
             navigationModel
         )
 }
@@ -215,7 +215,7 @@ struct TerminationSummaryScreen: View {
     )
 
     return TerminationSummaryScreen()
-        .environmentObject(
+        .environment(
             navigationModel
         )
 }

@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimSummaryView: View {
-    @ObservedObject var viewModel: SubmitClaimSummaryStep
+    let viewModel: SubmitClaimSummaryStep
     @State private var showAllAnswers = false
 
     private var claimDetails: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryItem] {
@@ -184,10 +184,10 @@ private struct SummaryAnswerValueView: View {
 }
 
 private struct SummaryAnswerFilesView: View {
-    @StateObject private var vm: FileGridViewModel
+    @State private var vm: FileGridViewModel
 
     init(files: [ClaimIntentStepContentSummary.ClaimIntentStepContentSummaryFileUpload]) {
-        _vm = StateObject(
+        _vm = State(
             wrappedValue: FileGridViewModel(
                 files: files.map {
                     .init(
@@ -210,7 +210,7 @@ private struct SummaryAnswerFilesView: View {
 }
 
 struct SubmitClaimSummaryBottomView: View {
-    @ObservedObject var viewModel: SubmitClaimSummaryStep
+    let viewModel: SubmitClaimSummaryStep
 
     var body: some View {
         hSection {

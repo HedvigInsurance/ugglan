@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct EuroBonusView: View {
     @AppObservedObject var store: ProfileStore
-    @EnvironmentObject var euroBonusNavigationVm: EuroBonusNavigationViewModel
+    @Environment(EuroBonusNavigationViewModel.self) var euroBonusNavigationVm
 
     public init() {}
 

@@ -10,7 +10,7 @@ The Chat module provides the customer support messaging interface. It includes a
   - `ConversationsClient` -- protocol for listing and creating conversations.
   - `ChatFileUploaderClient` -- protocol for file upload.
   - `ConversationsDemoClient` -- demo implementation that satisfies both `ConversationsClient` and `ConversationClient`.
-- **Data flow**: `ChatScreenViewModel` owns a `ChatMessageViewModel` (which owns a `ChatConversationViewModel`) and a `ChatInputViewModel`. On appear, a 5-second polling timer fetches new messages via `ChatServiceProtocol.getNewMessages()`. Messages are stored in `ChatMessageViewModel.messages` as `@Published` state. Pagination for older messages uses token-based cursors (`olderToken`/`newerToken`).
+- **Data flow**: `ChatScreenViewModel` owns a `ChatMessageViewModel` (which owns a `ChatConversationViewModel`) and a `ChatInputViewModel`. On appear, a 5-second polling timer fetches new messages via `ChatServiceProtocol.getNewMessages()`. Messages are stored in `ChatMessageViewModel.messages` as observable state. Pagination for older messages uses token-based cursors (`olderToken`/`newerToken`).
 
 ## Key Files
 - **Entry point / navigation**: `Navigation/ChatNavigation.swift` -- `ChatNavigation` view (wraps `RouterHost`), `ChatNavigationViewModel`, `ChatType` routing

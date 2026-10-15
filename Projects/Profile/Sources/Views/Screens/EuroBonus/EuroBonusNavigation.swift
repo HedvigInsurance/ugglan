@@ -2,8 +2,9 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public class EuroBonusNavigationViewModel: ObservableObject {
-    @Published var isChangeEuroBonusPresented = false
+@Observable
+public class EuroBonusNavigationViewModel {
+    var isChangeEuroBonusPresented = false
 }
 
 enum EuroBonusRouterType {
@@ -22,7 +23,7 @@ extension EuroBonusRouterType: TrackingViewNameProtocol {
 public struct EuroBonusNavigation: View {
     @StateObject var router = NavigationRouter()
     private let useOwnNavigation: Bool
-    @StateObject var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
+    @State var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
 
     public init(
         useOwnNavigation: Bool
@@ -47,7 +48,7 @@ public struct EuroBonusNavigation: View {
                     .navigationTitle(L10n.SasIntegration.title)
             }
         }
-        .environmentObject(euroBonusNavigationViewModel)
+        .environment(euroBonusNavigationViewModel)
         .detent(
             presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
             presentationStyle: .detent(style: [.height])

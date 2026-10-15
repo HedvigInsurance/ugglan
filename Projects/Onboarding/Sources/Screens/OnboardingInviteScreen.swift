@@ -6,7 +6,7 @@ import hCoreUI
 struct OnboardingInviteScreen: View {
     let discountCode: String
     let monthlyDiscountPerReferral: String
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @SwiftUI.Environment(OnboardingNavigationViewModel.self) var vm
     @State private var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
     @State private var namesToDisplay: [String] = []
     private var subtitle: String {
@@ -118,5 +118,5 @@ struct OnboardingInviteScreen: View {
 
 #Preview {
     OnboardingInviteScreen(discountCode: "HEDVIG", monthlyDiscountPerReferral: "10 kr")
-        .environmentObject(OnboardingNavigationViewModel())
+        .environment(OnboardingNavigationViewModel())
 }

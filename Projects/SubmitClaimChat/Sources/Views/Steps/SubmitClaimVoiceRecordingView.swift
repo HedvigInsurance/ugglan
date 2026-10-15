@@ -5,7 +5,7 @@ import hCoreUI
 
 // MARK: - Main Voice Recording View
 struct SubmitClaimVoiceRecordingView: View {
-    @ObservedObject var viewModel: SubmitClaimAudioStep
+    let viewModel: SubmitClaimAudioStep
 
     var body: some View {
         hSection {
@@ -54,12 +54,12 @@ struct SubmitClaimVoiceRecordingView: View {
 
 // MARK: - Result View (shown after submission)
 struct SubmitClaimVoiceRecordingResultView: View {
-    @ObservedObject var viewModel: SubmitClaimAudioStep
-    @StateObject private var audioPlayer: AudioPlayer
+    let viewModel: SubmitClaimAudioStep
+    @State private var audioPlayer: AudioPlayer
 
     init(viewModel: SubmitClaimAudioStep) {
         self.viewModel = viewModel
-        self._audioPlayer = StateObject(wrappedValue: AudioPlayer(url: viewModel.audioFileURL))
+        self._audioPlayer = State(wrappedValue: AudioPlayer(url: viewModel.audioFileURL))
     }
 
     var body: some View {

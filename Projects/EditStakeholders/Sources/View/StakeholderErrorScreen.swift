@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct StakeholderInputErrorView: View {
-    @ObservedObject var vm: StakeholderInputViewModel
-    @ObservedObject private var intentViewModel: IntentViewModel
+    let vm: StakeholderInputViewModel
+    private let intentViewModel: IntentViewModel
     let showEnterManuallyButton: Bool
 
     init(

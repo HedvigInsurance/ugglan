@@ -3,7 +3,8 @@ import hCore
 import hCoreUI
 
 @MainActor
-class SubmitClaimChatScreenAlertViewModel: ObservableObject {
+@Observable
+class SubmitClaimChatScreenAlertViewModel {
     var alertModel: AlertModel? {
         didSet {
             switch alertModel?.type {
@@ -16,14 +17,20 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
 
     /// Dropping the model when the detent closes releases its closures. Those closures are written
     /// in the presenting views and can hold the view that owns this object.
-    @Published var alertPresentationModel: AlertModel? {
+    var alertPresentationModel: AlertModel? {
         didSet {
+            onAlertPresentationModelSet?(alertPresentationModel)
             if alertPresentationModel == nil {
                 alertModel = nil
             }
         }
     }
-    @Published fileprivate var systemAlertPresented = false
+
+    // Test seam. An error alert can be stored and cleared inside one run-loop turn when nothing
+    // is able to present it, so a test cannot poll for it, and observation reports a change
+    // before it is applied.
+    @ObservationIgnored var onAlertPresentationModelSet: ((AlertModel?) -> Void)?
+    fileprivate var systemAlertPresented = false
 
     func performAction() {
         alertModel?.action()
@@ -98,7 +105,7 @@ class SubmitClaimChatScreenAlertViewModel: ObservableObject {
 }
 
 struct SubmitClaimChatScreenAlertHelper: ViewModifier {
-    @ObservedObject var viewModel: SubmitClaimChatScreenAlertViewModel
+    @Bindable var viewModel: SubmitClaimChatScreenAlertViewModel
 
     func body(content: Content) -> some View {
         content

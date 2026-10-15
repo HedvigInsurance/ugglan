@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct TodoList: View {
-    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) var navigationVm
     let todos: [Todo]
 
     var body: some View {
@@ -116,5 +116,5 @@ enum Todo: Identifiable, Comparable, Hashable {
         ]
         .sorted()
     )
-    .environmentObject(HomeNavigationViewModel())
+    .environment(HomeNavigationViewModel())
 }

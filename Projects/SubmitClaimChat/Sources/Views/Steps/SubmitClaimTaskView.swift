@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimTaskResultView: View {
-    @ObservedObject var viewModel: SubmitClaimTaskStep
+    @Bindable var viewModel: SubmitClaimTaskStep
 
     var body: some View {
         HStack(spacing: .padding4) {

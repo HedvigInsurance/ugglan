@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimChatMessageView: View {
-    @ObservedObject var viewModel: ClaimIntentStepHandler
+    @Bindable var viewModel: ClaimIntentStepHandler
 
     var body: some View {
         VStack(spacing: .padding8) {
@@ -105,7 +105,7 @@ extension ClaimIntentStepHandler {
 }
 
 struct ClaimStepView: View {
-    @ObservedObject var viewModel: ClaimIntentStepHandler
+    @Bindable var viewModel: ClaimIntentStepHandler
 
     var body: some View {
         VStack(spacing: .padding4) {
@@ -146,7 +146,7 @@ struct ClaimStepView: View {
 }
 
 struct ClaimInputCardView: View {
-    @ObservedObject var viewModel: ClaimIntentStepHandler
+    @Bindable var viewModel: ClaimIntentStepHandler
     var onTextFocus: () -> Void = {}
 
     @ViewBuilder var body: some View {
@@ -172,8 +172,8 @@ struct ClaimInputCardView: View {
 }
 
 struct ClaimStepResultView: View {
-    @ObservedObject var viewModel: ClaimIntentStepHandler
-    @EnvironmentObject var alertVm: SubmitClaimChatScreenAlertViewModel
+    @Bindable var viewModel: ClaimIntentStepHandler
+    @Environment(SubmitClaimChatScreenAlertViewModel.self) var alertVm
     @AccessibilityFocusState var isEditButtonFocused: Bool
 
     @ViewBuilder var body: some View {
@@ -222,7 +222,7 @@ struct ClaimStepResultView: View {
                             await viewModel?.regret()
                         }
                     },
-                    // Stored on alertVm, which this view's @EnvironmentObject holds strongly, so
+                    // Stored on alertVm, which this view's @Environment holds strongly, so
                     // capturing the view here would close a cycle no dismissal breaks.
                     onClose: { [$isEditButtonFocused] in
                         $isEditButtonFocused.wrappedValue = true

@@ -95,7 +95,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     let content: () -> SwiftUIContent
     let presentationStyle: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
-    @StateObject private var presentationViewModel = PresentationViewModel()
+    @State private var presentationViewModel = PresentationViewModel()
     let onUserDismiss: (() -> Void)?
 
     init(
@@ -258,10 +258,11 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 }
 
 @MainActor
-class PresentationViewModel: ObservableObject {
-    weak var rootVC: UIViewController?
-    var style: [Detent] = []
-    weak var presentingVC: UIViewController? {
+@Observable
+class PresentationViewModel {
+    @ObservationIgnored weak var rootVC: UIViewController?
+    @ObservationIgnored var style: [Detent] = []
+    @ObservationIgnored weak var presentingVC: UIViewController? {
         didSet {
             if style.contains(.height) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
@@ -294,7 +295,7 @@ class PresentationViewModel: ObservableObject {
         }
     }
 
-    private var formContentSizeChanged: AnyCancellable?
+    @ObservationIgnored private var formContentSizeChanged: AnyCancellable?
 }
 
 @MainActor

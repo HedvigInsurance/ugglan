@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 
 public struct TextInputView: View {
-    @ObservedObject private var vm: TextInputViewModel
+    @Bindable private var vm: TextInputViewModel
     let dismissAction: (() -> Void)?
 
     public init(
@@ -72,16 +72,17 @@ public struct TextInputView: View {
     }
 }
 
-public class TextInputViewModel: ObservableObject {
-    @Published public var input: String
-    @Published var error: String?
-    @Published var isLoading: Bool = false
-    @Published var type: TextInputView.InputViewFocus? = .textField
+@Observable
+public class TextInputViewModel {
+    public var input: String
+    var error: String?
+    var isLoading: Bool = false
+    var type: TextInputView.InputViewFocus? = .textField
     let masking: Masking
 
     let title: String
-    public var onSave: ((String) async throws -> Void)?
-    public var onDismiss: (() async throws -> Void)?
+    @ObservationIgnored public var onSave: ((String) async throws -> Void)?
+    @ObservationIgnored public var onDismiss: (() async throws -> Void)?
 
     public init(
         masking: Masking,

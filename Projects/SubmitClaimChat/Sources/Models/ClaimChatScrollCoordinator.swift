@@ -1,9 +1,11 @@
 import Combine
+import Observation
 import UIKit
 
 /// Manages scroll behavior and positioning for the claim chat interface
 @MainActor
-final class ClaimChatScrollCoordinator: ObservableObject {
+@Observable
+final class ClaimChatScrollCoordinator {
     // MARK: - Constants
     /// Threshold ratio (0.6 = 60%) above which the input is merged with content instead of being fixed at bottom
     private let inputHeightThreshold: CGFloat = 0.6
@@ -11,13 +13,13 @@ final class ClaimChatScrollCoordinator: ObservableObject {
     let topPadding: CGFloat = 32
 
     // MARK: - Published State
-    @Published var isInputScrolledOffScreen = false
-    @Published var shouldMergeInputWithContent = false
+    var isInputScrolledOffScreen = false
+    var shouldMergeInputWithContent = false
 
     // MARK: - Properties
-    var scrollViewHeight: CGFloat = 0
-    var scrollViewBottomInset: CGFloat = 0
-    weak var scrollView: UIScrollView? {
+    @ObservationIgnored var scrollViewHeight: CGFloat = 0
+    @ObservationIgnored var scrollViewBottomInset: CGFloat = 0
+    @ObservationIgnored weak var scrollView: UIScrollView? {
         didSet {
             scrollCancellable = scrollView?.publisher(for: \.contentOffset)
                 .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
@@ -38,11 +40,11 @@ final class ClaimChatScrollCoordinator: ObservableObject {
         return scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating
     }
 
-    private var scrollCancellable: AnyCancellable?
+    @ObservationIgnored private var scrollCancellable: AnyCancellable?
 
     // MARK: - Dependencies
-    private var totalStepsHeight: (() -> CGFloat)?
-    private var currentStepInputHeight: (() -> CGFloat)?
+    @ObservationIgnored private var totalStepsHeight: (() -> CGFloat)?
+    @ObservationIgnored private var currentStepInputHeight: (() -> CGFloat)?
 
     func configure(
         totalStepsHeight: @escaping () -> CGFloat,

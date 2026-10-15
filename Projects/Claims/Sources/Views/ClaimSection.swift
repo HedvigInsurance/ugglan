@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ClaimSection: View {
     @Binding var claims: [ClaimsStore.ActiveClaimType]
-    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
+    @State var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
 
     var body: some View {
         InfoCardScrollView(

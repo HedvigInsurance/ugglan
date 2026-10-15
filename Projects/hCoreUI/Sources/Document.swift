@@ -7,12 +7,12 @@ import SwiftUI
 import hCore
 
 public struct PDFPreview: View {
-    @StateObject fileprivate var vm: PDFPreviewViewModel
+    @State fileprivate var vm: PDFPreviewViewModel
 
     public init(
         document: hPDFDocument
     ) {
-        _vm = StateObject(wrappedValue: PDFPreviewViewModel(document: document))
+        _vm = State(wrappedValue: PDFPreviewViewModel(document: document))
     }
 
     public var body: some View {
@@ -59,11 +59,12 @@ public struct PDFPreview: View {
 }
 
 @MainActor
-private class PDFPreviewViewModel: ObservableObject {
+@Observable
+private class PDFPreviewViewModel {
     let document: hPDFDocument
-    @Published var isLoading = false
-    @Published var data: Data?
-    weak var navItem: UIBarButtonItem?
+    var isLoading = false
+    var data: Data?
+    @ObservationIgnored weak var navItem: UIBarButtonItem?
     init(document: hPDFDocument) {
         self.document = document
         Task {

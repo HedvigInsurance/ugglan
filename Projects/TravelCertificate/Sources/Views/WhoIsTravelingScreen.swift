@@ -7,8 +7,8 @@ import hCore
 import hCoreUI
 
 struct WhoIsTravelingScreen: View {
-    @ObservedObject var vm: WhoIsTravelingViewModel
-    @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
+    let vm: WhoIsTravelingViewModel
+    let travelCertificateNavigationVm: TravelCertificateNavigationViewModel
     let itemPickerConfig: ItemConfig<Stakeholder>
     init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
         self.vm = vm
@@ -65,13 +65,14 @@ struct WhoIsTravelingScreen: View {
 }
 
 @MainActor
-class WhoIsTravelingViewModel: ObservableObject {
+@Observable
+class WhoIsTravelingViewModel {
     let specification: TravelInsuranceContractSpecification
     let coInsuredModelData: [Stakeholder]
-    @Published var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
-    @Published var hasMissingCoInsuredData = false
-    var isPolicyHolderIncluded = true
-    @Published var isLoading = false
+    var policyCoinsuredPersons: [PolicyCoinsuredPersonModel] = []
+    var hasMissingCoInsuredData = false
+    @ObservationIgnored var isPolicyHolderIncluded = true
+    var isLoading = false
     let contract: Contracts.Contract?
     let router: NavigationRouter
     let contractStore: ContractStore = globalAppStateContainer.get()

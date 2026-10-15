@@ -1,3 +1,4 @@
+import Observation
 import SwiftUI
 import hCore
 
@@ -12,8 +13,31 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
     }
 
-    @Published var taskModel: ClaimIntentStepContentTask
-    @Published var displayText: String?
+    @ObservationIgnored private var _taskModel: ClaimIntentStepContentTask
+    var taskModel: ClaimIntentStepContentTask {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimTaskStep.taskModel)
+            return _taskModel
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimTaskStep.taskModel) {
+                _taskModel = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _displayText: String?
+    var displayText: String? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimTaskStep.displayText)
+            return _displayText
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimTaskStep.displayText) {
+                _displayText = newValue
+            }
+        }
+    }
 
     /// Animates `displayText`; held so it can be cancelled when the step is removed from the chat.
     private var displayTextTask: Task<Void, Never>?
@@ -26,7 +50,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         guard case .task(let model) = claimIntent.currentStep.content else {
             fatalError("TaskStepHandler initialized with non-task content")
         }
-        self.taskModel = model
+        self._taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         state.showResults = true
         displayText = taskModel.description

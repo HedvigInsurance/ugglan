@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 struct NotLoggedInView: View {
-    @ObservedObject var vm: NotLoggedViewModel
+    let vm: NotLoggedViewModel
     init(
         vm: NotLoggedViewModel
     ) {
@@ -79,27 +79,21 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 @MainActor
-class NotLoggedViewModel: ObservableObject {
-    @Published var bootStrapped: Bool = false
-    @Published var viewState: ViewState = .loading
-    @Published var showLanguagePicker = false
-    @Published var showLogin = false
+@Observable
+class NotLoggedViewModel {
+    var viewState: ViewState = .loading
+    var showLanguagePicker = false
+    var showLogin = false
     let router = NavigationRouter()
-    var onLoad: () -> Void = {}
-    var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored var onLoad: () -> Void = {}
+    @ObservationIgnored var cancellables = Set<AnyCancellable>()
 
     init() {
-        $bootStrapped
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                if value {
-                    self?.viewState = .language
-                    self?.onLoad()
-                }
-            }
-            .store(in: &cancellables)
-
-        bootStrapped = true
+        // Deferred one main-actor turn so the owner can set `onLoad` after init.
+        Task { @MainActor [weak self] in
+            self?.viewState = .language
+            self?.onLoad()
+        }
 
         NotificationCenter.default.addObserver(
             self,

@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 struct ImagesView: View {
-    @ObservedObject private var vm: ImagesViewModel
+    private let vm: ImagesViewModel
     init(vm: ImagesViewModel) {
         self.vm = vm
     }
@@ -52,10 +52,11 @@ struct ImagesView: View {
 }
 
 @MainActor
-class ImagesViewModel: ObservableObject {
-    @Published var files = [PHAsset]()
-    @Published var permissionNotGranted = false
-    var sendMessage: (_ message: Message) -> Void = { _ in }
+@Observable
+class ImagesViewModel {
+    var files = [PHAsset]()
+    var permissionNotGranted = false
+    @ObservationIgnored var sendMessage: (_ message: Message) -> Void = { _ in }
     init() {}
 
     func fetchData() async {

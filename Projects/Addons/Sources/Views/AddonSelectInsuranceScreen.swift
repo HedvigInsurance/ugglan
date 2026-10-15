@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct AddonSelectInsuranceScreen: View {
-    @ObservedObject var vm: AddonSelectInsuranceScreenViewModel
+    @Bindable var vm: AddonSelectInsuranceScreenViewModel
 
     init(_ vm: AddonSelectInsuranceScreenViewModel) {
         self.vm = vm
@@ -49,13 +49,14 @@ public struct AddonSelectInsuranceScreen: View {
 }
 
 @MainActor
-class AddonSelectInsuranceScreenViewModel: ObservableObject {
+@Observable
+class AddonSelectInsuranceScreenViewModel {
     private let service = AddonsService()
     fileprivate let navigationVm: ChangeAddonNavigationViewModel
 
-    @Published var processingState = ProcessingState.success
-    @Published var selectedItems: [AddonContractInfo] = []
-    @Published var deflect: AddonDeflect?
+    var processingState = ProcessingState.success
+    var selectedItems: [AddonContractInfo] = []
+    var deflect: AddonDeflect?
 
     init(_ navigationVm: ChangeAddonNavigationViewModel) {
         self.navigationVm = navigationVm

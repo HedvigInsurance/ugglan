@@ -4,10 +4,10 @@ import hCore
 import hCoreUI
 
 struct MovingFlowAddExtraBuildingScreen: View {
-    @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
-    @ObservedObject var houseInformationInputVm: HouseInformationInputModel
+    @State var vm = MovingFlowAddExtraBuildingViewModel()
+    let houseInformationInputVm: HouseInformationInputModel
 
-    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @Environment(MovingFlowNavigationViewModel.self) var movingFlowNavigationVm
 
     init(
         houseInformationInputVm: HouseInformationInputModel
@@ -114,14 +114,15 @@ enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
     case livingArea
 }
 
-public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
-    @Published var type: AddExtraBuildingType?
+@Observable
+public class MovingFlowAddExtraBuildingViewModel {
+    var type: AddExtraBuildingType?
 
-    @Published var buildingType: ExtraBuildingType?
-    @Published var livingArea: String = ""
-    @Published var connectedToWater = false
-    @Published var livingAreaError: String?
-    @Published var buildingTypeError: String?
+    var buildingType: ExtraBuildingType?
+    var livingArea: String = ""
+    var connectedToWater = false
+    var livingAreaError: String?
+    var buildingTypeError: String?
 
     func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError

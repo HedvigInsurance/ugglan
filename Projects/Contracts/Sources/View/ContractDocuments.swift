@@ -7,7 +7,7 @@ import hCoreUI
 
 struct ContractDocumentsView: View {
     @AppObservedObject var store: ContractStore
-    @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) private var contractsNavigationViewModel
 
     let id: String
     @State var height: CGFloat = 0

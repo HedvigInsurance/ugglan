@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 public struct VoicePlaybackButton: View {
-    @EnvironmentObject var voiceRecorder: VoiceRecorder
+    @Environment(VoiceRecorder.self) var voiceRecorder
 
     public var body: some View {
         Button(action: {
