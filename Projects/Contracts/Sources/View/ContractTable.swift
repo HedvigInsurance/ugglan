@@ -246,8 +246,8 @@ public class ContractTableViewModel {
     var addonBanners: [AddonBanner] = []
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     init() {
-        store.$isFetchingContracts
-            .combineLatest(store.$fetchContractsError)
+        store.publisher(for: \.isFetchingContracts)
+            .combineLatest(store.publisher(for: \.fetchContractsError))
             .receive(on: RunLoop.main)
             .sink { [weak self] isFetching, error in
                 if isFetching {

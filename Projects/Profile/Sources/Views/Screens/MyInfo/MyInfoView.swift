@@ -120,7 +120,7 @@ public class MyInfoViewModel {
         currentEmailInput = store.memberDetails?.email ?? ""
         isValid()
 
-        store.$memberDetails
+        store.publisher(for: \.memberDetails)
             .receive(on: RunLoop.main)
             .map { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()

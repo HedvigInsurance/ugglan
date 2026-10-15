@@ -124,8 +124,8 @@ public class PaymentsHistoryViewModel {
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
-        store.$isLoadingHistory
-            .combineLatest(store.$loadHistoryError)
+        store.publisher(for: \.isLoadingHistory)
+            .combineLatest(store.publisher(for: \.loadHistoryError))
             .receive(on: RunLoop.main)
             .map { isLoading, error in
                 if isLoading { return .loading }

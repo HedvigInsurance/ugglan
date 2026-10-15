@@ -95,7 +95,7 @@ private func describe(_ value: Any) -> String {
                 parts.append(describe(child.value))
                 continue
             }
-            // @Published and property wrappers store under a leading underscore.
+            // Property wrappers and @Observable store the value under a leading underscore.
             let name = label.hasPrefix("_") ? String(label.dropFirst()) : label
             if maskedFields.contains(name) {
                 parts.append("\(name): \(mask(child.value))")

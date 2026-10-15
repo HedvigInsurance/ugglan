@@ -206,8 +206,8 @@ public class PaymentsViewModel {
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     init() {
-        store.$isFetchingPaymentStatus
-            .combineLatest(store.$fetchPaymentStatusError)
+        store.publisher(for: \.isFetchingPaymentStatus)
+            .combineLatest(store.publisher(for: \.fetchPaymentStatusError))
             .receive(on: RunLoop.main)
             .map { isLoading, error in
                 if isLoading { return .loading }
