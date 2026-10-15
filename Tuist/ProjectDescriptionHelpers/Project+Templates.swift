@@ -95,7 +95,7 @@ extension Project {
                 destinations: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
-                deploymentTargets: .iOS("16.0"),
+                deploymentTargets: .iOS("17.0"),
                 infoPlist: .default,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
                 buildableFolders: ["Sources"],
@@ -112,7 +112,7 @@ extension Project {
                 destinations: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)Testing",
-                deploymentTargets: .iOS("16.0"),
+                deploymentTargets: .iOS("17.0"),
                 infoPlist: .default,
                 buildableFolders: ["Testing"],
                 dependencies: [
@@ -137,7 +137,7 @@ extension Project {
                 destinations: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTargets: .tests,
+                deploymentTargets: .iOS("17.0"),
                 infoPlist: .default,
                 buildableFolders: ["Tests"],
                 dependencies: [
@@ -166,7 +166,7 @@ extension Project {
                 destinations: .iOS,
                 product: .app,
                 bundleId: "com.hedvig.example.\(name)Example",
-                deploymentTargets: .iOS("16.0"),
+                deploymentTargets: .iOS("17.0"),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
                     "NSMicrophoneUsageDescription": "Hedvig uses the microphone to let you record messages and videos.",
