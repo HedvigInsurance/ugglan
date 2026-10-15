@@ -1,5 +1,5 @@
-import Combine
 import Foundation
+import Observation
 import SwiftUI
 
 @MainActor
@@ -86,6 +86,12 @@ public final class AppStateContainer {
     }
 
     private func observe<S: PersistableAppStore>(_ store: S) {
+        track(store)
+    }
+
+    ///
+    /// write of bytes that cannot have changed. `withObservationTracking` reports one change and
+    /// then stops, so this arms itself again each time.
         let key = ObjectIdentifier(S.self)
         let url = Self.url(for: S.self)
         persistenceCancellables[key] = store.objectWillChange
@@ -96,7 +102,9 @@ public final class AppStateContainer {
                 Task.detached(priority: .background) {
                     Self.persist(snapshot, to: url)
                 }
+                self.track(store)
             }
+        }
     }
 
     private nonisolated static func persist<Snapshot: Encodable & Sendable>(_ snapshot: Snapshot, to url: URL) {
@@ -130,17 +138,17 @@ public var globalAppStateContainer = AppStateContainer()
 @MainActor
 @propertyWrapper
 public struct AppObservedObject<T: AppStore>: DynamicProperty {
-    @StateObject private var stateObject: T
+    @State private var store: T
     public init() {
         _stateObject = StateObject(wrappedValue: globalAppStateContainer.get())
     }
 
     public var wrappedValue: T {
-        stateObject
+        store
     }
 
-    public var projectedValue: ObservedObject<T>.Wrapper {
-        $stateObject
+    public var projectedValue: Bindable<T> {
+        Bindable(store)
     }
 }
 

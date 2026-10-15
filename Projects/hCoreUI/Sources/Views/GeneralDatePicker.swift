@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 
 public struct DatePickerView: View {
-    @ObservedObject var vm: DatePickerViewModel
+    @Bindable var vm: DatePickerViewModel
 
     public init(
         vm: DatePickerViewModel
@@ -117,18 +117,19 @@ public struct DatePickerView: View {
 }
 
 @MainActor
-public class DatePickerViewModel: ObservableObject, @MainActor Equatable, @MainActor Identifiable {
+@Observable
+public class DatePickerViewModel: @MainActor Equatable, @MainActor Identifiable {
     public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
         lhs.id == rhs.id
     }
 
-    public var id: String?
-    private var observation: NSKeyValueObservation?
+    @ObservationIgnored public var id: String?
+    @ObservationIgnored private var observation: NSKeyValueObservation?
     let continueAction: ReferenceAction
     let cancelAction: ReferenceAction
-    weak var datePicker: UIDatePicker?
-    @Binding var date: Date
-    @Published var dateSelected: Date {
+    @ObservationIgnored weak var datePicker: UIDatePicker?
+    @ObservationIgnored @Binding var date: Date
+    var dateSelected: Date {
         didSet {
             date = dateSelected
             updateColors()

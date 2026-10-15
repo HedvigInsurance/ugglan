@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct NordeaPayoutSetupScreen: View {
-    @StateObject private var vm = NordeaPayoutSetupViewModel()
+    @State private var vm = NordeaPayoutSetupViewModel()
     @StateObject var router = NavigationRouter()
     let onSuccess: (() -> Void)?
 
@@ -73,28 +73,29 @@ struct NordeaPayoutSetupScreen: View {
 }
 
 @MainActor
-class NordeaPayoutSetupViewModel: ObservableObject {
-    @Published var accountNumber: String = ""
-    @Published var bankName: String?
-    @Published var focusedField: NordeaPayoutField?
-    @Published var clearingError: String?
-    @Published var accountError: String?
-    @Published var isLoading: Bool = false
-    @Published var errorMessage: String?
+@Observable
+class NordeaPayoutSetupViewModel {
+    var accountNumber: String = ""
+    var bankName: String?
+    var focusedField: NordeaPayoutField?
+    var clearingError: String?
+    var accountError: String?
+    var isLoading: Bool = false
+    var errorMessage: String?
 
     private let paymentService = hPaymentService()
     private let accountMasking = Masking(type: .bankAccountNumber)
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var accountNumberWatcher: ObservationWatcher?
 
     init() {
-        $accountNumber
-            .receive(on: RunLoop.main)
-            .sink { [weak self] newValue in
-                withAnimation {
-                    self?.bankName = newValue.bankName
-                }
+        accountNumberWatcher = ObservationWatcher { [weak self] in
+            _ = self?.accountNumber
+        } onChange: { [weak self] in
+            guard let self else { return }
+            withAnimation {
+                self.bankName = self.accountNumber.bankName
             }
-            .store(in: &cancellables)
+        }
     }
 
     func save() async -> Bool {

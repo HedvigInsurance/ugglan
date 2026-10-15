@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimFilesView: View {
-    @ObservedObject private var vm: ClaimFilesViewModel
+    @Bindable private var vm: ClaimFilesViewModel
     public init(endPoint: String, files: [File], onSuccess: @escaping (_ data: [ClaimFileUploadResponse]) -> Void) {
         vm = .init(
             endPoint: endPoint,
@@ -101,17 +101,18 @@ public struct ClaimFilesView: View {
 }
 
 @MainActor
-public class ClaimFilesViewModel: ObservableObject {
-    @Published var isLoading = false
-    @Published var success = false
-    @Published var error: String?
-    @Published var progress: Double = 0
-    @Published var showFileSourcePicker = false
+@Observable
+public class ClaimFilesViewModel {
+    var isLoading = false
+    var success = false
+    var error: String?
+    var progress: Double = 0
+    var showFileSourcePicker = false
 
     private let endPoint: String
     let fileGridViewModel: FileGridViewModel
-    private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
-    var claimFileUploadService = hClaimFileUploadService()
+    @ObservationIgnored private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
+    @ObservationIgnored var claimFileUploadService = hClaimFileUploadService()
 
     init(
         endPoint: String,

@@ -2,16 +2,18 @@ import Addons
 import AppStateContainer
 import EditStakeholders
 import Foundation
+import Observation
 import hCore
 
 @MainActor
 @PersistableStore
+@Observable
 public final class ContractStore: AppStore {
-    @Inject private var fetchContractsService: FetchContractsClient
+    @ObservationIgnored @Inject private var fetchContractsService: FetchContractsClient
 
-    @Published public internal(set) var activeContracts: [Contract] = []
-    @Published public private(set) var terminatedContracts: [Contract] = []
-    @Published public private(set) var pendingContracts: [Contract] = []
+    public internal(set) var activeContracts: [Contract] = []
+    public private(set) var terminatedContracts: [Contract] = []
+    public private(set) var pendingContracts: [Contract] = []
 
     @Transient @Published public private(set) var fetchContractsError: String?
     @Transient @Published public private(set) var isFetchingContracts: Bool = false

@@ -8,7 +8,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
-    @StateObject private var vm = TextFieldVM()
+    @State private var vm = TextFieldVM()
 
     @State private var animationEnabled: Bool = true
     @State private var innerValue: String = ""
@@ -230,12 +230,13 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 }
 
 @MainActor
-class TextFieldVM: ObservableObject {
-    weak var textField: UITextField?
-    var observer = TextFieldObserver()
-    @Published var onBeginEditing: Date?
-    @Published var onDidEndEditing: Date?
-    @Published var onReturnTap: Date?
+@Observable
+class TextFieldVM {
+    @ObservationIgnored weak var textField: UITextField?
+    @ObservationIgnored var observer = TextFieldObserver()
+    var onBeginEditing: Date?
+    var onDidEndEditing: Date?
+    var onReturnTap: Date?
 }
 
 #Preview {
@@ -412,13 +413,5 @@ extension EnvironmentValues {
 extension View {
     public func hAnimateField(_ animate: Bool) -> some View {
         environment(\.hAnimateField, animate)
-    }
-
-    /// Isolates the field's geometry from its ancestors so parent layout changes
-    /// don't animate the field's own subviews independently.
-    @ViewBuilder
-        } else {
-            self
-        }
     }
 }

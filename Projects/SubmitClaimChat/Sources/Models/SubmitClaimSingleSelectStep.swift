@@ -1,13 +1,36 @@
+import Observation
 import SwiftUI
 import hCore
 
 final class SubmitClaimSingleSelectStep: ClaimIntentStepHandler {
-    @Published var selectedOptionId: String?
+    @ObservationIgnored private var _selectedOptionId: String?
+    var selectedOptionId: String? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimSingleSelectStep.selectedOptionId)
+            return _selectedOptionId
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimSingleSelectStep.selectedOptionId) {
+                _selectedOptionId = newValue
+            }
+        }
+    }
     let model: ClaimIntentStepContentSelect
     /// With a default selection the member confirms manually, otherwise picking an option submits the step
     var requiresConfirmation: Bool { model.defaultSelectedId != nil }
     /// Set once an auto submit is scheduled - the first pick is final, so further taps are ignored
-    @Published private(set) var isSelectionLocked = false
+    @ObservationIgnored private var _isSelectionLocked = false
+    private(set) var isSelectionLocked: Bool {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimSingleSelectStep.isSelectionLocked)
+            return _isSelectionLocked
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimSingleSelectStep.isSelectionLocked) {
+                _isSelectionLocked = newValue
+            }
+        }
+    }
     private var autoSubmitTask: Task<Void, Never>?
 
     required init(

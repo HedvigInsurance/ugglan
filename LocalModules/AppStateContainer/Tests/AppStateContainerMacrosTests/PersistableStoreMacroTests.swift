@@ -1,4 +1,5 @@
 import AppStateContainerMacros
+import Observation
 import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
@@ -9,7 +10,7 @@ private let testMacros: [String: Macro.Type] = [
 ]
 
 final class PersistableStoreMacroTests: XCTestCase {
-    /// Every stored `var` with an explicit type is persisted regardless of `@Published`.
+    /// Every stored `var` with an explicit type is persisted whatever else it is marked with.
     /// Only `@Transient` (in-memory state) and `@Inject` (DI services, not Codable) are excluded,
     /// alongside `let`, `static`, and computed properties which can never be snapshot state.
     func testPersistsAllStoredVarsExceptTransientAndInject() {
@@ -17,7 +18,7 @@ final class PersistableStoreMacroTests: XCTestCase {
             """
             @PersistableStore
             class MyStore {
-                @Published var published: Int = 0
+                @ObservationIgnored var published: Int = 0
                 var plain: String = ""
                 @Transient var transientState: Bool = false
                 @Inject var service: Foo
@@ -28,7 +29,7 @@ final class PersistableStoreMacroTests: XCTestCase {
             """,
             expandedSource: """
                 class MyStore {
-                    @Published var published: Int = 0
+                    @ObservationIgnored var published: Int = 0
                     var plain: String = ""
                     var transientState: Bool = false
                     @Inject var service: Foo

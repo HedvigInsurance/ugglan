@@ -9,9 +9,9 @@ import hCoreUI
 
 struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) private var navigationVm
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    @StateObject private var bottomVm = HomeBottomScrollViewModel()
+    @State private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var scrollOffset: CGFloat = 0
@@ -169,7 +169,7 @@ private struct HeroBackgroundView: View {
 }
 
 private struct ConnectPaymentCardSection: View {
-    @EnvironmentObject private var navigationVm: HomeNavigationViewModel
+    @Environment(HomeNavigationViewModel.self) private var navigationVm
 
     var body: some View {
         ConnectPaymentCardView(onConnectPayment: {
@@ -184,7 +184,7 @@ private struct HomeSheetContent: View {
     @AppObservedObject private var crossSellStore: CrossSellStore
     @AppObservedObject private var paymentStore: PaymentStore
 
-    @ObservedObject var bottomVm: HomeBottomScrollViewModel
+    let bottomVm: HomeBottomScrollViewModel
     let contentFadeHeight: CGFloat
     let bottomOverscrollExtension: CGFloat
 
@@ -289,15 +289,6 @@ private struct HomeNavigationBar: View {
     }
 }
 
-extension View {
-    @ViewBuilder
-        } else {
-                scrollView.clipsToBounds = false
-            }
-        }
-    }
-}
-
 @MainActor private func setUpActiveHomeViewPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
@@ -334,7 +325,7 @@ extension View {
 
     return TabView {
         ActiveHomeView()
-            .environmentObject(HomeNavigationViewModel())
+            .environment(HomeNavigationViewModel())
             .tabItem {
                 hCoreUIAssets.homeTabActive.view
                 hText(L10n.tabHomeTitle)

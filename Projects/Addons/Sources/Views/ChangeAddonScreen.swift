@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct ChangeAddonScreen: View {
-    @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
-    @ObservedObject var vm: ChangeAddonViewModel
+    @Environment(ChangeAddonNavigationViewModel.self) var navigationVm
+    @Bindable var vm: ChangeAddonViewModel
 
     init(vm: ChangeAddonViewModel) {
         self.vm = vm
@@ -148,7 +148,7 @@ struct ChangeAddonScreen: View {
 
 private struct AddonOptionToggableView: View {
     let addon: AddonOfferQuote
-    @ObservedObject var vm: ChangeAddonViewModel
+    @Bindable var vm: ChangeAddonViewModel
     var body: some View {
         HStack(alignment: .top, spacing: .padding4) {
             AddonOptionRow(
@@ -191,7 +191,7 @@ private func changeAddonPreview(offer: AddonOffer) -> some View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo(offer: offer) })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(vm: .init(offer: offer))
-        .environmentObject(ChangeAddonNavigationViewModel(offer: offer))
+        .environment(ChangeAddonNavigationViewModel(offer: offer))
 }
 
 #Preview("Travel") { changeAddonPreview(offer: testTravelOfferNoActive) }

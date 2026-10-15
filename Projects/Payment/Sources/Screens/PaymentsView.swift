@@ -7,8 +7,8 @@ import hCoreUI
 public struct PaymentsView: View {
     @AppObservedObject var store: PaymentStore
     @EnvironmentObject var router: NavigationRouter
-    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
-    @StateObject var vm = PaymentsViewModel()
+    @Environment(PaymentsNavigationViewModel.self) var paymentNavigationVm
+    @State var vm = PaymentsViewModel()
 
     public var body: some View {
         successView
@@ -212,7 +212,10 @@ public class PaymentsViewModel: ObservableObject {
                 if let error { return .error(errorMessage: error) }
                 return .success
             }
-            .assign(to: &$viewState)
+            .sink { [weak self] state in
+                self?.viewState = state
+            }
+            .store(in: &cancellables)
     }
 
     /// Fetches all payment data in an unstructured `Task` owned by the ViewModel.

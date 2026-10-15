@@ -14,11 +14,11 @@ struct ContractTable: View {
     @State var onlyTerminatedInsurances = false
     @State var bottomContentHeights: [String: CGFloat] = [:]
     @State var cardHeights: [String: CGFloat] = [:]
-    @StateObject var vm = ContractTableViewModel()
+    @State var vm = ContractTableViewModel()
     @State private var cardDrawRotation = false
     @State private var didMemberExpandCards = false
     @State private var scrollToCardId: String?
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
     @EnvironmentObject var router: NavigationRouter
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 

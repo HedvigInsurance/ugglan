@@ -1,11 +1,13 @@
 import Combine
 import Foundation
+import Observation
 import hCore
 
 @MainActor
-public class PaymentsDiscountsRootViewModel: ObservableObject {
-    @Published public var viewState: ProcessingState = .loading
-    @Published public var paymentDiscountsData: PaymentDiscountsData?
+@Observable
+public class PaymentsDiscountsRootViewModel {
+    public var viewState: ProcessingState = .loading
+    public var paymentDiscountsData: PaymentDiscountsData?
 
     private let campaignService = hCampaignService()
 

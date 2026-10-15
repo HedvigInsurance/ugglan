@@ -4,7 +4,7 @@ import hCoreUI
 
 struct SelectInsuranceScreen: View {
     let changeTierContractsInput: ChangeTierContractsInput
-    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    let changeTierNavigationVm: ChangeTierNavigationViewModel
     let itemPickerConfig: ItemConfig<ChangeTierContract>
     init(
         changeTierContractsInput: ChangeTierContractsInput,

@@ -24,20 +24,7 @@ public struct ColorAnimationView<InitialColor: hColor, AnimationColor: hColor>: 
                     showAnimation = true
                 } completion: {
                     withAnimation {
-                        showAnimation = true
-                    } completion: {
-                        withAnimation {
-                            showAnimation = false
-                        }
-                    }
-                } else {
-                    withAnimation(.easeIn(duration: 0.2)) {
-                        showAnimation = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        withAnimation(.easeOut(duration: 0.2)) {
-                            showAnimation = false
-                        }
+                        showAnimation = false
                     }
                 }
             }

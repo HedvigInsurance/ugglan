@@ -3,15 +3,16 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
-class InfoViewNavigationViewModel: ObservableObject {
-    @Published var isInfoViewPresented = false
+@Observable
+class InfoViewNavigationViewModel {
+    var isInfoViewPresented = false
 }
 
 public struct InfoViewHolder: View {
     let title: String
     let description: String
     let type: InfoButtonType
-    @StateObject var infoViewNavigationModel = InfoViewNavigationViewModel()
+    @State var infoViewNavigationModel = InfoViewNavigationViewModel()
     @EnvironmentObject var router: NavigationRouter
 
     public init(title: String, description: String, type: InfoButtonType = .regular) {
@@ -170,7 +171,7 @@ extension View {
 struct NavigationInfoButton: ViewModifier {
     let title: String
     let description: String
-    @StateObject var vm = InfoButtonViewModel()
+    @State var vm = InfoButtonViewModel()
 
     init(
         title: String,
@@ -205,8 +206,9 @@ struct NavigationInfoButton: ViewModifier {
     }
 }
 
-class InfoButtonViewModel: ObservableObject {
-    @Published var isInfoViewPresented = false
+@Observable
+class InfoButtonViewModel {
+    var isInfoViewPresented = false
 
     @objc func transformDataToActivityView() {
         isInfoViewPresented = true

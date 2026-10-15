@@ -1,5 +1,4 @@
 import AppStateContainer
-import Combine
 import Contracts
 import CrossSell
 import EditStakeholders
@@ -9,12 +8,12 @@ import hCore
 import hCoreUI
 
 @MainActor
-class OnboardingNavigationViewModel: ObservableObject {
+@Observable
+class OnboardingNavigationViewModel {
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
-    private var routeCountCancellable: AnyCancellable?
-    @Published var steps: [OnboardingStep] = [
+    var steps: [OnboardingStep] = [
         .welcome
     ]
     {
@@ -22,18 +21,19 @@ class OnboardingNavigationViewModel: ObservableObject {
             progress = .init(currentStep: progress.currentStep, totalSteps: steps.count)
         }
     }
-    @Published var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
+    var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
 
-    @Published var missingPetChipIdInput: MissingPetChipIdInput?
+    var missingPetChipIdInput: MissingPetChipIdInput?
+    @ObservationIgnored private var routeCountWatcher: ObservationWatcher?
 
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()
         editStakeholdersVm = .init(existingStakeholders: contractStore)
         routeCountCancellable = router.$routeTypes
             .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.updateProgress()
-            }
+        } onChange: { [weak self] in
+            self?.updateProgress()
+        }
     }
 
     func advance(after step: OnboardingStep) {

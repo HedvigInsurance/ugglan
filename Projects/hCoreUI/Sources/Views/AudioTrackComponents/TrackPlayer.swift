@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 
 struct TrackPlayer: View {
-    @ObservedObject var audioPlayer: AudioPlayer
+    let audioPlayer: AudioPlayer
     @State private var width: CGFloat = 0
     @Environment(\.trackPlayerBackground) var trackPlayerBackground
     init(

@@ -178,7 +178,7 @@ struct DiscountsView: View {
 }
 
 public struct PaymentsDiscountsRootView: View {
-    @StateObject var vm = PaymentsDiscountsRootViewModel()
+    @State var vm = PaymentsDiscountsRootViewModel()
 
     public init() {}
 

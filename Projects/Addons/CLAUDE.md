@@ -3,7 +3,7 @@
 Handles insurance addon discovery, purchase, and removal. Supports both toggleable addons (independent selection) and selectable addons (mutually exclusive options with sub-option drilling).
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`). `AddonsService` uses `@Inject var client: AddonsClient`.
+- Pattern: ViewModel (`@MainActor @Observable class`). `AddonsService` uses `@Inject var client: AddonsClient`.
 - Key services: `AddonsClient` (protocol), `AddonsService` (wrapper with `@Log` macro and artificial delays on submit/confirm)
 - Data flow: `ChangeAddonCoordinator` (ViewModifier) fetches the initial offer, then presents either `ChangeAddonNavigation` or a deflect view. `ChangeAddonViewModel` manages addon selection state and cost fetching. `RemoveAddonViewModel` handles addon removal.
 - Two parallel flows: Change/Add addons and Remove addons, each with their own navigation and coordinator.

@@ -5,8 +5,8 @@ import hCoreUI
 
 struct OnboardingPhoneScreen: View, KeyboardReadable {
     let phoneNumber: String
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
-    @StateObject private var phoneVm = OnboardingPhoneViewModel()
+    @Environment(OnboardingNavigationViewModel.self) var vm
+    @State private var phoneVm = OnboardingPhoneViewModel()
     let digits = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["*", "0", "#"]]
     @State private var animateDigits: [String] = []
     @State private var keyboardVisible = false
@@ -110,13 +110,14 @@ private enum OnboardingPhoneField: hTextFieldFocusStateCompliant {
 }
 
 @MainActor
-class OnboardingPhoneViewModel: ObservableObject {
+@Observable
+class OnboardingPhoneViewModel {
     private let service = OnboardingService()
-    @Published var phone = ""
-    @Published var isLoading = false
-    @Published var error: String?
+    var phone = ""
+    var isLoading = false
+    var error: String?
     let masking = Masking(type: .phoneNumber)
-    @Published fileprivate var focus: OnboardingPhoneField?
+    fileprivate var focus: OnboardingPhoneField?
 
     // NOTE: contact info arrives via the `.phoneNumber` step's payload (fetched once in
     // getOnboardingSteps); updateContactInfo takes phone and the screen passes
@@ -147,5 +148,5 @@ class OnboardingPhoneViewModel: ObservableObject {
 
 #Preview {
     OnboardingPhoneScreen(phoneNumber: "0735328847")
-        .environmentObject(OnboardingNavigationViewModel())
+        .environment(OnboardingNavigationViewModel())
 }

@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct ChatInputView: View {
-    @StateObject var vm: ChatInputViewModel
+    @State var vm: ChatInputViewModel
     // Attached to the text field rather than to this view: the body is a stack of a
     // divider and three controls, and a binding on the whole thing propagates to every
     // descendant, leaving the focused element unspecified.
@@ -157,9 +157,10 @@ private struct ChatInputViewPreview: View {
 }
 
 @MainActor
-class ChatInputViewModel: NSObject, ObservableObject {
-    @Published var inputText: String = ""
-    @Published var keyboardIsShown = false {
+@Observable
+class ChatInputViewModel: NSObject {
+    var inputText: String = ""
+    var keyboardIsShown = false {
         didSet {
             if keyboardIsShown {
                 withAnimation {
@@ -169,7 +170,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
         }
     }
 
-    @Published var showBottomMenu = false {
+    var showBottomMenu = false {
         didSet {
             if showBottomMenu {
                 keyboardIsShown = false
@@ -178,8 +179,8 @@ class ChatInputViewModel: NSObject, ObservableObject {
         }
     }
 
-    var imagesViewModel = ImagesViewModel()
-    var sendMessage: (_ message: Message) -> Void = { _ in }
+    @ObservationIgnored var imagesViewModel = ImagesViewModel()
+    @ObservationIgnored var sendMessage: (_ message: Message) -> Void = { _ in }
     override init() {
         super.init()
         imagesViewModel.sendMessage = { [weak self] message in

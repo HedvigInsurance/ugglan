@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct BankIDLoginQRView: View {
-    @StateObject var vm = BankIDViewModel()
+    @State var vm = BankIDViewModel()
     @EnvironmentObject var router: NavigationRouter
 
     private var onStartDemoMode: () async -> Void

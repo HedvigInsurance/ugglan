@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 public struct OTPEntryView: View {
-    @StateObject private var vm: OTPEntryViewModel = .init()
-    @EnvironmentObject var otpVM: OTPState
+    @State private var vm: OTPEntryViewModel = .init()
+    @Environment(OTPState.self) var otpVM
     @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {
             hSection {
                 VStack(spacing: 50) {

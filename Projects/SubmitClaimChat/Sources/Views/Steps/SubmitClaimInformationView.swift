@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimInformationView: View {
-    @ObservedObject var viewModel: SubmitClaimInformationStep
+    let viewModel: SubmitClaimInformationStep
 
     var body: some View {
         hSection {
@@ -20,7 +20,7 @@ struct SubmitClaimInformationView: View {
 }
 
 struct SubmitClaimInformationResultView: View {
-    @ObservedObject var viewModel: SubmitClaimInformationStep
+    let viewModel: SubmitClaimInformationStep
 
     var body: some View {
         hText(viewModel.informationModel.buttonTitle)

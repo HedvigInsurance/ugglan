@@ -7,7 +7,7 @@ Data and domain layer for discounts/referrals: models, service protocol, and the
 - `Sources/Service/CampaignClient.swift` — `hCampaignClient` protocol + `CampaignError`.
 - `Sources/Service/hCampaignService.swift` — Thin `hCampaignService` wrapper with `@Inject` of `hCampaignClient`.
 - `Sources/Service/DemoImplementation/CampaignClientDemo.swift` — `hCampaignClientDemo` static demo data.
-- `Sources/ViewModels/PaymentsDiscountsRootViewModel.swift` — `@MainActor` ObservableObject driving the discounts root screen (loads via `hCampaignService`, exposes `ProcessingState` from `hCore`).
+- `Sources/ViewModels/PaymentsDiscountsRootViewModel.swift` — `@MainActor @Observable` class driving the discounts root screen (loads via `hCampaignService`, exposes `ProcessingState` from `hCore`).
 
 ## Dependencies
 - `hCore`

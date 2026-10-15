@@ -3,7 +3,7 @@
 Handles the address change (moving) flow for insurance contracts. Guides users through selecting a contract, housing type, entering address details, house-specific information, choosing a tier/deductible for the new address, and confirming the move.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`). `MovingFlowNavigationViewModel` uses `@Inject private var service: MoveFlowClient`.
+- Pattern: ViewModel (`@MainActor @Observable class`). `MovingFlowNavigationViewModel` uses `@Inject private var service: MoveFlowClient`.
 - Key services: `MoveFlowClient` (protocol)
 - Data flow: `MovingFlowNavigationViewModel` is the central VM that fetches move intent configuration, manages address/house input models, handles quote selection, and implements `ChangeTierQuoteDataProvider` to integrate with the ChangeTier module for tier selection. `MovingFlowQuoteManager` is a helper that builds summary view models and updates quote costs.
 

@@ -3,7 +3,9 @@
 Generates travel insurance certificates. Users select a contract, set travel dates, specify travelers (including co-insured), and receive a downloadable PDF certificate.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor class: ObservableObject`). `TravelInsuranceService` uses `@Inject var client: TravelInsuranceClient`.
+- Pattern: ViewModel (`@MainActor @Observable class`). `TravelInsuranceService` uses `@Inject var client: TravelInsuranceClient`.
+- Observation: views own a view model with `@State`, take an injected one with `@Bindable` (or plain `let` when no bindings are needed), and read a shared one with `@Environment(T.self)`.
+- Properties that should not trigger a re-render are marked `@ObservationIgnored`.
 - Key services: `TravelInsuranceClient` (protocol), `TravelInsuranceService` (wrapper)
 - Data flow: `TravelCertificateNavigationViewModel` manages overall navigation state and holds child VMs (`StartDateViewModel`, `WhoIsTravelingViewModel`). The list screen fetches existing certificates and addon banners. The creation flow goes through start date -> who is traveling -> processing.
 

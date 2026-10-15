@@ -33,21 +33,22 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 
 @MainActor
 @PersistableStore
+@Observable
 public final class HomeStore: AppStore {
-    @Inject private var homeService: HomeClient
+    @ObservationIgnored @Inject private var homeService: HomeClient
 
-    @Published public private(set) var memberContractState: MemberContractState = .loading
-    @Published public private(set) var memberInfo: MemberInfo?
-    @Published public private(set) var futureStatus: FutureStatus = .none
-    @Published public private(set) var contracts: [HomeContract] = []
-    @Published public private(set) var importantMessages: [ImportantMessage] = []
-    @Published public private(set) var quickActions: [QuickAction] = []
-    @Published public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
-    @Published public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
-    @Published public private(set) var showChatNotification: Bool = false
-    @Published public private(set) var hasSentOrRecievedAtLeastOneMessage: Bool = false
-    @Published public private(set) var latestConversationTimeStamp: Date = Date()
-    @Published public private(set) var latestChatTimeStamp: Date = Date()
+    public private(set) var memberContractState: MemberContractState = .loading
+    public private(set) var memberInfo: MemberInfo?
+    public private(set) var futureStatus: FutureStatus = .none
+    public private(set) var contracts: [HomeContract] = []
+    public private(set) var importantMessages: [ImportantMessage] = []
+    public private(set) var quickActions: [QuickAction] = []
+    public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
+    public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
+    public private(set) var showChatNotification: Bool = false
+    public private(set) var hasSentOrRecievedAtLeastOneMessage: Bool = false
+    public private(set) var latestConversationTimeStamp: Date = Date()
+    public private(set) var latestChatTimeStamp: Date = Date()
 
     @Transient @Published public private(set) var homeQuickActions: [HomeQuickAction] = []
     @Transient @Published public private(set) var ongoingQuotes: [OngoingQuote] = []
@@ -110,7 +111,8 @@ public final class HomeStore: AppStore {
                 return tiles.compactMap { $0 }
             }
             .removeDuplicates()
-            .assign(to: &$homeQuickActions)
+            .sink { [weak self] actions in self?.homeQuickActions = actions }
+            .store(in: &cancellables)
     }
 
     public func fetchMemberState() async {

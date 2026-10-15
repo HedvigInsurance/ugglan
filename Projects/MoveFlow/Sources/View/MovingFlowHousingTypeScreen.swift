@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 public struct MovingFlowHousingTypeScreen: View {
-    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
+    @Bindable var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: NavigationRouter
-    @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @Bindable var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(
         movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -103,8 +103,9 @@ public struct MovingFlowHousingTypeScreen: View {
 }
 
 @MainActor
-class MovingFlowHousingTypeViewModel: ObservableObject {
-    @Published var selectedHousingType: String? = HousingType.rental.rawValue
+@Observable
+class MovingFlowHousingTypeViewModel {
+    var selectedHousingType: String? = HousingType.rental.rawValue
     init() {}
 }
 

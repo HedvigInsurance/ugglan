@@ -4,11 +4,11 @@ import hCore
 import hCoreUI
 
 struct StakeholderInputScreen: View {
-    @ObservedObject var stakeholdersVm: StakeholdersViewModel
-    @ObservedObject var vm: StakeholderInputViewModel
+    let stakeholdersVm: StakeholdersViewModel
+    @Bindable var vm: StakeholderInputViewModel
     let title: String
-    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
+    private let editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    let intentViewModel: IntentViewModel
 
     init(
         vm: StakeholderInputViewModel,
@@ -118,8 +118,8 @@ extension View {
 }
 
 struct AddStakeholderFieldsView: View {
-    @ObservedObject var vm: StakeholderInputViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
+    @Bindable var vm: StakeholderInputViewModel
+    let intentViewModel: IntentViewModel
 
     var body: some View {
         Group {
@@ -213,12 +213,12 @@ struct AddStakeholderFieldsView: View {
                     vm.showInfoForMissingSSN = false
                 }
             }
-        )
+        }
     }
 }
 
 struct DeleteStakeholderFields: View {
-    @ObservedObject var vm: StakeholderInputViewModel
+    @Bindable var vm: StakeholderInputViewModel
 
     var body: some View {
         if vm.personalData.firstName != "", vm.personalData.lastName != "", vm.SSN != "" || vm.birthday != "" {
