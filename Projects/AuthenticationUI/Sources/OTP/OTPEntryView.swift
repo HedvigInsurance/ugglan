@@ -10,40 +10,43 @@ public struct OTPEntryView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: 50) {
-                    hText(
-                        vm.title,
-                        style: .displayXSLong
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    hTextField(
+        hForm {}
+            .hFormTitle(title: .init(.small, .body1, vm.title, alignment: .leading))
+            .hFormAttachToBottom {
+                hSection {
+                    hFloatingTextField(
                         masking: vm.masking,
-                        value: $otpVM.input
-                    )
-                    .focused($vm.focusInputField, equals: false) {
+                        value: $otpVM.input,
+                        equals: vm.$focusInputField,
+                        focusValue: true,
+                        placeholder: L10n.emailRowTitle,
+                        error: $otpVM.otpInputErrorMessage
+                    ) {
                         vm.onSubmit(otpState: otpVM)
                     }
-                    .hTextFieldError(otpVM.otpInputErrorMessage)
                 }
-            }
-        }
-        .hFormAttachToBottom {
-            hSection {
-                hContinueButton {
-                    vm.onSubmit(otpState: otpVM)
+                hSection {
+                    hContinueButton {
+                        vm.onSubmit(otpState: otpVM)
+                    }
+                    .hButtonIsLoading(otpVM.isLoading)
                 }
-                .hButtonIsLoading(otpVM.isLoading)
+                .disabled(!vm.masking.isValid(text: otpVM.input))
             }
-            .disabled(!vm.masking.isValid(text: otpVM.input))
-        }
-        .sectionContainerStyle(.transparent)
-        .onAppear {
-            vm.focusInputField = true
-            vm.router = router
-        }
+            .hFormContentPosition(.bottom)
+            .sectionContainerStyle(.transparent)
+            .onAppear {
+                vm.focusInputField = true
+                vm.router = router
+            }
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
+    return OTPEntryView()
+        .environmentObject(OTPState())
+        .environmentObject(NavigationRouter())
 }
 
 @MainActor
