@@ -52,13 +52,11 @@ struct PaymentConfirmationCard: View {
                     RoundedRectangle(cornerRadius: Self.checkboxCornerRadius)
                         .fill(hSignalColor.Green.element)
                 )
-                .colorScheme(.light)
                 .accessibilityHidden(true)
         } else {
             RoundedRectangle(cornerRadius: Self.checkboxCornerRadius)
                 .strokeBorder(hBorderColor.secondary, lineWidth: 2)
                 .frame(width: checkboxSize, height: checkboxSize)
-                .colorScheme(.light)
                 .hUseLightMode
                 .accessibilityHidden(true)
         }
