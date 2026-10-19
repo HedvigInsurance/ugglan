@@ -15,16 +15,9 @@ struct PaymentMethodPickerList: View {
             VStack(spacing: 0) {
                 if direction == .payin {
                     hSection {
-                        if hFormContentPosition == .center {
-                            InfoCard(text: L10n.payinInfoBox, type: .neutral)
-                                .padding(.top, -.padding8)
-                                .padding(.bottom, .padding8)
-                                .transition(.move(edge: .bottom))
-                        } else {
-                            InfoCard(text: L10n.payinInfoBox, type: .neutral)
-                                .padding(.top, -.padding8)
-                                .padding(.bottom, .padding8)
-                        }
+                        InfoCard(text: L10n.payinInfoBox, type: .neutral)
+                            .padding(.top, -.padding8)
+                            .padding(.bottom, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 }
