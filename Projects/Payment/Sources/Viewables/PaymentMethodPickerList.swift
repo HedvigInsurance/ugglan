@@ -12,32 +12,27 @@ struct PaymentMethodPickerList: View {
     @Environment(\.hFormContentPosition) var hFormContentPosition
     var body: some View {
         VStack(spacing: .padding16) {
-            // Nothing to pick from until the status has been fetched, and an empty list would
-            // still take up a section's worth of padding.
-            if !methods.isEmpty {
-                hSection {
-                    hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
-                        PaymentMethodSelectableRow(method.provider, direction: direction, selection: $selected)
+            VStack(spacing: 0) {
+                if direction == .payin {
+                    hSection {
+                        InfoCard(text: L10n.payinInfoBox, type: .neutral)
+                            .padding(.top, -.padding8)
+                            .padding(.bottom, .padding8)
                     }
+                    .sectionContainerStyle(.transparent)
                 }
-                .sectionContainerStyle(.transparent)
+                if !methods.isEmpty {
+                    hSection {
+                        hRadioOptionList(methods, id: \.provider, spacing: .padding8) { method in
+                            PaymentMethodSelectableRow(method.provider, direction: direction, selection: $selected)
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
             }
 
             hSection {
                 VStack(spacing: .padding8) {
-                    if direction == .payin, selected == .swish {
-                        if hFormContentPosition == .center {
-                            InfoCard(text: L10n.swishInfoBox, type: .neutral)
-                                .padding(.top, -.padding8)
-                                .padding(.bottom, .padding8)
-                                .transition(.move(edge: .bottom))
-                        } else {
-                            InfoCard(text: L10n.swishInfoBox, type: .neutral)
-                                .padding(.top, -.padding8)
-                                .padding(.bottom, .padding8)
-                        }
-                    }
-
                     hButton(.large, .primary, content: .init(title: connectTitle)) {
                         onConnect()
                     }

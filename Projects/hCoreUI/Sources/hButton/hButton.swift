@@ -32,6 +32,7 @@ public struct hButton: View {
         .accessibilityLabel(content.title)
         .buttonStyle(ButtonFilledStyle(size: size))
         .hButtonConfigurationType(type)
+        .geometryGroupIfAvailable()
     }
 
     private var mainContent: some View {
