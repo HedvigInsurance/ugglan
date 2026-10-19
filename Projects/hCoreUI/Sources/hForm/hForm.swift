@@ -117,15 +117,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
                         .sink { _ in
                         } receiveValue: { [weak vm] keyboardHeight in
-                            if vm?.vc?.presentedViewController == nil
-                                || vm?.vc?.presentedViewController?.isKind(of: UISearchController.self) == true
-                            {
-                                vm?.keyboardVisible = keyboardHeight != nil
-                                vm?.ignoreKeyboard = false
-                            } else {
-                                vm?.keyboardVisible = false
-                                vm?.ignoreKeyboard = true
-                            }
+                            guard let vm else { return }
+                            // Only react to the keyboard when nothing is presented over the form,
+                            // or when the presented controller is a search or alert controller.
+                            let presented = vm.vc?.presentedViewController
+                            let handlesKeyboard =
+                                presented == nil || presented is UISearchController || presented is UIAlertController
+                            vm.keyboardVisible = handlesKeyboard && keyboardHeight != nil
+                            vm.ignoreKeyboard = !handlesKeyboard
                         }
                 }
             }
