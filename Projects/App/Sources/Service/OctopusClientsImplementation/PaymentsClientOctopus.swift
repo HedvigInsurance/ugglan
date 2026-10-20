@@ -556,7 +556,7 @@ extension PaymentHistoryListData {
             nextPayment = paymentData
             payments.append(paymentData)
         }
-        let charges = payments.compactMap { PaymentHistory(id: $0.payment.date, paymentData: $0) }
+        let charges = payments.compactMap { PaymentHistory(id: $0.id, paymentData: $0) }
         let groupedPaymenthsByYear = Dictionary(grouping: charges, by: { $0.paymentData.payment.date.year ?? 0 })
 
         for year in groupedPaymenthsByYear.keys.sorted(by: { $0 > $1 }) {
