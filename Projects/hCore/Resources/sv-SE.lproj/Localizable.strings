@@ -471,7 +471,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "ONBOARDING_WELCOME_TITLE" = "Välkommen till Hedvig";
 "OS_VERSION_TOO_LOW_BODY" = "%@ stöds inte. Uppdatera till det senaste operativsystemet för att kunna använda Hedvig-appen.";
 "OS_VERSION_TOO_LOW_TITLE" = "Ditt operativsystem måste uppdateras";
-"PAYIN_INFO_BOX" = "Genom att koppla en betalmetod godkänner du att din premie dras automatiskt varje månad. Vi meddelar dig i Hedvig-appen inför varje betalning.";
+"PAYIN_INFO_BOX" = "Genom att koppla en betalningsmetod godkänner du att din premie dras automatiskt varje månad. Vi meddelar dig i Hedvig-appen inför varje betalning.";
 "PAYMENTS_ACCOUNT" = "Konto";
 "PAYMENTS_ADD_SWISH_PAYOUT_INFO" = "Jag bekräftar att det här är mitt eget Swish-nummer, kopplat till mitt personnummer.";
 "PAYMENTS_AMOUNT_TO_PAY" = "Att betala";
