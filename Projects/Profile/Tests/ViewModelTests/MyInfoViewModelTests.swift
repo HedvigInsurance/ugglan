@@ -1,6 +1,7 @@
 import AppStateContainer
 import Home
-import XCTest
+import TestDependencies
+import Testing
 import hCore
 
 @testable import Profile
@@ -8,167 +9,207 @@ import hCore
 private let phone = "0123456789"
 private let email = "test@email.com"
 
-@MainActor
-final class MyInfoViewModelTests: XCTestCase {
-    weak var sut: MockProfileService?
-    weak var store: ProfileStore?
+extension ProfileDependencySuite {
+    @MainActor
+    final class MyInfoViewModelTests {
+        private weak var sut: MockProfileService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-        Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+        init() {
+            globalAppStateContainer.clearPersistence()
+            Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+            Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+        }
 
-        sut = nil
-    }
+        // Test bodies are scoped so their locals are released before this check runs.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: ProfileClient.self)
+            Dependencies.shared.remove(for: HomeClient.self)
+            Dependencies.shared.remove(for: FeatureFlagsClient.self)
+            Dependencies.shared.remove(for: FeatureFlags.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: ProfileClient.self)
-        Dependencies.shared.remove(for: HomeClient.self)
-        await delay(0.0000001)
-        XCTAssertNil(sut)
-    }
+        // MARK: - Helpers
+        private func setUpMockService(
+            memberUpdate: @escaping MemberUpdate = { email, phone in (email, phone) }
+        ) -> MockProfileService {
+            let service = MockData.createMockProfileService(memberUpdate: memberUpdate)
+            sut = service
+            return service
+        }
 
-    // MARK: - Helpers
-    private func setUpMockService(
-        memberUpdate: @escaping MemberUpdate = { email, phone in (email, phone) }
-    ) -> MockProfileService {
-        let service = MockData.createMockProfileService(memberUpdate: memberUpdate)
-        sut = service
-        return service
-    }
-
-    private func setUpStore(
-        phone: String = phone,
-        email: String = email
-    ) async -> ProfileStore {
-        let store = ProfileStore()
-        globalAppStateContainer.register(store)
-        self.store = store
-        store.setMemberDetails(
-            .init(
-                id: "memberId",
-                firstName: "first name",
-                lastName: "last name",
-                phone: phone,
-                email: email,
-                hasTravelCertificate: true,
-                isContactInfoUpdateNeeded: false
+        private func setUpStore(
+            phone: String = phone,
+            email: String = email
+        ) async -> ProfileStore {
+            let store = ProfileStore()
+            globalAppStateContainer.register(store)
+            store.setMemberDetails(
+                .init(
+                    id: "memberId",
+                    firstName: "first name",
+                    lastName: "last name",
+                    phone: phone,
+                    email: email,
+                    hasTravelCertificate: true,
+                    isContactInfoUpdateNeeded: false
+                )
             )
-        )
-        return store
-    }
+            return store
+        }
 
-    // MARK: - Phone Update Success
+        // MARK: - Phone Update Success
 
-    func testSave_withValidPhone_updatesStoreAndSucceeds() async throws {
-        let mockService = setUpMockService()
-        let store = await setUpStore(phone: "000000")
+        @Test
+        func saveWithValidPhoneUpdatesStoreAndSucceeds() async {
+            do {
+                let mockService = setUpMockService()
+                let store = await setUpStore(phone: "000000")
+                // A fresh HomeStore, so the wait below sees the refresh save() kicks off, not a leftover one.
+                let homeStore = HomeStore()
+                globalAppStateContainer.register(homeStore)
 
-        let model = MyInfoViewModel()
-        let newPhone = "111111"
-        model.currentPhoneInput = newPhone
+                let model = MyInfoViewModel()
+                let newPhone = "111111"
+                model.currentPhoneInput = newPhone
 
-        let success = await model.save()
-        await delay(0.1)
+                let success = await model.save()
+                await waitUntil(description: "the member state refresh started by save() finished") {
+                    homeStore.memberInfo != nil
+                }
 
-        XCTAssertTrue(success)
-        XCTAssertEqual(store.memberDetails?.phone, newPhone)
-        XCTAssertEqual(store.memberDetails?.email, email)
-        XCTAssertNil(model.phoneError)
-        XCTAssertNil(model.emailError)
-        XCTAssertTrue(mockService.events.contains(.memberUpdate))
-    }
-
-    // MARK: - Phone Update Failures
-
-    func testSave_withEmptyPhone_failsWithPhoneEmptyError() async throws {
-        let mockService = setUpMockService()
-        let store = await setUpStore()
-
-        let model = MyInfoViewModel()
-        model.currentPhoneInput = ""
-        let success = await model.save()
-
-        XCTAssertFalse(success)
-        XCTAssertEqual(model.phoneError, MyInfoSaveError.phoneNumberEmpty.localizedDescription)
-        XCTAssertNil(model.emailError)
-        XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.memberDetails?.phone, phone)
-    }
-
-    // MARK: - Email Update Success
-
-    func testSave_withValidEmail_updatesStoreAndSucceeds() async throws {
-        let mockService = setUpMockService()
-        let store = await setUpStore(email: "old@email.com")
-
-        let model = MyInfoViewModel()
-        let newEmail = "newemail@email.com"
-        model.currentEmailInput = newEmail
-
-        let success = await model.save()
-        await delay(0.1)
-
-        XCTAssertTrue(success)
-        XCTAssertEqual(store.memberDetails?.email, newEmail)
-        XCTAssertEqual(store.memberDetails?.phone, phone)
-        XCTAssertNil(model.phoneError)
-        XCTAssertNil(model.emailError)
-        XCTAssertTrue(mockService.events.contains(.memberUpdate))
-    }
-
-    // MARK: - Email Update Failures
-
-    func testSave_withEmptyEmail_failsWithEmailEmptyError() async throws {
-        let mockService = setUpMockService()
-        let store = await setUpStore()
-
-        let model = MyInfoViewModel()
-        model.currentEmailInput = ""
-        let success = await model.save()
-
-        XCTAssertFalse(success)
-        XCTAssertEqual(model.emailError, MyInfoSaveError.emailEmpty.localizedDescription)
-        XCTAssertNil(model.phoneError)
-        XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.memberDetails?.email, email)
-    }
-
-    func testSave_withMalformedEmail_failsWithEmailMalformedError() async throws {
-        let mockService = setUpMockService()
-        let store = await setUpStore()
-
-        let model = MyInfoViewModel()
-        let malformedEmail = "email@email"
-        model.currentEmailInput = malformedEmail
-        let success = await model.save()
-
-        XCTAssertFalse(success)
-        XCTAssertEqual(model.emailError, MyInfoSaveError.emailMalformed.localizedDescription)
-        XCTAssertNil(model.phoneError)
-        XCTAssertFalse(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.memberDetails?.email, email)
-    }
-
-    // MARK: - API Failure
-
-    func testSave_whenAPIThrows_failsWithErrorMessage() async throws {
-        let mockService = setUpMockService(
-            memberUpdate: { _, _ in
-                throw MyInfoSaveError.error(message: "Network error")
+                #expect(success)
+                #expect(store.memberDetails?.phone == newPhone)
+                #expect(store.memberDetails?.email == email)
+                #expect(model.phoneError == nil)
+                #expect(model.emailError == nil)
+                #expect(mockService.events.contains(.memberUpdate))
             }
-        )
-        let store = await setUpStore()
 
-        let model = MyInfoViewModel()
-        model.currentEmailInput = "valid@email.com"
-        let success = await model.save()
+            await expectServiceReleased()
+        }
 
-        XCTAssertFalse(success)
-        XCTAssertTrue(mockService.events.contains(.memberUpdate))
-        XCTAssertEqual(store.memberDetails?.phone, phone)
-        XCTAssertEqual(store.memberDetails?.email, email)
+        // MARK: - Phone Update Failures
+
+        @Test
+        func saveWithEmptyPhoneFailsWithPhoneEmptyError() async {
+            do {
+                let mockService = setUpMockService()
+                let store = await setUpStore()
+
+                let model = MyInfoViewModel()
+                model.currentPhoneInput = ""
+                let success = await model.save()
+
+                #expect(success == false)
+                #expect(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
+                #expect(model.emailError == nil)
+                #expect(mockService.events.contains(.memberUpdate) == false)
+                #expect(store.memberDetails?.phone == phone)
+            }
+
+            await expectServiceReleased()
+        }
+
+        // MARK: - Email Update Success
+
+        @Test
+        func saveWithValidEmailUpdatesStoreAndSucceeds() async {
+            do {
+                let mockService = setUpMockService()
+                let store = await setUpStore(email: "old@email.com")
+                // A fresh HomeStore, so the wait below sees the refresh save() kicks off, not a leftover one.
+                let homeStore = HomeStore()
+                globalAppStateContainer.register(homeStore)
+
+                let model = MyInfoViewModel()
+                let newEmail = "newemail@email.com"
+                model.currentEmailInput = newEmail
+
+                let success = await model.save()
+                await waitUntil(description: "the member state refresh started by save() finished") {
+                    homeStore.memberInfo != nil
+                }
+
+                #expect(success)
+                #expect(store.memberDetails?.email == newEmail)
+                #expect(store.memberDetails?.phone == phone)
+                #expect(model.phoneError == nil)
+                #expect(model.emailError == nil)
+                #expect(mockService.events.contains(.memberUpdate))
+            }
+
+            await expectServiceReleased()
+        }
+
+        // MARK: - Email Update Failures
+
+        @Test
+        func saveWithEmptyEmailFailsWithEmailEmptyError() async {
+            do {
+                let mockService = setUpMockService()
+                let store = await setUpStore()
+
+                let model = MyInfoViewModel()
+                model.currentEmailInput = ""
+                let success = await model.save()
+
+                #expect(success == false)
+                #expect(model.emailError == MyInfoSaveError.emailEmpty.localizedDescription)
+                #expect(model.phoneError == nil)
+                #expect(mockService.events.contains(.memberUpdate) == false)
+                #expect(store.memberDetails?.email == email)
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func saveWithMalformedEmailFailsWithEmailMalformedError() async {
+            do {
+                let mockService = setUpMockService()
+                let store = await setUpStore()
+
+                let model = MyInfoViewModel()
+                let malformedEmail = "email@email"
+                model.currentEmailInput = malformedEmail
+                let success = await model.save()
+
+                #expect(success == false)
+                #expect(model.emailError == MyInfoSaveError.emailMalformed.localizedDescription)
+                #expect(model.phoneError == nil)
+                #expect(mockService.events.contains(.memberUpdate) == false)
+                #expect(store.memberDetails?.email == email)
+            }
+
+            await expectServiceReleased()
+        }
+
+        // MARK: - API Failure
+
+        @Test
+        func saveWhenAPIThrowsFailsWithErrorMessage() async {
+            do {
+                let mockService = setUpMockService(
+                    memberUpdate: { _, _ in
+                        throw MyInfoSaveError.error(message: "Network error")
+                    }
+                )
+                let store = await setUpStore()
+
+                let model = MyInfoViewModel()
+                model.currentEmailInput = "valid@email.com"
+                let success = await model.save()
+
+                #expect(success == false)
+                #expect(mockService.events.contains(.memberUpdate))
+                #expect(store.memberDetails?.phone == phone)
+                #expect(store.memberDetails?.email == email)
+            }
+
+            await expectServiceReleased()
+        }
     }
 }
