@@ -161,12 +161,6 @@ let xcassetsAppIconContents = """
         }
     """
 
-let testingContents = """
-        public struct \(nameAttribute)TestingData {
-
-        }
-    """
-
 let template = Template(
     description: "Framework template",
     attributes: [nameAttribute, .optional("platform", default: "iOS")],
@@ -175,7 +169,6 @@ let template = Template(
         .string(path: "\(nameAttribute)/GraphQL/ExampleQuery.graphql", contents: graphqlExampleQueryContents),
         .string(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", contents: exampleContents),
         .string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
-        .string(path: "\(nameAttribute)/Testing/\(nameAttribute).swift", contents: testingContents),
         .file(path: "\(nameAttribute)/Project.swift", templatePath: "project.stencil"),
     ]
 )

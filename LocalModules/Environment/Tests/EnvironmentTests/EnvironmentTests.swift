@@ -3,5 +3,5 @@ import Testing
 @testable import Environment
 
 @Test func example() async throws {
-    // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    // Placeholder so the package's test target has a test; write real tests with `#expect(...)` here.
 }
