@@ -1,84 +1,114 @@
-import XCTest
+import Foundation
+import TestDependencies
+import Testing
 import hCore
 
 @testable import TerminateContracts
 
-@MainActor
-final class TerminateContractsTests: XCTestCase {
-    private var mockClient: MockTerminateContractsClient!
+extension TerminateContractsDependencySuite {
+    @MainActor
+    final class TerminateContractsTests {
+        private let mockClient = MockTerminateContractsClient()
 
-    override func setUp() async throws {
-        try await super.setUp()
-        mockClient = MockTerminateContractsClient()
-        Dependencies.shared.add(module: Module { () -> TerminateContractsClient in self.mockClient })
-    }
-
-    override func tearDown() async throws {
-        try await super.tearDown()
-    }
-
-    func testGetTerminationSurvey_success() async throws {
-        mockClient.surveyDataToReturn = MockTerminationData.terminateSurveyData
-        let service = TerminateContractsService()
-        let result = try await service.getTerminationSurvey(contractId: "contract-123")
-        XCTAssertEqual(result.options.count, 2)
-        XCTAssertEqual(result.options.first?.title, "Better price")
-    }
-
-    func testGetTerminationSurvey_error() async {
-        mockClient.errorToThrow = NSError(domain: "test", code: 1)
-        let service = TerminateContractsService()
-        do {
-            _ = try await service.getTerminationSurvey(contractId: "contract-123")
-            XCTFail("Expected error")
-        } catch {
-            XCTAssertNotNil(error)
+        init() {
+            Dependencies.shared.add(module: Module { [mockClient] () -> TerminateContractsClient in mockClient })
         }
-    }
 
-    func testTerminateContract_success() async throws {
-        mockClient.terminateResultToReturn = .success
-        let service = TerminateContractsService()
-        let result = try await service.terminateContract(
-            contractId: "contract-123",
-            terminationDate: "2026-04-01",
-            surveyOptionId: "opt1",
-            comment: nil
-        )
-        XCTAssertEqual(result, .success)
-    }
+        @Test
+        func getTerminationSurveySuccess() async {
+            await recordingErrors {
+                mockClient.surveyDataToReturn = MockTerminationData.terminateSurveyData
+                let service = TerminateContractsService()
+                let result = try await service.getTerminationSurvey(contractId: "contract-123")
+                #expect(result.options.count == 2)
+                #expect(result.options.first?.title == "Better price")
+            }
 
-    func testTerminateContract_userError() async throws {
-        mockClient.terminateResultToReturn = .userError(message: "Cannot terminate")
-        let service = TerminateContractsService()
-        let result = try await service.terminateContract(
-            contractId: "contract-123",
-            terminationDate: "2026-04-01",
-            surveyOptionId: "opt1",
-            comment: nil
-        )
-        XCTAssertEqual(result, .userError(message: "Cannot terminate"))
-    }
+            removeClient()
+        }
 
-    func testDeleteContract_success() async throws {
-        mockClient.deleteResultToReturn = .success
-        let service = TerminateContractsService()
-        let result = try await service.deleteContract(
-            contractId: "contract-123",
-            surveyOptionId: "opt1",
-            comment: "Goodbye"
-        )
-        XCTAssertEqual(result, .success)
-    }
+        @Test
+        func getTerminationSurveyError() async {
+            do {
+                mockClient.errorToThrow = NSError(domain: "test", code: 1)
+                let service = TerminateContractsService()
+                await #expect(throws: (any Error).self) {
+                    try await service.getTerminationSurvey(contractId: "contract-123")
+                }
+            }
 
-    func testDeleteContract_userError() async throws {
-        mockClient.deleteResultToReturn = .userError(message: "Cannot delete")
-        let service = TerminateContractsService()
-        let result = try await service.deleteContract(
-            contractId: "contract-123",
-            surveyOptionId: "opt1",
-            comment: nil
-        )
-        XCTAssertEqual(result, .userError(message: "Cannot delete"))
+            removeClient()
+        }
+
+        @Test
+        func terminateContractSuccess() async {
+            await recordingErrors {
+                mockClient.terminateResultToReturn = .success
+                let service = TerminateContractsService()
+                let result = try await service.terminateContract(
+                    contractId: "contract-123",
+                    terminationDate: "2026-04-01",
+                    surveyOptionId: "opt1",
+                    comment: nil
+                )
+                #expect(result == .success)
+            }
+
+            removeClient()
+        }
+
+        @Test
+        func terminateContractUserError() async {
+            await recordingErrors {
+                mockClient.terminateResultToReturn = .userError(message: "Cannot terminate")
+                let service = TerminateContractsService()
+                let result = try await service.terminateContract(
+                    contractId: "contract-123",
+                    terminationDate: "2026-04-01",
+                    surveyOptionId: "opt1",
+                    comment: nil
+                )
+                #expect(result == .userError(message: "Cannot terminate"))
+            }
+
+            removeClient()
+        }
+
+        @Test
+        func deleteContractSuccess() async {
+            await recordingErrors {
+                mockClient.deleteResultToReturn = .success
+                let service = TerminateContractsService()
+                let result = try await service.deleteContract(
+                    contractId: "contract-123",
+                    surveyOptionId: "opt1",
+                    comment: "Goodbye"
+                )
+                #expect(result == .success)
+            }
+
+            removeClient()
+        }
+
+        @Test
+        func deleteContractUserError() async {
+            await recordingErrors {
+                mockClient.deleteResultToReturn = .userError(message: "Cannot delete")
+                let service = TerminateContractsService()
+                let result = try await service.deleteContract(
+                    contractId: "contract-123",
+                    surveyOptionId: "opt1",
+                    comment: nil
+                )
+                #expect(result == .userError(message: "Cannot delete"))
+            }
+
+            removeClient()
+        }
+
+        // Runs after the body's scope, so the service that resolved the client is already gone.
+        private func removeClient() {
+            Dependencies.shared.remove(for: TerminateContractsClient.self)
+        }
     }
 }
