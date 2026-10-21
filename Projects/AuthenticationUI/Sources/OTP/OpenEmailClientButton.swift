@@ -113,12 +113,9 @@ public struct OpenEmailClientButton: View {
         .offset(x: 0, y: showButton(state: otpVM) ? 0 : 150)
         .opacity(showButton(state: otpVM) ? 1 : 0)
         .animation(.spring(), value: showButton(state: otpVM))
-        .onUpdate(
-            of: hasAcceptedAlert,
-            perform: { _ in
-                sheetPresented = true
-            }
-        )
+        .onChange(of: hasAcceptedAlert) {
+            sheetPresented = true
+        }
         .actionSheet(isPresented: $sheetPresented) {
             ActionSheet(
                 title: Text(L10n.Login.openEmailAppButton),
