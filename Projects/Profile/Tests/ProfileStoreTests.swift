@@ -1,145 +1,181 @@
 import AppStateContainer
 import TestDependencies
-import XCTest
+import Testing
 
 @testable import Profile
 @testable import hCore
 
-@MainActor
-final class ProfileStoreTests: XCTestCase {
-    weak var store: ProfileStore?
+extension ProfileDependencySuite {
+    @MainActor
+    final class ProfileStoreTests {
+        private weak var store: ProfileStore?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-    }
-
-    override func tearDown() async throws {
-        try await super.tearDown()
-        await waitUntil(description: "deinitStore") {
-            self.store == nil
+        init() {
+            globalAppStateContainer.clearPersistence()
         }
-    }
 
-    func testFetchProfileSuccess() async throws {
-        let memberData: MemberDetails = .init(
-            id: "id",
-            firstName: "first name",
-            lastName: "last name",
-            phone: "phone",
-            email: "email",
-            hasTravelCertificate: true,
-            isContactInfoUpdateNeeded: false
-        )
-        let partnerData: PartnerData = .init(sas: nil)
-
-        let mockService = MockData.createMockProfileService(
-            fetchProfileState: {
-                (memberData, partnerData, canCreateInsuranceEvidence: true, hasTravelInsurances: true)
+        // Test bodies are scoped so their locals are released; a live local would make this wait never finish.
+        private func expectStoreReleased() async {
+            await waitUntil(description: "deinitStore") {
+                self.store == nil
             }
-        )
-
-        let store = ProfileStore()
-        self.store = store
-        await store.fetchProfileState()
-        assert(store.fetchProfileStateError == nil)
-        await waitUntil(description: "check state") {
-            store.memberDetails == memberData && store.partnerData == partnerData
-                && store.hasTravelCertificates == memberData.isTravelCertificateEnabled
-                && mockService.events.count == 1 && mockService.events.first == .getProfileState
+            Dependencies.shared.remove(for: ProfileClient.self)
         }
-    }
 
-    func testFetchProfileFailure() async throws {
-        let mockService = MockData.createMockProfileService(
-            fetchProfileState: { throw ProfileError.error(message: "error") }
-        )
+        @Test
+        func fetchProfileSuccess() async {
+            do {
+                let memberData: MemberDetails = .init(
+                    id: "id",
+                    firstName: "first name",
+                    lastName: "last name",
+                    phone: "phone",
+                    email: "email",
+                    hasTravelCertificate: true,
+                    isContactInfoUpdateNeeded: false
+                )
+                let partnerData: PartnerData = .init(sas: nil)
 
-        let store = ProfileStore()
-        self.store = store
-        await store.fetchProfileState()
-        assert(store.fetchProfileStateError != nil)
-        assert(store.memberDetails == nil)
-        assert(store.partnerData == nil)
-        assert(store.hasTravelCertificates == false)
+                let mockService = MockData.createMockProfileService(
+                    fetchProfileState: {
+                        (memberData, partnerData, canCreateInsuranceEvidence: true, hasTravelInsurances: true)
+                    }
+                )
 
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getProfileState)
-    }
+                let store = ProfileStore()
+                self.store = store
+                await store.fetchProfileState()
+                #expect(store.fetchProfileStateError == nil)
+                await waitUntil(description: "check state") {
+                    store.memberDetails == memberData && store.partnerData == partnerData
+                        && store.hasTravelCertificates == memberData.isTravelCertificateEnabled
+                        && mockService.events.count == 1 && mockService.events.first == .getProfileState
+                }
+            }
 
-    func testFetchMemberDetailsSuccess() async throws {
-        let memberData: MemberDetails = .init(
-            id: "id",
-            firstName: "first name",
-            lastName: "last name",
-            phone: "phone",
-            email: "email",
-            hasTravelCertificate: true,
-            isContactInfoUpdateNeeded: false
-        )
-
-        let mockService = MockData.createMockProfileService(
-            fetchMemberDetails: { memberData }
-        )
-
-        let store = ProfileStore()
-        self.store = store
-        await store.fetchMemberDetails()
-
-        await waitUntil(description: "check state") {
-            store.fetchMemberDetailsError == nil && store.memberDetails == memberData
-                && store.hasTravelCertificates == false && mockService.events.count == 1
-                && mockService.events.first == .getMemberDetails
+            await expectStoreReleased()
         }
-    }
 
-    func testFetchMemberDetailsFailure() async throws {
-        let mockService = MockData.createMockProfileService(
-            fetchMemberDetails: { throw ProfileError.error(message: "error") }
-        )
+        @Test
+        func fetchProfileFailure() async {
+            do {
+                let mockService = MockData.createMockProfileService(
+                    fetchProfileState: { throw ProfileError.error(message: "error") }
+                )
 
-        let store = ProfileStore()
-        self.store = store
-        await store.fetchMemberDetails()
-        await waitUntil(description: "check state") {
-            store.fetchMemberDetailsError != nil && store.memberDetails == nil
-                && store.hasTravelCertificates == false && mockService.events.count == 1
-                && mockService.events.first == .getMemberDetails
+                let store = ProfileStore()
+                self.store = store
+                await store.fetchProfileState()
+                #expect(store.fetchProfileStateError != nil)
+                #expect(store.memberDetails == nil)
+                #expect(store.partnerData == nil)
+                #expect(store.hasTravelCertificates == false)
+
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getProfileState)
+            }
+
+            await expectStoreReleased()
         }
-    }
 
-    func testUpdateLanguageSuccess() async throws {
-        let locale: Localization.Locale = .sv_SE
-        Localization.Locale.currentLocale = .init(locale)
+        @Test
+        func fetchMemberDetailsSuccess() async {
+            do {
+                let memberData: MemberDetails = .init(
+                    id: "id",
+                    firstName: "first name",
+                    lastName: "last name",
+                    phone: "phone",
+                    email: "email",
+                    hasTravelCertificate: true,
+                    isContactInfoUpdateNeeded: false
+                )
 
-        let mockService = MockData.createMockProfileService(
-            languageUpdate: {}
-        )
+                let mockService = MockData.createMockProfileService(
+                    fetchMemberDetails: { memberData }
+                )
 
-        let store = ProfileStore()
-        self.store = store
-        await store.updateLanguage()
-        await waitUntil(description: "check state") {
-            store.updateLanguageError == nil && Localization.Locale.currentLocale.value == .init(locale)
-                && mockService.events.count == 1 && mockService.events.first == .updateLanguage
+                let store = ProfileStore()
+                self.store = store
+                await store.fetchMemberDetails()
+
+                await waitUntil(description: "check state") {
+                    store.fetchMemberDetailsError == nil && store.memberDetails == memberData
+                        && store.hasTravelCertificates == false && mockService.events.count == 1
+                        && mockService.events.first == .getMemberDetails
+                }
+            }
+
+            await expectStoreReleased()
         }
-    }
 
-    func testUpdateLanguageFailure() async throws {
-        let locale: Localization.Locale = .sv_SE
-        Localization.Locale.currentLocale = .init(locale)
+        @Test
+        func fetchMemberDetailsFailure() async {
+            do {
+                let mockService = MockData.createMockProfileService(
+                    fetchMemberDetails: { throw ProfileError.error(message: "error") }
+                )
 
-        let mockService = MockData.createMockProfileService(
-            languageUpdate: { throw ProfileError.error(message: "error") }
-        )
+                let store = ProfileStore()
+                self.store = store
+                await store.fetchMemberDetails()
+                await waitUntil(description: "check state") {
+                    store.fetchMemberDetailsError != nil && store.memberDetails == nil
+                        && store.hasTravelCertificates == false && mockService.events.count == 1
+                        && mockService.events.first == .getMemberDetails
+                }
+            }
 
-        let store = ProfileStore()
-        self.store = store
-        await store.updateLanguage()
-        assert(store.updateLanguageError != nil)
-        assert(Localization.Locale.currentLocale.value == .init(locale))
+            await expectStoreReleased()
+        }
 
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .updateLanguage)
+        @Test
+        func updateLanguageSuccess() async {
+            let previousLocale = Localization.Locale.currentLocale
+            do {
+                let locale: Localization.Locale = .sv_SE
+                Localization.Locale.currentLocale = .init(locale)
+
+                let mockService = MockData.createMockProfileService(
+                    languageUpdate: {}
+                )
+
+                let store = ProfileStore()
+                self.store = store
+                await store.updateLanguage()
+                await waitUntil(description: "check state") {
+                    store.updateLanguageError == nil && Localization.Locale.currentLocale.value == .init(locale)
+                        && mockService.events.count == 1 && mockService.events.first == .updateLanguage
+                }
+            }
+            Localization.Locale.currentLocale = previousLocale
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func updateLanguageFailure() async {
+            let previousLocale = Localization.Locale.currentLocale
+            do {
+                let locale: Localization.Locale = .sv_SE
+                Localization.Locale.currentLocale = .init(locale)
+
+                let mockService = MockData.createMockProfileService(
+                    languageUpdate: { throw ProfileError.error(message: "error") }
+                )
+
+                let store = ProfileStore()
+                self.store = store
+                await store.updateLanguage()
+                #expect(store.updateLanguageError != nil)
+                #expect(Localization.Locale.currentLocale.value == .init(locale))
+
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .updateLanguage)
+            }
+            Localization.Locale.currentLocale = previousLocale
+
+            await expectStoreReleased()
+        }
     }
 }
