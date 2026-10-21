@@ -1,9 +1,9 @@
-@preconcurrency import XCTest
+import Testing
 
 @testable import Payment
 
 @MainActor
-final class PaymentStatusDataPayoutSelectionTests: XCTestCase {
+final class PaymentStatusDataPayoutSelectionTests {
     private let trustly = PaymentTestMethod.trustly
     private let swish = PaymentTestMethod.swish
     private let nordea = PaymentMethod.nordea(bankAccount: .init(account: "3300-1234567", bank: "Nordea"))
@@ -14,65 +14,72 @@ final class PaymentStatusDataPayoutSelectionTests: XCTestCase {
 
     // MARK: - activePayoutMethods
 
-    func testActivePayoutMethodsIncludesOnlyActiveMethods() {
+    @Test
+    func activePayoutMethodsIncludesOnlyActiveMethods() {
         let activeNordea = nordea.connected(isDefault: true)
         let pendingSwish = swish.connected(status: .pending)
         let unknownTrustly = trustly.connected(status: .unknown)
         let statusData = makeStatusData(payoutMethods: [activeNordea, pendingSwish, unknownTrustly])
 
-        XCTAssertEqual(statusData.activePayoutMethods, [activeNordea])
+        #expect(statusData.activePayoutMethods == [activeNordea])
     }
 
     // MARK: - selectablePayoutMethods
 
-    func testSelectablePayoutMethodsDefaultFirst() {
+    @Test
+    func selectablePayoutMethodsDefaultFirst() {
         let activeTrustly = trustly.connected()
         let defaultSwish = swish.connected(isDefault: true)
         let activeNordea = nordea.connected()
         let statusData = makeStatusData(payoutMethods: [activeTrustly, defaultSwish, activeNordea])
 
-        XCTAssertEqual(statusData.selectablePayoutMethods, [defaultSwish, activeTrustly, activeNordea])
+        #expect(statusData.selectablePayoutMethods == [defaultSwish, activeTrustly, activeNordea])
     }
 
-    func testSelectablePayoutMethodsExcludesPendingMethods() {
+    @Test
+    func selectablePayoutMethodsExcludesPendingMethods() {
         let defaultNordea = nordea.connected(isDefault: true)
         let pendingSwish = swish.connected(status: .pending)
         let statusData = makeStatusData(payoutMethods: [pendingSwish, defaultNordea])
 
-        XCTAssertEqual(statusData.selectablePayoutMethods, [defaultNordea])
+        #expect(statusData.selectablePayoutMethods == [defaultNordea])
     }
 
-    func testSelectableMethodsForPayoutIgnoresPayinMethods() {
+    @Test
+    func selectableMethodsForPayoutIgnoresPayinMethods() {
         let defaultNordea = nordea.connected(isDefault: true)
         let statusData = PaymentStatusData.test(
             payinMethods: [trustly.connected(isDefault: true), swish.connected()],
             payoutMethods: [defaultNordea]
         )
 
-        XCTAssertEqual(statusData.selectableMethods(for: .payout), [defaultNordea])
+        #expect(statusData.selectableMethods(for: .payout) == [defaultNordea])
     }
 
     // MARK: - canChooseDefaultPayoutMethod
 
-    func testCanChooseDefaultPayoutMethodWithoutMethods() {
+    @Test
+    func canChooseDefaultPayoutMethodWithoutMethods() {
         let statusData = makeStatusData(payoutMethods: [])
 
-        XCTAssertFalse(statusData.canChooseDefaultPayoutMethod)
+        #expect(statusData.canChooseDefaultPayoutMethod == false)
     }
 
-    func testCanChooseDefaultPayoutMethodWithOneActiveMethod() {
+    @Test
+    func canChooseDefaultPayoutMethodWithOneActiveMethod() {
         let statusData = makeStatusData(
             payoutMethods: [nordea.connected(isDefault: true), swish.connected(status: .pending)]
         )
 
-        XCTAssertFalse(statusData.canChooseDefaultPayoutMethod)
+        #expect(statusData.canChooseDefaultPayoutMethod == false)
     }
 
-    func testCanChooseDefaultPayoutMethodWithTwoActiveMethods() {
+    @Test
+    func canChooseDefaultPayoutMethodWithTwoActiveMethods() {
         let statusData = makeStatusData(
             payoutMethods: [nordea.connected(isDefault: true), swish.connected()]
         )
 
-        XCTAssertTrue(statusData.canChooseDefaultPayoutMethod)
+        #expect(statusData.canChooseDefaultPayoutMethod)
     }
 }

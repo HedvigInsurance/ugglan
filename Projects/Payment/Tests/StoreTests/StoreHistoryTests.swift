@@ -1,53 +1,73 @@
 import AppStateContainer
-import XCTest
+import Testing
+import hCore
 
 @testable import Payment
 
-@MainActor
-final class StoreHistoryTests: XCTestCase {
-    weak var store: PaymentStore?
+extension PaymentDependencySuite {
+    @MainActor
+    final class StoreHistoryTests {
+        private weak var store: PaymentStore?
+        private weak var sut: MockPaymentService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-    }
+        init() {
+            globalAppStateContainer.clearPersistence()
+        }
 
-    override func tearDown() async throws {
-        assert(store == nil)
-    }
+        // Test bodies are scoped in a do block so their locals are released before this check.
+        private func expectStoreAndServiceReleased() async {
+            Dependencies.shared.remove(for: hPaymentClient.self)
+            await delay(0.00001)
 
-    func testGetHistorySuccess() async throws {
-        let historyData: [PaymentHistoryListData] =
-            [
-                .init(
-                    id: "id",
-                    year: 2024,
-                    valuesPerMonth: []
+            #expect(store == nil, "the payment store must not outlive the test that created it")
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
+
+        @Test
+        func getHistorySuccess() async {
+            do {
+                let historyData: [PaymentHistoryListData] =
+                    [
+                        .init(
+                            id: "id",
+                            year: 2024,
+                            valuesPerMonth: []
+                        )
+                    ]
+
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchPaymentHistoryData: { historyData }
                 )
-            ]
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getHistory()
+                #expect(store.loadHistoryError == nil)
+                #expect(store.paymentHistory == historyData)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getPaymentHistoryData)
+            }
 
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentHistoryData: { historyData }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getHistory()
-        assert(store.loadHistoryError == nil)
-        assert(store.paymentHistory == historyData)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getPaymentHistoryData)
-    }
+            await expectStoreAndServiceReleased()
+        }
 
-    func testGetHistoryFailure() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentHistoryData: { throw PaymentError.missingDataError(message: "error") }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getHistory()
-        assert(store.loadHistoryError != nil)
-        assert(store.paymentHistory.isEmpty)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getPaymentHistoryData)
+        @Test
+        func getHistoryFailure() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchPaymentHistoryData: { throw PaymentError.missingDataError(message: "error") }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getHistory()
+                #expect(store.loadHistoryError != nil)
+                #expect(store.paymentHistory.isEmpty)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getPaymentHistoryData)
+            }
+
+            await expectStoreAndServiceReleased()
+        }
     }
 }

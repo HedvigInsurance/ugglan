@@ -1,174 +1,235 @@
-@preconcurrency import XCTest
+import Testing
 import hCore
 
 @testable import Payment
 
-@MainActor
-final class PaymentActionViewModelTests: XCTestCase {
-    weak var sut: MockPaymentService?
+extension PaymentDependencySuite {
+    @MainActor
+    final class PaymentActionViewModelTests {
+        private weak var sut: MockPaymentService?
 
-    private let swishMethod = ConnectedPaymentMethod(
-        status: .active,
-        isDefault: true,
-        method: .swish(phoneNumber: "0735328847")
-    )
-
-    private let trustlyMethod = ConnectedPaymentMethod(
-        status: .active,
-        isDefault: false,
-        method: .trustly(bankAccount: .init(account: "1234", bank: "Bank"))
-    )
-
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: hPaymentClient.self)
-        await delay(0.00001)
-
-        XCTAssertNil(sut)
-    }
-
-    func testInitialStateNotLoadingWithoutError() {
-        let mockService = MockPaymentData.createMockPaymentService()
-        sut = mockService
-
-        let vm = PaymentActionViewModel.remove(swishMethod)
-
-        XCTAssertEqual(vm.processingState, .success)
-        XCTAssertFalse(vm.isLoading)
-        XCTAssertNil(vm.errorMessage)
-        XCTAssertTrue(mockService.events.isEmpty)
-    }
-
-    func testPerformSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: {})
-        sut = mockService
-
-        let vm = PaymentActionViewModel.remove(swishMethod)
-        let result = await vm.perform()
-
-        XCTAssertTrue(result)
-        XCTAssertEqual(vm.processingState, .success)
-        XCTAssertFalse(vm.isLoading)
-        XCTAssertNil(vm.errorMessage)
-        XCTAssertEqual(mockService.events, [.removePaymentMethod])
-    }
-
-    func testPerformLoadingWhileActionRuns() async {
-        let mockService = MockPaymentData.createMockPaymentService()
-        sut = mockService
-
-        let vm = PaymentActionViewModel.remove(swishMethod)
-        mockService.removePaymentMethodClosure = { [weak vm] in
-            XCTAssertEqual(vm?.processingState, .loading)
-            XCTAssertEqual(vm?.isLoading, true)
-        }
-        let result = await vm.perform()
-
-        XCTAssertTrue(result)
-        XCTAssertFalse(vm.isLoading)
-    }
-
-    func testPerformServiceErrorFailure() async {
-        let error = PaymentError.missingDataError(message: "error")
-        let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: { throw error })
-        sut = mockService
-
-        let vm = PaymentActionViewModel.remove(swishMethod)
-        let result = await vm.perform()
-
-        XCTAssertFalse(result)
-        XCTAssertTrue(vm.processingState.isError)
-        XCTAssertEqual(vm.errorMessage, error.localizedDescription)
-        XCTAssertFalse(vm.isLoading)
-        XCTAssertEqual(mockService.events, [.removePaymentMethod])
-    }
-
-    func testPerformClearsPreviousErrorSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            removePaymentMethod: { throw PaymentError.missingDataError(message: "error") }
+        private let swishMethod = ConnectedPaymentMethod(
+            status: .active,
+            isDefault: true,
+            method: .swish(phoneNumber: "0735328847")
         )
-        sut = mockService
 
-        let vm = PaymentActionViewModel.remove(swishMethod)
-        let firstResult = await vm.perform()
-        mockService.removePaymentMethodClosure = {}
-        let secondResult = await vm.perform()
+        private let trustlyMethod = ConnectedPaymentMethod(
+            status: .active,
+            isDefault: false,
+            method: .trustly(bankAccount: .init(account: "1234", bank: "Bank"))
+        )
 
-        XCTAssertFalse(firstResult)
-        XCTAssertTrue(secondResult)
-        XCTAssertEqual(vm.processingState, .success)
-        XCTAssertNil(vm.errorMessage)
-        XCTAssertFalse(vm.isLoading)
-        XCTAssertEqual(mockService.events, [.removePaymentMethod, .removePaymentMethod])
-    }
+        // Test bodies are scoped in a do block so their locals are released before this check.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: hPaymentClient.self)
+            await delay(0.00001)
 
-    func testRemoveSendsTheMethodsProviderSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: {})
-        sut = mockService
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
 
-        let result = await PaymentActionViewModel.remove(swishMethod).perform()
+        @Test
+        func initialStateNotLoadingWithoutError() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService()
+                sut = mockService
 
-        XCTAssertTrue(result)
-        XCTAssertEqual(mockService.events, [.removePaymentMethod])
-        XCTAssertEqual(mockService.removedProviders, [.swish])
-    }
+                let vm = PaymentActionViewModel.remove(swishMethod)
 
-    func testRemoveTrustlyMethodRecordsProviderSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService()
-        sut = mockService
+                #expect(vm.processingState == .success)
+                #expect(vm.isLoading == false)
+                #expect(vm.errorMessage == nil)
+                #expect(mockService.events.isEmpty)
+            }
 
-        let result = await PaymentActionViewModel.remove(trustlyMethod).perform()
+            await expectServiceReleased()
+        }
 
-        XCTAssertTrue(result)
-        XCTAssertEqual(mockService.removedProviders, [.trustly])
-    }
+        @Test
+        func performSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: {})
+                sut = mockService
 
-    func testSetDefaultCallsSetDefaultPaymentMethodSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService(setDefaultPaymentMethod: {})
-        sut = mockService
+                let vm = PaymentActionViewModel.remove(swishMethod)
+                let result = await vm.perform()
 
-        let vm = PaymentActionViewModel.setDefault(swishMethod)
-        let result = await vm.perform()
+                #expect(result)
+                #expect(vm.processingState == .success)
+                #expect(vm.isLoading == false)
+                #expect(vm.errorMessage == nil)
+                #expect(mockService.events == [.removePaymentMethod])
+            }
 
-        XCTAssertTrue(result)
-        XCTAssertEqual(vm.processingState, .success)
-        XCTAssertEqual(mockService.events, [.setDefaultPaymentMethod])
-    }
+            await expectServiceReleased()
+        }
 
-    func testSetDefaultServiceErrorFailure() async {
-        let error = PaymentError.missingDataError(message: "error")
-        let mockService = MockPaymentData.createMockPaymentService(setDefaultPaymentMethod: { throw error })
-        sut = mockService
+        @Test
+        func performLoadingWhileActionRuns() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService()
+                sut = mockService
 
-        let vm = PaymentActionViewModel.setDefault(swishMethod)
-        let result = await vm.perform()
+                let vm = PaymentActionViewModel.remove(swishMethod)
+                await confirmation("the remove call runs") { removeRan in
+                    mockService.removePaymentMethodClosure = { [weak vm] in
+                        removeRan()
+                        #expect(vm?.processingState == .loading)
+                        #expect(vm?.isLoading == true)
+                    }
+                    let result = await vm.perform()
 
-        XCTAssertFalse(result)
-        XCTAssertEqual(vm.errorMessage, error.localizedDescription)
-        XCTAssertEqual(mockService.events, [.setDefaultPaymentMethod])
-    }
+                    #expect(result)
+                    #expect(vm.isLoading == false)
+                }
+            }
 
-    func testSetDefaultPayoutCallsSetDefaultPayoutMethodSuccess() async {
-        let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: {})
-        sut = mockService
+            await expectServiceReleased()
+        }
 
-        let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
-        let result = await vm.perform()
+        @Test
+        func performServiceErrorFailure() async {
+            do {
+                let error = PaymentError.missingDataError(message: "error")
+                let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: { throw error })
+                sut = mockService
 
-        XCTAssertTrue(result)
-        XCTAssertEqual(vm.processingState, .success)
-        XCTAssertEqual(mockService.events, [.setDefaultPayoutMethod])
-    }
+                let vm = PaymentActionViewModel.remove(swishMethod)
+                let result = await vm.perform()
 
-    func testSetDefaultPayoutServiceErrorFailure() async {
-        let error = PaymentError.missingDataError(message: "error")
-        let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: { throw error })
-        sut = mockService
+                #expect(result == false)
+                #expect(vm.processingState.isError)
+                #expect(vm.errorMessage == error.localizedDescription)
+                #expect(vm.isLoading == false)
+                #expect(mockService.events == [.removePaymentMethod])
+            }
 
-        let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
-        let result = await vm.perform()
+            await expectServiceReleased()
+        }
 
-        XCTAssertFalse(result)
-        XCTAssertEqual(vm.errorMessage, error.localizedDescription)
-        XCTAssertEqual(mockService.events, [.setDefaultPayoutMethod])
+        @Test
+        func performClearsPreviousErrorSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    removePaymentMethod: { throw PaymentError.missingDataError(message: "error") }
+                )
+                sut = mockService
+
+                let vm = PaymentActionViewModel.remove(swishMethod)
+                let firstResult = await vm.perform()
+                mockService.removePaymentMethodClosure = {}
+                let secondResult = await vm.perform()
+
+                #expect(firstResult == false)
+                #expect(secondResult)
+                #expect(vm.processingState == .success)
+                #expect(vm.errorMessage == nil)
+                #expect(vm.isLoading == false)
+                #expect(mockService.events == [.removePaymentMethod, .removePaymentMethod])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func removeSendsTheMethodsProviderSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(removePaymentMethod: {})
+                sut = mockService
+
+                let result = await PaymentActionViewModel.remove(swishMethod).perform()
+
+                #expect(result)
+                #expect(mockService.events == [.removePaymentMethod])
+                #expect(mockService.removedProviders == [.swish])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func removeTrustlyMethodRecordsProviderSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService()
+                sut = mockService
+
+                let result = await PaymentActionViewModel.remove(trustlyMethod).perform()
+
+                #expect(result)
+                #expect(mockService.removedProviders == [.trustly])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func setDefaultCallsSetDefaultPaymentMethodSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(setDefaultPaymentMethod: {})
+                sut = mockService
+
+                let vm = PaymentActionViewModel.setDefault(swishMethod)
+                let result = await vm.perform()
+
+                #expect(result)
+                #expect(vm.processingState == .success)
+                #expect(mockService.events == [.setDefaultPaymentMethod])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func setDefaultServiceErrorFailure() async {
+            do {
+                let error = PaymentError.missingDataError(message: "error")
+                let mockService = MockPaymentData.createMockPaymentService(setDefaultPaymentMethod: { throw error })
+                sut = mockService
+
+                let vm = PaymentActionViewModel.setDefault(swishMethod)
+                let result = await vm.perform()
+
+                #expect(result == false)
+                #expect(vm.errorMessage == error.localizedDescription)
+                #expect(mockService.events == [.setDefaultPaymentMethod])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func setDefaultPayoutCallsSetDefaultPayoutMethodSuccess() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: {})
+                sut = mockService
+
+                let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
+                let result = await vm.perform()
+
+                #expect(result)
+                #expect(vm.processingState == .success)
+                #expect(mockService.events == [.setDefaultPayoutMethod])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func setDefaultPayoutServiceErrorFailure() async {
+            do {
+                let error = PaymentError.missingDataError(message: "error")
+                let mockService = MockPaymentData.createMockPaymentService(setDefaultPayoutMethod: { throw error })
+                sut = mockService
+
+                let vm = PaymentActionViewModel.setDefaultPayout(swishMethod)
+                let result = await vm.perform()
+
+                #expect(result == false)
+                #expect(vm.errorMessage == error.localizedDescription)
+                #expect(mockService.events == [.setDefaultPayoutMethod])
+            }
+
+            await expectServiceReleased()
+        }
     }
 }

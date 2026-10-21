@@ -1,121 +1,164 @@
 import AppStateContainer
-import XCTest
+import Testing
+import hCore
 
 @testable import Payment
 
-@MainActor
-final class StoreMissedPaymentTests: XCTestCase {
-    weak var store: PaymentStore?
+extension PaymentDependencySuite {
+    @MainActor
+    final class StoreMissedPaymentTests {
+        private weak var store: PaymentStore?
+        private weak var sut: MockPaymentService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-    }
+        init() {
+            globalAppStateContainer.clearPersistence()
+        }
 
-    override func tearDown() async throws {
-        try await super.tearDown()
-        XCTAssertNil(store)
-    }
+        // Test bodies are scoped in a do block so their locals are released before this check.
+        private func expectStoreAndServiceReleased() async {
+            Dependencies.shared.remove(for: hPaymentClient.self)
+            await delay(0.00001)
 
-    func testGetMissedPaymentSuccess() async throws {
-        let missedPaymentData = MissedPaymentData(
-            paymentData: .init(
-                id: "missed-id",
-                payment: .init(
-                    gross: .init(amount: "230", currency: "SEK"),
-                    net: .init(amount: "230", currency: "SEK"),
-                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
-                    settlementAdjustment: nil,
-                    date: .init()
-                ),
-                status: .upcoming,
-                contracts: [],
-                referralDiscount: nil,
-                amountPerReferral: .sek(20),
-                payinMethod: nil,
-                addedToThePayment: nil
-            ),
-            paymentMethodData: .init(
-                status: .active,
-                isDefault: true,
-                method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
-            )
-        )
+            #expect(store == nil, "the payment store must not outlive the test that created it")
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
 
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { missedPaymentData }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getMissedPayment()
-        XCTAssertNil(store.loadMissedPaymentError)
-        assert(store.missedPaymentData == missedPaymentData)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getMissedPaymentData)
-    }
+        @Test
+        func getMissedPaymentSuccess() async {
+            do {
+                let missedPaymentData = MissedPaymentData(
+                    paymentData: .init(
+                        id: "missed-id",
+                        payment: .init(
+                            gross: .init(amount: "230", currency: "SEK"),
+                            net: .init(amount: "230", currency: "SEK"),
+                            carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                            settlementAdjustment: nil,
+                            date: .init()
+                        ),
+                        status: .upcoming,
+                        contracts: [],
+                        referralDiscount: nil,
+                        amountPerReferral: .sek(20),
+                        payinMethod: nil,
+                        addedToThePayment: nil
+                    ),
+                    paymentMethodData: .init(
+                        status: .active,
+                        isDefault: true,
+                        method: .trustly(bankAccount: .init(account: "descriptor", bank: "displayName"))
+                    )
+                )
 
-    func testGetMissedPaymentSuccessNil() async throws {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { nil }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getMissedPayment()
-        XCTAssertNil(store.loadMissedPaymentError)
-        assert(store.missedPaymentData == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getMissedPaymentData)
-    }
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { missedPaymentData }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getMissedPayment()
+                #expect(store.loadMissedPaymentError == nil)
+                #expect(store.missedPaymentData == missedPaymentData)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getMissedPaymentData)
+            }
 
-    func testGetMissedPaymentFailure() async throws {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { throw PaymentError.missingDataError(message: "error") }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getMissedPayment()
-        assert(store.loadMissedPaymentError != nil)
-        assert(store.missedPaymentData == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getMissedPaymentData)
-    }
+            await expectStoreAndServiceReleased()
+        }
 
-    func testGetMissedPaymentRefetchesAfterFailure() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { throw PaymentError.missingDataError(message: "error") }
-        )
-        let store = PaymentStore()
-        self.store = store
+        @Test
+        func getMissedPaymentSuccessNil() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { nil }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getMissedPayment()
+                #expect(store.loadMissedPaymentError == nil)
+                #expect(store.missedPaymentData == nil)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getMissedPaymentData)
+            }
 
-        await store.getMissedPayment()
-        XCTAssertNotNil(store.loadMissedPaymentError)
+            await expectStoreAndServiceReleased()
+        }
 
-        mockService.fetchMissedPaymentData = { nil }
-        await store.getMissedPayment()
+        @Test
+        func getMissedPaymentFailure() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { throw PaymentError.missingDataError(message: "error") }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getMissedPayment()
+                #expect(store.loadMissedPaymentError != nil)
+                #expect(store.missedPaymentData == nil)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getMissedPaymentData)
+            }
 
-        XCTAssertEqual(mockService.events.count, 2)
-        XCTAssertNil(store.loadMissedPaymentError)
-    }
+            await expectStoreAndServiceReleased()
+        }
 
-    func testGetMissedPaymentSkipsServiceWhileDataIsFresh() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { nil }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getMissedPayment()
-        await store.getMissedPayment()
-        XCTAssertEqual(mockService.events.count, 1)
-    }
+        @Test
+        func getMissedPaymentRefetchesAfterFailure() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { throw PaymentError.missingDataError(message: "error") }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
 
-    func testGetMissedPaymentWithForceUpdateBypassesFreshness() async {
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchMissedPaymentData: { nil }
-        )
-        let store = PaymentStore()
-        self.store = store
-        await store.getMissedPayment()
-        await store.getMissedPayment(forceUpdate: true)
-        XCTAssertEqual(mockService.events.count, 2)
+                await store.getMissedPayment()
+                #expect(store.loadMissedPaymentError != nil)
+
+                mockService.fetchMissedPaymentData = { nil }
+                await store.getMissedPayment()
+
+                #expect(mockService.events.count == 2)
+                #expect(store.loadMissedPaymentError == nil)
+            }
+
+            await expectStoreAndServiceReleased()
+        }
+
+        @Test
+        func getMissedPaymentSkipsServiceWhileDataIsFresh() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { nil }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getMissedPayment()
+                await store.getMissedPayment()
+                #expect(mockService.events.count == 1)
+            }
+
+            await expectStoreAndServiceReleased()
+        }
+
+        @Test
+        func getMissedPaymentWithForceUpdateBypassesFreshness() async {
+            do {
+                let mockService = MockPaymentData.createMockPaymentService(
+                    fetchMissedPaymentData: { nil }
+                )
+                sut = mockService
+                let store = PaymentStore()
+                self.store = store
+                await store.getMissedPayment()
+                await store.getMissedPayment(forceUpdate: true)
+                #expect(mockService.events.count == 2)
+            }
+
+            await expectStoreAndServiceReleased()
+        }
     }
 }
