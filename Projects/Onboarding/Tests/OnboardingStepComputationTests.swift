@@ -1,198 +1,207 @@
 import Contracts
 import CrossSell
 import EditStakeholders
-import XCTest
+import Testing
 import hCore
 
 @testable import Onboarding
 
-@MainActor
-final class OnboardingStepComputationTests: XCTestCase {
-    override func setUp() async throws {
-        try await super.setUp()
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
-        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: true)
-    }
+extension OnboardingDependencySuite {
+    @MainActor
+    final class OnboardingStepComputationTests {
+        init() {
+            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+            FeatureFlags.shared.data = .mock(isAnalyticsEnabled: true)
+        }
 
-    override func tearDown() async throws {
-        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
-        try await super.tearDown()
-    }
-
-    func testStaticStepsAlwaysPresent() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertEqual(
-            steps,
-            [
-                .welcome,
-                .analyticsConsent,
-                .phoneNumber(phoneNumber: ""),
-                .theme,
-            ]
-        )
-    }
-
-    func testAnalyticsConsentStepHiddenWhenAnalyticsDisabled() {
-        FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertFalse(steps.contains(.analyticsConsent))
-    }
-
-    func testPhoneNumberStepCarriesContactInfo() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: [],
-            contactInfo: .init(phone: "0735328847")
-        )
-        XCTAssertTrue(steps.contains(.phoneNumber(phoneNumber: "0735328847")))
-    }
-
-    func testInviteFriendStepShownWhenForeverDataExists() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: [],
-            foreverData: .init(
-                grossAmount: .init(amount: "100", currency: "SEK"),
-                netAmount: .init(amount: "90", currency: "SEK"),
-                otherDiscounts: nil,
-                discountCode: "CODE",
-                monthlyDiscount: .init(amount: "10", currency: "SEK"),
-                referrals: [],
-                referredBy: nil,
-                monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
+        @Test
+        func staticStepsAlwaysPresent() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: []
             )
-        )
-        XCTAssertTrue(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
-    }
+            #expect(
+                steps == [
+                    .welcome,
+                    .analyticsConsent,
+                    .phoneNumber(phoneNumber: ""),
+                    .theme,
+                ]
+            )
+        }
 
-    func testInviteFriendStepHiddenWithoutForeverData() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertFalse(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
-    }
+        @Test
+        func analyticsConsentStepHiddenWhenAnalyticsDisabled() {
+            FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains(.analyticsConsent) == false)
+        }
 
-    func testPaymentStepShownWhenNotConnected() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: false,
-            crossSells: []
-        )
-        XCTAssertTrue(steps.contains(.connectPayment(connectedProvider: nil)))
-    }
+        @Test
+        func phoneNumberStepCarriesContactInfo() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: [],
+                contactInfo: .init(phone: "0735328847")
+            )
+            #expect(steps.contains(.phoneNumber(phoneNumber: "0735328847")))
+        }
 
-    func testCrossSellStepShownWhenCrossSellsExist() {
-        let steps = OnboardingStepList.compute(
-            contracts: [],
-            isPaymentConnected: true,
-            crossSells: [.mock]
-        )
-        XCTAssertEqual(steps.last, .crossSell([.mock]))
-    }
+        @Test
+        func inviteFriendStepShownWhenForeverDataExists() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: [],
+                foreverData: .init(
+                    grossAmount: .init(amount: "100", currency: "SEK"),
+                    netAmount: .init(amount: "90", currency: "SEK"),
+                    otherDiscounts: nil,
+                    discountCode: "CODE",
+                    monthlyDiscount: .init(amount: "10", currency: "SEK"),
+                    referrals: [],
+                    referredBy: nil,
+                    monthlyDiscountPerReferral: .init(amount: "10", currency: "SEK")
+                )
+            )
+            #expect(steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) })
+        }
 
-    func testCoInsuredStepShownWhenContractHasMissingCoInsured() {
-        let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: true)])
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertTrue(steps.contains(.coInsured(contracts: [.init(contract: contract)])))
-    }
+        @Test
+        func inviteFriendStepHiddenWithoutForeverData() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(
+                steps.contains { $0.matches(.inviteFriend(discountCode: "", monthlyDiscountPerReferral: "")) } == false
+            )
+        }
 
-    func testCoInsuredStepHiddenWhenNoCoInsuredIsMissingInfo() {
-        let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: false)])
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertFalse(steps.contains { $0.matches(.coInsured(contracts: [])) })
-    }
+        @Test
+        func paymentStepShownWhenNotConnected() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: false,
+                crossSells: []
+            )
+            #expect(steps.contains(.connectPayment(connectedProvider: nil)))
+        }
 
-    func testCoOwnersStepShownWhenContractHasMissingCoOwners() {
-        let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: true)])
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertTrue(steps.contains(.coOwners(contracts: [.init(contract: contract)])))
-    }
+        @Test
+        func crossSellStepShownWhenCrossSellsExist() {
+            let steps = OnboardingStepList.compute(
+                contracts: [],
+                isPaymentConnected: true,
+                crossSells: [.mock]
+            )
+            #expect(steps.last == .crossSell([.mock]))
+        }
 
-    func testCoOwnersStepHiddenWhenNoCoOwnerIsMissingInfo() {
-        let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: false)])
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertFalse(steps.contains { $0.matches(.coOwners(contracts: [])) })
-    }
+        @Test
+        func coInsuredStepShownWhenContractHasMissingCoInsured() {
+            let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: true)])
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains(.coInsured(contracts: [.init(contract: contract)])))
+        }
 
-    func testPetChipIdsStepShownWithContractsWhenContractIsMissingPetChipId() {
-        let contract = Self.makeContract(missingPetChipId: true)
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertTrue(steps.contains(.petChipIds(contracts: [.init(contract: contract)])))
-    }
+        @Test
+        func coInsuredStepHiddenWhenNoCoInsuredIsMissingInfo() {
+            let contract = Self.makeContract(coInsured: [.init(needsMissingInfo: false)])
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains { $0.matches(.coInsured(contracts: [])) } == false)
+        }
 
-    func testPetChipIdsStepHiddenWhenNoContractIsMissingPetChipId() {
-        let contract = Self.makeContract(missingPetChipId: false)
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: true,
-            crossSells: []
-        )
-        XCTAssertFalse(steps.contains { $0.matches(.petChipIds(contracts: [])) })
-    }
+        @Test
+        func coOwnersStepShownWhenContractHasMissingCoOwners() {
+            let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: true)])
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains(.coOwners(contracts: [.init(contract: contract)])))
+        }
 
-    func testAllStepsShownInOrderWhenEveryConditionApplies() {
-        let contract = Self.makeContract(
-            coInsured: [.init(needsMissingInfo: true)],
-            coOwners: [.init(needsMissingInfo: true)],
-            missingPetChipId: true
-        )
-        let steps = OnboardingStepList.compute(
-            contracts: [contract],
-            isPaymentConnected: false,
-            crossSells: [.mock]
-        )
-        XCTAssertEqual(
-            steps,
-            [
-                .welcome,
-                .analyticsConsent,
-                .phoneNumber(phoneNumber: ""),
-                .coInsured(contracts: [.init(contract: contract)]),
-                .coOwners(contracts: [.init(contract: contract)]),
-                .petChipIds(contracts: [.init(contract: contract)]),
-                .theme,
-                .connectPayment(connectedProvider: nil),
-                .crossSell([.mock]),
-            ]
-        )
+        @Test
+        func coOwnersStepHiddenWhenNoCoOwnerIsMissingInfo() {
+            let contract = Self.makeContract(coOwners: [.init(needsMissingInfo: false)])
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains { $0.matches(.coOwners(contracts: [])) } == false)
+        }
+
+        @Test
+        func petChipIdsStepShownWithContractsWhenContractIsMissingPetChipId() {
+            let contract = Self.makeContract(missingPetChipId: true)
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains(.petChipIds(contracts: [.init(contract: contract)])))
+        }
+
+        @Test
+        func petChipIdsStepHiddenWhenNoContractIsMissingPetChipId() {
+            let contract = Self.makeContract(missingPetChipId: false)
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: true,
+                crossSells: []
+            )
+            #expect(steps.contains { $0.matches(.petChipIds(contracts: [])) } == false)
+        }
+
+        @Test
+        func allStepsShownInOrderWhenEveryConditionApplies() {
+            let contract = Self.makeContract(
+                coInsured: [.init(needsMissingInfo: true)],
+                coOwners: [.init(needsMissingInfo: true)],
+                missingPetChipId: true
+            )
+            let steps = OnboardingStepList.compute(
+                contracts: [contract],
+                isPaymentConnected: false,
+                crossSells: [.mock]
+            )
+            #expect(
+                steps == [
+                    .welcome,
+                    .analyticsConsent,
+                    .phoneNumber(phoneNumber: ""),
+                    .coInsured(contracts: [.init(contract: contract)]),
+                    .coOwners(contracts: [.init(contract: contract)]),
+                    .petChipIds(contracts: [.init(contract: contract)]),
+                    .theme,
+                    .connectPayment(connectedProvider: nil),
+                    .crossSell([.mock]),
+                ]
+            )
+        }
     }
 }
 
-extension OnboardingStepComputationTests {
-    /// `Contract`'s memberwise init has 22 parameters; this factory supplies sensible
-    /// defaults so gating tests only need to spell out the fields they exercise.
+extension OnboardingDependencySuite.OnboardingStepComputationTests {
+    /// Defaults for `Contract`'s 22-parameter init so tests only spell out the fields they exercise.
     fileprivate static func makeContract(
         coInsured: [Stakeholder] = [],
         coOwners: [Stakeholder] = [],
