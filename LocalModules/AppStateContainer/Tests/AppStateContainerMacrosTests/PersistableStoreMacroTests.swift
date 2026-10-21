@@ -1,19 +1,32 @@
 import AppStateContainerMacros
 import Observation
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
-import XCTest
+import SwiftSyntaxMacrosGenericTestSupport
+import Testing
 
-private let testMacros: [String: Macro.Type] = [
-    "PersistableStore": PersistableStoreMacro.self,
-    "Transient": TransientMacro.self,
+private let testMacros: [String: MacroSpec] = [
+    "PersistableStore": MacroSpec(type: PersistableStoreMacro.self),
+    "Transient": MacroSpec(type: TransientMacro.self),
 ]
 
-final class PersistableStoreMacroTests: XCTestCase {
-    /// Every stored `var` with an explicit type is persisted whatever else it is marked with.
-    /// Only `@Transient` (in-memory state) and `@Inject` (DI services, not Codable) are excluded,
-    /// alongside `let`, `static`, and computed properties which can never be snapshot state.
-    func testPersistsAllStoredVarsExceptTransientAndInject() {
+// Macro assertions report via XCTFail, which Swift Testing does not see, so failures go through a handler.
+private func recordMacroFailure(_ failure: TestFailureSpec) {
+    Issue.record(
+        Comment(rawValue: failure.message),
+        sourceLocation: SourceLocation(
+            fileID: failure.location.fileID,
+            filePath: failure.location.filePath,
+            line: failure.location.line,
+            column: failure.location.column
+        )
+    )
+}
+
+final class PersistableStoreMacroTests {
+    /// Every typed stored `var` is persisted except `@Transient` and `@Inject` ones.
+    @Test
+    func persistsAllStoredVarsExceptTransientAndInject() {
         assertMacroExpansion(
             """
             @PersistableStore
@@ -52,12 +65,14 @@ final class PersistableStoreMacroTests: XCTestCase {
                     }
                 }
                 """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 
     /// A stored property with `didSet`/`willSet` observers is still stored state and is persisted.
-    func testPersistsStoredVarWithObservers() {
+    @Test
+    func persistsStoredVarWithObservers() {
         assertMacroExpansion(
             """
             @PersistableStore
@@ -86,7 +101,8 @@ final class PersistableStoreMacroTests: XCTestCase {
                     }
                 }
                 """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 }
