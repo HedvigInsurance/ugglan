@@ -1,17 +1,19 @@
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
-import XCTest
+import SwiftSyntaxMacrosGenericTestSupport
+import Testing
 
 @testable import AutomaticLogMacros
 
-private let testMacros: [String: any Macro.Type] = [
-    "Log": AutomaticLogMacros.AutomaticLog.self,
-    "Masked": MaskedMacro.self,
-    "Loggable": LoggableMacro.self,
+private let testMacros: [String: MacroSpec] = [
+    "Log": MacroSpec(type: AutomaticLogMacros.AutomaticLog.self),
+    "Masked": MacroSpec(type: MaskedMacro.self),
+    "Loggable": MacroSpec(type: LoggableMacro.self),
 ]
 
-final class LoggableExpansionTests: XCTestCase {
-    func testLoggableCollectsTheMaskedPropertyNames() {
+final class LoggableExpansionTests {
+    @Test
+    func loggableCollectsTheMaskedPropertyNames() {
         assertMacroExpansion(
             """
             @Loggable
@@ -33,11 +35,13 @@ final class LoggableExpansionTests: XCTestCase {
                     public nonisolated static let maskedLogFields: Set<String> = ["email", "phone"]
                 }
                 """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 
-    func testMaskedWithoutLoggableIsAnError() {
+    @Test
+    func maskedWithoutLoggableIsAnError() {
         assertMacroExpansion(
             """
             struct Member {
@@ -56,13 +60,15 @@ final class LoggableExpansionTests: XCTestCase {
                     column: 5
                 )
             ],
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 }
 
-final class LogMacroExpansionTests: XCTestCase {
-    func testListedParameterExpandsToAMaskedDescription() {
+final class LogMacroExpansionTests {
+    @Test
+    func listedParameterExpandsToAMaskedDescription() {
         assertMacroExpansion(
             """
             struct Service {
@@ -81,11 +87,13 @@ final class LogMacroExpansionTests: XCTestCase {
                     }
                 }
                 """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 
-    func testEnclosingLogAllMaskedNamesAreInherited() {
+    @Test
+    func enclosingLogAllMaskedNamesAreInherited() {
         assertMacroExpansion(
             """
             @LogAll(masked: ["token", "missing"])
@@ -106,11 +114,13 @@ final class LogMacroExpansionTests: XCTestCase {
                     }
                 }
                 """,
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 
-    func testUnknownMaskedNameIsAnError() {
+    @Test
+    func unknownMaskedNameIsAnError() {
         assertMacroExpansion(
             """
             struct Service {
@@ -134,7 +144,8 @@ final class LogMacroExpansionTests: XCTestCase {
                     column: 5
                 )
             ],
-            macros: testMacros
+            macroSpecs: testMacros,
+            failureHandler: recordMacroFailure
         )
     }
 }

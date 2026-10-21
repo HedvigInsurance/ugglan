@@ -1,5 +1,5 @@
 import AutomaticLog
-import XCTest
+import Testing
 
 nonisolated(unsafe) private var capturedLogs: [String] = []
 
@@ -35,56 +35,66 @@ private enum TypeLevelError: Error {
     case rejected
 }
 
-final class LogAllTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        capturedLogs = []
-        loginClosure = { capturedLogs.append($0) }
-    }
+extension LoginClosureSuite {
+    final class LogAllTests {
+        init() {
+            capturedLogs = []
+            loginClosure = { capturedLogs.append($0) }
+        }
 
-    override func tearDown() {
-        loginClosure = { print($0) }
-        super.tearDown()
-    }
+        // Restores the process-wide closure after every test, even one that throws.
+        deinit {
+            loginClosure = { print($0) }
+        }
 
-    func testEveryFunctionIsLogged() {
-        _ = TypeLevelService().plain(id: "1")
+        @Test
+        func everyFunctionIsLogged() throws {
+            _ = TypeLevelService().plain(id: "1")
 
-        XCTAssertEqual(capturedLogs.count, 1)
-        XCTAssertTrue(capturedLogs[0].contains("TypeLevelService plain"), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"id\": \"1\""), capturedLogs[0])
-    }
+            #expect(capturedLogs.count == 1)
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("TypeLevelService plain"), Comment(rawValue: log))
+            #expect(log.contains("\"id\": \"1\""), Comment(rawValue: log))
+        }
 
-    func testMaskedNamesApplyWhereTheParameterExists() {
-        _ = TypeLevelService().exchange(token: "secret", id: "7")
+        @Test
+        func maskedNamesApplyWhereTheParameterExists() throws {
+            _ = TypeLevelService().exchange(token: "secret", id: "7")
 
-        XCTAssertEqual(capturedLogs.count, 1)
-        XCTAssertFalse(capturedLogs[0].contains("secret"), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"token\": \"******\""), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"id\": \"7\""), capturedLogs[0])
-    }
+            #expect(capturedLogs.count == 1)
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("secret") == false, Comment(rawValue: log))
+            #expect(log.contains("\"token\": \"******\""), Comment(rawValue: log))
+            #expect(log.contains("\"id\": \"7\""), Comment(rawValue: log))
+        }
 
-    func testFunctionLevelLogWins() throws {
-        _ = try TypeLevelService().quiet(id: "1")
+        @Test
+        func functionLevelLogWins() throws {
+            _ = try TypeLevelService().quiet(id: "1")
 
-        XCTAssertEqual(capturedLogs.count, 0, "\(capturedLogs)")
-    }
+            #expect(capturedLogs.count == 0, "\(capturedLogs)")
+        }
 
-    func testFunctionLevelLogKeepsTheTypeLevelMask() {
-        XCTAssertThrowsError(try TypeLevelService().failing(token: "secret"))
+        @Test
+        func functionLevelLogKeepsTheTypeLevelMask() throws {
+            #expect(throws: (any Error).self) { try TypeLevelService().failing(token: "secret") }
 
-        XCTAssertEqual(capturedLogs.count, 1)
-        XCTAssertFalse(capturedLogs[0].contains("secret"), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"token\": \"******\""), capturedLogs[0])
-    }
+            #expect(capturedLogs.count == 1)
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("secret") == false, Comment(rawValue: log))
+            #expect(log.contains("\"token\": \"******\""), Comment(rawValue: log))
+        }
 
-    func testOwnAndTypeLevelMasksAreUnioned() {
-        _ = TypeLevelService().both(token: "secret", id: "42")
+        @Test
+        func ownAndTypeLevelMasksAreUnioned() throws {
+            _ = TypeLevelService().both(token: "secret", id: "42")
 
-        XCTAssertEqual(capturedLogs.count, 1)
-        XCTAssertFalse(capturedLogs[0].contains("secret"), capturedLogs[0])
-        XCTAssertFalse(capturedLogs[0].contains("42"), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"token\": \"******\""), capturedLogs[0])
-        XCTAssertTrue(capturedLogs[0].contains("\"id\": \"**\""), capturedLogs[0])
+            #expect(capturedLogs.count == 1)
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("secret") == false, Comment(rawValue: log))
+            #expect(log.contains("42") == false, Comment(rawValue: log))
+            #expect(log.contains("\"token\": \"******\""), Comment(rawValue: log))
+            #expect(log.contains("\"id\": \"**\""), Comment(rawValue: log))
+        }
     }
 }
