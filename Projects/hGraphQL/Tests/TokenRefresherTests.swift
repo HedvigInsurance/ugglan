@@ -1,339 +1,424 @@
-@preconcurrency import XCTest
+import Foundation
+import TestDependencies
+import Testing
 
 @testable import hGraphQL
 
+@Suite(.serialized)
 @MainActor
-final class TokenRefresherTests: XCTestCase {
-    weak var sut: TokenRefresher?
+final class TokenRefresherTests {
+    // Serialized because every test swaps the process-wide forceLogoutHook and restores it.
+    private weak var sut: TokenRefresher?
     private var originalForceLogoutHook: (() -> Void)!
     private var forceLogoutCount = 0
 
-    override func setUp() async throws {
-        try await super.setUp()
+    init() {
         originalForceLogoutHook = forceLogoutHook
-        forceLogoutCount = 0
         forceLogoutHook = { [weak self] in self?.forceLogoutCount += 1 }
     }
 
-    override func tearDown() async throws {
+    // Bodies are scoped in do/recordingErrors so locals are released and throws still reach the restore.
+    private func restoreHookAndExpectRefresherReleased() async {
         forceLogoutHook = originalForceLogoutHook
         originalForceLogoutHook = nil
-        try await Task.sleep(nanoseconds: 100)
-        XCTAssertNil(sut)
+        try? await Task.sleep(nanoseconds: 100)
+        #expect(sut == nil, "the token refresher must not outlive the test that created it")
     }
 
     // MARK: - Single caller
 
-    func testRefreshIfNeededValidAccessTokenSkipsRefreshSuccess() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 120, refreshExpiresIn: 3600))
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededValidAccessTokenSkipsRefreshSuccess() async {
+        await recordingErrors {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 120, refreshExpiresIn: 3600))
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        try await refresher.refreshIfNeeded()
-
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 0)
-    }
-
-    func testRefreshIfNeededMissingTokenFailure() async {
-        let mock = MockTokenSource(token: nil)
-        let refresher = mock.makeRefresher()
-        sut = refresher
-
-        await assertThrows(.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
-
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 1)
-    }
-
-    func testRefreshIfNeededExpiredRefreshTokenFailure() async {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
-        let refresher = mock.makeRefresher()
-        sut = refresher
-
-        await assertThrows(.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
-
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 1)
-    }
-
-    func testRefreshIfNeededExpiringAccessTokenRefreshesSuccess() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refresher = mock.makeRefresher()
-        sut = refresher
-
-        try await refresher.refreshIfNeeded()
-
-        XCTAssertEqual(mock.events, [.retrieveToken, .retrieveToken, .refresh(token: "refresh-token")])
-        XCTAssertEqual(forceLogoutCount, 0)
-    }
-
-    func testRefreshIfNeededMissingOnRefreshFailure() async {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refresher = mock.makeRefresher(withOnRefresh: false)
-        sut = refresher
-
-        await assertThrows(.refreshFailed) { try await refresher.refreshIfNeeded() }
-
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 0)
-    }
-
-    func testRefreshIfNeededNetworkIssueRethrowsWithoutLogoutFailure() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        mock.refreshResult = { throw AuthError.networkIssue }
-        let refresher = mock.makeRefresher()
-        sut = refresher
-
-        await assertThrows(.networkIssue) { try await refresher.refreshIfNeeded() }
-        XCTAssertEqual(forceLogoutCount, 0)
-
-        // The failed in-flight task must be cleared so the next call starts a fresh refresh.
-        mock.refreshResult = {}
-        try await refresher.refreshIfNeeded()
-
-        XCTAssertEqual(
-            mock.events,
-            [
-                .retrieveToken, .retrieveToken, .refresh(token: "refresh-token"),
-                .retrieveToken, .retrieveToken, .refresh(token: "refresh-token"),
-            ]
-        )
-        XCTAssertEqual(forceLogoutCount, 0)
-    }
-
-    func testRefreshIfNeededNonAuthErrorRethrowsWithoutLogoutFailure() async {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        mock.refreshResult = { throw URLError(.timedOut) }
-        let refresher = mock.makeRefresher()
-        sut = refresher
-
-        do {
             try await refresher.refreshIfNeeded()
-            XCTFail("Expected URLError to be thrown")
-        } catch {
-            XCTAssertEqual((error as? URLError)?.code, .timedOut)
+
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 0)
         }
-        XCTAssertEqual(forceLogoutCount, 0)
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededSequentialCallsStartNewRefreshSuccess() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededMissingTokenFailure() async {
+        do {
+            let mock = MockTokenSource(token: nil)
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        try await refresher.refreshIfNeeded()
-        try await refresher.refreshIfNeeded()
+            await #expect(throws: AuthError.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
 
-        XCTAssertEqual(mock.refreshCount, 2)
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 1)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededTokenRotatedDuringReadSkipsRefreshSuccess() async throws {
-        // First read returns a stale token (another refresh completed meanwhile); the re-read inside the
-        // refresh task sees the rotated refresh token, so the stale one must not be exchanged.
-        let staleToken = OAuthorizationToken.mock(accessExpiresIn: 30, refreshExpiresIn: 3600, refreshToken: "old")
-        let rotatedToken = OAuthorizationToken.mock(
-            accessExpiresIn: 3600,
-            refreshExpiresIn: 7200,
-            refreshToken: "rotated"
-        )
-        let mock = MockTokenSource(token: rotatedToken)
-        mock.queuedTokens = [staleToken]
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededExpiredRefreshTokenFailure() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        try await refresher.refreshIfNeeded()
+            await #expect(throws: AuthError.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
 
-        XCTAssertEqual(mock.events, [.retrieveToken, .retrieveToken])
-        XCTAssertEqual(mock.refreshCount, 0)
-        XCTAssertEqual(forceLogoutCount, 0)
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 1)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededTokenMissingOnReReadStillRefreshesSuccess() async throws {
-        // Documents current behavior: only a *different* refresh token skips the refresh; a missing one does not.
-        let mock = MockTokenSource(token: nil)
-        mock.queuedTokens = [.mock(accessExpiresIn: 30, refreshExpiresIn: 3600)]
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededExpiringAccessTokenRefreshesSuccess() async {
+        await recordingErrors {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        try await refresher.refreshIfNeeded()
+            try await refresher.refreshIfNeeded()
 
-        XCTAssertEqual(mock.events, [.retrieveToken, .retrieveToken, .refresh(token: "refresh-token")])
-        XCTAssertEqual(forceLogoutCount, 0)
+            #expect(mock.events == [.retrieveToken, .retrieveToken, .refresh(token: "refresh-token")])
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededMissingOnRefreshFailure() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refresher = mock.makeRefresher(withOnRefresh: false)
+            sut = refresher
+
+            await #expect(throws: AuthError.refreshFailed) { try await refresher.refreshIfNeeded() }
+
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededNetworkIssueRethrowsWithoutLogoutFailure() async {
+        await recordingErrors {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            mock.refreshResult = { throw AuthError.networkIssue }
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            await #expect(throws: AuthError.networkIssue) { try await refresher.refreshIfNeeded() }
+            #expect(forceLogoutCount == 0)
+
+            // The failed in-flight task must be cleared so the next call starts a fresh refresh.
+            mock.refreshResult = {}
+            try await refresher.refreshIfNeeded()
+
+            #expect(
+                mock.events == [
+                    .retrieveToken, .retrieveToken, .refresh(token: "refresh-token"),
+                    .retrieveToken, .retrieveToken, .refresh(token: "refresh-token"),
+                ]
+            )
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededNonAuthErrorRethrowsWithoutLogoutFailure() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            mock.refreshResult = { throw URLError(.timedOut) }
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            let error = await #expect(throws: URLError.self) { try await refresher.refreshIfNeeded() }
+            #expect(error?.code == .timedOut)
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededSequentialCallsStartNewRefreshSuccess() async {
+        await recordingErrors {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            try await refresher.refreshIfNeeded()
+            try await refresher.refreshIfNeeded()
+
+            #expect(mock.refreshCount == 2)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededTokenRotatedDuringReadSkipsRefreshSuccess() async {
+        await recordingErrors {
+            // The re-read inside the refresh task sees the rotated token, so the stale one must not be exchanged.
+            let staleToken = OAuthorizationToken.mock(accessExpiresIn: 30, refreshExpiresIn: 3600, refreshToken: "old")
+            let rotatedToken = OAuthorizationToken.mock(
+                accessExpiresIn: 3600,
+                refreshExpiresIn: 7200,
+                refreshToken: "rotated"
+            )
+            let mock = MockTokenSource(token: rotatedToken)
+            mock.queuedTokens = [staleToken]
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            try await refresher.refreshIfNeeded()
+
+            #expect(mock.events == [.retrieveToken, .retrieveToken])
+            #expect(mock.refreshCount == 0)
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
+    }
+
+    @Test
+    func refreshIfNeededTokenMissingOnReReadStillRefreshesSuccess() async {
+        await recordingErrors {
+            // Documents current behavior: only a *different* refresh token skips the refresh; a missing one does not.
+            let mock = MockTokenSource(token: nil)
+            mock.queuedTokens = [.mock(accessExpiresIn: 30, refreshExpiresIn: 3600)]
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            try await refresher.refreshIfNeeded()
+
+            #expect(mock.events == [.retrieveToken, .retrieveToken, .refresh(token: "refresh-token")])
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
     // MARK: - Concurrency
 
-    func testRefreshIfNeededConcurrentCallsShareInFlightRefreshSuccess() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refreshGate = AsyncGate()
-        mock.refreshResult = { await refreshGate.wait() }
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededConcurrentCallsShareInFlightRefreshSuccess() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refreshGate = AsyncGate()
+            mock.refreshResult = { await refreshGate.wait() }
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { refreshGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { refreshGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
 
-        refreshGate.open()
-        let results = await collect(tasks + lateTasks)
+            refreshGate.open()
+            let results = await collect(tasks + lateTasks)
 
-        XCTAssertEqual(results.count, 4)
-        XCTAssertTrue(results.allSatisfy { $0 == nil }, "Expected all callers to succeed, got \(results)")
-        XCTAssertEqual(mock.refreshCount, 1)
-        XCTAssertEqual(forceLogoutCount, 0)
+            #expect(results.count == 4)
+            #expect(results.allSatisfy { $0 == nil }, "Expected all callers to succeed, got \(results)")
+            #expect(mock.refreshCount == 1)
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededConcurrentCallsDuringTokenReadShareSingleRefreshSuccess() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let retrieveGate = AsyncGate()
-        mock.retrieveGate = retrieveGate
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededConcurrentCallsDuringTokenReadShareSingleRefreshSuccess() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let retrieveGate = AsyncGate()
+            mock.retrieveGate = retrieveGate
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        // The first caller is still inside the token read. Because the shared task wraps the read
-        // too, the others must join it rather than start a read of their own.
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { retrieveGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
+            // The first caller is still in the token read; the shared task wraps it, so the others must join it.
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { retrieveGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
 
-        retrieveGate.open()
-        let results = await collect(tasks + lateTasks)
+            retrieveGate.open()
+            let results = await collect(tasks + lateTasks)
 
-        XCTAssertTrue(results.allSatisfy { $0 == nil }, "Expected all callers to succeed, got \(results)")
-        XCTAssertEqual(mock.refreshCount, 1)
-        XCTAssertEqual(mock.events.filter { $0 == .retrieveToken }.count, 2)
-        XCTAssertEqual(forceLogoutCount, 0)
+            #expect(results.allSatisfy { $0 == nil }, "Expected all callers to succeed, got \(results)")
+            #expect(mock.refreshCount == 1)
+            #expect(mock.events.filter { $0 == .retrieveToken }.count == 2)
+            #expect(forceLogoutCount == 0)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededConcurrentCallsExpiredRefreshTokenLogOutOnceFailure() async throws {
-        // The prod case: a burst of in-flight requests against a refresh token that expired weeks
-        // ago. Every caller has to throw, but the member is only logged out once.
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
-        let retrieveGate = AsyncGate()
-        mock.retrieveGate = retrieveGate
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededConcurrentCallsExpiredRefreshTokenLogOutOnceFailure() async {
+        do {
+            // A burst against a long-expired refresh token: every caller throws, but logout happens only once.
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
+            let retrieveGate = AsyncGate()
+            mock.retrieveGate = retrieveGate
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { retrieveGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 24)
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { retrieveGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 24)
 
-        retrieveGate.open()
-        let results = await collect(tasks + lateTasks)
+            retrieveGate.open()
+            let results = await collect(tasks + lateTasks)
 
-        XCTAssertEqual(results.count, 25)
-        XCTAssertTrue(
-            results.allSatisfy { ($0 as? AuthError) == .refreshTokenExpired },
-            "Expected all callers to throw .refreshTokenExpired, got \(results)"
-        )
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 1)
+            #expect(results.count == 25)
+            #expect(
+                results.allSatisfy { ($0 as? AuthError) == .refreshTokenExpired },
+                "Expected all callers to throw .refreshTokenExpired, got \(results)"
+            )
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 1)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededConcurrentCallsMissingTokenLogOutOnceFailure() async throws {
-        let mock = MockTokenSource(token: nil)
-        let retrieveGate = AsyncGate()
-        mock.retrieveGate = retrieveGate
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededConcurrentCallsMissingTokenLogOutOnceFailure() async {
+        do {
+            let mock = MockTokenSource(token: nil)
+            let retrieveGate = AsyncGate()
+            mock.retrieveGate = retrieveGate
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { retrieveGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 24)
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { retrieveGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 24)
 
-        retrieveGate.open()
-        let results = await collect(tasks + lateTasks)
+            retrieveGate.open()
+            let results = await collect(tasks + lateTasks)
 
-        XCTAssertTrue(
-            results.allSatisfy { ($0 as? AuthError) == .refreshTokenExpired },
-            "Expected all callers to throw .refreshTokenExpired, got \(results)"
-        )
-        XCTAssertEqual(mock.events, [.retrieveToken])
-        XCTAssertEqual(forceLogoutCount, 1)
+            #expect(
+                results.allSatisfy { ($0 as? AuthError) == .refreshTokenExpired },
+                "Expected all callers to throw .refreshTokenExpired, got \(results)"
+            )
+            #expect(mock.events == [.retrieveToken])
+            #expect(forceLogoutCount == 1)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
     // MARK: - Force logout latch
 
-    func testRefreshIfNeededLaterBurstsAfterLogoutStaySilentFailure() async {
-        // The shared task collapses one burst; the latch collapses the waves that follow it.
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededLaterBurstsAfterLogoutStaySilentFailure() async {
+        do {
+            // The shared task collapses one burst; the latch collapses the waves that follow it.
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        for _ in 0..<3 {
-            await assertThrows(.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
+            for _ in 0..<3 {
+                await #expect(throws: AuthError.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
+            }
+
+            #expect(forceLogoutCount == 1)
         }
 
-        XCTAssertEqual(forceLogoutCount, 1)
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededLogsOutAgainAfterTokenWasStoredFailure() async {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
-        let refresher = mock.makeRefresher()
-        sut = refresher
+    @Test
+    func refreshIfNeededLogsOutAgainAfterTokenWasStoredFailure() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: -10, refreshExpiresIn: -1))
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        await assertThrows(.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
-        refresher.tokenWasStored()
-        await assertThrows(.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
+            await #expect(throws: AuthError.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
+            refresher.tokenWasStored()
+            await #expect(throws: AuthError.refreshTokenExpired) { try await refresher.refreshIfNeeded() }
 
-        XCTAssertEqual(forceLogoutCount, 2)
-    }
-
-    func testRefreshIfNeededConcurrentCallsPropagateRefreshFailedFailure() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refreshGate = AsyncGate()
-        mock.refreshResult = {
-            await refreshGate.wait()
-            throw AuthError.refreshFailed
+            #expect(forceLogoutCount == 2)
         }
-        let refresher = mock.makeRefresher()
-        sut = refresher
 
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { refreshGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 4)
-
-        refreshGate.open()
-        let results = await collect(tasks + lateTasks)
-
-        XCTAssertEqual(results.count, 5)
-        XCTAssertTrue(
-            results.allSatisfy { ($0 as? AuthError) == .refreshFailed },
-            "Expected all callers to throw .refreshFailed, got \(results)"
-        )
-        XCTAssertEqual(mock.refreshCount, 1)
-        XCTAssertEqual(forceLogoutCount, 1)
+        await restoreHookAndExpectRefresherReleased()
     }
 
-    func testRefreshIfNeededConcurrentCallsPropagateNetworkIssueFailure() async throws {
-        let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
-        let refreshGate = AsyncGate()
-        mock.refreshResult = {
-            await refreshGate.wait()
-            throw AuthError.networkIssue
+    @Test
+    func refreshIfNeededConcurrentCallsPropagateRefreshFailedFailure() async {
+        do {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refreshGate = AsyncGate()
+            mock.refreshResult = {
+                await refreshGate.wait()
+                throw AuthError.refreshFailed
+            }
+            let refresher = mock.makeRefresher()
+            sut = refresher
+
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { refreshGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 4)
+
+            refreshGate.open()
+            let results = await collect(tasks + lateTasks)
+
+            #expect(results.count == 5)
+            #expect(
+                results.allSatisfy { ($0 as? AuthError) == .refreshFailed },
+                "Expected all callers to throw .refreshFailed, got \(results)"
+            )
+            #expect(mock.refreshCount == 1)
+            #expect(forceLogoutCount == 1)
         }
-        let refresher = mock.makeRefresher()
-        sut = refresher
 
-        let tasks = startConcurrentCallers(on: refresher, count: 1)
-        await waitUntil { refreshGate.waiterCount == 1 }
-        let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
+        await restoreHookAndExpectRefresherReleased()
+    }
 
-        refreshGate.open()
-        let results = await collect(tasks + lateTasks)
+    @Test
+    func refreshIfNeededConcurrentCallsPropagateNetworkIssueFailure() async {
+        await recordingErrors {
+            let mock = MockTokenSource(token: .mock(accessExpiresIn: 30, refreshExpiresIn: 3600))
+            let refreshGate = AsyncGate()
+            mock.refreshResult = {
+                await refreshGate.wait()
+                throw AuthError.networkIssue
+            }
+            let refresher = mock.makeRefresher()
+            sut = refresher
 
-        XCTAssertTrue(
-            results.allSatisfy { ($0 as? AuthError) == .networkIssue },
-            "Expected all callers to throw .networkIssue, got \(results)"
-        )
-        XCTAssertEqual(mock.refreshCount, 1)
-        XCTAssertEqual(forceLogoutCount, 0)
+            let tasks = startConcurrentCallers(on: refresher, count: 1)
+            await yieldUntil { refreshGate.waiterCount == 1 }
+            let lateTasks = await startCallersJoiningInFlightRefresh(on: refresher, count: 3)
 
-        // Task is cleared after failure, so a later call starts a new refresh.
-        mock.refreshResult = {}
-        try await refresher.refreshIfNeeded()
-        XCTAssertEqual(mock.refreshCount, 2)
+            refreshGate.open()
+            let results = await collect(tasks + lateTasks)
+
+            #expect(
+                results.allSatisfy { ($0 as? AuthError) == .networkIssue },
+                "Expected all callers to throw .networkIssue, got \(results)"
+            )
+            #expect(mock.refreshCount == 1)
+            #expect(forceLogoutCount == 0)
+
+            // Task is cleared after failure, so a later call starts a new refresh.
+            mock.refreshResult = {}
+            try await refresher.refreshIfNeeded()
+            #expect(mock.refreshCount == 2)
+        }
+
+        await restoreHookAndExpectRefresherReleased()
     }
 
     // MARK: - Helpers
@@ -345,9 +430,7 @@ final class TokenRefresherTests: XCTestCase {
         (0..<count).map { _ in Task { await Self.capture { try await refresher.refreshIfNeeded() } } }
     }
 
-    /// Starts callers while a refresh is in flight. Each task increments `started` synchronously right before
-    /// calling `refreshIfNeeded()` on the main actor, so once `started == count` every caller has passed the first
-    /// `refreshTask` check and is awaiting the shared task.
+    /// Starts callers mid-refresh; once every caller has bumped `counter`, each is awaiting the shared task.
     private func startCallersJoiningInFlightRefresh(
         on refresher: TokenRefresher,
         count: Int
@@ -360,7 +443,7 @@ final class TokenRefresherTests: XCTestCase {
                     return await Self.capture { try await refresher.refreshIfNeeded() }
                 }
             }
-        await waitUntil { counter.value == count }
+        await yieldUntil { counter.value == count }
         return tasks
     }
 
@@ -379,31 +462,16 @@ final class TokenRefresherTests: XCTestCase {
         return results
     }
 
-    private func waitUntil(
+    private func yieldUntil(
         maxYields: Int = 10_000,
-        file: StaticString = #filePath,
-        line: UInt = #line,
+        sourceLocation: SourceLocation = #_sourceLocation,
         _ condition: () -> Bool
     ) async {
         for _ in 0..<maxYields {
             if condition() { return }
             await Task.yield()
         }
-        XCTFail("Condition not met after \(maxYields) yields", file: file, line: line)
-    }
-
-    private func assertThrows(
-        _ expected: AuthError,
-        file: StaticString = #filePath,
-        line: UInt = #line,
-        _ block: () async throws -> Void
-    ) async {
-        do {
-            try await block()
-            XCTFail("Expected \(expected) to be thrown", file: file, line: line)
-        } catch {
-            XCTAssertEqual(error as? AuthError, expected, file: file, line: line)
-        }
+        Issue.record("Condition not met after \(maxYields) yields", sourceLocation: sourceLocation)
     }
 }
 
