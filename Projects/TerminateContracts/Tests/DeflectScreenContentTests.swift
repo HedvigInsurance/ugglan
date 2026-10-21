@@ -1,77 +1,71 @@
-import XCTest
+import Testing
 import hCore
 
 @testable import TerminateContracts
 
-final class DeflectScreenContentTests: XCTestCase {
-    func testAutoCancelSold_returnsAutoCancelContent() {
-        let content = DeflectScreenContent.from(suggestionType: .autoCancelSold)
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
-        XCTAssertNotNil(content?.extraMessage)
-        XCTAssertTrue(content?.explanations.isEmpty ?? false)
-        XCTAssertNil(content?.info)
-        XCTAssertEqual(content?.primaryAction, .dismiss)
+final class DeflectScreenContentTests {
+    @Test(arguments: [
+        TerminationSuggestionType.autoCancelSold,
+        .autoCancelScrapped,
+        .autoCancelDecommission,
+    ])
+    func autoCancelTypesReturnAutoCancelContent(suggestionType: TerminationSuggestionType) throws {
+        let content = try #require(DeflectScreenContent.from(suggestionType: suggestionType))
+        #expect(content.canContinueTermination == false)
+        #expect(content.extraMessage != nil)
+        #expect(content.explanations.isEmpty)
+        #expect(content.info == nil)
+        #expect(content.primaryAction == .dismiss)
     }
 
-    func testAutoCancelScrapped_returnsAutoCancelContent() {
-        let content = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
-        XCTAssertNotNil(content?.extraMessage)
-        XCTAssertTrue(content?.explanations.isEmpty ?? false)
+    @Test
+    func autoDecommissionReturnsDecomContent() throws {
+        let content = try #require(DeflectScreenContent.from(suggestionType: .autoDecommission))
+        #expect(content.canContinueTermination == true)
+        #expect(content.extraMessage == nil)
+        #expect(content.explanations.count == 2)
+        #expect(content.info != nil)
+        #expect(content.primaryAction == .dismiss)
     }
 
-    func testAutoCancelDecommission_returnsAutoCancelContent() {
-        let content = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, false)
-        XCTAssertNotNil(content?.extraMessage)
+    @Test
+    func carAlreadyDecommissionReturnsRecommissionContent() throws {
+        let content = try #require(DeflectScreenContent.from(suggestionType: .carAlreadyDecommission))
+        #expect(content.canContinueTermination == true)
+        #expect(content.extraMessage == nil)
+        #expect(content.explanations.isEmpty)
+        #expect(content.info == nil)
+        #expect(content.primaryAction == .dismiss)
     }
 
-    func testAutoDecommission_returnsDecomContent() {
-        let content = DeflectScreenContent.from(suggestionType: .autoDecommission)
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
-        XCTAssertNil(content?.extraMessage)
-        XCTAssertEqual(content?.explanations.count, 2)
-        XCTAssertNotNil(content?.info)
-        XCTAssertEqual(content?.primaryAction, .dismiss)
+    @Test(arguments: [
+        TerminationSuggestionType.updateAddress,
+        .upgradeCoverage,
+        .downgradePrice,
+        .redirect,
+        .info,
+        .unknown,
+    ])
+    func nonDeflectTypesReturnNil(suggestionType: TerminationSuggestionType) {
+        #expect(DeflectScreenContent.from(suggestionType: suggestionType) == nil)
     }
 
-    func testCarAlreadyDecommission_returnsRecommissionContent() {
-        let content = DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)
-        XCTAssertNotNil(content)
-        XCTAssertEqual(content?.canContinueTermination, true)
-        XCTAssertNil(content?.extraMessage)
-        XCTAssertTrue(content?.explanations.isEmpty ?? false)
-        XCTAssertNil(content?.info)
-        XCTAssertEqual(content?.primaryAction, .dismiss)
+    @Test
+    func autoCancelTypesShareSameTitle() throws {
+        let sold = try #require(DeflectScreenContent.from(suggestionType: .autoCancelSold))
+        let scrapped = try #require(DeflectScreenContent.from(suggestionType: .autoCancelScrapped))
+        let decom = try #require(DeflectScreenContent.from(suggestionType: .autoCancelDecommission))
+        #expect(sold.title == scrapped.title)
+        #expect(sold.title == decom.title)
     }
 
-    func testNonDeflectTypes_returnNil() {
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .updateAddress))
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .upgradeCoverage))
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .downgradePrice))
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .redirect))
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .info))
-        XCTAssertNil(DeflectScreenContent.from(suggestionType: .unknown))
-    }
-
-    func testAutoCancelTypes_shareSameTitle() {
-        let sold = DeflectScreenContent.from(suggestionType: .autoCancelSold)
-        let scrapped = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
-        let decom = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
-        XCTAssertEqual(sold?.title, scrapped?.title)
-        XCTAssertEqual(sold?.title, decom?.title)
-    }
-
-    func testAutoCancelTypes_haveDifferentMessages() {
-        let sold = DeflectScreenContent.from(suggestionType: .autoCancelSold)
-        let scrapped = DeflectScreenContent.from(suggestionType: .autoCancelScrapped)
-        let decom = DeflectScreenContent.from(suggestionType: .autoCancelDecommission)
-        XCTAssertNotEqual(sold?.message, scrapped?.message)
-        XCTAssertNotEqual(sold?.message, decom?.message)
-        XCTAssertNotEqual(scrapped?.message, decom?.message)
+    @Test
+    func autoCancelTypesHaveDifferentMessages() throws {
+        let sold = try #require(DeflectScreenContent.from(suggestionType: .autoCancelSold))
+        let scrapped = try #require(DeflectScreenContent.from(suggestionType: .autoCancelScrapped))
+        let decom = try #require(DeflectScreenContent.from(suggestionType: .autoCancelDecommission))
+        #expect(sold.message != scrapped.message)
+        #expect(sold.message != decom.message)
+        #expect(scrapped.message != decom.message)
     }
 }

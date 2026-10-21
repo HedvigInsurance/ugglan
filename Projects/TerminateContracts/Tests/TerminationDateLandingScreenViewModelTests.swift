@@ -1,45 +1,68 @@
-import XCTest
+import Testing
 import hCore
 
 @testable import TerminateContracts
 
-final class TerminationDateLandingScreenViewModelTests: XCTestCase {
+extension TerminateContractsDependencySuite {
     @MainActor
-    override func setUp() async throws {
-        try await super.setUp()
-        let mockClient = MockTerminateContractsClient()
-        mockClient.notificationToReturn = .init(message: "Test notification", type: .info)
-        Dependencies.shared.add(module: Module { () -> TerminateContractsClient in mockClient })
-    }
+    final class TerminationDateLandingScreenViewModelTests {
+        private weak var sut: MockTerminateContractsClient?
 
-    @MainActor
-    func testIsDeletion_withDeleteAction() {
-        let navVM = TerminationFlowNavigationViewModel(
-            configs: [MockTerminationData.testConfig],
-            terminateInsuranceViewModel: nil
-        )
-        navVM.surveyData = MockTerminationData.deleteSurveyData
-        XCTAssertTrue(navVM.isDeletion)
-    }
+        init() {
+            let mockClient = MockTerminateContractsClient()
+            mockClient.notificationToReturn = .init(message: "Test notification", type: .info)
+            sut = mockClient
+            Dependencies.shared.add(module: Module { () -> TerminateContractsClient in mockClient })
+        }
 
-    @MainActor
-    func testIsDeletion_withTerminateAction() {
-        let navVM = TerminationFlowNavigationViewModel(
-            configs: [MockTerminationData.testConfig],
-            terminateInsuranceViewModel: nil
-        )
-        navVM.surveyData = MockTerminationData.terminateSurveyData
-        XCTAssertFalse(navVM.isDeletion)
-    }
+        @Test
+        func isDeletionWithDeleteAction() async {
+            do {
+                let navVM = TerminationFlowNavigationViewModel(
+                    configs: [MockTerminationData.testConfig],
+                    terminateInsuranceViewModel: nil
+                )
+                navVM.surveyData = MockTerminationData.deleteSurveyData
+                #expect(navVM.isDeletion)
+            }
 
-    @MainActor
-    func testExtraCoverage_fromAction() {
-        let navVM = TerminationFlowNavigationViewModel(
-            configs: [MockTerminationData.testConfig],
-            terminateInsuranceViewModel: nil
-        )
-        navVM.surveyData = MockTerminationData.terminateSurveyData
-        XCTAssertEqual(navVM.extraCoverage.count, 1)
-        XCTAssertEqual(navVM.extraCoverage.first?.displayName, "Travel plus")
+            await expectClientReleased()
+        }
+
+        @Test
+        func isDeletionWithTerminateAction() async {
+            do {
+                let navVM = TerminationFlowNavigationViewModel(
+                    configs: [MockTerminationData.testConfig],
+                    terminateInsuranceViewModel: nil
+                )
+                navVM.surveyData = MockTerminationData.terminateSurveyData
+                #expect(!navVM.isDeletion)
+            }
+
+            await expectClientReleased()
+        }
+
+        @Test
+        func extraCoverageFromAction() async {
+            do {
+                let navVM = TerminationFlowNavigationViewModel(
+                    configs: [MockTerminationData.testConfig],
+                    terminateInsuranceViewModel: nil
+                )
+                navVM.surveyData = MockTerminationData.terminateSurveyData
+                #expect(navVM.extraCoverage.count == 1)
+                #expect(navVM.extraCoverage.first?.displayName == "Travel plus")
+            }
+
+            await expectClientReleased()
+        }
+
+        // Not deinit: this has to suspend before it reads sut.
+        private func expectClientReleased() async {
+            Dependencies.shared.remove(for: TerminateContractsClient.self)
+            try? await Task.sleep(for: .seconds(0.0000001))
+            #expect(sut == nil, "the mock client must not outlive its dependency registration")
+        }
     }
 }
