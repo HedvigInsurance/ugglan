@@ -1,71 +1,84 @@
 import Addons
-import XCTest
+import TestDependencies
+import Testing
 import hCore
 
 @testable import CrossSell
 
-@MainActor
-final class CrossSellTests: XCTestCase {
-    weak var sut: MockCrossSellService?
+extension CrossSellDependencySuite {
+    @MainActor
+    final class CrossSellTests {
+        private weak var sut: MockCrossSellService?
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: CrossSellClient.self)
-        await delay(0.0000001)
-
-        XCTAssertNil(sut)
-    }
-
-    func testGetCrossSellSuccess() async throws {
-        let crossSell: CrossSells = .init(
-            recommended: nil,
-            others: [
-                .init(
-                    id: "1",
-                    title: "car",
-                    description: "description",
-                    buttonTitle: "button title",
-                    webActionURL: "",
-                    imageUrl: nil,
-                    buttonDescription: "button description"
-                ),
-                .init(
-                    id: "2",
-                    title: "pet",
-                    description: "description",
-                    buttonTitle: "button title",
-                    webActionURL: "",
-                    imageUrl: nil,
-                    buttonDescription: "button description"
-                ),
-            ]
-        )
-
-        let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { _ in crossSell }
-        )
-        sut = mockService
-
-        let respondedCrossSell = try await mockService.fetchCrossSell(.insurances)
-        assert(respondedCrossSell == crossSell)
-    }
-
-    func testGetAddonBannerSuccess() async throws {
-        let addonBanner = [
-            AddonBanner(
-                contractIds: ["contractId"],
-                displayTitle: "title",
-                displayDescription: "description",
-                badges: [],
-                addonType: .travelPlus
+        @Test
+        func getCrossSellSuccess() async {
+            let crossSell: CrossSells = .init(
+                recommended: nil,
+                others: [
+                    .init(
+                        id: "1",
+                        title: "car",
+                        description: "description",
+                        buttonTitle: "button title",
+                        webActionURL: "",
+                        imageUrl: nil,
+                        buttonDescription: "button description"
+                    ),
+                    .init(
+                        id: "2",
+                        title: "pet",
+                        description: "description",
+                        buttonTitle: "button title",
+                        webActionURL: "",
+                        imageUrl: nil,
+                        buttonDescription: "button description"
+                    ),
+                ]
             )
-        ]
 
-        let mockService = MockData.createMockCrossSellService(
-            fetchAddonBanners: { _ in addonBanner }
-        )
-        sut = mockService
+            // Scoped so mockService is released before expectServiceReleased() runs.
+            await recordingErrors {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchCrossSell: { _ in crossSell }
+                )
+                sut = mockService
 
-        let respondedAddonBanner = try await mockService.getAddonBanners(source: .insurances)
-        assert(respondedAddonBanner == addonBanner)
+                let respondedCrossSell = try await mockService.fetchCrossSell(.insurances)
+                #expect(respondedCrossSell == crossSell)
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func getAddonBannerSuccess() async {
+            let addonBanner = [
+                AddonBanner(
+                    contractIds: ["contractId"],
+                    displayTitle: "title",
+                    displayDescription: "description",
+                    badges: [],
+                    addonType: .travelPlus
+                )
+            ]
+
+            await recordingErrors {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchAddonBanners: { _ in addonBanner }
+                )
+                sut = mockService
+
+                let respondedAddonBanner = try await mockService.getAddonBanners(source: .insurances)
+                #expect(respondedAddonBanner == addonBanner)
+            }
+
+            await expectServiceReleased()
+        }
+
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: CrossSellClient.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
     }
 }
