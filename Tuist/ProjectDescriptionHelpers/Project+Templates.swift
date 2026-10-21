@@ -141,8 +141,12 @@ extension Project {
                 infoPlist: .default,
                 buildableFolders: ["Tests"],
                 dependencies: [
+                    // Hosted in the module's example app where there is one. Modules that only ship
+                    // a framework get a plain logic-test bundle instead, rather than being forced to
+                    // carry an example app to have tests; testsDependencies already links the
+                    // framework itself, so nothing is added here in that case.
+                    targets.contains(.example) ? [.target(name: "\(name)Example")] : [],
                     [
-                        .target(name: "\(name)Example"),
                         .project(
                             target: "CoreDependencies",
                             path: .relativeToRoot("Dependencies/CoreDependencies")
