@@ -74,8 +74,7 @@ struct MockData {
         return client
     }
 
-    // `log` is a mutable global rather than an injected dependency, so the funnel is observed
-    // by swapping it for the duration of a test. The caller restores it in tearDown.
+    // `log` is a mutable global, so the funnel is observed by swapping it; the caller must restore it.
     @discardableResult
     static func createMockLogger() -> MockLogger {
         let logger = MockLogger()
