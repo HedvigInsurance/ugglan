@@ -1,5 +1,3 @@
-import CoreImage
-import CoreImage.CIFilterBuiltins
 import Environment
 import SwiftUI
 import hCore
@@ -118,9 +116,13 @@ struct SwishPayinConsentScreen: View {
                 .accessibilityAddTraits(.updatesFrequently)
         case .waiting:
             if let qrImage = vm.qrImage {
-                SwishQRCodeView(image: qrImage)
-                    .frame(width: Self.codeSide, height: Self.codeSide)
-                    .accessibilityHidden(true)
+                StyledQRCodeView(image: qrImage) {
+                    hCoreUIAssets.swish.view
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                }
+                .frame(width: Self.codeSide, height: Self.codeSide)
+                .accessibilityHidden(true)
 
                 if vm.canOpenSwish {
                     DotsActivityIndicator(.standard)
@@ -281,7 +283,7 @@ class SwishPayinConsentViewModel: ObservableObject {
     }
 
     private static func generateQRImage(from url: String?) -> UIImage? {
-        url.flatMap(SwishQRCode.image(for:))
+        url.flatMap { StyledQRCode.image(for: $0) }
     }
 
     /// One pass of the flow: fetch an order when the screen hasn't got one, then wait for the
@@ -378,158 +380,6 @@ class SwishPayinConsentViewModel: ObservableObject {
         // that came back already active settles on the re-armed task's first poll.
         withAnimation { state = .waiting }
         pollAttempt += 1
-    }
-}
-
-/// QR with a matching monochrome Swish logo in the cleared centre — black in light mode, white in dark mode.
-private struct SwishQRCodeView: View {
-    let image: UIImage
-
-    var body: some View {
-        GeometryReader { proxy in
-            Image(uiImage: image)
-                .resizable()
-                .overlay {
-                    hCoreUIAssets.swish.view
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: proxy.size.width * SwishQRCode.logoFraction * 0.8)
-                }
-                .foregroundColor(
-                    hTextColor.Opaque.primary
-                )
-                .accessibilityHidden(true)
-        }
-    }
-}
-
-/// Draws a QR code in the Swish style — round modules, rounded finder patterns and an empty centre for
-/// the logo — as a template image, so the caller decides the fill.
-enum SwishQRCode {
-    /// Share of the code's width left empty in the middle for the logo.
-    static let logoFraction: CGFloat = 0.24
-
-    private static let moduleSize: CGFloat = 12
-    private static let finderSize = 7
-    private static let ciContext = CIContext()
-
-    static func image(for message: String) -> UIImage? {
-        guard let modules = modules(for: message) else { return nil }
-        let count = modules.count
-        let finderOrigins = [
-            (column: 0, row: 0),
-            (column: count - finderSize, row: 0),
-            (column: 0, row: count - finderSize),
-        ]
-        let logo = logoRange(count: count)
-
-        /// Modules covered by a finder pattern or the logo are left to those instead.
-        func isCovered(column: Int, row: Int) -> Bool {
-            let inFinder = finderOrigins.contains {
-                ($0.column..<$0.column + finderSize).contains(column) && ($0.row..<$0.row + finderSize).contains(row)
-            }
-            return inFinder || (logo.contains(column) && logo.contains(row))
-        }
-
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        let side = CGFloat(count) * moduleSize
-        let image = UIGraphicsImageRenderer(size: CGSize(width: side, height: side), format: format)
-            .image { _ in
-                UIColor.black.setFill()
-                for row in 0..<count {
-                    for column in 0..<count where modules[row][column] && !isCovered(column: column, row: row) {
-                        drawModule(column: column, row: row)
-                    }
-                }
-                for origin in finderOrigins {
-                    drawFinder(column: origin.column, row: origin.row)
-                }
-            }
-        return image.withRenderingMode(.alwaysTemplate)
-    }
-
-    /// Reads the module grid out of Core Image's 1-pixel-per-module output, trimming its quiet zone.
-    /// High error correction leaves room for the modules cleared under the logo.
-    private static func modules(for message: String) -> [[Bool]]? {
-        guard let data = message.data(using: .utf8) else { return nil }
-        let filter = CIFilter.qrCodeGenerator()
-        filter.message = data
-        filter.correctionLevel = "H"
-        guard
-            let output = filter.outputImage,
-            let cgImage = ciContext.createCGImage(output, from: output.extent)
-        else { return nil }
-
-        let width = cgImage.width
-        let height = cgImage.height
-        var pixels = [UInt8](repeating: 255, count: width * height)
-        let drawn = pixels.withUnsafeMutableBytes { buffer -> Bool in
-            guard
-                let context = CGContext(
-                    data: buffer.baseAddress,
-                    width: width,
-                    height: height,
-                    bitsPerComponent: 8,
-                    bytesPerRow: width,
-                    space: CGColorSpaceCreateDeviceGray(),
-                    bitmapInfo: CGImageAlphaInfo.none.rawValue
-                )
-            else { return false }
-            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-            return true
-        }
-        guard drawn else { return nil }
-
-        func isDark(_ x: Int, _ y: Int) -> Bool { pixels[y * width + x] < 128 }
-        // The quiet zone is equally wide on every side and the top-left finder fills its corner, so the
-        // first dark pixel on the diagonal is where the grid starts.
-        guard let start = (0..<min(width, height)).first(where: { isDark($0, $0) }) else { return nil }
-        let count = width - 2 * start
-        guard count > 0, start + count <= height else { return nil }
-
-        return (start..<start + count).map { y in (start..<start + count).map { x in isDark(x, y) } }
-    }
-
-    /// Module indices to clear for the logo, centred and matching the grid's parity.
-    private static func logoRange(count: Int) -> Range<Int> {
-        var side = Int((CGFloat(count) * logoFraction).rounded())
-        if (count - side) % 2 != 0 { side += 1 }
-        let start = (count - side) / 2
-        return start..<start + side
-    }
-
-    private static func rect(column: Int, row: Int, size: Int = 1) -> CGRect {
-        CGRect(
-            x: CGFloat(column) * moduleSize,
-            y: CGFloat(row) * moduleSize,
-            width: CGFloat(size) * moduleSize,
-            height: CGFloat(size) * moduleSize
-        )
-    }
-
-    private static func drawModule(column: Int, row: Int) {
-        let inset = moduleSize * 0.08
-        UIBezierPath(ovalIn: rect(column: column, row: row).insetBy(dx: inset, dy: inset)).fill()
-    }
-
-    /// A one-module ring around a rounded 3×3 eye. The ring's hole is rounded concentrically with its
-    /// outside so the ring keeps an even thickness around the corners.
-    private static func drawFinder(column: Int, row: Int) {
-        let outer = rect(column: column, row: row, size: finderSize)
-        let ring = circularRoundedRect(outer, radius: moduleSize * 1.8)
-        ring.append(circularRoundedRect(outer.insetBy(dx: moduleSize, dy: moduleSize), radius: moduleSize * 0.8))
-        ring.usesEvenOddFillRule = true
-        ring.fill()
-
-        let eye = outer.insetBy(dx: moduleSize * 2, dy: moduleSize * 2)
-        UIBezierPath(roundedRect: eye, cornerRadius: moduleSize * 0.6).fill()
-    }
-
-    /// Circular-arc corners. `UIBezierPath(roundedRect:cornerRadius:)` draws continuous ones, which
-    /// wouldn't stay concentric between the ring's outside and its hole.
-    private static func circularRoundedRect(_ rect: CGRect, radius: CGFloat) -> UIBezierPath {
-        UIBezierPath(cgPath: CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil))
     }
 }
 
