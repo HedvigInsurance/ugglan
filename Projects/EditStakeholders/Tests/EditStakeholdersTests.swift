@@ -1,24 +1,22 @@
 import Foundation
-import XCTest
+import Testing
 
 @testable import EditStakeholders
 
 @MainActor
-final class ContractsEditInsuredCompleteListTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-
-    func testUpcomingZeroCurrentOneSuccess() {
+final class ContractsEditInsuredCompleteListTests {
+    @Test
+    func upcomingZeroCurrentOneSuccess() {
         let viewModel = StakeholdersViewModel(with: .init(stakeholders: [Stakeholder.testMemberWithSSN5]))
 
         viewModel.stakeholdersAdded = []
         viewModel.stakeholdersDeleted = []
         let list = viewModel.completeList()
-        XCTAssert(list.count == 1)
+        #expect(list.count == 1)
     }
 
-    func testUpcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
+    @Test
+    func upcomingTwoCoInsuredMissingDataWithCurrentWithTwoCoInsuredSuccess() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN5,
@@ -33,10 +31,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 0)
+        #expect(list.count == 0)
     }
 
-    func testCurrentWith4EmptyDataUpcomingThreeSuccess() {
+    @Test
+    func currentWith4EmptyDataUpcomingThreeSuccess() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.mockMissingData(),
@@ -49,10 +48,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersAdded = []
         viewModel.stakeholdersDeleted = []
         let list = viewModel.completeList()
-        XCTAssert(list.count == 4)
+        #expect(list.count == 4)
     }
 
-    func testCurrentFourEmptyUpcomingFourWithValueAddedOne() {
+    @Test
+    func currentFourEmptyUpcomingFourWithValueAddedOne() {
         let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
@@ -71,10 +71,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 3)
+        #expect(list.count == 3)
     }
 
-    func testCurrentTwoWithValuesAddingThreeWithValues() {
+    @Test
+    func currentTwoWithValuesAddingThreeWithValues() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN4,
@@ -89,10 +90,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         ]
         viewModel.stakeholdersDeleted = []
         let list = viewModel.completeList()
-        XCTAssert(list.count == 5)
+        #expect(list.count == 5)
     }
 
-    func testInitialWithTwoAdded() {
+    @Test
+    func initialWithTwoAdded() throws {
         let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
@@ -107,12 +109,13 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = []
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 2)
-        XCTAssert(list[0] == Stakeholder.testMemberWithSSN1)
-        XCTAssert(list[1] == Stakeholder.testMemberWithSSN2)
+        try #require(list.count == 2)
+        #expect(list[0] == Stakeholder.testMemberWithSSN1)
+        #expect(list[1] == Stakeholder.testMemberWithSSN2)
     }
 
-    func testInitialWithOneDeleted() {
+    @Test
+    func initialWithOneDeleted() throws {
         let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
@@ -127,11 +130,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = [Stakeholder.mockMissingData()]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 1)
-        XCTAssert(list[0] == Stakeholder.mockMissingData())
+        try #require(list.count == 1)
+        #expect(list[0] == Stakeholder.mockMissingData())
     }
 
-    func testInitialAllDeleted() {
+    @Test
+    func initialAllDeleted() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.mockMissingData(),
@@ -143,10 +147,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = [Stakeholder.mockMissingData(), Stakeholder.mockMissingData()]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 0)
+        #expect(list.count == 0)
     }
 
-    func testRemoveOne() {
+    @Test
+    func removeOne() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN1,
@@ -159,10 +164,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = [Stakeholder.testMemberWithBirthdate2]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 2)
+        #expect(list.count == 2)
     }
 
-    func testEmptyWithTerminationAndMissingData() {
+    @Test
+    func emptyWithTerminationAndMissingData() throws {
         let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
@@ -178,11 +184,12 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = [Stakeholder.mockMissingData()]
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 1)
-        XCTAssert(list[0] == Stakeholder.mockMissingData())
+        try #require(list.count == 1)
+        #expect(list[0] == Stakeholder.mockMissingData())
     }
 
-    func testEmptyWithTerminationAndAddedData() {
+    @Test
+    func emptyWithTerminationAndAddedData() {
         let viewModel = StakeholdersViewModel(
             with: .init(stakeholders: [
                 Stakeholder.testMemberWithSSN1,
@@ -195,10 +202,11 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = []
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 2)
+        #expect(list.count == 2)
     }
 
-    func testEmptyWithTerminationAndAddingData() {
+    @Test
+    func emptyWithTerminationAndAddingData() throws {
         let viewModel = StakeholdersViewModel(
             with: .init(
                 stakeholders: [
@@ -217,9 +225,9 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         viewModel.stakeholdersDeleted = []
 
         let list = viewModel.completeList()
-        XCTAssert(list.count == 2)
-        XCTAssert(list[0] == Stakeholder.testMemberWithSSN1)
-        XCTAssert(list[1] == Stakeholder.testMemberWithBirthdate1)
+        try #require(list.count == 2)
+        #expect(list[0] == Stakeholder.testMemberWithSSN1)
+        #expect(list[1] == Stakeholder.testMemberWithBirthdate1)
     }
 }
 
