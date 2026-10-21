@@ -1,49 +1,57 @@
-import XCTest
+import Testing
 import hCore
 
 @testable import MoveFlow
 
-@MainActor
-final class MovingFlowHousingTypeViewModelTests: XCTestCase {
-    weak var sut: MockMoveFlowService?
+extension MoveFlowDependencySuite {
+    @MainActor
+    final class MovingFlowHousingTypeViewModelTests {
+        private weak var sut: MockMoveFlowService?
 
-    lazy var movingFlowModel: MoveQuotesModel = .init(
-        homeQuotes: [],
-        mtaQuotes: [],
-        changeTierModel: nil
-    )
+        lazy var movingFlowModel: MoveQuotesModel = .init(
+            homeQuotes: [],
+            mtaQuotes: [],
+            changeTierModel: nil
+        )
 
-    override func setUp() async throws {
-        try await super.setUp()
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        sut = nil
-    }
+        init() {
+            Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        }
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: MoveFlowClient.self)
-        XCTAssertNil(sut)
-    }
+        @Test
+        func housingTypeSuccess() async {
+            let extraBuildings = [
+                ExtraBuilding(
+                    id: "",
+                    type: ExtraBuildingType(type: "building type 1", displayName: "building display type"),
+                    livingArea: 20,
+                    connectedToWater: false
+                )
+            ]
 
-    func testHousingTypeSuccess() async {
-        let extraBuildings = [
-            ExtraBuilding(
-                id: "",
-                type: ExtraBuildingType(type: "building type 1", displayName: "building display type"),
-                livingArea: 20,
-                connectedToWater: false
-            )
-        ]
+            // Scoped so mockService is released before expectServiceReleased() runs.
+            do {
+                let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
+                    _ in
+                    self.movingFlowModel
+                })
+                sut = mockService
+            }
 
-        let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            _ in
-            self.movingFlowModel
-        })
-        sut = mockService
+            let houseModel = HouseInformationInputModel()
+            houseModel.extraBuildings = extraBuildings
 
-        let houseModel = HouseInformationInputModel()
-        houseModel.extraBuildings = extraBuildings
+            #expect(houseModel.extraBuildings.count == extraBuildings.count)
+            #expect(houseModel.extraBuildings.first?.type == extraBuildings.first?.type)
 
-        assert(houseModel.extraBuildings.count == extraBuildings.count)
-        assert(houseModel.extraBuildings.first?.type == extraBuildings.first?.type)
+            await expectServiceReleased()
+        }
+
+        // Not deinit: this has to suspend before it reads sut.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: MoveFlowClient.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
     }
 }
