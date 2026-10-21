@@ -1,236 +1,278 @@
-import XCTest
+import TestDependencies
+import Testing
 import hCore
 
 @testable import Addons
 
-@MainActor
-final class AddonsViewModelTests: XCTestCase {
-    weak var sut: MockAddonsService?
-    weak var vm: ChangeAddonViewModel?
-    weak var eventTracker: MockEventTrackingClient?
+extension AddonsDependencySuite {
+    @MainActor
+    final class AddonsViewModelTests {
+        private weak var sut: MockAddonsService?
+        private weak var vm: ChangeAddonViewModel?
+        private weak var eventTracker: MockEventTrackingClient?
 
-    override func tearDown() async throws {
-        try await super.tearDown()
-        Dependencies.shared.remove(for: AddonsClient.self)
-        Dependencies.shared.remove(for: EventTrackingClient.self)
-        XCTAssertNil(sut)
-        XCTAssertNil(vm)
-        XCTAssertNil(eventTracker)
-    }
+        // Bodies are scoped in do/recordingErrors so locals are released and throws still reach this check.
+        private func expectEverythingReleased() {
+            Dependencies.shared.remove(for: AddonsClient.self)
+            Dependencies.shared.remove(for: EventTrackingClient.self)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+            #expect(vm == nil, "the view model must not outlive the test that created it")
+            #expect(eventTracker == nil, "the event tracker must not outlive its dependency registration")
+        }
 
-    // MARK: - Selectable (travel) tests
+        // MARK: - Selectable (travel) tests
 
-    func testSelectableAddonSelection() async throws {
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+        @Test
+        func selectableAddonSelection() async {
+            do {
+                let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
 
-        vm = model
+                vm = model
 
-        assert(model.offer == testTravelOfferNoActive)
-        assert(model.selectedAddons == [travelQuote45Days])
+                #expect(model.offer == testTravelOfferNoActive)
+                #expect(model.selectedAddons == [travelQuote45Days])
 
-        // Select second quote — should replace, not add
-        model.selectAddon(addon: travelQuote60Days)
-        assert(model.selectedAddons == [travelQuote60Days])
+                // Select second quote — should replace, not add
+                model.selectAddon(addon: travelQuote60Days)
+                #expect(model.selectedAddons == [travelQuote60Days])
 
-        // Re-select first — still replaces
-        model.selectAddon(addon: travelQuote45Days)
-        assert(model.selectedAddons == [travelQuote45Days])
-    }
+                // Re-select first — still replaces
+                model.selectAddon(addon: travelQuote45Days)
+                #expect(model.selectedAddons == [travelQuote45Days])
+            }
 
-    func testSubmitAddonsSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
-        let mockEventTracker = MockData.createMockEventTrackingClient()
+            expectEverythingReleased()
+        }
 
-        sut = mockService
-        eventTracker = mockEventTracker
+        @Test
+        func submitAddonsSuccess() async {
+            await recordingErrors {
+                let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+                let mockEventTracker = MockData.createMockEventTrackingClient()
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+                sut = mockService
+                eventTracker = mockEventTracker
 
-        vm = model
+                let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
 
-        await model.submitAddons()
+                vm = model
 
-        assert(model.submittingState == .success)
+                await model.submitAddons()
 
-        XCTAssertEqual(mockEventTracker.trackedEvents.count, 1)
-        assertAddonPurchased(
-            mockEventTracker.trackedEvents[0],
-            userFlow: "insurance_screen",
-            addonType: "travel",
-            contractId: "travelContractId",
-            price: 59,
-            currency: "SEK",
-            quoteId: "quoteId1",
-            purchaseType: "new"
-        )
-    }
+                #expect(model.submittingState == .success)
 
-    func testSubmitSelectableUpgradeFromContractDetailTracksUpgrade() async throws {
-        let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
-        let mockEventTracker = MockData.createMockEventTrackingClient()
+                try #require(mockEventTracker.trackedEvents.count == 1)
+                assertAddonPurchased(
+                    mockEventTracker.trackedEvents[0],
+                    userFlow: "insurance_screen",
+                    addonType: "travel",
+                    contractId: "travelContractId",
+                    price: 59,
+                    currency: "SEK",
+                    quoteId: "quoteId1",
+                    purchaseType: "new"
+                )
+            }
 
-        sut = mockService
-        eventTracker = mockEventTracker
+            expectEverythingReleased()
+        }
 
-        let model = ChangeAddonViewModel(offer: testTravelOffer45Days.with(source: .contractDetail))
+        @Test
+        func submitSelectableUpgradeFromContractDetailTracksUpgrade() async {
+            await recordingErrors {
+                let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+                let mockEventTracker = MockData.createMockEventTrackingClient()
 
-        vm = model
+                sut = mockService
+                eventTracker = mockEventTracker
 
-        await model.submitAddons()
+                let model = ChangeAddonViewModel(offer: testTravelOffer45Days.with(source: .contractDetail))
 
-        assert(model.submittingState == .success)
+                vm = model
 
-        XCTAssertEqual(mockEventTracker.trackedEvents.count, 1)
-        assertAddonPurchased(
-            mockEventTracker.trackedEvents[0],
-            userFlow: "insurance_card",
-            addonType: "travel",
-            contractId: "travelContractId",
-            price: 67,
-            currency: "SEK",
-            quoteId: "quoteId2",
-            purchaseType: "upgrade"
-        )
-    }
+                await model.submitAddons()
 
-    func testSubmitToggleableAddonsNextToActiveOneTracksNewPurchasePerAddon() async throws {
-        let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
-        let mockEventTracker = MockData.createMockEventTrackingClient()
+                #expect(model.submittingState == .success)
 
-        sut = mockService
-        eventTracker = mockEventTracker
+                try #require(mockEventTracker.trackedEvents.count == 1)
+                assertAddonPurchased(
+                    mockEventTracker.trackedEvents[0],
+                    userFlow: "insurance_card",
+                    addonType: "travel",
+                    contractId: "travelContractId",
+                    price: 67,
+                    currency: "SEK",
+                    quoteId: "quoteId2",
+                    purchaseType: "upgrade"
+                )
+            }
 
-        let model = ChangeAddonViewModel(offer: testCarAddonRisk.with(source: .homeCrossSellSheet))
+            expectEverythingReleased()
+        }
 
-        vm = model
+        @Test
+        func submitToggleableAddonsNextToActiveOneTracksNewPurchasePerAddon() async {
+            await recordingErrors {
+                let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+                let mockEventTracker = MockData.createMockEventTrackingClient()
 
-        model.selectAddon(addon: carQuoteHyrbil)
-        model.selectAddon(addon: carQuoteDrulle)
-        await model.submitAddons()
+                sut = mockService
+                eventTracker = mockEventTracker
 
-        assert(model.submittingState == .success)
+                let model = ChangeAddonViewModel(offer: testCarAddonRisk.with(source: .homeCrossSellSheet))
 
-        XCTAssertEqual(mockEventTracker.trackedEvents.count, 2)
-        assertAddonPurchased(
-            mockEventTracker.trackedEvents[0],
-            userFlow: "home",
-            addonType: "car_addon",
-            contractId: "carContractId",
-            price: 33,
-            currency: "SEK",
-            quoteId: "carQuoteId2",
-            purchaseType: "new"
-        )
-        assertAddonPurchased(
-            mockEventTracker.trackedEvents[1],
-            userFlow: "home",
-            addonType: "car_addon",
-            contractId: "carContractId",
-            price: 25,
-            currency: "SEK",
-            quoteId: "carQuoteId2",
-            purchaseType: "new"
-        )
-    }
+                vm = model
 
-    func testSubmitAddonsFailure() async throws {
-        let mockService = MockData.createMockAddonsService(
-            addonsSubmit: { _, _ in throw AddonsError.submitError }
-        )
-        let mockEventTracker = MockData.createMockEventTrackingClient()
+                model.selectAddon(addon: carQuoteHyrbil)
+                model.selectAddon(addon: carQuoteDrulle)
+                await model.submitAddons()
 
-        sut = mockService
-        eventTracker = mockEventTracker
+                #expect(model.submittingState == .success)
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+                try #require(mockEventTracker.trackedEvents.count == 2)
+                assertAddonPurchased(
+                    mockEventTracker.trackedEvents[0],
+                    userFlow: "home",
+                    addonType: "car_addon",
+                    contractId: "carContractId",
+                    price: 33,
+                    currency: "SEK",
+                    quoteId: "carQuoteId2",
+                    purchaseType: "new"
+                )
+                assertAddonPurchased(
+                    mockEventTracker.trackedEvents[1],
+                    userFlow: "home",
+                    addonType: "car_addon",
+                    contractId: "carContractId",
+                    price: 25,
+                    currency: "SEK",
+                    quoteId: "carQuoteId2",
+                    purchaseType: "new"
+                )
+            }
 
-        vm = model
+            expectEverythingReleased()
+        }
 
-        await model.submitAddons()
+        @Test
+        func submitAddonsFailure() async {
+            do {
+                let mockService = MockData.createMockAddonsService(
+                    addonsSubmit: { _, _ in throw AddonsError.submitError }
+                )
+                let mockEventTracker = MockData.createMockEventTrackingClient()
 
-        assert(model.submittingState == .error(errorMessage: AddonsError.submitError.localizedDescription))
-        XCTAssertTrue(mockEventTracker.trackedEvents.isEmpty)
-    }
+                sut = mockService
+                eventTracker = mockEventTracker
 
-    // MARK: - Addon offer cost tests
+                let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
 
-    func testGetAddonOfferCostSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonOfferCost: { _, _ in testAddonOfferCost }
-        )
+                vm = model
 
-        sut = mockService
+                await model.submitAddons()
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+                #expect(model.submittingState == .error(errorMessage: AddonsError.submitError.localizedDescription))
+                #expect(mockEventTracker.trackedEvents.isEmpty)
+            }
 
-        vm = model
+            expectEverythingReleased()
+        }
 
-        model.selectAddon(addon: travelQuote45Days)
-        await model.getAddonOfferCost()
+        // MARK: - Addon offer cost tests
 
-        assert(model.fetchingCostState == .success)
-        assert(model.addonOfferCost == testAddonOfferCost)
-    }
+        @Test
+        func getAddonOfferCostSuccess() async {
+            do {
+                let mockService = MockData.createMockAddonsService(
+                    fetchAddonOfferCost: { _, _ in testAddonOfferCost }
+                )
 
-    func testGetAddonOfferCostFailure() async throws {
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonOfferCost: { _, _ in throw AddonsError.somethingWentWrong }
-        )
+                sut = mockService
 
-        sut = mockService
+                let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
 
-        let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
+                vm = model
 
-        vm = model
+                model.selectAddon(addon: travelQuote45Days)
+                await model.getAddonOfferCost()
 
-        model.selectAddon(addon: travelQuote45Days)
-        await model.getAddonOfferCost()
+                #expect(model.fetchingCostState == .success)
+                #expect(model.addonOfferCost == testAddonOfferCost)
+            }
 
-        assert(model.addonOfferCost == nil)
-        assert(model.fetchingCostState == .error(errorMessage: AddonsError.somethingWentWrong.localizedDescription))
-    }
+            expectEverythingReleased()
+        }
 
-    // MARK: - Toggleable (car) tests
+        @Test
+        func getAddonOfferCostFailure() async {
+            do {
+                let mockService = MockData.createMockAddonsService(
+                    fetchAddonOfferCost: { _, _ in throw AddonsError.somethingWentWrong }
+                )
 
-    func testToggleableAddonSelection() async throws {
-        let model = ChangeAddonViewModel(offer: testCarOfferNoActive)
+                sut = mockService
 
-        vm = model
+                let model = ChangeAddonViewModel(offer: testTravelOfferNoActive)
 
-        assert(model.offer == testCarOfferNoActive)
-        assert(model.selectedAddons.isEmpty)
+                vm = model
 
-        // Toggle first addon on
-        model.selectAddon(addon: carQuoteSjalvrisk)
-        assert(model.selectedAddons == [carQuoteSjalvrisk])
+                model.selectAddon(addon: travelQuote45Days)
+                await model.getAddonOfferCost()
 
-        // Toggle second addon on
-        model.selectAddon(addon: carQuoteHyrbil)
-        assert(model.selectedAddons == [carQuoteSjalvrisk, carQuoteHyrbil])
+                #expect(model.addonOfferCost == nil)
+                #expect(
+                    model.fetchingCostState == .error(errorMessage: AddonsError.somethingWentWrong.localizedDescription)
+                )
+            }
 
-        // Toggle first addon off
-        model.selectAddon(addon: carQuoteSjalvrisk)
-        assert(model.selectedAddons == [carQuoteHyrbil])
-    }
+            expectEverythingReleased()
+        }
 
-    private func assertAddonPurchased(
-        _ event: MockEventTrackingClient.TrackedEvent,
-        userFlow: String,
-        addonType: String,
-        contractId: String,
-        price: Double,
-        currency: String,
-        quoteId: String,
-        purchaseType: String,
-        line: UInt = #line
-    ) {
-        XCTAssertEqual(event.name, "addon_purchased", line: line)
-        XCTAssertEqual(event.parameters["user_flow"] as? String, userFlow, line: line)
-        XCTAssertEqual(event.parameters["addon_type"] as? String, addonType, line: line)
-        XCTAssertEqual(event.parameters["contract_id"] as? String, contractId, line: line)
-        XCTAssertEqual(event.parameters["price"] as? Double, price, line: line)
-        XCTAssertEqual(event.parameters["currency"] as? String, currency, line: line)
-        XCTAssertEqual(event.parameters["quote_id"] as? String, quoteId, line: line)
-        XCTAssertEqual(event.parameters["purchase_type"] as? String, purchaseType, line: line)
+        // MARK: - Toggleable (car) tests
+
+        @Test
+        func toggleableAddonSelection() async {
+            do {
+                let model = ChangeAddonViewModel(offer: testCarOfferNoActive)
+
+                vm = model
+
+                #expect(model.offer == testCarOfferNoActive)
+                #expect(model.selectedAddons.isEmpty)
+
+                model.selectAddon(addon: carQuoteSjalvrisk)
+                #expect(model.selectedAddons == [carQuoteSjalvrisk])
+
+                model.selectAddon(addon: carQuoteHyrbil)
+                #expect(model.selectedAddons == [carQuoteSjalvrisk, carQuoteHyrbil])
+
+                model.selectAddon(addon: carQuoteSjalvrisk)
+                #expect(model.selectedAddons == [carQuoteHyrbil])
+            }
+
+            expectEverythingReleased()
+        }
+
+        private func assertAddonPurchased(
+            _ event: MockEventTrackingClient.TrackedEvent,
+            userFlow: String,
+            addonType: String,
+            contractId: String,
+            price: Double,
+            currency: String,
+            quoteId: String,
+            purchaseType: String,
+            sourceLocation: SourceLocation = #_sourceLocation
+        ) {
+            #expect(event.name == "addon_purchased", sourceLocation: sourceLocation)
+            #expect(event.parameters["user_flow"] as? String == userFlow, sourceLocation: sourceLocation)
+            #expect(event.parameters["addon_type"] as? String == addonType, sourceLocation: sourceLocation)
+            #expect(event.parameters["contract_id"] as? String == contractId, sourceLocation: sourceLocation)
+            #expect(event.parameters["price"] as? Double == price, sourceLocation: sourceLocation)
+            #expect(event.parameters["currency"] as? String == currency, sourceLocation: sourceLocation)
+            #expect(event.parameters["quote_id"] as? String == quoteId, sourceLocation: sourceLocation)
+            #expect(event.parameters["purchase_type"] as? String == purchaseType, sourceLocation: sourceLocation)
+        }
     }
 }
