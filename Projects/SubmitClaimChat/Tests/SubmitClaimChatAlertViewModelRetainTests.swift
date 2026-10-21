@@ -1,103 +1,116 @@
-import XCTest
+import Testing
 
 @testable import SubmitClaimChat
 
 private final class AlertClosureProbe {}
 
 @MainActor
-final class SubmitClaimChatAlertViewModelRetainTests: XCTestCase {
-    weak var sut: SubmitClaimChatScreenAlertViewModel?
+final class SubmitClaimChatAlertViewModelRetainTests {
+    private weak var sut: SubmitClaimChatScreenAlertViewModel?
 
-    override func tearDown() async throws {
-        try await super.tearDown()
-
-        XCTAssertNil(sut, "SubmitClaimChatScreenAlertViewModel must not outlive the test that created it")
-    }
-
-    func testErrorAlertDismissalReleasesClosures() {
-        let viewModel = SubmitClaimChatScreenAlertViewModel()
-        sut = viewModel
-
-        weak var probe: AlertClosureProbe?
-        // Built in its own scope so the closures stored on the view model end up the probe's only
-        // owner; a strong reference left in this frame would hide a leak from the assertions below.
+    @Test
+    func errorAlertDismissalReleasesClosures() {
+        // Scoped so viewModel is released before expectAlertViewModelReleased() runs.
         do {
-            let strongProbe = AlertClosureProbe()
-            probe = strongProbe
-            viewModel.alertModel = .init(
-                type: .error,
-                message: "message",
-                action: { _ = strongProbe },
-                onClose: { _ = strongProbe }
+            let viewModel = SubmitClaimChatScreenAlertViewModel()
+            sut = viewModel
+
+            weak var probe: AlertClosureProbe?
+            // Own scope so the view model's closures are the probe's only owner; a local ref would hide a leak.
+            do {
+                let strongProbe = AlertClosureProbe()
+                probe = strongProbe
+                viewModel.alertModel = .init(
+                    type: .error,
+                    message: "message",
+                    action: { _ = strongProbe },
+                    onClose: { _ = strongProbe }
+                )
+            }
+
+            #expect(
+                viewModel.alertPresentationModel != nil,
+                "an .error alert must be routed into alertPresentationModel, otherwise nothing below is exercised"
             )
+            #expect(probe != nil, "the stored alert closures must hold the probe while the alert is presented")
+
+            viewModel.alertPresentationModel = nil
+
+            #expect(probe == nil, "dismissing the presented alert must clear alertModel and release its closures")
         }
 
-        XCTAssertNotNil(
-            viewModel.alertPresentationModel,
-            "an .error alert must be routed into alertPresentationModel, otherwise nothing below is exercised"
-        )
-        XCTAssertNotNil(probe, "the stored alert closures must hold the probe while the alert is presented")
-
-        viewModel.alertPresentationModel = nil
-
-        XCTAssertNil(probe, "dismissing the presented alert must clear alertModel and release its closures")
+        expectAlertViewModelReleased()
     }
 
-    func testEditAlertPerformActionReleasesClosures() {
-        let viewModel = SubmitClaimChatScreenAlertViewModel()
-        sut = viewModel
-
-        var actionRan = false
-        weak var probe: AlertClosureProbe?
-        // Same scoping as above: only the model's own closures may own the probe.
+    @Test
+    func editAlertPerformActionReleasesClosures() {
         do {
-            let strongProbe = AlertClosureProbe()
-            probe = strongProbe
-            viewModel.alertModel = .init(
-                type: .edit,
-                message: "message",
-                action: {
-                    actionRan = true
-                    _ = strongProbe
-                },
-                onClose: { _ = strongProbe }
-            )
+            let viewModel = SubmitClaimChatScreenAlertViewModel()
+            sut = viewModel
+
+            var actionRan = false
+            weak var probe: AlertClosureProbe?
+            // Same scoping as above: only the model's own closures may own the probe.
+            do {
+                let strongProbe = AlertClosureProbe()
+                probe = strongProbe
+                viewModel.alertModel = .init(
+                    type: .edit,
+                    message: "message",
+                    action: {
+                        actionRan = true
+                        _ = strongProbe
+                    },
+                    onClose: { _ = strongProbe }
+                )
+            }
+
+            #expect(probe != nil, "both alert closures must hold the probe before the alert is answered")
+
+            viewModel.performAction()
+
+            #expect(actionRan, "performAction must run the alert's action closure")
+            #expect(probe == nil, "performAction must clear alertModel and release both of its closures")
         }
 
-        XCTAssertNotNil(probe, "both alert closures must hold the probe before the alert is answered")
-
-        viewModel.performAction()
-
-        XCTAssertTrue(actionRan, "performAction must run the alert's action closure")
-        XCTAssertNil(probe, "performAction must clear alertModel and release both of its closures")
+        expectAlertViewModelReleased()
     }
 
-    func testEditAlertPerformCloseReleasesClosures() {
-        let viewModel = SubmitClaimChatScreenAlertViewModel()
-        sut = viewModel
-
-        var closeRan = false
-        weak var probe: AlertClosureProbe?
-        // Same scoping as above: only the model's own closures may own the probe.
+    @Test
+    func editAlertPerformCloseReleasesClosures() {
         do {
-            let strongProbe = AlertClosureProbe()
-            probe = strongProbe
-            viewModel.alertModel = .init(
-                type: .edit,
-                message: "message",
-                action: { _ = strongProbe },
-                onClose: {
-                    closeRan = true
-                    _ = strongProbe
-                }
-            )
+            let viewModel = SubmitClaimChatScreenAlertViewModel()
+            sut = viewModel
+
+            var closeRan = false
+            weak var probe: AlertClosureProbe?
+            // Same scoping as above: only the model's own closures may own the probe.
+            do {
+                let strongProbe = AlertClosureProbe()
+                probe = strongProbe
+                viewModel.alertModel = .init(
+                    type: .edit,
+                    message: "message",
+                    action: { _ = strongProbe },
+                    onClose: {
+                        closeRan = true
+                        _ = strongProbe
+                    }
+                )
+            }
+
+            #expect(probe != nil, "both alert closures must hold the probe before the alert is dismissed")
+
+            viewModel.performClose()
+
+            #expect(closeRan, "performClose must run the alert's onClose closure")
+            #expect(probe == nil, "performClose must clear alertModel and release both of its closures")
         }
 
-        XCTAssertNotNil(probe, "both alert closures must hold the probe before the alert is dismissed")
+        expectAlertViewModelReleased()
+    }
 
-        viewModel.performClose()
-
-        XCTAssertTrue(closeRan, "performClose must run the alert's onClose closure")
-        XCTAssertNil(probe, "performClose must clear alertModel and release both of its closures")
+    private func expectAlertViewModelReleased() {
+        #expect(sut == nil, "SubmitClaimChatScreenAlertViewModel must not outlive the test that created it")
     }
 }
