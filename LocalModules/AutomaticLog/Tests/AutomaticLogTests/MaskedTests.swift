@@ -1,5 +1,6 @@
 import AutomaticLog
-import XCTest
+import Foundation
+import Testing
 
 @Loggable
 private struct Member: Codable, Equatable, Hashable, Sendable {
@@ -21,8 +22,7 @@ private struct Stored<Value> {
     var wrappedValue: Value
 }
 
-/// The case `@Masked` exists for: a property that already carries a property wrapper, which no
-/// second wrapper could have been applied to.
+/// The case `@Masked` exists for: a property that already carries another property wrapper.
 @Loggable
 private final class LoginState {
     var isLoading = false
@@ -69,107 +69,120 @@ private struct Credentials {
     }
 }
 
-final class MaskedFieldTests: XCTestCase {
-    func testMaskedStoredPropertyKeepsItsName() {
+final class MaskedFieldTests {
+    @Test
+    func maskedStoredPropertyKeepsItsName() {
         let described = logDescription(Member(name: "Alice", email: "alice@example.com", phone: "070"))
 
-        XCTAssertTrue(described.contains("name: Alice"))
-        XCTAssertTrue(described.contains("email: *****************"))
-        XCTAssertTrue(described.contains("phone: ***"))
-        XCTAssertFalse(described.contains("alice@example.com"))
+        #expect(described.contains("name: Alice"))
+        #expect(described.contains("email: *****************"))
+        #expect(described.contains("phone: ***"))
+        #expect(described.contains("alice@example.com") == false)
     }
 
-    func testMaskedOptionalStaysNil() {
-        XCTAssertTrue(logDescription(Member(name: "A", email: "a@b.c", phone: nil)).contains("phone: nil"))
+    @Test
+    func maskedOptionalStaysNil() {
+        #expect(logDescription(Member(name: "A", email: "a@b.c", phone: nil)).contains("phone: nil"))
     }
 
-    func testFieldNamesAreMatchedExactly() {
+    @Test
+    func fieldNamesAreMatchedExactly() {
         let described = logDescription(Stakeholder(fullName: "Alice A", SSN: "199001011234"))
 
-        XCTAssertTrue(described.contains("fullName: Alice A"))
-        XCTAssertFalse(described.contains("199001011234"))
+        #expect(described.contains("fullName: Alice A"))
+        #expect(described.contains("199001011234") == false)
     }
 
-    func testPublishedPropertyIsMasked() {
+    @Test
+    func publishedPropertyIsMasked() {
         let described = logDescription(LoginState())
 
-        XCTAssertFalse(described.contains("1234"))
-        XCTAssertTrue(described.contains("code: "))
+        #expect(described.contains("1234") == false)
+        #expect(described.contains("code: "))
     }
 
-    func testMaskedFieldsStayMaskedWhenNested() {
+    @Test
+    func maskedFieldsStayMaskedWhenNested() {
         let described = logDescription([Member(name: "A", email: "a@b.c", phone: nil)])
 
-        XCTAssertFalse(described.contains("a@b.c"))
+        #expect(described.contains("a@b.c") == false)
     }
 
-    func testNonMaskedValuesAreUnchanged() {
-        XCTAssertEqual(logDescription("plain"), "plain")
-        XCTAssertEqual(logDescription(Optional<String>.none as Any), "nil")
+    @Test
+    func nonMaskedValuesAreUnchanged() {
+        #expect(logDescription("plain") == "plain")
+        #expect(logDescription(Optional<String>.none as Any) == "nil")
     }
 
-    func testLoggableDoesNotChangeTheCodableRepresentation() throws {
+    @Test
+    func loggableDoesNotChangeTheCodableRepresentation() throws {
         let member = Member(name: "Alice", email: "alice@example.com", phone: "070")
         let json = String(data: try JSONEncoder().encode(member), encoding: .utf8)
 
-        XCTAssertEqual(json?.contains("\"email\":\"alice@example.com\""), true)
-        XCTAssertFalse(json?.contains("_email") ?? true)
+        #expect(json?.contains("\"email\":\"alice@example.com\"") == true)
+        #expect(json?.contains("_email") == false)
     }
 }
 
-final class MaskedValueConformanceTests: XCTestCase {
-    func testHandWrittenConformanceMasksOnlyThePayload() {
+final class MaskedValueConformanceTests {
+    @Test
+    func handWrittenConformanceMasksOnlyThePayload() {
         let described = logDescription(Envelope(sentAt: "today", payload: .text(text: "hello there", id: "7")))
 
-        XCTAssertTrue(described.contains("sentAt: today"))
-        XCTAssertTrue(described.contains("payload: text(text: ***********, id: 7)"))
-        XCTAssertFalse(described.contains("hello there"))
+        #expect(described.contains("sentAt: today"))
+        #expect(described.contains("payload: text(text: ***********, id: 7)"))
+        #expect(described.contains("hello there") == false)
     }
 
-    func testHandWrittenConformanceIsHonouredThroughCollections() {
+    @Test
+    func handWrittenConformanceIsHonouredThroughCollections() {
         let described = logDescription([Envelope(sentAt: "today", payload: .text(text: "secret", id: "7"))])
 
-        XCTAssertFalse(described.contains("secret"))
-        XCTAssertTrue(described.contains("******"))
+        #expect(described.contains("secret") == false)
+        #expect(described.contains("******"))
     }
 }
 
-final class MaskedParameterTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        capturedLogs = []
-        loginClosure = { message in capturedLogs.append(message) }
-    }
+extension LoginClosureSuite {
+    final class MaskedParameterTests {
+        init() {
+            capturedLogs = []
+            loginClosure = { message in capturedLogs.append(message) }
+        }
 
-    override func tearDown() {
-        loginClosure = { print($0) }
-        super.tearDown()
-    }
+        // Restores the process-wide closure after every test, even one that throws.
+        deinit {
+            loginClosure = { print($0) }
+        }
 
-    func testListedParameterIsMaskedAndOthersAreNot() {
-        let result = Credentials().exchange(refreshToken: "secret-token", id: "42")
+        @Test
+        func listedParameterIsMaskedAndOthersAreNot() {
+            let result = Credentials().exchange(refreshToken: "secret-token", id: "42")
 
-        XCTAssertEqual(result, "exchanged 12 for 42")
-        let log = capturedLogs.first
-        XCTAssertFalse(log?.contains("secret-token") ?? true)
-        XCTAssertEqual(log?.contains("************"), true)
-        XCTAssertEqual(log?.contains("\"id\": \"42\""), true)
-    }
+            #expect(result == "exchanged 12 for 42")
+            let log = capturedLogs.first
+            #expect(log?.contains("secret-token") == false)
+            #expect(log?.contains("************") == true)
+            #expect(log?.contains("\"id\": \"42\"") == true)
+        }
 
-    func testExternallyLabelledParameterIsMasked() async throws {
-        try await Credentials().register(for: "device-token")
+        @Test
+        func externallyLabelledParameterIsMasked() async throws {
+            try await Credentials().register(for: "device-token")
 
-        let log = try XCTUnwrap(capturedLogs.first)
-        XCTAssertFalse(log.contains("device-token"))
-        XCTAssertTrue(log.contains("\"token\": \"************\""))
-    }
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("device-token") == false)
+            #expect(log.contains("\"token\": \"************\""))
+        }
 
-    func testResultPropertiesAreMasked() throws {
-        _ = try Credentials().member()
+        @Test
+        func resultPropertiesAreMasked() throws {
+            _ = try Credentials().member()
 
-        let log = try XCTUnwrap(capturedLogs.first)
-        XCTAssertFalse(log.contains("alice@example.com"))
-        XCTAssertTrue(log.contains("name: Alice"))
+            let log = try #require(capturedLogs.first)
+            #expect(log.contains("alice@example.com") == false)
+            #expect(log.contains("name: Alice"))
+        }
     }
 }
 
@@ -183,31 +196,33 @@ private struct Batch {
     let payloads: [Payload]
 }
 
-/// `MaskedValue` has to hold wherever the value sits. A type that masks itself as a direct
-/// property but leaks inside an array would be the worst kind of gap: invisible at the
-/// declaration site.
-final class MaskedValueReachabilityTests: XCTestCase {
-    func testMaskedValueInsideAnOptionalPropertyIsMasked() {
+/// `MaskedValue` must hold wherever the value sits, e.g. inside an array, not just as a direct property.
+final class MaskedValueReachabilityTests {
+    @Test
+    func maskedValueInsideAnOptionalPropertyIsMasked() {
         let described = logDescription(OptionalEnvelope(sentAt: "today", payload: .text(text: "hello there", id: "7")))
 
-        XCTAssertFalse(described.contains("hello there"))
+        #expect(described.contains("hello there") == false)
     }
 
-    func testMaskedValueInsideATopLevelCollectionIsMasked() {
+    @Test
+    func maskedValueInsideATopLevelCollectionIsMasked() {
         let described = logDescription([Payload.text(text: "hello there", id: "7")])
 
-        XCTAssertFalse(described.contains("hello there"))
+        #expect(described.contains("hello there") == false)
     }
 
-    func testMaskedValueInsideACollectionPropertyIsMasked() {
+    @Test
+    func maskedValueInsideACollectionPropertyIsMasked() {
         let described = logDescription(Batch(sentAt: "today", payloads: [.text(text: "hello there", id: "7")]))
 
-        XCTAssertFalse(described.contains("hello there"))
+        #expect(described.contains("hello there") == false)
     }
 
-    func testMaskedValueInsideADictionaryValueIsMasked() {
+    @Test
+    func maskedValueInsideADictionaryValueIsMasked() {
         let described = logDescription(["a": Payload.text(text: "hello there", id: "7")])
 
-        XCTAssertFalse(described.contains("hello there"))
+        #expect(described.contains("hello there") == false)
     }
 }
