@@ -6,8 +6,7 @@ let project = Project.framework(
     targets: Set([
        .framework,
        .tests,
-       .example,
-       .testing
+       .example
     ]),
     dependencies: [],
     sdks: []
