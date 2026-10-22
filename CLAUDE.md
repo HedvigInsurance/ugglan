@@ -15,7 +15,7 @@ tuist generate              # Regenerate Xcode workspace after module changes
 ## Documentation
 
 - **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, AppStateContainer stores, navigation, service layer, DI, GraphQL
-- **[CLAUDE-testing.md](CLAUDE-testing.md)** — XCTest patterns, MockData, memory leak detection, test naming
+- **[CLAUDE-testing.md](CLAUDE-testing.md)** — Swift Testing patterns, MockData, memory leak detection, test naming
 - **[CLAUDE-accessibility.md](CLAUDE-accessibility.md)** — VoiceOver, dynamic type, contrast, CI rules, auto-fix
 - Per-module docs at `Projects/<Module>/CLAUDE.md` — architecture, key files, dependencies, gotchas
 
