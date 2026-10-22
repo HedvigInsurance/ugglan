@@ -183,7 +183,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS" = "2-8 timmar";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 timmar";
 "CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION" = "Berätta mer";
-"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Var barnvagnen låst? Berätta gärna med egna ord, t.ex. vilket lås du använde.";
+"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Var barnvagnen låst eller skyddad på något annat sätt?";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Skicka in skadeanmälan";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Bearbetar information, vänligen vänta.";
 "CLAIM_CHAT_TITLE" = "Skadeanmälan";
@@ -316,6 +316,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_DISABLED" = "Inaktiverad";
 "GENERAL_ENABLED" = "Aktiverad";
 "GENERAL_GO_TO" = "Gå till %1$@";
+"GENERAL_NOT_SELECTED" = "Ej valt";
 "GENERAL_NO_THANKS" = "Nej tack";
 "GENERAL_RETRY" = "Försök igen";
 "GENERAL_TODAY" = "Idag";

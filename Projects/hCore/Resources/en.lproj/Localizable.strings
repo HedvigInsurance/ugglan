@@ -183,7 +183,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_TWO_TO_EIGHT_HOURS" = "2-8 hours";
 "CLAIM_CHAT_STROLLER_THEFT_LEFT_UNDER_TWO_HOURS" = "Under 2 hours";
 "CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION" = "Tell us more";
-"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Was the stroller locked? Tell us in your own words, e.g. what kind of lock you used.";
+"CLAIM_CHAT_STROLLER_THEFT_LOCK_DESCRIPTION_MESSAGE" = "Was the stroller locked or secured some other way?";
 "CLAIM_CHAT_SUBMIT_CLAIM" = "Submit your claim";
 "CLAIM_CHAT_TASK_CONTENT_DESCRIPTION" = "Processing information, please wait.";
 "CLAIM_CHAT_TITLE" = "Claim";
@@ -316,6 +316,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_DISABLED" = "Disabled";
 "GENERAL_ENABLED" = "Enabled";
 "GENERAL_GO_TO" = "Go to %1$@";
+"GENERAL_NOT_SELECTED" = "Not selected";
 "GENERAL_NO_THANKS" = "No thanks";
 "GENERAL_RETRY" = "Try again";
 "GENERAL_TODAY" = "Today";
