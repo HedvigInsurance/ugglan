@@ -44,3 +44,18 @@ public func waitUntil(
         try? await Task.sleep(nanoseconds: UInt64(pollInterval * 1_000_000_000))
     }
 }
+
+/// Runs `body` and records anything it throws as an issue instead of propagating it.
+@MainActor
+public func recordingErrors(
+    sourceLocation: SourceLocation = #_sourceLocation,
+    _ body: @MainActor () async throws -> Void
+) async {
+    do {
+        try await body()
+    } catch is ExpectationFailedError {
+        // `#require` has already recorded its own failure before throwing this.
+    } catch {
+        Issue.record(error, sourceLocation: sourceLocation)
+    }
+}
