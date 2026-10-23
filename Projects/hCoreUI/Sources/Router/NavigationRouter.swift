@@ -131,7 +131,7 @@ public struct hNavigationStack<Screen: View>: View {
                 .modifier(NavigationBarVisibilityModifier(options: options))
                 .trackNavigation(name: tracking.nameForTracking)
         }
-        .introspect(.navigationStack, on: .iOS(.v16...)) { navController in
+        .introspect(.navigationStack, on: .iOS(.v17...)) { navController in
             hNavigationStack.applyCustomStyling(to: navController, options: options)
             hNavigationStack.wireUpDismiss(navController: navController, router: router)
         }
