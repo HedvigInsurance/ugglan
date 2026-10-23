@@ -7,9 +7,11 @@ import hGraphQL
 class CrossSellClientOctopus: CrossSellClient {
     @Inject private var octopus: hOctopus
     @Inject private var addonClient: AddonsClient
+    @Inject private var experimentProvider: ExperimentProvider
 
     func getCrossSell(source: CrossSellSource) async throws -> CrossSells {
-        let query = OctopusGraphQL.CrossSellQuery(input: source.asGraphQLCrossSellInput)
+        let experiments = await experimentProvider.activeExperiments()
+        let query = OctopusGraphQL.CrossSellQuery(input: source.asGraphQLCrossSellInput(experiments: experiments))
         let crossSells = try await octopus.client.fetch(query: query)
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
             CrossSell($0.fragments.crossSellFragment)
@@ -85,11 +87,11 @@ extension AddonCrossSell {
 }
 
 extension CrossSellSource {
-    fileprivate var asGraphQLCrossSellInput: OctopusGraphQL.CrossSellInput {
+    fileprivate func asGraphQLCrossSellInput(experiments: [Experiment]) -> OctopusGraphQL.CrossSellInput {
         .init(
             userFlow: .case(asGraphQLUserFlow),
             flowSource: GraphQLNullable(optionalValue: asGraphQLFlowSource.map { .case($0) }),
-            experiments: [],
+            experiments: experiments.map { .init(name: $0.name, variant: $0.variant) },
             contractId: GraphQLNullable(optionalValue: contractId),
             claimId: GraphQLNullable(optionalValue: claimId),
         )

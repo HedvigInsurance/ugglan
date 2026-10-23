@@ -17,6 +17,8 @@ extension AppDelegate {
 
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
+            // Unleash's own user field, next to the memberId property the flags' stickiness keys on.
+            "userId": memberId,
             "appVersion": Bundle.main.appVersion,
             "market": "SE",
             // Normalize to 3-component semver (e.g. "26" → "26.0.0") since systemVersion can return 1, 2, or 3 components
@@ -31,14 +33,18 @@ extension AppDelegate {
         return requiredDictionary
     }
 
+    /// Hands Unleash the member the profile store holds, or nobody after a logout.
+    func updateFeatureFlagsContext() {
+        Dependencies.featureFlags().updateContext(context: getContext)
+    }
+
     private func observeUpdate() {
         cancellables.removeAll()
         Localization.Locale.currentLocale
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                guard let self else { return }
-                Dependencies.featureFlags().updateContext(context: self.getContext)
+                self?.updateFeatureFlagsContext()
             }
             .store(in: &cancellables)
 
@@ -49,8 +55,7 @@ extension AppDelegate {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                guard let self else { return }
-                Dependencies.featureFlags().updateContext(context: self.getContext)
+                self?.updateFeatureFlagsContext()
             }
             .store(in: &cancellables)
     }
