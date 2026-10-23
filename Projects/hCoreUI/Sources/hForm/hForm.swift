@@ -31,6 +31,18 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 if verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
+                        // Only measured here: in compact size class it is inside the scroll view content.
+                        .background {
+                            GeometryReader { geometry in
+                                Color.clear
+                                    .onAppear {
+                                        vm.alwaysVisibleBottomViewHeight = geometry.size.height
+                                    }
+                                    .onChange(of: geometry.size) { value in
+                                        vm.alwaysVisibleBottomViewHeight = value.height
+                                    }
+                            }
+                        }
                 }
             }
             .frame(maxWidth: .infinity)
@@ -77,6 +89,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
+        }
+        .onAppear {
+            vm.isVerticalSizeClassRegular = verticalSizeClass == .regular
+        }
+        .onChange(of: verticalSizeClass) { value in
+            vm.isVerticalSizeClassRegular = value == .regular
         }
     }
 
@@ -254,6 +272,7 @@ private class hUpdatedFormViewModel: ObservableObject {
     weak var scrollView: UIScrollView? {
         didSet {
             scrollView?.clipsToBounds = false
+            setAdditionalDetentHeight()
             setScrollView()
             setBouces()
         }
@@ -269,6 +288,24 @@ private class hUpdatedFormViewModel: ObservableObject {
         didSet {
             setBouces()
         }
+    }
+
+    var alwaysVisibleBottomViewHeight: CGFloat = 0 {
+        didSet {
+            setAdditionalDetentHeight()
+        }
+    }
+
+    var isVerticalSizeClassRegular: Bool = true {
+        didSet {
+            setAdditionalDetentHeight()
+        }
+    }
+
+    /// The always visible bottom view is outside of the scroll view only for regular vertical size class,
+    /// in compact it is part of the scroll view content and already included in its content size.
+    private func setAdditionalDetentHeight() {
+        scrollView?.additionalDetentHeight = isVerticalSizeClassRegular ? alwaysVisibleBottomViewHeight : 0
     }
 
     var scrollViewHeight: CGFloat = 0 {
