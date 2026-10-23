@@ -22,7 +22,7 @@ public struct DatePickerView: View {
                 datePicker
                     .tint(hSignalColor.Green.element)
                     .datePickerStyle(.graphical)
-                    .introspect(.datePicker, on: .iOS(.v13...)) { [weak vm] datePicker in
+                    .introspect(.datePicker, on: .iOS(.v17...)) { [weak vm] datePicker in
                         vm?.datePicker = datePicker
                         vm?.updateColors()
                     }

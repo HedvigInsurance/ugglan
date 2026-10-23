@@ -57,7 +57,7 @@ struct FormFieldSearchView: View {
         .animation(.default, value: vm.noResults)
         .animation(.default, value: vm.suggestedQuery)
         .animation(.default, value: vm.searchController.searchBar.text)
-        .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+        .introspect(.viewController, on: .iOS(.v17...)) { [weak vm] vc in
             guard let vm else { return }
             vc.navigationItem.searchController = vm.searchController
             vc.navigationItem.hidesSearchBarWhenScrolling = false

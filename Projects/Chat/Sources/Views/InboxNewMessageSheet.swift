@@ -52,7 +52,7 @@ public struct InboxNewMessageSheet: View {
         }
         .hFormContentPosition(.compact)
         .hFormIgnoreBottomPadding
-        .introspect(.viewController, on: .iOS(.v13...)) { vc in
+        .introspect(.viewController, on: .iOS(.v17...)) { vc in
             vc.navigationController?.navigationBar.backgroundColor = .red
         }
     }

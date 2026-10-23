@@ -70,7 +70,7 @@ extension UIViewController {
 extension View {
     public func trackVisibility<V: View>(as type: V.Type) -> some View {
         let name = String(describing: type)
-        return introspect(.viewController, on: .iOS(.v13...)) { vc in
+        return introspect(.viewController, on: .iOS(.v17...)) { vc in
             VisibleScreenTracker.register(name: name, vc: vc)
         }
     }
