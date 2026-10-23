@@ -89,9 +89,9 @@ class HomeBottomScrollViewModel {
         let homeStore: HomeStore = globalAppStateContainer.get()
 
         Publishers.CombineLatest3(
-            paymentStore.$paymentStatusData.removeDuplicates(),
-            paymentStore.$paymentData.removeDuplicates(),
-            homeStore.$memberContractState.removeDuplicates()
+            paymentStore.publisher(for: \.paymentStatusData).removeDuplicates(),
+            paymentStore.publisher(for: \.paymentData).removeDuplicates(),
+            homeStore.publisher(for: \.memberContractState).removeDuplicates()
         )
         .receive(on: RunLoop.main)
         .sink(receiveValue: { [weak self] paymentStatus, _, memberState in
@@ -125,8 +125,8 @@ class HomeBottomScrollViewModel {
 
     private func handleImportantMessages() {
         let homeStore: HomeStore = globalAppStateContainer.get()
-        homeStore.$importantMessages
-            .combineLatest(homeStore.$hidenImportantMessages)
+        homeStore.publisher(for: \.importantMessages)
+            .combineLatest(homeStore.publisher(for: \.hidenImportantMessages))
             .map { importantMessages, hidenImportantMessages in
                 importantMessages.filter { !hidenImportantMessages.contains($0.id) }
             }
@@ -154,7 +154,7 @@ class HomeBottomScrollViewModel {
 
     private func handleRenewalCardView() {
         let homeStore: HomeStore = globalAppStateContainer.get()
-        homeStore.$contracts
+        homeStore.publisher(for: \.contracts)
             .map { $0.contains(where: { $0.upcomingRenewal != nil }) }
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -165,7 +165,7 @@ class HomeBottomScrollViewModel {
     }
 
     private func handleMissingCoInsured() {
-        contractStore.$activeContracts
+        contractStore.publisher(for: \.activeContracts)
             .map(\.hasMissingCoInsured)
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -176,7 +176,7 @@ class HomeBottomScrollViewModel {
     }
 
     private func handleMissingCoOwners() {
-        contractStore.$activeContracts
+        contractStore.publisher(for: \.activeContracts)
             .map(\.hasMissingCoOwners)
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -188,8 +188,8 @@ class HomeBottomScrollViewModel {
 
     private func handleStatusMessage() {
         let store: HomeStore = globalAppStateContainer.get()
-        store.$memberContractState
-            .combineLatest(store.$futureStatus)
+        store.publisher(for: \.memberContractState)
+            .combineLatest(store.publisher(for: \.futureStatus))
             .map { memberContractState, futureStatus in
                 Self.statusCard(for: memberContractState, futureStatus: futureStatus)
             }
@@ -222,7 +222,7 @@ class HomeBottomScrollViewModel {
 
     func handleUpdateContactInfo() {
         let store: HomeStore = globalAppStateContainer.get()
-        store.$memberInfo
+        store.publisher(for: \.memberInfo)
             .compactMap { $0?.isContactInfoUpdateNeeded }
             .removeDuplicates()
             .sink(receiveValue: { [weak self] isContactInfoUpdateNeeded in
@@ -235,7 +235,7 @@ class HomeBottomScrollViewModel {
         let featureFlags = Dependencies.featureFlags()
 
         UserDefaults.standard.publisher(for: \.analyticsConsent)
-            .combineLatest(featureFlags.$data)
+            .combineLatest(featureFlags.publisher(for: \.data))
             .map { consent, featureFlags in consent == nil && featureFlags.isAnalyticsEnabled }
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -244,7 +244,7 @@ class HomeBottomScrollViewModel {
     }
 
     private func handleMissingPetChipIds() {
-        contractStore.$activeContracts
+        contractStore.publisher(for: \.activeContracts)
             .map { $0.contains { $0.missingPetChipId } }
             .removeDuplicates()
             .receive(on: RunLoop.main)
