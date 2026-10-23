@@ -27,6 +27,7 @@ struct NotLoggedInView: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .modifier(BankIDSandboxToggle())
     }
 
     @ViewBuilder
@@ -69,6 +70,29 @@ struct NotLoggedInView: View {
                 }
             }
         }
+    }
+}
+
+private struct BankIDSandboxToggle: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if BankIDSandboxState.isAvailable {
+            content.onTapGesture(count: 3) { toggle() }
+        } else {
+            content
+        }
+    }
+
+    @MainActor
+    private func toggle() {
+        BankIDSandboxState.isEnabled.toggle()
+        let isEnabled = BankIDSandboxState.isEnabled
+        Toasts.shared.displayToastBar(
+            toast: .init(
+                type: isEnabled ? .attention : .neutral,
+                text: "BankID sandbox \(isEnabled ? "on" : "off")"
+            )
+        )
     }
 }
 

@@ -26,6 +26,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             semaphore.signal()
         }
         semaphore.wait()
+        if BankIDSandboxState.isEnabled {
+            headers["Hedvig-Bankid-Sandbox"] = "true"
+        }
         return headers
     }
 
