@@ -22,6 +22,9 @@ public struct FeatureData: Codable, Equatable {
     public let isTerminationRedirectionEnabled: Bool
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
+    /// The experiments the member is in, or nil while the toggles in hand were not fetched for this member, since
+    /// Unleash assigns variants server-side from the member id the fetch carried. Empty when they are in none.
+    public let experiments: [Experiment]?
 
     public init(
         isUpdateNecessary: Bool,
@@ -36,7 +39,8 @@ public struct FeatureData: Codable, Equatable {
         isOnboardingEnabled: Bool,
         isTerminationRedirectionEnabled: Bool,
         isAnalyticsEnabled: Bool,
-        isResumingOngoingShopSessionsEnabled: Bool
+        isResumingOngoingShopSessionsEnabled: Bool,
+        experiments: [Experiment]? = nil
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
@@ -51,6 +55,7 @@ public struct FeatureData: Codable, Equatable {
         self.isTerminationRedirectionEnabled = isTerminationRedirectionEnabled
         self.isAnalyticsEnabled = isAnalyticsEnabled
         self.isResumingOngoingShopSessionsEnabled = isResumingOngoingShopSessionsEnabled
+        self.experiments = experiments
     }
 }
 
