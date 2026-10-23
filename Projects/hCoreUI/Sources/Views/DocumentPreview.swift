@@ -231,7 +231,7 @@ public struct DocumentPreview: View {
                 }
             }
         }
-        .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+        .introspect(.viewController, on: .iOS(.v17...)) { [weak vm] vc in
             if vm?.vc != vc {
                 vm?.vc = vc
             }

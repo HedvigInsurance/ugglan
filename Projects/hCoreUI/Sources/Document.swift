@@ -21,7 +21,7 @@ public struct PDFPreview: View {
                 loadingIndicatorView
             } else if let data = vm.data {
                 DocumentRepresentable(data: data)
-                    .introspect(.viewController, on: .iOS(.v13...)) { vc in
+                    .introspect(.viewController, on: .iOS(.v17...)) { vc in
                         let navBarItem = UIBarButtonItem(
                             image: UIImage(systemName: "square.and.arrow.up"),
                             style: .plain,

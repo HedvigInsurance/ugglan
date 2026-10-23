@@ -108,7 +108,7 @@ public struct HelpCenterStartView: View {
                 ? .default : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
         .dismissKeyboard()
-        .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+        .introspect(.viewController, on: .iOS(.v17...)) { [weak vm] vc in
             guard let vm else { return }
 
             if !vm.didSetInitialSearchAppearance {

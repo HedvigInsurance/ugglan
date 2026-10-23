@@ -17,7 +17,7 @@ struct HideViewController: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .introspect(.viewController, on: .iOS(.v13...)) { vc in
+            .introspect(.viewController, on: .iOS(.v17...)) { vc in
                 DispatchQueue.main.async { [weak vc] in
                     self.vc = vc
                 }

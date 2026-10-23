@@ -21,7 +21,7 @@ struct ProgressBarView: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .introspect(.viewController, on: .iOS(.v13...)) { viewController in
+            .introspect(.viewController, on: .iOS(.v17...)) { viewController in
                 let navigationController =
                     (viewController as? UINavigationController)
                     ?? viewController.navigationController
@@ -100,7 +100,7 @@ struct StepProgressBarView: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .introspect(.viewController, on: .iOS(.v13...)) { viewController in
+            .introspect(.viewController, on: .iOS(.v17...)) { viewController in
                 let navigationController =
                     (viewController as? UINavigationController)
                     ?? viewController.navigationController
