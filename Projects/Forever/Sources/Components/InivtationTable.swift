@@ -98,7 +98,6 @@ struct InvitationRow: View {
     return InvitationTable(foreverData: navigationVm.foreverData).environmentObject(navigationVm)
 }
 
-@available(iOS 17.0, *)
 #Preview("Invitation Row", traits: .sizeThatFitsLayout) {
     let mockRow: Referral = .init(
         name: "Axel",

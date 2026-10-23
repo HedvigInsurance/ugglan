@@ -182,7 +182,6 @@ public struct CheckboxToggleView: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var isOn: Bool = true
 

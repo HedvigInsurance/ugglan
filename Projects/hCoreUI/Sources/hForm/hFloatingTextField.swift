@@ -82,7 +82,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
-        .geometryGroupIfAvailable()
+        .geometryGroup()
         .onChange(of: vm.textField) { [weak vm] _, textField in
             textField?.delegate = vm?.observer
             if focusValue == Value.last {
@@ -238,7 +238,6 @@ class TextFieldVM: ObservableObject {
     @Published var onReturnTap: Date?
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: String = "Text Input"
     @Previewable @State var error: String?
@@ -413,16 +412,5 @@ extension EnvironmentValues {
 extension View {
     public func hAnimateField(_ animate: Bool) -> some View {
         environment(\.hAnimateField, animate)
-    }
-
-    /// Isolates the field's geometry from its ancestors so parent layout changes
-    /// don't animate the field's own subviews independently.
-    @ViewBuilder
-    public func geometryGroupIfAvailable() -> some View {
-        if #available(iOS 17.0, *) {
-            geometryGroup()
-        } else {
-            self
-        }
     }
 }

@@ -43,7 +43,6 @@ public struct hRadioIndicator: View {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview("States") {
     VStack(spacing: .padding16) {
         HStack(spacing: .padding16) {
