@@ -136,7 +136,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 animate = false
             }
         }
-        .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
+        .introspect(.textField, on: .iOS(.v17...)) { [weak vm] textField in
             vm?.textField = textField
         }
         .onAppear {

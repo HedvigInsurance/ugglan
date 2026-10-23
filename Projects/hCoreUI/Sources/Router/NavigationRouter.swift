@@ -309,7 +309,7 @@ extension View {
                 .sharedBackgroundVisibility(.hidden)
             }
         } else {
-            introspect(.viewController, on: .iOS(.v13...)) { vc in
+            introspect(.viewController, on: .iOS(.v17...)) { vc in
                 vc.navigationItem.titleView = getTitleUIView(
                     title: title,
                     subTitle: subTitle,
@@ -323,7 +323,7 @@ extension View {
     }
 
     @MainActor public var enableModalInPresentation: some View {
-        introspect(.viewController, on: .iOS(.v13...)) { vc in
+        introspect(.viewController, on: .iOS(.v17...)) { vc in
             vc.isModalInPresentation = true
         }
     }

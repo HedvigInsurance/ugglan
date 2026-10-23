@@ -73,7 +73,7 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     @ViewBuilder
     func body(content: Content) -> some View {
         content
-            .introspect(.viewController, on: .iOS(.v13...)) { vc in
+            .introspect(.viewController, on: .iOS(.v17...)) { vc in
                 presentationViewModel.rootVC = vc
             }
             .onAppear {

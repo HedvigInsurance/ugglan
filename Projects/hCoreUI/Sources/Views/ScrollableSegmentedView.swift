@@ -59,7 +59,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                 }
                 .frame(minWidth: vm.viewWidth)
             }
-            .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+            .introspect(.scrollView, on: .iOS(.v17...)) { scrollView in
                 vm.headerScrollView = scrollView
                 scrollView.bounces = false
             }
@@ -152,7 +152,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                 }
             }
         }
-        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+        .introspect(.scrollView, on: .iOS(.v17...)) { scrollView in
             if vm.horizontalScrollView != scrollView {
                 vm.horizontalScrollView = scrollView
             }
