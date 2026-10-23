@@ -8,6 +8,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
+    @Environment(\.hFieldMultiline) var isMultiline
     @State private var vm = TextFieldVM()
 
     @State private var animationEnabled: Bool = true
@@ -108,11 +109,16 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 textField?.becomeFirstResponder()
             }
         }
+        .onChange(of: vm.textView) { _, textView in
+            if equals == focusValue {
+                textView?.becomeFirstResponder()
+            }
+        }
         .onChange(of: equals) { [weak vm] _, equals in
             if equals == focusValue {
-                vm?.textField?.becomeFirstResponder()
-            } else if vm?.textField?.isEditing == true {
-                vm?.textField?.resignFirstResponder()
+                vm?.responder?.becomeFirstResponder()
+            } else if vm?.responder?.isFirstResponder == true {
+                vm?.responder?.resignFirstResponder()
             }
         }
         .onChange(of: innerValue) { _, currentValue in
@@ -127,7 +133,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .accessibilityAddTraits(.isButton)
         .onTapGesture {
             equals = focusValue
-            vm.textField?.becomeFirstResponder()
+            vm.responder?.becomeFirstResponder()
         }
         .accessibilityAddTraits(.isButton)
         .onChange(of: error) {
@@ -138,6 +144,10 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .introspect(.textField, on: .iOS(.v17...)) { [weak vm] textField in
             vm?.textField = textField
+        }
+        // A vertical axis TextField is backed by a UITextView instead of a UITextField
+        .introspect(.textField(axis: .vertical), on: .iOS(.v17...)) { [weak vm] textView in
+            vm?.textView = textView
         }
         .onAppear {
             updateMoveLabel(false)
@@ -157,7 +167,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 equals = next
             } else {
                 equals = nil
-                vm?.textField?.resignFirstResponder()
+                vm?.responder?.resignFirstResponder()
             }
             updateMoveLabel(true)
             onReturn()
@@ -196,8 +206,21 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
     }
 
+    @ViewBuilder
     private var getTextField: some View {
-        SwiftUI.TextField(shouldMoveLabel ? textFieldPlaceholder ?? "" : "", text: $innerValue)
+        let title = shouldMoveLabel ? textFieldPlaceholder ?? "" : ""
+        if isMultiline {
+            styled(
+                SwiftUI.TextField(title, text: $innerValue, axis: .vertical)
+                    .lineLimit(2...2)
+            )
+        } else {
+            styled(SwiftUI.TextField(title, text: $innerValue))
+        }
+    }
+
+    private func styled(_ textField: some View) -> some View {
+        textField
             .modifier(hFontModifier(style: size == .large ? .body2 : .body1))
             .modifier(masking)
             .tint(foregroundColor)
@@ -233,10 +256,51 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 @Observable
 class TextFieldVM {
     @ObservationIgnored weak var textField: UITextField?
+    /// Backing view of a multiline field. Its delegate is owned by SwiftUI, so editing is observed via notifications.
+    @ObservationIgnored weak var textView: UITextView? {
+        didSet {
+            if oldValue !== textView {
+                observeTextView()
+            }
+        }
+    }
     @ObservationIgnored var observer = TextFieldObserver()
     var onBeginEditing: Date?
     var onDidEndEditing: Date?
     var onReturnTap: Date?
+
+    @ObservationIgnored nonisolated(unsafe) private var textViewObservers: [NSObjectProtocol] = []
+
+    var responder: UIResponder? {
+        textField ?? textView
+    }
+
+    private func observeTextView() {
+        textViewObservers.forEach { NotificationCenter.default.removeObserver($0) }
+        textViewObservers = []
+        guard let textView else { return }
+        let center = NotificationCenter.default
+        textViewObservers = [
+            center.addObserver(
+                forName: UITextView.textDidBeginEditingNotification,
+                object: textView,
+                queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.onBeginEditing = Date() }
+            },
+            center.addObserver(
+                forName: UITextView.textDidEndEditingNotification,
+                object: textView,
+                queue: .main
+            ) { [weak self] _ in
+                MainActor.assumeIsolated { self?.onDidEndEditing = Date() }
+            },
+        ]
+    }
+
+    deinit {
+        textViewObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    }
 }
 
 #Preview {
@@ -263,6 +327,15 @@ class TextFieldVM {
             error: $error
         )
         .disabled(true)
+        hFloatingTextField<PreviewType>(
+            masking: .init(type: .none),
+            value: $value,
+            equals: $previewType,
+            focusValue: .third,
+            placeholder: "Label",
+            error: $error
+        )
+        .hFieldMultiline()
     }
     .hFieldSize(.large)
 
@@ -281,6 +354,7 @@ class TextFieldVM {
 
         case first
         case second
+        case third
     }
 }
 
@@ -313,6 +387,16 @@ extension EnvironmentValues {
     @Entry public var hBackgroundOption: [BackgroundOption] = []
     @Entry public var hFieldSize: hFieldSize = .medium
     @Entry public var hFieldRightAttachedView: AnyView? = nil
+    @Entry public var hFieldMultiline: Bool = false
+}
+
+extension View {
+    /// Lets `hFloatingTextField` wrap onto two rows, at a fixed height. The field does not grow
+    /// with the text, longer input scrolls inside it.
+    /// Return inserts a new line instead of moving focus to the next field.
+    public func hFieldMultiline(_ isMultiline: Bool = true) -> some View {
+        environment(\.hFieldMultiline, isMultiline)
+    }
 }
 
 extension View {
