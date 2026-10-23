@@ -363,7 +363,7 @@ struct StepView: View {
                         }
                 }
             }
-            .onChange(of: step.state.isLoaderAnimating) { _, isLoading in
+            .onChange(of: step.state.isLoaderAnimating) {
                 if let indexOfCurrentStep = viewModel.allSteps.firstIndex(where: { $0.id == step.id }),
                     indexOfCurrentStep > 0
                 {

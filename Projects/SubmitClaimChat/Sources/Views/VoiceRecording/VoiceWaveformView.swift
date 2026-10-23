@@ -44,7 +44,7 @@ public struct VoiceWaveformView: View {
             .onChange(of: audioLevels) {
                 updateHeights()
             }
-            .onChange(of: isRecording) { _, isRecording in
+            .onChange(of: isRecording) {
                 updateHeights()
             }
         }
