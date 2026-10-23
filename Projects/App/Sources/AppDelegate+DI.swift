@@ -28,6 +28,8 @@ import hGraphQL
 enum DI {
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+        let experimentProvider = UnleashExperimentProvider()
+        Dependencies.shared.add(module: Module { () -> ExperimentProvider in experimentProvider })
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
     }
 
