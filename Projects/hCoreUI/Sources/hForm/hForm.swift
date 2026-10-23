@@ -123,7 +123,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                             let presented = vm.vc?.presentedViewController
                             let handlesKeyboard =
                                 presented == nil || presented is UISearchController || presented is UIAlertController
-                            vm.keyboardVisible = handlesKeyboard && keyboardHeight != nil
                             vm.ignoreKeyboard = !handlesKeyboard
                         }
                 }
@@ -251,7 +250,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 @MainActor
 private class hUpdatedFormViewModel: ObservableObject {
     var keyboardCancellable: AnyCancellable?
-    @Published var keyboardVisible: Bool = false
     @Published var ignoreKeyboard: Bool = false
     weak var scrollView: UIScrollView? {
         didSet {
