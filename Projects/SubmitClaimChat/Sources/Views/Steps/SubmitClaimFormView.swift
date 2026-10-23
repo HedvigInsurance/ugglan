@@ -157,21 +157,21 @@ struct FormFieldView: View {
     }
 
     var textView: some View {
-//        hTextView(
-//            selectedValue: fieldViewModel.value,
-//            placeholder: field.title,
-//            popupPlaceholder: field.title,
-//            minCharacters: field.minValue.flatMap { Int($0) },
-//            maxCharacters: field.maxValue.flatMap { Int($0) },
-//            enabled: true
-////            floatingPlaceholder: true
-//        ) { text in
-//            fieldViewModel.value = text
-//        }
-//        .hTextFieldError(fieldViewModel.error)
-//        // Restore the section padding stripped by the surrounding form so the
-//        // text is inset from the box edge
-//        .hWithoutHorizontalPadding(.none)
+        //        hTextView(
+        //            selectedValue: fieldViewModel.value,
+        //            placeholder: field.title,
+        //            popupPlaceholder: field.title,
+        //            minCharacters: field.minValue.flatMap { Int($0) },
+        //            maxCharacters: field.maxValue.flatMap { Int($0) },
+        //            enabled: true
+        ////            floatingPlaceholder: true
+        //        ) { text in
+        //            fieldViewModel.value = text
+        //        }
+        //        .hTextFieldError(fieldViewModel.error)
+        //        // Restore the section padding stripped by the surrounding form so the
+        //        // text is inset from the box edge
+        //        .hWithoutHorizontalPadding(.none)
         hFloatingTextField(
             masking: .init(type: .none),
             value: $fieldViewModel.value,
