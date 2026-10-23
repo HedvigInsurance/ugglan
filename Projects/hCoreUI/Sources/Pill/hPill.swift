@@ -133,13 +133,14 @@ fileprivate struct PillModifier: ViewModifier {
         }
     }
 
-    /// `capsuleShape` was expressed as cornerRadius 24, which only rendered as a capsule
-    /// because the radius exceeded half the pill's height and CoreGraphics clamped it. iOS 26
-    /// renders shapes through a signed-distance-field path that is not forgiving of a radius
-    /// larger than the shape allows, so name the capsule directly instead.
+    /// `capsuleShape` is designed as cornerRadius 24. On a single-line pill that exceeds half the
+    /// height and used to be clamped by CoreGraphics into a capsule, but iOS 26 renders shapes through
+    /// a signed-distance-field path that is not forgiving of an oversized radius, so clamp it ourselves.
+    /// A plain `Capsule()` is not a substitute: it keeps growing the radius as the pill gets taller
+    /// (multi-line text, large Dynamic Type), while the design caps it at 24.
     private var pillShape: AnyShape {
         capsuleShape
-            ? AnyShape(Capsule())
+            ? AnyShape(RoundedRectangle(cornerRadius: .cornerRadiusXXL))
             : AnyShape(RoundedRectangle(cornerRadius: getCornerRadius))
     }
 
