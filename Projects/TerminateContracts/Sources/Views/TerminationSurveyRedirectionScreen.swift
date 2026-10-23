@@ -5,7 +5,7 @@ import hCoreUI
 
 struct TerminationSurveyRedirectionScreen: View {
     let route: TerminationSurveyRedirectionRoute
-    @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationFlowNavigationViewModel
 
     private var redirection: TerminationRedirection { route.redirection }
 
@@ -106,6 +106,6 @@ struct TerminationSurveyRedirectionScreen: View {
             route: .init(option: option, comment: nil)!
         )
         .navigationBarTitleDisplayMode(.inline)
-        .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
+        .environment(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
     }
 }

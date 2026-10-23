@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimTextCard: View {
-    @ObservedObject var viewModel: SubmitClaimAudioStep
+    @Bindable var viewModel: SubmitClaimAudioStep
     var onFocus: () -> Void = {}
     @FocusState private var isFocused: Bool
     @Environment(\.verticalSizeClass) var verticalSizeClass

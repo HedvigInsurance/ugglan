@@ -4,18 +4,19 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class IntentViewModel: ObservableObject {
-    @Published var intent: Intent?
-    @Published var isLoading: Bool = false
-    @Published var errorMessageForInput: String?
-    @Published var errorMessageForStakeholders: String?
-    @Published var viewState: ProcessingState = .loading {
+@Observable
+public class IntentViewModel {
+    var intent: Intent?
+    var isLoading: Bool = false
+    var errorMessageForInput: String?
+    var errorMessageForStakeholders: String?
+    var viewState: ProcessingState = .loading {
         didSet {
             invalidateDetents()
         }
     }
 
-    var service = EditStakeholdersService()
+    @ObservationIgnored var service = EditStakeholdersService()
 
     var showErrorViewForStakeholders: Bool {
         errorMessageForStakeholders != nil
@@ -30,7 +31,7 @@ public class IntentViewModel: ObservableObject {
         return intent.newTotalCost.net != intent.currentTotalCost.net
     }
 
-    var contractId: String?
+    @ObservationIgnored var contractId: String?
 
     @MainActor
     func getIntent(

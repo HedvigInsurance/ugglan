@@ -4,12 +4,13 @@ import hCore
 import hCoreUI
 
 public struct OTPEntryView: View {
-    @StateObject private var vm: OTPEntryViewModel = .init()
-    @EnvironmentObject var otpVM: OTPState
+    @State private var vm: OTPEntryViewModel = .init()
+    @Environment(OTPState.self) var otpVM
     @EnvironmentObject var router: NavigationRouter
     public init() {}
 
     public var body: some View {
+        @Bindable var otpVM = otpVM
         hForm {}
             .hFormTitle(title: .init(.small, .body1, vm.title, alignment: .leading))
             .hFormAttachToBottom {
@@ -45,15 +46,16 @@ public struct OTPEntryView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return OTPEntryView()
-        .environmentObject(OTPState())
+        .environment(OTPState())
         .environmentObject(NavigationRouter())
 }
 
 @MainActor
-class OTPEntryViewModel: ObservableObject {
-    var authenticationService = AuthenticationService()
-    @hTextFieldFocusState var focusInputField = false
-    weak var router: NavigationRouter?
+@Observable
+class OTPEntryViewModel {
+    @ObservationIgnored var authenticationService = AuthenticationService()
+    @ObservationIgnored @hTextFieldFocusState var focusInputField = false
+    @ObservationIgnored weak var router: NavigationRouter?
     var masking: Masking {
         Masking(type: .email)
     }

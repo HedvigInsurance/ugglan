@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationProcessingScreen: View {
-    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    @Bindable var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     var body: some View {
         ProcessingStateView(

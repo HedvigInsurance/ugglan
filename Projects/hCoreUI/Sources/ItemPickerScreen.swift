@@ -1,18 +1,19 @@
 import SwiftUI
 import hCore
 
-public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
+@Observable
+public class ItemConfig<T> where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
-    var items: [PickerModel]
+    @ObservationIgnored var items: [PickerModel]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
     let buttonText: String
     let infoCard: ItemPickerInfoCard?
-    var manualInput: ItemManualInput
+    @ObservationIgnored var manualInput: ItemManualInput
     let returnValueOnSelection: Bool
-    @Published var type: ItemPickerFieldType? = nil
-    @Published var selectedItems: [T] = []
+    var type: ItemPickerFieldType? = nil
+    var selectedItems: [T] = []
 
     public init(
         items: [(object: T, displayName: ItemModel)],
@@ -58,8 +59,8 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     public class ItemManualInput {
         let id = "manualInputId"
         let placeholder: String?
-        @Published public var brandName: String = ""
-        @Published var input: Bool = false
+        public var brandName: String = ""
+        var input: Bool = false
 
         public init(
             placeholder: String? = nil,
@@ -79,7 +80,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hItemPickerAttributes) var attributes
     @Environment(\.hFieldSize) var fieldSize
-    @ObservedObject private var config: ItemConfig<T>
+    @Bindable private var config: ItemConfig<T>
 
     public init(
         config: ItemConfig<T>

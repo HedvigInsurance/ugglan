@@ -109,7 +109,7 @@ struct TooltipViewModifier: ViewModifier {
     let type: ToolbarOptionType
     let placement: ListToolBarPlacement
     let direction: TooltipDirection
-    @StateObject private var toolTipManager = ToolTipManager.shared
+    @State private var toolTipManager = ToolTipManager.shared
     @State var showTooltip = false
     @State var xOffset: CGFloat = 0
     func body(content: Content) -> some View {
@@ -161,7 +161,7 @@ struct TooltipView: View {
 
     @State private var isTooltipVisible: Bool = false
     @State private var autoHideTask: Task<Void, Never>?
-    @StateObject private var toolTipManager = ToolTipManager.shared
+    @State private var toolTipManager = ToolTipManager.shared
 
     // MARK: - Init
 
@@ -408,13 +408,14 @@ private struct TooltipAnchorPreview: View {
 }
 
 @MainActor
-class ToolTipManager: ObservableObject {
+@Observable
+class ToolTipManager {
     static let shared = ToolTipManager()
 
     private init() {}
 
-    @Published fileprivate var displayedTooltip: ToolbarOptionType?
-    @Published private var toolTipsToShow: Set<ToolbarOptionType> = Set()
+    fileprivate var displayedTooltip: ToolbarOptionType?
+    private var toolTipsToShow: Set<ToolbarOptionType> = Set()
 
     func checkIfDisplayIsNeeded(_ tooltip: ToolbarOptionType) {
         if tooltip.shouldShowTooltip(for: tooltip.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)) {

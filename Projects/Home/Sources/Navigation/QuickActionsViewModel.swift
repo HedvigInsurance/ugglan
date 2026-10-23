@@ -12,14 +12,15 @@ import hCore
 import hCoreUI
 
 @MainActor
-public final class QuickActionsViewModel: ObservableObject {
-    @Published var editContractActions: EditInsuranceActionsWrapper?
-    @Published var isTravelCertificatePresented = false
-    @Published var isChangeAddressPresented = false
-    @Published var firstVetPartners: FirstVetPartnersWrapper?
-    @Published var sickAbroadData: SubmitClaimChat.Deflection?
-    @Published var isChangeTierPresented: ChangeTierContractsInput?
-    @Published var isPaymentsPresented = false
+@Observable
+public final class QuickActionsViewModel {
+    var editContractActions: EditInsuranceActionsWrapper?
+    var isTravelCertificatePresented = false
+    var isChangeAddressPresented = false
+    var firstVetPartners: FirstVetPartnersWrapper?
+    var sickAbroadData: SubmitClaimChat.Deflection?
+    var isChangeTierPresented: ChangeTierContractsInput?
+    var isPaymentsPresented = false
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     let editStakeholdersVm = EditStakeholdersViewModel(
         existingStakeholders: globalAppStateContainer.get(ContractStore.self)
@@ -90,7 +91,7 @@ extension View {
 }
 
 private struct QuickActions<RedirectContent: View>: ViewModifier {
-    @ObservedObject var vm: QuickActionsViewModel
+    @Bindable var vm: QuickActionsViewModel
     private let redirect: (HelpCenterRedirectType) -> RedirectContent
 
     init(

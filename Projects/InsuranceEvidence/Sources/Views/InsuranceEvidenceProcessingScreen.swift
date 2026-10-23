@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct InsuranceEvidenceProcessingScreen: View {
-    @ObservedObject var vm: ProcessingViewModel
+    @Bindable var vm: ProcessingViewModel
     @EnvironmentObject var router: NavigationRouter
     var body: some View {
         ProcessingStateView(
@@ -56,13 +56,14 @@ struct InsuranceEvidenceProcessingScreen: View {
 }
 
 @MainActor
-class ProcessingViewModel: ObservableObject {
-    fileprivate weak var navigation: InsuranceEvidenceNavigationViewModel!
+@Observable
+class ProcessingViewModel {
+    @ObservationIgnored fileprivate weak var navigation: InsuranceEvidenceNavigationViewModel!
     private let input: InsuranceEvidenceInput
     fileprivate let modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
-    @Published fileprivate var viewState: ProcessingState = .loading
-    @Published var insuranceEvidence: InsuranceEvidence?
+    fileprivate var viewState: ProcessingState = .loading
+    var insuranceEvidence: InsuranceEvidence?
 
     init(input: InsuranceEvidenceInput, navigation: InsuranceEvidenceNavigationViewModel) {
         self.input = input

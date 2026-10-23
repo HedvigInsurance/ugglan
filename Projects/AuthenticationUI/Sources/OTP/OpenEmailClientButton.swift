@@ -54,7 +54,7 @@ public struct OpenEmailClientButton: View {
     private var hasPressedButton: (() -> Void)?
     @Binding private var hasAcceptedAlert: Bool
     private let buttonSize: OpenEmailButtonType
-    @EnvironmentObject var otpVM: OTPState
+    @Environment(OTPState.self) var otpVM
 
     public init(
         options: EmailOptions? = nil,

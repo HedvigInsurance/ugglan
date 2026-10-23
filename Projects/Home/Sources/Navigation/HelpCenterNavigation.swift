@@ -5,11 +5,12 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class HelpCenterNavigationViewModel: ObservableObject {
+@Observable
+public class HelpCenterNavigationViewModel {
     // Set by the deep-link handler before/after the help-center modal opens.
     // Consumed by `HelpCenterNavigation` via .task(id:) so the push runs after
     // the NavigationStack has mounted and registered its destination modifiers.
-    @Published public var pendingPuppyGuideRoute: PuppyGuideRoute?
+    public var pendingPuppyGuideRoute: PuppyGuideRoute?
     public let quickActionsVm = QuickActionsViewModel()
     public let router = NavigationRouter()
 
@@ -48,7 +49,7 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
 }
 
 private struct PaymentMethodsFromQuickActions: ViewModifier {
-    @ObservedObject var vm: QuickActionsViewModel
+    @Bindable var vm: QuickActionsViewModel
 
     func body(content: Content) -> some View {
         content.handlePaymentMethods(presented: $vm.isPaymentsPresented)
@@ -56,7 +57,7 @@ private struct PaymentMethodsFromQuickActions: ViewModifier {
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
+    let helpCenterVm: HelpCenterNavigationViewModel
 
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
 

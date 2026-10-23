@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct InsuranceEvidenceInputScreen: View {
-    @ObservedObject var vm: InsuranceEvidenceInputScreenViewModel
+    @Bindable var vm: InsuranceEvidenceInputScreenViewModel
     var body: some View {
         hForm {}
             .sectionContainerStyle(.transparent)
@@ -43,11 +43,12 @@ struct InsuranceEvidenceInputScreen: View {
 }
 
 @MainActor
-class InsuranceEvidenceInputScreenViewModel: ObservableObject {
-    weak var insuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel!
-    @Published var state: ProcessingState = .loading
-    @Published var insuranceEvidenceInput = InsuranceEvidenceInput(email: "")
-    @Published var focused: Bool?
+@Observable
+class InsuranceEvidenceInputScreenViewModel {
+    @ObservationIgnored weak var insuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel!
+    var state: ProcessingState = .loading
+    var insuranceEvidenceInput = InsuranceEvidenceInput(email: "")
+    var focused: Bool?
     init(InsuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel) {
         insuranceEvidenceNavigationViewModel = InsuranceEvidenceNavigationViewModel
         getData()

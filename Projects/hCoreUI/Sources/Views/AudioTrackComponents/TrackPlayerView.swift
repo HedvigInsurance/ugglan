@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 
 public struct TrackPlayerView: View {
-    @ObservedObject var audioPlayer: AudioPlayer
+    let audioPlayer: AudioPlayer
 
     public init(
         audioPlayer: AudioPlayer

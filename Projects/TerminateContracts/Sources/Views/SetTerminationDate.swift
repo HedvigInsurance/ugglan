@@ -5,7 +5,7 @@ import hCoreUI
 struct SetTerminationDate: View {
     @State private var terminationDate: Date
     @State private var isHidden = false
-    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    let terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         terminationNavigationVm: TerminationFlowNavigationViewModel

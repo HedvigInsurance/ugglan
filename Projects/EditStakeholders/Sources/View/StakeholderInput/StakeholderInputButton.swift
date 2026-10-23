@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 public struct StakeholderInputButton: View {
-    @ObservedObject var vm: StakeholderInputViewModel
-    @ObservedObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @ObservedObject private var intentViewModel: IntentViewModel
+    let vm: StakeholderInputViewModel
+    private let editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    private let intentViewModel: IntentViewModel
 
     private let stakeholderType: StakeholderType
 
@@ -127,8 +127,8 @@ public struct StakeholderInputButton: View {
 private struct StakeholderActionButton: View {
     let style: hButtonConfigurationType
     let title: String
-    @ObservedObject var vm: StakeholderInputViewModel
-    @ObservedObject private var intentViewModel: IntentViewModel
+    let vm: StakeholderInputViewModel
+    private let intentViewModel: IntentViewModel
     let onTap: () async -> Void
 
     init(

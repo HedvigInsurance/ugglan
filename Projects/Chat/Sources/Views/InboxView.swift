@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct InboxView: View {
-    @StateObject var vm = InboxViewModel()
+    @State var vm = InboxViewModel()
     @InjectObservableObject var featureFlags: FeatureFlags
     @Namespace var animationNamespace
     @State private var isNewMessageSheetPresented = false
@@ -210,13 +210,14 @@ public struct InboxView: View {
 }
 
 @MainActor
-class InboxViewModel: ObservableObject {
-    @Inject var service: ConversationsClient
-    @Published var conversations: [Conversation] = []
-    private var pollTimerCancellable: AnyCancellable?
-    private var chatClosedObserver: NSObjectProtocol?
-    @Published var processingState: ProcessingState = .loading
-    private var hasFetchedOnce = false
+@Observable
+class InboxViewModel {
+    @ObservationIgnored @Inject var service: ConversationsClient
+    var conversations: [Conversation] = []
+    @ObservationIgnored private var pollTimerCancellable: AnyCancellable?
+    @ObservationIgnored private var chatClosedObserver: NSObjectProtocol?
+    var processingState: ProcessingState = .loading
+    @ObservationIgnored private var hasFetchedOnce = false
 
     var isInboxEmpty: Bool {
         conversations.isEmpty && processingState == .success

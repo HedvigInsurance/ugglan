@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct OnboardingWelcomeScreen: View {
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
     @State private var showBadge = false
     var body: some View {
         hForm {
@@ -59,5 +59,5 @@ struct OnboardingWelcomeScreen: View {
 
 #Preview {
     OnboardingWelcomeScreen()
-        .environmentObject(OnboardingNavigationViewModel())
+        .environment(OnboardingNavigationViewModel())
 }

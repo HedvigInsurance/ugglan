@@ -7,7 +7,7 @@ import hCoreUI
 
 public struct MyInfoView: View {
     @EnvironmentObject var router: NavigationRouter
-    @StateObject var vm = MyInfoViewModel()
+    @State var vm = MyInfoViewModel()
     let presentationMode: PresentationMode
 
     public init(presentationMode: PresentationMode = .navigation) {
@@ -92,39 +92,33 @@ extension MyInfoView {
 }
 
 @MainActor
-public class MyInfoViewModel: ObservableObject {
+@Observable
+public class MyInfoViewModel {
     private let profileService = ProfileService()
-    @AppState var profileStore: ProfileStore
-    @AppState var homeStore: HomeStore
-    @Published var type: MyInfoViewEditType?
-    @Published var currentPhoneInput: String = ""
-    @Published var phoneError: String?
-    @Published var currentEmailInput: String = ""
-    @Published var emailError: String?
-    @Published var error: String?
-    @Published var viewState: ProcessingState = .success
-    @Published var disabledSaveButton: Bool = false
+    @ObservationIgnored @AppState var profileStore: ProfileStore
+    @ObservationIgnored @AppState var homeStore: HomeStore
+    var type: MyInfoViewEditType?
+    var currentPhoneInput: String = "" {
+        didSet { scheduleValidation() }
+    }
+    var phoneError: String?
+    var currentEmailInput: String = "" {
+        didSet { scheduleValidation() }
+    }
+    var emailError: String?
+    var error: String?
+    var viewState: ProcessingState = .success
+    var disabledSaveButton: Bool = false
 
-    private var cancellables = Set<AnyCancellable>()
-    @Published var showInfoCard: Bool
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+    var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalAppStateContainer.get()
         showInfoCard = store.memberDetails?.isContactInfoUpdateNeeded ?? false
         currentPhoneInput = store.memberDetails?.phone ?? ""
         currentEmailInput = store.memberDetails?.email ?? ""
-        $currentPhoneInput
-            .delay(for: 0.05, scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.isValid()
-            }
-            .store(in: &cancellables)
-        $currentEmailInput
-            .delay(for: 0.05, scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.isValid()
-            }
-            .store(in: &cancellables)
+        isValid()
 
         store.$memberDetails
             .receive(on: RunLoop.main)
@@ -134,6 +128,14 @@ public class MyInfoViewModel: ObservableObject {
                 self?.showInfoCard = state ?? false
             }
             .store(in: &cancellables)
+    }
+
+    /// Validates after a short delay so the text field has time to clear its error for the new input first.
+    private func scheduleValidation() {
+        Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(50))
+            self?.isValid()
+        }
     }
 
     func isValid() {

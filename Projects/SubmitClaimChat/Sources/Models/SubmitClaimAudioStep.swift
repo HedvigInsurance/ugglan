@@ -2,6 +2,7 @@ import AVFoundation
 import Apollo
 import Environment
 import Foundation
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -12,27 +13,92 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
-    @Published var textInput: String = "" {
-        didSet {
+    @ObservationIgnored private var _textInput: String = ""
+    var textInput: String {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.textInput)
+            return _textInput
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.textInput) {
+                _textInput = newValue
+            }
             if !characterMismatch { showsLengthMessage = false }
         }
     }
-    @Published private var showsLengthMessage = false
+
+    @ObservationIgnored private var _showsLengthMessage = false
+    private var showsLengthMessage: Bool {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.showsLengthMessage)
+            return _showsLengthMessage
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.showsLengthMessage) {
+                _showsLengthMessage = newValue
+            }
+        }
+    }
     var textInputError: String? {
         showsLengthMessage && characterMismatch
             ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
     }
-    @Published private(set) var inputMode: InputMode = .choose {
-        didSet {
+    @ObservationIgnored private var _inputMode: InputMode = .choose
+    private(set) var inputMode: InputMode {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.inputMode)
+            return _inputMode
+        }
+        set {
+            let oldValue = _inputMode
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.inputMode) {
+                _inputMode = newValue
+            }
             guard inputMode != .voice, oldValue == .voice else { return }
             voiceRecorder.isCountingDown = false
             voiceRecorder.stopRecording()
             voiceRecorder.stopPlayback()
         }
     }
-    @Published private(set) var shouldFocusTextInput = false
-    @Published private(set) var submittedKind: AudioRecordingStepType?
-    @Published var uploadProgress: Double = 0
+
+    @ObservationIgnored private var _shouldFocusTextInput = false
+    private(set) var shouldFocusTextInput: Bool {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.shouldFocusTextInput)
+            return _shouldFocusTextInput
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.shouldFocusTextInput) {
+                _shouldFocusTextInput = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _submittedKind: AudioRecordingStepType?
+    private(set) var submittedKind: AudioRecordingStepType? {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.submittedKind)
+            return _submittedKind
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.submittedKind) {
+                _submittedKind = newValue
+            }
+        }
+    }
+
+    @ObservationIgnored private var _uploadProgress: Double = 0
+    var uploadProgress: Double {
+        get {
+            observationRegistrar.access(self, keyPath: \SubmitClaimAudioStep.uploadProgress)
+            return _uploadProgress
+        }
+        set {
+            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimAudioStep.uploadProgress) {
+                _uploadProgress = newValue
+            }
+        }
+    }
 
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {

@@ -8,7 +8,7 @@ extension View {
 
 private struct RotateViewModifier: ViewModifier {
     let onAppear: Bool
-    @StateObject private var vm = RotateViewModel()
+    @State private var vm = RotateViewModel()
     func body(content: Content) -> some View {
         content
             .rotationEffect(.degrees(vm.angle))
@@ -21,9 +21,10 @@ private struct RotateViewModifier: ViewModifier {
 }
 
 @MainActor
-private class RotateViewModel: ObservableObject {
-    @Published var angle: Double = 0
-    private var task: Task<(), any Error>?
+@Observable
+private class RotateViewModel {
+    var angle: Double = 0
+    @ObservationIgnored private var task: Task<(), any Error>?
     init() {
         animate()
     }

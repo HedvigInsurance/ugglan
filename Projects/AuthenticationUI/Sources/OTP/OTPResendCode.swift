@@ -4,8 +4,8 @@ import hCore
 import hCoreUI
 
 struct ResendOTPCode: View {
-    @StateObject private var vm = ResendOTPCodeViewModel()
-    @ObservedObject var otpVM: OTPState
+    @State private var vm = ResendOTPCodeViewModel()
+    let otpVM: OTPState
 
     var body: some View {
         Group {
@@ -46,9 +46,10 @@ struct ResendOTPCode: View {
 }
 
 @MainActor
-class ResendOTPCodeViewModel: ObservableObject {
-    private var authenticationService = AuthenticationService()
-    @Published var canResendAtText: String = ""
+@Observable
+class ResendOTPCodeViewModel {
+    @ObservationIgnored private var authenticationService = AuthenticationService()
+    var canResendAtText: String = ""
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     func updateText(state: OTPState) {

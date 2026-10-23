@@ -4,14 +4,14 @@ import hCore
 import hCoreUI
 
 struct HeaderView: View {
-    @StateObject var vm: HeaderViewModel
+    @State var vm: HeaderViewModel
     let didPressInfo: () -> Void
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel,
         didPressInfo: @escaping () -> Void
     ) {
-        _vm = StateObject(wrappedValue: .init(foreverData: foreverNavigationVm.foreverData))
+        _vm = State(wrappedValue: .init(foreverData: foreverNavigationVm.foreverData))
         self.didPressInfo = didPressInfo
     }
 
@@ -64,10 +64,11 @@ struct HeaderView: View {
     }
 }
 
-class HeaderViewModel: ObservableObject {
-    @Published var showPieChart: Bool = false
+@Observable
+class HeaderViewModel {
+    var showPieChart: Bool = false
     let foreverData: ForeverData?
-    @Published var showMonthlyDiscount: Bool = false
+    var showMonthlyDiscount: Bool = false
 
     init(
         foreverData: ForeverData?

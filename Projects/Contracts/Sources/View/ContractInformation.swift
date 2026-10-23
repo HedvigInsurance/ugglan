@@ -10,7 +10,7 @@ import hCoreUI
 
 struct ContractInformationView: View {
     @AppObservedObject var store: ContractStore
-    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) private var contractsNavigationVm
     let id: String
 
     var body: some View {
@@ -276,7 +276,7 @@ extension Stakeholder {
 }
 
 public struct MissingStakeholderInfoCard: View {
-    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) private var contractsNavigationVm
 
     let config: StakeholdersConfig
     public init(contract: Contract, type: StakeholderType) {
@@ -306,7 +306,7 @@ public struct MissingStakeholderInfoCard: View {
     Task { await store.fetchContracts() }
 
     return ScrollView { ContractInformationView(id: "contractId") }
-        .environmentObject(ContractsNavigationViewModel())
+        .environment(ContractsNavigationViewModel())
 }
 
 extension Contract {

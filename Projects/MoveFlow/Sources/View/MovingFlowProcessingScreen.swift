@@ -4,11 +4,11 @@ import hCore
 import hCoreUI
 
 struct MovingFlowProcessingScreen: View {
-    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @Environment(MovingFlowNavigationViewModel.self) var movingFlowNavigationVm
     var onSuccessButtonAction: () -> Void
     var onErrorButtonAction: () -> Void
 
-    @ObservedObject var movingFlowConfirmVm: MovingFlowConfirmViewModel
+    @Bindable var movingFlowConfirmVm: MovingFlowConfirmViewModel
 
     var body: some View {
         ProcessingStateView(
@@ -53,5 +53,5 @@ struct MovingFlowProcessingScreen: View {
         onErrorButtonAction: {},
         movingFlowConfirmVm: .init()
     )
-    .environmentObject(MovingFlowNavigationViewModel())
+    .environment(MovingFlowNavigationViewModel())
 }

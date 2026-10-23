@@ -5,7 +5,7 @@ import hCoreUI
 
 struct AddonActionSheet: View {
     let addonAction: AddonAction
-    @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
+    let contractsNavigationVm: ContractsNavigationViewModel
     private let router = NavigationRouter()
     @State private var selectedOption: AddonAction.AddonActionType?
 

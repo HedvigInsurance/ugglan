@@ -6,7 +6,7 @@ import hCoreUI
 
 struct ContractCoverageView: View {
     @AppObservedObject var store: ContractStore
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+    @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
     let id: String
 
     var body: some View {

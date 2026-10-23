@@ -46,7 +46,7 @@ final class SubmitClaimChatTests: XCTestCase {
     /// The flow-start failure: `SubmitClaimChatViewModel.init` kicks off `startClaimIntent()`, the
     /// service throws, and the screen's own `.onChange(of: viewModel.showError)` builds the alert.
     /// Its `onClose` runs on `router`, which the screen reads from the environment - reaching it
-    /// through the screen struct captures `@EnvironmentObject var viewModel` with it, and the view
+    /// through the screen struct captures `@Environment var viewModel` with it, and the view
     /// model owns the `alertVm` the closure is stored on.
     func testStartFailureErrorAlertDoesNotRetainFlow() throws {
         let scene = try XCTUnwrap(Self.windowScene, "no window scene in this host, so the screen cannot be rendered")
@@ -172,7 +172,7 @@ final class SubmitClaimChatTests: XCTestCase {
                 sut,
                 "the step's error alert must not capture CurrentStepView, which holds this alert view model"
             )
-            XCTAssertNil(stepSut, "a captured CurrentStepView holds its @ObservedObject step handler too")
+            XCTAssertNil(stepSut, "a captured CurrentStepView holds its step handler too")
         }
     }
 
@@ -219,8 +219,8 @@ final class SubmitClaimChatTests: XCTestCase {
         UIHostingController(
             rootView:
                 SubmitClaimChatScreen()
-                .environmentObject(viewModel)
-                .environmentObject(viewModel.scrollCoordinator)
+                .environment(viewModel)
+                .environment(viewModel.scrollCoordinator)
                 .environmentObject(viewModel.router)
         )
     }
@@ -251,19 +251,17 @@ final class SubmitClaimChatTests: XCTestCase {
 /// `.detent` in `SubmitClaimChatScreenAlertHelper` presents nothing while the stage's root-less
 /// window is key, so its throwaway `hHostingController` deinits at once and writes `presented =
 /// false` back, nilling `alertPresentationModel` and with it `alertModel` - usually inside the same
-/// run-loop turn that stored it. `@Published` emits in `willSet`, so the store itself cannot be
-/// missed.
+/// run-loop turn that stored it, and observation reports a change before it is applied. The view
+/// model's `onAlertPresentationModelSet` hook runs inside the store itself, so it cannot be missed.
 @MainActor
 private final class AlertRecorder {
     private(set) var model: SubmitClaimChatScreenAlertViewModel.AlertModel?
-    private var cancellable: AnyCancellable?
 
     init(alertVm: SubmitClaimChatScreenAlertViewModel) {
-        cancellable = alertVm.$alertPresentationModel
-            .sink { [weak self] model in
-                guard let self, self.model == nil, let model else { return }
-                self.model = model
-            }
+        alertVm.onAlertPresentationModelSet = { [weak self] model in
+            guard let self, self.model == nil, let model else { return }
+            self.model = model
+        }
     }
 }
 

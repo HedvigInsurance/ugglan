@@ -5,22 +5,23 @@ import SwiftUI
 import hCore
 
 @MainActor
-public final class VoiceRecorder: ObservableObject {
+@Observable
+public final class VoiceRecorder {
     public static let audioFileExtension = "m4a"
 
     // MARK: - Published State
-    @Published public private(set) var recordingState: RecordingState = .idle
-    @Published public private(set) var currentTime: TimeInterval?
-    @Published public private(set) var audioLevels: [CGFloat] = []
-    @Published public private(set) var recordedFileURL: URL?
-    @Published public var error: VoiceRecorderError?
+    public private(set) var recordingState: RecordingState = .idle
+    public private(set) var currentTime: TimeInterval?
+    public private(set) var audioLevels: [CGFloat] = []
+    public private(set) var recordedFileURL: URL?
+    public var error: VoiceRecorderError?
 
-    public var isRecording: Bool { recordingState == .recording }
-    @Published public var isSending: Bool = false
-    @Published public var isCountingDown: Bool = false
+    @ObservationIgnored public var isRecording: Bool { recordingState == .recording }
+    public var isSending: Bool = false
+    public var isCountingDown: Bool = false
 
-    public var hasRecording: Bool { recordedFileURL != nil }
-    public var isPlaying: Bool { recordingState == .playing }
+    @ObservationIgnored public var hasRecording: Bool { recordedFileURL != nil }
+    @ObservationIgnored public var isPlaying: Bool { recordingState == .playing }
 
     public var progress: Double {
         guard let player, player.duration > 0 else { return 0 }
@@ -29,14 +30,14 @@ public final class VoiceRecorder: ObservableObject {
 
     // MARK: - Private Properties
     private let filePath: URL
-    private var recorder: AVAudioRecorder?
-    private var player: AVAudioPlayer?
-    private var timer: Timer?
-    private var meteringTimer: Timer?
-    private var recordingStartTime: Date?
-    private var recentPeaks: [CGFloat] = []
+    @ObservationIgnored private var recorder: AVAudioRecorder?
+    @ObservationIgnored private var player: AVAudioPlayer?
+    @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var meteringTimer: Timer?
+    @ObservationIgnored private var recordingStartTime: Date?
+    @ObservationIgnored private var recentPeaks: [CGFloat] = []
     private let peakWindowSize = 30  // Track peaks over last 30 samples
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Types
     public enum RecordingState: Equatable {

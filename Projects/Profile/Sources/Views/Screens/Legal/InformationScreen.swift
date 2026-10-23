@@ -10,7 +10,7 @@ import hCoreUI
 struct InformationScreen: View {
     @State var showSubmitBugAlert = false
     @State var hasPressedSubmitBugOk = false
-    @StateObject private var vm = InformationViewModel()
+    @State private var vm = InformationViewModel()
     let store: ProfileStore = globalAppStateContainer.get()
 
     var body: some View {
@@ -100,7 +100,7 @@ struct InformationScreen: View {
             },
             buttonSize: .secondary
         )
-        .environmentObject(OTPState())
+        .environment(OTPState())
         .alert(isPresented: $showSubmitBugAlert) {
             Alert(
                 title: Text(L10n.AppInfo.SubmitBug.warning),
@@ -165,8 +165,9 @@ extension InformationScreen {
 }
 
 @MainActor
-class InformationViewModel: ObservableObject {
-    @Published var deviceId: String?
+@Observable
+class InformationViewModel {
+    var deviceId: String?
 
     init() {
         Task {

@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct ChangeEuroBonusView: View {
-    @StateObject private var vm = ChangeEurobonusViewModel()
+    @State private var vm = ChangeEurobonusViewModel()
     @EnvironmentObject var router: NavigationRouter
 
     var body: some View {
@@ -25,9 +25,10 @@ struct ChangeEuroBonusView: View {
 }
 
 @MainActor
-private class ChangeEurobonusViewModel: ObservableObject {
+@Observable
+private class ChangeEurobonusViewModel {
     let inputVm: TextInputViewModel
-    var profileService = ProfileService()
+    @ObservationIgnored var profileService = ProfileService()
     var router: NavigationRouter?
 
     init() {

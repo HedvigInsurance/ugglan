@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 
 struct OnboardingAnalyticsScreen: View {
-    @EnvironmentObject var vm: OnboardingNavigationViewModel
+    @Environment(OnboardingNavigationViewModel.self) var vm
 
     var body: some View {
         AnalyticsConsentScreen { _ in
@@ -16,5 +16,5 @@ struct OnboardingAnalyticsScreen: View {
 
 #Preview {
     OnboardingAnalyticsScreen()
-        .environmentObject(OnboardingNavigationViewModel())
+        .environment(OnboardingNavigationViewModel())
 }
