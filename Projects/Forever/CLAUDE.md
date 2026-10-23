@@ -21,7 +21,7 @@ The referral program module. Displays a user's referral code, discount informati
 - Depended on by: Payment, Campaign, App
 
 ## Navigation
-- `ForeverNavigation`: Can operate with its own `RouterHost` or be embedded (`useOwnNavigation` flag). Receives a `Router` via `@EnvironmentObject`.
+- `ForeverNavigation`: Can operate with its own `RouterHost` or be embedded (`useOwnNavigation` flag). Receives a `Router` via `@Environment`.
 - Change code flow presented as a detent with its own embedded navigation and router.
 - Routes: `ForeverRouterActions.success` for the success screen after code change.
 - Sharing uses `UIActivityViewController` via `ModalPresentationSourceWrapperViewModel`.

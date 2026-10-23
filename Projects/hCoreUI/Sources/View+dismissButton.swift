@@ -68,7 +68,7 @@ private struct DismissButton: ViewModifier {
     let cancelButtonTitle: String?
     let confirmButtonRole: ButtonRole?
     let action: (() -> Void)?
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @State var isAlertPresented = false
 
     init(
@@ -164,7 +164,7 @@ private struct DismissAlertPopup: ViewModifier {
     let confirmButtonRole: ButtonRole?
     let action: (() -> Void)?
     @Binding var isPresented: Bool
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     init(
         title: String = L10n.General.areYouSure,

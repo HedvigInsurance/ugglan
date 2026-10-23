@@ -83,7 +83,7 @@ public class HomeNavigationViewModel {
         }
     }
 
-    public var router = NavigationRouter()
+    @ObservationIgnored public var router = NavigationRouter()
     public let quickActionsVm = QuickActionsViewModel()
 
     public var claimsAutomationStartInput: StartClaimInput?

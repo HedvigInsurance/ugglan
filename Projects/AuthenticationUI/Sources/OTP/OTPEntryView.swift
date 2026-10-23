@@ -6,7 +6,7 @@ import hCoreUI
 public struct OTPEntryView: View {
     @State private var vm: OTPEntryViewModel = .init()
     @Environment(OTPState.self) var otpVM
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     public init() {}
 
     public var body: some View {
@@ -47,7 +47,7 @@ public struct OTPEntryView: View {
     Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
     return OTPEntryView()
         .environment(OTPState())
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 @MainActor

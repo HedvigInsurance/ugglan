@@ -5,7 +5,7 @@ import hCoreUI
 
 struct DiscountsView: View {
     let data: PaymentDiscountsData
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     var body: some View {
         hForm {

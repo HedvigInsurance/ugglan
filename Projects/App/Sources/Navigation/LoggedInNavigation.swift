@@ -487,8 +487,8 @@ class DeepLinkHandler {
 
 struct LoggedInNavigation: View {
     @Bindable var vm: LoggedInNavigationViewModel
-    @StateObject private var router = NavigationRouter()
-    @StateObject private var foreverRouter = NavigationRouter()
+    @State private var router = NavigationRouter()
+    @State private var foreverRouter = NavigationRouter()
     @SwiftUI.Environment(MainNavigationViewModel.self) private var mainNavigationVm
     private let contractStore: ContractStore = globalAppStateContainer.get()
     var body: some View {
@@ -552,7 +552,7 @@ struct LoggedInNavigation: View {
 
     var homeTab: some View {
         HomeTab(homeNavigationVm: vm.homeNavigationVm, loggedInVm: vm)
-            .environmentObject(router)
+            .environment(router)
             .tabItem {
                 vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.view : hCoreUIAssets.homeTab.view
                 hText(L10n.tabHomeTitle)
@@ -612,7 +612,7 @@ struct LoggedInNavigation: View {
 
     var foreverTab: some View {
         ForeverNavigation(useOwnNavigation: true)
-            .environmentObject(foreverRouter)
+            .environment(foreverRouter)
             .tabItem {
                 vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.view : hCoreUIAssets.foreverTab.view
                 hText(L10n.tabReferralsTitle)

@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct PayoutSelectedMethodScreen: View {
     @AppObservedObject var store: PaymentStore
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @Environment(PaymentsNavigationViewModel.self) var paymentsNavigationVm
     @State private var showChangePayoutMethod = false
     @State private var showChooseDefaultPayoutMethod = false
@@ -157,7 +157,7 @@ extension PaymentStatusData {
 }
 #Preview {
     PayoutSelectedMethodScreen()
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
         .onAppear {
             let store: PaymentStore = globalAppStateContainer.get()
             store.paymentStatusData = .init(
@@ -210,12 +210,12 @@ extension PaymentStatusData {
 
 #Preview("Kivra - no change button") {
     PayoutSelectedMethodScreen()
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
 
 #Preview("PayoutSelectedMethodScreen - no default payout") {
     PayoutSelectedMethodScreen()
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
         .onAppear {
             let store: PaymentStore = globalAppStateContainer.get()
             store.paymentStatusData = .init(

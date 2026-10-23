@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct CrossSellingDetent: View {
-    @StateObject private var router = NavigationRouter()
+    @State private var router = NavigationRouter()
 
     let crossSells: CrossSells
     let addons: [AddonBanner]

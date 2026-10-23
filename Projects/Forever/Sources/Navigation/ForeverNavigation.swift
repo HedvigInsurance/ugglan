@@ -58,7 +58,7 @@ extension ForeverRouterActions: TrackingViewNameProtocol {
 }
 
 public struct ForeverNavigation: View {
-    @EnvironmentObject var router: NavigationRouter
+    @SwiftUI.Environment(NavigationRouter.self) var router
     private let changeCodeRouter = NavigationRouter()
     @State var foreverNavigationVm = ForeverNavigationViewModel()
     let useOwnNavigation: Bool
@@ -126,5 +126,5 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
 #Preview {
     ForeverNavigation(useOwnNavigation: true)
-        .environmentObject(NavigationRouter())
+        .environment(NavigationRouter())
 }
