@@ -79,7 +79,7 @@ public struct TravelCertificatesListScreen: View {
         .onPullToRefresh {
             await vm.fetchTravelCertificateList(showLoading: false)
         }
-        .onChange(of: travelCertificateNavigationVm.isStartDateScreenPresented) { value in
+        .onChange(of: travelCertificateNavigationVm.isStartDateScreenPresented) { _, value in
             if value == nil {
                 Task {
                     await vm.fetchTravelCertificateList()

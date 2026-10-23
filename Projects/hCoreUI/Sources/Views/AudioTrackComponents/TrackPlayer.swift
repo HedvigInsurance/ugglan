@@ -77,7 +77,7 @@ struct TrackPlayer: View {
                                 .onAppear {
                                     width = geo.size.width
                                 }
-                                .onChange(of: geo.size) { size in
+                                .onChange(of: geo.size) { _, size in
                                     width = size.width
                                 }
                         }

@@ -35,7 +35,7 @@ struct VoiceRecordButton: View {
         .buttonStyle(.plain)
         .accessibilityLabel(voiceRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel)
         .accessibilityAddTraits(.isButton)
-        .onChange(of: countdownNumber) { _ in
+        .onChange(of: countdownNumber) {
             buttonScale = 1.3
             Task {
                 await delay(ClaimChatConstants.Timing.hapticDelay)

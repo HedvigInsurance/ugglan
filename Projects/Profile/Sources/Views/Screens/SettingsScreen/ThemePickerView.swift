@@ -42,7 +42,7 @@ struct ThemePickerView: View {
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }
-        .onChange(of: themeId) { newValue in
+        .onChange(of: themeId) { _, newValue in
             if let theme = ThemeOption.allCases.first(where: { $0.id == newValue }) {
                 ThemeOption.current = theme
                 theme.apply()

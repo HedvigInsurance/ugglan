@@ -28,7 +28,7 @@ private struct MissingPetChipIdsCoordinator: ViewModifier {
                     self.addMissingPetChipIdInput = .init(contract: selectedContract)
                 }
             }
-            .onChange(of: input) { input in
+            .onChange(of: input) { _, input in
                 guard let contracts = input?.contracts, !contracts.isEmpty else { return }
 
                 if contracts.count == 1, let contract = contracts.first {
@@ -94,7 +94,7 @@ struct AddMissingPetChipIdBottomSheet: View {
         .hFormContentPosition(.compact)
         .navigationTitle(L10n.chipIdTopTitle)
         .disabled(vm.isLoading)
-        .onChange(of: vm.isLoading) { isLoading in
+        .onChange(of: vm.isLoading) { _, isLoading in
             if isLoading {
                 detentOptions.insert(.disableDismissOnScroll)
             } else {
