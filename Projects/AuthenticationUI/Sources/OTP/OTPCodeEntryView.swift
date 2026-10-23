@@ -12,65 +12,64 @@ public struct OTPCodeEntryView: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(spacing: 50) {
-                    VStack(spacing: 16) {
-                        hText(L10n.Login.Title.checkYourEmail, style: .displayXSLong)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        hText(
-                            L10n.Login.Subtitle.verificationCodeEmail(otpVM.maskedEmail ?? L10n.authOtpYourEmail),
-                            style: .body1
-                        )
-                    }
-                    VStack(spacing: 8) {
-                        OTPCodeDisplay(
-                            code: otpVM.code,
-                            showRedBorders: otpVM.codeErrorMessage != nil
-                        )
-                        .background(
-                            PasteView {
-                                guard let pasteBoardValue = UIPasteboard.general.string else {
-                                    return
-                                }
-
-                                let onlyDigitsCode =
-                                    pasteBoardValue.components(
-                                        separatedBy: CharacterSet.decimalDigits.inverted
-                                    )
-                                    .joined()
-
-                                otpVM.code = String(onlyDigitsCode.prefix(6))
+                VStack(spacing: 8) {
+                    OTPCodeDisplay(
+                        code: otpVM.code,
+                        showRedBorders: otpVM.codeErrorMessage != nil
+                    )
+                    .background(
+                        PasteView {
+                            guard let pasteBoardValue = UIPasteboard.general.string else {
+                                return
                             }
-                        )
-                        .simultaneousGesture(
-                            TapGesture()
-                                .onEnded { _ in
-                                    vm.focusCodeField = true
-                                }
-                        )
 
-                        if let errorMessage = otpVM.codeErrorMessage {
-                            hText(
-                                errorMessage,
-                                style: .label
-                            )
-                            .foregroundColor(hSignalColor.Red.text)
-                            .transition(.opacity)
+                            let onlyDigitsCode =
+                                pasteBoardValue.components(
+                                    separatedBy: CharacterSet.decimalDigits.inverted
+                                )
+                                .joined()
+
+                            otpVM.code = String(onlyDigitsCode.prefix(6))
                         }
+                    )
+                    .simultaneousGesture(
+                        TapGesture()
+                            .onEnded { _ in
+                                vm.focusCodeField = true
+                            }
+                    )
 
-                        ResendOTPCode(otpVM: otpVM)
-                            .environmentObject(otpVM)
-                    }
+                    hText(
+                        otpVM.codeErrorMessage ?? " ",
+                        style: .label
+                    )
+                    .foregroundColor(hSignalColor.Red.text)
+                    .transition(.opacity)
+
+                    ResendOTPCode(otpVM: otpVM)
+                        .environmentObject(otpVM)
                 }
             }
             .background(
-                hTextField(
+                hFloatingTextField(
                     masking: .init(type: .digits),
-                    value: $otpVM.code
+                    value: $otpVM.code,
+                    equals: vm.$focusCodeField,
+                    focusValue: true
                 )
-                .focused($vm.focusCodeField, equals: true)
                 .opacity(0)
             )
         }
+        .hFormTitle(
+            title: .init(.small, .body1, L10n.Login.Title.checkYourEmail, alignment: .leading),
+            subTitle: .init(
+                .small,
+                .body1,
+                L10n.Login.Subtitle.verificationCodeEmail(otpVM.maskedEmail ?? L10n.authOtpYourEmail),
+                alignment: .leading
+            )
+        )
+        .hFormContentPosition(.center)
         .hFormAttachToBottom {
             OpenEmailClientButton()
                 .environmentObject(otpVM)
@@ -88,6 +87,13 @@ public struct OTPCodeEntryView: View {
     }
 }
 
+#Preview {
+    Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
+    return OTPCodeEntryView()
+        .environmentObject(OTPState())
+        .environmentObject(NavigationRouter())
+}
+
 @MainActor
 class OTPCodeEntryViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
@@ -99,7 +105,9 @@ class OTPCodeEntryViewModel: ObservableObject {
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
         }
-        otpState.codeErrorMessage = nil
+        withAnimation {
+            otpState.codeErrorMessage = nil
+        }
         if code.count == 6 {
             Task { @MainActor [weak self, weak otpState] in
                 otpState?.isLoading = true
