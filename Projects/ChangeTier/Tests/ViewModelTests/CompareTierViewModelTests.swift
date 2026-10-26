@@ -15,18 +15,15 @@ extension ChangeTierDependencySuite {
         let tiers = TierFixtures.tiers
 
         init() {
-            Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+            ViewModelSuiteSupport.registerDateService()
         }
 
-        // Remove the client only after the view model's Task finishes; removing it earlier makes @Inject fatalError.
-        private func expectServiceAndViewModelReleased() async {
-            await waitUntil(description: "the view model must not outlive the test that created it") {
-                self.vm == nil
-            }
-            Dependencies.shared.remove(for: ChangeTierClient.self)
-            Dependencies.shared.remove(for: DateService.self)
-            await delay(0.02)
-            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        private func expectServiceAndViewModelReleased(sourceLocation: SourceLocation = #_sourceLocation) async {
+            await ViewModelSuiteSupport.expectServiceAndViewModelReleased(
+                viewModel: { self.vm },
+                service: { self.sut },
+                sourceLocation: sourceLocation
+            )
         }
 
         @Test
