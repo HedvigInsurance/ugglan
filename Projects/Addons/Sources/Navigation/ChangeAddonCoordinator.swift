@@ -20,7 +20,7 @@ private struct ChangeAddonCoordinator: ViewModifier {
                 ChangeAddonNavigation(offer: $0.offer, preselectedAddonTitle: $0.preselectedAddonTitle)
             }
             .detent(item: $deflect) { DeflectView(deflect: $0) }
-            .onChange(of: input) { input in
+            .onChange(of: input) { _, input in
                 guard let input else { return }
                 guard let contractInfos = input.contractInfos, let contractInfo = contractInfos.first else {
                     self.input = nil

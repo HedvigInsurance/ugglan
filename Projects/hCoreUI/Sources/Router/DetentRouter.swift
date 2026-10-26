@@ -76,13 +76,13 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
             }
             present = item != nil
         }
-        .onChange(of: item) { newValue in
+        .onChange(of: item) { _, newValue in
             if let item = item {
                 itemToRenderFrom = item
             }
             present = newValue != nil
         }
-        .onChange(of: present) { _ in
+        .onChange(of: present) {
             if !present {
                 item = nil
             }
@@ -121,10 +121,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             .onAppear {
                 handle(isPresent: presented)
             }
-            .onChange(of: presented) { isPresent in
+            .onChange(of: presented) { _, isPresent in
                 handle(isPresent: isPresent)
             }
-            .onChange(of: options) { newOptions in
+            .onChange(of: options) { _, newOptions in
                 presentationViewModel.presentingVC?.isModalInPresentation = newOptions.contains(.disableDismissOnScroll)
             }
     }

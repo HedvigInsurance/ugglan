@@ -84,7 +84,7 @@ public struct EditContractScreen: View {
             }
         }
         .hFormContentPosition(.compact)
-        .onChange(of: selectedValue) { value in
+        .onChange(of: selectedValue) { _, value in
             selectedType = EditType(rawValue: value ?? "")
         }
     }

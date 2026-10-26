@@ -68,7 +68,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     .onAppear {
                         vm.viewHeight = geometry.size.height
                     }
-                    .onChange(of: geometry.size) { value in
+                    .onChange(of: geometry.size) { _, value in
                         vm.viewHeight = value.height
                     }
                 }
@@ -101,7 +101,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                             .onAppear {
                                 vm.scrollViewHeight = geometry.size.height
                             }
-                            .onChange(of: geometry.size) { value in
+                            .onChange(of: geometry.size) { _, value in
                                 vm.scrollViewHeight = value.height
                             }
                         }

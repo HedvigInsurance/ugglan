@@ -48,10 +48,10 @@ struct ClaimChatLoadingAnimationView: View {
             await delay(Constants.introDelay * 2)
             animationOpacity = 1
         }
-        .onChange(of: isLoading) { newValue in
+        .onChange(of: isLoading) { _, newValue in
             updateAnimation(isLoading: newValue)
         }
-        .onChange(of: colorScheme) { _ in
+        .onChange(of: colorScheme) {
             rebuildViewModel()
         }
         .onDisappear {

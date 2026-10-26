@@ -61,7 +61,7 @@ public struct hDatePickerField: View {
                 getValueLabel()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .onChange(of: selectedDate) { date in
+            .onChange(of: selectedDate) { _, date in
                 if let date {
                     error = nil
                     onUpdate(date)

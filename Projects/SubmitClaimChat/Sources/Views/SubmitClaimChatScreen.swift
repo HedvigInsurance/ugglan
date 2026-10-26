@@ -17,13 +17,13 @@ public struct SubmitClaimChatScreen: View {
         scrollContent
             .submitClaimChatScreenAlert(viewModel.alertVm)
             .animation(.defaultSpring, value: viewModel.outcome)
-            .onChange(of: verticalSizeClass) { value in
+            .onChange(of: verticalSizeClass) { _, value in
                 viewModel.currentVerticalSizeClass = value
             }
             .onAppear {
                 viewModel.currentVerticalSizeClass = verticalSizeClass
             }
-            .onChange(of: viewModel.showError) { [weak viewModel] value in
+            .onChange(of: viewModel.showError) { [weak viewModel] _, value in
                 if value {
                     viewModel?.alertVm.alertModel = .init(
                         type: .error,
@@ -47,7 +47,7 @@ public struct SubmitClaimChatScreen: View {
     private var scrollContent: some View {
         ScrollViewReader { proxy in
             mainContent
-                .onChange(of: viewModel.scrollTarget) { scrollTarget in
+                .onChange(of: viewModel.scrollTarget) { _, scrollTarget in
                     withAnimation {
                         proxy.scrollTo(scrollTarget.id, anchor: scrollTarget.anchor)
                     }
@@ -84,7 +84,7 @@ public struct SubmitClaimChatScreen: View {
                     scrollCoordinator.scrollViewHeight = proxy.size.height
                 }
                 .hFormBottomBackgroundColor(.aiPoweredGradient)
-                .onChange(of: proxy.size) { value in
+                .onChange(of: proxy.size) { _, value in
                     scrollCoordinator.scrollViewHeight = value.height
                 }
                 .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
@@ -171,7 +171,7 @@ private struct ClaimChatDockedInputView: View {
                                     .onAppear {
                                         viewModel.currentStepInputHeight = proxy.size.height
                                     }
-                                    .onChange(of: proxy.size) { value in
+                                    .onChange(of: proxy.size) { _, value in
                                         viewModel.currentStepInputHeight = value.height
                                     }
                             }
@@ -306,7 +306,7 @@ private struct ClaimStepErrorAlertModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onChange(of: step.state.showError) { [weak step, weak router] value in
+            .onChange(of: step.state.showError) { [weak step, weak router] _, value in
                 if value {
                     alertVm.alertModel = .init(
                         type: .error,
@@ -358,12 +358,12 @@ struct StepView: View {
                         .onAppear {
                             viewModel.stepHeights[step.id] = proxy.size.height
                         }
-                        .onChange(of: proxy.size) { value in
+                        .onChange(of: proxy.size) { _, value in
                             viewModel.stepHeights[step.id] = value.height
                         }
                 }
             }
-            .onChange(of: step.state.isLoaderAnimating) { isLoading in
+            .onChange(of: step.state.isLoaderAnimating) {
                 if let indexOfCurrentStep = viewModel.allSteps.firstIndex(where: { $0.id == step.id }),
                     indexOfCurrentStep > 0
                 {
@@ -381,7 +381,7 @@ struct StepView: View {
 
             )
             .accessibilityFocused($isAccessibilityFocused, equals: step.id)
-            .onChange(of: viewModel.currentStepId) { id in
+            .onChange(of: viewModel.currentStepId) { _, id in
                 isAccessibilityFocused = id
             }
     }
