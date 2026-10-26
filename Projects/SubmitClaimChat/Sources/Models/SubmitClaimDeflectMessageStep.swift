@@ -2,6 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@Observable
 final class SubmitClaimDeflectMessageStep: ClaimIntentStepHandler {
     override var sender: SubmitClaimChatMessageSender { .hedvig }
 

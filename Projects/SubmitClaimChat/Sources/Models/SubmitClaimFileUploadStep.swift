@@ -5,32 +5,10 @@ import Observation
 import SwiftUI
 import hCore
 
+@Observable
 final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
-    @ObservationIgnored private var _selectedOption: String?
-    var selectedOption: String? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFileUploadStep.selectedOption)
-            return _selectedOption
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFileUploadStep.selectedOption) {
-                _selectedOption = newValue
-            }
-        }
-    }
-
-    @ObservationIgnored private var _showFileSourcePicker = false
-    var showFileSourcePicker: Bool {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFileUploadStep.showFileSourcePicker)
-            return _showFileSourcePicker
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFileUploadStep.showFileSourcePicker) {
-                _showFileSourcePicker = newValue
-            }
-        }
-    }
+    var selectedOption: String?
+    var showFileSourcePicker = false
 
     let model: ClaimIntentStepContentFileUpload
     let fileUploadVm: FilesUploadViewModel

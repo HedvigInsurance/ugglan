@@ -3,93 +3,27 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@Observable
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
-    @ObservationIgnored private var _currentFieldId: String?
-    var currentFieldId: String? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.currentFieldId)
-            return _currentFieldId
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.currentFieldId) {
-                _currentFieldId = newValue
-            }
-        }
-    }
+    var currentFieldId: String?
 
-    @ObservationIgnored private var _isDatePickerPresented: DatePickerViewModel?
     var isDatePickerPresented: DatePickerViewModel? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.isDatePickerPresented)
-            return _isDatePickerPresented
-        }
-        set {
-            UIApplication.dismissKeyboard()
-            let oldValue = _isDatePickerPresented
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.isDatePickerPresented) {
-                _isDatePickerPresented = newValue
-            }
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
 
-    @ObservationIgnored private var _isSelectItemPresented: SingleItemModel?
     var isSelectItemPresented: SingleItemModel? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.isSelectItemPresented)
-            return _isSelectItemPresented
-        }
-        set {
-            UIApplication.dismissKeyboard()
-            let oldValue = _isSelectItemPresented
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.isSelectItemPresented) {
-                _isSelectItemPresented = newValue
-            }
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
 
-    @ObservationIgnored private var _searchFieldPresentation: FormFieldSearchModel?
     var searchFieldPresentation: FormFieldSearchModel? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.searchFieldPresentation)
-            return _searchFieldPresentation
-        }
-        set {
-            UIApplication.dismissKeyboard()
-            let oldValue = _searchFieldPresentation
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.searchFieldPresentation) {
-                _searchFieldPresentation = newValue
-            }
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
 
-    @ObservationIgnored private var _dateForPicker: Date = Date()
-    var dateForPicker: Date {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.dateForPicker)
-            return _dateForPicker
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.dateForPicker) {
-                _dateForPicker = newValue
-            }
-        }
-    }
-
-    @ObservationIgnored private var _formValues: [String: FormStepValue] = [:]
-    var formValues: [String: FormStepValue] {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimFormStep.formValues)
-            return _formValues
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimFormStep.formValues) {
-                _formValues = newValue
-            }
-        }
-    }
+    var dateForPicker: Date = Date()
+    var formValues: [String: FormStepValue] = [:]
 
     let formModel: ClaimIntentStepContentForm
     required init(

@@ -5,7 +5,8 @@ import hCore
 import hCoreUI
 
 @MainActor
-class ClaimIntentStepHandler: Observable, @MainActor Identifiable {
+@Observable
+class ClaimIntentStepHandler: @MainActor Identifiable {
     struct StepUIState {
         var isLoading = false
         var isEnabled = true
@@ -25,24 +26,7 @@ class ClaimIntentStepHandler: Observable, @MainActor Identifiable {
         var showLoadingAnimation = true
     }
 
-    // Observation is wired by hand instead of with @Observable because the macro only
-    // transforms the properties of the class it is attached to. Every property declared in
-    // one of this class's subclasses would stop updating the UI, with nothing to compile
-    // against. The registrar is shared with the subclasses for that reason.
-    let observationRegistrar = ObservationRegistrar()
-
-    @ObservationIgnored private var _state = StepUIState()
-    var state: StepUIState {
-        get {
-            observationRegistrar.access(self, keyPath: \ClaimIntentStepHandler.state)
-            return _state
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \ClaimIntentStepHandler.state) {
-                _state = newValue
-            }
-        }
-    }
+    var state = StepUIState()
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMessageSender { .member }
@@ -52,8 +36,8 @@ class ClaimIntentStepHandler: Observable, @MainActor Identifiable {
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
-    weak var alertVm: SubmitClaimChatScreenAlertViewModel?
-    private var submitTask: Task<Void, Never>?
+    @ObservationIgnored weak var alertVm: SubmitClaimChatScreenAlertViewModel?
+    @ObservationIgnored private var submitTask: Task<Void, Never>?
 
     required init(
         claimIntent: ClaimIntent,

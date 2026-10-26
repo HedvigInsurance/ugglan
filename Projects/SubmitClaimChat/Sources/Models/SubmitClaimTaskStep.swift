@@ -2,10 +2,12 @@ import Observation
 import SwiftUI
 import hCore
 
+@Observable
 final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override var id: String { claimIntent.currentStep.id }
     override var sender: SubmitClaimChatMessageSender { .hedvig }
-    override var claimIntent: ClaimIntent {
+    // Tracking comes from the base class accessor; @Observable must not re-wrap the override.
+    @ObservationIgnored override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
                 taskModel = model
@@ -13,34 +15,11 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
     }
 
-    @ObservationIgnored private var _taskModel: ClaimIntentStepContentTask
-    var taskModel: ClaimIntentStepContentTask {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimTaskStep.taskModel)
-            return _taskModel
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimTaskStep.taskModel) {
-                _taskModel = newValue
-            }
-        }
-    }
-
-    @ObservationIgnored private var _displayText: String?
-    var displayText: String? {
-        get {
-            observationRegistrar.access(self, keyPath: \SubmitClaimTaskStep.displayText)
-            return _displayText
-        }
-        set {
-            observationRegistrar.withMutation(of: self, keyPath: \SubmitClaimTaskStep.displayText) {
-                _displayText = newValue
-            }
-        }
-    }
+    var taskModel: ClaimIntentStepContentTask
+    var displayText: String?
 
     /// Animates `displayText`; held so it can be cancelled when the step is removed from the chat.
-    private var displayTextTask: Task<Void, Never>?
+    @ObservationIgnored private var displayTextTask: Task<Void, Never>?
 
     required init(
         claimIntent: ClaimIntent,
@@ -50,7 +29,7 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         guard case .task(let model) = claimIntent.currentStep.content else {
             fatalError("TaskStepHandler initialized with non-task content")
         }
-        self._taskModel = model
+        self.taskModel = model
         super.init(claimIntent: claimIntent, service: service, mainHandler: mainHandler)
         state.showResults = true
         displayText = taskModel.description
