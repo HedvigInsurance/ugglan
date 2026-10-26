@@ -79,7 +79,7 @@ public struct SubmitClaimChatScreen: View {
                 }
                 .hFormContentPosition(.top)
                 .environmentObject(viewModel)
-                .hideScrollIndicators()
+                .scrollIndicators(.hidden)
                 .onAppear {
                     scrollCoordinator.scrollViewHeight = proxy.size.height
                 }
@@ -178,7 +178,7 @@ private struct ClaimChatDockedInputView: View {
                         }
                 }
                 .frame(maxHeight: viewModel.currentStepInputHeight)
-                .addScrollBounce()
+                .scrollBounceBehavior(.basedOnSize)
                 .transition(.offset(x: 0, y: 1000))
                 .animation(.easeInOut(duration: 0.5), value: viewModel.shouldHideCurrentInput)
                 .accessibilityFocused($isCurrentStepFocused)
@@ -223,7 +223,7 @@ private struct ClaimChatFloatingCardView: View {
                     .padding(.horizontal, .padding16)
                     .padding(.vertical, verticalSizeClass == .regular ? .padding16 : .padding8)
                     .disabled(!step.state.isEnabled)
-                    .geometryGroupIfAvailable()
+                    .geometryGroup()
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .claimStepErrorAlert(for: step)
                     .onAppear {
@@ -236,16 +236,6 @@ private struct ClaimChatFloatingCardView: View {
     }
 }
 
-extension View {
-    @ViewBuilder
-    func addScrollBounce() -> some View {
-        if #available(iOS 16.4, *) {
-            self.scrollBounceBehavior(.basedOnSize)
-        } else {
-            self
-        }
-    }
-}
 struct ScrollToBottomButton: View {
     let scrollAction: () -> Void
 
@@ -390,17 +380,6 @@ struct StepView: View {
 extension SubmitClaimChatScreen: TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: self)
-    }
-}
-
-extension View {
-    @ViewBuilder
-    fileprivate func hideScrollIndicators() -> some View {
-        if #available(iOS 16.0, *) {
-            self.scrollIndicators(.hidden)
-        } else {
-            self
-        }
     }
 }
 

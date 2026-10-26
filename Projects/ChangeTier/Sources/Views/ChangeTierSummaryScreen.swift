@@ -55,7 +55,6 @@ extension ChangeTierViewModel {
         )
     }
 }
-@available(iOS 17.0, *)
 #Preview {
     let changeTierVm = ChangeTierViewModel(
         changeTierInput: .contractWithSource(

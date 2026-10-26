@@ -109,7 +109,6 @@ public struct hRadioOptionSelectedView<T>: View where T: Equatable {
     }
 }
 
-@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var value: String? = "id"
     @Previewable @State var error: String?
