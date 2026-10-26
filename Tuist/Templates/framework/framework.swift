@@ -3,170 +3,170 @@ import ProjectDescription
 let nameAttribute: Template.Attribute = .required("name")
 
 let exampleContents = """
-        import Foundation
+    import Foundation
 
-        struct \(nameAttribute) { }
+    struct \(nameAttribute) { }
 
-        """
+    """
 
 let testContents = """
-        import Testing
+    import Testing
 
-        @testable import \(nameAttribute)
+    @testable import \(nameAttribute)
 
-        @MainActor
-        final class \(nameAttribute)Tests {
+    @MainActor
+    final class \(nameAttribute)Tests {
 
-            init() {
-                // Swift Testing builds a fresh instance per test, so this replaces setUp
-            }
-
-            @Test func example() {
-                // Add your test here
-            }
-
+        init() {
+            // Swift Testing builds a fresh instance per test, so this replaces setUp
         }
 
-        """
+        @Test func example() {
+            // Add your test here
+        }
+
+    }
+
+    """
 
 // Matches most existing Example apps, which ship only an app delegate. Project.framework's scene manifest names
 // <Name>Example.SceneDelegate; add one (see Projects/Claims/Example) if the example needs to show a window.
 let appDelegateContents = """
-        import UIKit
+    import UIKit
 
-        @main class AppDelegate: UIResponder, UIApplicationDelegate {
-            var window: UIWindow?
+    @main class AppDelegate: UIResponder, UIApplicationDelegate {
+        var window: UIWindow?
 
-            func application(
-                _: UIApplication,
-                didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
-            ) -> Bool {
-                true
-            }
+        func application(
+            _: UIApplication,
+            didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+        ) -> Bool {
+            true
         }
+    }
 
-        """
+    """
 
 let graphqlExampleQueryContents = """
-        query Example {
-            member {
-                id
-            }
+    query Example {
+        member {
+            id
         }
+    }
 
-        """
+    """
 
 let xcassetsContents = """
-        {
-          "info" : {
-            "version" : 1,
-            "author" : "xcode"
-          }
-        }
+    {
+      "info" : {
+        "version" : 1,
+        "author" : "xcode"
+      }
+    }
 
-        """
+    """
 
 let xcassetsAppIconContents = """
+    {
+      "images" : [
         {
-          "images" : [
-            {
-              "idiom" : "iphone",
-              "scale" : "2x",
-              "size" : "20x20"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "3x",
-              "size" : "20x20"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "2x",
-              "size" : "29x29"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "3x",
-              "size" : "29x29"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "2x",
-              "size" : "40x40"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "3x",
-              "size" : "40x40"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "2x",
-              "size" : "60x60"
-            },
-            {
-              "idiom" : "iphone",
-              "scale" : "3x",
-              "size" : "60x60"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "1x",
-              "size" : "20x20"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "2x",
-              "size" : "20x20"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "1x",
-              "size" : "29x29"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "2x",
-              "size" : "29x29"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "1x",
-              "size" : "40x40"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "2x",
-              "size" : "40x40"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "1x",
-              "size" : "76x76"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "2x",
-              "size" : "76x76"
-            },
-            {
-              "idiom" : "ipad",
-              "scale" : "2x",
-              "size" : "83.5x83.5"
-            },
-            {
-              "idiom" : "ios-marketing",
-              "scale" : "1x",
-              "size" : "1024x1024"
-            }
-          ],
-          "info" : {
-            "author" : "xcode",
-            "version" : 1
-          }
+          "idiom" : "iphone",
+          "scale" : "2x",
+          "size" : "20x20"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "3x",
+          "size" : "20x20"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "2x",
+          "size" : "29x29"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "3x",
+          "size" : "29x29"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "2x",
+          "size" : "40x40"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "3x",
+          "size" : "40x40"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "2x",
+          "size" : "60x60"
+        },
+        {
+          "idiom" : "iphone",
+          "scale" : "3x",
+          "size" : "60x60"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "1x",
+          "size" : "20x20"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "2x",
+          "size" : "20x20"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "1x",
+          "size" : "29x29"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "2x",
+          "size" : "29x29"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "1x",
+          "size" : "40x40"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "2x",
+          "size" : "40x40"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "1x",
+          "size" : "76x76"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "2x",
+          "size" : "76x76"
+        },
+        {
+          "idiom" : "ipad",
+          "scale" : "2x",
+          "size" : "83.5x83.5"
+        },
+        {
+          "idiom" : "ios-marketing",
+          "scale" : "1x",
+          "size" : "1024x1024"
         }
+      ],
+      "info" : {
+        "author" : "xcode",
+        "version" : 1
+      }
+    }
 
-        """
+    """
 
 let template = Template(
     description: "Framework template",
