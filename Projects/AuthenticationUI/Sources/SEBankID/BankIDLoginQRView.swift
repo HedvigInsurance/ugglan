@@ -235,14 +235,8 @@ class BankIDViewModel {
             return
         }
         withAnimation(.snappy(duration: 0.1)) {
-            self.image = generateQRImage(from: qrData)
+            self.image = StyledQRCode.image(for: qrData, logoFraction: 0, correctionLevel: .low)
         }
-    }
-
-    private func generateQRImage(from url: String) -> UIImage? {
-        // No logo to make room for, so medium correction is enough — and fewer modules draw larger,
-        // finder patterns included.
-        StyledQRCode.image(for: url, logoFraction: 0, correctionLevel: .low)
     }
 }
 
