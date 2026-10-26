@@ -20,46 +20,7 @@ extension ChangeTierDependencySuite {
         @Test
         func fetchTierDataSuccess() async {
             await recordingErrors {
-                let tiers: [Tier] = [
-                    .init(
-                        id: "id1",
-                        name: "standard",
-                        level: 1,
-                        description: nil,
-                        quotes: [],
-                        exposureName: "exposureName"
-                    ),
-                    .init(
-                        id: "id2",
-                        name: "max",
-                        level: 2,
-                        description: nil,
-                        quotes: [
-                            .init(
-                                id: "id1",
-                                quoteAmount: nil,
-                                quotePercentage: nil,
-                                subTitle: nil,
-                                currentTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                                newTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                                displayItems: [],
-                                productVariant: .init(
-                                    termsVersion: "",
-                                    typeOfContract: "",
-                                    perils: [],
-                                    insurableLimits: [],
-                                    documents: [],
-                                    displayName: "",
-                                    displayNameTier: nil,
-                                    tierDescription: nil
-                                ),
-                                addons: [],
-                                costBreakdown: []
-                            )
-                        ],
-                        exposureName: "exposureName"
-                    ),
-                ]
+                let tiers = TierFixtures.tiers
 
                 let changeTierIntentModel: ChangeTierIntentModel = .init(
                     contractId: "contractId",

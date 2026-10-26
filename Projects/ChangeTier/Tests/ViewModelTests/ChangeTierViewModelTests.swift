@@ -12,54 +12,8 @@ extension ChangeTierDependencySuite {
         private weak var sut: MockChangeTierService?
         private weak var vm: ChangeTierViewModel?
 
-        let currentTier = Tier(
-            id: "currentTier",
-            name: "current tier",
-            level: 1,
-            description: nil,
-            quotes: [],
-            exposureName: nil
-        )
-        let tiers: [Tier] = [
-            .init(
-                id: "id1",
-                name: "standard",
-                level: 1,
-                description: nil,
-                quotes: [],
-                exposureName: "exposureName"
-            ),
-            .init(
-                id: "id2",
-                name: "max",
-                level: 2,
-                description: nil,
-                quotes: [
-                    .init(
-                        id: "id1",
-                        quoteAmount: nil,
-                        quotePercentage: nil,
-                        subTitle: nil,
-                        currentTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                        newTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                        displayItems: [],
-                        productVariant: .init(
-                            termsVersion: "",
-                            typeOfContract: "",
-                            perils: [],
-                            insurableLimits: [],
-                            documents: [],
-                            displayName: "displayName",
-                            displayNameTier: nil,
-                            tierDescription: nil
-                        ),
-                        addons: [],
-                        costBreakdown: []
-                    )
-                ],
-                exposureName: "exposureName"
-            ),
-        ]
+        let currentTier = TierFixtures.currentTier
+        let tiers = TierFixtures.tiers
 
         init() {
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
@@ -80,19 +34,7 @@ extension ChangeTierDependencySuite {
         func fetchTiersSuccess() async {
             do {
                 let activationDate = "2024-12-12".localDateToDate ?? Date()
-                let changeTierIntentModel: ChangeTierIntentModel = .init(
-                    contractId: "contractId",
-                    displayName: "display name",
-                    activationDate: activationDate,
-                    tiers: tiers,
-                    currentTier: currentTier,
-                    currentQuote: nil,
-                    selectedTier: nil,
-                    selectedQuote: nil,
-                    canEditTier: true,
-                    typeOfContract: .seHouse,
-                    relatedAddons: [:]
-                )
+                let changeTierIntentModel = TierFixtures.intent(activationDate: activationDate)
 
                 let mockService = MockData.createMockChangeTier(fetchTier: { _ in
                     changeTierIntentModel
@@ -147,19 +89,7 @@ extension ChangeTierDependencySuite {
                 let mockService = MockData.createMockChangeTier()
                 sut = mockService
 
-                let intent: ChangeTierIntentModel = .init(
-                    contractId: "intent-contract-456",
-                    displayName: "display name",
-                    activationDate: Date(),
-                    tiers: tiers,
-                    currentTier: currentTier,
-                    currentQuote: nil,
-                    selectedTier: nil,
-                    selectedQuote: nil,
-                    canEditTier: true,
-                    typeOfContract: .seHouse,
-                    relatedAddons: [:]
-                )
+                let intent = TierFixtures.intent(contractId: "intent-contract-456", activationDate: Date())
 
                 let model = ChangeTierViewModel(
                     changeTierInput: .existingIntent(intent: intent, onSelect: nil)
@@ -210,19 +140,7 @@ extension ChangeTierDependencySuite {
         func setSelectedTierSuccess() async {
             do {
                 let activationDate = "2024-12-12".localDateToDate ?? Date()
-                let changeTierIntentModel: ChangeTierIntentModel = .init(
-                    contractId: "contractId",
-                    displayName: "display name",
-                    activationDate: activationDate,
-                    tiers: tiers,
-                    currentTier: currentTier,
-                    currentQuote: nil,
-                    selectedTier: nil,
-                    selectedQuote: nil,
-                    canEditTier: true,
-                    typeOfContract: .seHouse,
-                    relatedAddons: [:]
-                )
+                let changeTierIntentModel = TierFixtures.intent(activationDate: activationDate)
 
                 let mockService = MockData.createMockChangeTier(fetchTier: { _ in
                     changeTierIntentModel
@@ -290,19 +208,7 @@ extension ChangeTierDependencySuite {
         func setSelectedDeductibleSuccess() async {
             do {
                 let activationDate = "2024-12-12".localDateToDate ?? Date()
-                let changeTierIntentModel: ChangeTierIntentModel = .init(
-                    contractId: "contractId",
-                    displayName: "display name",
-                    activationDate: activationDate,
-                    tiers: tiers,
-                    currentTier: nil,
-                    currentQuote: nil,
-                    selectedTier: nil,
-                    selectedQuote: nil,
-                    canEditTier: true,
-                    typeOfContract: .seHouse,
-                    relatedAddons: [:]
-                )
+                let changeTierIntentModel = TierFixtures.intent(activationDate: activationDate, currentTier: nil)
 
                 let mockService = MockData.createMockChangeTier(fetchTier: { _ in
                     changeTierIntentModel
