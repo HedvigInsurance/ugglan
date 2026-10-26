@@ -352,7 +352,7 @@ extension Masking: ViewModifier {
             .autocapitalization(autocapitalizationType)
             .disableAutocorrection(disableAutocorrection)
             .autocorrectionDisabled()
-            .introspect(.textField, on: .iOS(.v13...)) { textField in
+            .introspect(.textField, on: .iOS(.v17...)) { textField in
                 textField.spellCheckingType = spellCheckingType
             }
     }

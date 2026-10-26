@@ -503,7 +503,7 @@ struct LoggedInNavigation: View {
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
         }
         .handleLoggedInPresentations(with: vm)
-        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
+        .introspect(.tabView, on: .iOS(.v17...)) { tabBar in
             vm.tabBar = tabBar
         }
         .detent(

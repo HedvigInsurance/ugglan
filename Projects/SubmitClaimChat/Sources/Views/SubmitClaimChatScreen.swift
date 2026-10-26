@@ -88,7 +88,7 @@ public struct SubmitClaimChatScreen: View {
                 .onChange(of: proxy.size) { _, value in
                     scrollCoordinator.scrollViewHeight = value.height
                 }
-                .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                .introspect(.scrollView, on: .iOS(.v17...)) { scrollView in
                     scrollCoordinator.scrollViewBottomInset = scrollView.safeAreaInsets.bottom
                     if scrollView != scrollCoordinator.scrollView {
                         scrollCoordinator.scrollView = scrollView

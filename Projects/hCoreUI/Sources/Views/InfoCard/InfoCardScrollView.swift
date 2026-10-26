@@ -33,7 +33,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatab
                         }
                     }
                 }
-                .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
+                .introspect(.scrollView, on: .iOS(.v17...)) { [weak vm] scrollView in
                     vm?.scrollView = scrollView
                     scrollView.delegate = vm
                     scrollView.clipsToBounds = false
