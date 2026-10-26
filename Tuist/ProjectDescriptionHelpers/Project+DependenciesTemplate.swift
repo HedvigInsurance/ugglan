@@ -244,6 +244,7 @@ extension Project {
         name: String,
         externalDependencies: [ExternalDependencies],
         sdks: [String] = [],
+        baseSettings: SettingsDictionary = [:],
         deploymentTargets: DeploymentTargets = .iOS("17.0"),
         scripts: [TargetScript] = []
     ) -> Project {
@@ -302,7 +303,7 @@ extension Project {
                     resources: [],
                     scripts: scripts,
                     dependencies: dependencies,
-                    settings: .settings(base: [:], configurations: frameworkConfigurations)
+                    settings: .settings(base: baseSettings, configurations: frameworkConfigurations)
                 )
             ],
             schemes: [
