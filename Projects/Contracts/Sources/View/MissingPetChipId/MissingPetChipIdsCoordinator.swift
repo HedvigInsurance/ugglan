@@ -52,11 +52,11 @@ extension View {
 }
 
 struct AddMissingPetChipIdBottomSheet: View {
-    @StateObject private var vm: AddMissingPetChipIdViewModel
+    @State private var vm: AddMissingPetChipIdViewModel
     @Binding private var detentOptions: DetentPresentationOption
 
     init(_ vm: AddMissingPetChipIdViewModel, detentOptions: Binding<DetentPresentationOption>) {
-        self._vm = StateObject(wrappedValue: vm)
+        self._vm = State(wrappedValue: vm)
         self._detentOptions = detentOptions
     }
 
@@ -128,17 +128,18 @@ private struct SelectContractInput: Identifiable & Equatable {
 }
 
 @MainActor
-class AddMissingPetChipIdViewModel: ObservableObject {
-    @AppState private var contractStore: ContractStore
+@Observable
+class AddMissingPetChipIdViewModel {
+    @ObservationIgnored @AppState private var contractStore: ContractStore
     private let service = PetChipIdService()
     let router = NavigationRouter()
 
     let contract: Contract
     let petChipIdMasking = Masking(type: .petChipId)
-    @Published var petChipId: String = ""
-    @Published var isLoading = false
-    @Published var fieldError: String?
-    var canProceed: Bool { petChipIdMasking.isValid(text: petChipId) }
+    var petChipId: String = ""
+    var isLoading = false
+    var fieldError: String?
+    @ObservationIgnored var canProceed: Bool { petChipIdMasking.isValid(text: petChipId) }
 
     init(contract: Contract) {
         self.contract = contract

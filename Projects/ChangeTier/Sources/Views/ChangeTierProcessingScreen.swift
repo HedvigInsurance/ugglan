@@ -4,8 +4,8 @@ import hCore
 import hCoreUI
 
 struct ChangeTierProcessingView: View {
-    @ObservedObject var vm: ChangeTierViewModel
-    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @Bindable var vm: ChangeTierViewModel
+    @Environment(ChangeTierNavigationViewModel.self) var changeTierNavigationVm
 
     var body: some View {
         ProcessingStateView(

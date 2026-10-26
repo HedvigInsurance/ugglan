@@ -1,35 +1,29 @@
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
 
+@Observable
 final class SubmitClaimFormStep: ClaimIntentStepHandler {
-    @Published var currentFieldId: String?
-    @Published var isDatePickerPresented: DatePickerViewModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
-        }
-        didSet {
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+    var currentFieldId: String?
+
+    var isDatePickerPresented: DatePickerViewModel? {
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
-    @Published var isSelectItemPresented: SingleItemModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
-        }
-        didSet {
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+
+    var isSelectItemPresented: SingleItemModel? {
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
-    @Published var searchFieldPresentation: FormFieldSearchModel? {
-        willSet {
-            UIApplication.dismissKeyboard()
-        }
-        didSet {
-            handleFieldPresentation(dismissed: oldValue?.id)
-        }
+
+    var searchFieldPresentation: FormFieldSearchModel? {
+        willSet { UIApplication.dismissKeyboard() }
+        didSet { handleFieldPresentation(dismissed: oldValue?.id) }
     }
-    @Published var dateForPicker: Date = Date()
-    @Published var formValues: [String: FormStepValue] = [:]
+
+    var dateForPicker: Date = Date()
+    var formValues: [String: FormStepValue] = [:]
 
     let formModel: ClaimIntentStepContentForm
     required init(
@@ -146,28 +140,29 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
     }
 }
 
-final class FormStepValue: ObservableObject {
-    @Published var values: [String] = [] {
+@Observable
+final class FormStepValue {
+    var values: [String] = [] {
         didSet {
             error = nil
         }
     }
-    @Published var value: String = "" {
+    var value: String = "" {
         didSet {
             values = [value]
             error = nil
         }
     }
-    @Published var error: String?
+    var error: String?
     /// Display title for search-selected values (since the value is an opaque ID)
-    @Published var selectedSearchItem: SingleSelectValue? {
+    var selectedSearchItem: SingleSelectValue? {
         didSet {
             if let selectedSearchItem {
                 value = selectedSearchItem.value
             }
         }
     }
-    var lastSearchQuery: String?
+    @ObservationIgnored var lastSearchQuery: String?
     init(field: ClaimIntentStepContentForm.ClaimIntentStepContentFormField) {
         let seedValues = field.currentValues.isEmpty ? field.defaultValues : field.currentValues
         self.value = seedValues.first ?? ""

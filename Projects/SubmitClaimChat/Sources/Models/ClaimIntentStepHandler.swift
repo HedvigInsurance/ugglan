@@ -1,10 +1,12 @@
 import Foundation
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
 
 @MainActor
-class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
+@Observable
+class ClaimIntentStepHandler: @MainActor Identifiable {
     struct StepUIState {
         var isLoading = false
         var isEnabled = true
@@ -24,7 +26,7 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
         var showLoadingAnimation = true
     }
 
-    @Published var state = StepUIState()
+    var state = StepUIState()
     var id: String { claimIntent.currentStep.id }
     var claimIntent: ClaimIntent
     var sender: SubmitClaimChatMessageSender { .member }
@@ -34,8 +36,8 @@ class ClaimIntentStepHandler: ObservableObject, @MainActor Identifiable {
 
     let service: ClaimIntentService
     let mainHandler: (SubmitClaimEvent) -> Void
-    weak var alertVm: SubmitClaimChatScreenAlertViewModel?
-    private var submitTask: Task<Void, Never>?
+    @ObservationIgnored weak var alertVm: SubmitClaimChatScreenAlertViewModel?
+    @ObservationIgnored private var submitTask: Task<Void, Never>?
 
     required init(
         claimIntent: ClaimIntent,

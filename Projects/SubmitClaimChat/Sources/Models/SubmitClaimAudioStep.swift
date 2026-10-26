@@ -2,27 +2,31 @@ import AVFoundation
 import Apollo
 import Environment
 import Foundation
+import Observation
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
+@Observable
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {
     var audioFileURL: URL?
-    @Inject var fileUploadClient: hSubmitClaimFileUploadClient
+    @ObservationIgnored @Inject var fileUploadClient: hSubmitClaimFileUploadClient
     let audioRecordingModel: ClaimIntentStepContentAudioRecording
 
-    @Published var textInput: String = "" {
+    var textInput: String = "" {
         didSet {
             if !characterMismatch { showsLengthMessage = false }
         }
     }
-    @Published private var showsLengthMessage = false
+
+    private var showsLengthMessage = false
     var textInputError: String? {
         showsLengthMessage && characterMismatch
             ? L10n.claimsTextInputMinCharactersError(audioRecordingModel.freeTextMinLength) : nil
     }
-    @Published private(set) var inputMode: InputMode = .choose {
+
+    private(set) var inputMode: InputMode = .choose {
         didSet {
             guard inputMode != .voice, oldValue == .voice else { return }
             voiceRecorder.isCountingDown = false
@@ -30,9 +34,10 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
             voiceRecorder.stopPlayback()
         }
     }
-    @Published private(set) var shouldFocusTextInput = false
-    @Published private(set) var submittedKind: AudioRecordingStepType?
-    @Published var uploadProgress: Double = 0
+
+    private(set) var shouldFocusTextInput = false
+    private(set) var submittedKind: AudioRecordingStepType?
+    var uploadProgress: Double = 0
 
     let voiceRecorder = VoiceRecorder()
     var characterMismatch: Bool {
@@ -121,7 +126,7 @@ final class SubmitClaimAudioStep: ClaimIntentStepHandler {
         submitResponse()
     }
 
-    private var uploadedAudioId: String?
+    @ObservationIgnored private var uploadedAudioId: String?
     func uploadAudioRecording() async throws {
         // A resumed step carries a remote currentAudioUrl; only local recordings can be uploaded.
         guard let audioFileURL, audioFileURL.isFileURL else {

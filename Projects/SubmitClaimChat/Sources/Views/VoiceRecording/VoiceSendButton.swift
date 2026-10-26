@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct VoiceSendButton: View {
     let onTap: () async throws -> Void
-    @EnvironmentObject var voiceRecorder: VoiceRecorder
+    @Environment(VoiceRecorder.self) var voiceRecorder
 
     public init(
         onTap: @escaping () async throws -> Void,
@@ -87,8 +87,8 @@ public struct VoiceSendButton: View {
 #Preview {
     VStack(spacing: 40) {
         VoiceSendButton(onTap: {})
-            .environmentObject(VoiceRecorder())
+            .environment(VoiceRecorder())
         VoiceSendButton(onTap: {})
-            .environmentObject(VoiceRecorder())
+            .environment(VoiceRecorder())
     }
 }

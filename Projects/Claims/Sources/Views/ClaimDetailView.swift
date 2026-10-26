@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 public struct ClaimDetailView: View {
-    @StateObject var vm: ClaimDetailViewModel
+    @State var vm: ClaimDetailViewModel
     @EnvironmentObject var router: NavigationRouter
 
     public init(
@@ -256,7 +256,7 @@ public struct ClaimDetailView: View {
                         TrackPlayerView(
                             audioPlayer: player
                         )
-                        .onReceive(player.objectWillChange.filter { $0.playbackState == .finished }) { _ in }
+                        .onReceive(player.playbackChanges.filter { $0.playbackState == .finished }) { _ in }
                     }
                 }
                 if let fetchError = vm.fetchFilesError {
@@ -433,10 +433,11 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 }
 
 @MainActor
-public class ClaimDetailViewModel: ObservableObject {
-    @AppState var store: ClaimsStore
-    @Published public var document: hPDFDocument? = nil
-    @Published private(set) var claim: ClaimModel? {
+@Observable
+public class ClaimDetailViewModel {
+    @ObservationIgnored @AppState var store: ClaimsStore
+    public var document: hPDFDocument? = nil
+    private(set) var claim: ClaimModel? {
         didSet {
             setupToolbarOptionType(for: claim)
             if let url = URL(string: claim?.signedAudioURL) {
@@ -445,20 +446,19 @@ public class ClaimDetailViewModel: ObservableObject {
         }
     }
 
-    @Published var showFileSourcePicker = false
+    var showFileSourcePicker = false
 
     private(set) var player: AudioPlayer?
-    private var claimDetailsService: FetchClaimDetailsService
-    @Published var fetchFilesError: String?
-    @Published var claimProcessingState: ProcessingState = .loading
+    @ObservationIgnored private var claimDetailsService: FetchClaimDetailsService
+    var fetchFilesError: String?
+    var claimProcessingState: ProcessingState = .loading
 
-    @Published var hasFiles = false
-    @Published var showFilesView: FilesDto?
-    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
+    var showFilesView: FilesDto?
+    var toolbarOptionType: [ToolbarOptionType] = [.chat(hasUnread: false)]
 
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     public init(
         claim: ClaimModel?,
         type: ClaimDetailsType
@@ -474,12 +474,6 @@ public class ClaimDetailViewModel: ObservableObject {
             Task {
                 await fetchFiles()
             }
-            fileGridViewModel.$files
-                .sink { _ in
-                } receiveValue: { [weak self] files in
-                    self?.hasFiles = !files.isEmpty
-                }
-                .store(in: &cancellables)
             handleClaimChat()
         }
         if let claim {

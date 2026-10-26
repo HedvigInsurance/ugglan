@@ -1,10 +1,13 @@
+import Observation
 import SwiftUI
 import hCore
 
+@Observable
 final class SubmitClaimTaskStep: ClaimIntentStepHandler {
     override var id: String { claimIntent.currentStep.id }
     override var sender: SubmitClaimChatMessageSender { .hedvig }
-    override var claimIntent: ClaimIntent {
+    // Tracking comes from the base class accessor; @Observable must not re-wrap the override.
+    @ObservationIgnored override var claimIntent: ClaimIntent {
         didSet {
             if case let .task(model) = claimIntent.currentStep.content {
                 taskModel = model
@@ -12,11 +15,11 @@ final class SubmitClaimTaskStep: ClaimIntentStepHandler {
         }
     }
 
-    @Published var taskModel: ClaimIntentStepContentTask
-    @Published var displayText: String?
+    var taskModel: ClaimIntentStepContentTask
+    var displayText: String?
 
     /// Animates `displayText`; held so it can be cancelled when the step is removed from the chat.
-    private var displayTextTask: Task<Void, Never>?
+    @ObservationIgnored private var displayTextTask: Task<Void, Never>?
 
     required init(
         claimIntent: ClaimIntent,

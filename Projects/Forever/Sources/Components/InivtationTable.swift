@@ -4,12 +4,12 @@ import hCore
 import hCoreUI
 
 struct InvitationTable: View {
-    @StateObject var vm: InvitationTableViewModel
+    @State var vm: InvitationTableViewModel
 
     init(
         foreverData: ForeverData?
     ) {
-        _vm = StateObject(wrappedValue: .init(foreverData: foreverData))
+        _vm = State(wrappedValue: .init(foreverData: foreverData))
     }
 
     var body: some View {
@@ -41,9 +41,10 @@ struct InvitationTable: View {
     }
 }
 
-class InvitationTableViewModel: ObservableObject {
+@Observable
+class InvitationTableViewModel {
     let foreverData: ForeverData?
-    @Published var showInvitations = false
+    var showInvitations = false
 
     init(
         foreverData: ForeverData?
@@ -95,7 +96,7 @@ struct InvitationRow: View {
 #Preview("Invitation Table") {
     Localization.Locale.currentLocale.send(.en_SE)
     let navigationVm = ForeverNavigationViewModel()
-    return InvitationTable(foreverData: navigationVm.foreverData).environmentObject(navigationVm)
+    return InvitationTable(foreverData: navigationVm.foreverData).environment(navigationVm)
 }
 
 #Preview("Invitation Row", traits: .sizeThatFitsLayout) {
@@ -130,5 +131,5 @@ struct InvitationRow: View {
         InvitationRow(row: mockRow4, invitedYou: false)
     }
     .sectionContainerStyle(.transparent)
-    .environmentObject(ForeverNavigationViewModel())
+    .environment(ForeverNavigationViewModel())
 }

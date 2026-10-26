@@ -1,23 +1,25 @@
 import Combine
 import Foundation
+import Observation
 import UIKit
 import hCore
 import hCoreUI
 
 @MainActor
-final class FormFieldSearchViewModel: NSObject, ObservableObject {
-    @Published var searchResults: [SingleSelectValue] = []
-    @Published var processingState: ProcessingState = .success
-    @Published var noResults: Bool = false
-    @Published var suggestedQuery: String?
-    @Published var searchText = ""
+@Observable
+final class FormFieldSearchViewModel: NSObject {
+    var searchResults: [SingleSelectValue] = []
+    var processingState: ProcessingState = .success
+    var noResults: Bool = false
+    var suggestedQuery: String?
+    var searchText = ""
     private let stepId: String
     private let fieldId: String
     private let service: ClaimIntentService
-    private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var cancellables = Set<AnyCancellable>()
     let searchSubject = CurrentValueSubject<String, Never>("")
 
-    lazy var searchController: UISearchController = {
+    @ObservationIgnored lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = L10n.searchPlaceholder
@@ -54,7 +56,7 @@ final class FormFieldSearchViewModel: NSObject, ObservableObject {
     }
 
     // Have this property to trigger this only once.
-    private var didActivateSearchInitially = false
+    @ObservationIgnored private var didActivateSearchInitially = false
 
     func activateSearch() {
         if !didActivateSearchInitially {

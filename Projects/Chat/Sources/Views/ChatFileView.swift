@@ -6,7 +6,7 @@ import hCoreUI
 struct ChatFileView: View {
     let file: File
     let status: MessageStatus
-    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    @Environment(ChatNavigationViewModel.self) var chatNavigationVm
 
     init(file: File, status: MessageStatus = .draft) {
         self.file = file

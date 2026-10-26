@@ -5,7 +5,8 @@ import SwiftUI
 import hCore
 
 @MainActor
-public class AudioPlayer: NSObject, @MainActor ObservableObject {
+@Observable
+public class AudioPlayer: NSObject {
     public init(
         url: URL?
     ) {
@@ -13,7 +14,9 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
         sampleHeights = generateGaussianHeights()
     }
 
-    public let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
+    // Not an ObservableObject publisher: the views read this player's properties directly and
+    // @Observable tracks those. This carries the playback-state edges a caller wants to act on.
+    @ObservationIgnored public let playbackChanges = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let sampleHeights: [Int]
     var observerStatus: NSKeyValueObservation?
@@ -47,21 +50,21 @@ public class AudioPlayer: NSObject, @MainActor ObservableObject {
                 break
             }
             withAnimation {
-                objectWillChange.send(self)
+                playbackChanges.send(self)
             }
         }
     }
 
     private(set) var progress: Double = 0 {
         didSet {
-            objectWillChange.send(self)
+            playbackChanges.send(self)
         }
     }
 
     public var url: URL? {
         didSet {
             withAnimation {
-                objectWillChange.send(self)
+                playbackChanges.send(self)
             }
         }
     }

@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 struct StakeholdersScreen: View {
-    @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
-    @ObservedObject var vm: StakeholdersViewModel
-    @ObservedObject var intentViewModel: IntentViewModel
+    @Environment(EditStakeholdersNavigationViewModel.self) private var editStakeholdersNavigation
+    let vm: StakeholdersViewModel
+    let intentViewModel: IntentViewModel
     let type: StakeholderFieldType?
 
     private var displayItems: [StakeholderRowItem] {

@@ -4,17 +4,18 @@ import hCore
 import hCoreUI
 
 @MainActor
-class CampaignNavigationViewModel: ObservableObject {}
+@Observable
+class CampaignNavigationViewModel {}
 
 public struct CampaignNavigation: View {
-    @StateObject var campaignNavigationVm = CampaignNavigationViewModel()
+    @State var campaignNavigationVm = CampaignNavigationViewModel()
 
     public init() {}
 
     public var body: some View {
         PaymentsDiscountsRootView()
             .navigationTitle(L10n.paymentsDiscountsSectionTitle)
-            .environmentObject(campaignNavigationVm)
+            .environment(campaignNavigationVm)
             .routerDestination(for: CampaignRouterAction.self) { _ in
                 ForeverNavigation(useOwnNavigation: false)
                     .toolbar(.hidden, for: .tabBar)

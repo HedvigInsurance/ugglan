@@ -6,24 +6,25 @@ import WebKit
 import hCore
 
 @MainActor
-public class DocumentPreviewModel: NSObject, ObservableObject {
+@Observable
+public class DocumentPreviewModel: NSObject {
     let type: DocumentPreviewType
     let webView = WKWebView()
     let player: AVPlayer?
-    weak var vc: UIViewController? {
+    @ObservationIgnored weak var vc: UIViewController? {
         didSet {
             guard type.name != nil else { return }
             setupShareButton()
         }
     }
-    @Published var isLoading = true
-    @Published var error: String?
-    @Published var contentHeight: CGFloat = 0
-    @Published var offset: CGFloat = 0
-    @Published var opacity: Double = 0
+    var isLoading = true
+    var error: String?
+    var contentHeight: CGFloat = 0
+    var offset: CGFloat = 0
+    var opacity: Double = 0
 
-    var contentSizeCancellable: AnyCancellable?
-    private var temporaryFileURL: URL?
+    @ObservationIgnored var contentSizeCancellable: AnyCancellable?
+    @ObservationIgnored private var temporaryFileURL: URL?
 
     public init(type: DocumentPreviewType) {
         self.type = type
@@ -168,7 +169,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 }
 
 public struct DocumentPreview: View {
-    @ObservedObject var vm: DocumentPreviewModel
+    let vm: DocumentPreviewModel
     public init(vm: DocumentPreviewModel) {
         self.vm = vm
     }

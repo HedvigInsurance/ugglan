@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationSelectInsuranceScreen: View {
-    @ObservedObject private var vm: TerminationFlowNavigationViewModel
+    private let vm: TerminationFlowNavigationViewModel
     let itemPickerConfig: ItemConfig<TerminationConfirmConfig>
     init(
         vm: TerminationFlowNavigationViewModel,

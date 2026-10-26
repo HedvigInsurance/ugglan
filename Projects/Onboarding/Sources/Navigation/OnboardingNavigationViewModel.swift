@@ -9,12 +9,13 @@ import hCore
 import hCoreUI
 
 @MainActor
-class OnboardingNavigationViewModel: ObservableObject {
+@Observable
+class OnboardingNavigationViewModel {
     let router = NavigationRouter()
     let onboardingService = OnboardingService()
     let editStakeholdersVm: EditStakeholdersViewModel
-    private var routeCountCancellable: AnyCancellable?
-    @Published var steps: [OnboardingStep] = [
+    @ObservationIgnored private var routeCountCancellable: AnyCancellable?
+    var steps: [OnboardingStep] = [
         .welcome
     ]
     {
@@ -22,9 +23,9 @@ class OnboardingNavigationViewModel: ObservableObject {
             progress = .init(currentStep: progress.currentStep, totalSteps: steps.count)
         }
     }
-    @Published var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
+    var progress = StepProgressModel(currentStep: 0, totalSteps: 0)
 
-    @Published var missingPetChipIdInput: MissingPetChipIdInput?
+    var missingPetChipIdInput: MissingPetChipIdInput?
 
     init() {
         let contractStore: ContractStore = globalAppStateContainer.get()

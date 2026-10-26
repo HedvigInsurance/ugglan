@@ -3,17 +3,18 @@ import hCore
 import hCoreUI
 
 @MainActor
-class EditStakeholdersNavigationViewModel: ObservableObject {
+@Observable
+class EditStakeholdersNavigationViewModel {
     init(config: StakeholdersConfig) {
         stakeholderViewModel = .init(with: config)
     }
 
-    @Published var editStakeholderConfig: StakeholdersConfig?
-    @Published var stakeholderInputModel: StakeholderInputModel?
-    @Published var selectStakeholder: SelectStakeholder?
-    @Published var showProgressScreenWithSuccess = false
-    @Published var showProgressScreenWithoutSuccess = false
-    @Published var isEditStakeholderSelectPresented: StakeholdersConfig?
+    var editStakeholderConfig: StakeholdersConfig?
+    var stakeholderInputModel: StakeholderInputModel?
+    var selectStakeholder: SelectStakeholder?
+    var showProgressScreenWithSuccess = false
+    var showProgressScreenWithoutSuccess = false
+    var isEditStakeholderSelectPresented: StakeholdersConfig?
 
     let stakeholderViewModel: StakeholdersViewModel
     let intentViewModel = IntentViewModel()
@@ -58,9 +59,9 @@ extension EditStakeholdersScreenType {
 struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
-    @ObservedObject private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
+    @Bindable private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
     @StateObject var router = NavigationRouter()
-    @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
+    @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
 
     init(
         config: StakeholdersConfig,
@@ -95,7 +96,7 @@ struct EditStakeholdersNavigation: View {
             EditStakeholdersNavigation(
                 config: config
             )
-            .environmentObject(editStakeholdersViewModel)
+            .environment(editStakeholdersViewModel)
         }
         .detent(
             item: $editStakeholdersNavigationVm.stakeholderInputModel,
@@ -112,7 +113,7 @@ struct EditStakeholdersNavigation: View {
             presentationStyle: .detent(style: [.height])
         ) { selectStakeholder in
             openStakeholderSelectScreen(contractId: selectStakeholder.id)
-                .environmentObject(editStakeholdersNavigationVm)
+                .environment(editStakeholdersNavigationVm)
                 .embededInNavigation(
                     options: [.navigationType(type: .large), .extendedNavigationWidth],
                     tracking: StakeholderScreenTrackingType.select(config.stakeholderType)
@@ -129,7 +130,7 @@ struct EditStakeholdersNavigation: View {
             openNewStakeholdersScreen()
                 .environmentObject(router)
         }
-        .environmentObject(editStakeholdersNavigationVm)
+        .environment(editStakeholdersNavigationVm)
     }
 
     func openNewStakeholdersScreen() -> some View {
@@ -159,7 +160,7 @@ struct EditStakeholdersNavigation: View {
             title: stakeholderModelEdit.title,
             editStakeholdersNavigation: editStakeholdersNavigationVm
         )
-        .environmentObject(editStakeholdersNavigationVm)
+        .environment(editStakeholdersNavigationVm)
         .navigationTitle(config.stakeholderType.addInfoTitle)
     }
 
@@ -173,8 +174,8 @@ struct EditStakeholdersNavigation: View {
             showSuccessScreen: showSuccess,
             intentVM: editStakeholdersNavigationVm.intentViewModel
         )
-        .environmentObject(editStakeholdersNavigationVm)
-        .environmentObject(editStakeholdersViewModel)
+        .environment(editStakeholdersNavigationVm)
+        .environment(editStakeholdersViewModel)
     }
 
     func openRemoveStakeholderScreen() -> some View {
@@ -198,8 +199,8 @@ struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
     @StateObject var router = NavigationRouter()
-    @EnvironmentObject var editStakeholdersViewModel: EditStakeholdersViewModel
-    @StateObject var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
+    @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
+    @State var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
     init(
         configs: [StakeholdersConfig],
@@ -239,7 +240,7 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
 struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
     @StateObject var router = NavigationRouter()
-    @EnvironmentObject private var editStakeholdersViewModel: EditStakeholdersViewModel
+    @Environment(EditStakeholdersViewModel.self) private var editStakeholdersViewModel
 
     init(
         config: StakeholdersConfig

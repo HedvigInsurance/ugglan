@@ -7,8 +7,8 @@ import hCore
 import hCoreUI
 
 public struct TravelCertificatesListScreen: View {
-    @StateObject var vm = TravelCertificatesListScreenViewModel()
-    @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
+    @State var vm = TravelCertificatesListScreenViewModel()
+    @Environment(TravelCertificateNavigationViewModel.self) var travelCertificateNavigationVm
     let contractStore: ContractStore = globalAppStateContainer.get()
 
     let infoButtonPlacement: ListToolBarPlacement
@@ -159,15 +159,16 @@ extension View {
 }
 
 @MainActor
-class TravelCertificatesListScreenViewModel: ObservableObject {
-    var service = TravelInsuranceService()
-    @Published var list: [TravelCertificateModel] = []
-    @Published var canCreateTravelInsurance: Bool = false
-    @Published var error: String?
-    @Published var isLoading = false
-    @Published var isCreateNewLoading: Bool = false
-    @Published var addonBanner: AddonBanner?
-    private var addonAddedObserver: NSObjectProtocol?
+@Observable
+class TravelCertificatesListScreenViewModel {
+    @ObservationIgnored var service = TravelInsuranceService()
+    var list: [TravelCertificateModel] = []
+    var canCreateTravelInsurance: Bool = false
+    var error: String?
+    var isLoading = false
+    var isCreateNewLoading: Bool = false
+    var addonBanner: AddonBanner?
+    @ObservationIgnored private var addonAddedObserver: NSObjectProtocol?
 
     init() {
         addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonsChanged, object: nil, queue: nil) {

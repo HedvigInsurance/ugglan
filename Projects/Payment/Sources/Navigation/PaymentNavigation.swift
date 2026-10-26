@@ -5,16 +5,17 @@ import hCore
 import hCoreUI
 
 @MainActor
-public class PaymentsNavigationViewModel: ObservableObject {
-    private var paymentStoreSubscription: AnyCancellable?
+@Observable
+public class PaymentsNavigationViewModel {
+    @ObservationIgnored private var paymentStoreSubscription: AnyCancellable?
     let paymentsRouter = NavigationRouter()
-    @Published var showChooseDefaultPaymentMethod = false
-    @Published var showAddPaymentMethod = false
+    var showChooseDefaultPaymentMethod = false
+    var showAddPaymentMethod = false
     public init() {}
 }
 
 public struct PaymentsNavigation: View {
-    @ObservedObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    let paymentsNavigationVm: PaymentsNavigationViewModel
     public init(
         paymentsNavigationVm: PaymentsNavigationViewModel
     ) {
@@ -75,11 +76,11 @@ extension View {
 }
 
 private struct PaymentsPresentations: ViewModifier {
-    @ObservedObject var vm: PaymentsNavigationViewModel
+    @Bindable var vm: PaymentsNavigationViewModel
 
     func body(content: Content) -> some View {
         content
-            .environmentObject(vm)
+            .environment(vm)
             .detent(
                 presented: $vm.showChooseDefaultPaymentMethod,
                 presentationStyle: .detent(style: [.height])

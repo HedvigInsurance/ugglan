@@ -3,8 +3,8 @@ import hCore
 import hCoreUI
 
 struct AddonProcessingScreen: View {
-    @ObservedObject var vm: ChangeAddonViewModel
-    @EnvironmentObject var navigationVm: ChangeAddonNavigationViewModel
+    @Bindable var vm: ChangeAddonViewModel
+    @Environment(ChangeAddonNavigationViewModel.self) var navigationVm
 
     var body: some View {
         ProcessingStateView(
@@ -36,8 +36,6 @@ struct AddonProcessingScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return AddonProcessingScreen(
-        vm: .init(offer: testCarOfferNoActive),
-        navigationVm: .init()
-    )
+    return AddonProcessingScreen(vm: .init(offer: testCarOfferNoActive))
+        .environment(ChangeAddonNavigationViewModel(offer: testCarOfferNoActive))
 }

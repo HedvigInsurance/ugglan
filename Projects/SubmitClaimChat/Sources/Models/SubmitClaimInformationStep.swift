@@ -2,6 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@Observable
 final class SubmitClaimInformationStep: ClaimIntentStepHandler {
     override var sender: SubmitClaimChatMessageSender { .member }
 

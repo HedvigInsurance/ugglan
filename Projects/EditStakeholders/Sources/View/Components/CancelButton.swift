@@ -2,7 +2,7 @@ import SwiftUI
 import hCoreUI
 
 struct CancelButton: View {
-    @EnvironmentObject private var editStakeholdersNavigation: EditStakeholdersNavigationViewModel
+    @Environment(EditStakeholdersNavigationViewModel.self) private var editStakeholdersNavigation
     @EnvironmentObject private var router: NavigationRouter
 
     var body: some View {

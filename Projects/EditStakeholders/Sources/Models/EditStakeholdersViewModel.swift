@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Observation
 import hCore
 
 @MainActor
@@ -8,15 +9,16 @@ public protocol ExistingStakeholders: AnyObject {
 }
 
 @MainActor
-public class EditStakeholdersViewModel: ObservableObject {
-    @Published public var editStakeholderModelDetent: EditStakeholdersNavigationModel?
-    @Published public var editStakeholderModelFullScreen: EditStakeholdersNavigationModel?
-    @Published public var editStakeholderModelMissingAlert: StakeholdersConfig?
-    @Published public var editStakeholderModelError: EditStakeholdersErrorWrapper?
+@Observable
+public class EditStakeholdersViewModel {
+    public var editStakeholderModelDetent: EditStakeholdersNavigationModel?
+    public var editStakeholderModelFullScreen: EditStakeholdersNavigationModel?
+    public var editStakeholderModelMissingAlert: StakeholdersConfig?
+    public var editStakeholderModelError: EditStakeholdersErrorWrapper?
     private let service = EditStakeholdersService()
     public static var updatedStakeholderForContractId = PassthroughSubject<String?, Never>()
-    weak var existingStakeholders: ExistingStakeholders?
-    var stakeholderType: StakeholderType!
+    @ObservationIgnored weak var existingStakeholders: ExistingStakeholders?
+    @ObservationIgnored var stakeholderType: StakeholderType!
 
     @MainActor
     public init(existingStakeholders: ExistingStakeholders) {
