@@ -218,7 +218,11 @@ class BankIDViewModel {
         }
 
         withAnimation {
-            self.image = generateQRImage(from: "bankid:///?autostarttoken=\(token)")
+            self.image = StyledQRCode.image(
+                for: "bankid:///?autostarttoken=\(token)",
+                logoFraction: 0,
+                correctionLevel: .low
+            )
         }
     }
 
