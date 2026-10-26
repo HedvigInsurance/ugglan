@@ -60,7 +60,7 @@ struct EditStakeholdersNavigation: View {
     let config: StakeholdersConfig
     @State var openSpecificScreen: EditStakeholdersScreenType
     @Bindable private var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
 
     init(
@@ -128,7 +128,7 @@ struct EditStakeholdersNavigation: View {
         .modally(item: $editStakeholdersNavigationVm.isEditStakeholderSelectPresented) { editConfig in
             let _ = editStakeholdersNavigationVm.stakeholderViewModel.initializeStakeholders(with: editConfig)
             openNewStakeholdersScreen()
-                .environmentObject(router)
+                .environment(router)
         }
         .environment(editStakeholdersNavigationVm)
     }
@@ -198,7 +198,7 @@ struct EditStakeholdersNavigation: View {
 struct EditStakeholdersSelectInsuranceNavigation: View {
     let configs: [StakeholdersConfig]
     let stakeholderType: StakeholderType
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     @Environment(EditStakeholdersViewModel.self) var editStakeholdersViewModel
     @State var editStakeholdersNavigationVm: EditStakeholdersNavigationViewModel
 
@@ -239,7 +239,7 @@ extension EditStakeholdersSelectInsuranceNavigation: TrackingViewNameProtocol {
 
 struct EditStakeholdersAlertNavigation: View {
     let config: StakeholdersConfig
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     @Environment(EditStakeholdersViewModel.self) private var editStakeholdersViewModel
 
     init(

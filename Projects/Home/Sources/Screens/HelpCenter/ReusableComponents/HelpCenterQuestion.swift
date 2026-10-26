@@ -26,7 +26,7 @@ struct QuestionsItems: View {
     let questions: [FAQModel]
     let questionType: QuestionType
     let source: HelpViewSource
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {

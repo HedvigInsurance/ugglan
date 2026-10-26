@@ -10,7 +10,7 @@ import hCoreUI
 
 struct LoginNavigation: View {
     @Bindable var vm: NotLoggedViewModel
-    @StateObject private var router = NavigationRouter()
+    @State private var router = NavigationRouter()
     @State private var otpState = OTPState()
 
     var body: some View {

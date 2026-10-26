@@ -265,7 +265,7 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 
 public struct MovingFlowNavigation: View {
     @State private var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     private let onMoved: () -> Void
 
     public init(

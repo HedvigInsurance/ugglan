@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct FirstVetView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     private let partners: [FirstVetPartner]
 
     public init(

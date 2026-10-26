@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     let openChat: () -> Void
 
     var body: some View {

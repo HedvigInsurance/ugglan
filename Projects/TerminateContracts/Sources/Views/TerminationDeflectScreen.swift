@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct TerminationDeflectScreen: View {
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     @Environment(TerminationFlowNavigationViewModel.self) var terminationFlowNavigationViewModel
     let content: DeflectScreenContent
 
@@ -110,7 +110,7 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoCancelSold)!
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
     .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
@@ -123,7 +123,7 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .autoDecommission)!
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
     .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
@@ -136,7 +136,7 @@ struct TerminationDeflectScreen: View {
     TerminationDeflectScreen(
         content: DeflectScreenContent.from(suggestionType: .carAlreadyDecommission)!
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
     .environment(
         TerminationFlowNavigationViewModel(
             configs: [],
@@ -155,7 +155,7 @@ struct TerminationDeflectScreen: View {
             )
         )!
     )
-    .environmentObject(NavigationRouter())
+    .environment(NavigationRouter())
     .environment(
         TerminationFlowNavigationViewModel(
             configs: [],

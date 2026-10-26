@@ -21,7 +21,7 @@ extension EuroBonusRouterType: TrackingViewNameProtocol {
 }
 
 public struct EuroBonusNavigation: View {
-    @StateObject var router = NavigationRouter()
+    @State var router = NavigationRouter()
     private let useOwnNavigation: Bool
     @State var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
 

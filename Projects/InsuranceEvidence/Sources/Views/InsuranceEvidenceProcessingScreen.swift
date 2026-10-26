@@ -4,7 +4,7 @@ import hCoreUI
 
 struct InsuranceEvidenceProcessingScreen: View {
     @Bindable var vm: ProcessingViewModel
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.Certificates.generating,

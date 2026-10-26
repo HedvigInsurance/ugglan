@@ -4,7 +4,7 @@ import hCoreUI
 
 public struct SubmitClaimDeflectMessageStepView: View {
     private let model: ClaimIntentStepContentDeflectionMessage
-    @EnvironmentObject var router: NavigationRouter
+    @Environment(NavigationRouter.self) var router
     public init(
         model: ClaimIntentStepContentDeflectionMessage,
     ) {
