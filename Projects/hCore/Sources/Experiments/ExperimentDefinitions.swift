@@ -6,7 +6,7 @@ struct ExperimentDefinition: Equatable, Sendable {
 }
 
 let knownExperiments: [ExperimentDefinition] = [
-    // Variants DISCOUNT (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for NO_DISCOUNT.
+    // Variants DISCOUNT_50 (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for NO_DISCOUNT.
     ExperimentDefinition(name: "ACCIDENT_DISCOUNT", unleashFlag: "accident_discount_experiment")
 ]
 
