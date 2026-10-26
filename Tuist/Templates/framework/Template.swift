@@ -9,20 +9,18 @@ let exampleContents = """
     """
 
 let testContents = """
-        import Foundation
-        import XCTest
+        import Testing
 
-        final class \(nameAttribute)Tests: XCTestCase {
+        @testable import \(nameAttribute)
 
-            override func setUp() {
-                super.setUp()
+        @MainActor
+        final class \(nameAttribute)Tests {
+
+            init() {
+                // Swift Testing builds a fresh instance per test, so this replaces setUp
             }
 
-            override func tearDown() {
-                super.tearDown()
-            }
-
-            func test_example() {
+            @Test func example() {
                 // Add your test here
             }
 
