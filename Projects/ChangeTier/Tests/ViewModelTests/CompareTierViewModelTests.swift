@@ -11,54 +11,8 @@ extension ChangeTierDependencySuite {
         private weak var sut: MockChangeTierService?
         private weak var vm: CompareTierViewModel?
 
-        let currentTier = Tier(
-            id: "currentTier",
-            name: "current tier",
-            level: 1,
-            description: nil,
-            quotes: [],
-            exposureName: nil
-        )
-        let tiers: [Tier] = [
-            .init(
-                id: "id1",
-                name: "standard",
-                level: 1,
-                description: nil,
-                quotes: [],
-                exposureName: "exposureName"
-            ),
-            .init(
-                id: "id2",
-                name: "max",
-                level: 2,
-                description: nil,
-                quotes: [
-                    .init(
-                        id: "id1",
-                        quoteAmount: nil,
-                        quotePercentage: nil,
-                        subTitle: nil,
-                        currentTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                        newTotalCost: .init(gross: .sek(229), net: .sek(229)),
-                        displayItems: [],
-                        productVariant: .init(
-                            termsVersion: "",
-                            typeOfContract: "",
-                            perils: [],
-                            insurableLimits: [],
-                            documents: [],
-                            displayName: "displayName",
-                            displayNameTier: nil,
-                            tierDescription: nil
-                        ),
-                        addons: [],
-                        costBreakdown: []
-                    )
-                ],
-                exposureName: "exposureName"
-            ),
-        ]
+        let currentTier = TierFixtures.currentTier
+        let tiers = TierFixtures.tiers
 
         init() {
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
