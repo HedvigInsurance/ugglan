@@ -6,7 +6,8 @@ let exampleContents = """
         import Foundation
 
         struct \(nameAttribute) { }
-    """
+
+        """
 
 let testContents = """
         import Testing
@@ -25,23 +26,26 @@ let testContents = """
             }
 
         }
-    """
 
+        """
+
+// Matches most existing Example apps, which ship only an app delegate. Project.framework's scene manifest names
+// <Name>Example.SceneDelegate; add one (see Projects/Claims/Example) if the example needs to show a window.
 let appDelegateContents = """
-        import Foundation
+        import UIKit
 
-        @UIApplicationMain
-        class AppDelegate: UIResponder, UIApplicationDelegate {
+        @main class AppDelegate: UIResponder, UIApplicationDelegate {
             var window: UIWindow?
 
-            internal func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-                self.window = UIWindow(frame: UIScreen.main.bounds)
-                self.window?.rootViewController = UINavigationController()
-                self.window?.makeKeyAndVisible()
-                return true
+            func application(
+                _: UIApplication,
+                didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+            ) -> Bool {
+                true
             }
         }
-    """
+
+        """
 
 let graphqlExampleQueryContents = """
         query Example {
@@ -49,7 +53,8 @@ let graphqlExampleQueryContents = """
                 id
             }
         }
-    """
+
+        """
 
 let xcassetsContents = """
         {
@@ -58,7 +63,8 @@ let xcassetsContents = """
             "author" : "xcode"
           }
         }
-    """
+
+        """
 
 let xcassetsAppIconContents = """
         {
@@ -159,13 +165,22 @@ let xcassetsAppIconContents = """
             "version" : 1
           }
         }
-    """
+
+        """
 
 let template = Template(
     description: "Framework template",
     attributes: [nameAttribute, .optional("platform", default: "iOS")],
     items: [
         .string(path: "\(nameAttribute)/Example/Sources/AppDelegate.swift", contents: appDelegateContents),
+        .string(
+            path: "\(nameAttribute)/Example/Resources/Assets.xcassets/Contents.json",
+            contents: xcassetsContents
+        ),
+        .string(
+            path: "\(nameAttribute)/Example/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+            contents: xcassetsAppIconContents
+        ),
         .string(path: "\(nameAttribute)/GraphQL/ExampleQuery.graphql", contents: graphqlExampleQueryContents),
         .string(path: "\(nameAttribute)/Sources/\(nameAttribute).swift", contents: exampleContents),
         .string(path: "\(nameAttribute)/Tests/\(nameAttribute)Tests.swift", contents: testContents),
