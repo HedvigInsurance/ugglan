@@ -244,7 +244,7 @@ extension Project {
         name: String,
         externalDependencies: [ExternalDependencies],
         sdks: [String] = [],
-        deploymentTargets: DeploymentTargets = .iOS("16.0"),
+        deploymentTargets: DeploymentTargets = .iOS("17.0"),
         scripts: [TargetScript] = []
     ) -> Project {
         let frameworkConfigurations: [Configuration] = [

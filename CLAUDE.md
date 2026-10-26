@@ -1,6 +1,6 @@
 # Ugglan — Hedvig iOS App
 
-Tuist-managed iOS monorepo. Latest Swift, targeting iOS 16+.
+Tuist-managed iOS monorepo. Latest Swift, targeting iOS 17+.
 
 ## Build & Run
 
