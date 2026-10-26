@@ -20,6 +20,9 @@ public class ChatCrossSellViewModel {
     // dealt with, even if the mutation that records it never reaches the server.
     @ObservationIgnored private var hasRetired = false
 
+    // The chat screen is the visit: a card hidden behind the keyboard and shown again counts once.
+    private let shownTracker = CrossSellShownTracker(source: .inChat)
+
     init(chatService: ChatServiceProtocol) {
         self.chatService = chatService
     }
@@ -49,9 +52,18 @@ public class ChatCrossSellViewModel {
         track(.prompted)
     }
 
+    func offerWasShown() {
+        if let recommended {
+            shownTracker.offerWasShown(recommended)
+        }
+    }
+
     func dismiss() async {
-        guard recommended != nil else { return }
+        guard let recommended else { return }
         retire(event: .dismissed)
+        if case let .insurance(crossSell) = recommended {
+            crossSell.track(.dismissed, from: .inChat)
+        }
         try? await chatService.hideCrossSales()
     }
 
@@ -59,8 +71,11 @@ public class ChatCrossSellViewModel {
         guard let recommended else { return }
         let destination = recommended.destination
         // Recorded before the member leaves for the store, so a click is never lost to the
-        // app being backgrounded.
+        // app being backgrounded. Retiring also hides the card at once, so a second tap opens nothing.
         retire(event: .clicked)
+        if case let .insurance(crossSell) = recommended {
+            crossSell.track(.clicked, from: .inChat)
+        }
         await open(destination)
         try? await chatService.hideCrossSales()
     }

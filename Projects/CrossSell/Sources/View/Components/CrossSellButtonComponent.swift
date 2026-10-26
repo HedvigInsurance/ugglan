@@ -4,6 +4,7 @@ import hCoreUI
 
 struct CrossSellButtonComponent: View {
     let crossSell: RecommendedCrossSell
+    let source: CrossSellSource
     @State private var isLoading = false
     @Environment(\.dismiss) var dismiss
     var body: some View {
@@ -46,10 +47,10 @@ struct CrossSellButtonComponent: View {
         switch crossSell {
         case let .insurance(insurance):
             Task {
-                if let url = URL(string: insurance.webActionURL) {
-                    isLoading = true
-                    await Dependencies.urlOpener.open(url)
-                    isLoading = false
+                isLoading = true
+                let didOpen = await CrossSellStoreOpener.shared.open(insurance, from: source)
+                isLoading = false
+                if didOpen {
                     dismiss()
                 }
             }
@@ -74,6 +75,7 @@ struct CrossSellButtonComponent: View {
                 imageUrl: nil,
                 buttonDescription: "button"
             )
-        )
+        ),
+        source: .homeXSell
     )
 }

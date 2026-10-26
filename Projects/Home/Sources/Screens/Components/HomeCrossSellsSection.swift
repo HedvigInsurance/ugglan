@@ -7,7 +7,7 @@ struct HomeCrossSellsSection: View {
 
     var body: some View {
         if let crossSells, !crossSells.others.isEmpty {
-            CrossSellStackComponent(crossSells: crossSells.others)
+            CrossSellStackComponent(crossSells: crossSells.others, source: .home)
         }
     }
 }

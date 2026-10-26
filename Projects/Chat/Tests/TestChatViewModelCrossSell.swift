@@ -10,17 +10,21 @@ final class TestChatViewModelCrossSell: XCTestCase {
     weak var sut: MockConversationService?
     private var logger: MockLogger!
     private var originalLog: (any Logging)!
+    private var eventTracker: MockEventTrackingClient!
 
     override func setUp() async throws {
         try await super.setUp()
         originalLog = log
         logger = MockData.createMockLogger()
+        eventTracker = MockData.createMockEventTrackingClient()
     }
 
     override func tearDown() async throws {
         try await super.tearDown()
         log = originalLog
         logger = nil
+        eventTracker = nil
+        Dependencies.shared.remove(for: EventTrackingClient.self)
         Dependencies.shared.remove(for: CrossSellClient.self)
         Dependencies.shared.remove(for: URLOpener.self)
         Dependencies.shared.remove(for: ConversationClient.self)
@@ -255,6 +259,86 @@ final class TestChatViewModelCrossSell: XCTestCase {
         // Addons route through the deep-link notification, never the web store.
         XCTAssertTrue(opener.openedURLs.isEmpty)
         XCTAssertNil(model.messageVm.crossSellVm.recommended)
+        sut = mockService
+    }
+
+    func testCardReportsShownOncePerChatScreen() async {
+        MockData.createMockCrossSellClient()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        await model.messageVm.fetchMessages()
+        // Hidden behind the keyboard and shown again, the card is still the same visit.
+        model.messageVm.crossSellVm.offerWasShown()
+        model.messageVm.crossSellVm.offerWasShown()
+        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_shown"])
+        XCTAssertEqual(
+            eventTracker.trackedEvents.first?.parameters,
+            ["user_flow": "in_chat_x_sell", "offer_id": "cross-sell-1"]
+        )
+        sut = mockService
+    }
+
+    func testDismissReportsCrossSellDismissed() async {
+        MockData.createMockCrossSellClient()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        await model.messageVm.fetchMessages()
+        await model.messageVm.crossSellVm.dismiss()
+        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_dismissed"])
+        XCTAssertEqual(
+            eventTracker.trackedEvents.first?.parameters,
+            ["user_flow": "in_chat_x_sell", "offer_id": "cross-sell-1"]
+        )
+        sut = mockService
+    }
+
+    func testDoubleTapOnOpenReportsOneClick() async {
+        MockData.createMockCrossSellClient()
+        let opener = MockData.createMockURLOpener()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        await model.messageVm.fetchMessages()
+        async let firstTap: Void = model.messageVm.crossSellVm.open()
+        async let secondTap: Void = model.messageVm.crossSellVm.open()
+        _ = await (firstTap, secondTap)
+        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked"])
+        XCTAssertEqual(opener.openedURLs.count, 1)
+        sut = mockService
+    }
+
+    func testAddonRecommendationReportsNoCrossSellEvents() async {
+        MockData.createMockCrossSellClient(
+            fetchCrossSell: { _ in
+                .init(
+                    recommended: .addon(
+                        .init(
+                            id: "addon-1",
+                            title: "Travel Plus",
+                            description: "Extended travel cover.",
+                            buttonText: "See your price",
+                            deepLink: "hedvig://addon/travel",
+                            imageUrl: nil
+                        )
+                    ),
+                    others: []
+                )
+            }
+        )
+        MockData.createMockURLOpener()
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        await model.messageVm.fetchMessages()
+        model.messageVm.crossSellVm.offerWasShown()
+        await model.messageVm.crossSellVm.open()
+        XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
         sut = mockService
     }
 }

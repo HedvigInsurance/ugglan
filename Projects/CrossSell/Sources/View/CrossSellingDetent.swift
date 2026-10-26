@@ -7,15 +7,18 @@ public struct CrossSellingDetent: View {
     @State private var router = NavigationRouter()
 
     let crossSells: CrossSells
+    let source: CrossSellSource
     let addons: [AddonBanner]
     let onAddonTap: (AddonBanner) -> Void
 
     public init(
         crossSells: CrossSells,
+        source: CrossSellSource,
         addons: [AddonBanner],
         onAddonTap: @escaping (AddonBanner) -> Void
     ) {
         self.crossSells = crossSells
+        self.source = source
         self.addons = addons
         self.onAddonTap = onAddonTap
     }
@@ -23,7 +26,7 @@ public struct CrossSellingDetent: View {
     public var body: some View {
         hForm {
             VStack(spacing: .padding48) {
-                CrossSellStackComponent(crossSells: crossSells.others)
+                CrossSellStackComponent(crossSells: crossSells.others, source: source)
                 CrossSellAddonsSection(addons: addons, onAddonTap: onAddonTap)
             }
         }
@@ -54,5 +57,10 @@ extension CrossSellingDetent: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingDetent(crossSells: .init(recommended: nil, others: []), addons: [], onAddonTap: { _ in })
+    return CrossSellingDetent(
+        crossSells: .init(recommended: nil, others: []),
+        source: .homeXSell,
+        addons: [],
+        onAddonTap: { _ in }
+    )
 }

@@ -5,13 +5,13 @@ import hCoreUI
 
 struct CrossSellingItem: View {
     let crossSell: CrossSell
+    let source: CrossSellSource
     @State private var isCrossSellLoading = false
 
     func openExternal() {
         Task {
-            guard let url = URL(string: crossSell.webActionURL) else { return }
             isCrossSellLoading = true
-            await Dependencies.urlOpener.open(url)
+            await CrossSellStoreOpener.shared.open(crossSell, from: source)
             isCrossSellLoading = false
         }
     }
@@ -51,6 +51,7 @@ struct CrossSellingItem: View {
             webActionURL: "",
             imageUrl: nil,
             buttonDescription: "button description"
-        )
+        ),
+        source: .home
     )
 }

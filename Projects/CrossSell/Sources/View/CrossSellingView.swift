@@ -10,7 +10,7 @@ public struct CrossSellingView: View {
     public var body: some View {
         VStack {
             if let crossSells = store.crossSells, !crossSells.others.isEmpty {
-                CrossSellStackComponent(crossSells: crossSells.others)
+                CrossSellStackComponent(crossSells: crossSells.others, source: .insurances)
             }
         }
         .task {

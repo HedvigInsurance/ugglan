@@ -766,14 +766,14 @@ struct HomeTab: View {
             presentationStyle: .center,
             options: .constant([.alwaysOpenOnTop])
         ) { crossSell in
-            CrossSellingCentered(crossSell: crossSell)
+            CrossSellingCentered(crossSell: crossSell, source: homeNavigationVm.navBarItems.newOfferSource)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedModal,
             presentationStyle: .detent(style: [.large]),
             options: .constant([.alwaysOpenOnTop, .withoutGrabber])
         ) { crossSells in
-            CrossSellingModal(crossSells: crossSells)
+            CrossSellingModal(crossSells: crossSells, source: homeNavigationVm.navBarItems.newOfferSource)
         }
         .detent(
             item: $homeNavigationVm.navBarItems.isNewOfferPresentedDetent,
@@ -782,6 +782,7 @@ struct HomeTab: View {
         ) { crossSells in
             CrossSellingDetent(
                 crossSells: crossSells,
+                source: homeNavigationVm.navBarItems.newOfferSource,
                 addons: crossSellStore.addonBanners,
                 onAddonTap: { banner in
                     homeNavigationVm.navBarItems.isNewOfferPresentedDetent = nil

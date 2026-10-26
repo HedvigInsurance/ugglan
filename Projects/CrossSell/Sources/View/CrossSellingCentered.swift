@@ -4,11 +4,16 @@ import hCoreUI
 
 public struct CrossSellingCentered: View {
     private let crossSell: RecommendedCrossSell
+    private let source: CrossSellSource
     @State private var viewId = UUID().uuidString
+    @State private var shownTracker: CrossSellShownTracker
     public init(
-        crossSell: RecommendedCrossSell
+        crossSell: RecommendedCrossSell,
+        source: CrossSellSource
     ) {
         self.crossSell = crossSell
+        self.source = source
+        _shownTracker = State(initialValue: CrossSellShownTracker(source: source))
     }
 
     public var body: some View {
@@ -16,12 +21,13 @@ public struct CrossSellingCentered: View {
             VStack(spacing: 0) {
                 CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
+                    .onCrossSellShown { shownTracker.offerWasShown(crossSell) }
                     .padding(.top, contentTopPadding)
                 VStack(spacing: .padding16) {
                     if case let .insurance(insurance) = crossSell {
                         CrossSellDiscountProgressComponent(crossSell: insurance)
                     }
-                    CrossSellButtonComponent(crossSell: crossSell)
+                    CrossSellButtonComponent(crossSell: crossSell, source: source)
                 }
                 .padding(.top, buttonTopPadding)
             }
@@ -71,6 +77,7 @@ public struct CrossSellingCentered: View {
                 buttonDescription: "buttonDescription",
                 numberOfEligibleContracts: 1
             )
-        )
+        ),
+        source: .homeXSell
     )
 }

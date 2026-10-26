@@ -68,6 +68,13 @@ struct MockData {
     }
 
     @discardableResult
+    static func createMockEventTrackingClient() -> MockEventTrackingClient {
+        let client = MockEventTrackingClient()
+        Dependencies.shared.add(module: Module { () -> EventTrackingClient in client })
+        return client
+    }
+
+    @discardableResult
     static func createMockConversationClient(showCrossSales: Bool = false) -> MockConversationClient {
         let client = MockConversationClient(showCrossSales: showCrossSales)
         Dependencies.shared.add(module: Module { () -> ConversationClient in client })
@@ -149,6 +156,22 @@ class MockLogger: Logging {
     func critical(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
     func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
+}
+
+class MockEventTrackingClient: EventTrackingClient {
+    var trackedEvents = [(name: String, parameters: [String: String])]()
+
+    func setCollectionEnabled(_ enabled: Bool) {}
+
+    func trackEvent(name: String, parameters: [String: Any]?) {
+        trackedEvents.append((name, (parameters ?? [:]).mapValues { "\($0)" }))
+    }
+
+    func trackScreen(name: String, parameters: [String: Any]?) {}
+
+    func setUserId(_ userId: String?) {}
+
+    func setUserProperty(name: String, value: String?) {}
 }
 
 class MockURLOpener: URLOpener {
