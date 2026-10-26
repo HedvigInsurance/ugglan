@@ -1,6 +1,7 @@
 import Apollo
 import Combine
 import Foundation
+import Observation
 import SwiftUI
 
 @MainActor
@@ -60,18 +61,24 @@ public struct Module {
 
 @MainActor
 @propertyWrapper
-public struct InjectObservableObject<T: ObservableObject>: DynamicProperty {
-    @StateObject private var stateObject: T
+public struct InjectObservableObject<T: AnyObject & Observable>: DynamicProperty {
+    /// `State(wrappedValue:)` evaluates its argument eagerly, unlike the autoclosure `StateObject` took,
+    /// so resolving in `init` would run before e.g. `MainNavigation.init` has registered the dependency.
+    /// The box defers resolution to first access and keeps that instance for the view's lifetime.
+    @State private var box = LazyResolvedBox<T>()
 
-    public init() {
-        _stateObject = StateObject(wrappedValue: Dependencies.shared.resolve())
-    }
+    public init() {}
 
     public var wrappedValue: T {
-        stateObject
+        box.object
     }
 
-    public var projectedValue: ObservedObject<T>.Wrapper {
-        $stateObject
+    public var projectedValue: Bindable<T> {
+        Bindable(box.object)
     }
+}
+
+@MainActor
+private final class LazyResolvedBox<T: AnyObject> {
+    lazy var object: T = Dependencies.shared.resolve()
 }
