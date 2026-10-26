@@ -29,7 +29,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
             }
         }
         .sectionContainerStyle(.transparent)
-        .onUpdate(of: configuration.isOn) { _ in
+        .onChange(of: configuration.isOn) {
             withAnimation {
                 animate = true
             }
