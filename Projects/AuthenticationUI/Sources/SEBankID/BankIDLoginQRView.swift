@@ -242,7 +242,7 @@ class BankIDViewModel {
     private func generateQRImage(from url: String) -> UIImage? {
         // No logo to make room for, so medium correction is enough — and fewer modules draw larger,
         // finder patterns included.
-        StyledQRCode.image(for: url, logoFraction: 0, correctionLevel: .medium)
+        StyledQRCode.image(for: url, logoFraction: 0, correctionLevel: .low)
     }
 }
 
