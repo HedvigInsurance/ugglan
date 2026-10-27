@@ -5,8 +5,17 @@ import UnleashProxyClientSwift
 
 @testable import hCore
 
+extension MockData {
+    @discardableResult
+    static func createMockFeatureFlagsClient() -> MockFeatureFlagsClient {
+        let client = MockFeatureFlagsClient()
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in client })
+        return client
+    }
+}
+
 /// Feeds `FeatureFlags.shared` whatever feature data a test needs.
-final class FakeFeatureFlagsClient: FeatureFlagsClient, @unchecked Sendable {
+final class MockFeatureFlagsClient: FeatureFlagsClient, @unchecked Sendable {
     private let subject = PassthroughSubject<FeatureData, Never>()
 
     var featureData: AnyPublisher<FeatureData, Never> {
@@ -42,33 +51,9 @@ extension FeatureData {
     }
 }
 
-@MainActor
-final class FakeEventTrackingClient: EventTrackingClient {
-    /// Every `setUserProperty` call in order, so a test can tell "cleared" from "never touched".
-    private(set) var userPropertyChanges: [(name: String, value: String?)] = []
-
-    /// The latest value set per property; a key is absent until the property has been set at all.
-    var userProperties: [String: String?] {
-        var properties: [String: String?] = [:]
-        for change in userPropertyChanges {
-            properties[change.name] = change.value
-        }
-        return properties
-    }
-
-    func setCollectionEnabled(_: Bool) {}
-    func trackEvent(name _: String, parameters _: [String: Any]?) {}
-    func trackScreen(name _: String, parameters _: [String: Any]?) {}
-    func setUserId(_: String?) {}
-
-    func setUserProperty(name: String, value: String?) {
-        userPropertyChanges.append((name, value))
-    }
-}
-
 /// Stands in for the network under the Unleash SDK: answers each fetch from a queue of canned responses,
 /// failing once the queue is empty, and records every URL it was asked for.
-final class FakePollerSession: PollerSession, @unchecked Sendable {
+final class MockPollerSession: PollerSession, @unchecked Sendable {
     struct Response {
         let statusCode: Int
         let body: Data
@@ -116,12 +101,13 @@ final class FakePollerSession: PollerSession, @unchecked Sendable {
     }
 }
 
-/// Records the warnings logged, so a test can tell the app reported a fallback.
-final class FakeLogger: Logging {
-    private(set) var warnings: [String] = []
+class MockLogger: Logging {
+    var warnings = [String]()
 
     func debug(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
     func info(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
     func notice(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
 
     func warn(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
@@ -129,12 +115,15 @@ final class FakeLogger: Logging {
     }
 
     func error(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
     func critical(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
     func addUserAction(
         type _: LoggingAction,
         name _: String,
         error _: Error?,
         attributes _: [AttributeKey: AttributeValue]?
     ) {}
+
     func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
 }

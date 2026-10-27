@@ -1,14 +1,15 @@
 import Combine
 import Environment
 import TestDependencies
-import XCTest
+@preconcurrency import XCTest
 
 @testable import hCore
 
 @MainActor
 final class FeatureFlagsUnleashTests: XCTestCase {
-    private var session: FakePollerSession!
-    private var sut: FeatureFlagsUnleash!
+    weak var sut: FeatureFlagsUnleash?
+    private var session: MockPollerSession!
+    private var client: FeatureFlagsUnleash!
     private var published: [FeatureData] = []
     private var cancellable: AnyCancellable?
 
@@ -31,49 +32,52 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         """
 
     override func setUp() async throws {
-        session = FakePollerSession()
-        sut = FeatureFlagsUnleash(environment: .staging, pollerSession: session)
+        session = MockPollerSession()
+        client = FeatureFlagsUnleash(environment: .staging, pollerSession: session)
+        sut = client
         published = []
-        cancellable = sut.featureData.sink { [weak self] in self?.published.append($0) }
+        cancellable = client.featureData.sink { [weak self] in self?.published.append($0) }
     }
 
     override func tearDown() async throws {
         cancellable = nil
-        sut = nil
+        client = nil
+        await delay(0.0000001)
+        XCTAssertNil(sut)
     }
 
-    func testTheFetchCarriesTheMemberAsUserIdAndAsTheMemberIdProperty() async throws {
+    func testSetupFetchesWithTheMemberAsUserIdAndMemberIdProperty() async throws {
         session.enqueue(.toggles(memberToggles))
 
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
 
         let query = try XCTUnwrap(session.requestedURLs.last?.query)
         XCTAssertTrue(query.contains("userId=123"), query)
         XCTAssertTrue(query.contains("properties%5BmemberId%5D=123"), query)
     }
 
-    func testExperimentsComeFromTheTogglesFetchedForTheMember() async throws {
+    func testSetupPublishesTheExperimentsFromTheMembersToggles() async throws {
         session.enqueue(.toggles(memberToggles))
 
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
 
         XCTAssertEqual(published.last?.experiments, [noDiscount])
     }
 
-    func testADisabledFlagPutsTheMemberInNoExperiment() async throws {
+    func testSetupWithADisabledFlagPublishesNoExperiment() async throws {
         session.enqueue(.toggles(anonymousToggles))
 
-        try await sut.setup(with: nobody)
+        try await client.setup(with: nobody)
 
         XCTAssertEqual(published.last?.experiments, [])
     }
 
-    func testExperimentsAreUnknownUntilTheNewMembersFetchLands() async throws {
+    func testUpdateContextLeavesExperimentsUnknownUntilTheNewMembersFetchLands() async throws {
         session.enqueue(.toggles(anonymousToggles))
-        try await sut.setup(with: nobody)
+        try await client.setup(with: nobody)
         session.enqueue(.toggles(memberToggles))
 
-        sut.updateContext(context: member)
+        client.updateContext(context: member)
 
         let beforeTheFetch = try XCTUnwrap(published.last)
         XCTAssertNil(beforeTheFetch.experiments)
@@ -82,24 +86,24 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         }
     }
 
-    func testASetupForANewMemberMakesExperimentsUnknownUntilItsFetchLands() async throws {
+    func testSetupForANewMemberLeavesExperimentsUnknownUntilItsFetchLands() async throws {
         session.enqueue(.toggles(anonymousToggles))
-        try await sut.setup(with: nobody)
+        try await client.setup(with: nobody)
         session.enqueue(.toggles(memberToggles))
 
         // Login runs setup again with the member in the context, while Home already queries cross-sells.
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
 
         XCTAssertEqual(published.map(\.experiments).suffix(3), [[], nil, [noDiscount]])
     }
 
-    func testANotModifiedAnswerAfterTheContextChangeCountsAsTheNewMembersState() async throws {
+    func testUpdateContextTakesANotModifiedAnswerAsTheNewMembersState() async throws {
         session.enqueue(.toggles(memberToggles))
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
         // The SDK keeps one ETag across contexts, so a member with the same toggles gets a 304 and no event.
         session.enqueue(.notModified)
 
-        sut.updateContext(context: otherMember)
+        client.updateContext(context: otherMember)
 
         await waitUntil(
             description: "the 304 is taken as the other member's state",
@@ -110,12 +114,12 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         XCTAssertEqual(session.requestedURLs.count, 2)
     }
 
-    func testExperimentsStayUnknownWhenTheMembersFetchFails() async throws {
+    func testUpdateContextKeepsExperimentsUnknownWhenTheMembersFetchFails() async throws {
         session.enqueue(.toggles(anonymousToggles))
-        try await sut.setup(with: nobody)
+        try await client.setup(with: nobody)
         // Nothing enqueued: the member's fetch fails.
 
-        sut.updateContext(context: member)
+        client.updateContext(context: member)
 
         await waitUntil(description: "the member's fetch was attempted", timeout: sdkFetchTimeout) { [self] in
             session.requestedURLs.count == 2
@@ -125,12 +129,12 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         XCTAssertNil(latest.experiments)
     }
 
-    func testRemovingTheMemberFromTheContextFetchesForNobody() async throws {
+    func testUpdateContextWithoutAMemberFetchesForNobody() async throws {
         session.enqueue(.toggles(memberToggles))
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
         session.enqueue(.toggles(anonymousToggles))
 
-        sut.updateContext(context: nobody)
+        client.updateContext(context: nobody)
 
         await waitUntil(description: "nobody's toggles arrive", timeout: sdkFetchTimeout) { [self] in
             published.last?.experiments == []
@@ -140,11 +144,11 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         XCTAssertFalse(query.contains("memberId"), query)
     }
 
-    func testAnUnchangedContextIsNotFetchedAgain() async throws {
+    func testUpdateContextWithTheSameContextDoesNotFetchAgain() async throws {
         session.enqueue(.toggles(memberToggles))
-        try await sut.setup(with: member)
+        try await client.setup(with: member)
 
-        sut.updateContext(context: member)
+        client.updateContext(context: member)
 
         await delay(0.1)
         XCTAssertEqual(session.requestedURLs.count, 1)
