@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import Logger
 import UnleashProxyClientSwift
 
 @testable import hCore
@@ -113,4 +114,27 @@ final class FakePollerSession: PollerSession, @unchecked Sendable {
         )
         completionHandler(response.body, httpResponse, nil)
     }
+}
+
+/// Records the warnings logged, so a test can tell the app reported a fallback.
+final class FakeLogger: Logging {
+    private(set) var warnings: [String] = []
+
+    func debug(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+    func info(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+    func notice(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+
+    func warn(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        warnings.append(message)
+    }
+
+    func error(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+    func critical(_: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {}
+    func addUserAction(
+        type _: LoggingAction,
+        name _: String,
+        error _: Error?,
+        attributes _: [AttributeKey: AttributeValue]?
+    ) {}
+    func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
 }
