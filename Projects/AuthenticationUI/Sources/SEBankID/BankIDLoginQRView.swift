@@ -7,6 +7,7 @@ import hCoreUI
 public struct BankIDLoginQRView: View {
     @State var vm = BankIDViewModel()
     @Environment(NavigationRouter.self) var router
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -29,11 +30,7 @@ public struct BankIDLoginQRView: View {
                     VStack(spacing: .padding32) {
                         ZStack {
                             if let image = vm.image {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(height: 140)
-                                    .foregroundColor(hTextColor.Opaque.primary)
+                                qrCode(image)
                                     .transition(.opacity)
                                     .id(image.pngData()?.count ?? 0)
                                     .accessibilityLabel(L10n.bankidLoginTitle)
@@ -115,6 +112,21 @@ public struct BankIDLoginQRView: View {
             vm.router = router
             vm.onAppear()
         }
+    }
+
+    /// Always drawn dark-on-light, the way scanners expect a code. In dark mode it sits on a light card
+    /// matching the form's light background, which also gives the code its quiet zone.
+    private func qrCode(_ image: UIImage) -> some View {
+        StyledQRCodeView(image: image)
+            .frame(width: 180, height: 180)
+            .padding(colorScheme == .dark ? .padding16 : 0)
+            .background {
+                if colorScheme == .dark {
+                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                        .fill(hBackgroundColor.primary)
+                }
+            }
+            .colorScheme(.light)
     }
 }
 
@@ -206,7 +218,11 @@ class BankIDViewModel {
         }
 
         withAnimation {
-            self.image = generateQRImage(from: "bankid:///?autostarttoken=\(token)")
+            self.image = StyledQRCode.image(
+                for: "bankid:///?autostarttoken=\(token)",
+                logoFraction: 0,
+                correctionLevel: .low
+            )
         }
     }
 
@@ -222,30 +238,9 @@ class BankIDViewModel {
             image = nil
             return
         }
-        withAnimation(.snappy) {
-            self.image = generateQRImage(from: qrData)
+        withAnimation(.snappy(duration: 0.1)) {
+            self.image = StyledQRCode.image(for: qrData, logoFraction: 0, correctionLevel: .low)
         }
-    }
-
-    private func generateQRImage(from url: String) -> UIImage? {
-        let data = url.data(using: String.Encoding.ascii)
-        guard let qrFilter = CIFilter(name: "CIQRCodeGenerator") else { return nil }
-        qrFilter.setValue(data, forKey: "inputMessage")
-        guard let qrImage = qrFilter.outputImage else { return nil }
-
-        let transform = CGAffineTransform(scaleX: 10, y: 10)
-        let scaledQrImage = qrImage.transformed(by: transform)
-
-        guard let maskToAlphaFilter = CIFilter(name: "CIMaskToAlpha") else { return nil }
-        maskToAlphaFilter.setValue(scaledQrImage, forKey: "inputImage")
-        guard let outputCIImage = maskToAlphaFilter.outputImage else { return nil }
-
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(outputCIImage, from: outputCIImage.extent) else {
-            return nil
-        }
-        let processedImage = UIImage(cgImage: cgImage).withRenderingMode(.alwaysTemplate)
-        return processedImage
     }
 }
 
