@@ -312,6 +312,21 @@ final class TestChatViewModelCrossSell: XCTestCase {
         sut = mockService
     }
 
+    func testStoreLinkTheSystemDoesNotOpenReportsNoClick() async {
+        MockData.createMockCrossSellClient()
+        let opener = MockData.createMockURLOpener()
+        opener.systemOpensURLs = false
+        let mockService = MockData.createMockChatService(
+            fetchNewMessages: { .init(conversationId: "conv-1", showCrossSales: true) }
+        )
+        let model = ChatScreenViewModel(chatService: mockService)
+        await model.messageVm.fetchMessages()
+        await model.messageVm.crossSellVm.open()
+        XCTAssertEqual(opener.openedURLs.count, 1)
+        XCTAssertFalse(eventTracker.trackedEvents.map(\.name).contains("cross_sell_clicked"))
+        sut = mockService
+    }
+
     func testAddonRecommendationReportsNoCrossSellEvents() async {
         MockData.createMockCrossSellClient(
             fetchCrossSell: { _ in

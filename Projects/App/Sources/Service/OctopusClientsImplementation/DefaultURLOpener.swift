@@ -8,9 +8,10 @@ class DefaultURLOpener: URLOpener {
 
     // Opened URLs can carry a credential (BankID autostart token, quote resume links), so the URL is masked.
     @Log(masked: ["url"])
-    public func open(_ url: URL) async {
+    @discardableResult
+    public func open(_ url: URL) async -> Bool {
         let urlToOpen = url.requiresAuthorization ? await urlWithAuthorizationCode(url) : url
-        await UIApplication.shared.open(urlToOpen)
+        return await UIApplication.shared.open(urlToOpen)
     }
 
     private func urlWithAuthorizationCode(_ url: URL) async -> URL {

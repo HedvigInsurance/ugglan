@@ -113,15 +113,18 @@ class MockEventTrackingClient: EventTrackingClient {
 class MockURLOpener: URLOpener {
     var openedURLs = [URL]()
     var holdsOpens = false
+    /// What the system answers, false as when no app can handle the URL.
+    var systemOpensURLs = true
     private var heldOpen: CheckedContinuation<Void, Never>?
 
     var isHoldingAnOpen: Bool { heldOpen != nil }
 
-    func open(_ url: URL) async {
+    func open(_ url: URL) async -> Bool {
         openedURLs.append(url)
         if holdsOpens {
             await withCheckedContinuation { heldOpen = $0 }
         }
+        return systemOpensURLs
     }
 
     func finishHeldOpen() {

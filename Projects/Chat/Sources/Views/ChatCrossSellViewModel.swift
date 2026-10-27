@@ -70,13 +70,11 @@ public class ChatCrossSellViewModel {
     func open() async {
         guard let recommended else { return }
         let destination = recommended.destination
-        // Recorded before the member leaves for the store, so a click is never lost to the
-        // app being backgrounded. Retiring also hides the card at once, so a second tap opens nothing.
+        // Retiring hides the card at once, so a second tap opens nothing.
         retire(event: .clicked)
-        if case let .insurance(crossSell) = recommended {
+        if await open(destination), case let .insurance(crossSell) = recommended {
             crossSell.track(.clicked, from: .inChat)
         }
-        await open(destination)
         try? await chatService.hideCrossSales()
     }
 
@@ -102,16 +100,16 @@ public class ChatCrossSellViewModel {
         log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
     }
 
-    private func open(_ destination: RecommendedCrossSell.Destination) async {
+    /// Returns whether the destination opened.
+    private func open(_ destination: RecommendedCrossSell.Destination) async -> Bool {
         switch destination {
         case let .storeURL(urlString):
-            if let urlString, let url = URL(string: urlString) {
-                await Dependencies.urlOpener.open(url)
-            }
+            guard let urlString, let url = URL(string: urlString) else { return false }
+            return await Dependencies.urlOpener.open(url)
         case let .deepLink(link):
-            if let url = URL(string: link) {
-                NotificationCenter.default.post(name: .openDeepLink, object: url)
-            }
+            guard let url = URL(string: link) else { return false }
+            NotificationCenter.default.post(name: .openDeepLink, object: url)
+            return true
         }
     }
 }

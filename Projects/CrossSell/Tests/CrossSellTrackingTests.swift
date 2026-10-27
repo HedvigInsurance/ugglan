@@ -112,6 +112,20 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked"])
     }
 
+    func testAStoreLinkTheSystemDoesNotOpenCountsNoClick() async {
+        let eventTracker = MockData.createMockEventTrackingClient()
+        let urlOpener = MockData.createMockURLOpener()
+        urlOpener.systemOpensURLs = false
+        sut = eventTracker
+        let storeOpener = CrossSellStoreOpener()
+
+        let opened = await storeOpener.open(makeCrossSell(link: storeLink), from: .home)
+
+        XCTAssertFalse(opened)
+        XCTAssertEqual(urlOpener.openedURLs.count, 1)
+        XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
+    }
+
     func testTapAfterTheStoreOpenedIsANewLaunch() async {
         let eventTracker = MockData.createMockEventTrackingClient()
         let urlOpener = MockData.createMockURLOpener()

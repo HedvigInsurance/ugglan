@@ -3,7 +3,9 @@ import SwiftUI
 
 @MainActor
 public protocol URLOpener {
-    func open(_ url: URL) async
+    /// Returns whether the system opened the URL.
+    @discardableResult
+    func open(_ url: URL) async -> Bool
 }
 
 extension Dependencies {
