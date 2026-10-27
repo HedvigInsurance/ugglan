@@ -75,27 +75,15 @@ struct hFieldContainer<Content: View>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hBackgroundOption) var backgroundOption
-    @Environment(\.hFieldMultiline) var isMultiline
 
     var body: some View {
-        // Multiline fields are taller than the label, so pin both to the top to keep the label on the first line
-        ZStack(alignment: isMultiline ? .topLeading : .leading) {
-            ZStack(alignment: .leading) {
-                if isMultiline {
-                    // Box as tall as a single line field, so the label is centered like in a single line field.
-                    // A single line UITextField is ~2pt taller than its font's line height, hence the extra padding.
-                    hText(" ", style: size.labelFont)
-                        .padding(.vertical, 1)
-                        .hidden()
-                        .accessibilityHidden(true)
-                }
-                hFieldLabel(
-                    placeholder: placeholder,
-                    animate: $animate,
-                    error: $error,
-                    shouldMoveLabel: $shouldMoveLabel
-                )
-            }
+        ZStack(alignment: Alignment(horizontal: .leading, vertical: .fieldLabel)) {
+            hFieldLabel(
+                placeholder: placeholder,
+                animate: $animate,
+                error: $error,
+                shouldMoveLabel: $shouldMoveLabel
+            )
             .offset(y: (customLabelOffset ?? shouldMoveLabel) ? labelOffset : 0)
 
             textField()
@@ -152,6 +140,18 @@ struct hFieldContainer<Content: View>: View {
             return size.fieldOffset
         }
     }
+}
+
+extension VerticalAlignment {
+    private enum FieldLabel: AlignmentID {
+        static func defaultValue(in context: ViewDimensions) -> CGFloat {
+            context[VerticalAlignment.center]
+        }
+    }
+
+    /// Vertical position the floating label of a field is centered on. Defaults to the field's center,
+    /// multiline fields move it to the center of their first line.
+    static let fieldLabel = VerticalAlignment(FieldLabel.self)
 }
 
 struct hFieldLabel: View {

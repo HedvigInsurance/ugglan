@@ -9,6 +9,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
     @Environment(\.hFieldMultiline) var isMultiline
+    @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
     @State private var vm = TextFieldVM()
 
     @State private var animationEnabled: Bool = true
@@ -210,18 +211,28 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     private var getTextField: some View {
         let title = shouldMoveLabel ? textFieldPlaceholder ?? "" : ""
         if isMultiline {
+            let labelOffset = firstRowHeight / 2 + (shouldMoveLabel ? .padding4 : 0)
             styled(
                 SwiftUI.TextField(title, text: $innerValue, axis: .vertical)
                     .lineLimit(2...2)
+                    .alignmentGuide(.fieldLabel) { _ in labelOffset }
             )
         } else {
             styled(SwiftUI.TextField(title, text: $innerValue))
         }
     }
 
+    private var fontStyle: HFontTextStyle {
+        size == .large ? .body2 : .body1
+    }
+
+    private var firstRowHeight: CGFloat {
+        Fonts.fontFor(style: fontStyle, withoutFontMultipler: withoutFontMultiplier).lineHeight
+    }
+
     private func styled(_ textField: some View) -> some View {
         textField
-            .modifier(hFontModifier(style: size == .large ? .body2 : .body1))
+            .modifier(hFontModifier(style: fontStyle))
             .modifier(masking)
             .tint(foregroundColor)
             .foregroundColor(foregroundColor)
