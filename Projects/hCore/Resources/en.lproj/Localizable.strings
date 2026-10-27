@@ -156,6 +156,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
+"CLAIM_CHAT_AGENT_NOTICE_KEEP_DAMAGED_BELONGINGS" = "";
+"CLAIM_CHAT_AGENT_NOTICE_WATER_HOUSE_BOOK_INSPECTION" = "";
 "CLAIM_CHAT_AI_INFO" = "We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";

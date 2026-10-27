@@ -156,6 +156,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_AUDIO_RECORDING" = "Gör röstinspelning";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Skickar...";
 "CLAIMS_YOUR_CLAIM" = "Din skadeanmälan";
+"CLAIM_CHAT_AGENT_NOTICE_KEEP_DAMAGED_BELONGINGS" = "";
+"CLAIM_CHAT_AGENT_NOTICE_WATER_HOUSE_BOOK_INSPECTION" = "";
 "CLAIM_CHAT_AI_INFO" = "Vi använder AI som stöd när du anmäler din skada och när vi hanterar den. Vårt team granskar alltid ärendet innan vi fattar något beslut.";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Röstinspelning";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Annat föremål";
