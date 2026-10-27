@@ -48,6 +48,8 @@ public final class UnleashExperimentProvider: ExperimentProvider {
             let arrived = await waitForTheMembersExperiments()
             if !arrived {
                 flagsAtLastTimeout = flagsBeforeWaiting
+                // Sizes how often a cross-sell query goes out without the member's variant.
+                log.warn("Gave up waiting \(memberStateTimeout)s for the member's experiments, reporting none")
             }
         }
         return featureFlags.experiments ?? []

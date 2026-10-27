@@ -131,6 +131,40 @@ final class UnleashExperimentProviderTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
     }
 
+    func testLogsEachTimeItGivesUpWaiting() async {
+        let logger = FakeLogger()
+        let previousLog = log
+        log = logger
+        defer { log = previousLog }
+        let provider = UnleashExperimentProvider(memberStateTimeout: 0.2)
+
+        _ = await provider.activeExperiments()
+        _ = await provider.activeExperiments()
+        XCTAssertEqual(logger.warnings.count, 1, "the second call answered at once without waiting")
+
+        await send(experiments: nil, isPuppyGuideEnabled: true)
+        _ = await provider.activeExperiments()
+        XCTAssertEqual(logger.warnings.count, 2)
+    }
+
+    func testDoesNotLogWhenTheMembersTogglesArriveInTime() async {
+        let logger = FakeLogger()
+        let previousLog = log
+        log = logger
+        defer { log = previousLog }
+        let provider = UnleashExperimentProvider(memberStateTimeout: 3)
+        let flags = flags!
+        let noDiscount = noDiscount
+        Task {
+            try? await Task.sleep(for: .milliseconds(100))
+            flags.send(.allOff(experiments: [noDiscount]))
+        }
+
+        _ = await provider.activeExperiments()
+
+        XCTAssertTrue(logger.warnings.isEmpty)
+    }
+
     func testUserPropertiesFollowTheMembersExperiments() async {
         let provider = UnleashExperimentProvider(memberStateTimeout: 3)
         let tracking = tracking!
