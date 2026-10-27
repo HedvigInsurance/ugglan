@@ -27,7 +27,7 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     public init(featureFlags: FeatureFlags = .shared, memberStateTimeout: TimeInterval = 3) {
         self.featureFlags = featureFlags
         self.memberStateTimeout = memberStateTimeout
-        userPropertiesCancellable = featureFlags.$data
+        userPropertiesCancellable = featureFlags.publisher(for: \.data)
             .handleEvents(receiveOutput: { [weak self] _ in self?.hasTimedOutSinceLastUpdate = false })
             // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear
             // the properties Firebase kept from the last session, leaving events without the group until the
@@ -54,7 +54,7 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     private func waitForTheMembersExperiments() async -> Bool {
         await withCheckedContinuation { continuation in
             var cancellable: AnyCancellable?
-            cancellable = featureFlags.$data
+            cancellable = featureFlags.publisher(for: \.data)
                 .compactMap(\.experiments)
                 .map { _ in true }
                 .timeout(.seconds(memberStateTimeout), scheduler: RunLoop.main)
