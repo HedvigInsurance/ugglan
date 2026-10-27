@@ -60,6 +60,27 @@ public struct FeatureData: Codable, Equatable {
     }
 }
 
+extension FeatureData {
+    func with(experiments: [Experiment]?) -> FeatureData {
+        FeatureData(
+            isUpdateNecessary: isUpdateNecessary,
+            isSubmitClaimEnabled: isSubmitClaimEnabled,
+            osVersionTooLow: osVersionTooLow,
+            emailPreferencesEnabled: emailPreferencesEnabled,
+            isDemoMode: isDemoMode,
+            isAddonsRemovalFromMovingFlowEnabled: isAddonsRemovalFromMovingFlowEnabled,
+            isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
+            isPuppyGuideEnabled: isPuppyGuideEnabled,
+            isResumeClaimEnabled: isResumeClaimEnabled,
+            isOnboardingEnabled: isOnboardingEnabled,
+            isTerminationRedirectionEnabled: isTerminationRedirectionEnabled,
+            isAnalyticsEnabled: isAnalyticsEnabled,
+            isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
+            experiments: experiments
+        )
+    }
+}
+
 public enum PaymentType {
     case trustly
 }
@@ -105,6 +126,9 @@ public class FeatureFlags {
 
     public func setup(with context: [String: String]) async throws {
         let client: FeatureFlagsClient = Dependencies.shared.resolve()
+        // After a logout this is a fresh client with no toggles to publish until its first fetch lands, so the
+        // experiments in hand, fetched for whoever was in the old client's context, stop counting as this member's.
+        data = data.with(experiments: nil)
         featureDataCancellable = client.featureData
             .receive(on: RunLoop.main)
             .removeDuplicates()
