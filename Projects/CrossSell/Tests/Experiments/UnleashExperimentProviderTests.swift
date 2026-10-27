@@ -94,11 +94,40 @@ final class UnleashExperimentProviderTests: XCTestCase {
         XCTAssertEqual(secondAnswer, [])
         XCTAssertLessThan(clock.now - start, .milliseconds(100))
 
-        // Any flag update may be the member's toggles arriving, so it is worth waiting again.
+        // A change of the toggles may be the member's own arriving, so it is worth waiting again.
         await send(experiments: nil, isPuppyGuideEnabled: true)
         start = clock.now
         let thirdAnswer = await provider.activeExperiments()
         XCTAssertEqual(thirdAnswer, [])
+        XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
+    }
+
+    func testSettingUpTheSameFlagsAgainDoesNotMakeItWaitAgain() async throws {
+        let provider = UnleashExperimentProvider(memberStateTimeout: 0.2)
+        _ = await provider.activeExperiments()
+
+        // While Unleash is unreachable the app sets the flags up again every second, republishing the same toggles.
+        try await FeatureFlags.shared.setup(with: [:])
+        flags.send(.allOff(experiments: nil))
+        await delay(0.1)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let answer = await provider.activeExperiments()
+
+        XCTAssertEqual(answer, [])
+        XCTAssertLessThan(clock.now - start, .milliseconds(100))
+    }
+
+    func testANewMemberMakesItWaitAgainAfterATimeout() async {
+        let provider = UnleashExperimentProvider(memberStateTimeout: 0.2)
+        _ = await provider.activeExperiments()
+
+        FeatureFlags.shared.updateContext(context: ["memberId": "123"])
+        let clock = ContinuousClock()
+        let start = clock.now
+        let answer = await provider.activeExperiments()
+
+        XCTAssertEqual(answer, [])
         XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
     }
 

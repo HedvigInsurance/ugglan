@@ -7,7 +7,8 @@ import Foundation
 /// member id the fetch carried: `FeatureData.experiments` is nil until those are in hand. Right after a login, or
 /// on a first launch, `activeExperiments()` waits for the member's own fetch for at most `memberStateTimeout`,
 /// after which it reports no experiments and the member keeps today's behaviour. Once a wait has timed out, later
-/// calls answer at once until the flags change, so an unreachable Unleash delays one request rather than every one.
+/// calls answer at once until the toggles or the member change, so an unreachable Unleash delays one request rather
+/// than every one.
 ///
 /// The variants are also set as Firebase user properties so every analytics event carries them, following every
 /// flag update, which includes the member in the Unleash context changing on login and logout. Firebase uploads
@@ -21,14 +22,15 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     private let featureFlags: FeatureFlags
     private let memberStateTimeout: TimeInterval
     private var userPropertiesCancellable: AnyCancellable?
-    /// Set when a wait timed out, cleared by the next flag update since that may be the member's toggles arriving.
-    private var hasTimedOutSinceLastUpdate = false
+    /// What the flags held when a wait last timed out. Waiting is worth it again only once they differ, since that
+    /// may be the member's toggles arriving or a new member. The app retries a failed Unleash setup every second,
+    /// which republishes the same toggles, so a mere update is not enough.
+    private var flagsAtLastTimeout: FlagsState?
 
     public init(featureFlags: FeatureFlags = .shared, memberStateTimeout: TimeInterval = 3) {
         self.featureFlags = featureFlags
         self.memberStateTimeout = memberStateTimeout
         userPropertiesCancellable = featureFlags.publisher(for: \.data)
-            .handleEvents(receiveOutput: { [weak self] _ in self?.hasTimedOutSinceLastUpdate = false })
             // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear
             // the properties Firebase kept from the last session, leaving events without the group until the
             // member's fetch lands.
@@ -41,13 +43,18 @@ public final class UnleashExperimentProvider: ExperimentProvider {
         if let experiments = featureFlags.experiments {
             return experiments
         }
-        if !hasTimedOutSinceLastUpdate {
+        let flagsBeforeWaiting = currentFlags
+        if flagsBeforeWaiting != flagsAtLastTimeout {
             let arrived = await waitForTheMembersExperiments()
             if !arrived {
-                hasTimedOutSinceLastUpdate = true
+                flagsAtLastTimeout = flagsBeforeWaiting
             }
         }
         return featureFlags.experiments ?? []
+    }
+
+    private var currentFlags: FlagsState {
+        FlagsState(data: featureFlags.data, context: featureFlags.context)
     }
 
     /// Whether the member's experiments arrived within `memberStateTimeout`.
@@ -73,4 +80,9 @@ public final class UnleashExperimentProvider: ExperimentProvider {
         eventTrackingClient.setUserProperty(name: Self.userPropertyExperimentName, value: experiment?.name)
         eventTrackingClient.setUserProperty(name: Self.userPropertyExperimentVariant, value: experiment?.variant)
     }
+}
+
+private struct FlagsState: Equatable {
+    let data: FeatureData
+    let context: [String: String]
 }

@@ -117,6 +117,8 @@ public class FeatureFlags {
     )
 
     public var hasFetchedInitialData = false
+    /// The Unleash context last handed to the client, which carries the member.
+    @ObservationIgnored private(set) var context: [String: String] = [:]
 
     public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
         data[keyPath: keyPath]
@@ -126,6 +128,7 @@ public class FeatureFlags {
 
     public func setup(with context: [String: String]) async throws {
         let client: FeatureFlagsClient = Dependencies.shared.resolve()
+        self.context = context
         // After a logout this is a fresh client with no toggles to publish until its first fetch lands, so the
         // experiments in hand, fetched for whoever was in the old client's context, stop counting as this member's.
         data = data.with(experiments: nil)
@@ -148,6 +151,7 @@ public class FeatureFlags {
     }
 
     public func updateContext(context: [String: String]) {
+        self.context = context
         client?.updateContext(context: context)
     }
 }
