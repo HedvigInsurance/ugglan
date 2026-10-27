@@ -61,6 +61,25 @@ final class UnleashExperimentProviderTests: XCTestCase {
         XCTAssertEqual(experiments, [noDiscount])
     }
 
+    func testAfterALoginItWaitsForTheMembersTogglesRatherThanAnsweringFromTheLoggedOutOnes() async throws {
+        // Logged out, the toggles in hand were fetched with nobody in the context.
+        await send(experiments: [])
+        // Logging out registers a fresh client, which has nothing to publish yet when the login sets it up.
+        let clientAfterLogout = FakeFeatureFlagsClient()
+        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in clientAfterLogout })
+        try await FeatureFlags.shared.setup(with: ["memberId": "123"])
+        let provider = UnleashExperimentProvider(memberStateTimeout: 3)
+        let noDiscount = noDiscount
+        Task {
+            try? await Task.sleep(for: .milliseconds(100))
+            clientAfterLogout.send(.allOff(experiments: [noDiscount]))
+        }
+
+        let experiments = await provider.activeExperiments()
+
+        XCTAssertEqual(experiments, [noDiscount])
+    }
+
     func testGivesUpAfterTheTimeoutAndAnswersAtOnceUntilTheFlagsChange() async {
         let provider = UnleashExperimentProvider(memberStateTimeout: 0.2)
         let clock = ContinuousClock()
