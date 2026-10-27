@@ -1,10 +1,10 @@
-import XCTest
+@preconcurrency import XCTest
 
 @testable import hCore
 
 @MainActor
 final class ExperimentTests: XCTestCase {
-    func testTheAccidentDiscountFlagIsReportedUnderTheBackendsExperimentName() {
+    func testActiveReportsTheAccidentDiscountFlagUnderTheBackendsExperimentName() {
         let experiments = Experiment.active { flag in
             flag == "accident_discount_experiment" ? "NO_DISCOUNT" : nil
         }
@@ -12,17 +12,17 @@ final class ExperimentTests: XCTestCase {
         XCTAssertEqual(experiments, [Experiment(name: "ACCIDENT_DISCOUNT", variant: "NO_DISCOUNT")])
     }
 
-    func testAFlagWithoutAVariantPutsTheMemberInNoExperiment() {
+    func testActiveWithAFlagWithoutAVariantReportsNoExperiment() {
         XCTAssertEqual(Experiment.active { _ in nil }, [])
     }
 
-    func testAVariantThatIsNotScreamingSnakeCaseIsDropped() {
+    func testActiveDropsAVariantThatIsNotScreamingSnakeCase() {
         for variant in ["no-discount", "NoDiscount", "NO DISCOUNT", ""] {
             XCTAssertEqual(Experiment.active { _ in variant }, [], "variant '\(variant)'")
         }
     }
 
-    func testOnlyTheDefinedFlagsAreReported() {
+    func testActiveReportsOnlyTheDefinedFlags() {
         let definitions = [
             ExperimentDefinition(name: "ONE", unleashFlag: "one"),
             ExperimentDefinition(name: "TWO", unleashFlag: "two"),
