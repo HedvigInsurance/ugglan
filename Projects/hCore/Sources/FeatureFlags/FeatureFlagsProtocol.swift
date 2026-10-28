@@ -146,7 +146,8 @@ public class FeatureFlags {
                 }
                 self.data = data
                 self.hasFetchedInitialData = true
-                self.hasFetchedInitialDataForMember = self.context[FeatureFlags.userId] != nil
+                self.hasFetchedInitialDataForMember =
+                    self.context[FeatureFlags.userId] != nil && data.experiments != nil
             }
         self.client = client
         try await client.setup(with: context)

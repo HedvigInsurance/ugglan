@@ -121,10 +121,19 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         featureDataPublisher.send(data)
     }
 
+    /// Each experiment's name as the backend knows it, and the Unleash flag assigning its variant. The name is also
+    /// the Firebase user property holding the variant, so it must be a valid property name: at most 24 characters,
+    /// and a letter first. Firebase drops variant values longer than 36 characters.
+    private static let knownExperiments: [(name: String, unleashFlag: String)] = [
+        // Variants DISCOUNT_50 (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for
+        // NO_DISCOUNT.
+        (name: "ACCIDENT_DISCOUNT", unleashFlag: "accident_discount_experiment")
+    ]
+
     /// The member's experiments, or nil while the toggles in hand were fetched for another context.
     private func experimentsForCurrentMember(_ client: UnleashClient) -> [Experiment]? {
         guard fetchedContext == contextInEffect else { return nil }
-        return Experiment.active { flag in
+        return Experiment.active(in: Self.knownExperiments) { flag in
             guard client.isEnabled(name: flag) else { return nil }
             let variant = client.getVariant(name: flag)
             return variant.enabled ? variant.name : nil
