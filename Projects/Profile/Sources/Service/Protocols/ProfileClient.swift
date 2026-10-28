@@ -13,6 +13,8 @@ public protocol ProfileClient: Sendable {
     func update(phone: String) async throws
     func update(eurobonus: String) async throws -> PartnerData
     func updateSubscriptionPreference(to subscribed: Bool) async throws
+    /// The id this device sends to the backend in request headers.
+    func getDeviceIdentifier() async -> String
 }
 
 public enum ProfileError: Error {

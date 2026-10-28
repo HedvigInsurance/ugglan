@@ -158,4 +158,8 @@ class MockProfileService: ProfileClient {
         events.append(.updateSubscriptionPreference)
         try await subscriptionPreferenceUpdate(subscribed)
     }
+
+    func getDeviceIdentifier() async -> String {
+        "mock-device-id"
+    }
 }

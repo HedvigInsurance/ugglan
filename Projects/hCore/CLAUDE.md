@@ -4,7 +4,7 @@ Foundational module providing dependency injection, shared models, localization,
 
 ## Architecture
 - **Dependency Injection** -- A lightweight, custom DI container (`Dependencies`) with `@Inject` property wrappers; no third-party DI framework
-- **Shared Domain Models** -- Insurance-related value types (MonetaryAmount, Premium, TypeOfContract, etc.) with GraphQL fragment initializers
+- **Shared Domain Models** -- Insurance-related value types (MonetaryAmount, Premium, TypeOfContract, etc.); their GraphQL fragment initializers live in App (`Projects/App/Sources/Service/OctopusClientsImplementation/hCoreModels+Octopus.swift`)
 - **Feature Flags** -- Abstraction over Unleash for runtime feature toggling, exposed on an `@Observable` singleton
 - **Localization** -- Generated `L10n` enum (via SwiftGen) and locale management for the Swedish market (sv_SE, en_SE)
 - **Extensions** -- Utility extensions on Foundation, UIKit, and SwiftUI types used broadly by every other module
@@ -24,18 +24,18 @@ Foundational module providing dependency injection, shared models, localization,
 - `Networking/NetworkClient.swift` -- `NetworkClient` with generic `handleResponse`/`handleResponseForced`, `NetworkError` enum, `MultipartFormDataRequest`
 
 ### Models
-- `Models/MonetaryAmount.swift` -- Currency-aware amount with locale-specific formatting, arithmetic operators, and GraphQL fragment init
+- `Models/MonetaryAmount.swift` -- Currency-aware amount with locale-specific formatting and arithmetic operators
 - `Models/Premium.swift` -- Gross/net monetary pair with arithmetic operators and array `.sum()`
 - `Models/TypeOfContract.swift` -- Enum of all Swedish insurance contract types with fuzzy resolution fallback
-- `Models/ProductVariant.swift` -- Insurance product details (perils, limits, documents) from GraphQL
-- `Models/AddonVariant.swift` -- Add-on product details from GraphQL
+- `Models/ProductVariant.swift` -- Insurance product details (perils, limits, documents)
+- `Models/AddonVariant.swift` -- Add-on product details
 - `Models/File.swift` -- File model with `FileSource` enum (data, URL, PHPickerResult); includes NSItemProvider helpers
 - `Models/MimeType.swift` -- Comprehensive MIME type enum with `isImage`/`isVideo` helpers and bidirectional mime string lookup
 - `Models/hPDFDocument.swift` -- PDF document model with `TypeOfDocument` enum
 - `Models/InsurableLimits.swift` -- Label/limit/description triplet for insurance coverage limits
 - `Models/Deflect.swift` -- `Partner`, `LinkOnlyPartner`, `DeflectQuestion` models for claim deflection flows
 - `Models/EditType.swift` -- Enum of insurance-editing operations (change address, stakeholders, tier, cancellation, etc.)
-- `Models/ItemCost.swift` -- `ItemCost` and `ItemDiscount` for line-item pricing from GraphQL
+- `Models/ItemCost.swift` -- `ItemCost` and `ItemDiscount` for line-item pricing
 - `Models/IntentCost.swift` -- `IntentCost` and `QuoteCost` for quote-level pricing
 - `Models/UploadFile.swift` -- Simple data/name/mimeType struct for file uploads
 - `Models/ServerBasedDate.swift` -- Typealias `ServerBasedDate = String` with display formatting extensions
@@ -84,8 +84,7 @@ Foundational module providing dependency injection, shared models, localization,
 
 ### Miscellaneous Utilities
 - `Helpers/UrlOpener.swift` -- `URLOpener` protocol and `DefaultURLOpener` with DI convenience (`Dependencies.urlOpener`)
-- `Helpers/GraphQLErrors+description.swift` -- Localized error descriptions for `GraphQLError`
-- `Perils.swift` -- `Perils` struct for insurance coverage perils with GraphQL fragment inits
+- `Perils.swift` -- `Perils` struct for insurance coverage perils
 - `Viewable/FileUploadManager.swift` -- Temp directory management for uploaded file data
 - `Viewable/PillowType.swift` -- `PillowType` enum for insurance icon/image selection
 - `HelpCenter+chatType.swift` -- `ChatType` enum (conversation, inbox, new conversation, claim conversation)
@@ -154,7 +153,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `ServerBasedDate = String`
 
 ## Dependencies
-- **hGraphQL** -- Only direct module dependency; provides OctopusGraphQL fragments used by model initializers
+- **No module dependencies.** hCore deliberately does not depend on hGraphQL, so feature modules and their SwiftUI previews don't link the generated GraphQL code. Fragment → model conversions (and `GraphQLError`'s localized description) live in App; add new ones there, not here
 - External: Apollo, Combine, SwiftUI, UnleashProxyClientSwift, SwiftUIIntrospect, GameKit
 
 Almost every other module in the app imports hCore.

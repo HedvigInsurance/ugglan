@@ -1,4 +1,3 @@
-import Apollo
 import AppStateContainer
 import Chat
 import Claims
@@ -139,7 +138,7 @@ class HomeVM {
 
 #Preview("ActiveInFuture") {
     fetchDependenciesForPreview()
-    ApolloClient.removeDeleteAccountStatus(for: "ID")
+    DeleteAccountStatus.remove(for: "ID")
     previewMemberState(.future, .activeInFuture(inceptionDate: "2023-11-23"))
 
     return HomeScreen()
@@ -180,7 +179,7 @@ class HomeVM {
 
 #Preview("Deleted") {
     fetchDependenciesForPreview()
-    ApolloClient.saveDeleteAccountStatus(for: "ID")
+    DeleteAccountStatus.save(for: "ID")
     previewMemberState(.active, .pendingSwitchable)
 
     return HomeScreen()

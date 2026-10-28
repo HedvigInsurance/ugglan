@@ -1,4 +1,3 @@
-import Apollo
 import SwiftUI
 import hCore
 import hCoreUI
@@ -92,7 +91,7 @@ public struct DeleteRequestLoadingView: View {
     private func sendSlackMessage(details: MemberDetails) async {
         do {
             try await profileService.postDeleteRequest()
-            ApolloClient.saveDeleteAccountStatus(for: details.id)
+            DeleteAccountStatus.save(for: details.id)
             screenState = .success
         } catch {
             screenState = .error(errorMessage: L10n.General.errorBody)

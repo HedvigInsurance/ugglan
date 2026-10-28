@@ -1,3 +1,4 @@
+import Apollo
 import Profile
 import hCore
 import hGraphQL
@@ -115,6 +116,10 @@ class ProfileClientOctopus: ProfileClient {
         if data?.memberUpdateSubscriptionPreference?.message != nil {
             throw ProfileError.error(message: L10n.General.errorBody)
         }
+    }
+
+    func getDeviceIdentifier() async -> String {
+        await ApolloClient.getDeviceIdentifier()
     }
 }
 

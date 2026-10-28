@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public struct InsurableLimits: Codable, Hashable, Identifiable, Sendable {
     public var id = UUID().uuidString
@@ -15,13 +14,5 @@ public struct InsurableLimits: Codable, Hashable, Identifiable, Sendable {
         self.label = label
         self.limit = limit
         self.description = description
-    }
-
-    public init(
-        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
-    ) {
-        label = data.label
-        limit = data.limit
-        description = data.description
     }
 }

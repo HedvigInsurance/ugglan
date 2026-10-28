@@ -1,6 +1,5 @@
 import Apollo
 import ApolloWebSocket
-import Disk
 import Environment
 import Foundation
 import SwiftUI
@@ -138,27 +137,5 @@ extension ApolloClient {
     public static func saveToken(token: OAuthorizationToken) {
         KeychainHelper.standard.save(token, key: "oAuthorizationToken")
         TokenRefresher.shared.tokenWasStored()
-    }
-
-    public static func retreiveMembersWithDeleteRequests() -> Set<String> {
-        let memberIds = try? Disk.retrieve("deleteRequestedMembers", from: .applicationSupport, as: Set<String>.self)
-        return memberIds ?? []
-    }
-
-    public static func saveDeleteAccountStatus(for memberId: String) {
-        var members = retreiveMembersWithDeleteRequests()
-        members.insert(memberId)
-        try? Disk.save(members, to: .applicationSupport, as: "deleteRequestedMembers")
-    }
-
-    public static func removeDeleteAccountStatus(for memberId: String) {
-        var members = retreiveMembersWithDeleteRequests()
-        members.remove(memberId)
-        try? Disk.save(members, to: .applicationSupport, as: "deleteRequestedMembers")
-    }
-
-    public static func deleteAccountStatus(for memberId: String) -> Bool {
-        let members = retreiveMembersWithDeleteRequests()
-        return members.contains(memberId)
     }
 }
