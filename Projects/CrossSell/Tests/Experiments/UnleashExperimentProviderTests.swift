@@ -17,7 +17,7 @@ final class UnleashExperimentProviderTests: XCTestCase {
         originalLog = log
         logger = MockLogger()
         log = logger
-        try await FeatureFlags.shared.setup(with: [:])
+        try await FeatureFlags.shared.setup(with: memberContext("1"))
         // Every test starts with toggles that are not known to be the member's.
         await send(experiments: nil)
     }
@@ -36,6 +36,11 @@ final class UnleashExperimentProviderTests: XCTestCase {
             FeatureFlags.shared.experiments == experiments
                 && FeatureFlags.shared.isPuppyGuideEnabled == isPuppyGuideEnabled
         }
+    }
+
+    /// The Unleash context of a logged-in member, as `AppDelegate` builds it.
+    private func memberContext(_ memberId: String) -> [String: String] {
+        ["memberId": memberId, FeatureFlags.userId: memberId]
     }
 
     private func makeProvider(memberStateTimeout: TimeInterval) -> UnleashExperimentProvider {
@@ -70,12 +75,12 @@ final class UnleashExperimentProviderTests: XCTestCase {
         XCTAssertEqual(experiments, [noDiscount])
     }
 
-    func testActiveExperimentsAfterLoginWaitsForTheMembersTogglesInsteadOfTheLoggedOutOnes() async throws {
-        // Logged out, the toggles in hand were fetched with nobody in the context.
+    func testActiveExperimentsAfterReLoginWaitsForTheNewMembersTogglesInsteadOfThePreviousOnes() async throws {
+        // The toggles in hand were fetched for the member logged in before.
         await send(experiments: [])
         // Logging out registers a fresh client, which has nothing to publish yet when the login sets it up.
         let clientAfterLogout = MockData.createMockFeatureFlagsClient()
-        try await FeatureFlags.shared.setup(with: ["memberId": "123"])
+        try await FeatureFlags.shared.setup(with: memberContext("123"))
         let provider = makeProvider(memberStateTimeout: 3)
         let noDiscount = noDiscount
         Task {
@@ -115,7 +120,7 @@ final class UnleashExperimentProviderTests: XCTestCase {
         _ = await provider.activeExperiments()
 
         // While Unleash is unreachable the app sets the flags up again every second, republishing the same toggles.
-        try await FeatureFlags.shared.setup(with: [:])
+        try await FeatureFlags.shared.setup(with: memberContext("1"))
         featureFlagsClient.send(.allOff(experiments: nil))
         await delay(0.1)
         let clock = ContinuousClock()
@@ -130,7 +135,7 @@ final class UnleashExperimentProviderTests: XCTestCase {
         let provider = makeProvider(memberStateTimeout: 0.2)
         _ = await provider.activeExperiments()
 
-        FeatureFlags.shared.updateContext(context: ["memberId": "123"])
+        FeatureFlags.shared.updateContext(context: memberContext("123"))
         let clock = ContinuousClock()
         let start = clock.now
         let answer = await provider.activeExperiments()
