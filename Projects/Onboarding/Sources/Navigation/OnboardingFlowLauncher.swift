@@ -26,7 +26,7 @@ private struct OnboardingFlowLauncher: ViewModifier {
             ) { stepsWrapper in
                 OnboardingNavigation(steps: stepsWrapper.steps)
             }
-            .task(id: featureFlags.hasFetchedInitialData) {
+            .task(id: featureFlags.hasFetchedInitialDataForMember) {
                 await checkIfShouldPresentOnboarding()
             }
     }

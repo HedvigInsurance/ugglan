@@ -96,6 +96,8 @@ extension Dependencies {
 @dynamicMemberLookup
 @Observable
 public class FeatureFlags {
+    public static let userId = "userId"
+
     @ObservationIgnored public static let shared = FeatureFlags()
     @ObservationIgnored private var client: FeatureFlagsClient?
     @ObservationIgnored private var featureDataCancellable: AnyCancellable?
@@ -115,7 +117,7 @@ public class FeatureFlags {
         isResumingOngoingShopSessionsEnabled: false
     )
 
-    public var hasFetchedInitialData = false
+    public var hasFetchedInitialDataForMember = false
     /// The Unleash context last handed to the client, which carries the member.
     @ObservationIgnored private(set) var context: [String: String] = [:]
 
@@ -142,7 +144,7 @@ public class FeatureFlags {
                     )
                 }
                 self.data = data
-                self.hasFetchedInitialData = true
+                self.hasFetchedInitialDataForMember = self.context[FeatureFlags.userId] != nil
             }
         self.client = client
         try await client.setup(with: context)
