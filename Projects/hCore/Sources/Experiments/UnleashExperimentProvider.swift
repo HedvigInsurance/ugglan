@@ -7,13 +7,10 @@ import Foundation
 /// up to `memberStateTimeout` and then reports none. After a timeout it answers at once until the toggles or the
 /// member change, so an unreachable Unleash delays one request rather than every one.
 ///
-/// The variants are mirrored to Firebase user properties so every analytics event carries them. Firebase uploads
-/// nothing while collection is disabled, so no consent gating is needed here.
+/// Each experiment is also set as a Firebase user property named after it, holding the variant, so every analytics
+/// event carries it. Firebase uploads nothing while collection is disabled, so no consent gating is needed here.
 @MainActor
 public final class UnleashExperimentProvider: ExperimentProvider {
-    static let userPropertyExperimentName = "experiment_name"
-    static let userPropertyExperimentVariant = "experiment_variant"
-
     @Inject private var eventTrackingClient: EventTrackingClient
     private let featureFlags: FeatureFlags
     private let memberStateTimeout: TimeInterval
@@ -71,11 +68,13 @@ public final class UnleashExperimentProvider: ExperimentProvider {
         return await arrival.value
     }
 
-    // Two properties hold one experiment at a time, which is all that is running. Cleared when the member is in none.
+    // Every known experiment is written, so one the member is not in is cleared rather than kept from an earlier
+    // session.
     private func publishUserProperties(_ experiments: [Experiment]) {
-        let experiment = experiments.first
-        eventTrackingClient.setUserProperty(name: Self.userPropertyExperimentName, value: experiment?.name)
-        eventTrackingClient.setUserProperty(name: Self.userPropertyExperimentVariant, value: experiment?.variant)
+        for definition in knownExperiments {
+            let variant = experiments.first { $0.name == definition.name }?.variant
+            eventTrackingClient.setUserProperty(name: definition.name, value: variant)
+        }
     }
 }
 
