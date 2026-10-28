@@ -133,6 +133,7 @@ public class FeatureFlags {
         self.context = context
         // After a logout the client is fresh and publishes nothing until it fetches, so drop the old member's.
         data = data.with(experiments: nil)
+        hasFetchedInitialDataForMember = false
         featureDataCancellable = client.featureData
             .receive(on: RunLoop.main)
             .removeDuplicates()
