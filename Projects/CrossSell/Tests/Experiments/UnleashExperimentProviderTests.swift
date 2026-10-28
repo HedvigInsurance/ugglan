@@ -174,14 +174,12 @@ final class UnleashExperimentProviderTests: XCTestCase {
 
         await send(experiments: [noDiscount])
         await waitUntil(description: "the experiment reaches the user properties") {
-            eventTracker.userProperties["experiment_name"] == "ACCIDENT_DISCOUNT"
-                && eventTracker.userProperties["experiment_variant"] == "NO_DISCOUNT"
+            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"]
         }
 
         await send(experiments: [])
-        await waitUntil(description: "the user properties are cleared") {
-            eventTracker.userProperties["experiment_name"] == .some(nil)
-                && eventTracker.userProperties["experiment_variant"] == .some(nil)
+        await waitUntil(description: "the user property is cleared") {
+            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": nil]
         }
         withExtendedLifetime(provider) {}
     }
@@ -194,5 +192,14 @@ final class UnleashExperimentProviderTests: XCTestCase {
 
         XCTAssertTrue(eventTracker.userPropertyChanges.isEmpty)
         withExtendedLifetime(provider) {}
+    }
+
+    func testEveryExperimentNameIsAValidFirebaseUserPropertyName() {
+        for definition in knownExperiments {
+            XCTAssertNotNil(
+                definition.name.range(of: "^[A-Za-z][A-Za-z0-9_]{0,23}$", options: .regularExpression),
+                "'\(definition.name)'"
+            )
+        }
     }
 }
