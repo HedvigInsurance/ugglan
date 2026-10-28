@@ -117,6 +117,7 @@ public class FeatureFlags {
         isResumingOngoingShopSessionsEnabled: false
     )
 
+    public var hasFetchedInitialData = false
     public var hasFetchedInitialDataForMember = false
     /// The Unleash context last handed to the client, which carries the member.
     @ObservationIgnored private(set) var context: [String: String] = [:]
@@ -144,6 +145,7 @@ public class FeatureFlags {
                     )
                 }
                 self.data = data
+                self.hasFetchedInitialData = true
                 self.hasFetchedInitialDataForMember = self.context[FeatureFlags.userId] != nil
             }
         self.client = client
