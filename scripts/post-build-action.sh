@@ -10,7 +10,7 @@ function copyFramework() {
 copyFramework RiveRuntime
 
 # Remove HedvigShared.framework. `:umbrella` is isStatic=true; its Kotlin symbols
-# are already statically linked into CoreDependencies.framework, and nothing has
+# are already statically linked into AppDependencies.framework, and nothing has
 # an LC_LOAD_DYLIB for HedvigShared. Leaving the static-archive wrapper in
 # Frameworks/ produces a `bundle with generic` (CodeDirectory v=20200) signature
 # that iOS 16.7+ rejects on install with 0xE8008029.
@@ -23,13 +23,13 @@ rm -rf "${APP_BUNDLE}/Frameworks/"*".framework"/Frameworks
 
 # Compose Multiplatform's iOS resource reader uses Bundle.main, expecting resources
 # at <App>.app/compose-resources/composeResources/...
-#   Local mode    → resources end up inside CoreDependencies.framework (with the
+#   Local mode    → resources end up inside AppDependencies.framework (with the
 #                   compose-resources/ prefix). Move (not copy) so the framework's
 #                   sealed file list matches its on-disk contents.
 #   Released mode → resources are inside the SPM-extracted HedvigShared.framework
 #                   in ${CONFIGURATION_BUILD_DIR}. Copy them, synthesizing the
 #                   compose-resources/ parent.
-LOCAL_RESOURCES="${APP_BUNDLE}/Frameworks/CoreDependencies.framework/compose-resources"
+LOCAL_RESOURCES="${APP_BUNDLE}/Frameworks/AppDependencies.framework/compose-resources"
 RELEASED_RESOURCES_SRC="${CONFIGURATION_BUILD_DIR}/HedvigShared.framework/composeResources"
 
 rm -rf "${APP_BUNDLE}/compose-resources"

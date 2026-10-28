@@ -1,6 +1,5 @@
 import AppStateContainer
 import Combine
-@preconcurrency import HedvigShared
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -8,8 +7,8 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @State var vm = HelpCenterStartViewModel()
-    @State private var puppyGuideDisplay: PuppyGuideDisplay?
-    @State private var puppyGuideCancellable: PuppyGuideAvailabilityCancellable?
+    @State private var puppyGuideDisplay: PuppyGuideEntryPlacement?
+    @State private var puppyGuideCancellable: AnyCancellable?
     let onQuickAction: (QuickAction) -> Void
     @Environment(NavigationRouter.self) var router
     @InjectObservableObject var featureFlags: FeatureFlags
@@ -18,11 +17,6 @@ public struct HelpCenterStartView: View {
         onQuickAction: @escaping (QuickAction) -> Void
     ) {
         self.onQuickAction = onQuickAction
-    }
-
-    private enum PuppyGuideDisplay {
-        case fullCard
-        case quickAction
     }
 
     private var showsFullPuppyGuideCard: Bool {
@@ -123,18 +117,14 @@ public struct HelpCenterStartView: View {
             vc.definesPresentationContext = true
             vm.updateColors()
         }
-        .task {
-            puppyGuideCancellable = PuppyGuideAvailabilityKt.observePuppyGuideAvailability { presentation in
-                let display: PuppyGuideDisplay?
-                if presentation is PuppyGuidePresentation.FullCard {
-                    display = .fullCard
-                } else if presentation is PuppyGuidePresentation.QuickAction {
-                    display = .quickAction
-                } else {
-                    display = nil
-                }
-                DispatchQueue.main.async { puppyGuideDisplay = display }
-            }
+        // Only resolve the client while the guide is enabled: demo mode, previews and tests disable the flag and
+        // don't have to register a PuppyGuideClient.
+        .task(id: featureFlags.isPuppyGuideEnabled) {
+            puppyGuideCancellable?.cancel()
+            puppyGuideCancellable = nil
+            guard featureFlags.isPuppyGuideEnabled else { return }
+            let client: PuppyGuideClient = Dependencies.shared.resolve()
+            puppyGuideCancellable = client.observeEntryPlacement { puppyGuideDisplay = $0 }
         }
         .onDisappear {
             puppyGuideCancellable?.cancel()
@@ -324,8 +314,13 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 }
 
 #Preview {
-    HelpCenterStartView(
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return HelpCenterStartView(
         onQuickAction: { _ in
         }
     )
+    .environment(NavigationRouter())
 }

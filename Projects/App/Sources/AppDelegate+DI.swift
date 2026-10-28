@@ -58,6 +58,7 @@ enum DI {
             let insuranceEvidenceClient = InsuranceEvidenceClientDemo()
             let petChipIdClient = PetChipIdClientDemo()
             let onboardingClient = OnboardingClientDemo()
+            let puppyGuideClient = PuppyGuideClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -80,6 +81,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> InsuranceEvidenceClient in insuranceEvidenceClient })
             Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
             Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
+            Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -112,6 +114,7 @@ enum DI {
             let claimIntentClient = ClaimIntentClientOctopus()
             let petChipIdClient = PetChipIdClientOctopus()
             let onboardingClient = OnboardingClientOctopus()
+            let puppyGuideClient = PuppyGuideClientHedvigShared()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
@@ -143,6 +146,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
+                Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -173,6 +177,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
+                Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
             }
         }
     }

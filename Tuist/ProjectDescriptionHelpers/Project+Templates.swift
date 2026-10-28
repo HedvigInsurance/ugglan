@@ -187,6 +187,17 @@ extension Project {
                 ]),
                 sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
                 resources: "Example/Resources/**",
+                // Same post-build step as the main app: embeds RiveRuntime (which Tuist doesn't embed) and
+                // fixes up the bundle. Without it, examples linking SubmitClaimChat crash on launch in dyld,
+                // so the app and its SwiftUI previews never start.
+                scripts: [
+                    .post(
+                        path: .relativeToRoot("scripts/post-build-action.sh"),
+                        arguments: [],
+                        name: "Clean frameworks",
+                        basedOnDependencyAnalysis: false
+                    )
+                ],
                 dependencies: [
                     [
                         .target(name: "\(name)"),
