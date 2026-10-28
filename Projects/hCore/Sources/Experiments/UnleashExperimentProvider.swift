@@ -3,15 +3,11 @@ import Foundation
 
 /// Reports the member's experiment variants as Unleash assigns them, see `ExperimentDefinition`.
 ///
-/// A variant is only reported from toggles fetched for the current member, since Unleash assigns it from the
-/// member id the fetch carried: `FeatureData.experiments` is nil until those are in hand. Right after a login, or
-/// on a first launch, `activeExperiments()` waits for the member's own fetch for at most `memberStateTimeout`,
-/// after which it reports no experiments and the member keeps today's behaviour. Once a wait has timed out, later
-/// calls answer at once until the toggles or the member change, so an unreachable Unleash delays one request rather
-/// than every one.
+/// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
+/// up to `memberStateTimeout` and then reports none. After a timeout it answers at once until the toggles or the
+/// member change, so an unreachable Unleash delays one request rather than every one.
 ///
-/// The variants are also set as Firebase user properties so every analytics event carries them, following every
-/// flag update, which includes the member in the Unleash context changing on login and logout. Firebase uploads
+/// The variants are mirrored to Firebase user properties so every analytics event carries them. Firebase uploads
 /// nothing while collection is disabled, so no consent gating is needed here.
 @MainActor
 public final class UnleashExperimentProvider: ExperimentProvider {
@@ -22,18 +18,16 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     private let featureFlags: FeatureFlags
     private let memberStateTimeout: TimeInterval
     private var userPropertiesCancellable: AnyCancellable?
-    /// What the flags held when a wait last timed out. Waiting is worth it again only once they differ, since that
-    /// may be the member's toggles arriving or a new member. The app retries a failed Unleash setup every second,
-    /// which republishes the same toggles, so a mere update is not enough.
+    /// What the flags held when a wait last timed out. A failed Unleash setup is retried every second and
+    /// republishes the same toggles, so only a real change is worth waiting for again.
     private var flagsAtLastTimeout: FlagsState?
 
     public init(featureFlags: FeatureFlags = .shared, memberStateTimeout: TimeInterval = 3) {
         self.featureFlags = featureFlags
         self.memberStateTimeout = memberStateTimeout
         userPropertiesCancellable = featureFlags.publisher(for: \.data)
-            // Toggles that aren't the member's own say nothing about their group. Publishing from them would clear
-            // the properties Firebase kept from the last session, leaving events without the group until the
-            // member's fetch lands.
+            // Toggles that aren't the member's say nothing about their group, and would clear the one Firebase
+            // kept from the last session.
             .compactMap(\.experiments)
             .removeDuplicates()
             .sink { [weak self] experiments in self?.publishUserProperties(experiments) }
@@ -61,19 +55,20 @@ public final class UnleashExperimentProvider: ExperimentProvider {
 
     /// Whether the member's experiments arrived within `memberStateTimeout`.
     private func waitForTheMembersExperiments() async -> Bool {
-        await withCheckedContinuation { continuation in
-            var cancellable: AnyCancellable?
-            cancellable = featureFlags.publisher(for: \.data)
-                .compactMap(\.experiments)
-                .map { _ in true }
-                .timeout(.seconds(memberStateTimeout), scheduler: RunLoop.main)
-                .first()
-                .replaceEmpty(with: false)
-                .sink { arrived in
-                    continuation.resume(returning: arrived)
-                    cancellable = nil
-                }
+        let featureFlags = featureFlags
+        let memberStateTimeout = memberStateTimeout
+        let arrival = Task {
+            for await _ in featureFlags.publisher(for: \.data).compactMap(\.experiments).values {
+                return true
+            }
+            return false
         }
+        let timeout = Task {
+            try? await Task.sleep(for: .seconds(memberStateTimeout))
+            arrival.cancel()
+        }
+        defer { timeout.cancel() }
+        return await arrival.value
     }
 
     // Two properties hold one experiment at a time, which is all that is running. Cleared when the member is in none.

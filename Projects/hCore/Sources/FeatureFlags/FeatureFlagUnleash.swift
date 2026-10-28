@@ -13,13 +13,10 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
     private var unleashClient: UnleashClient?
     private var environment: Environment
     private let pollerSession: PollerSession
-    /// The context the client currently fetches for. Unleash resolves strategies server-side against the context a
-    /// fetch carried, so toggles fetched for another member, or for no member, resolve every member-dependent
-    /// strategy wrongly for this one.
+    /// The context the client fetches for. Unleash resolves strategies against the context a fetch carried.
     private var contextInEffect: [String: String] = [:]
-    /// The context the toggles in hand were fetched for, or nil until the first fetch lands.
+    /// The context the toggles in hand were fetched for, nil until the first fetch lands.
     private var fetchedContext: [String: String]?
-    private var contextUpdateTask: Task<Void, Never>?
 
     public init(
         environment: Environment,
@@ -30,11 +27,9 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
     }
 
     public func setup(with context: [String: String]) async throws {
-        contextUpdateTask?.cancel()
         contextInEffect = context
         fetchedContext = nil
-        // Login runs this again with the member in the context while Home is already querying cross-sells, so
-        // the toggles in hand must stop counting as this member's before the new client has fetched anything.
+        // Login runs this again while Home already queries cross-sells: the toggles in hand are not this member's.
         setFeatureFlags()
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -77,13 +72,12 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         contextInEffect = context
         // Until the fetch for this context lands, the toggles in hand say nothing about this member.
         setFeatureFlags()
-        contextUpdateTask?.cancel()
-        contextUpdateTask = Task { [weak self] in
+        Task { [weak self] in
             do {
                 try await client.updateContext(context: context)
-                guard let self, !Task.isCancelled, self.unleashClient === client else { return }
-                // A 304 lands here too and posts no event: the SDK keeps one ETag across contexts and writes
-                // nothing on one, and it means the toggles in hand are exactly what Unleash resolves for this context.
+                // A later setup or context change may have taken over while this fetch was in flight.
+                guard let self, self.unleashClient === client, self.contextInEffect == context else { return }
+                // A 304 lands here too without an update event, and means the toggles in hand are this context's.
                 self.fetchedContext = context
                 self.setFeatureFlags()
             } catch {
@@ -93,8 +87,7 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
     }
 
     private func handleUpdate() {
-        // The SDK fetches for the context it holds, which it takes before fetching, so an update is for the
-        // context in effect.
+        // The SDK only fetches for the context it holds, which is the one in effect.
         fetchedContext = contextInEffect
         setFeatureFlags()
     }
@@ -128,8 +121,7 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         featureDataPublisher.send(data)
     }
 
-    /// The experiments the member is in, or nil while the toggles in hand were not fetched for the context in
-    /// effect, since Unleash assigns variants server-side from the member id the fetch carried.
+    /// The member's experiments, or nil while the toggles in hand were fetched for another context.
     private func experimentsForCurrentMember(_ client: UnleashClient) -> [Experiment]? {
         guard fetchedContext == contextInEffect else { return nil }
         return Experiment.active { flag in
