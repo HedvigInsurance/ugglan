@@ -23,8 +23,7 @@ public struct FeatureData: Codable, Equatable {
     public let isTerminationRedirectionEnabled: Bool
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
-    /// The experiments the member is in, or nil while the toggles in hand were not fetched for this member, since
-    /// Unleash assigns variants server-side from the member id the fetch carried. Empty when they are in none.
+    /// The member's experiments, empty when they are in none, or nil while the toggles in hand are not theirs.
     public let experiments: [Experiment]?
 
     public init(
@@ -129,8 +128,7 @@ public class FeatureFlags {
     public func setup(with context: [String: String]) async throws {
         let client: FeatureFlagsClient = Dependencies.shared.resolve()
         self.context = context
-        // After a logout this is a fresh client with no toggles to publish until its first fetch lands, so the
-        // experiments in hand, fetched for whoever was in the old client's context, stop counting as this member's.
+        // After a logout the client is fresh and publishes nothing until it fetches, so drop the old member's.
         data = data.with(experiments: nil)
         featureDataCancellable = client.featureData
             .receive(on: RunLoop.main)
