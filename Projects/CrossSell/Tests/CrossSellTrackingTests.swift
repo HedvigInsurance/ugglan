@@ -19,7 +19,7 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testTrackedEventCarriesOfferIdAndCampaignCodeInsteadOfTheLink() {
+    func testTrackedEventCarriesOfferIdCampaignCodeAndExperimentGroupInsteadOfTheLink() {
         let eventTracker = MockData.createMockEventTrackingClient()
         sut = eventTracker
 
@@ -34,6 +34,7 @@ final class CrossSellTrackingTests: XCTestCase {
                         "user_flow": "home",
                         "offer_id": "crossSell:ACCIDENT",
                         "campaign_code": "accident50app",
+                        "ACCIDENT_DISCOUNT": "NO_DISCOUNT",
                     ]
                 )
             ]
@@ -90,6 +91,45 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertEqual(makeCrossSell(link: "https://www.hedvig.com/r?code=summer+10").campaignCode, "summer+10")
         XCTAssertNil(makeCrossSell(link: "https://www.hedvig.com/r?code=").campaignCode)
         XCTAssertNil(makeCrossSell(link: "https://www.hedvig.com/se/forsakringar/djurforsakring").campaignCode)
+    }
+
+    func testEveryExperimentInTheLinkBecomesAParameterNamedAfterIt() {
+        let crossSell = makeCrossSell(
+            link: "https://www.hedvig.com/api/redirect/recommend?attribution.userFlow=HOME"
+                + "&attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
+                + "&attribution.experiments.RECOMMENDED_CROSS_SELL=B"
+        )
+
+        XCTAssertEqual(crossSell.experiments, ["ACCIDENT_DISCOUNT": "NO_DISCOUNT", "RECOMMENDED_CROSS_SELL": "B"])
+    }
+
+    func testLinkWithoutExperimentsSendsNoExperimentParameter() {
+        let crossSell = makeCrossSell(
+            link: "https://www.hedvig.com/api/redirect/recommend?attribution.userFlow=HOME&code=accident50app"
+        )
+
+        XCTAssertEqual(
+            crossSell.analyticsParameters(from: .home),
+            ["user_flow": "home", "offer_id": "crossSell:ACCIDENT", "campaign_code": "accident50app"]
+        )
+    }
+
+    func testExperimentFirebaseCannotTakeAsAParameterNameIsLeftOut() {
+        let crossSell = makeCrossSell(
+            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.1ST=A"
+                + "&attribution.experiments.WITH-DASH=B&attribution.experiments.\(String(repeating: "X", count: 41))=C"
+        )
+
+        XCTAssertEqual(crossSell.experiments, [:])
+    }
+
+    func testExperimentNeverReplacesOneOfTheEventsOwnParameters() {
+        let crossSell = makeCrossSell(
+            id: "crossSell:ACCIDENT",
+            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.offer_id=X"
+        )
+
+        XCTAssertEqual(crossSell.analyticsParameters(from: .home)["offer_id"], "crossSell:ACCIDENT")
     }
 
     func testSecondTapWhileTheStoreIsOpeningOpensNothingAndCountsNoClick() async {

@@ -11,21 +11,10 @@ extension MockData {
 
 class MockEventTrackingClient: EventTrackingClient {
     var trackedEvents = [TrackedEvent]()
-    /// Every `setUserProperty` call in order, so a test can tell "cleared" from "never touched".
-    private(set) var userPropertyChanges = [(name: String, value: String?)]()
 
     struct TrackedEvent: Equatable {
         let name: String
         let parameters: [String: String]
-    }
-
-    /// The latest value set per property; a key is absent until the property has been set at all.
-    var userProperties: [String: String?] {
-        var properties: [String: String?] = [:]
-        for change in userPropertyChanges {
-            properties[change.name] = change.value
-        }
-        return properties
     }
 
     func setCollectionEnabled(_ enabled: Bool) {}
@@ -38,7 +27,5 @@ class MockEventTrackingClient: EventTrackingClient {
 
     func setUserId(_ userId: String?) {}
 
-    func setUserProperty(name: String, value: String?) {
-        userPropertyChanges.append((name, value))
-    }
+    func setUserProperty(name: String, value: String?) {}
 }
