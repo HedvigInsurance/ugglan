@@ -1,6 +1,8 @@
 import Foundation
 
 struct ExperimentDefinition: Equatable, Sendable {
+    /// Also the Firebase user property holding the variant, so it must be a valid property name: at most 24
+    /// characters, and a letter first. Firebase drops variant values longer than 36 characters.
     let name: String
     let unleashFlag: String
 }
