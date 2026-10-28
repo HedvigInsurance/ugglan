@@ -1,5 +1,6 @@
 import Combine
 import Environment
+import Logger
 import TestDependencies
 @preconcurrency import XCTest
 
@@ -12,6 +13,8 @@ final class FeatureFlagsUnleashTests: XCTestCase {
     private var client: FeatureFlagsUnleash!
     private var published: [FeatureData] = []
     private var cancellable: AnyCancellable?
+    private var logger: MockLogger!
+    private var originalLog: (any Logging)!
 
     private let member = ["memberId": "123", "userId": "123", "market": "SE"]
     private let otherMember = ["memberId": "456", "userId": "456", "market": "SE"]
@@ -31,7 +34,18 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         "variant":{"name":"disabled","enabled":false}}]}
         """
 
+    /// What Unleash answers for a member the accident discount flag is on for, with the given variant.
+    private func toggles(variant: String, variantEnabled: Bool = true) -> String {
+        """
+        {"toggles":[{"name":"accident_discount_experiment","enabled":true,\
+        "variant":{"name":"\(variant)","enabled":\(variantEnabled)}}]}
+        """
+    }
+
     override func setUp() async throws {
+        originalLog = log
+        logger = MockLogger()
+        log = logger
         session = MockPollerSession()
         client = FeatureFlagsUnleash(environment: .staging, pollerSession: session)
         sut = client
@@ -42,6 +56,7 @@ final class FeatureFlagsUnleashTests: XCTestCase {
     override func tearDown() async throws {
         cancellable = nil
         client = nil
+        log = originalLog
         await delay(0.0000001)
         XCTAssertNil(sut)
     }
@@ -153,5 +168,29 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         await delay(0.1)
         XCTAssertEqual(session.requestedURLs.count, 1)
         XCTAssertEqual(published.last?.experiments, [noDiscount])
+    }
+
+    func testSetupWithADisabledVariantPublishesNoExperiment() async throws {
+        session.enqueue(.toggles(toggles(variant: "NO_DISCOUNT", variantEnabled: false)))
+
+        try await client.setup(with: member)
+
+        XCTAssertEqual(published.last?.experiments, [])
+    }
+
+    func testSetupDropsAndWarnsAboutAVariantThatIsNotScreamingSnakeCase() async throws {
+        for variant in ["no-discount", "NoDiscount", "NO DISCOUNT", ""] {
+            logger.warnings = []
+            session.enqueue(.toggles(toggles(variant: variant)))
+
+            try await client.setup(with: member)
+
+            XCTAssertEqual(published.last?.experiments, [], "variant '\(variant)'")
+            XCTAssertEqual(
+                logger.warnings,
+                ["Ignoring ACCIDENT_DISCOUNT variant '\(variant)': not SCREAMING_SNAKE_CASE"],
+                "variant '\(variant)'"
+            )
+        }
     }
 }

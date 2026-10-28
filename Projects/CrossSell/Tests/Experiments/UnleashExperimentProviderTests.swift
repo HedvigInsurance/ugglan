@@ -176,11 +176,36 @@ final class UnleashExperimentProviderTests: XCTestCase {
         await waitUntil(description: "the experiment reaches the user properties") {
             eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"]
         }
+        XCTAssertEqual(eventTracker.userPropertyChanges.count, 1)
+        withExtendedLifetime(provider) {}
+    }
+
+    func testUserPropertiesAreSetForEveryExperimentTheMemberIsIn() async {
+        let provider = makeProvider(memberStateTimeout: 3)
+        let eventTracker = eventTracker!
+        let otherExperiment = Experiment(name: "OTHER_EXPERIMENT", variant: "B")
+
+        await send(experiments: [noDiscount, otherExperiment])
+        await waitUntil(description: "both experiments reach the user properties") {
+            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT", "OTHER_EXPERIMENT": "B"]
+        }
+        XCTAssertEqual(eventTracker.userPropertyChanges.count, 2)
+        withExtendedLifetime(provider) {}
+    }
+
+    func testUserPropertiesAreNotClearedWhenTheMemberIsInNoExperiment() async {
+        let provider = makeProvider(memberStateTimeout: 3)
+        let eventTracker = eventTracker!
+        await send(experiments: [noDiscount])
+        await waitUntil(description: "the experiment reaches the user properties") {
+            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"]
+        }
 
         await send(experiments: [])
-        await waitUntil(description: "the user property is cleared") {
-            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": nil]
-        }
+        await delay(0.1)
+
+        XCTAssertEqual(eventTracker.userPropertyChanges.count, 1, "nothing was set or cleared for []")
+        XCTAssertEqual(eventTracker.userProperties, ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"])
         withExtendedLifetime(provider) {}
     }
 
@@ -192,14 +217,5 @@ final class UnleashExperimentProviderTests: XCTestCase {
 
         XCTAssertTrue(eventTracker.userPropertyChanges.isEmpty)
         withExtendedLifetime(provider) {}
-    }
-
-    func testEveryExperimentNameIsAValidFirebaseUserPropertyName() {
-        for definition in knownExperiments {
-            XCTAssertNotNil(
-                definition.name.range(of: "^[A-Za-z][A-Za-z0-9_]{0,23}$", options: .regularExpression),
-                "'\(definition.name)'"
-            )
-        }
     }
 }

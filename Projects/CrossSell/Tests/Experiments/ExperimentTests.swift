@@ -4,28 +4,28 @@
 
 @MainActor
 final class ExperimentTests: XCTestCase {
-    func testActiveReportsTheAccidentDiscountFlagUnderTheBackendsExperimentName() {
-        let experiments = Experiment.active { flag in
-            flag == "accident_discount_experiment" ? "NO_DISCOUNT" : nil
-        }
+    private let definitions = [(name: "ONE", unleashFlag: "one")]
 
-        XCTAssertEqual(experiments, [Experiment(name: "ACCIDENT_DISCOUNT", variant: "NO_DISCOUNT")])
+    func testActiveReportsTheFlagsVariantUnderTheExperimentName() {
+        let experiments = Experiment.active(in: definitions) { flag in flag == "one" ? "VARIANT_A" : nil }
+
+        XCTAssertEqual(experiments, [Experiment(name: "ONE", variant: "VARIANT_A")])
     }
 
     func testActiveWithAFlagWithoutAVariantReportsNoExperiment() {
-        XCTAssertEqual(Experiment.active { _ in nil }, [])
+        XCTAssertEqual(Experiment.active(in: definitions) { _ in nil }, [])
     }
 
     func testActiveDropsAVariantThatIsNotScreamingSnakeCase() {
         for variant in ["no-discount", "NoDiscount", "NO DISCOUNT", ""] {
-            XCTAssertEqual(Experiment.active { _ in variant }, [], "variant '\(variant)'")
+            XCTAssertEqual(Experiment.active(in: definitions) { _ in variant }, [], "variant '\(variant)'")
         }
     }
 
     func testActiveReportsOnlyTheDefinedFlags() {
         let definitions = [
-            ExperimentDefinition(name: "ONE", unleashFlag: "one"),
-            ExperimentDefinition(name: "TWO", unleashFlag: "two"),
+            (name: "ONE", unleashFlag: "one"),
+            (name: "TWO", unleashFlag: "two"),
         ]
 
         let experiments = Experiment.active(in: definitions) { flag in flag == "two" ? "B" : nil }

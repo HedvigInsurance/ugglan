@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-/// Reports the member's experiment variants as Unleash assigns them, see `ExperimentDefinition`.
+/// Reports the member's experiment variants as Unleash assigns them, see `FeatureFlagsUnleash`.
 ///
 /// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
 /// up to `memberStateTimeout` and then reports none.
@@ -58,12 +58,9 @@ public final class UnleashExperimentProvider: ExperimentProvider {
         try await arrival.value
     }
 
-    // Every known experiment is written, so one the member is not in is cleared rather than kept from an earlier
-    // session.
     private func publishUserProperties(_ experiments: [Experiment]) {
-        for definition in knownExperiments {
-            let variant = experiments.first { $0.name == definition.name }?.variant
-            eventTrackingClient.setUserProperty(name: definition.name, value: variant)
+        for experiment in experiments {
+            eventTrackingClient.setUserProperty(name: experiment.name, value: experiment.variant)
         }
     }
 }
