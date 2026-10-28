@@ -18,7 +18,7 @@ extension AppDelegate {
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
             // Unleash's own user field, next to the memberId property the flags' stickiness keys on.
-            "userId": memberId,
+            FeatureFlags.userId: memberId,
             "appVersion": Bundle.main.appVersion,
             "market": "SE",
             // Normalize to 3-component semver (e.g. "26" → "26.0.0") since systemVersion can return 1, 2, or 3 components

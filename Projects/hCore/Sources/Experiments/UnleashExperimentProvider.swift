@@ -4,8 +4,7 @@ import Foundation
 /// Reports the member's experiment variants as Unleash assigns them, see `ExperimentDefinition`.
 ///
 /// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
-/// up to `memberStateTimeout` and then reports none. After a timeout it answers at once until the toggles or the
-/// member change, so an unreachable Unleash delays one request rather than every one.
+/// up to `memberStateTimeout` and then reports none.
 ///
 /// Each experiment is also set as a Firebase user property named after it, holding the variant, so every analytics
 /// event carries it. Firebase uploads nothing while collection is disabled, so no consent gating is needed here.
@@ -15,9 +14,6 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     private let featureFlags: FeatureFlags
     private let memberStateTimeout: TimeInterval
     private var userPropertiesCancellable: AnyCancellable?
-    /// What the flags held when a wait last timed out. A failed Unleash setup is retried every second and
-    /// republishes the same toggles, so only a real change is worth waiting for again.
-    private var flagsAtLastTimeout: FlagsState?
 
     public init(featureFlags: FeatureFlags = .shared, memberStateTimeout: TimeInterval = 3) {
         self.featureFlags = featureFlags
@@ -31,41 +27,35 @@ public final class UnleashExperimentProvider: ExperimentProvider {
     }
 
     public func activeExperiments() async -> [Experiment] {
-        if let experiments = featureFlags.experiments {
-            return experiments
-        }
-        let flagsBeforeWaiting = currentFlags
-        if flagsBeforeWaiting != flagsAtLastTimeout {
-            let arrived = await waitForTheMembersExperiments()
-            if !arrived {
-                flagsAtLastTimeout = flagsBeforeWaiting
-                // Sizes how often a cross-sell query goes out without the member's variant.
-                log.warn("Gave up waiting \(memberStateTimeout)s for the member's experiments, reporting none")
-            }
+        do {
+            try await waitForTheMembersExperiments()
+        } catch {
+            // Sizes how often a cross-sell query goes out without the member's variant.
+            log.warn("Gave up waiting \(memberStateTimeout)s for the member's experiments, reporting none")
         }
         return featureFlags.experiments ?? []
     }
 
-    private var currentFlags: FlagsState {
-        FlagsState(data: featureFlags.data, context: featureFlags.context)
-    }
-
-    /// Whether the member's experiments arrived within `memberStateTimeout`.
-    private func waitForTheMembersExperiments() async -> Bool {
+    /// Waits until the member's experiments arrive. Throws `CancellationError` if `memberStateTimeout` passes first.
+    private func waitForTheMembersExperiments() async throws {
         let featureFlags = featureFlags
         let memberStateTimeout = memberStateTimeout
+        // Suspends until the flag is first true. Only the timeout cancelling the task ends the loop without a value.
+        // The check sits in the loop rather than in a Combine `filter`: `AsyncPublisher` pulls values off the main
+        // actor, so a closure in the chain would inherit main-actor isolation and trap when Combine calls it.
         let arrival = Task {
-            for await _ in featureFlags.publisher(for: \.data).compactMap(\.experiments).values {
-                return true
+            for await hasFetched in featureFlags.publisher(for: \.hasFetchedInitialDataForMember).values
+            where hasFetched {
+                return
             }
-            return false
+            throw CancellationError()
         }
         let timeout = Task {
-            try? await Task.sleep(for: .seconds(memberStateTimeout))
+            await delay(memberStateTimeout)
             arrival.cancel()
         }
         defer { timeout.cancel() }
-        return await arrival.value
+        try await arrival.value
     }
 
     // Every known experiment is written, so one the member is not in is cleared rather than kept from an earlier
@@ -76,9 +66,4 @@ public final class UnleashExperimentProvider: ExperimentProvider {
             eventTrackingClient.setUserProperty(name: definition.name, value: variant)
         }
     }
-}
-
-private struct FlagsState: Equatable {
-    let data: FeatureData
-    let context: [String: String]
 }
