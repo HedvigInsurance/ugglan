@@ -1,5 +1,3 @@
-import hGraphQL
-
 public struct Premium: Equatable, Hashable, Codable, Sendable {
     public var gross: MonetaryAmount
     public var net: MonetaryAmount
@@ -14,15 +12,6 @@ public struct Premium: Equatable, Hashable, Codable, Sendable {
 }
 
 extension Premium {
-    public init(
-        fragment: OctopusGraphQL.ItemCostFragment
-    ) {
-        self.init(
-            gross: .init(fragment: fragment.monthlyGross.fragments.moneyFragment),
-            net: .init(fragment: fragment.monthlyNet.fragments.moneyFragment)
-        )
-    }
-
     public static var zeroSek: Premium {
         .init(gross: .sek(0), net: .sek(0))
     }

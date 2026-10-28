@@ -1,4 +1,3 @@
-import Apollo
 import AppStateContainer
 import SwiftUI
 import hCore
@@ -86,7 +85,7 @@ struct SettingsView: View {
                     ),
                     {
                         if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                            let hasAlreadyRequested = DeleteAccountStatus.isRequested(for: memberDetails.id)
                             if hasAlreadyRequested {
                                 profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
                             } else {

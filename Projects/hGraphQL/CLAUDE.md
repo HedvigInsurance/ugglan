@@ -5,7 +5,7 @@ The foundational GraphQL networking layer for the app. Contains the Apollo clien
 ## Architecture
 - Pattern: Infrastructure module, not a feature module. No ViewModels or UI.
 - Key services: `ApolloClient` setup (`hApollo`, `hOctopus`), `TokenRefresher` (singleton), `HeadersInterceptor`, `NetworkInterceptorProvider`
-- Data flow: Feature modules import hGraphQL (indirectly, via hCore) and use the Apollo client to execute queries/mutations. The `HeadersInterceptor` attaches auth tokens and standard headers to every request. `TokenRefresher` handles automatic access token refresh before requests when the token is near expiry.
+- Data flow: Only App depends on hGraphQL; its Octopus client implementations (`Projects/App/Sources/Service/OctopusClientsImplementation/`) use the Apollo client to execute queries/mutations. Feature modules don't link it. The `HeadersInterceptor` attaches auth tokens and standard headers to every request. `TokenRefresher` handles automatic access token refresh before requests when the token is near expiry.
 
 ## Key Files
 - Apollo client setup: `ApolloClient.swift` in `Sources/ApolloClient.swift` -- creates the Octopus client, manages token storage/retrieval via Keychain, handles headers
@@ -27,9 +27,9 @@ The foundational GraphQL networking layer for the app. Contains the Apollo clien
 - Codegen output is committed to the repository under `Sources/Derived/`
 
 ## Dependencies
-- Imports: Apollo, ApolloWebSocket, ApolloAPI, Disk, Environment, Logger
+- Imports: Apollo, ApolloWebSocket, ApolloAPI, Environment, Logger
 - No Hedvig module dependencies (this is a leaf dependency)
-- Depended on by: hCore (which re-exports it to all feature modules)
+- Depended on by: App only. Keep it that way: anything feature modules need (e.g. `DeleteAccountStatus`) belongs in hCore, so their SwiftUI previews don't link the generated GraphQL code
 
 ## Navigation
 - Not applicable. This is an infrastructure module with no UI or navigation.

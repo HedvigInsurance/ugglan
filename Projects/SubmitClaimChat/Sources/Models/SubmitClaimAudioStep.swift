@@ -6,7 +6,6 @@ import Observation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @Observable
 final class SubmitClaimAudioStep: ClaimIntentStepHandler {

@@ -1,5 +1,3 @@
-import hGraphQL
-
 public struct Perils: Codable, Equatable, Hashable, Sendable {
     public let id: String?
     public let title: String
@@ -22,36 +20,6 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
         self.color = color
         self.covered = covered
         self.isDisabled = isDisabled ?? false
-    }
-
-    public init(
-        fragment: OctopusGraphQL.AddonVariantFragment.AddonPeril
-    ) {
-        var description = fragment.description ?? ""
-        let coverageTexts = [fragment.coverageText].compactMap { $0 }
-        if !coverageTexts.isEmpty {
-            description += "\r\n"
-        }
-        for coverageText in [fragment.coverageText].compactMap({ $0 }) {
-            description += "\r\n \(coverageText)"
-        }
-        id = fragment.title
-        title = fragment.title
-        self.description = description
-        covered = []
-        color = fragment.colorCode
-        isDisabled = false
-    }
-
-    public init(
-        fragment: OctopusGraphQL.PerilFragment
-    ) {
-        id = fragment.id
-        title = fragment.title
-        description = fragment.description
-        covered = fragment.covered
-        color = fragment.colorCode
-        isDisabled = false
     }
 
     public func asDisabled() -> Perils {

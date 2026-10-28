@@ -6,7 +6,7 @@ The Profile module provides the user profile screen with access to personal info
 - **Pattern**: `ProfileStore` is an `@PersistableStore`-backed `AppStore` exposing `partnerData`, `memberDetails`, `pushNotificationStatus`, `hasTravelCertificates`, `canCreateInsuranceEvidence`, etc. as observable properties. Views observe via `@AppObservedObject`. Async API methods (`fetchProfileState`, `fetchMemberDetails`, `updateLanguage`) live on the store directly.
 - **ViewModels** layered on top: `DeleteAccountViewModel`, `MyInfoViewModel`, `MemberSubscriptionPreferenceViewModel` (all `@MainActor @Observable class`). They access the store via `@AppState` and use `ProfileService` directly for writes that don't belong in the store.
 - **Key services**:
-  - `ProfileClient` -- protocol defining all profile operations (get state, get member details, update language, delete request, update email/phone, update eurobonus, update subscription preference).
+  - `ProfileClient` -- protocol defining all profile operations (get state, get member details, update language, delete request, update email/phone, update eurobonus, update subscription preference, device identifier).
   - `ProfileService` -- thin service wrapper that uses `@Inject var client: ProfileClient` and adds logging.
   - `ProfileClientDemo` -- demo implementation.
 - **Data flow**: `ProfileView.task` calls `await store.fetchProfileState()`. The store calls `profileService.getProfileState()` and assigns the results onto its observable properties; the view re-renders automatically. `MyInfoViewModel.save()` calls `ProfileService` directly and then triggers `HomeStore.fetchMemberState()` to keep both stores in sync.
@@ -47,4 +47,5 @@ The Profile module provides the user profile screen with access to personal info
 - `MyInfoViewModel` uses `ProfileService` directly (not through the store) for the update operation, then updates `ProfileStore` and triggers `HomeStore.fetchMemberState()` to sync state. This creates a split write path.
 - `ProfileStore.init()` launches a `Task` to check push notification settings and assigns the result to a observable property -- a side effect in the store initializer that views subscribing to `pushNotificationStatus` will pick up automatically.
 - `DeleteAccountViewModel` reads from `ClaimsStore` and `ContractStore` (from other modules) to determine if the user has active claims/contracts before allowing deletion.
-- The `ProfileView` accesses `ApolloClient.deleteAccountStatus` and `ApolloClient.saveDeleteAccountStatus` directly for persisting delete request state, bypassing the store pattern.
+- `SettingsView` and `DeleteRequestLoadingView` use hCore's `DeleteAccountStatus` directly for persisting delete request state, bypassing the store pattern.
+- Profile does not link hGraphQL. Anything it needs from the network layer goes through `ProfileClient` (e.g. `getDeviceIdentifier()` for the app info screen), implemented in App's `ProfileClientOctopus`.

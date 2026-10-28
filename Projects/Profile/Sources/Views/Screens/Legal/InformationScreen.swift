@@ -1,4 +1,3 @@
-import Apollo
 import AppStateContainer
 import AuthenticationCore
 import AuthenticationUI
@@ -168,10 +167,11 @@ extension InformationScreen {
 @Observable
 class InformationViewModel {
     var deviceId: String?
+    @ObservationIgnored @Inject private var profileClient: ProfileClient
 
     init() {
         Task {
-            let deviceId = await ApolloClient.getDeviceIdentifier()
+            let deviceId = await profileClient.getDeviceIdentifier()
             self.deviceId = deviceId
         }
     }

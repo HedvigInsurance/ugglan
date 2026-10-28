@@ -48,4 +48,8 @@ public class ProfileClientDemo: ProfileClient {
     public func update(phone: String) async throws {}
 
     public func updateSubscriptionPreference(to _: Bool) async throws {}
+
+    public func getDeviceIdentifier() async -> String {
+        "demo-device-id"
+    }
 }

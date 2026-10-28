@@ -1,6 +1,5 @@
 import Foundation
 import XCTest
-import hGraphQL
 
 @testable import hCore
 
