@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-build phase on CoreDependencies. Runs gradle to rebuild HedvigShared.framework
+# Pre-build phase on AppDependencies. Runs gradle to rebuild HedvigShared.framework
 # into ${BUILT_PRODUCTS_DIR} when .local-umbrella is present; no-op otherwise.
 
 set -euo pipefail

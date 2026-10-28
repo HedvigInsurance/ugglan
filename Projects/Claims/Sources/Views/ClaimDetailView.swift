@@ -394,6 +394,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
         claim: claim,
         type: .claim(id: "claimId")
     )
+    .environment(NavigationRouter())
 }
 
 #Preview("Partner claim") {
@@ -430,6 +431,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
         claim: claim,
         type: .partnerClaim(id: "partnerClaimId")
     )
+    .environment(NavigationRouter())
 }
 
 @MainActor

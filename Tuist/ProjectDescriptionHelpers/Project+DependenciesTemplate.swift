@@ -3,7 +3,7 @@ import ProjectDescription
 
 /// Marker `<repo-root>/.local-umbrella` (gitignored, created by
 /// `scripts/use-local-umbrella.sh`) flips Tuist into "embed-for-Xcode" mode: the umbrella
-/// dependency is dropped and a pre-build script (attached to CoreDependencies) calls
+/// dependency is dropped and a pre-build script (attached to AppDependencies) calls
 /// `:umbrella:embedAndSignAppleFrameworkForXcode` to build HedvigShared.framework directly
 /// into `${BUILT_PRODUCTS_DIR}` for each Xcode build. When absent, Ugglan consumes the
 /// released SPM package unchanged.
@@ -50,9 +50,14 @@ public enum ExternalDependencies: CaseIterable {
 
     public var isResourceBundledDependency: Bool { false }
 
+    /// Linked only by the App target (via AppDependencies), never by feature modules. Keep anything that only
+    /// App imports here: whatever stays in CoreDependencies is linked into every module, Example app and
+    /// SwiftUI preview, and an oversized CoreDependencies makes previews time out on launch.
+    /// Datadog must stay next to `umbrella`: HedvigShared (Kotlin) calls Datadog RUM directly (`DDRUMMonitor`).
+    /// HedvigShared is static, so only one framework (AppDependencies) may link it.
     public var isAppDependency: Bool {
         switch self {
-        case .firebaseAnalytics: return true
+        case .firebaseAnalytics, .kmpNativeCoroutines, .umbrella, .datadog: return true
         default: return false
         }
     }
@@ -192,7 +197,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .umbrella:
             if isLocalUmbrellaMode {
-                // No declared dependency. The CoreDependencies pre-build script
+                // No declared dependency. The AppDependencies pre-build script
                 // produces HedvigShared.framework in $(BUILT_PRODUCTS_DIR), which the
                 // Swift compiler resolves automatically via the default framework search path.
                 return []

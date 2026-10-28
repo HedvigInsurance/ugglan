@@ -69,27 +69,33 @@ struct ClaimStatusCard: View {
                 }
             )
             .hCardBackgroundColor(.light)
+            // Labeled closures instead of `{ } message: { }`: the preview thunk rewriter mangles
+            // multiple trailing closures on `.alert`, which breaks previews of this file.
             .alert(
                 L10n.resumeClaimDeleteTitle,
-                isPresented: $showDeleteConfirmation
-            ) {
-                Button(L10n.generalCancelButton, role: .cancel) {}
-                Button(L10n.resumeClaimDeleteButton, role: .destructive) {
-                    deleteClaimInProgress()
+                isPresented: $showDeleteConfirmation,
+                actions: {
+                    Button(L10n.generalCancelButton, role: .cancel) {}
+                    Button(L10n.resumeClaimDeleteButton, role: .destructive) {
+                        deleteClaimInProgress()
+                    }
+                },
+                message: {
+                    Text(L10n.resumeClaimDeleteBody)
                 }
-            } message: {
-                Text(L10n.resumeClaimDeleteBody)
-            }
+            )
             .alert(
                 L10n.resumeClaimExpiredTitle,
-                isPresented: $showExpiredAlert
-            ) {
-                Button(L10n.generalCloseButton, role: .cancel) {
-                    deleteClaimInProgress()
+                isPresented: $showExpiredAlert,
+                actions: {
+                    Button(L10n.generalCloseButton, role: .cancel) {
+                        deleteClaimInProgress()
+                    }
+                },
+                message: {
+                    Text(L10n.resumeClaimExpiredBody)
                 }
-            } message: {
-                Text(L10n.resumeClaimExpiredBody)
-            }
+            )
         }
     }
 
@@ -303,4 +309,5 @@ extension ClaimModel {
         }
         .sectionContainerStyle(.transparent)
     }
+    .environment(NavigationRouter())
 }

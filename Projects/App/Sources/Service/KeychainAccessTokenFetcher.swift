@@ -1,5 +1,6 @@
 import Apollo
 import HedvigShared
+import hGraphQL
 
 public class IosAccessTokenFetcher: AccessTokenFetcher {
     public init() {}
