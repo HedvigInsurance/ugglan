@@ -6,24 +6,16 @@ import Foundation
 /// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
 /// up to `memberStateTimeout` and then reports none.
 ///
-/// Each experiment is also set as a Firebase user property named after it, holding the variant, so every analytics
-/// event carries it. Firebase uploads nothing while collection is disabled, so no consent gating is needed here.
+/// Analytics don't read the variants from here: the backend lists every experiment it applied in the offer's store
+/// link, and the cross-sell events read them from there.
 @MainActor
 public final class UnleashExperimentProvider: ExperimentProvider {
-    @Inject private var eventTrackingClient: EventTrackingClient
     private let featureFlags: FeatureFlags
     private let memberStateTimeout: TimeInterval
-    private var userPropertiesCancellable: AnyCancellable?
 
     public init(featureFlags: FeatureFlags = .shared, memberStateTimeout: TimeInterval = 3) {
         self.featureFlags = featureFlags
         self.memberStateTimeout = memberStateTimeout
-        userPropertiesCancellable = featureFlags.publisher(for: \.data)
-            // Toggles that aren't the member's say nothing about their group, and would clear the one Firebase
-            // kept from the last session.
-            .compactMap(\.experiments)
-            .removeDuplicates()
-            .sink { [weak self] experiments in self?.publishUserProperties(experiments) }
     }
 
     public func activeExperiments() async -> [Experiment] {
@@ -56,11 +48,5 @@ public final class UnleashExperimentProvider: ExperimentProvider {
         }
         defer { timeout.cancel() }
         try await arrival.value
-    }
-
-    private func publishUserProperties(_ experiments: [Experiment]) {
-        for experiment in experiments {
-            eventTrackingClient.setUserProperty(name: experiment.name, value: experiment.variant)
-        }
     }
 }

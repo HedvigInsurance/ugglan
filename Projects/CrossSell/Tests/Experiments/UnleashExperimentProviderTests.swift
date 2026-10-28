@@ -8,14 +8,12 @@ import TestDependencies
 final class UnleashExperimentProviderTests: XCTestCase {
     weak var sut: UnleashExperimentProvider?
     private var featureFlagsClient: MockFeatureFlagsClient!
-    private var eventTracker: MockEventTrackingClient!
     private var logger: MockLogger!
     private var originalLog: (any Logging)!
     private let noDiscount = Experiment(name: "ACCIDENT_DISCOUNT", variant: "NO_DISCOUNT")
 
     override func setUp() async throws {
         featureFlagsClient = MockData.createMockFeatureFlagsClient()
-        eventTracker = MockData.createMockEventTrackingClient()
         originalLog = log
         logger = MockLogger()
         log = logger
@@ -27,7 +25,6 @@ final class UnleashExperimentProviderTests: XCTestCase {
     override func tearDown() async throws {
         log = originalLog
         Dependencies.shared.remove(for: FeatureFlagsClient.self)
-        Dependencies.shared.remove(for: EventTrackingClient.self)
         await delay(0.0000001)
         XCTAssertNil(sut)
     }
@@ -166,56 +163,5 @@ final class UnleashExperimentProviderTests: XCTestCase {
         _ = await provider.activeExperiments()
 
         XCTAssertTrue(logger.warnings.isEmpty)
-    }
-
-    func testUserPropertiesFollowTheMembersExperiments() async {
-        let provider = makeProvider(memberStateTimeout: 3)
-        let eventTracker = eventTracker!
-
-        await send(experiments: [noDiscount])
-        await waitUntil(description: "the experiment reaches the user properties") {
-            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"]
-        }
-        XCTAssertEqual(eventTracker.userPropertyChanges.count, 1)
-        withExtendedLifetime(provider) {}
-    }
-
-    func testUserPropertiesAreSetForEveryExperimentTheMemberIsIn() async {
-        let provider = makeProvider(memberStateTimeout: 3)
-        let eventTracker = eventTracker!
-        let otherExperiment = Experiment(name: "OTHER_EXPERIMENT", variant: "B")
-
-        await send(experiments: [noDiscount, otherExperiment])
-        await waitUntil(description: "both experiments reach the user properties") {
-            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT", "OTHER_EXPERIMENT": "B"]
-        }
-        XCTAssertEqual(eventTracker.userPropertyChanges.count, 2)
-        withExtendedLifetime(provider) {}
-    }
-
-    func testUserPropertiesAreNotClearedWhenTheMemberIsInNoExperiment() async {
-        let provider = makeProvider(memberStateTimeout: 3)
-        let eventTracker = eventTracker!
-        await send(experiments: [noDiscount])
-        await waitUntil(description: "the experiment reaches the user properties") {
-            eventTracker.userProperties == ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"]
-        }
-
-        await send(experiments: [])
-        await delay(0.1)
-
-        XCTAssertEqual(eventTracker.userPropertyChanges.count, 1, "nothing was set or cleared for []")
-        XCTAssertEqual(eventTracker.userProperties, ["ACCIDENT_DISCOUNT": "NO_DISCOUNT"])
-        withExtendedLifetime(provider) {}
-    }
-
-    func testUserPropertiesStayUnsetWhileTheTogglesAreNotTheMembers() async {
-        let provider = makeProvider(memberStateTimeout: 3)
-
-        await send(experiments: nil, isPuppyGuideEnabled: true)
-        await delay(0.1)
-
-        XCTAssertTrue(eventTracker.userPropertyChanges.isEmpty)
-        withExtendedLifetime(provider) {}
     }
 }
