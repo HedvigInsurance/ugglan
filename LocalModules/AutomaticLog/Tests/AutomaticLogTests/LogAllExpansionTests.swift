@@ -1,11 +1,13 @@
+import SwiftSyntaxMacroExpansion
 import SwiftSyntaxMacros
-import SwiftSyntaxMacrosTestSupport
-import XCTest
+import SwiftSyntaxMacrosGenericTestSupport
+import Testing
 
 @testable import AutomaticLogMacros
 
-final class LogAllExpansionTests: XCTestCase {
-    func testLogAllForwardsOptionsOntoFunctionsWithoutTheirOwn() {
+final class LogAllExpansionTests {
+    @Test
+    func logAllForwardsOptionsOntoFunctionsWithoutTheirOwn() {
         assertMacroExpansion(
             """
             @LogAll(.error, masked: ["token"])
@@ -37,7 +39,8 @@ final class LogAllExpansionTests: XCTestCase {
                     var state: Int { 1 }
                 }
                 """,
-            macros: ["LogAll": LogAllMacro.self]
+            macroSpecs: ["LogAll": MacroSpec(type: LogAllMacro.self)],
+            failureHandler: recordMacroFailure
         )
     }
 }

@@ -208,15 +208,8 @@ let project = Project(
             resources: [],
             scripts: [],
             dependencies: [
-                [
-                    .target(name: "Ugglan"),
-                    .project(
-                        target: "TestDependencies",
-                        path: .relativeToRoot("Dependencies/TestDependencies")
-                    ),
-                ]
-            ]
-            .flatMap { $0 },
+                .target(name: "Ugglan")
+            ],
             settings: .settings(configurations: testsConfigurations)
         ),
         Target.target(
