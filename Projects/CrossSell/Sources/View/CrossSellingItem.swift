@@ -36,6 +36,7 @@ struct CrossSellingItem: View {
                 .fade(duration: 0.25)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+                .accessibilityHidden(true)
         }
     }
 }

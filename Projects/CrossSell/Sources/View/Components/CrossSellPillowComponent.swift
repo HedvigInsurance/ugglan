@@ -20,6 +20,7 @@ struct CrossSellPillowComponent: View {
                         }
                         .fade(duration: 0)
                         .resizable()
+                        .accessibilityHidden(true)
                     if let discountText = insurance.discountText {
                         hText(discountText, style: .label)
                             .padding(.horizontal, .padding6)
@@ -64,6 +65,7 @@ struct CrossSellPillowComponent: View {
                         }
                         .fade(duration: 0)
                         .resizable()
+                        .accessibilityHidden(true)
                     ZStack {
                         Circle()
                             .foregroundColor(hFillColor.Opaque.negative)
@@ -75,6 +77,7 @@ struct CrossSellPillowComponent: View {
                         hCoreUIAssets.plus.view
                             .resizable()
                             .frame(width: 20, height: 20)
+                            .accessibilityHidden(true)
                     }
                     .offset(x: -5, y: 4)
                 }
@@ -114,6 +117,7 @@ struct CrossSellPillowComponent: View {
         KFImage(url)
             .resizable()
             .frame(width: backgroundImageSize, height: backgroundImageSize)
+            .accessibilityHidden(true)
     }
 }
 
