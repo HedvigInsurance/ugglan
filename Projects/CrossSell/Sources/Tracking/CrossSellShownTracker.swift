@@ -44,10 +44,7 @@ private struct CrossSellShownModifier: ViewModifier {
         content
             .onGeometryChange(for: Bool.self, of: \.isHalfVisible) { isHalfVisible = $0 }
             .task(id: isHalfVisible) {
-                // Previews register no event tracking client to report to.
-                guard isHalfVisible, ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" else {
-                    return
-                }
+                guard isHalfVisible else { return }
                 try? await Task.sleep(for: .milliseconds(500))
                 guard !Task.isCancelled else { return }
                 action()

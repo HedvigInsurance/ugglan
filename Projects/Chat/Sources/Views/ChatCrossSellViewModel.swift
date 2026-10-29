@@ -61,19 +61,21 @@ public class ChatCrossSellViewModel {
     func dismiss() async {
         guard let recommended else { return }
         retire(event: .dismissed)
-        if case let .insurance(crossSell) = recommended {
-            crossSell.track(.dismissed)
-        }
+        recommended.track(.dismissed)
         try? await chatService.hideCrossSales()
     }
 
     func open() async {
         guard let recommended else { return }
-        let destination = recommended.destination
         // Retiring hides the card at once, so a second tap opens nothing.
         retire(event: .clicked)
-        if await open(destination), case let .insurance(crossSell) = recommended {
-            crossSell.track(.clicked)
+        switch recommended {
+        case let .insurance(crossSell):
+            await crossSell.openStore()
+        case .addon:
+            if case let .deepLink(link) = recommended.destination, let url = URL(string: link) {
+                NotificationCenter.default.post(name: .openDeepLink, object: url)
+            }
         }
         try? await chatService.hideCrossSales()
     }
@@ -98,18 +100,6 @@ public class ChatCrossSellViewModel {
             "event": event.rawValue
         ]
         log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
-    }
-
-    private func open(_ destination: RecommendedCrossSell.Destination) async -> Bool {
-        switch destination {
-        case let .storeURL(urlString):
-            guard let urlString, let url = URL(string: urlString) else { return false }
-            return await Dependencies.urlOpener.open(url)
-        case let .deepLink(link):
-            guard let url = URL(string: link) else { return false }
-            NotificationCenter.default.post(name: .openDeepLink, object: url)
-            return true
-        }
     }
 }
 

@@ -19,7 +19,7 @@ public struct CrossSellStackComponent: View {
     public var body: some View {
         hSection {
             VStack(spacing: .padding4) {
-                ForEach(crossSells, id: \.title) { crossSell in
+                ForEach(crossSells) { crossSell in
                     CrossSellingItem(crossSell: crossSell)
                         .onCrossSellShown { shownTracker.offerWasShown(crossSell) }
                         .transition(.opacity)
@@ -36,7 +36,7 @@ public struct CrossSellStackComponent: View {
     CrossSellStackComponent(
         crossSells: [
             .init(
-                id: "id",
+                id: "id1",
                 source: .home,
                 title: "title",
                 description: "long description that goes long way",
@@ -46,7 +46,7 @@ public struct CrossSellStackComponent: View {
                 buttonDescription: "button"
             ),
             .init(
-                id: "id",
+                id: "id2",
                 source: .home,
                 title: "short btn",
                 description: "short",
