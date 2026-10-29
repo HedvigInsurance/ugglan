@@ -6,7 +6,7 @@ import hCore
 
 @MainActor
 protocol AnalyticsClient {
-    func fetchAndSetUserId() async throws
+    func fetchUserId() async throws -> String
     func setWith(userId: String)
     func setDeviceInfo(model: MemberLogDeviceModel) async
 }

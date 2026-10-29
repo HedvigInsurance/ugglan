@@ -133,6 +133,7 @@ class MainNavigationViewModel {
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
+                    analyticsService.clearUserId()
                     analyticsService = AnalyticsService()
                     // Recreate loggedInVm only AFTER clearData() has reset the
                     // container — otherwise the new loggedInVm's nav VMs (e.g.
@@ -159,6 +160,7 @@ class MainNavigationViewModel {
     init() {
         Task { @MainActor [weak self] in
             await UIApplication.shared.appDelegate.initialSetup()
+            self?.setCachedUserIdIfLoggedIn()
             self?.checkForFeatureFlags()
             withAnimation(.easeInOut) {
                 self?.hasLaunchFinished = true
@@ -238,6 +240,16 @@ class MainNavigationViewModel {
         let isColdStart = abs(timeSinceLaunch) < 1
         whenLoggedIn(after: isColdStart ? 2 : 0.2, storingIn: \.deepLinkCancellable) { [weak self] in
             self?.loggedInVm.handleDeepLink(deepLinkUrl)
+        }
+    }
+
+    // On a cold start the `state` didSet never fires, so the user id is restored from the cached member details.
+    // Must run after `initialSetup()`, since Datadog and Firebase are configured there.
+    private func setCachedUserIdIfLoggedIn() {
+        guard state == .loggedIn else { return }
+        let profileStore: ProfileStore = globalAppStateContainer.get()
+        if let userId = profileStore.memberDetails?.id {
+            analyticsService.setWith(userId: userId)
         }
     }
 

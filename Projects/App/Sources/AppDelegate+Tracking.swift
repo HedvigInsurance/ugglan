@@ -33,14 +33,6 @@ extension AppDelegate {
             with: configuration,
             trackingConsent: .granted
         )
-        let store: ProfileStore = globalAppStateContainer.get()
-        if let userId = store.memberDetails?.id {
-            let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
-            analyticsService.setWith(userId: userId)
-            let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
-            eventTrackingClient.setUserId(userId)
-        }
-
         Logs.enable()
         RUM.enable(
             with: RUM.Configuration(

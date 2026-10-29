@@ -6,36 +6,46 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@LogAll(.error)
 @MainActor
 class AnalyticsService {
     @Inject var client: AnalyticsClient
     @Inject var eventClient: EventTrackingClient
-    private var setDeviceInfoTask: Task<(), Never>?
+    fileprivate var setDeviceInfoTask: Task<(), Never>?
     func fetchAndSetUserId() async throws {
-        log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
-        try await client.fetchAndSetUserId()
+        let userId = try await client.fetchUserId()
+        setWith(userId: userId)
         let settings = await UNUserNotificationCenter.current().notificationSettings()
-        let pushNotificationEnabled = settings.authorizationStatus == .authorized
-        setDeviceInfoTask = Task { [weak self] in
-            let memberLogDeviceModel = MemberLogDeviceModel(
-                os: UIDevice.current.systemName,
-                brand: "Apple",
-                model: UIDevice.modelName,
-                pushNotificationEnabled: pushNotificationEnabled,
-            )
-            log.info("AnalyticsService: setDeviceInfo \(memberLogDeviceModel.asString)", error: nil, attributes: nil)
-            await self?.client.setDeviceInfo(model: memberLogDeviceModel)
-        }
+        setDeviceInfo(pushNotificationEnabled: settings.authorizationStatus == .authorized)
     }
 
-    @Log
     func setWith(userId: String) {
         client.setWith(userId: userId)
         eventClient.setUserId(userId)
     }
 
+    func clearUserId() {
+        eventClient.setUserId(nil)
+    }
+
     deinit {
         setDeviceInfoTask?.cancel()
+    }
+}
+
+// Lives in an extension so `@LogAll` doesn't attach `@Log` to it — the compiler crashes
+// ("Failed to produce diagnostic") when this `Task { [weak self] in }` closure is inside a body macro.
+extension AnalyticsService {
+    fileprivate func setDeviceInfo(pushNotificationEnabled: Bool) {
+        setDeviceInfoTask = Task { [weak self] in
+            let memberLogDeviceModel = MemberLogDeviceModel(
+                os: UIDevice.current.systemName,
+                brand: "Apple",
+                model: UIDevice.modelName,
+                pushNotificationEnabled: pushNotificationEnabled
+            )
+            await self?.client.setDeviceInfo(model: memberLogDeviceModel)
+        }
     }
 }
 
@@ -44,9 +54,9 @@ struct AnalyticsClientOctopus: AnalyticsClient {
 
     init() {}
 
-    func fetchAndSetUserId() async throws {
+    func fetchUserId() async throws -> String {
         let data = try await octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery())
-        setWith(userId: data.currentMember.id)
+        return data.currentMember.id
     }
 
     func setWith(userId: String) {
