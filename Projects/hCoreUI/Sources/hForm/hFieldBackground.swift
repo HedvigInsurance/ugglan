@@ -77,7 +77,7 @@ struct hFieldContainer<Content: View>: View {
     @Environment(\.hBackgroundOption) var backgroundOption
 
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: Alignment(horizontal: .leading, vertical: .fieldLabel)) {
             hFieldLabel(
                 placeholder: placeholder,
                 animate: $animate,
@@ -140,6 +140,18 @@ struct hFieldContainer<Content: View>: View {
             return size.fieldOffset
         }
     }
+}
+
+extension VerticalAlignment {
+    private enum FieldLabel: AlignmentID {
+        static func defaultValue(in context: ViewDimensions) -> CGFloat {
+            context[VerticalAlignment.center]
+        }
+    }
+
+    /// Vertical position the floating label of a field is centered on. Defaults to the field's center,
+    /// multiline fields move it to the center of their first line.
+    static let fieldLabel = VerticalAlignment(FieldLabel.self)
 }
 
 struct hFieldLabel: View {
