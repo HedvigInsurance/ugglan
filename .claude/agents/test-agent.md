@@ -35,29 +35,39 @@ You write, debug, and run unit tests for the Hedvig iOS app (Ugglan). Follow pro
 
 Follow these patterns exactly:
 
-**Imports and class declaration:**
+**Imports and suite declaration:**
 ```swift
-@preconcurrency import XCTest
+import TestDependencies
+import Testing
 import hCore
 
 @testable import ModuleName
 
-@MainActor
-final class SomeTests: XCTestCase {
-    weak var sut: MockSomeService?
+extension ModuleNameDependencySuite {
+    @MainActor
+    final class SomeTests {
+        private weak var sut: MockSomeService?
 ```
 
-**Memory leak detection (mandatory):**
-- `weak var sut: MockSomeService?` property
-- `sut = mockService` assignment in each test
-- `XCTAssertNil(sut)` in tearDown after removing DI dependency
+- Swift Testing only: `@Test func`, `#expect(...)`, `try #require(...)`, `await #expect(throws: SomeError.self) { ... }`
+- Per-test `init()` replaces setUp; there is no tearDown (see below)
+- Suites that touch `Dependencies.shared`, `log`, `globalAppStateContainer` or other globals nest under the module's
+  `@Suite(.serialized) struct <Module>DependencySuite` (create it if the module lacks one). Swift Testing runs suites
+  in parallel in one process; nesting is what serializes them. Pure value/model suites stay top level.
 
-**tearDown:**
+**Memory leak detection and teardown (mandatory):**
+- `private weak var sut: MockSomeService?`, assigned `sut = mockService` in each test
+- Scope the test body so locals die before the check: `do { ... }`, or `await recordingErrors { ... }` when the body
+  throws or uses `try #require` (it records the error instead of skipping teardown)
+- End every test with a closing helper that removes DI registrations, restores swapped globals, then checks `sut == nil`
+- If a fire-and-forget `Task` may still hold the object, use `waitUntil(description:) { self.vm == nil }`
+- Do not use `deinit` for this: it is nonisolated and cannot suspend
+
 ```swift
-override func tearDown() async throws {
+private func expectServiceReleased() async {
     Dependencies.shared.remove(for: SomeClientProtocol.self)
-    try await Task.sleep(seconds: 0.0000001)
-    XCTAssertNil(sut)
+    await delay(0.00001)
+    #expect(sut == nil, "the mock service must not outlive the test that created it")
 }
 ```
 
@@ -95,52 +105,67 @@ class MockSomeService: SomeClientProtocol {
 
 **ViewModel test:**
 ```swift
-func testFetchItemsSuccess() async {
-    let expected: [Item] = [.init(id: "1", name: "Test")]
-    let mockService = MockData.createMockSomeService(fetchItems: { expected })
-    sut = mockService
+@Test
+func fetchItemsSuccess() async {
+    do {
+        let expected: [Item] = [.init(id: "1", name: "Test")]
+        let mockService = MockData.createMockSomeService(fetchItems: { expected })
+        sut = mockService
 
-    let vm = SomeViewModel()
-    await vm.fetchItems()
+        let vm = SomeViewModel()
+        await vm.fetchItems()
 
-    XCTAssertEqual(vm.items, expected)
-    XCTAssertEqual(mockService.events, [.getItems])
+        #expect(vm.items == expected)
+        #expect(mockService.events == [.getItems])
+    }
+
+    await expectServiceReleased()
 }
 ```
 
 ### Test Naming
-- Start with `test` (required by XCTest)
-- Include the action or method name: `FetchActiveClaims`, `SubmitAddons`
+- No `test` prefix — `@Test` marks the function
+- Start with the action or method name in lower camel case: `fetchActiveClaims`, `submitAddons`
 - End with the outcome: `Success`, `Failure`, `Error`
 - CamelCase throughout, no underscores
 
 ### AppStore Tests
 
-Reset persistence in setUp; call the store's async methods directly and read its `@Published` properties.
+Reset persistence in `init`; call the store's async methods directly and read its `@Observable` properties.
 
 ```swift
-override func setUp() async throws {
-    try await super.setUp()
+private weak var store: SomeStore?
+
+init() {
     globalAppStateContainer.clearPersistence()
 }
 
-func testFetchItemsSuccess() async {
-    let mockService = MockData.createMockSomeService(fetchItems: { expected })
-    sut = mockService
+@Test
+func fetchItemsSuccess() async {
+    do {
+        MockData.createMockSomeService(fetchItems: { expected })
+        let store = SomeStore()
+        self.store = store
+        await store.fetchItems()
 
-    let store = SomeStore()
-    await store.fetchItems()
+        #expect(store.items == expected)
+    }
 
-    XCTAssertEqual(store.items, expected)
+    #expect(store == nil)
 }
 ```
 
+UI tests in `Projects/App/Tests/UITests` remain XCTest / XCUITest; everything else is Swift Testing.
+
 ### Verify Tests Compile
 
-After writing tests, build to verify compilation:
+After writing tests, build to verify compilation (`Ugglan-Workspace` is the scheme CI runs; it includes every
+module's test target):
 ```bash
-xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' 2>&1 | tail -20
+xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' 2>&1 | tail -20
 ```
+
+For a single module, use that module's scheme instead (e.g. `-scheme Payment`).
 
 ---
 
@@ -158,16 +183,22 @@ xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan -desti
 - Fix: ensure `MockData.createMock...()` is called before creating the ViewModel/Store
 - Check that the mock registers for the correct protocol type
 
-**Memory leak detected (`XCTAssertNil(sut)` fails):**
-- Symptom: `sut` is not nil in tearDown
+**Memory leak detected (`#expect(sut == nil)` fails):**
+- Symptom: `sut` is not nil in the closing helper
+- Check the test body is scoped (`do {}` / `recordingErrors {}`) so no local still owns the object
 - Fix: check for retain cycles — strong references to `self` in closures, missing `[weak self]`
 - Check that `Dependencies.shared.remove(for:)` is called for ALL registered protocols
-- Ensure `try await Task.sleep(seconds: 0.0000001)` precedes the nil assertion
+- A Task started by the code under test may still hold it: `waitUntil` for the release instead of a fixed delay
+
+**Flaky only when run with other suites:**
+- Symptom: passes alone, fails in the full run (mock missing, wrong global, unexpected events)
+- Fix: the suite touches shared globals but is not nested under the module's `<Module>DependencySuite`
+- Check a throwing test wraps its body in `recordingErrors` so its teardown still runs
 
 **Async timing issues:**
 - Symptom: state not updated when assertion runs
-- Fix: use `await` on ViewModel methods; for stores use `waitUntil(description:closure:)`
-- Check that `@MainActor` is on both the test class and the code under test
+- Fix: use `await` on ViewModel methods; for work a fire-and-forget Task finishes later use `waitUntil(description:closure:)`
+- Check that `@MainActor` is on both the test suite and the code under test
 
 **Wrong mock setup:**
 - Symptom: test gets unexpected data or the mock returns defaults instead of test values
@@ -182,16 +213,21 @@ xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan -desti
 ### Fix and Verify
 1. Fix the root cause (not the symptom)
 2. Run the specific test to confirm the fix
-3. Run the full test class to check for regressions
+3. Run the full suite to check for regressions
 
 ## Running Tests
 
-Run all tests:
+Run all tests (the same scheme CI uses):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
 ```
 
-Run a specific test class:
+Run one module's tests with its own scheme:
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'ModuleTests/TestClassName'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme <Module> -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+```
+
+Run a specific suite (nested suites include the parent):
+```bash
+xcodebuild test -workspace Ugglan.xcworkspace -scheme <Module> -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'ModuleTests/ModuleDependencySuite/SomeTests'
 ```
