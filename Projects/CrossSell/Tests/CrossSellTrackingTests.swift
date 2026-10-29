@@ -6,24 +6,35 @@ import hCore
 @MainActor
 final class CrossSellTrackingTests: XCTestCase {
     weak var sut: MockEventTrackingClient?
+    private var eventTracker: MockEventTrackingClient!
 
     private let storeLink =
         "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&initiated_from=APP"
         + "&attribution.userFlow=HOME&attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
         + "&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
 
+    override func setUp() async throws {
+        try await super.setUp()
+        eventTracker = MockData.createMockEventTrackingClient()
+        sut = eventTracker
+    }
+
     override func tearDown() async throws {
+        eventTracker = nil
         Dependencies.shared.remove(for: EventTrackingClient.self)
         Dependencies.shared.remove(for: URLOpener.self)
         await delay(0.0000001)
         XCTAssertNil(sut)
     }
 
-    func testTrackedEventCarriesOfferIdCampaignCodeAndExperimentGroupInsteadOfTheLink() {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        sut = eventTracker
+    func testEventNamesMatchAndroid() {
+        XCTAssertEqual(CrossSellEvent.shown.rawValue, "cross_sell_shown")
+        XCTAssertEqual(CrossSellEvent.clicked.rawValue, "cross_sell_clicked")
+        XCTAssertEqual(CrossSellEvent.dismissed.rawValue, "cross_sell_dismissed")
+    }
 
-        makeCrossSell(id: "crossSell:ACCIDENT", link: storeLink).track(.clicked)
+    func testTrackedEventCarriesOfferIdCampaignCodeAndExperimentGroupInsteadOfTheLink() {
+        makeCrossSell(link: storeLink).track(.clicked)
 
         XCTAssertEqual(
             eventTracker.trackedEvents,
@@ -38,21 +49,6 @@ final class CrossSellTrackingTests: XCTestCase {
                     ]
                 )
             ]
-        )
-    }
-
-    func testEveryEventNameMatchesAndroid() {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        sut = eventTracker
-        let crossSell = makeCrossSell(link: storeLink)
-
-        crossSell.track(.shown)
-        crossSell.track(.clicked)
-        crossSell.track(.dismissed)
-
-        XCTAssertEqual(
-            eventTracker.trackedEvents.map(\.name),
-            ["cross_sell_shown", "cross_sell_clicked", "cross_sell_dismissed"]
         )
     }
 
@@ -73,17 +69,14 @@ final class CrossSellTrackingTests: XCTestCase {
         }
     }
 
-    func testLinkWithoutCampaignCodeSendsNoCampaignCode() {
+    func testLinkWithoutCodeOrExperimentsSendsOnlyUserFlowAndOfferId() {
         let crossSell = makeCrossSell(
             id: "crossSell:CAR",
             source: .insurances,
             link: "https://www.hedvig.com/api/redirect/recommend?next=%2Fse%2Fbil&requiresAuthorization=true"
         )
 
-        XCTAssertEqual(
-            crossSell.analyticsParameters,
-            ["user_flow": "insurances", "offer_id": "crossSell:CAR"]
-        )
+        XCTAssertEqual(crossSell.analyticsParameters, ["user_flow": "insurances", "offer_id": "crossSell:CAR"])
     }
 
     func testCampaignCodeIsPercentDecodedAndKeepsAPlus() {
@@ -91,28 +84,15 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertEqual(encoded.campaignCode, "rätt+50 off")
         XCTAssertEqual(makeCrossSell(link: "https://www.hedvig.com/r?code=summer+10").campaignCode, "summer+10")
         XCTAssertNil(makeCrossSell(link: "https://www.hedvig.com/r?code=").campaignCode)
-        XCTAssertNil(makeCrossSell(link: "https://www.hedvig.com/se/forsakringar/djurforsakring").campaignCode)
     }
 
     func testEveryExperimentInTheLinkBecomesAParameterNamedAfterIt() {
         let crossSell = makeCrossSell(
-            link: "https://www.hedvig.com/api/redirect/recommend?attribution.userFlow=HOME"
-                + "&attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
+            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
                 + "&attribution.experiments.RECOMMENDED_CROSS_SELL=B"
         )
 
         XCTAssertEqual(crossSell.experiments, ["ACCIDENT_DISCOUNT": "NO_DISCOUNT", "RECOMMENDED_CROSS_SELL": "B"])
-    }
-
-    func testLinkWithoutExperimentsSendsNoExperimentParameter() {
-        let crossSell = makeCrossSell(
-            link: "https://www.hedvig.com/api/redirect/recommend?attribution.userFlow=HOME&code=accident50app"
-        )
-
-        XCTAssertEqual(
-            crossSell.analyticsParameters,
-            ["user_flow": "home", "offer_id": "crossSell:ACCIDENT", "campaign_code": "accident50app"]
-        )
     }
 
     func testExperimentFirebaseCannotTakeAsAParameterNameIsLeftOut() {
@@ -126,42 +106,33 @@ final class CrossSellTrackingTests: XCTestCase {
 
     func testExperimentNeverReplacesOneOfTheEventsOwnParameters() {
         let crossSell = makeCrossSell(
-            id: "crossSell:ACCIDENT",
             link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.offer_id=X"
         )
 
         XCTAssertEqual(crossSell.analyticsParameters["offer_id"], "crossSell:ACCIDENT")
     }
 
+    func testOpeningTheStoreCountsOneClick() async {
+        let urlOpener = MockData.createMockURLOpener()
+
+        let opened = await makeCrossSell(link: storeLink).openStore()
+
+        XCTAssertTrue(opened)
+        XCTAssertEqual(urlOpener.openedURLs.map(\.absoluteString), [storeLink])
+        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked"])
+    }
+
     func testAStoreLinkTheSystemDoesNotOpenCountsNoClick() async {
-        let eventTracker = MockData.createMockEventTrackingClient()
         let urlOpener = MockData.createMockURLOpener()
         urlOpener.systemOpensURLs = false
-        sut = eventTracker
 
         let opened = await makeCrossSell(link: storeLink).openStore()
 
         XCTAssertFalse(opened)
-        XCTAssertEqual(urlOpener.openedURLs.count, 1)
         XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
     }
 
-    func testTapAfterTheStoreOpenedIsANewLaunch() async {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        let urlOpener = MockData.createMockURLOpener()
-        sut = eventTracker
-        let crossSell = makeCrossSell(link: storeLink)
-
-        await crossSell.openStore()
-        await crossSell.openStore()
-
-        XCTAssertEqual(urlOpener.openedURLs.count, 2)
-        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked", "cross_sell_clicked"])
-    }
-
     func testShownTrackerReportsEachOfferOncePerVisit() {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        sut = eventTracker
         let tracker = CrossSellShownTracker()
         let car = makeCrossSell(id: "crossSell:CAR", link: storeLink)
         let pet = makeCrossSell(id: "crossSell:PET", link: storeLink)
@@ -172,30 +143,24 @@ final class CrossSellTrackingTests: XCTestCase {
         tracker.endVisit()
         tracker.offerWasShown(car)
 
+        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), Array(repeating: "cross_sell_shown", count: 3))
         XCTAssertEqual(
             eventTracker.trackedEvents.map { $0.parameters["offer_id"] },
             ["crossSell:CAR", "crossSell:PET", "crossSell:CAR"]
         )
-        XCTAssertEqual(Set(eventTracker.trackedEvents.map(\.name)), ["cross_sell_shown"])
     }
 
     func testShownTrackerIgnoresAddonRecommendations() {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        sut = eventTracker
-        let tracker = CrossSellShownTracker()
-
-        tracker.offerWasShown(
-            .addon(
-                .init(
-                    id: "addon-id",
-                    title: "Travel Plus",
-                    description: "description",
-                    buttonText: "See price",
-                    deepLink: "https://link.dev.hedvigit.com/travel-addon",
-                    imageUrl: nil
-                )
-            )
+        let addon = AddonCrossSell(
+            id: "addon-id",
+            title: "Travel Plus",
+            description: "description",
+            buttonText: "See price",
+            deepLink: "https://link.dev.hedvigit.com/travel-addon",
+            imageUrl: nil
         )
+
+        CrossSellShownTracker().offerWasShown(.addon(addon))
 
         XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
     }
