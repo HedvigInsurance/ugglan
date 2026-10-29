@@ -3,7 +3,6 @@ import SwiftUI
 
 @MainActor
 public protocol URLOpener {
-    /// Returns whether the system opened the URL.
     @discardableResult
     func open(_ url: URL) async -> Bool
 }

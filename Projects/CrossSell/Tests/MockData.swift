@@ -81,26 +81,12 @@ class MockCrossSellService: CrossSellClient {
     }
 }
 
-/// Can hold an open the way the real opener waits for an authorization code, until `finishHeldOpen()`.
 class MockURLOpener: URLOpener {
     var openedURLs = [URL]()
-    var holdsOpens = false
-    /// What the system answers, false as when no app can handle the URL.
     var systemOpensURLs = true
-    private var heldOpen: CheckedContinuation<Void, Never>?
-
-    var isHoldingAnOpen: Bool { heldOpen != nil }
 
     func open(_ url: URL) async -> Bool {
         openedURLs.append(url)
-        if holdsOpens {
-            await withCheckedContinuation { heldOpen = $0 }
-        }
         return systemOpensURLs
-    }
-
-    func finishHeldOpen() {
-        heldOpen?.resume()
-        heldOpen = nil
     }
 }

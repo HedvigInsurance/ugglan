@@ -100,7 +100,6 @@ public class ChatCrossSellViewModel {
         log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
     }
 
-    /// Returns whether the destination opened.
     private func open(_ destination: RecommendedCrossSell.Destination) async -> Bool {
         switch destination {
         case let .storeURL(urlString):

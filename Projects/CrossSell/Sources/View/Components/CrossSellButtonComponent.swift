@@ -45,9 +45,9 @@ struct CrossSellButtonComponent: View {
     private func openRecommendation() {
         switch crossSell {
         case let .insurance(insurance):
+            isLoading = true
             Task {
-                isLoading = true
-                let didOpen = await CrossSellStoreOpener.shared.open(insurance)
+                let didOpen = await insurance.openStore()
                 isLoading = false
                 if didOpen {
                     dismiss()

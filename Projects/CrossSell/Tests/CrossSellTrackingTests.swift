@@ -133,34 +133,13 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertEqual(crossSell.analyticsParameters["offer_id"], "crossSell:ACCIDENT")
     }
 
-    func testSecondTapWhileTheStoreIsOpeningOpensNothingAndCountsNoClick() async {
-        let eventTracker = MockData.createMockEventTrackingClient()
-        let urlOpener = MockData.createMockURLOpener()
-        urlOpener.holdsOpens = true
-        sut = eventTracker
-        let storeOpener = CrossSellStoreOpener()
-        let crossSell = makeCrossSell(link: storeLink)
-
-        let firstTap = Task { await storeOpener.open(crossSell) }
-        while !urlOpener.isHoldingAnOpen { await Task.yield() }
-        let secondTapOpened = await storeOpener.open(crossSell)
-        urlOpener.finishHeldOpen()
-        let firstTapOpened = await firstTap.value
-
-        XCTAssertTrue(firstTapOpened)
-        XCTAssertFalse(secondTapOpened)
-        XCTAssertEqual(urlOpener.openedURLs.map(\.absoluteString), [storeLink])
-        XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked"])
-    }
-
     func testAStoreLinkTheSystemDoesNotOpenCountsNoClick() async {
         let eventTracker = MockData.createMockEventTrackingClient()
         let urlOpener = MockData.createMockURLOpener()
         urlOpener.systemOpensURLs = false
         sut = eventTracker
-        let storeOpener = CrossSellStoreOpener()
 
-        let opened = await storeOpener.open(makeCrossSell(link: storeLink))
+        let opened = await makeCrossSell(link: storeLink).openStore()
 
         XCTAssertFalse(opened)
         XCTAssertEqual(urlOpener.openedURLs.count, 1)
@@ -171,11 +150,10 @@ final class CrossSellTrackingTests: XCTestCase {
         let eventTracker = MockData.createMockEventTrackingClient()
         let urlOpener = MockData.createMockURLOpener()
         sut = eventTracker
-        let storeOpener = CrossSellStoreOpener()
         let crossSell = makeCrossSell(link: storeLink)
 
-        await storeOpener.open(crossSell)
-        await storeOpener.open(crossSell)
+        await crossSell.openStore()
+        await crossSell.openStore()
 
         XCTAssertEqual(urlOpener.openedURLs.count, 2)
         XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked", "cross_sell_clicked"])

@@ -176,7 +176,6 @@ class MockEventTrackingClient: EventTrackingClient {
 
 class MockURLOpener: URLOpener {
     var openedURLs = [URL]()
-    /// What the system answers, false as when no app can handle the URL.
     var systemOpensURLs = true
 
     func open(_ url: URL) async -> Bool {

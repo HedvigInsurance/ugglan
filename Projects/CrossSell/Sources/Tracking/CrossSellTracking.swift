@@ -10,6 +10,18 @@ public enum CrossSellEvent: String, Sendable {
 }
 
 extension CrossSell {
+    /// Sends the member to the web store, counting a click only when the system opened it.
+    @MainActor
+    @discardableResult
+    func openStore() async -> Bool {
+        guard let webActionURL, let url = URL(string: webActionURL) else { return false }
+        let opened = await Dependencies.urlOpener.open(url)
+        if opened {
+            track(.clicked)
+        }
+        return opened
+    }
+
     @MainActor
     public func track(_ event: CrossSellEvent) {
         let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
@@ -46,7 +58,6 @@ extension CrossSell {
         return experiments
     }
 
-    /// Each named query parameter's first non-empty value, decoded.
     private var storeLinkParameters: [String: String] {
         guard let webActionURL, let components = URLComponents(string: webActionURL) else { return [:] }
         var parameters: [String: String] = [:]

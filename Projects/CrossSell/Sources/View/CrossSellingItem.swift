@@ -8,9 +8,9 @@ struct CrossSellingItem: View {
     @State private var isCrossSellLoading = false
 
     func openExternal() {
+        isCrossSellLoading = true
         Task {
-            isCrossSellLoading = true
-            await CrossSellStoreOpener.shared.open(crossSell)
+            await crossSell.openStore()
             isCrossSellLoading = false
         }
     }
