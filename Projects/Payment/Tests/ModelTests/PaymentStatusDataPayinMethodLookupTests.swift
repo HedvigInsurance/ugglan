@@ -1,9 +1,9 @@
-@preconcurrency import XCTest
+import Testing
 
 @testable import Payment
 
 @MainActor
-final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
+final class PaymentStatusDataPayinMethodLookupTests {
     private let trustly = PaymentTestMethod.trustly
     private let swish = PaymentTestMethod.swish
     private let invoice = PaymentTestMethod.invoice
@@ -15,92 +15,102 @@ final class PaymentStatusDataPayinMethodLookupTests: XCTestCase {
         .test(defaultPayinMethod: defaultPayinMethod, payinMethods: payinMethods)
     }
 
-    func testPayinMethodWithoutMethodsReturnsNil() {
+    @Test
+    func payinMethodWithoutMethodsReturnsNil() {
         let statusData = makeStatusData(payinMethods: [])
 
-        XCTAssertNil(statusData.connectedPaymentMethod(for: .swish))
+        #expect(statusData.connectedPaymentMethod(for: .swish) == nil)
     }
 
-    func testPayinMethodWithoutMatchingProviderReturnsNil() {
+    @Test
+    func payinMethodWithoutMatchingProviderReturnsNil() {
         let statusData = makeStatusData(
             defaultPayinMethod: trustly.connected(isDefault: true),
             payinMethods: [trustly.connected(isDefault: true), invoice.connected(status: .pending)]
         )
 
-        XCTAssertNil(statusData.connectedPaymentMethod(for: .swish))
+        #expect(statusData.connectedPaymentMethod(for: .swish) == nil)
     }
 
-    func testPayinMethodActiveMatchNotProcessing() throws {
+    @Test
+    func payinMethodActiveMatchNotProcessing() throws {
         let activeSwish = swish.connected()
         let statusData = makeStatusData(payinMethods: [trustly.connected(isDefault: true), activeSwish])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, activeSwish)
+        #expect(result == activeSwish)
     }
 
-    func testPayinMethodPendingMatchIsProcessing() throws {
+    @Test
+    func payinMethodPendingMatchIsProcessing() throws {
         let pendingSwish = swish.connected(status: .pending)
         let statusData = makeStatusData(payinMethods: [trustly.connected(isDefault: true), pendingSwish])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, pendingSwish)
+        #expect(result == pendingSwish)
     }
 
-    func testPayinMethodPrefersActiveOverPendingMatch() throws {
+    @Test
+    func payinMethodPrefersActiveOverPendingMatch() throws {
         let pendingSwish = swish.connected(status: .pending)
         let activeSwish = swish.connected(isDefault: true)
         let statusData = makeStatusData(payinMethods: [pendingSwish, activeSwish])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, activeSwish)
+        #expect(result == activeSwish)
     }
 
-    func testPayinMethodFallsBackToFirstMatchWithoutActive() throws {
+    @Test
+    func payinMethodFallsBackToFirstMatchWithoutActive() throws {
         let unknownSwish = swish.connected(status: .unknown)
         let pendingSwish = swish.connected(status: .pending)
         let statusData = makeStatusData(payinMethods: [unknownSwish, pendingSwish])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, unknownSwish)
+        #expect(result == unknownSwish)
     }
 
-    func testPayinMethodOtherProviderPendingNotProcessing() throws {
+    @Test
+    func payinMethodOtherProviderPendingNotProcessing() throws {
         let activeTrustly = trustly.connected(isDefault: true)
         let statusData = makeStatusData(payinMethods: [activeTrustly, swish.connected(status: .pending)])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .trustly))
+        let result = try #require(statusData.connectedPaymentMethod(for: .trustly))
 
-        XCTAssertEqual(result, activeTrustly)
+        #expect(result == activeTrustly)
     }
 
-    func testPayinMethodMatchOnlyInDefaultPayinMethod() throws {
+    @Test
+    func payinMethodMatchOnlyInDefaultPayinMethod() throws {
         let defaultSwish = swish.connected(isDefault: true)
         let statusData = makeStatusData(defaultPayinMethod: defaultSwish, payinMethods: [trustly.connected()])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, defaultSwish)
+        #expect(result == defaultSwish)
     }
 
-    func testPayinMethodPrefersActiveListedMethodOverPendingDefault() throws {
+    @Test
+    func payinMethodPrefersActiveListedMethodOverPendingDefault() throws {
         let pendingDefaultSwish = swish.connected(status: .pending, isDefault: true)
         let activeSwish = swish.connected()
         let statusData = makeStatusData(defaultPayinMethod: pendingDefaultSwish, payinMethods: [activeSwish])
 
-        let result = try XCTUnwrap(statusData.connectedPaymentMethod(for: .swish))
+        let result = try #require(statusData.connectedPaymentMethod(for: .swish))
 
-        XCTAssertEqual(result, activeSwish)
+        #expect(result == activeSwish)
     }
 
-    func testDefaultOrFirstDefaultFallsBackToTheListWithoutADefaultField() {
+    @Test
+    func defaultOrFirstDefaultFallsBackToTheListWithoutADefaultField() {
         let activeTrustly = trustly.connected()
         let defaultSwish = swish.connected(isDefault: true)
         let statusData = makeStatusData(payinMethods: [activeTrustly, defaultSwish])
 
-        XCTAssertEqual(statusData.defaultOrFirstDefaultPayinMethod, defaultSwish)
+        #expect(statusData.defaultOrFirstDefaultPayinMethod == defaultSwish)
     }
 }

@@ -1,9 +1,9 @@
-@preconcurrency import XCTest
+import Testing
 
 @testable import Payment
 
 @MainActor
-final class PaymentStatusDataPayinSelectionTests: XCTestCase {
+final class PaymentStatusDataPayinSelectionTests {
     private let trustly = PaymentTestMethod.trustly
     private let swish = PaymentTestMethod.swish
     private let invoice = PaymentTestMethod.invoice
@@ -14,96 +14,107 @@ final class PaymentStatusDataPayinSelectionTests: XCTestCase {
 
     // MARK: - activePayinMethods
 
-    func testActivePayinMethodsEmptyWithoutMethods() {
+    @Test
+    func activePayinMethodsEmptyWithoutMethods() {
         let statusData = makeStatusData(payinMethods: [])
 
-        XCTAssertEqual(statusData.activePayinMethods, [])
+        #expect(statusData.activePayinMethods == [])
     }
 
-    func testActivePayinMethodsIncludesOnlyActiveMethods() {
+    @Test
+    func activePayinMethodsIncludesOnlyActiveMethods() {
         let activeTrustly = trustly.connected(isDefault: true)
         let pendingSwish = swish.connected(status: .pending)
         let unknownInvoice = invoice.connected(status: .unknown)
         let activeSwish = swish.connected()
         let statusData = makeStatusData(payinMethods: [activeTrustly, pendingSwish, unknownInvoice, activeSwish])
 
-        XCTAssertEqual(statusData.activePayinMethods, [activeTrustly, activeSwish])
+        #expect(statusData.activePayinMethods == [activeTrustly, activeSwish])
     }
 
     // MARK: - selectablePayinMethods
 
-    func testSelectablePayinMethodsDefaultFirst() {
+    @Test
+    func selectablePayinMethodsDefaultFirst() {
         let activeTrustly = trustly.connected()
         let defaultInvoice = invoice.connected(isDefault: true)
         let activeSwish = swish.connected()
         let statusData = makeStatusData(payinMethods: [activeTrustly, defaultInvoice, activeSwish])
 
-        XCTAssertEqual(statusData.selectablePayinMethods, [defaultInvoice, activeTrustly, activeSwish])
+        #expect(statusData.selectablePayinMethods == [defaultInvoice, activeTrustly, activeSwish])
     }
 
-    func testSelectablePayinMethodsPreservesBackendOrderWithoutDefault() {
+    @Test
+    func selectablePayinMethodsPreservesBackendOrderWithoutDefault() {
         let activeSwish = swish.connected()
         let activeInvoice = invoice.connected()
         let activeTrustly = trustly.connected()
         let statusData = makeStatusData(payinMethods: [activeSwish, activeInvoice, activeTrustly])
 
-        XCTAssertEqual(statusData.selectablePayinMethods, [activeSwish, activeInvoice, activeTrustly])
+        #expect(statusData.selectablePayinMethods == [activeSwish, activeInvoice, activeTrustly])
     }
 
-    func testSelectablePayinMethodsExcludesPendingMethods() {
+    @Test
+    func selectablePayinMethodsExcludesPendingMethods() {
         let activeTrustly = trustly.connected()
         let pendingSwish = swish.connected(status: .pending)
         let defaultInvoice = invoice.connected(isDefault: true)
         let statusData = makeStatusData(payinMethods: [activeTrustly, pendingSwish, defaultInvoice])
 
-        XCTAssertEqual(statusData.selectablePayinMethods, [defaultInvoice, activeTrustly])
+        #expect(statusData.selectablePayinMethods == [defaultInvoice, activeTrustly])
     }
 
-    func testSelectablePayinMethodsExcludesPendingDefault() {
+    @Test
+    func selectablePayinMethodsExcludesPendingDefault() {
         let pendingDefaultSwish = swish.connected(status: .pending, isDefault: true)
         let activeTrustly = trustly.connected()
         let statusData = makeStatusData(payinMethods: [pendingDefaultSwish, activeTrustly])
 
-        XCTAssertEqual(statusData.selectablePayinMethods, [activeTrustly])
+        #expect(statusData.selectablePayinMethods == [activeTrustly])
     }
 
-    func testSelectablePayinMethodsEmptyWhenAllPending() {
+    @Test
+    func selectablePayinMethodsEmptyWhenAllPending() {
         let statusData = makeStatusData(
             payinMethods: [swish.connected(status: .pending), trustly.connected(status: .pending)]
         )
 
-        XCTAssertEqual(statusData.selectablePayinMethods, [])
+        #expect(statusData.selectablePayinMethods == [])
     }
 
     // MARK: - canChooseDefaultPayinMethod
 
-    func testCanChooseDefaultPayinMethodWithoutMethods() {
+    @Test
+    func canChooseDefaultPayinMethodWithoutMethods() {
         let statusData = makeStatusData(payinMethods: [])
 
-        XCTAssertFalse(statusData.canChooseDefaultPayinMethod)
+        #expect(statusData.canChooseDefaultPayinMethod == false)
     }
 
-    func testCanChooseDefaultPayinMethodWithOnlyPendingMethods() {
+    @Test
+    func canChooseDefaultPayinMethodWithOnlyPendingMethods() {
         let statusData = makeStatusData(
             payinMethods: [swish.connected(status: .pending), trustly.connected(status: .pending)]
         )
 
-        XCTAssertFalse(statusData.canChooseDefaultPayinMethod)
+        #expect(statusData.canChooseDefaultPayinMethod == false)
     }
 
-    func testCanChooseDefaultPayinMethodWithOneActiveMethod() {
+    @Test
+    func canChooseDefaultPayinMethodWithOneActiveMethod() {
         let statusData = makeStatusData(
             payinMethods: [trustly.connected(isDefault: true), swish.connected(status: .pending)]
         )
 
-        XCTAssertFalse(statusData.canChooseDefaultPayinMethod)
+        #expect(statusData.canChooseDefaultPayinMethod == false)
     }
 
-    func testCanChooseDefaultPayinMethodWithTwoActiveMethods() {
+    @Test
+    func canChooseDefaultPayinMethodWithTwoActiveMethods() {
         let statusData = makeStatusData(
             payinMethods: [trustly.connected(isDefault: true), swish.connected()]
         )
 
-        XCTAssertTrue(statusData.canChooseDefaultPayinMethod)
+        #expect(statusData.canChooseDefaultPayinMethod)
     }
 }
