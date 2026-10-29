@@ -215,7 +215,7 @@ class InboxViewModel {
     @ObservationIgnored @Inject var service: ConversationsClient
     var conversations: [Conversation] = []
     @ObservationIgnored private var pollTimerCancellable: AnyCancellable?
-    @ObservationIgnored private var chatClosedObserver: NSObjectProtocol?
+    @ObservationIgnored private var chatClosedCancellable: AnyCancellable?
     var processingState: ProcessingState = .loading
     @ObservationIgnored private var hasFetchedOnce = false
 
@@ -237,18 +237,20 @@ class InboxViewModel {
 
     init() {
         configureFetching()
-        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
-            [weak self] _ in
-            Task {
-                await self?.configureFetching()
+        // A cancellable rather than an observer token: it unsubscribes when the model is freed, which a
+        // nonisolated deinit cannot reliably do for a main-actor property.
+        chatClosedCancellable = NotificationCenter.default.publisher(for: .chatClosed)
+            .sink { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.configureFetching()
+                }
             }
-        }
     }
 
     func configureFetching() {
         pollTimerCancellable = nil
-        Task {
-            await fetchMessages()
+        Task { [weak self] in
+            await self?.fetchMessages()
         }
         pollTimerCancellable = Timer.publish(every: TimeInterval(5), on: .main, in: .common)
             .autoconnect()
@@ -279,14 +281,6 @@ class InboxViewModel {
                     pollTimerCancellable?.cancel()
                     processingState = .error(errorMessage: error.localizedDescription)
                 }
-            }
-        }
-    }
-
-    deinit {
-        Task { @MainActor [weak self] in
-            if let chatClosedObserver = self?.chatClosedObserver {
-                NotificationCenter.default.removeObserver(chatClosedObserver)
             }
         }
     }
