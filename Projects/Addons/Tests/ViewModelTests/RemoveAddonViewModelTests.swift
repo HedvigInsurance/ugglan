@@ -1,74 +1,92 @@
-import XCTest
+import Testing
 import hCore
 
 @testable import Addons
 
-@MainActor
-final class RemoveAddonViewModelTests: XCTestCase {
-    weak var sut: MockAddonsService?
-    weak var vm: RemoveAddonViewModel?
+extension AddonsDependencySuite {
+    @MainActor
+    final class RemoveAddonViewModelTests {
+        private weak var sut: MockAddonsService?
+        private weak var vm: RemoveAddonViewModel?
 
-    override func tearDown() async throws {
-        try await super.tearDown()
-        Dependencies.shared.remove(for: AddonsClient.self)
-        XCTAssertNil(sut)
-        XCTAssertNil(vm)
-    }
+        // Stands in for the old tearDown, which cannot become deinit: deinit is nonisolated and this is
+        // main-actor work. Each test body is scoped in a do block because XCTest ran tearDown after the
+        // test frame was gone, and this runs inside it, where live locals would still own both.
+        private func expectServiceAndViewModelReleased() {
+            Dependencies.shared.remove(for: AddonsClient.self)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+            #expect(vm == nil, "the view model must not outlive the test that created it")
+        }
 
-    func testGetAddonRemoveOfferCostSuccess() async throws {
-        let expectedCost = ItemCost(premium: .init(gross: .sek(399), net: .sek(399)), discounts: [])
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonRemoveOffer: { _ in testRemoveOffer },
-            fetchAddonRemoveOfferCost: { _, _ in expectedCost }
-        )
+        @Test
+        func getAddonRemoveOfferCostSuccess() async {
+            do {
+                let expectedCost = ItemCost(premium: .init(gross: .sek(399), net: .sek(399)), discounts: [])
+                let mockService = MockData.createMockAddonsService(
+                    fetchAddonRemoveOffer: { _ in testRemoveOffer },
+                    fetchAddonRemoveOfferCost: { _, _ in expectedCost }
+                )
 
-        sut = mockService
+                sut = mockService
 
-        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
+                let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
-        vm = model
-        await delay(0.03)
+                vm = model
 
-        model.toggleAddon(testRemoveOffer.removableAddons[0])
-        await model.getAddonRemoveOfferCost()
+                model.toggleAddon(testRemoveOffer.removableAddons[0])
+                await model.getAddonRemoveOfferCost()
 
-        assert(model.addonRemoveOfferCost == expectedCost)
-        assert(model.fetchingCostState == .success)
-    }
+                #expect(model.addonRemoveOfferCost == expectedCost)
+                #expect(model.fetchingCostState == .success)
+            }
 
-    func testConfirmRemovalSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonRemoveOffer: { _ in testRemoveOffer },
-            confirmAddonRemoval: { _, _ in }
-        )
+            expectServiceAndViewModelReleased()
+        }
 
-        sut = mockService
+        @Test
+        func confirmRemovalSuccess() async {
+            do {
+                let mockService = MockData.createMockAddonsService(
+                    fetchAddonRemoveOffer: { _ in testRemoveOffer },
+                    confirmAddonRemoval: { _, _ in }
+                )
 
-        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
+                sut = mockService
 
-        vm = model
-        await delay(0.03)
+                let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
-        await model.confirmRemoval()
+                vm = model
 
-        assert(model.submittingState == .success)
-    }
+                await model.confirmRemoval()
 
-    func testConfirmRemovalFailure() async throws {
-        let mockService = MockData.createMockAddonsService(
-            fetchAddonRemoveOffer: { _ in testRemoveOffer },
-            confirmAddonRemoval: { _, _ in throw AddonsError.somethingWentWrong }
-        )
+                #expect(model.submittingState == .success)
+            }
 
-        sut = mockService
+            expectServiceAndViewModelReleased()
+        }
 
-        let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
+        @Test
+        func confirmRemovalFailure() async {
+            do {
+                let mockService = MockData.createMockAddonsService(
+                    fetchAddonRemoveOffer: { _ in testRemoveOffer },
+                    confirmAddonRemoval: { _, _ in throw AddonsError.somethingWentWrong }
+                )
 
-        vm = model
-        await delay(0.03)
+                sut = mockService
 
-        await model.confirmRemoval()
+                let model = RemoveAddonViewModel(.init(offer: testRemoveOffer, preselectedAddons: Set(), cost: nil))
 
-        assert(model.submittingState == .error(errorMessage: AddonsError.somethingWentWrong.localizedDescription))
+                vm = model
+
+                await model.confirmRemoval()
+
+                #expect(
+                    model.submittingState == .error(errorMessage: AddonsError.somethingWentWrong.localizedDescription)
+                )
+            }
+
+            expectServiceAndViewModelReleased()
+        }
     }
 }
