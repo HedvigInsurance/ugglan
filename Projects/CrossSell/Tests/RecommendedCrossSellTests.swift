@@ -1,10 +1,10 @@
 import Foundation
-import XCTest
+import Testing
 
 @testable import CrossSell
 
 @MainActor
-final class RecommendedCrossSellTests: XCTestCase {
+final class RecommendedCrossSellTests {
     private func makeInsurance(id: String = "insurance-id", bannerText: String? = nil) -> CrossSell {
         .init(
             id: id,
@@ -30,53 +30,59 @@ final class RecommendedCrossSellTests: XCTestCase {
         )
     }
 
-    func testInsuranceForwardsIdAndBannerText() {
+    @Test
+    func insuranceForwardsIdAndBannerText() {
         let recommended: RecommendedCrossSell = .insurance(makeInsurance(id: "1", bannerText: "Save 15%"))
 
-        assert(recommended.id == "1")
-        assert(recommended.bannerText == "Save 15%")
+        #expect(recommended.id == "1")
+        #expect(recommended.bannerText == "Save 15%")
     }
 
-    func testAddonForwardsIdAndBannerText() {
+    @Test
+    func addonForwardsIdAndBannerText() {
         let recommended: RecommendedCrossSell = .addon(
             makeAddon(id: "2", bannerText: "Add extra safety when traveling")
         )
 
-        assert(recommended.id == "2")
-        assert(recommended.bannerText == "Add extra safety when traveling")
+        #expect(recommended.id == "2")
+        #expect(recommended.bannerText == "Add extra safety when traveling")
     }
 
-    func testAddonWithoutBannerHasNoBannerText() {
+    @Test
+    func addonWithoutBannerHasNoBannerText() {
         let recommended: RecommendedCrossSell = .addon(makeAddon(id: "3"))
 
-        assert(recommended.id == "3")
-        assert(recommended.bannerText == nil)
+        #expect(recommended.id == "3")
+        #expect(recommended.bannerText == nil)
     }
 
-    func testHasRecommendationTrueForInsurance() {
+    @Test
+    func hasRecommendationTrueForInsurance() {
         let crossSells: CrossSells = .init(
             recommended: .insurance(makeInsurance()),
             others: []
         )
 
-        assert(crossSells.hasRecommendation)
+        #expect(crossSells.hasRecommendation)
     }
 
-    func testHasRecommendationTrueForAddon() {
+    @Test
+    func hasRecommendationTrueForAddon() {
         let crossSells: CrossSells = .init(
             recommended: .addon(makeAddon()),
             others: []
         )
 
-        assert(crossSells.hasRecommendation)
+        #expect(crossSells.hasRecommendation)
     }
 
-    func testHasRecommendationFalseWhenNil() {
+    @Test
+    func hasRecommendationFalseWhenNil() {
         let crossSells: CrossSells = .init(
             recommended: nil,
             others: []
         )
 
-        assert(!crossSells.hasRecommendation)
+        #expect(!crossSells.hasRecommendation)
     }
 }
