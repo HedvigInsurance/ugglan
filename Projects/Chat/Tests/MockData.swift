@@ -161,17 +161,25 @@ class MockLogger: Logging {
 class MockEventTrackingClient: EventTrackingClient {
     var trackedEvents = [(name: String, parameters: [String: String])]()
 
-    func setCollectionEnabled(_ enabled: Bool) {}
+    func setCollectionEnabled(_: Bool) {
+        // Not asserted in tests
+    }
 
     func trackEvent(name: String, parameters: [String: Any]?) {
         trackedEvents.append((name, (parameters ?? [:]).mapValues { "\($0)" }))
     }
 
-    func trackScreen(name: String, parameters: [String: Any]?) {}
+    func trackScreen(name _: String, parameters _: [String: Any]?) {
+        // Not asserted in tests
+    }
 
-    func setUserId(_ userId: String?) {}
+    func setUserId(_: String?) {
+        // Not asserted in tests
+    }
 
-    func setUserProperty(name: String, value: String?) {}
+    func setUserProperty(name _: String, value _: String?) {
+        // Not asserted in tests
+    }
 }
 
 class MockURLOpener: URLOpener {

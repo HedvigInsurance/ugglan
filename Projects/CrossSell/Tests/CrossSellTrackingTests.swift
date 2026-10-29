@@ -8,10 +8,11 @@ final class CrossSellTrackingTests: XCTestCase {
     weak var sut: MockEventTrackingClient?
     private var eventTracker: MockEventTrackingClient!
 
-    private let storeLink =
-        "https://www.hedvig.com/api/redirect/recommend?attributed_to=HEDVIG&initiated_from=APP"
-        + "&attribution.userFlow=HOME&attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
-        + "&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+    private lazy var storeLink = link(
+        query: "attributed_to=HEDVIG&initiated_from=APP"
+            + "&attribution.userFlow=HOME&attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
+            + "&next=%2Fse-en%2Finsurances%2Faccident&code=accident50app&requiresAuthorization=true"
+    )
 
     override func setUp() async throws {
         try await super.setUp()
@@ -73,23 +74,25 @@ final class CrossSellTrackingTests: XCTestCase {
         let crossSell = makeCrossSell(
             id: "crossSell:CAR",
             source: .insurances,
-            link: "https://www.hedvig.com/api/redirect/recommend?next=%2Fse%2Fbil&requiresAuthorization=true"
+            link: link(query: "next=%2Fse%2Fbil&requiresAuthorization=true")
         )
 
         XCTAssertEqual(crossSell.analyticsParameters, ["user_flow": "insurances", "offer_id": "crossSell:CAR"])
     }
 
     func testCampaignCodeIsPercentDecodedAndKeepsAPlus() {
-        let encoded = makeCrossSell(link: "https://www.hedvig.com/r?code=r%C3%A4tt%2B50%20off")
+        let encoded = makeCrossSell(link: link(query: "code=r%C3%A4tt%2B50%20off"))
         XCTAssertEqual(encoded.campaignCode, "rätt+50 off")
-        XCTAssertEqual(makeCrossSell(link: "https://www.hedvig.com/r?code=summer+10").campaignCode, "summer+10")
-        XCTAssertNil(makeCrossSell(link: "https://www.hedvig.com/r?code=").campaignCode)
+        XCTAssertEqual(makeCrossSell(link: link(query: "code=summer+10")).campaignCode, "summer+10")
+        XCTAssertNil(makeCrossSell(link: link(query: "code=")).campaignCode)
     }
 
     func testEveryExperimentInTheLinkBecomesAParameterNamedAfterIt() {
         let crossSell = makeCrossSell(
-            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
-                + "&attribution.experiments.RECOMMENDED_CROSS_SELL=B"
+            link: link(
+                query: "attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT"
+                    + "&attribution.experiments.RECOMMENDED_CROSS_SELL=B"
+            )
         )
 
         XCTAssertEqual(crossSell.experiments, ["ACCIDENT_DISCOUNT": "NO_DISCOUNT", "RECOMMENDED_CROSS_SELL": "B"])
@@ -97,17 +100,17 @@ final class CrossSellTrackingTests: XCTestCase {
 
     func testExperimentFirebaseCannotTakeAsAParameterNameIsLeftOut() {
         let crossSell = makeCrossSell(
-            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.1ST=A"
-                + "&attribution.experiments.WITH-DASH=B&attribution.experiments.\(String(repeating: "X", count: 41))=C"
+            link: link(
+                query: "attribution.experiments.1ST=A&attribution.experiments.WITH-DASH=B"
+                    + "&attribution.experiments.\(String(repeating: "X", count: 41))=C"
+            )
         )
 
         XCTAssertEqual(crossSell.experiments, [:])
     }
 
     func testExperimentNeverReplacesOneOfTheEventsOwnParameters() {
-        let crossSell = makeCrossSell(
-            link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.offer_id=X"
-        )
+        let crossSell = makeCrossSell(link: link(query: "attribution.experiments.offer_id=X"))
 
         XCTAssertEqual(crossSell.analyticsParameters["offer_id"], "crossSell:ACCIDENT")
     }
@@ -156,13 +159,22 @@ final class CrossSellTrackingTests: XCTestCase {
             title: "Travel Plus",
             description: "description",
             buttonText: "See price",
-            deepLink: "https://link.dev.hedvigit.com/travel-addon",
+            deepLink: storeLink,
             imageUrl: nil
         )
 
         CrossSellShownTracker().offerWasShown(.addon(addon))
 
         XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
+    }
+
+    /// Builds a store link from its percent-encoded query; only the query is read by the tracking code.
+    private func link(query: String) -> String {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = "www.hedvig.com"
+        components.percentEncodedQuery = query
+        return components.string ?? ""
     }
 
     private func makeCrossSell(
