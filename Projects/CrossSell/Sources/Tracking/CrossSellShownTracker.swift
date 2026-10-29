@@ -7,16 +7,13 @@ import hCore
 /// for a sheet, one opening.
 @MainActor
 public final class CrossSellShownTracker {
-    let source: CrossSellSource
     private var shownOfferIds = Set<String>()
 
-    public init(source: CrossSellSource) {
-        self.source = source
-    }
+    public init() {}
 
     public func offerWasShown(_ crossSell: CrossSell) {
         guard shownOfferIds.insert(crossSell.id).inserted else { return }
-        crossSell.track(.shown, from: source)
+        crossSell.track(.shown)
     }
 
     /// Add-on recommendations are not tracked as cross-sells.

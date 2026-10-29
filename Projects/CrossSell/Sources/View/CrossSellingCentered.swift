@@ -4,16 +4,12 @@ import hCoreUI
 
 public struct CrossSellingCentered: View {
     private let crossSell: RecommendedCrossSell
-    private let source: CrossSellSource
     @State private var viewId = UUID().uuidString
-    @State private var shownTracker: CrossSellShownTracker
+    @State private var shownTracker = CrossSellShownTracker()
     public init(
-        crossSell: RecommendedCrossSell,
-        source: CrossSellSource
+        crossSell: RecommendedCrossSell
     ) {
         self.crossSell = crossSell
-        self.source = source
-        _shownTracker = State(initialValue: CrossSellShownTracker(source: source))
     }
 
     public var body: some View {
@@ -27,7 +23,7 @@ public struct CrossSellingCentered: View {
                     if case let .insurance(insurance) = crossSell {
                         CrossSellDiscountProgressComponent(crossSell: insurance)
                     }
-                    CrossSellButtonComponent(crossSell: crossSell, source: source)
+                    CrossSellButtonComponent(crossSell: crossSell)
                 }
                 .padding(.top, buttonTopPadding)
             }
@@ -69,6 +65,7 @@ public struct CrossSellingCentered: View {
         crossSell: .insurance(
             .init(
                 id: "id",
+                source: .home,
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
                 buttonTitle: "Save 50%",
@@ -77,7 +74,6 @@ public struct CrossSellingCentered: View {
                 buttonDescription: "buttonDescription",
                 numberOfEligibleContracts: 1
             )
-        ),
-        source: .homeXSell
+        )
     )
 }

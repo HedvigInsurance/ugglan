@@ -249,6 +249,7 @@ extension CrossSell {
     fileprivate static var mock: CrossSell {
         .init(
             id: "cross-sell-id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "buttonTitle",

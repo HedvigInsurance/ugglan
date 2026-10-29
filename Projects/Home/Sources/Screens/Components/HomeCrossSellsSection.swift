@@ -7,7 +7,7 @@ struct HomeCrossSellsSection: View {
 
     var body: some View {
         if let crossSells, !crossSells.others.isEmpty {
-            CrossSellStackComponent(crossSells: crossSells.others, source: .home)
+            CrossSellStackComponent(crossSells: crossSells.others)
         }
     }
 }
@@ -18,6 +18,7 @@ struct HomeCrossSellsSection: View {
             recommended: .insurance(
                 .init(
                     id: "2",
+                    source: .home,
                     title: "Accident Insurance",
                     description: "From 79 SEK/mo.",
                     buttonTitle: "See price",
@@ -29,6 +30,7 @@ struct HomeCrossSellsSection: View {
             others: [
                 .init(
                     id: "1",
+                    source: .home,
                     title: "Pet Insurance",
                     description: "For your dog or cat",
                     buttonTitle: "See price",

@@ -191,6 +191,7 @@ extension CrossSell {
     static var mockInChat: CrossSell {
         .init(
             id: "cross-sell-1",
+            source: .inChat,
             title: "Car insurance",
             description: "Insure your car with Hedvig.",
             buttonTitle: "See your price",

@@ -4,16 +4,12 @@ import hCoreUI
 
 public struct CrossSellingModal: View {
     let crossSells: CrossSells
-    let source: CrossSellSource
-    @State private var shownTracker: CrossSellShownTracker
+    @State private var shownTracker = CrossSellShownTracker()
 
     public init(
-        crossSells: CrossSells,
-        source: CrossSellSource
+        crossSells: CrossSells
     ) {
         self.crossSells = crossSells
-        self.source = source
-        _shownTracker = State(initialValue: CrossSellShownTracker(source: source))
     }
 
     public var body: some View {
@@ -30,7 +26,7 @@ public struct CrossSellingModal: View {
                             if case let .insurance(insurance) = recommended {
                                 CrossSellDiscountProgressComponent(crossSell: insurance)
                             }
-                            CrossSellButtonComponent(crossSell: recommended, source: source)
+                            CrossSellButtonComponent(crossSell: recommended)
                         }
                     }
                     CrossSellStackComponent(crossSells: crossSells.others, shownTracker: shownTracker)
@@ -54,5 +50,5 @@ extension CrossSellingModal: TrackingViewNameProtocol {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-    return CrossSellingModal(crossSells: .init(recommended: nil, others: []), source: .homeXSell)
+    return CrossSellingModal(crossSells: .init(recommended: nil, others: []))
 }

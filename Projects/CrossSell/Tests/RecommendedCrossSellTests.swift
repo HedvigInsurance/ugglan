@@ -8,6 +8,7 @@ final class RecommendedCrossSellTests: XCTestCase {
     private func makeInsurance(id: String = "insurance-id", bannerText: String? = nil) -> CrossSell {
         .init(
             id: id,
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "button title",

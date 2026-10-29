@@ -16,14 +16,14 @@ public final class CrossSellStoreOpener {
     /// Returns true when this call opened the store, false when the offer has no link, that link is still opening,
     /// or the system did not open it.
     @discardableResult
-    public func open(_ crossSell: CrossSell, from source: CrossSellSource) async -> Bool {
+    public func open(_ crossSell: CrossSell) async -> Bool {
         guard let link = crossSell.webActionURL, let url = URL(string: link), opening.insert(link).inserted else {
             return false
         }
         defer { opening.remove(link) }
         let opened = await Dependencies.urlOpener.open(url)
         if opened {
-            crossSell.track(.clicked, from: source)
+            crossSell.track(.clicked)
         }
         return opened
     }

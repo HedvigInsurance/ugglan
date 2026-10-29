@@ -23,7 +23,7 @@ final class CrossSellTrackingTests: XCTestCase {
         let eventTracker = MockData.createMockEventTrackingClient()
         sut = eventTracker
 
-        makeCrossSell(id: "crossSell:ACCIDENT", link: storeLink).track(.clicked, from: .home)
+        makeCrossSell(id: "crossSell:ACCIDENT", link: storeLink).track(.clicked)
 
         XCTAssertEqual(
             eventTracker.trackedEvents,
@@ -46,9 +46,9 @@ final class CrossSellTrackingTests: XCTestCase {
         sut = eventTracker
         let crossSell = makeCrossSell(link: storeLink)
 
-        crossSell.track(.shown, from: .inChat)
-        crossSell.track(.clicked, from: .inChat)
-        crossSell.track(.dismissed, from: .inChat)
+        crossSell.track(.shown)
+        crossSell.track(.clicked)
+        crossSell.track(.dismissed)
 
         XCTAssertEqual(
             eventTracker.trackedEvents.map(\.name),
@@ -76,11 +76,12 @@ final class CrossSellTrackingTests: XCTestCase {
     func testLinkWithoutCampaignCodeSendsNoCampaignCode() {
         let crossSell = makeCrossSell(
             id: "crossSell:CAR",
+            source: .insurances,
             link: "https://www.hedvig.com/api/redirect/recommend?next=%2Fse%2Fbil&requiresAuthorization=true"
         )
 
         XCTAssertEqual(
-            crossSell.analyticsParameters(from: .insurances),
+            crossSell.analyticsParameters,
             ["user_flow": "insurances", "offer_id": "crossSell:CAR"]
         )
     }
@@ -109,7 +110,7 @@ final class CrossSellTrackingTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            crossSell.analyticsParameters(from: .home),
+            crossSell.analyticsParameters,
             ["user_flow": "home", "offer_id": "crossSell:ACCIDENT", "campaign_code": "accident50app"]
         )
     }
@@ -129,7 +130,7 @@ final class CrossSellTrackingTests: XCTestCase {
             link: "https://www.hedvig.com/api/redirect/recommend?attribution.experiments.offer_id=X"
         )
 
-        XCTAssertEqual(crossSell.analyticsParameters(from: .home)["offer_id"], "crossSell:ACCIDENT")
+        XCTAssertEqual(crossSell.analyticsParameters["offer_id"], "crossSell:ACCIDENT")
     }
 
     func testSecondTapWhileTheStoreIsOpeningOpensNothingAndCountsNoClick() async {
@@ -140,9 +141,9 @@ final class CrossSellTrackingTests: XCTestCase {
         let storeOpener = CrossSellStoreOpener()
         let crossSell = makeCrossSell(link: storeLink)
 
-        let firstTap = Task { await storeOpener.open(crossSell, from: .home) }
+        let firstTap = Task { await storeOpener.open(crossSell) }
         while !urlOpener.isHoldingAnOpen { await Task.yield() }
-        let secondTapOpened = await storeOpener.open(crossSell, from: .home)
+        let secondTapOpened = await storeOpener.open(crossSell)
         urlOpener.finishHeldOpen()
         let firstTapOpened = await firstTap.value
 
@@ -159,7 +160,7 @@ final class CrossSellTrackingTests: XCTestCase {
         sut = eventTracker
         let storeOpener = CrossSellStoreOpener()
 
-        let opened = await storeOpener.open(makeCrossSell(link: storeLink), from: .home)
+        let opened = await storeOpener.open(makeCrossSell(link: storeLink))
 
         XCTAssertFalse(opened)
         XCTAssertEqual(urlOpener.openedURLs.count, 1)
@@ -173,8 +174,8 @@ final class CrossSellTrackingTests: XCTestCase {
         let storeOpener = CrossSellStoreOpener()
         let crossSell = makeCrossSell(link: storeLink)
 
-        await storeOpener.open(crossSell, from: .home)
-        await storeOpener.open(crossSell, from: .home)
+        await storeOpener.open(crossSell)
+        await storeOpener.open(crossSell)
 
         XCTAssertEqual(urlOpener.openedURLs.count, 2)
         XCTAssertEqual(eventTracker.trackedEvents.map(\.name), ["cross_sell_clicked", "cross_sell_clicked"])
@@ -183,7 +184,7 @@ final class CrossSellTrackingTests: XCTestCase {
     func testShownTrackerReportsEachOfferOncePerVisit() {
         let eventTracker = MockData.createMockEventTrackingClient()
         sut = eventTracker
-        let tracker = CrossSellShownTracker(source: .home)
+        let tracker = CrossSellShownTracker()
         let car = makeCrossSell(id: "crossSell:CAR", link: storeLink)
         let pet = makeCrossSell(id: "crossSell:PET", link: storeLink)
 
@@ -203,7 +204,7 @@ final class CrossSellTrackingTests: XCTestCase {
     func testShownTrackerIgnoresAddonRecommendations() {
         let eventTracker = MockData.createMockEventTrackingClient()
         sut = eventTracker
-        let tracker = CrossSellShownTracker(source: .addon)
+        let tracker = CrossSellShownTracker()
 
         tracker.offerWasShown(
             .addon(
@@ -221,9 +222,14 @@ final class CrossSellTrackingTests: XCTestCase {
         XCTAssertTrue(eventTracker.trackedEvents.isEmpty)
     }
 
-    private func makeCrossSell(id: String = "crossSell:ACCIDENT", link: String) -> CrossSell {
+    private func makeCrossSell(
+        id: String = "crossSell:ACCIDENT",
+        source: CrossSellSource = .home,
+        link: String
+    ) -> CrossSell {
         .init(
             id: id,
+            source: source,
             title: "Accident insurance",
             description: "description",
             buttonTitle: "See price",

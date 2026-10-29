@@ -5,13 +5,12 @@ import hCoreUI
 
 struct CrossSellingItem: View {
     let crossSell: CrossSell
-    let source: CrossSellSource
     @State private var isCrossSellLoading = false
 
     func openExternal() {
         Task {
             isCrossSellLoading = true
-            await CrossSellStoreOpener.shared.open(crossSell, from: source)
+            await CrossSellStoreOpener.shared.open(crossSell)
             isCrossSellLoading = false
         }
     }
@@ -45,13 +44,13 @@ struct CrossSellingItem: View {
     CrossSellingItem(
         crossSell: .init(
             id: "id",
+            source: .home,
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
             buttonTitle: "See price",
             webActionURL: "",
             imageUrl: nil,
             buttonDescription: "button description"
-        ),
-        source: .home
+        )
     )
 }

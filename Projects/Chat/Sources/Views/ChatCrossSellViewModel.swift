@@ -21,7 +21,7 @@ public class ChatCrossSellViewModel {
     @ObservationIgnored private var hasRetired = false
 
     // The chat screen is the visit: a card hidden behind the keyboard and shown again counts once.
-    private let shownTracker = CrossSellShownTracker(source: .inChat)
+    private let shownTracker = CrossSellShownTracker()
 
     init(chatService: ChatServiceProtocol) {
         self.chatService = chatService
@@ -62,7 +62,7 @@ public class ChatCrossSellViewModel {
         guard let recommended else { return }
         retire(event: .dismissed)
         if case let .insurance(crossSell) = recommended {
-            crossSell.track(.dismissed, from: .inChat)
+            crossSell.track(.dismissed)
         }
         try? await chatService.hideCrossSales()
     }
@@ -73,7 +73,7 @@ public class ChatCrossSellViewModel {
         // Retiring hides the card at once, so a second tap opens nothing.
         retire(event: .clicked)
         if await open(destination), case let .insurance(crossSell) = recommended {
-            crossSell.track(.clicked, from: .inChat)
+            crossSell.track(.clicked)
         }
         try? await chatService.hideCrossSales()
     }

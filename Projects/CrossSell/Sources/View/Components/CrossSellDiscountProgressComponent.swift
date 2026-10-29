@@ -113,6 +113,7 @@ private struct AnimatedProgressView: View {
     ScrollView {
         let crossSell0 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Get price",
@@ -124,6 +125,7 @@ private struct AnimatedProgressView: View {
         )
         let crossSell1 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Save 15%",
@@ -135,6 +137,7 @@ private struct AnimatedProgressView: View {
         )
         let crossSell2 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Save 15%",
@@ -146,6 +149,7 @@ private struct AnimatedProgressView: View {
         )
         let crossSell3 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Save 15%",
@@ -157,6 +161,7 @@ private struct AnimatedProgressView: View {
         )
         let crossSell4 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Save 15%",
@@ -168,6 +173,7 @@ private struct AnimatedProgressView: View {
         )
         let crossSell5 = CrossSell(
             id: "id",
+            source: .home,
             title: "title",
             description: "description",
             buttonTitle: "Save 15%",

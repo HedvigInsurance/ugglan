@@ -122,6 +122,7 @@ struct CrossSellPillowComponent: View {
         crossSell: .insurance(
             .init(
                 id: "id",
+                source: .home,
                 title: "title",
                 description: "description",
                 buttonTitle: "Save 15%",

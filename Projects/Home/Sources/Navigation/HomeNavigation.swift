@@ -50,7 +50,6 @@ public class HomeNavigationViewModel {
 
             Task { @MainActor in
                 guard let crossSells = try? await crossSellInfo.getCrossSell() else { return }
-                self?.navBarItems.newOfferSource = crossSellInfo.type
                 // A recommendation (insurance or addon) on its own uses the centered presentation;
                 // combined with other cross-sells it uses the modal, and other-sells-only uses the detent.
                 // A response with nothing to show does not present a sheet at all.
@@ -106,8 +105,6 @@ public class HomeNavigationViewModel {
         public var isNewOfferPresentedModal: CrossSells?
         public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?
-        /// The flow the presented offers were fetched for: the Home cross-sell button, or the end of another flow.
-        public var newOfferSource: CrossSellSource = .homeXSell
     }
 
     deinit {

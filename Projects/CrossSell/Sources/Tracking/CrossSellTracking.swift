@@ -11,16 +11,16 @@ public enum CrossSellEvent: String, Sendable {
 
 extension CrossSell {
     @MainActor
-    public func track(_ event: CrossSellEvent, from source: CrossSellSource) {
+    public func track(_ event: CrossSellEvent) {
         let eventTrackingClient: EventTrackingClient = Dependencies.shared.resolve()
-        eventTrackingClient.trackEvent(name: event.rawValue, parameters: analyticsParameters(from: source))
+        eventTrackingClient.trackEvent(name: event.rawValue, parameters: analyticsParameters)
     }
 
     /// The offer is described by its backend id (`crossSell:ACCIDENT`), the campaign code its store link applies and
     /// the experiment groups the backend made it for, never by the link itself: Firebase drops parameter values over
     /// 100 characters. The link lists each group as `attribution.experiments.ACCIDENT_DISCOUNT=NO_DISCOUNT`, and
     /// each becomes a parameter named after the experiment.
-    func analyticsParameters(from source: CrossSellSource) -> [String: String] {
+    var analyticsParameters: [String: String] {
         var parameters = ["user_flow": source.analyticsUserFlow, "offer_id": id]
         if let campaignCode {
             parameters["campaign_code"] = campaignCode

@@ -24,6 +24,7 @@ public class OnboardingClientDemo: OnboardingClient {
         return [
             .init(
                 id: "accident",
+                source: .home,
                 title: "Accident insurance",
                 description: "From 49 kr/mo",
                 buttonTitle: "See price",

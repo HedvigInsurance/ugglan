@@ -6,8 +6,8 @@ public struct CrossSellStackComponent: View {
     @State private var shownTracker: CrossSellShownTracker
 
     /// Offers that make up a surface of their own, visited for as long as the list is on screen.
-    public init(crossSells: [CrossSell], source: CrossSellSource) {
-        self.init(crossSells: crossSells, shownTracker: CrossSellShownTracker(source: source))
+    public init(crossSells: [CrossSell]) {
+        self.init(crossSells: crossSells, shownTracker: CrossSellShownTracker())
     }
 
     /// Offers that share a visit with the rest of the sheet they are on.
@@ -20,7 +20,7 @@ public struct CrossSellStackComponent: View {
         hSection {
             VStack(spacing: .padding4) {
                 ForEach(crossSells, id: \.title) { crossSell in
-                    CrossSellingItem(crossSell: crossSell, source: shownTracker.source)
+                    CrossSellingItem(crossSell: crossSell)
                         .onCrossSellShown { shownTracker.offerWasShown(crossSell) }
                         .transition(.opacity)
                 }
@@ -37,6 +37,7 @@ public struct CrossSellStackComponent: View {
         crossSells: [
             .init(
                 id: "id",
+                source: .home,
                 title: "title",
                 description: "long description that goes long way",
                 buttonTitle: "See price",
@@ -46,6 +47,7 @@ public struct CrossSellStackComponent: View {
             ),
             .init(
                 id: "id",
+                source: .home,
                 title: "short btn",
                 description: "short",
                 buttonTitle: "See price",
@@ -53,7 +55,6 @@ public struct CrossSellStackComponent: View {
                 imageUrl: nil,
                 buttonDescription: "button"
             ),
-        ],
-        source: .home
+        ]
     )
 }
