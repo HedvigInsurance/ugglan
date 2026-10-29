@@ -11,7 +11,8 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
     weak var sut: UnleashFeatureFlagsClient?
     private var session: MockPollerSession!
     private var client: UnleashFeatureFlagsClient!
-    private var published: [FeatureData] = []
+    /// The client's experiments each time it published feature data.
+    private var publishedExperiments: [[Experiment]?] = []
     private var cancellable: AnyCancellable?
     private var logger: MockLogger!
     private var originalLog: (any Logging)!
@@ -49,8 +50,11 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
         session = MockPollerSession()
         client = UnleashFeatureFlagsClient(environment: .staging, pollerSession: session)
         sut = client
-        published = []
-        cancellable = client.featureData.sink { [weak self] in self?.published.append($0) }
+        publishedExperiments = []
+        cancellable = client.featureData.sink { [weak self] _ in
+            guard let self else { return }
+            self.publishedExperiments.append(self.client.experiments)
+        }
     }
 
     override func tearDown() async throws {
@@ -76,7 +80,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
         try await client.setup(with: member)
 
-        XCTAssertEqual(published.last?.experiments, [noDiscount])
+        XCTAssertEqual(client.experiments, [noDiscount])
     }
 
     func testSetupWithADisabledFlagPublishesNoExperiment() async throws {
@@ -84,7 +88,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
         try await client.setup(with: nobody)
 
-        XCTAssertEqual(published.last?.experiments, [])
+        XCTAssertEqual(client.experiments, [])
     }
 
     func testUpdateContextLeavesExperimentsUnknownUntilTheNewMembersFetchLands() async throws {
@@ -94,10 +98,10 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
         client.updateContext(context: member)
 
-        let beforeTheFetch = try XCTUnwrap(published.last)
-        XCTAssertNil(beforeTheFetch.experiments)
+        let beforeTheFetch = try XCTUnwrap(publishedExperiments.last)
+        XCTAssertNil(beforeTheFetch)
         await waitUntil(description: "the member's toggles arrive", timeout: sdkFetchTimeout) { [self] in
-            published.last?.experiments == [noDiscount]
+            client.experiments == [noDiscount]
         }
     }
 
@@ -109,7 +113,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
         // Login runs setup again with the member in the context, while Home already queries cross-sells.
         try await client.setup(with: member)
 
-        XCTAssertEqual(published.map(\.experiments).suffix(3), [[], nil, [noDiscount]])
+        XCTAssertEqual(publishedExperiments.suffix(3), [[], nil, [noDiscount]])
     }
 
     func testUpdateContextTakesANotModifiedAnswerAsTheNewMembersState() async throws {
@@ -124,7 +128,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
             description: "the 304 is taken as the other member's state",
             timeout: sdkFetchTimeout
         ) { [self] in
-            published.last?.experiments == [noDiscount]
+            client.experiments == [noDiscount]
         }
         XCTAssertEqual(session.requestedURLs.count, 2)
     }
@@ -140,8 +144,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
             session.requestedURLs.count == 2
         }
         await delay(0.1)
-        let latest = try XCTUnwrap(published.last)
-        XCTAssertNil(latest.experiments)
+        XCTAssertNil(client.experiments)
     }
 
     func testUpdateContextWithoutAMemberFetchesForNobody() async throws {
@@ -152,7 +155,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
         client.updateContext(context: nobody)
 
         await waitUntil(description: "nobody's toggles arrive", timeout: sdkFetchTimeout) { [self] in
-            published.last?.experiments == []
+            client.experiments == []
         }
         let query = try XCTUnwrap(session.requestedURLs.last?.query)
         XCTAssertFalse(query.contains("userId"), query)
@@ -167,7 +170,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
         await delay(0.1)
         XCTAssertEqual(session.requestedURLs.count, 1)
-        XCTAssertEqual(published.last?.experiments, [noDiscount])
+        XCTAssertEqual(client.experiments, [noDiscount])
     }
 
     func testSetupWithADisabledVariantPublishesNoExperiment() async throws {
@@ -175,7 +178,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
         try await client.setup(with: member)
 
-        XCTAssertEqual(published.last?.experiments, [])
+        XCTAssertEqual(client.experiments, [])
     }
 
     func testSetupDropsAndWarnsAboutAVariantThatIsNotScreamingSnakeCase() async throws {
@@ -185,7 +188,7 @@ final class UnleashFeatureFlagsClientTests: XCTestCase {
 
             try await client.setup(with: member)
 
-            XCTAssertEqual(published.last?.experiments, [], "variant '\(variant)'")
+            XCTAssertEqual(client.experiments, [], "variant '\(variant)'")
             XCTAssertEqual(
                 logger.warnings,
                 ["Ignoring ACCIDENT_DISCOUNT variant '\(variant)': not SCREAMING_SNAKE_CASE"],

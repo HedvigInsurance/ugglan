@@ -1,55 +1,8 @@
-import Combine
 import Foundation
 import Logger
 import UnleashProxyClientSwift
 
 @testable import hCore
-
-extension MockData {
-    @discardableResult
-    static func createMockFeatureFlagsClient() -> MockFeatureFlagsClient {
-        let client = MockFeatureFlagsClient()
-        Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in client })
-        return client
-    }
-}
-
-/// Feeds `FeatureFlags.shared` whatever feature data a test needs.
-final class MockFeatureFlagsClient: FeatureFlagsClient, @unchecked Sendable {
-    private let subject = PassthroughSubject<FeatureData, Never>()
-
-    var featureData: AnyPublisher<FeatureData, Never> {
-        subject.eraseToAnyPublisher()
-    }
-
-    func setup(with _: [String: String]) async throws {}
-    func updateContext(context _: [String: String]) {}
-
-    func send(_ data: FeatureData) {
-        subject.send(data)
-    }
-}
-
-extension FeatureData {
-    static func allOff(experiments: [Experiment]?, isPuppyGuideEnabled: Bool = false) -> FeatureData {
-        FeatureData(
-            isUpdateNecessary: false,
-            isSubmitClaimEnabled: false,
-            osVersionTooLow: false,
-            emailPreferencesEnabled: false,
-            isDemoMode: false,
-            isAddonsRemovalFromMovingFlowEnabled: false,
-            isNewConversationFromInboxEnabled: false,
-            isPuppyGuideEnabled: isPuppyGuideEnabled,
-            isResumeClaimEnabled: false,
-            isOnboardingEnabled: false,
-            isTerminationRedirectionEnabled: false,
-            isAnalyticsEnabled: false,
-            isResumingOngoingShopSessionsEnabled: false,
-            experiments: experiments
-        )
-    }
-}
 
 /// Stands in for the network under the Unleash SDK: answers each fetch from a queue of canned responses,
 /// failing once the queue is empty, and records every URL it was asked for.

@@ -3,15 +3,7 @@ import Environment
 import Foundation
 import UnleashProxyClientSwift
 
-/// Also reports the member's experiment variants as Unleash assigns them.
-///
-/// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
-/// up to `memberStateTimeout` and then reports none. After a timeout it answers at once until the context or the
-/// fetched toggles change, so an unreachable Unleash delays one request rather than every one.
-///
-/// Analytics don't read the variants from here: the backend lists every experiment it applied in the offer's store
-/// link, and the cross-sell events read them from there.
-public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
+public class UnleashFeatureFlagsClient: FeatureFlagsClient {
     private var featureDataPublisher = PassthroughSubject<FeatureData, Never>()
 
     public var featureData: AnyPublisher<FeatureData, Never> {
@@ -26,10 +18,11 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
     private var contextInEffect: [String: String] = [:]
     /// The context the toggles in hand were fetched for, nil until the first fetch lands.
     private var fetchedContext: [String: String]?
-    /// The member's experiments, or nil while the toggles in hand are not theirs.
+    /// Nil while the toggles in hand were fetched for another context.
+    private(set) var experiments: [Experiment]?
+    /// Nil while the toggles in hand are not the logged-in member's.
     private let memberExperiments = CurrentValueSubject<[Experiment]?, Never>(nil)
-    /// The contexts when a wait last timed out. A failed setup is retried every second with the same context, so
-    /// only a real change is worth waiting for again.
+    /// Failed setups are retried with the same context, so only a change is worth waiting for again.
     private var contextsAtLastTimeout: ContextsState?
 
     public init(
@@ -112,7 +105,7 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
         guard let unleashClient else {
             return
         }
-        let experiments = experimentsForCurrentMember(unleashClient)
+        experiments = experimentsForCurrentMember(unleashClient)
         memberExperiments.send(contextInEffect[FeatureFlags.userId] != nil ? experiments : nil)
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
@@ -133,29 +126,15 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
             isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics"),
             isResumingOngoingShopSessionsEnabled: !unleashClient.isEnabled(
                 name: "disable_resuming_ongoing_shop_sessions"
-            ),
-            experiments: experiments
+            )
         )
         featureDataPublisher.send(data)
     }
+}
 
-    /// Each experiment's name as the backend knows it, and the Unleash flag assigning its variant.
-    private static let knownExperiments: [(name: String, unleashFlag: String)] = [
-        // Variants DISCOUNT_50 (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for
-        // NO_DISCOUNT.
-        (name: "ACCIDENT_DISCOUNT", unleashFlag: "accident_discount_experiment")
-    ]
-
-    /// The member's experiments, or nil while the toggles in hand were fetched for another context.
-    private func experimentsForCurrentMember(_ client: UnleashClient) -> [Experiment]? {
-        guard fetchedContext == contextInEffect else { return nil }
-        return Experiment.active(in: Self.knownExperiments) { flag in
-            guard client.isEnabled(name: flag) else { return nil }
-            let variant = client.getVariant(name: flag)
-            return variant.enabled ? variant.name : nil
-        }
-    }
-
+/// Waits up to `memberStateTimeout` for the member's toggles, then reports none. After a timeout it answers at once
+/// until the context changes, so an unreachable Unleash delays one request rather than every one.
+extension UnleashFeatureFlagsClient: ExperimentProvider {
     public func activeExperiments() async -> [Experiment] {
         let contextsBeforeWaiting = currentContexts
         if contextsBeforeWaiting != contextsAtLastTimeout {
@@ -163,7 +142,6 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
                 return try await waitForTheMembersExperiments()
             } catch {
                 contextsAtLastTimeout = contextsBeforeWaiting
-                // Sizes how often a cross-sell query goes out without the member's variant.
                 log.warn("Gave up waiting \(memberStateTimeout)s for the member's experiments, reporting none")
             }
         }
@@ -174,15 +152,13 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
         ContextsState(inEffect: contextInEffect, fetched: fetchedContext)
     }
 
-    /// Waits until the member's experiments arrive. Throws `CancellationError` if `memberStateTimeout` passes first.
+    /// Throws `CancellationError` if `memberStateTimeout` passes first.
     private func waitForTheMembersExperiments() async throws -> [Experiment] {
         if let experiments = memberExperiments.value { return experiments }
         let memberExperiments = memberExperiments
         let memberStateTimeout = memberStateTimeout
-        // Suspends until the experiments are first known. Only the timeout cancelling the task ends the loop without
-        // a value. The check sits in the loop rather than in a Combine `compactMap`: `AsyncPublisher` pulls values
-        // off the main actor, so a closure in the chain would inherit main-actor isolation and trap when Combine
-        // calls it.
+        // Filtered in the loop, not with `compactMap`: `AsyncPublisher` pulls values off the main actor, so a
+        // main-actor-isolated closure in the chain would trap.
         let arrival = Task {
             for await experiments in memberExperiments.values {
                 if let experiments { return experiments }
@@ -195,6 +171,22 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
         }
         defer { timeout.cancel() }
         return try await arrival.value
+    }
+
+    /// Each experiment's name as the backend knows it, and the Unleash flag assigning its variant.
+    fileprivate static let knownExperiments: [(name: String, unleashFlag: String)] = [
+        // Variants DISCOUNT_50 (today's behaviour) and NO_DISCOUNT. The backend withholds the discount for
+        // NO_DISCOUNT.
+        (name: "ACCIDENT_DISCOUNT", unleashFlag: "accident_discount_experiment")
+    ]
+
+    fileprivate func experimentsForCurrentMember(_ client: UnleashClient) -> [Experiment]? {
+        guard fetchedContext == contextInEffect else { return nil }
+        return Experiment.active(in: Self.knownExperiments) { flag in
+            guard client.isEnabled(name: flag) else { return nil }
+            let variant = client.getVariant(name: flag)
+            return variant.enabled ? variant.name : nil
+        }
     }
 }
 

@@ -23,8 +23,6 @@ public struct FeatureData: Codable, Equatable {
     public let isTerminationRedirectionEnabled: Bool
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
-    /// The member's experiments, empty when they are in none, or nil while the toggles in hand are not theirs.
-    public let experiments: [Experiment]?
 
     public init(
         isUpdateNecessary: Bool,
@@ -39,8 +37,7 @@ public struct FeatureData: Codable, Equatable {
         isOnboardingEnabled: Bool,
         isTerminationRedirectionEnabled: Bool,
         isAnalyticsEnabled: Bool,
-        isResumingOngoingShopSessionsEnabled: Bool,
-        experiments: [Experiment]? = nil
+        isResumingOngoingShopSessionsEnabled: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
@@ -55,28 +52,6 @@ public struct FeatureData: Codable, Equatable {
         self.isTerminationRedirectionEnabled = isTerminationRedirectionEnabled
         self.isAnalyticsEnabled = isAnalyticsEnabled
         self.isResumingOngoingShopSessionsEnabled = isResumingOngoingShopSessionsEnabled
-        self.experiments = experiments
-    }
-}
-
-extension FeatureData {
-    func with(experiments: [Experiment]?) -> FeatureData {
-        FeatureData(
-            isUpdateNecessary: isUpdateNecessary,
-            isSubmitClaimEnabled: isSubmitClaimEnabled,
-            osVersionTooLow: osVersionTooLow,
-            emailPreferencesEnabled: emailPreferencesEnabled,
-            isDemoMode: isDemoMode,
-            isAddonsRemovalFromMovingFlowEnabled: isAddonsRemovalFromMovingFlowEnabled,
-            isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
-            isPuppyGuideEnabled: isPuppyGuideEnabled,
-            isResumeClaimEnabled: isResumeClaimEnabled,
-            isOnboardingEnabled: isOnboardingEnabled,
-            isTerminationRedirectionEnabled: isTerminationRedirectionEnabled,
-            isAnalyticsEnabled: isAnalyticsEnabled,
-            isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
-            experiments: experiments
-        )
     }
 }
 
@@ -118,9 +93,6 @@ public class FeatureFlags {
     )
 
     public var hasFetchedInitialData = false
-    public var hasFetchedInitialDataForMember = false
-    /// The Unleash context last handed to the client, which carries the member.
-    @ObservationIgnored private(set) var context: [String: String] = [:]
 
     public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
         data[keyPath: keyPath]
@@ -130,10 +102,6 @@ public class FeatureFlags {
 
     public func setup(with context: [String: String]) async throws {
         let client: FeatureFlagsClient = Dependencies.shared.resolve()
-        self.context = context
-        // After a logout the client is fresh and publishes nothing until it fetches, so drop the old member's.
-        data = data.with(experiments: nil)
-        hasFetchedInitialDataForMember = false
         featureDataCancellable = client.featureData
             .receive(on: RunLoop.main)
             .removeDuplicates()
@@ -147,15 +115,12 @@ public class FeatureFlags {
                 }
                 self.data = data
                 self.hasFetchedInitialData = true
-                self.hasFetchedInitialDataForMember =
-                    self.context[FeatureFlags.userId] != nil && data.experiments != nil
             }
         self.client = client
         try await client.setup(with: context)
     }
 
     public func updateContext(context: [String: String]) {
-        self.context = context
         client?.updateContext(context: context)
     }
 }
