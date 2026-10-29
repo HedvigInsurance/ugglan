@@ -61,6 +61,7 @@ enum DI {
             let puppyGuideClient = PuppyGuideClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
+            Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
             Dependencies.shared.add(module: Module { () -> hClaimFileUploadClient in hClaimFileUploadService })

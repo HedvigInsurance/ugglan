@@ -47,3 +47,9 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
         featureDataPublisher.send(data)
     }
 }
+
+extension FeatureFlagsDemo: ExperimentProvider {
+    public func activeExperiments() async -> [Experiment] {
+        []
+    }
+}
