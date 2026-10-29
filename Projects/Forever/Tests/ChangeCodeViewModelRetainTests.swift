@@ -1,43 +1,47 @@
-import XCTest
+import Testing
 import hCore
 import hCoreUI
 
 @testable import Forever
 
-@MainActor
-final class ChangeCodeViewModelRetainTests: XCTestCase {
-    weak var sut: MockForeverService?
+extension ForeverDependencySuite {
+    @MainActor
+    final class ChangeCodeViewModelRetainTests {
+        private weak var sut: MockForeverService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = nil
-    }
+        @Test
+        func inputViewModelCallbacksDoNotRetainOwner() async {
+            // Scoped so mockService is released before expectServiceReleased() runs.
+            do {
+                let mockService = MockData.createMockForeverService()
+                sut = mockService
+            }
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: ForeverClient.self)
-        await delay(0.0000001)
+            var owner: ChangeCodeViewModel? = ChangeCodeViewModel(
+                input: "code",
+                foreverVm: ForeverNavigationViewModel()
+            )
+            weak let weakOwner = owner
 
-        XCTAssertNil(sut)
-    }
+            // Outlives the owner on purpose, as TextInputView's save button keeps it alive mid-request.
+            let inputVm: TextInputViewModel = owner!.inputVm
 
-    func testInputViewModelCallbacksDoNotRetainOwner() {
-        let mockService = MockData.createMockForeverService()
-        sut = mockService
+            #expect(inputVm.onSave != nil, "onSave must be installed by init")
+            #expect(inputVm.onDismiss != nil, "onDismiss must be installed by init")
 
-        var owner: ChangeCodeViewModel? = ChangeCodeViewModel(input: "code", foreverVm: ForeverNavigationViewModel())
-        weak let weakOwner = owner
+            owner = nil
 
-        // TextInputView's save button keeps the TextInputViewModel alive for the whole in-flight
-        // request, so this local reproduces that lifetime: it outlives the owner on purpose, and a
-        // strong capture in either callback would be visible as a surviving owner below.
-        let inputVm: TextInputViewModel = owner!.inputVm
+            #expect(weakOwner == nil, "closures stored on inputVm must not keep ChangeCodeViewModel alive")
+            withExtendedLifetime(inputVm) {}
 
-        XCTAssertNotNil(inputVm.onSave, "onSave must be installed by init")
-        XCTAssertNotNil(inputVm.onDismiss, "onDismiss must be installed by init")
+            await expectServiceReleased()
+        }
 
-        owner = nil
-
-        XCTAssertNil(weakOwner, "closures stored on inputVm must not keep ChangeCodeViewModel alive")
-        withExtendedLifetime(inputVm) {}
+        // Not deinit: this has to suspend before it reads sut.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: ForeverClient.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
     }
 }
