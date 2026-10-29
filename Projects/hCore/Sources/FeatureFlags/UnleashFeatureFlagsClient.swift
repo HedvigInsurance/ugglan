@@ -3,7 +3,15 @@ import Environment
 import Foundation
 import UnleashProxyClientSwift
 
-public class FeatureFlagsUnleash: FeatureFlagsClient {
+/// Also reports the member's experiment variants as Unleash assigns them.
+///
+/// Variants only count from toggles fetched for the current member. Until those land, `activeExperiments()` waits
+/// up to `memberStateTimeout` and then reports none. After a timeout it answers at once until the context or the
+/// fetched toggles change, so an unreachable Unleash delays one request rather than every one.
+///
+/// Analytics don't read the variants from here: the backend lists every experiment it applied in the offer's store
+/// link, and the cross-sell events read them from there.
+public class UnleashFeatureFlagsClient: FeatureFlagsClient, ExperimentProvider {
     private var featureDataPublisher = PassthroughSubject<FeatureData, Never>()
 
     public var featureData: AnyPublisher<FeatureData, Never> {
@@ -13,17 +21,25 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
     private var unleashClient: UnleashClient?
     private var environment: Environment
     private let pollerSession: PollerSession
+    private let memberStateTimeout: TimeInterval
     /// The context the client fetches for. Unleash resolves strategies against the context a fetch carried.
     private var contextInEffect: [String: String] = [:]
     /// The context the toggles in hand were fetched for, nil until the first fetch lands.
     private var fetchedContext: [String: String]?
+    /// The member's experiments, or nil while the toggles in hand are not theirs.
+    private let memberExperiments = CurrentValueSubject<[Experiment]?, Never>(nil)
+    /// The contexts when a wait last timed out. A failed setup is retried every second with the same context, so
+    /// only a real change is worth waiting for again.
+    private var contextsAtLastTimeout: ContextsState?
 
     public init(
         environment: Environment,
-        pollerSession: PollerSession = URLSession.shared
+        pollerSession: PollerSession = URLSession.shared,
+        memberStateTimeout: TimeInterval = 3
     ) {
         self.environment = environment
         self.pollerSession = pollerSession
+        self.memberStateTimeout = memberStateTimeout
     }
 
     public func setup(with context: [String: String]) async throws {
@@ -96,6 +112,8 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
         guard let unleashClient else {
             return
         }
+        let experiments = experimentsForCurrentMember(unleashClient)
+        memberExperiments.send(contextInEffect[FeatureFlags.userId] != nil ? experiments : nil)
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
             isSubmitClaimEnabled: true,
@@ -116,7 +134,7 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             isResumingOngoingShopSessionsEnabled: !unleashClient.isEnabled(
                 name: "disable_resuming_ongoing_shop_sessions"
             ),
-            experiments: experimentsForCurrentMember(unleashClient)
+            experiments: experiments
         )
         featureDataPublisher.send(data)
     }
@@ -137,4 +155,50 @@ public class FeatureFlagsUnleash: FeatureFlagsClient {
             return variant.enabled ? variant.name : nil
         }
     }
+
+    public func activeExperiments() async -> [Experiment] {
+        let contextsBeforeWaiting = currentContexts
+        if contextsBeforeWaiting != contextsAtLastTimeout {
+            do {
+                return try await waitForTheMembersExperiments()
+            } catch {
+                contextsAtLastTimeout = contextsBeforeWaiting
+                // Sizes how often a cross-sell query goes out without the member's variant.
+                log.warn("Gave up waiting \(memberStateTimeout)s for the member's experiments, reporting none")
+            }
+        }
+        return memberExperiments.value ?? []
+    }
+
+    private var currentContexts: ContextsState {
+        ContextsState(inEffect: contextInEffect, fetched: fetchedContext)
+    }
+
+    /// Waits until the member's experiments arrive. Throws `CancellationError` if `memberStateTimeout` passes first.
+    private func waitForTheMembersExperiments() async throws -> [Experiment] {
+        if let experiments = memberExperiments.value { return experiments }
+        let memberExperiments = memberExperiments
+        let memberStateTimeout = memberStateTimeout
+        // Suspends until the experiments are first known. Only the timeout cancelling the task ends the loop without
+        // a value. The check sits in the loop rather than in a Combine `compactMap`: `AsyncPublisher` pulls values
+        // off the main actor, so a closure in the chain would inherit main-actor isolation and trap when Combine
+        // calls it.
+        let arrival = Task {
+            for await experiments in memberExperiments.values {
+                if let experiments { return experiments }
+            }
+            throw CancellationError()
+        }
+        let timeout = Task {
+            await delay(memberStateTimeout)
+            arrival.cancel()
+        }
+        defer { timeout.cancel() }
+        return try await arrival.value
+    }
+}
+
+private struct ContextsState: Equatable {
+    let inEffect: [String: String]
+    let fetched: [String: String]?
 }

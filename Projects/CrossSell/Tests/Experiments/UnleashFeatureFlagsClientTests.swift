@@ -7,10 +7,10 @@ import TestDependencies
 @testable import hCore
 
 @MainActor
-final class FeatureFlagsUnleashTests: XCTestCase {
-    weak var sut: FeatureFlagsUnleash?
+final class UnleashFeatureFlagsClientTests: XCTestCase {
+    weak var sut: UnleashFeatureFlagsClient?
     private var session: MockPollerSession!
-    private var client: FeatureFlagsUnleash!
+    private var client: UnleashFeatureFlagsClient!
     private var published: [FeatureData] = []
     private var cancellable: AnyCancellable?
     private var logger: MockLogger!
@@ -47,7 +47,7 @@ final class FeatureFlagsUnleashTests: XCTestCase {
         logger = MockLogger()
         log = logger
         session = MockPollerSession()
-        client = FeatureFlagsUnleash(environment: .staging, pollerSession: session)
+        client = UnleashFeatureFlagsClient(environment: .staging, pollerSession: session)
         sut = client
         published = []
         cancellable = client.featureData.sink { [weak self] in self?.published.append($0) }
@@ -192,5 +192,110 @@ final class FeatureFlagsUnleashTests: XCTestCase {
                 "variant '\(variant)'"
             )
         }
+    }
+
+    /// Replaces the client under test with one that waits `memberStateTimeout` for the member's experiments.
+    private func makeClient(memberStateTimeout: TimeInterval) -> UnleashFeatureFlagsClient {
+        let client = UnleashFeatureFlagsClient(
+            environment: .staging,
+            pollerSession: session,
+            memberStateTimeout: memberStateTimeout
+        )
+        self.client = client
+        sut = client
+        return client
+    }
+
+    func testActiveExperimentsWithTheMembersTogglesInHandAnswersAtOnce() async throws {
+        let client = makeClient(memberStateTimeout: 3)
+        session.enqueue(.toggles(memberToggles))
+        try await client.setup(with: member)
+
+        let clock = ContinuousClock()
+        let start = clock.now
+        let experiments = await client.activeExperiments()
+
+        XCTAssertEqual(experiments, [noDiscount])
+        XCTAssertLessThan(clock.now - start, .seconds(1))
+    }
+
+    func testActiveExperimentsWaitsForTheMembersToggles() async throws {
+        let client = makeClient(memberStateTimeout: sdkFetchTimeout)
+        session.enqueue(.toggles(anonymousToggles))
+        try await client.setup(with: nobody)
+        session.enqueue(.toggles(memberToggles))
+
+        client.updateContext(context: member)
+        let experiments = await client.activeExperiments()
+
+        XCTAssertEqual(experiments, [noDiscount])
+        XCTAssertTrue(logger.warnings.isEmpty)
+    }
+
+    func testActiveExperimentsAfterAMemberChangeWaitsForTheNewMembersToggles() async throws {
+        let client = makeClient(memberStateTimeout: sdkFetchTimeout)
+        session.enqueue(.toggles(toggles(variant: "NO_DISCOUNT", variantEnabled: false)))
+        try await client.setup(with: member)
+        session.enqueue(.toggles(memberToggles))
+
+        client.updateContext(context: otherMember)
+        let experiments = await client.activeExperiments()
+
+        XCTAssertEqual(experiments, [noDiscount])
+    }
+
+    func testActiveExperimentsAfterATimeoutAnswersAtOnceUntilTheContextChanges() async throws {
+        let client = makeClient(memberStateTimeout: 0.2)
+        session.enqueue(.toggles(anonymousToggles))
+        try await client.setup(with: nobody)
+        // Nothing enqueued: the member's fetch fails.
+        client.updateContext(context: member)
+        let clock = ContinuousClock()
+
+        var start = clock.now
+        let firstAnswer = await client.activeExperiments()
+        XCTAssertEqual(firstAnswer, [])
+        XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
+
+        start = clock.now
+        let secondAnswer = await client.activeExperiments()
+        XCTAssertEqual(secondAnswer, [])
+        XCTAssertLessThan(clock.now - start, .milliseconds(100))
+
+        // Another member's toggles may be on their way, so it is worth waiting again.
+        client.updateContext(context: otherMember)
+        start = clock.now
+        let thirdAnswer = await client.activeExperiments()
+        XCTAssertEqual(thirdAnswer, [])
+        XCTAssertGreaterThanOrEqual(clock.now - start, .milliseconds(200))
+    }
+
+    func testActiveExperimentsAfterATimeoutDoesNotWaitAgainForTheSameContextSetUpAgain() async throws {
+        let client = makeClient(memberStateTimeout: 0.2)
+        // Nothing enqueued: Unleash is unreachable.
+        try? await client.setup(with: member)
+        _ = await client.activeExperiments()
+
+        // While Unleash is unreachable the app sets the flags up again every second, with the same context.
+        try? await client.setup(with: member)
+        let clock = ContinuousClock()
+        let start = clock.now
+        let answer = await client.activeExperiments()
+
+        XCTAssertEqual(answer, [])
+        XCTAssertLessThan(clock.now - start, .milliseconds(100))
+    }
+
+    func testActiveExperimentsLogsAWarningEachTimeItGivesUpWaiting() async throws {
+        let client = makeClient(memberStateTimeout: 0.2)
+        try? await client.setup(with: member)
+
+        _ = await client.activeExperiments()
+        _ = await client.activeExperiments()
+        XCTAssertEqual(logger.warnings.count, 1, "the second call answered at once without waiting")
+
+        client.updateContext(context: otherMember)
+        _ = await client.activeExperiments()
+        XCTAssertEqual(logger.warnings.count, 2)
     }
 }

@@ -28,8 +28,6 @@ import hGraphQL
 enum DI {
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
-        let experimentProvider = UnleashExperimentProvider()
-        Dependencies.shared.add(module: Module { () -> ExperimentProvider in experimentProvider })
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
     }
 
@@ -102,7 +100,7 @@ enum DI {
             let fetchContractsService = FetchContractsClientOctopus()
             let hFetchClaimsService = FetchClaimsClientOctopus()
             let travelInsuranceService = TravelInsuranceClientOctopus()
-            let featureFlagsClientUnleash = FeatureFlagsUnleash(environment: Environment.current)
+            let featureFlagsClientUnleash = UnleashFeatureFlagsClient(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
             let eventTrackingClient = EventTrackingClientFirebase()
             let notificationService = NotificationClientOctopus()
@@ -120,6 +118,7 @@ enum DI {
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
+                Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
@@ -151,6 +150,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
+                Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
