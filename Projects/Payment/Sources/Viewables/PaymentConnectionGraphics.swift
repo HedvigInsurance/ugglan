@@ -38,16 +38,16 @@ struct PaymentConnectionGraphic: View {
     var outcome: StatusBadge.Kind? = nil
 
     var body: some View {
-        HStack(spacing: .padding16) {
+        HStack(spacing: 0) {
             switch direction {
             case .payin:
-                methodSlot
-                dots
+                methodSlot.collapsed(provider == nil)
+                dots.collapsed(provider == nil)
                 badged(pillow)
             case .payout:
                 pillow
-                dots
-                badged(methodSlot)
+                dots.collapsed(provider == nil)
+                badged(methodSlot).collapsed(provider == nil)
             }
         }
         .animation(reduceMotion ? .none : .easeInOut, value: provider)
@@ -85,6 +85,7 @@ struct PaymentConnectionGraphic: View {
     private var dots: some View {
         DotsActivityIndicator(.standard, animated: outcome == nil)
             .useDarkColor
+            .padding(.horizontal, .padding16)
     }
 
     private var pillow: some View {
@@ -101,6 +102,34 @@ struct PaymentConnectionGraphic: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
+    }
+}
+
+extension View {
+    fileprivate func collapsed(_ isCollapsed: Bool) -> some View {
+        CollapsingLayout(fraction: isCollapsed ? 0 : 1) { self }
+            .opacity(isCollapsed ? 0 : 1)
+            .scaleEffect(isCollapsed ? 0.5 : 1)
+    }
+}
+
+/// Takes its content's ideal width scaled by `fraction`. A `.frame(width:)` can't animate to and from
+/// `nil`, so this lets a view collapse smoothly without hard-coding its width.
+private struct CollapsingLayout: Layout {
+    var fraction: CGFloat
+
+    var animatableData: CGFloat {
+        get { fraction }
+        set { fraction = newValue }
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let size = subviews.first?.sizeThatFits(.unspecified) ?? .zero
+        return CGSize(width: size.width * fraction, height: size.height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: CGPoint(x: bounds.midX, y: bounds.midY), anchor: .center, proposal: .unspecified)
     }
 }
 
@@ -176,4 +205,19 @@ struct SwishPillow: View {
         PaymentConnectionGraphic(direction: .payout, provider: .nordea, outcome: .success)
     }
     .padding(.padding32)
+}
+
+#Preview("Provider set after 1 s") {
+    @Previewable @State var provider: PaymentProvider? = nil
+    VStack {
+        PaymentConnectionGraphic(provider: provider)
+            .padding(.padding32)
+            .task {
+                try? await Task.sleep(for: .seconds(1))
+                provider = .swish
+                try? await Task.sleep(for: .seconds(1))
+                provider = nil
+            }
+        Spacer()
+    }
 }
