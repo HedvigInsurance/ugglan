@@ -42,7 +42,10 @@ fi
 
 # --- Re-sign every framework now that the bundle layout is final ---
 
-find "${TARGET_BUILD_DIR}" -name '*.framework' -print0 | while read -d $'\0' framework
+# Scope to this target's own bundle. TARGET_BUILD_DIR is shared by every target, so scanning it
+# re-signs other targets' frameworks while they're being built/signed in parallel, which races
+# codesign on the same binary and intermittently fails with "<Name>.cstemp couldn't be opened".
+find "${APP_BUNDLE}/Frameworks" -maxdepth 1 -name '*.framework' -print0 | while read -d $'\0' framework
 do
     codesign --force --deep --sign "${EXPANDED_CODE_SIGN_IDENTITY}" --preserve-metadata=identifier,entitlements --timestamp=none "${framework}"
 done
