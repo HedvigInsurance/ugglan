@@ -78,6 +78,7 @@ private struct BankIDSandboxToggle: ViewModifier {
     func body(content: Content) -> some View {
         if BankIDSandboxState.isAvailable {
             content.onTapGesture(count: 3) { toggle() }
+            .accessibilityAddTraits(.isButton)
         } else {
             content
         }
