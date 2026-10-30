@@ -71,6 +71,8 @@ extension Dependencies {
 @dynamicMemberLookup
 @Observable
 public class FeatureFlags {
+    public static let userId = "userId"
+
     @ObservationIgnored public static let shared = FeatureFlags()
     @ObservationIgnored private var client: FeatureFlagsClient?
     @ObservationIgnored private var featureDataCancellable: AnyCancellable?
