@@ -7,16 +7,16 @@ import hCoreUI
 private enum StoryConstants {
     static let storyDuration: Float = 10.0
     static let tapThreshold: TimeInterval = 0.1
-    static let gestureDebounce: Float = 0.05
+    static let gestureDebounce: TimeInterval = 0.05
     static let progressUpdateInterval: UInt64 = 100_000_000  // 0.1 seconds in nanoseconds
     static let swipeThreshold: CGFloat = 0.5
 
     enum Animation {
-        static let fadeOutDelay: Float = 0.2
-        static let titleFadeOutDelay: Float = 0.3
-        static let initialDelay: Float = 0.5
-        static let contentFadeInDelay: Float = 1.0
-        static let finalDelay: Float = 2.0
+        static let fadeOutDelay: TimeInterval = 0.2
+        static let titleFadeOutDelay: TimeInterval = 0.3
+        static let initialDelay: TimeInterval = 0.5
+        static let contentFadeInDelay: TimeInterval = 1.0
+        static let finalDelay: TimeInterval = 2.0
     }
 
     enum Size {
@@ -46,27 +46,27 @@ private class StoryAnimationCoordinator: ObservableObject {
         reset()
 
         // Initial delays to fade out previous content
-        try await Task.sleep(seconds: StoryConstants.Animation.fadeOutDelay)
-        try await Task.sleep(seconds: StoryConstants.Animation.titleFadeOutDelay)
+        try await Task.sleep(for: .seconds(StoryConstants.Animation.fadeOutDelay))
+        try await Task.sleep(for: .seconds(StoryConstants.Animation.titleFadeOutDelay))
 
         guard story == currentStory else { return }
 
         // Show content in sequence
-        try await Task.sleep(seconds: StoryConstants.Animation.initialDelay)
+        try await Task.sleep(for: .seconds(StoryConstants.Animation.initialDelay))
         try Task.checkCancellation()
 
         withAnimation {
             showImage = true
         }
 
-        try await Task.sleep(seconds: StoryConstants.Animation.contentFadeInDelay)
+        try await Task.sleep(for: .seconds(StoryConstants.Animation.contentFadeInDelay))
         try Task.checkCancellation()
 
         withAnimation {
             showTitle = true
         }
 
-        try await Task.sleep(seconds: StoryConstants.Animation.contentFadeInDelay)
+        try await Task.sleep(for: .seconds(StoryConstants.Animation.contentFadeInDelay))
         try Task.checkCancellation()
 
         withAnimation {
@@ -74,7 +74,7 @@ private class StoryAnimationCoordinator: ObservableObject {
         }
 
         if isLastStory && story == currentStory {
-            try await Task.sleep(seconds: StoryConstants.Animation.finalDelay)
+            try await Task.sleep(for: .seconds(StoryConstants.Animation.finalDelay))
             try Task.checkCancellation()
 
             withAnimation {
@@ -225,7 +225,7 @@ struct StoryView: View {
 struct StoryImageView: View {
     @ObservedObject var vm: StoriesScreenViewModel
     @StateObject private var animator = StoryAnimationCoordinator()
-    @EnvironmentObject var router: Router
+    @Environment(NavigationRouter.self) var router
     let story: Story
 
     var body: some View {
@@ -403,7 +403,7 @@ class StoriesScreenViewModel: ObservableObject {
                 resumeProgress()
             }
 
-            try? await Task.sleep(seconds: StoryConstants.gestureDebounce)
+            try? await Task.sleep(for: .seconds(StoryConstants.gestureDebounce))
         }
     }
 
@@ -426,7 +426,7 @@ class StoriesScreenViewModel: ObservableObject {
                 startAutomaticProgress()
             }
 
-            try? await Task.sleep(seconds: StoryConstants.gestureDebounce)
+            try? await Task.sleep(for: .seconds(StoryConstants.gestureDebounce))
         }
     }
 
@@ -485,7 +485,7 @@ public struct Story: Identifiable, Equatable {
 // MARK: - Preview
 #Preview {
     StoriesScreen(stories: StoriesScreen.stories)
-        .environmentObject(Router())
+        .environment(NavigationRouter())
 }
 
 // MARK: - Preview Data
