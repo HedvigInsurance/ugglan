@@ -840,6 +840,10 @@ struct HomeTab: View {
                 .withDismissButton()
                 .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
         }
+        .modally(presented: $homeNavigationVm.showYearReview) {
+            StoriesScreen(stories: StoriesScreen.stories)
+                .embededInNavigation(options: .navigationBarHidden, tracking: "App Review")
+        }
     }
 
     @ViewBuilder

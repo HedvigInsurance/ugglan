@@ -160,6 +160,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        UserDefaults.standard.removeObject(forKey: "appReview2024visited")
         // Installed before the Kotlin graph exists so no request can reach TokenRefresher while
         // forceLogoutHook is still the no-op default; its latch would pin that default for the session.
         TokenRefresher.shared.onRefresh = { token in

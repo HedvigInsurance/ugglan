@@ -299,3 +299,44 @@ extension InfoCardType {
         statusMessage != nil
     }
 }
+
+@propertyWrapper
+public struct UserDefault<Value> {
+    let key: String
+    let defaultValue: Value
+    var container: UserDefaults = .standard
+    private let publisher = PassthroughSubject<Value, Never>()
+
+    public var wrappedValue: Value {
+        get {
+            container.object(forKey: key) as? Value ?? defaultValue
+        }
+        set {
+            // Check whether we're dealing with an optional and remove the object if the new value is nil.
+            if let optional = newValue as? AnyOptional, optional.isNil {
+                container.removeObject(forKey: key)
+            } else {
+                container.set(newValue, forKey: key)
+            }
+            publisher.send(newValue)
+        }
+    }
+
+    public var projectedValue: AnyPublisher<Value, Never> {
+        publisher.eraseToAnyPublisher()
+    }
+}
+
+public protocol AnyOptional {
+    var isNil: Bool { get }
+}
+
+extension Optional: AnyOptional {
+    public var isNil: Bool { self == nil }
+}
+
+@MainActor
+extension UserDefaults {
+    @UserDefault(key: "appReview2024visited", defaultValue: nil)
+    public static var appReview2024visited: Bool?
+}

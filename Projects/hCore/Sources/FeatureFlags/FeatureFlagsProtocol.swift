@@ -23,6 +23,7 @@ public struct FeatureData: Codable, Equatable {
     public let isTerminationRedirectionEnabled: Bool
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
+    public let showYearInReview: Bool
 
     public init(
         isUpdateNecessary: Bool,
@@ -37,7 +38,8 @@ public struct FeatureData: Codable, Equatable {
         isOnboardingEnabled: Bool,
         isTerminationRedirectionEnabled: Bool,
         isAnalyticsEnabled: Bool,
-        isResumingOngoingShopSessionsEnabled: Bool
+        isResumingOngoingShopSessionsEnabled: Bool,
+        showYearInReview: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.isSubmitClaimEnabled = isSubmitClaimEnabled
@@ -52,6 +54,7 @@ public struct FeatureData: Codable, Equatable {
         self.isTerminationRedirectionEnabled = isTerminationRedirectionEnabled
         self.isAnalyticsEnabled = isAnalyticsEnabled
         self.isResumingOngoingShopSessionsEnabled = isResumingOngoingShopSessionsEnabled
+        self.showYearInReview = showYearInReview
     }
 }
 
@@ -89,7 +92,8 @@ public class FeatureFlags {
         isOnboardingEnabled: false,
         isTerminationRedirectionEnabled: false,
         isAnalyticsEnabled: false,
-        isResumingOngoingShopSessionsEnabled: false
+        isResumingOngoingShopSessionsEnabled: false,
+        showYearInReview: false
     )
 
     public var hasFetchedInitialData = false

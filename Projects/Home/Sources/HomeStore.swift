@@ -216,6 +216,7 @@ public final class HomeStore: AppStore {
 
     private func updateToolbarTypes() {
         var types: [ToolbarOptionType] = []
+        types.append(.yearInReview)
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
 
         if crossSellStore.hasNewOffer {

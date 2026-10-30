@@ -89,6 +89,7 @@ public class HomeNavigationViewModel {
     public var claimsAutomationStartInput: StartClaimInput?
     public var isAddonPresented: ChangeAddonInput?
     public var isHelpCenterPresented = false
+    public var showYearReview = false
     public var isPayoutMethodPresented = false
     public var isAddPaymentMethodPresented = false
     public var isPaymentMethodsPresented = false
