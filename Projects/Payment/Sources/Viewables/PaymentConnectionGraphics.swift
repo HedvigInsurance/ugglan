@@ -37,26 +37,19 @@ struct PaymentConnectionGraphic: View {
     /// non-nil once the connection has a result, badging the trailing tile.
     var outcome: StatusBadge.Kind? = nil
 
-    private let tileSize: CGFloat = 74
-    /// The dots plus `.padding16` on each side — the gap between the tiles.
-    private let dotsSlotWidth: CGFloat = 30 + 2 * .padding16
-
     var body: some View {
-        // Every view stays mounted and the hidden ones collapse to zero width, so a provider change
-        // is a plain width/opacity interpolation; inserting views relied on transitions and jumped.
         HStack(spacing: 0) {
             switch direction {
             case .payin:
-                methodSlot.collapsed(provider == nil, width: tileSize)
-                dots.collapsed(provider == nil, width: dotsSlotWidth)
+                methodSlot.collapsed(provider == nil)
+                dots.collapsed(provider == nil)
                 badged(pillow)
             case .payout:
                 pillow
-                dots.collapsed(provider == nil, width: dotsSlotWidth)
-                badged(methodSlot).collapsed(provider == nil, width: tileSize)
+                dots.collapsed(provider == nil)
+                badged(methodSlot).collapsed(provider == nil)
             }
         }
-        .frame(maxWidth: .infinity)
         .animation(reduceMotion ? .none : .easeInOut, value: provider)
         .animation(reduceMotion ? .none : .easeInOut, value: outcome)
         .accessibilityHidden(true)
@@ -92,6 +85,7 @@ struct PaymentConnectionGraphic: View {
     private var dots: some View {
         DotsActivityIndicator(.standard, animated: outcome == nil)
             .useDarkColor
+            .padding(.horizontal, .padding16)
     }
 
     private var pillow: some View {
@@ -112,10 +106,30 @@ struct PaymentConnectionGraphic: View {
 }
 
 extension View {
-    fileprivate func collapsed(_ isCollapsed: Bool, width: CGFloat) -> some View {
-        frame(width: isCollapsed ? 0 : width)
+    fileprivate func collapsed(_ isCollapsed: Bool) -> some View {
+        CollapsingLayout(fraction: isCollapsed ? 0 : 1) { self }
             .opacity(isCollapsed ? 0 : 1)
             .scaleEffect(isCollapsed ? 0.5 : 1)
+    }
+}
+
+/// Takes its content's ideal width scaled by `fraction`. A `.frame(width:)` can't animate to and from
+/// `nil`, so this lets a view collapse smoothly without hard-coding its width.
+private struct CollapsingLayout: Layout {
+    var fraction: CGFloat
+
+    var animatableData: CGFloat {
+        get { fraction }
+        set { fraction = newValue }
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let size = subviews.first?.sizeThatFits(.unspecified) ?? .zero
+        return CGSize(width: size.width * fraction, height: size.height)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        subviews.first?.place(at: CGPoint(x: bounds.midX, y: bounds.midY), anchor: .center, proposal: .unspecified)
     }
 }
 
