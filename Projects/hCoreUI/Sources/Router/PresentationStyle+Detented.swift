@@ -128,6 +128,26 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
     }
 }
 
+extension UIScrollView {
+    private static var _additionalDetentHeight: UInt8 = 1
+
+    /// Extra height outside of the scroll view's content that the `.height` detent should include.
+    /// Set by `hForm` to the height of its always visible bottom view, which sits below the scroll view.
+    public var additionalDetentHeight: CGFloat {
+        get {
+            (objc_getAssociatedObject(self, &UIScrollView._additionalDetentHeight) as? CGFloat) ?? 0
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &UIScrollView._additionalDetentHeight,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+}
+
 extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
@@ -249,6 +269,7 @@ public enum Detent: Equatable {
                 viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
             var totalHeight: CGFloat =
                 scrollView.contentSize.height
+                + scrollView.additionalDetentHeight
                 + (hasNavigationBar ? navigationBarHeight : 0)
                 + additionalNavigationHeight
                 + additionalViewHeight
@@ -406,6 +427,7 @@ extension UIViewController {
             viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
         var totalHeight: CGFloat =
             scrollView.contentSize.height
+            + scrollView.additionalDetentHeight
             + (hasNavigationBar ? navigationBarHeight : 0)
             + additionalNavigationHeight
             + additionalViewHeight

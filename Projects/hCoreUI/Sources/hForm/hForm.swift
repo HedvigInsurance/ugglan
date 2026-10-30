@@ -31,6 +31,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 if verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
+                        // Only measured here: in compact size class it is inside the scroll view content.
+                        .onGeometryChange(for: CGFloat.self, of: \.size.height) { height in
+                            vm.alwaysVisibleBottomViewHeight = height
+                        }
                 }
             }
             .frame(maxWidth: .infinity)
@@ -77,6 +81,9 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
+        }
+        .onChange(of: verticalSizeClass, initial: true) { _, value in
+            vm.isVerticalSizeClassRegular = value == .regular
         }
     }
 
@@ -255,6 +262,7 @@ private class hUpdatedFormViewModel {
     @ObservationIgnored weak var scrollView: UIScrollView? {
         didSet {
             scrollView?.clipsToBounds = false
+            setAdditionalDetentHeight()
             setScrollView()
             setBouces()
         }
@@ -270,6 +278,24 @@ private class hUpdatedFormViewModel {
         didSet {
             setBouces()
         }
+    }
+
+    @ObservationIgnored var alwaysVisibleBottomViewHeight: CGFloat = 0 {
+        didSet {
+            setAdditionalDetentHeight()
+        }
+    }
+
+    @ObservationIgnored var isVerticalSizeClassRegular: Bool = true {
+        didSet {
+            setAdditionalDetentHeight()
+        }
+    }
+
+    /// The always visible bottom view is outside of the scroll view only for regular vertical size class,
+    /// in compact it is part of the scroll view content and already included in its content size.
+    private func setAdditionalDetentHeight() {
+        scrollView?.additionalDetentHeight = isVerticalSizeClassRegular ? alwaysVisibleBottomViewHeight : 0
     }
 
     @ObservationIgnored var scrollViewHeight: CGFloat = 0 {
