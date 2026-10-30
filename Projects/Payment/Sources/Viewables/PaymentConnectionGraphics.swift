@@ -37,19 +37,26 @@ struct PaymentConnectionGraphic: View {
     /// non-nil once the connection has a result, badging the trailing tile.
     var outcome: StatusBadge.Kind? = nil
 
+    private let tileSize: CGFloat = 74
+    /// The dots plus `.padding16` on each side — the gap between the tiles.
+    private let dotsSlotWidth: CGFloat = 30 + 2 * .padding16
+
     var body: some View {
-        HStack(spacing: .padding16) {
+        // Every view stays mounted and the hidden ones collapse to zero width, so a provider change
+        // is a plain width/opacity interpolation; inserting views relied on transitions and jumped.
+        HStack(spacing: 0) {
             switch direction {
             case .payin:
-                methodSlot
-                dots
+                methodSlot.collapsed(provider == nil, width: tileSize)
+                dots.collapsed(provider == nil, width: dotsSlotWidth)
                 badged(pillow)
             case .payout:
                 pillow
-                dots
-                badged(methodSlot)
+                dots.collapsed(provider == nil, width: dotsSlotWidth)
+                badged(methodSlot).collapsed(provider == nil, width: tileSize)
             }
         }
+        .frame(maxWidth: .infinity)
         .animation(reduceMotion ? .none : .easeInOut, value: provider)
         .animation(reduceMotion ? .none : .easeInOut, value: outcome)
         .accessibilityHidden(true)
@@ -101,6 +108,14 @@ struct PaymentConnectionGraphic: View {
                     .transition(.scale.combined(with: .opacity))
             }
         }
+    }
+}
+
+extension View {
+    fileprivate func collapsed(_ isCollapsed: Bool, width: CGFloat) -> some View {
+        frame(width: isCollapsed ? 0 : width)
+            .opacity(isCollapsed ? 0 : 1)
+            .scaleEffect(isCollapsed ? 0.5 : 1)
     }
 }
 
@@ -176,4 +191,19 @@ struct SwishPillow: View {
         PaymentConnectionGraphic(direction: .payout, provider: .nordea, outcome: .success)
     }
     .padding(.padding32)
+}
+
+#Preview("Provider set after 1 s") {
+    @Previewable @State var provider: PaymentProvider? = nil
+    VStack {
+        PaymentConnectionGraphic(provider: provider)
+            .padding(.padding32)
+            .task {
+                try? await Task.sleep(for: .seconds(1))
+                provider = .swish
+                try? await Task.sleep(for: .seconds(1))
+                provider = nil
+            }
+        Spacer()
+    }
 }
