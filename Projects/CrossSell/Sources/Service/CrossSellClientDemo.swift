@@ -11,6 +11,7 @@ public class CrossSellClientDemo: CrossSellClient {
                 recommended: .insurance(
                     .init(
                         id: "in-chat-demo",
+                        source: source,
                         title: "Bundle discount",
                         description: "Activate your discount by taking out one more insurance.",
                         buttonTitle: "See your price",
@@ -29,6 +30,7 @@ public class CrossSellClientDemo: CrossSellClient {
         let crossSells: [CrossSell] = [
             .init(
                 id: "1",
+                source: source,
                 title: "title",
                 description: "description",
                 buttonTitle: "See price",

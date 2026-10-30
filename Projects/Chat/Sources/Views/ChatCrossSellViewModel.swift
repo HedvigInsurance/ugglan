@@ -20,6 +20,9 @@ public class ChatCrossSellViewModel {
     // dealt with, even if the mutation that records it never reaches the server.
     @ObservationIgnored private var hasRetired = false
 
+    // The chat screen is the visit: a card hidden behind the keyboard and shown again counts once.
+    private let shownTracker = CrossSellShownTracker()
+
     init(chatService: ChatServiceProtocol) {
         self.chatService = chatService
     }
@@ -49,19 +52,31 @@ public class ChatCrossSellViewModel {
         track(.prompted)
     }
 
+    func offerWasShown() {
+        if let recommended {
+            shownTracker.offerWasShown(recommended)
+        }
+    }
+
     func dismiss() async {
-        guard recommended != nil else { return }
+        guard let recommended else { return }
         retire(event: .dismissed)
+        recommended.track(.dismissed)
         try? await chatService.hideCrossSales()
     }
 
     func open() async {
         guard let recommended else { return }
-        let destination = recommended.destination
-        // Recorded before the member leaves for the store, so a click is never lost to the
-        // app being backgrounded.
+        // Retiring hides the card at once, so a second tap opens nothing.
         retire(event: .clicked)
-        await open(destination)
+        switch recommended {
+        case let .insurance(crossSell):
+            await crossSell.openStore()
+        case .addon:
+            if case let .deepLink(link) = recommended.destination, let url = URL(string: link) {
+                NotificationCenter.default.post(name: .openDeepLink, object: url)
+            }
+        }
         try? await chatService.hideCrossSales()
     }
 
@@ -85,19 +100,6 @@ public class ChatCrossSellViewModel {
             "event": event.rawValue
         ]
         log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
-    }
-
-    private func open(_ destination: RecommendedCrossSell.Destination) async {
-        switch destination {
-        case let .storeURL(urlString):
-            if let urlString, let url = URL(string: urlString) {
-                await Dependencies.urlOpener.open(url)
-            }
-        case let .deepLink(link):
-            if let url = URL(string: link) {
-                NotificationCenter.default.post(name: .openDeepLink, object: url)
-            }
-        }
     }
 }
 

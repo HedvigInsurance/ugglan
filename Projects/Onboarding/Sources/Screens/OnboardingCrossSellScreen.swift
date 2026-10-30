@@ -42,6 +42,7 @@ struct OnboardingCrossSellScreen: View {
             [
                 .init(
                     id: "1",
+                    source: .onboarding,
                     title: "title",
                     description: "desc",
                     buttonTitle: "See price",
@@ -54,6 +55,7 @@ struct OnboardingCrossSellScreen: View {
                 ),
                 .init(
                     id: "2",
+                    source: .onboarding,
                     title: "title 2",
                     description: "desc 2",
                     buttonTitle: "See price",

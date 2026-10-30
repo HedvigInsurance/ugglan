@@ -21,6 +21,7 @@ final class CrossSellTests: XCTestCase {
             others: [
                 .init(
                     id: "1",
+                    source: .home,
                     title: "car",
                     description: "description",
                     buttonTitle: "button title",
@@ -30,6 +31,7 @@ final class CrossSellTests: XCTestCase {
                 ),
                 .init(
                     id: "2",
+                    source: .home,
                     title: "pet",
                     description: "description",
                     buttonTitle: "button title",

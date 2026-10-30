@@ -4,6 +4,7 @@ import hCoreUI
 
 public struct CrossSellingModal: View {
     let crossSells: CrossSells
+    @State private var shownTracker = CrossSellShownTracker()
 
     public init(
         crossSells: CrossSells
@@ -20,6 +21,7 @@ public struct CrossSellingModal: View {
                 VStack(spacing: .padding48) {
                     if let recommended = crossSells.recommended {
                         CrossSellPillowComponent(crossSell: recommended)
+                            .onCrossSellShown { shownTracker.offerWasShown(recommended) }
                         VStack(spacing: .padding16) {
                             if case let .insurance(insurance) = recommended {
                                 CrossSellDiscountProgressComponent(crossSell: insurance)
@@ -27,7 +29,7 @@ public struct CrossSellingModal: View {
                             CrossSellButtonComponent(crossSell: recommended)
                         }
                     }
-                    CrossSellStackComponent(crossSells: crossSells.others)
+                    CrossSellStackComponent(crossSells: crossSells.others, shownTracker: shownTracker)
                 }
                 .padding(.bottom, .padding16)
             }

@@ -45,11 +45,11 @@ struct CrossSellButtonComponent: View {
     private func openRecommendation() {
         switch crossSell {
         case let .insurance(insurance):
+            isLoading = true
             Task {
-                if let url = URL(string: insurance.webActionURL) {
-                    isLoading = true
-                    await Dependencies.urlOpener.open(url)
-                    isLoading = false
+                let didOpen = await insurance.openStore()
+                isLoading = false
+                if didOpen {
                     dismiss()
                 }
             }
@@ -67,6 +67,7 @@ struct CrossSellButtonComponent: View {
         crossSell: .insurance(
             .init(
                 id: "id1",
+                source: .home,
                 title: "title",
                 description: "description",
                 buttonTitle: "Save 15%",

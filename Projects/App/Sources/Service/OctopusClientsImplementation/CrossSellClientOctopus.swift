@@ -12,7 +12,7 @@ class CrossSellClientOctopus: CrossSellClient {
         let query = OctopusGraphQL.CrossSellQuery(input: source.asGraphQLCrossSellInput)
         let crossSells = try await octopus.client.fetch(query: query)
         let otherCrossSells: [CrossSell] = crossSells.currentMember.crossSellV2.otherCrossSells.compactMap {
-            CrossSell($0.fragments.crossSellFragment)
+            CrossSell($0.fragments.crossSellFragment, source: source)
         }
         let recommendedCrossSell: RecommendedCrossSell? = {
             // Addon recommendations take priority: the backend returns at most one of them and only
@@ -21,7 +21,7 @@ class CrossSellClientOctopus: CrossSellClient {
                 return .addon(AddonCrossSell(addon))
             }
             if let crossSellFragment = crossSells.currentMember.crossSellV2.recommendedCrossSell,
-                let crossSell = CrossSell(crossSellFragment)
+                let crossSell = CrossSell(crossSellFragment, source: source)
             {
                 return .insurance(crossSell)
             }
@@ -36,9 +36,10 @@ class CrossSellClientOctopus: CrossSellClient {
 }
 
 extension CrossSell {
-    public init?(_ data: OctopusGraphQL.CrossSellFragment) {
+    public init?(_ data: OctopusGraphQL.CrossSellFragment, source: CrossSellSource) {
         self.init(
             id: data.id,
+            source: source,
             title: data.title,
             description: data.description,
             buttonTitle: data.buttonTitle,
@@ -48,10 +49,14 @@ extension CrossSell {
         )
     }
 
-    public init?(_ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSellV2.RecommendedCrossSell) {
+    public init?(
+        _ data: OctopusGraphQL.CrossSellQuery.Data.CurrentMember.CrossSellV2.RecommendedCrossSell,
+        source: CrossSellSource
+    ) {
         let crossSellFragment = data.crossSell.fragments.crossSellFragment
         self.init(
             id: crossSellFragment.id,
+            source: source,
             title: crossSellFragment.title,
             description: crossSellFragment.description,
             buttonTitle: crossSellFragment.buttonTitle,

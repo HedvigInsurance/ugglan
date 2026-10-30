@@ -1,4 +1,5 @@
 import Addons
+import Foundation
 import hCore
 
 @testable import CrossSell
@@ -30,6 +31,13 @@ struct MockData {
         )
         Dependencies.shared.add(module: Module { () -> CrossSellClient in service })
         return service
+    }
+
+    @discardableResult
+    static func createMockURLOpener() -> MockURLOpener {
+        let opener = MockURLOpener()
+        Dependencies.shared.add(module: Module { () -> URLOpener in opener })
+        return opener
     }
 }
 
@@ -70,5 +78,15 @@ class MockCrossSellService: CrossSellClient {
         events.append(.getAddonBanners)
         let data = try await fetchAddonBanners(source)
         return data
+    }
+}
+
+class MockURLOpener: URLOpener {
+    var openedURLs = [URL]()
+    var systemOpensURLs = true
+
+    func open(_ url: URL) async -> Bool {
+        openedURLs.append(url)
+        return systemOpensURLs
     }
 }

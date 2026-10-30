@@ -3,7 +3,8 @@ import SwiftUI
 
 @MainActor
 public protocol URLOpener {
-    func open(_ url: URL) async
+    @discardableResult
+    func open(_ url: URL) async -> Bool
 }
 
 extension Dependencies {

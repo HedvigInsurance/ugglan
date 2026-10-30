@@ -6,7 +6,7 @@ public protocol CrossSellClient: Sendable {
     func getAddonBanners(source: AddonSource) async throws -> [AddonBanner]
 }
 
-public enum CrossSellSource: Codable, Equatable, Sendable {
+public enum CrossSellSource: Codable, Hashable, Sendable {
     public typealias RawValue = String
 
     case homeXSell

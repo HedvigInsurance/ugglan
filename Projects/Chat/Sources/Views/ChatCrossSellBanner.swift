@@ -1,3 +1,4 @@
+import CrossSell
 import SwiftUI
 import hCore
 import hCoreUI
@@ -23,5 +24,6 @@ struct ChatCrossSellBanner: View {
                     }
                 ),
             ])
+            .onCrossSellShown { [weak vm] in vm?.offerWasShown() }
     }
 }

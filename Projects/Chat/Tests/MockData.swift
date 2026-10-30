@@ -68,6 +68,13 @@ struct MockData {
     }
 
     @discardableResult
+    static func createMockEventTrackingClient() -> MockEventTrackingClient {
+        let client = MockEventTrackingClient()
+        Dependencies.shared.add(module: Module { () -> EventTrackingClient in client })
+        return client
+    }
+
+    @discardableResult
     static func createMockConversationClient(showCrossSales: Bool = false) -> MockConversationClient {
         let client = MockConversationClient(showCrossSales: showCrossSales)
         Dependencies.shared.add(module: Module { () -> ConversationClient in client })
@@ -151,11 +158,42 @@ class MockLogger: Logging {
     func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
 }
 
+class MockEventTrackingClient: EventTrackingClient {
+    var trackedEvents = [TrackedEvent]()
+
+    struct TrackedEvent: Equatable {
+        let name: String
+        let parameters: [String: String]
+    }
+
+    func setCollectionEnabled(_: Bool) {
+        // Not asserted in tests
+    }
+
+    func trackEvent(name: String, parameters: [String: Any]?) {
+        trackedEvents.append(.init(name: name, parameters: (parameters ?? [:]).mapValues { "\($0)" }))
+    }
+
+    func trackScreen(name _: String, parameters _: [String: Any]?) {
+        // Not asserted in tests
+    }
+
+    func setUserId(_: String?) {
+        // Not asserted in tests
+    }
+
+    func setUserProperty(name _: String, value _: String?) {
+        // Not asserted in tests
+    }
+}
+
 class MockURLOpener: URLOpener {
     var openedURLs = [URL]()
+    var systemOpensURLs = true
 
-    func open(_ url: URL) async {
+    func open(_ url: URL) async -> Bool {
         openedURLs.append(url)
+        return systemOpensURLs
     }
 }
 
@@ -165,6 +203,7 @@ extension CrossSell {
     static var mockInChat: CrossSell {
         .init(
             id: "cross-sell-1",
+            source: .inChat,
             title: "Car insurance",
             description: "Insure your car with Hedvig.",
             buttonTitle: "See your price",

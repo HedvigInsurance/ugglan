@@ -108,6 +108,8 @@ public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
     public let id: String
+    /// The flow this offer was fetched for, reported with every event about it.
+    public let source: CrossSellSource
     public let title: String
     public let description: String
     let buttonTitle: String
@@ -124,6 +126,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
 
     public init(
         id: String,
+        source: CrossSellSource,
         title: String,
         description: String,
         buttonTitle: String,
@@ -139,6 +142,7 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
         numberOfEligibleContracts: Int = 0
     ) {
         self.id = id
+        self.source = source
         self.title = title
         self.description = description
         self.buttonTitle = buttonTitle

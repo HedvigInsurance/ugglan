@@ -5,6 +5,7 @@ import hCoreUI
 public struct CrossSellingCentered: View {
     private let crossSell: RecommendedCrossSell
     @State private var viewId = UUID().uuidString
+    @State private var shownTracker = CrossSellShownTracker()
     public init(
         crossSell: RecommendedCrossSell
     ) {
@@ -16,6 +17,7 @@ public struct CrossSellingCentered: View {
             VStack(spacing: 0) {
                 CrossSellBannerComponent(crossSell: crossSell)
                 CrossSellPillowComponent(crossSell: crossSell)
+                    .onCrossSellShown { shownTracker.offerWasShown(crossSell) }
                     .padding(.top, contentTopPadding)
                 VStack(spacing: .padding16) {
                     if case let .insurance(insurance) = crossSell {
@@ -63,6 +65,7 @@ public struct CrossSellingCentered: View {
         crossSell: .insurance(
             .init(
                 id: "id",
+                source: .home,
                 title: "Accident Insurance",
                 description: "Help when you need it the most",
                 buttonTitle: "Save 50%",

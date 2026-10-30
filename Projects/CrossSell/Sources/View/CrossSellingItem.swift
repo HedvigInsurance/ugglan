@@ -8,10 +8,9 @@ struct CrossSellingItem: View {
     @State private var isCrossSellLoading = false
 
     func openExternal() {
+        isCrossSellLoading = true
         Task {
-            guard let url = URL(string: crossSell.webActionURL) else { return }
-            isCrossSellLoading = true
-            await Dependencies.urlOpener.open(url)
+            await crossSell.openStore()
             isCrossSellLoading = false
         }
     }
@@ -37,6 +36,7 @@ struct CrossSellingItem: View {
                 .fade(duration: 0.25)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+                .accessibilityHidden(true)
         }
     }
 }
@@ -45,6 +45,7 @@ struct CrossSellingItem: View {
     CrossSellingItem(
         crossSell: .init(
             id: "id",
+            source: .home,
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
             buttonTitle: "See price",
