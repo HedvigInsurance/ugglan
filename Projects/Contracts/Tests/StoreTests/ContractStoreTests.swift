@@ -1,57 +1,71 @@
 import AppStateContainer
 import TestDependencies
-import XCTest
+import Testing
+import hCore
 
 @testable import Contracts
 
-@MainActor
-final class ContractStoreTests: XCTestCase {
-    weak var store: ContractStore?
-
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-    }
-
+extension ContractsDependencySuite {
     @MainActor
-    override func tearDown() async throws {
-        try await super.tearDown()
-        await waitUntil(description: "Store deinit") {
-            self.store == nil
+    final class ContractStoreTests {
+        private weak var store: ContractStore?
+
+        init() {
+            globalAppStateContainer.clearPersistence()
         }
-        globalAppStateContainer.clearPersistence()
-    }
 
-    func testFetchContractsSuccess() async {
-        let mockService = MockData.createMockContractsService(
-            fetchContracts: { ContractsStack.getDefault }
-        )
-        let store = ContractStore()
-        self.store = store
-        await store.fetchContracts()
-        assert(store.activeContracts == ContractsStack.getDefault.activeContracts)
-        assert(store.pendingContracts == ContractsStack.getDefault.pendingContracts)
-        assert(store.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
-        assert(store.fetchContractsError == nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getContracts)
-    }
+        @Test
+        func fetchContractsSuccess() async {
+            // Scoped so the store is released before expectStoreReleased() waits for it.
+            do {
+                let mockService = MockData.createMockContractsService(
+                    fetchContracts: { ContractsStack.getDefault }
+                )
+                let store = ContractStore()
+                self.store = store
+                await store.fetchContracts()
+                #expect(store.activeContracts == ContractsStack.getDefault.activeContracts)
+                #expect(store.pendingContracts == ContractsStack.getDefault.pendingContracts)
+                #expect(store.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
+                #expect(store.fetchContractsError == nil)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getContracts)
+            }
 
-    func testFetchContractsFailure() async {
-        let mockService = MockData.createMockContractsService(
-            fetchContracts: { throw MockContractError.fetchContracts }
-        )
+            await expectStoreReleased()
+        }
 
-        let store = ContractStore()
-        self.store = store
-        await store.fetchContracts()
+        @Test
+        func fetchContractsFailure() async {
+            do {
+                let mockService = MockData.createMockContractsService(
+                    fetchContracts: { throw MockContractError.fetchContracts }
+                )
 
-        assert(store.activeContracts.isEmpty)
-        assert(store.pendingContracts.isEmpty)
-        assert(store.terminatedContracts.isEmpty)
-        assert(store.fetchContractsError != nil)
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getContracts)
+                let store = ContractStore()
+                self.store = store
+                await store.fetchContracts()
+
+                #expect(store.activeContracts.isEmpty)
+                #expect(store.pendingContracts.isEmpty)
+                #expect(store.terminatedContracts.isEmpty)
+                #expect(store.fetchContractsError != nil)
+                #expect(mockService.events.count == 1)
+                #expect(mockService.events.first == .getContracts)
+            }
+
+            await expectStoreReleased()
+        }
+
+        // Not deinit: these steps must run after the test body has dropped its store reference.
+        private func expectStoreReleased() async {
+            await waitUntil(description: "Store deinit") {
+                self.store == nil
+            }
+            // Removed only once the store is gone, so its @Inject client can't resolve after removal.
+            Dependencies.shared.remove(for: FetchContractsClient.self)
+            globalAppStateContainer.clearPersistence()
+        }
     }
 }
 
