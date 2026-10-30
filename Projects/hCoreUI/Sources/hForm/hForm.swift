@@ -32,16 +32,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                         // Only measured here: in compact size class it is inside the scroll view content.
-                        .background {
-                            GeometryReader { geometry in
-                                Color.clear
-                                    .onAppear {
-                                        vm.alwaysVisibleBottomViewHeight = geometry.size.height
-                                    }
-                                    .onChange(of: geometry.size) { value in
-                                        vm.alwaysVisibleBottomViewHeight = value.height
-                                    }
-                            }
+                        .onGeometryChange(for: CGFloat.self, of: \.size.height) { height in
+                            vm.alwaysVisibleBottomViewHeight = height
                         }
                 }
             }
@@ -90,10 +82,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         .task {
             vm.scrollBounces = hEnableScrollBounce
         }
-        .onAppear {
-            vm.isVerticalSizeClassRegular = verticalSizeClass == .regular
-        }
-        .onChange(of: verticalSizeClass) { value in
+        .onChange(of: verticalSizeClass, initial: true) { _, value in
             vm.isVerticalSizeClassRegular = value == .regular
         }
     }
