@@ -297,7 +297,7 @@ public class ChatScreenViewModel {
 
     @ObservationIgnored private var pollTimerCancellable: AnyCancellable?
     @ObservationIgnored var hideBannerCancellable: AnyCancellable?
-    @ObservationIgnored private var openDeepLinkObserver: NSObjectProtocol?
+    @ObservationIgnored private var openDeepLinkCancellable: AnyCancellable?
     @ObservationIgnored private var applicationStateCancellable: [AnyCancellable] = []
 
     public init(
@@ -343,22 +343,25 @@ public class ChatScreenViewModel {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
-        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in
-            guard let self = self else { return }
-            if let deepLinkUrl = notification.object as? URL {
-                Task { @MainActor in
-                    if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
-                        log.addUserAction(
-                            type: .custom,
-                            name: "Help center opened from the chat",
-                            error: nil,
-                            attributes: ["haveSentAMessage": self.messageVm.haveSentAMessage]
-                        )
-                    }
-                }
+        // A cancellable rather than an observer token: it unsubscribes when the model is freed, which a
+        // nonisolated deinit cannot reliably do for a main-actor property.
+        openDeepLinkCancellable = NotificationCenter.default.publisher(for: .openDeepLink)
+            .sink { [weak self] notification in
+                // Logged synchronously rather than from a Task, so the event is not lost if the link
+                // dismisses the chat and frees the model before a queued task would run. The sink is
+                // main-actor isolated, so .openDeepLink must be posted on the main thread, as all
+                // post sites do.
+                guard let self,
+                    let deepLinkUrl = notification.object as? URL,
+                    DeepLink.getType(from: deepLinkUrl) == .helpCenter
+                else { return }
+                log.addUserAction(
+                    type: .custom,
+                    name: "Help center opened from the chat",
+                    error: nil,
+                    attributes: ["haveSentAMessage": messageVm.haveSentAMessage]
+                )
             }
-        }
 
         NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
             .sink { [weak self] _ in
@@ -376,10 +379,7 @@ public class ChatScreenViewModel {
     }
 
     deinit {
-        Task { @MainActor [weak self] in
-            if let openDeepLinkObserver = self?.openDeepLinkObserver {
-                NotificationCenter.default.removeObserver(openDeepLinkObserver)
-            }
+        Task { @MainActor in
             NotificationCenter.default.post(name: .chatClosed, object: nil)
         }
     }
