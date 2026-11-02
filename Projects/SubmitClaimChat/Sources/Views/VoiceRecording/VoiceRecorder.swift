@@ -34,6 +34,7 @@ public final class VoiceRecorder {
     @ObservationIgnored private var player: AVAudioPlayer?
     @ObservationIgnored private var timer: Timer?
     @ObservationIgnored private var meteringTimer: Timer?
+    @ObservationIgnored private var playbackTask: Task<Void, Never>?
     @ObservationIgnored private var recordingStartTime: Date?
     @ObservationIgnored private var recentPeaks: [CGFloat] = []
     private let peakWindowSize = 30  // Track peaks over last 30 samples
@@ -102,9 +103,8 @@ public final class VoiceRecorder {
         }
 
         do {
-            try configureAudioSession(forRecording: true)
-            try prepareRecorder()
-            recorder?.record()
+            try await AudioSessionController.activate(forRecording: true)
+            recorder = try await AudioSessionController.startRecorder(at: filePath)
             recordingState = .recording
             recordingStartTime = Date()
             startTimers()
@@ -166,9 +166,24 @@ public final class VoiceRecorder {
             return
         }
 
-        player.play()
         recordingState = .playing
-        startPlaybackTimer()
+        // Audio session activation blocks, so it runs off the main thread; playback starts once it's active
+        playbackTask?.cancel()
+        playbackTask = Task { [weak self] in
+            do {
+                try await AudioSessionController.activate(forRecording: false)
+            } catch {
+                guard let self, !Task.isCancelled else { return }
+                self.error = .playbackFailed
+                self.recordingState = .recorded
+                return
+            }
+            // Bail out if playback was paused/stopped while the session was activating
+            guard let self, !Task.isCancelled, self.isPlaying, self.player === player else { return }
+            await AudioSessionController.play(player)
+            guard !Task.isCancelled, self.isPlaying, self.player === player else { return }
+            self.startPlaybackTimer()
+        }
     }
 
     private func preparePlayer() {
@@ -177,24 +192,28 @@ public final class VoiceRecorder {
         }
 
         do {
-            try configureAudioSession(forRecording: false)
-            player = try AVAudioPlayer(contentsOf: url)
-            player?.isMeteringEnabled = true
-            player?.prepareToPlay()
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.isMeteringEnabled = true
+            self.player = player
+            AudioSessionController.prepare(player)
         } catch {
             self.error = .playbackFailed
         }
     }
 
     public func pausePlayback() {
-        player?.pause()
+        playbackTask?.cancel()
+        playbackTask = nil
+        if let player { AudioSessionController.pause(player) }
         stopTimers()
         recordingState = .recorded
         deactivateAudioSession()
     }
 
     public func stopPlayback() {
-        player?.stop()
+        playbackTask?.cancel()
+        playbackTask = nil
+        if let player { AudioSessionController.stop(player) }
         player = nil
         stopTimers()
         recordingState = .recorded
@@ -223,15 +242,17 @@ public final class VoiceRecorder {
         player.currentTime = newTime
         currentTime = newTime
         // Ensure player is ready for playback after seeking
-        player.prepareToPlay()
+        AudioSessionController.prepare(player)
     }
 
     public func startOver() {
         error = nil
         stopTimers()
+        playbackTask?.cancel()
+        playbackTask = nil
         recorder?.stop()
         recorder = nil
-        player?.stop()
+        if let player { AudioSessionController.stop(player) }
         player = nil
 
         if let url = recordedFileURL, FileManager.default.fileExists(atPath: url.path) {
@@ -298,55 +319,8 @@ public final class VoiceRecorder {
         case granted
     }
 
-    private func configureAudioSession(forRecording recording: Bool) throws {
-        let session = AVAudioSession.sharedInstance()
-        if recording {
-            try session.setCategory(
-                .record,
-                mode: .default,
-                options: [.allowBluetoothHFP]
-            )
-        } else {
-            try session.setCategory(
-                .playback,
-                mode: .default,
-                options: [.duckOthers]
-            )
-        }
-
-        try session.setActive(true)
-    }
-
     private func deactivateAudioSession() {
-        Task.detached {
-            do {
-                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            } catch {
-                print("Failed to deactivate audio session: \(error)")
-            }
-        }
-    }
-
-    private func prepareRecorder() throws {
-        // Ensure directory exists
-        let directory = filePath.deletingLastPathComponent()
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-
-        // Remove existing file
-        if FileManager.default.fileExists(atPath: filePath.path) {
-            try FileManager.default.removeItem(at: filePath)
-        }
-
-        let settings: [String: Any] = [
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 44100,
-            AVNumberOfChannelsKey: 1,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
-        ]
-
-        recorder = try AVAudioRecorder(url: filePath, settings: settings)
-        recorder?.isMeteringEnabled = true
-        recorder?.prepareToRecord()
+        AudioSessionController.deactivate()
     }
 
     private func startTimers() {
@@ -416,8 +390,114 @@ public final class VoiceRecorder {
     deinit {
         timer?.invalidate()
         meteringTimer?.invalidate()
+        playbackTask?.cancel()
         if let url = recordedFileURL {
             try? FileManager.default.removeItem(at: url)
+        }
+    }
+}
+
+// MARK: - Audio Session
+/// `AVAudioSession` (de)activation is blocking and must not run on the main thread.
+/// All calls go through one serial queue so activate/deactivate are applied in the order they were issued.
+private enum AudioSessionController {
+    private static let queue = DispatchQueue(label: "com.hedvig.voiceRecorder.audioSession", qos: .userInitiated)
+
+    static func activate(forRecording recording: Bool) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            queue.async {
+                do {
+                    let session = AVAudioSession.sharedInstance()
+                    if recording {
+                        try session.setCategory(.record, mode: .default, options: [.allowBluetoothHFP])
+                    } else {
+                        try session.setCategory(.playback, mode: .default, options: [.duckOthers])
+                    }
+                    try session.setActive(true)
+                    continuation.resume()
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    /// `prepareToRecord()` and `record()` implicitly (re)activate the audio session, so they run on the queue too.
+    static func startRecorder(at filePath: URL) async throws -> AVAudioRecorder {
+        let box = try await withCheckedThrowingContinuation {
+            (continuation: CheckedContinuation<UncheckedBox<AVAudioRecorder>, Error>) in
+            queue.async {
+                do {
+                    // Ensure directory exists
+                    let directory = filePath.deletingLastPathComponent()
+                    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+                    // Remove existing file
+                    if FileManager.default.fileExists(atPath: filePath.path) {
+                        try FileManager.default.removeItem(at: filePath)
+                    }
+
+                    let settings: [String: Any] = [
+                        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                        AVSampleRateKey: 44100,
+                        AVNumberOfChannelsKey: 1,
+                        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
+                    ]
+
+                    let recorder = try AVAudioRecorder(url: filePath, settings: settings)
+                    recorder.isMeteringEnabled = true
+                    recorder.prepareToRecord()
+                    recorder.record()
+                    continuation.resume(returning: UncheckedBox(value: recorder))
+                } catch {
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+        return box.value
+    }
+
+    /// `play()` implicitly (re)activates the audio session, so it runs on the queue.
+    /// `pause()`/`stop()` go through the queue too so they can't overtake a pending `play()`.
+    static func play(_ player: AVAudioPlayer) async {
+        let box = UncheckedBox(value: player)
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            queue.async {
+                box.value.play()
+                continuation.resume()
+            }
+        }
+    }
+
+    /// `prepareToPlay()` acquires the audio hardware, which implicitly activates the audio session.
+    static func prepare(_ player: AVAudioPlayer) {
+        let box = UncheckedBox(value: player)
+        queue.async { box.value.prepareToPlay() }
+    }
+
+    static func pause(_ player: AVAudioPlayer) {
+        let box = UncheckedBox(value: player)
+        queue.async { box.value.pause() }
+    }
+
+    static func stop(_ player: AVAudioPlayer) {
+        let box = UncheckedBox(value: player)
+        queue.async { box.value.stop() }
+    }
+
+    /// Hands audio objects between the main actor and the serial audio-session queue; they are only ever touched
+    /// from one of them at a time.
+    private struct UncheckedBox<Value>: @unchecked Sendable {
+        let value: Value
+    }
+
+    static func deactivate() {
+        queue.async {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Failed to deactivate audio session: \(error)")
+            }
         }
     }
 }
