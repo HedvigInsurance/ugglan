@@ -28,6 +28,7 @@ Displays and manages the status of insurance claims after submission. Provides a
 - `Sources/Service/Protocols/UploadClaimFileClient.swift` -- `hClaimFileUploadClient` protocol.
 - `Sources/Service/OctopusImplementation/UploadClaimFileClientOctopus.swift` -- `hClaimFileUploadService` (logging wrapper) and `ClaimFileUploadResponse`/`FileUpload` response models.
 - `Sources/Service/Models/UploadFileResponseModel.swift` -- `UploadFileResponseModel` for audio URL responses.
+- `Tests/FetchClaimDetailsTests.swift` -- Unit tests for `FetchClaimDetailsService`: the regular-claim lookup, its fallback to a partner claim when the claim is not found, and that a network error does not trigger that fallback.
 - `Tests/FetchClaimsTests.swift` -- Unit tests for active claims, history claims, and file fetching using a mock service.
 - `Tests/MockData.swift` -- `MockFetchClaimsService` conforming to `hFetchClaimsClient` with injectable closures. Factory method `createMockFetchClaimService` registers the mock into `Dependencies`.
 

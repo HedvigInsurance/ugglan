@@ -6,13 +6,12 @@ public enum FeatureTarget {
     case frameworkResources
     case tests
     case example
-    case testing
 }
 
 extension Project {
     public static func framework(
         name: String,
-        targets: Set<FeatureTarget> = Set([.framework, .tests, .example, .testing]),
+        targets: Set<FeatureTarget> = Set([.framework, .tests, .example]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
         sdks: [String] = []
@@ -75,8 +74,6 @@ extension Project {
             testsDependencies.append(.project(target: item, path: .relativeToRoot("Projects/\(item)")))
         }
 
-        if targets.contains(.testing) { testsDependencies.append(.target(name: "\(name)Testing")) }
-
         var targetDependencies: [TargetDependency] = projects.map {
             .project(target: $0, path: .relativeToRoot("Projects/\($0)"))
         }
@@ -106,31 +103,6 @@ extension Project {
             projectTargets.append(frameworkTarget)
         }
 
-        if targets.contains(.testing) {
-            let testingTarget = Target.target(
-                name: "\(name)Testing",
-                destinations: .iOS,
-                product: .framework,
-                bundleId: "com.hedvig.\(name)Testing",
-                deploymentTargets: .iOS("17.0"),
-                infoPlist: .default,
-                buildableFolders: ["Testing"],
-                dependencies: [
-                    [
-                        .target(name: "\(name)"),
-                        .project(
-                            target: "DevDependencies",
-                            path: .relativeToRoot("Dependencies/DevDependencies")
-                        ),
-                    ], targetDependencies,
-                ]
-                .flatMap { $0 },
-                settings: .settings(base: [:], configurations: frameworkConfigurations)
-            )
-
-            projectTargets.append(testingTarget)
-        }
-
         if targets.contains(.tests) {
             let testTarget = Target.target(
                 name: "\(name)Tests",
@@ -141,8 +113,12 @@ extension Project {
                 infoPlist: .default,
                 buildableFolders: ["Tests"],
                 dependencies: [
+                    // Hosted in the module's example app where there is one. Modules that only ship
+                    // a framework get a plain logic-test bundle instead, rather than being forced to
+                    // carry an example app to have tests; testsDependencies already links the
+                    // framework itself, so nothing is added here in that case.
+                    targets.contains(.example) ? [.target(name: "\(name)Example")] : [],
                     [
-                        .target(name: "\(name)Example"),
                         .project(
                             target: "CoreDependencies",
                             path: .relativeToRoot("Dependencies/CoreDependencies")
@@ -205,8 +181,7 @@ extension Project {
                             target: "DevDependencies",
                             path: .relativeToRoot("Dependencies/DevDependencies")
                         ),
-                    ], targets.contains(.testing) ? [.target(name: "\(name)Testing")] : [],
-                    targetDependencies,
+                    ], targetDependencies,
                 ]
                 .flatMap { $0 },
                 settings: .settings(
