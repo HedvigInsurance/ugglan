@@ -1,4 +1,4 @@
-@_spi(RiveExperimental) import RiveRuntime
+import RiveRuntime
 import SwiftUI
 import hCore
 import hCoreUI

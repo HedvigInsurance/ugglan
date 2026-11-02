@@ -142,7 +142,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .rive:
             return [
-                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.26.0"))
+                .package(url: "https://github.com/rive-app/rive-ios", .upToNextMajor(from: "6.29.0"))
             ]
         case .firebaseAnalytics:
             return [
