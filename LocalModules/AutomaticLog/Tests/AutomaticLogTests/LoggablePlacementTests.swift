@@ -1,5 +1,5 @@
 import AutomaticLog
-import XCTest
+import Testing
 
 private struct Outer {
     @Loggable
@@ -16,19 +16,21 @@ private struct Isolated: Codable {
     @Masked let url: String
 }
 
-final class LoggablePlacementTests: XCTestCase {
-    func testNestedTypeIsMasked() {
+final class LoggablePlacementTests {
+    @Test
+    func nestedTypeIsMasked() {
         let described = logDescription(Outer.Inner(title: "Address", value: "Storgatan 1"))
 
-        XCTAssertTrue(described.contains("title: Address"), described)
-        XCTAssertFalse(described.contains("Storgatan"), described)
+        #expect(described.contains("title: Address"), Comment(rawValue: described))
+        #expect(described.contains("Storgatan") == false, Comment(rawValue: described))
     }
 
-    func testMainActorTypeIsMaskedFromANonisolatedContext() async {
+    @Test
+    func mainActorTypeIsMaskedFromANonisolatedContext() async {
         let value = await MainActor.run { Isolated(id: "1", url: "https://signed") }
         let described = await Task.detached { logDescription(value) }.value
 
-        XCTAssertTrue(described.contains("id: 1"), described)
-        XCTAssertFalse(described.contains("signed"), described)
+        #expect(described.contains("id: 1"), Comment(rawValue: described))
+        #expect(described.contains("signed") == false, Comment(rawValue: described))
     }
 }

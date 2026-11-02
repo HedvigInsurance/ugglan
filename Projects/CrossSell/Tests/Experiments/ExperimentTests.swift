@@ -1,28 +1,30 @@
-@preconcurrency import XCTest
+import Testing
 
 @testable import hCore
 
 @MainActor
-final class ExperimentTests: XCTestCase {
+struct ExperimentTests {
     private let definitions = [(name: "ONE", unleashFlag: "one")]
 
-    func testActiveReportsTheFlagsVariantUnderTheExperimentName() {
+    @Test
+    func activeReportsTheFlagsVariantUnderTheExperimentName() {
         let experiments = Experiment.active(in: definitions) { flag in flag == "one" ? "VARIANT_A" : nil }
 
-        XCTAssertEqual(experiments, [Experiment(name: "ONE", variant: "VARIANT_A")])
+        #expect(experiments == [Experiment(name: "ONE", variant: "VARIANT_A")])
     }
 
-    func testActiveWithAFlagWithoutAVariantReportsNoExperiment() {
-        XCTAssertEqual(Experiment.active(in: definitions) { _ in nil }, [])
+    @Test
+    func activeWithAFlagWithoutAVariantReportsNoExperiment() {
+        #expect(Experiment.active(in: definitions) { _ in nil } == [])
     }
 
-    func testActiveDropsAVariantThatIsNotScreamingSnakeCase() {
-        for variant in ["no-discount", "NoDiscount", "NO DISCOUNT", ""] {
-            XCTAssertEqual(Experiment.active(in: definitions) { _ in variant }, [], "variant '\(variant)'")
-        }
+    @Test(arguments: ["no-discount", "NoDiscount", "NO DISCOUNT", ""])
+    func activeDropsAVariantThatIsNotScreamingSnakeCase(variant: String) {
+        #expect(Experiment.active(in: definitions) { _ in variant } == [])
     }
 
-    func testActiveReportsOnlyTheDefinedFlags() {
+    @Test
+    func activeReportsOnlyTheDefinedFlags() {
         let definitions = [
             (name: "ONE", unleashFlag: "one"),
             (name: "TWO", unleashFlag: "two"),
@@ -30,6 +32,6 @@ final class ExperimentTests: XCTestCase {
 
         let experiments = Experiment.active(in: definitions) { flag in flag == "two" ? "B" : nil }
 
-        XCTAssertEqual(experiments, [Experiment(name: "TWO", variant: "B")])
+        #expect(experiments == [Experiment(name: "TWO", variant: "B")])
     }
 }
