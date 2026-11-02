@@ -1,54 +1,65 @@
 import AppStateContainer
-import XCTest
+import Foundation
+import Testing
 import hCore
 
 @testable import Profile
 
-@MainActor
-final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
-    weak var sut: MockProfileService?
+extension ProfileDependencySuite {
+    @MainActor
+    final class MemberSubscriptionPreferenceViewModelTests {
+        private weak var sut: MockProfileService?
 
-    override func setUp() async throws {
-        UserDefaults.standard.removeObject(forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey)
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-        sut = nil
-    }
+        init() {
+            UserDefaults.standard.removeObject(forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey)
+            globalAppStateContainer.clearPersistence()
+        }
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: ProfileClient.self)
-        await delay(0.0000001)
-        XCTAssertNil(sut)
-    }
+        // Test bodies are scoped so their locals are released before this check runs.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: ProfileClient.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
+        }
 
-    func testToggleSubscriptionSuccess() async throws {
-        let mockService = MockData.createMockProfileService(
-            subscriptionPreferenceUpdate: { _ in }
-        )
+        @Test
+        func toggleSubscriptionSuccess() async {
+            do {
+                let mockService = MockData.createMockProfileService(
+                    subscriptionPreferenceUpdate: { _ in }
+                )
 
-        sut = mockService
+                sut = mockService
 
-        let model = MemberSubscriptionPreferenceViewModel()
-        await delay(0.3)
-        let currentValue = model.isUnsubscribed
-        await model.toggleSubscription()
-        await delay(0.3)
-        assert(model.isLoading == false && model.isUnsubscribed == !currentValue)
-    }
-
-    func testToggleSubscriptionFailure() async {
-        let mockService = MockData.createMockProfileService(
-            subscriptionPreferenceUpdate: { _ in
-                throw ProfileError.error(message: "error")
+                let model = MemberSubscriptionPreferenceViewModel()
+                let currentValue = model.isUnsubscribed
+                await model.toggleSubscription()
+                #expect(model.isLoading == false)
+                #expect(model.isUnsubscribed == !currentValue)
             }
-        )
 
-        sut = mockService
+            await expectServiceReleased()
+        }
 
-        let model = MemberSubscriptionPreferenceViewModel()
-        await model.toggleSubscription()
+        @Test
+        func toggleSubscriptionFailure() async {
+            do {
+                let mockService = MockData.createMockProfileService(
+                    subscriptionPreferenceUpdate: { _ in
+                        throw ProfileError.error(message: "error")
+                    }
+                )
 
-        assert(model.isLoading == false)
-        assert(model.isUnsubscribed == false)
+                sut = mockService
+
+                let model = MemberSubscriptionPreferenceViewModel()
+                await model.toggleSubscription()
+
+                #expect(model.isLoading == false)
+                #expect(model.isUnsubscribed == false)
+            }
+
+            await expectServiceReleased()
+        }
     }
 }

@@ -1,98 +1,122 @@
 import Addons
 import AppStateContainer
 import TestDependencies
-import XCTest
+import Testing
 import hCore
 
 @testable import CrossSell
 
-@MainActor
-final class CrossSellStoreTests: XCTestCase {
-    weak var store: CrossSellStore?
-
-    override func setUp() async throws {
-        try await super.setUp()
-        globalAppStateContainer.clearPersistence()
-    }
-
+extension CrossSellDependencySuite {
     @MainActor
-    override func tearDown() async throws {
-        try await super.tearDown()
-        await waitUntil(description: "Store deinit") {
-            self.store == nil
-        }
-    }
+    final class CrossSellStoreTests {
+        private weak var store: CrossSellStore?
 
-    func testFetchCrossSalesSuccess() async {
-        let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { _ in CrossSell.getDefault }
-        )
-        let store = CrossSellStore()
-        self.store = store
-        await store.fetchCrossSell()
-        await waitUntil(description: "loading state") {
-            store.fetchCrossSellError == nil && store.crossSells == CrossSell.getDefault
+        init() {
+            globalAppStateContainer.clearPersistence()
         }
 
-        assert(mockService.events == [.getCrossSell])
-    }
-
-    func testFetchCrossSalesFailure() async throws {
-        let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { _ in throw MockContractError.fetchCrossSells }
-        )
-
-        let store = CrossSellStore()
-        self.store = store
-        await store.fetchCrossSell()
-        await delay(0.5)
-        assert(store.fetchCrossSellError != nil)
-        assert(store.crossSells?.others.isEmpty == nil)
-        assert(mockService.events == [.getCrossSell])
-    }
-
-    func testFetchHomeCrossSellsSuccess() async {
-        let mockService = MockData.createMockCrossSellService(
-            fetchCrossSell: { _ in CrossSell.getDefaultWithRecommendation }
-        )
-        let store = CrossSellStore()
-        self.store = store
-        store.setHasSeenRecommendedWith(id: "previously-seen-id")
-        await store.fetchHomeCrossSells()
-        await waitUntil(description: "loading state") {
-            store.homeCrossSells == CrossSell.getDefaultWithRecommendation
+        // Test bodies are scoped so their stores are released; a live local would make this wait time out.
+        private func expectStoreReleased() async {
+            await waitUntil(description: "Store deinit") {
+                self.store == nil
+            }
+            Dependencies.shared.remove(for: CrossSellClient.self)
         }
 
-        assert(store.hasNewOffer == true)
-        assert(mockService.events == [.getCrossSell, .getCrossSell])
-    }
+        @Test
+        func fetchCrossSalesSuccess() async {
+            do {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchCrossSell: { _ in CrossSell.getDefault }
+                )
+                let store = CrossSellStore()
+                self.store = store
+                await store.fetchCrossSell()
+                await waitUntil(description: "loading state") {
+                    store.fetchCrossSellError == nil && store.crossSells == CrossSell.getDefault
+                }
 
-    func testFetchAddonBannersDataSuccess() async {
-        let mockService = MockData.createMockCrossSellService(
-            fetchAddonBanners: { _ in AddonBanner.getDefault }
-        )
-        let store = CrossSellStore()
-        self.store = store
-        await store.fetchAddonBanners()
-        await waitUntil(description: "loading state") {
-            store.fetchAddonBannersError == nil && store.addonBanners == AddonBanner.getDefault
+                #expect(mockService.events == [.getCrossSell])
+            }
+
+            await expectStoreReleased()
         }
 
-        assert(mockService.events == [.getAddonBanners])
-    }
+        @Test
+        func fetchCrossSalesFailure() async {
+            do {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchCrossSell: { _ in throw MockContractError.fetchCrossSells }
+                )
 
-    func testFetchAddonBannerDataFailure() async throws {
-        let mockService = MockData.createMockCrossSellService(
-            fetchAddonBanners: { _ in throw MockContractError.fetchAddonBanners }
-        )
+                let store = CrossSellStore()
+                self.store = store
+                await store.fetchCrossSell()
+                #expect(store.fetchCrossSellError != nil)
+                #expect(store.crossSells == nil)
+                #expect(mockService.events == [.getCrossSell])
+            }
 
-        let store = CrossSellStore()
-        self.store = store
-        await store.fetchAddonBanners()
-        await delay(0.5)
-        assert(store.fetchAddonBannersError != nil)
-        assert(store.crossSells?.others.isEmpty == nil)
-        assert(mockService.events == [.getAddonBanners])
+            await expectStoreReleased()
+        }
+
+        @Test
+        func fetchHomeCrossSellsSuccess() async {
+            do {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchCrossSell: { _ in CrossSell.getDefaultWithRecommendation }
+                )
+                let store = CrossSellStore()
+                self.store = store
+                store.setHasSeenRecommendedWith(id: "previously-seen-id")
+                await store.fetchHomeCrossSells()
+                await waitUntil(description: "loading state") {
+                    store.homeCrossSells == CrossSell.getDefaultWithRecommendation
+                }
+
+                #expect(store.hasNewOffer == true)
+                #expect(mockService.events == [.getCrossSell, .getCrossSell])
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func fetchAddonBannersDataSuccess() async {
+            do {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchAddonBanners: { _ in AddonBanner.getDefault }
+                )
+                let store = CrossSellStore()
+                self.store = store
+                await store.fetchAddonBanners()
+                await waitUntil(description: "loading state") {
+                    store.fetchAddonBannersError == nil && store.addonBanners == AddonBanner.getDefault
+                }
+
+                #expect(mockService.events == [.getAddonBanners])
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func fetchAddonBannerDataFailure() async {
+            do {
+                let mockService = MockData.createMockCrossSellService(
+                    fetchAddonBanners: { _ in throw MockContractError.fetchAddonBanners }
+                )
+
+                let store = CrossSellStore()
+                self.store = store
+                await store.fetchAddonBanners()
+                #expect(store.fetchAddonBannersError != nil)
+                #expect(store.addonBanners.isEmpty)
+                #expect(mockService.events == [.getAddonBanners])
+            }
+
+            await expectStoreReleased()
+        }
     }
 }
 
