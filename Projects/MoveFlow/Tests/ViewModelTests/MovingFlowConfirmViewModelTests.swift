@@ -1,50 +1,60 @@
-import XCTest
+import Testing
 import hCore
 
 @testable import MoveFlow
 
-@MainActor
-final class MovingFlowConfirmViewModelTests: XCTestCase {
-    weak var sut: MockMoveFlowService?
+extension MoveFlowDependencySuite {
+    @MainActor
+    final class MovingFlowConfirmViewModelTests {
+        private weak var sut: MockMoveFlowService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = nil
-    }
+        @Test
+        func confirmMoveIntentStoresNewContractId() async {
+            // Scoped so mockService is released before expectServiceReleased() runs.
+            do {
+                let mockService = MockData.createMockMoveFlowService(
+                    moveIntentConfirm: { _, _, _ in "new-contract-123" }
+                )
+                sut = mockService
 
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: MoveFlowClient.self)
-        XCTAssertNil(sut)
-    }
+                let model = MovingFlowConfirmViewModel()
+                await model.confirmMoveIntent(intentId: "intent", currentHomeQuoteId: "quote", removedAddons: [])
 
-    func testConfirmMoveIntentStoresNewContractId() async {
-        let mockService = MockData.createMockMoveFlowService(
-            moveIntentConfirm: { _, _, _ in "new-contract-123" }
-        )
-        sut = mockService
+                #expect(model.newContractId == "new-contract-123")
+                #expect(model.viewState == .success)
+                #expect(mockService.events.contains(.confirmMoveIntent))
+            }
 
-        let model = MovingFlowConfirmViewModel()
-        await model.confirmMoveIntent(intentId: "intent", currentHomeQuoteId: "quote", removedAddons: [])
+            await expectServiceReleased()
+        }
 
-        assert(model.newContractId == "new-contract-123")
-        assert(model.viewState == .success)
-        assert(mockService.events.contains(.confirmMoveIntent))
-    }
+        @Test
+        func confirmMoveIntentFailureKeepsContractIdNil() async {
+            do {
+                let mockService = MockData.createMockMoveFlowService(
+                    moveIntentConfirm: { _, _, _ in throw MovingFlowError.serverError(message: "failed") }
+                )
+                sut = mockService
 
-    func testConfirmMoveIntentFailureKeepsContractIdNil() async {
-        let mockService = MockData.createMockMoveFlowService(
-            moveIntentConfirm: { _, _, _ in throw MovingFlowError.serverError(message: "failed") }
-        )
-        sut = mockService
+                let model = MovingFlowConfirmViewModel()
+                await model.confirmMoveIntent(intentId: "intent", currentHomeQuoteId: "quote", removedAddons: [])
 
-        let model = MovingFlowConfirmViewModel()
-        await model.confirmMoveIntent(intentId: "intent", currentHomeQuoteId: "quote", removedAddons: [])
+                #expect(model.newContractId == nil)
+                if case .error = model.viewState {
+                    // expected
+                } else {
+                    Issue.record("Expected error view state")
+                }
+            }
 
-        assert(model.newContractId == nil)
-        if case .error = model.viewState {
-            // expected
-        } else {
-            XCTFail("Expected error view state")
+            await expectServiceReleased()
+        }
+
+        // Not deinit: this has to suspend before it reads sut.
+        private func expectServiceReleased() async {
+            Dependencies.shared.remove(for: MoveFlowClient.self)
+            await delay(0.0000001)
+            #expect(sut == nil, "the mock service must not outlive its dependency registration")
         }
     }
 }

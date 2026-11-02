@@ -1,23 +1,11 @@
-import XCTest
-import hCore
+import Testing
 
 @testable import MoveFlow
 
 @MainActor
-final class HouseInformationInputModelTests: XCTestCase {
-    weak var sut: MockMoveFlowService?
-
-    override func setUp() async throws {
-        try await super.setUp()
-    }
-
-    override func tearDown() async throws {
-        Dependencies.shared.remove(for: MoveFlowClient.self)
-        await delay(0.0000001)
-        XCTAssertNil(sut)
-    }
-
-    func testRemoveExtraBuildingSuccess() async {
+final class HouseInformationInputModelTests {
+    @Test
+    func removeExtraBuildingSuccess() {
         let model = HouseInformationInputModel()
 
         model.extraBuildings = [
@@ -41,7 +29,7 @@ final class HouseInformationInputModelTests: XCTestCase {
             ),
         ]
 
-        assert(model.extraBuildings.count == 3)
+        #expect(model.extraBuildings.count == 3)
 
         model.remove(
             extraBuilding:
@@ -53,6 +41,6 @@ final class HouseInformationInputModelTests: XCTestCase {
                 )
         )
 
-        assert(model.extraBuildings.count == 2)
+        #expect(model.extraBuildings.count == 2)
     }
 }

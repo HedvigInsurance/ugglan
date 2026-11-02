@@ -1,29 +1,24 @@
-import XCTest
-import hCore
+import Testing
 
 @testable import MoveFlow
 
-final class MovingFlowAddExtraBuildingViewModelTests: XCTestCase {
+final class MovingFlowAddExtraBuildingViewModelTests {
     let buildingType = ExtraBuildingType(type: "building type", displayName: "building display type")
 
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() async throws {}
-
-    func testSetExtraBuildingSuccess() async {
+    @Test
+    func setExtraBuildingSuccess() async {
         let model = MovingFlowAddExtraBuildingViewModel()
         model.livingArea = "80"
         model.buildingType = buildingType
 
-        assert(model.isValid() == true)
+        #expect(model.isValid() == true)
     }
 
-    func testIsNotValidSuccess() async {
+    @Test
+    func isNotValidSuccess() async {
         let model = MovingFlowAddExtraBuildingViewModel()
         model.buildingType = buildingType
 
-        assert(model.isValid() == false)
+        #expect(model.isValid() == false)
     }
 }
