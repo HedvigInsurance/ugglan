@@ -73,7 +73,7 @@ struct AddMissingPetChipIdBottomSheet: View {
                     hFloatingTextField(
                         masking: vm.petChipIdMasking,
                         value: $vm.petChipId,
-                        equals: .constant(MissingPetChipIdType.single),
+                        focus: .constant(MissingPetChipIdType.single),
                         focusValue: .single,
                         placeholder: L10n.chipIdLabel,
                         error: $vm.fieldError,
@@ -111,10 +111,8 @@ extension AddMissingPetChipIdBottomSheet: TrackingViewNameProtocol {
     }
 }
 
-enum MissingPetChipIdType: hTextFieldFocusStateCompliant {
+enum MissingPetChipIdType: Hashable {
     case single
-    static let last: MissingPetChipIdType = .single
-    var next: MissingPetChipIdType? { nil }
 }
 
 private struct AddMissingPetChipIdInput: Identifiable & Equatable {

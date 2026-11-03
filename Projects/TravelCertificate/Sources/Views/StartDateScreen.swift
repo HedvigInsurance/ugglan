@@ -33,8 +33,6 @@ struct StartDateScreen: View {
                             hFloatingTextField(
                                 masking: .init(type: .email),
                                 value: $vm.email,
-                                equals: $vm.editValue,
-                                focusValue: .email,
                                 placeholder: L10n.emailRowTitle,
                                 error: $vm.emailError
                             )
@@ -71,30 +69,11 @@ class StartDateViewModel {
     var email: String = ""
     var date: Date
     var emailError: String?
-    var editValue: StartDateViewEditType?
     let specification: TravelInsuranceContractSpecification
     init(specification: TravelInsuranceContractSpecification) {
         self.specification = specification
         email = specification.email ?? ""
         date = specification.minStartDate
-    }
-
-    enum StartDateViewEditType: hTextFieldFocusStateCompliant {
-        static var last: StartDateViewEditType {
-            StartDateViewEditType.email
-        }
-
-        var next: StartDateViewEditType? {
-            switch self {
-            case .date:
-                return .email
-            case .email:
-                return nil
-            }
-        }
-
-        case date
-        case email
     }
 }
 

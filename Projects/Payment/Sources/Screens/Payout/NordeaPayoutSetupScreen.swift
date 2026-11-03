@@ -30,7 +30,7 @@ struct NordeaPayoutSetupScreen: View {
             hFloatingTextField(
                 masking: .init(type: .bankAccountNumber),
                 value: $vm.accountNumber,
-                equals: $vm.focusedField,
+                focus: $vm.focusedField,
                 focusValue: .account,
                 placeholder: placeholder,
                 error: $vm.accountError
@@ -134,18 +134,8 @@ class NordeaPayoutSetupViewModel {
     }
 }
 
-enum NordeaPayoutField: hTextFieldFocusStateCompliant {
-    case clearing
+enum NordeaPayoutField: Hashable {
     case account
-
-    static var last: NordeaPayoutField { .account }
-
-    var next: NordeaPayoutField? {
-        switch self {
-        case .clearing: return .account
-        case .account: return nil
-        }
-    }
 }
 
 #Preview {

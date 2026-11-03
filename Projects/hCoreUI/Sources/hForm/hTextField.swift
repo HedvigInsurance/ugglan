@@ -1,7 +1,5 @@
-import Combine
 import Foundation
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 extension EnvironmentValues {
@@ -40,41 +38,8 @@ extension View {
     }
 }
 
-class TextFieldObserver: NSObject, UITextFieldDelegate {
-    var onReturnTap: () -> Void = {}
-    var onDidEndEditing: () -> Void = {}
-    var onBeginEditing: () -> Void = {}
-    func textFieldShouldReturn(_: UITextField) -> Bool {
-        onReturnTap()
-        return true
-    }
-
-    func textFieldDidEndEditing(_: UITextField) {
-        onDidEndEditing()
-    }
-
-    func textFieldDidBeginEditing(_: UITextField) {
-        onBeginEditing()
-    }
-}
-
 extension UITextField {
     @objc func dismissKeyboad() {
         resignFirstResponder()
-    }
-}
-
-public protocol hTextFieldFocusStateCompliant: Hashable {
-    static var last: Self { get }
-    var next: Self? { get }
-}
-
-extension Bool: hTextFieldFocusStateCompliant {
-    public static var last: Bool {
-        true
-    }
-
-    public var next: Bool? {
-        nil
     }
 }

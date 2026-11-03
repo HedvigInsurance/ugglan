@@ -92,7 +92,7 @@ struct MovingFlowAddressScreen: View {
         hFloatingTextField(
             masking: Masking(type: .address),
             value: $vm.address,
-            equals: $vm.type,
+            focus: $vm.type,
             focusValue: .address,
             error: $vm.addressError
         )
@@ -102,7 +102,7 @@ struct MovingFlowAddressScreen: View {
         hFloatingTextField(
             masking: Masking(type: .postalCode),
             value: $vm.postalCode,
-            equals: $vm.type,
+            focus: $vm.type,
             focusValue: .postalCode,
             placeholder: L10n.changeAddressNewPostalCodeLabel,
             error: $vm.postalCodeError
@@ -113,7 +113,7 @@ struct MovingFlowAddressScreen: View {
         hFloatingTextField(
             masking: Masking(type: .digits),
             value: $vm.squareArea,
-            equals: $vm.type,
+            focus: $vm.type,
             focusValue: .squareArea,
             placeholder: L10n.changeAddressNewLivingSpaceLabel,
             suffix: "m\u{00B2}",
@@ -248,22 +248,7 @@ struct MovingFlowAddressScreen: View {
     return VStack { MovingFlowAddressScreen(vm: .init()).environment(MovingFlowNavigationViewModel()) }
 }
 
-enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
-    static var last: MovingFlowNewAddressViewFieldType {
-        MovingFlowNewAddressViewFieldType.squareArea
-    }
-
-    var next: MovingFlowNewAddressViewFieldType? {
-        switch self {
-        case .address:
-            return .postalCode
-        case .postalCode:
-            return .squareArea
-        case .squareArea:
-            return nil
-        }
-    }
-
+enum MovingFlowNewAddressViewFieldType: Hashable, Codable {
     case address
     case postalCode
     case squareArea

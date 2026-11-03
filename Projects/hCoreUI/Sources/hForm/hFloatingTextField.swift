@@ -1,37 +1,42 @@
-import Combine
 import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
-public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
+public struct hFloatingTextField<Value: Hashable>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
     @Environment(\.hFieldMultiline) var isMultiline
     @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
-    @State private var vm = TextFieldVM()
+    @Environment(\.hFieldFocusCoordinator) private var focusCoordinator
+    @Environment(\.hFormScrollProxy) private var scrollProxy
+    @FocusState private var isFocused: Bool
+    @State private var fieldID = hFieldFocusID()
 
-    @State private var animationEnabled: Bool = true
     @State private var innerValue: String = ""
     @State private var animate = false
     @State private var previousInnerValue: String = ""
     @State private var shouldMoveLabel: Bool = false
     @Binding var error: String?
     @Binding var value: String
-    @Binding var equals: Value?
+    @Binding var focus: Value?
 
     private var masking: Masking
     private var placeholder: String
     private var suffix: String?
-    private let focusValue: Value
+    /// `nil` when focus isn't controlled from outside, see the `Value == Never` init
+    private let focusValue: Value?
     private let onReturn: () -> Void
     private let textFieldPlaceholder: String?
 
+    /// - Parameters:
+    ///   - focus: Lets the caller move focus to this field, by setting it to `focusValue`, or drop it,
+    ///     by setting anything else. Return moves to the next field in the enclosing `hForm` on its own.
     public init(
         masking: Masking,
         value: Binding<String>,
-        equals: Binding<Value?>,
+        focus: Binding<Value?>,
         focusValue: Value,
         placeholder: String? = nil,
         suffix: String? = nil,
@@ -39,18 +44,44 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         textFieldPlaceholder: String? = nil,
         onReturn: @escaping () -> Void = {}
     ) {
+        self.init(
+            masking: masking,
+            value: value,
+            focus: focus,
+            optionalFocusValue: focusValue,
+            placeholder: placeholder,
+            suffix: suffix,
+            error: error,
+            textFieldPlaceholder: textFieldPlaceholder,
+            onReturn: onReturn
+        )
+    }
+
+    fileprivate init(
+        masking: Masking,
+        value: Binding<String>,
+        focus: Binding<Value?>,
+        optionalFocusValue focusValue: Value?,
+        placeholder: String?,
+        suffix: String?,
+        error: Binding<String?>?,
+        textFieldPlaceholder: String?,
+        onReturn: @escaping () -> Void
+    ) {
         self.masking = masking
         self.placeholder = placeholder ?? masking.placeholderText ?? ""
         self.suffix = suffix
         _value = value
-        _equals = equals
+        _focus = focus
         self.focusValue = focusValue
         self.onReturn = onReturn
         _error = error ?? Binding.constant(nil)
         _previousInnerValue = State(initialValue: value.wrappedValue)
         _innerValue = State(initialValue: value.wrappedValue)
+        // @State can't be written from init, so the label position is seeded as the initial value
+        let startsFocused = focusValue != nil && focus.wrappedValue == focusValue
+        _shouldMoveLabel = State(initialValue: !value.wrappedValue.isEmpty || startsFocused)
         self.textFieldPlaceholder = textFieldPlaceholder
-        updateMoveLabel(false)
     }
 
     public var body: some View {
@@ -66,13 +97,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     getTextField
                         .showClearButtonOrError(
                             $innerValue,
-                            equals: $equals,
-                            animationEnabled: $animationEnabled,
-                            error: $error,
-                            focusValue: focusValue
+                            isFocused: isFocused,
+                            error: $error
                         )
-                    if !(suffix ?? "").isEmpty {
-                        getSuffixLabel
+                    if let suffix, !suffix.isEmpty {
+                        hText(suffix, style: fontStyle)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
             }
@@ -85,125 +115,120 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .geometryGroup()
-        .onChange(of: vm.textField) { [weak vm] _, textField in
-            textField?.delegate = vm?.observer
-            if focusValue == Value.last {
-                textField?.returnKeyType = .done
-            }
-
-            func dismissKeyboard() {
-                Task {
-                    await textField?.resignFirstResponder()
-                }
-            }
-
-            vm?.observer.onBeginEditing = {
-                vm?.onBeginEditing = Date()
-            }
-            vm?.observer.onDidEndEditing = {
-                vm?.onDidEndEditing = Date()
-            }
-            vm?.observer.onReturnTap = {
-                vm?.onReturnTap = Date()
-            }
-            if equals == focusValue {
-                textField?.becomeFirstResponder()
-            }
-        }
-        .onChange(of: vm.textView) { _, textView in
-            if equals == focusValue {
-                textView?.becomeFirstResponder()
-            }
-        }
-        .onChange(of: equals) { [weak vm] _, equals in
-            if equals == focusValue {
-                vm?.responder?.becomeFirstResponder()
-            } else if vm?.responder?.isFirstResponder == true {
-                vm?.responder?.resignFirstResponder()
-            }
-        }
-        .onChange(of: innerValue) { _, currentValue in
-            withAnimation {
-                error = nil
-            }
-            if animationEnabled {
-                updateMoveLabel(true)
-                startAnimation(currentValue)
-            }
-        }
-        .accessibilityAddTraits(.isButton)
         .onTapGesture {
-            equals = focusValue
-            vm.responder?.becomeFirstResponder()
+            isFocused = true
         }
         .accessibilityAddTraits(.isButton)
-        .onChange(of: error) {
-            animate = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                animate = false
-            }
-        }
-        .introspect(.textField, on: .iOS(.v17...)) { [weak vm] textField in
-            vm?.textField = textField
-        }
-        // A vertical axis TextField is backed by a UITextView instead of a UITextField
-        .introspect(.textField(axis: .vertical), on: .iOS(.v17...)) { [weak vm] textView in
-            vm?.textView = textView
-        }
+        .id(fieldID)
+        // Disabled fields are left out, so return skips over them
+        .preference(key: hFieldFocusOrderKey.self, value: isEnabled ? [fieldID] : [])
         .onAppear {
-            updateMoveLabel(false)
-        }
-        .onChange(of: vm.onBeginEditing) {
-            withAnimation {
-                error = nil
+            if isFocusedFromOutside {
+                isFocused = true
             }
-            updateMoveLabel(true)
-            equals = focusValue
         }
-        .onChange(of: vm.onDidEndEditing) {
-            updateMoveLabel(true)
+        .onChange(of: focus) {
+            isFocused = isFocusedFromOutside
         }
-        .onChange(of: vm.onReturnTap) { [weak vm] in
-            if let next = equals?.next {
-                equals = next
-            } else {
-                equals = nil
-                vm?.responder?.resignFirstResponder()
+        .onChange(of: focusCoordinator?.focusRequest) { _, request in
+            if request == fieldID {
+                focusCoordinator?.focusRequest = nil
+                isFocused = true
             }
-            updateMoveLabel(true)
-            onReturn()
+        }
+        .onChange(of: isFocused) { _, isFocused in
+            if isFocused {
+                clearError()
+                if let focusValue {
+                    focus = focusValue
+                }
+                scrollIntoView()
+            } else if isFocusedFromOutside {
+                focus = nil
+            }
+            updateMoveLabel()
         }
         .onChange(of: value) { _, value in
             innerValue = value
         }
+        .onChange(of: innerValue) { _, currentValue in
+            handleInnerValueChange(currentValue)
+        }
+        .onChange(of: error) {
+            pulseAnimation()
+        }
     }
 
-    private func startAnimation(_ value: String) {
+    private var isFocusedFromOutside: Bool {
+        focusValue != nil && focus == focusValue
+    }
+
+    /// Applies the masking to typed text and writes the result back to the bindings.
+    private func handleInnerValueChange(_ currentValue: String) {
+        if currentValue != previousInnerValue {
+            let masked = masking.maskValue(text: currentValue, previousText: previousInnerValue)
+            withAnimation {
+                value = masked
+                innerValue = masked
+                previousInnerValue = masked
+            }
+            // A rewritten value fires this handler again, which then does the work below
+            if masked != currentValue { return }
+        }
+        clearError()
+        updateMoveLabel()
+        pulseAnimation { currentValue == innerValue }
+    }
+
+    /// Moves focus to the next field in the enclosing `hForm`, or drops the keyboard when this is the last one.
+    private func handleReturn() {
+        if let next = focusCoordinator?.field(after: fieldID) {
+            // The next field takes the first responder from this one, so the keyboard stays up
+            focusCoordinator?.focusRequest = next
+        } else {
+            isFocused = false
+        }
+        onReturn()
+    }
+
+    /// Scrolls the enclosing `hForm` so the field sits in the middle of the area left above the keyboard
+    private func scrollIntoView() {
+        guard let scrollProxy else { return }
+        Task {
+            // Waits for the keyboard inset, otherwise the scroll targets the area the keyboard is about to cover
+            await delay(0.3)
+            guard isFocused else { return }
+            withAnimation {
+                scrollProxy.scrollTo(fieldID, anchor: .center)
+            }
+        }
+    }
+
+    private func clearError() {
+        guard error != nil else { return }
+        withAnimation {
+            error = nil
+        }
+    }
+
+    /// Highlights the field background briefly. `shouldReset` is checked after the delay,
+    /// so a newer pulse can keep the highlight on.
+    private func pulseAnimation(shouldReset: @escaping @MainActor () -> Bool = { true }) {
         animate = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            if value == innerValue {
+        Task {
+            await delay(0.4)
+            if shouldReset() {
                 animate = false
             }
         }
     }
 
-    private func updateMoveLabel(_ animation: Bool) {
-        if innerValue != "" || equals == focusValue, !shouldMoveLabel {
-            if animation {
-                withAnimation(Animation.easeInOut(duration: 0.2)) {
-                    shouldMoveLabel = true
-                }
-            } else {
-                shouldMoveLabel = true
-            }
-        } else if shouldMoveLabel, innerValue == "", equals != focusValue {
-            if animation {
-                withAnimation(Animation.easeInOut(duration: 0.2)) {
-                    shouldMoveLabel = false
-                }
-            } else {
-                shouldMoveLabel = false
-            }
+    /// The label sits above the text whenever the field has a value or is focused.
+    private func updateMoveLabel() {
+        let target = !innerValue.isEmpty || isFocused
+        guard target != shouldMoveLabel else { return }
+        withAnimation(.easeInOut(duration: 0.2)) {
+            shouldMoveLabel = target
         }
     }
 
@@ -218,7 +243,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     .alignmentGuide(.fieldLabel) { _ in labelOffset }
             )
         } else {
+            // Return in a multiline field inserts a new line, so only single line fields submit
             styled(SwiftUI.TextField(title, text: $innerValue))
+                .submitLabel(focusCoordinator?.field(after: fieldID) == nil ? .done : .return)
+                .introspect(.textField, on: .iOS(.v17...)) { textField in
+                    ReturnKeyInterceptor.install(on: textField, onReturn: handleReturn)
+                }
         }
     }
 
@@ -236,16 +266,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             .modifier(masking)
             .tint(foregroundColor)
             .foregroundColor(foregroundColor)
-            .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                if shouldUpdate {
-                    let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                    withAnimation {
-                        self.value = value
-                        innerValue = value
-                        previousInnerValue = value
-                    }
-                }
-            }
+            .focused($isFocused)
     }
 
     @hColorBuilder
@@ -256,116 +277,174 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             hTextColor.Translucent.secondary
         }
     }
-
-    private var getSuffixLabel: some View {
-        hText(suffix ?? "", style: size == .large ? .body2 : .body1)
-            .foregroundColor(hTextColor.Opaque.secondary)
-    }
 }
 
+/// Handles the return key of a SwiftUI backed `UITextField` and forwards every other delegate call to
+/// SwiftUI's own delegate, so `@FocusState` keeps working.
+/// SwiftUI resigns the field on return, before the next field takes focus, which drops and raises the keyboard.
+/// Not resigning here hands the first responder straight over to the next field.
 @MainActor
-@Observable
-class TextFieldVM {
-    @ObservationIgnored weak var textField: UITextField?
-    /// Backing view of a multiline field. Its delegate is owned by SwiftUI, so editing is observed via notifications.
-    @ObservationIgnored weak var textView: UITextView? {
-        didSet {
-            if oldValue !== textView {
-                observeTextView()
-            }
+final class ReturnKeyInterceptor: NSObject, UITextFieldDelegate {
+    private static var associatedKey: UInt8 = 0
+
+    private var onReturn: () -> Void = {}
+    nonisolated(unsafe) private weak var forwardee: (any UITextFieldDelegate)?
+
+    /// Owned by the text field rather than the view, since `onReturn` captures the view's state
+    static func install(on textField: UITextField, onReturn: @escaping () -> Void) {
+        let interceptor =
+            objc_getAssociatedObject(textField, &associatedKey) as? ReturnKeyInterceptor
+            ?? {
+                let interceptor = ReturnKeyInterceptor()
+                objc_setAssociatedObject(textField, &associatedKey, interceptor, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+                return interceptor
+            }()
+        interceptor.onReturn = onReturn
+        if textField.delegate !== interceptor {
+            interceptor.forwardee = textField.delegate
+            textField.delegate = interceptor
         }
     }
-    @ObservationIgnored var observer = TextFieldObserver()
-    var onBeginEditing: Date?
-    var onDidEndEditing: Date?
-    var onReturnTap: Date?
 
-    @ObservationIgnored nonisolated(unsafe) private var textViewObservers: [NSObjectProtocol] = []
-
-    var responder: UIResponder? {
-        textField ?? textView
+    func textFieldShouldReturn(_: UITextField) -> Bool {
+        onReturn()
+        return false
     }
 
-    private func observeTextView() {
-        textViewObservers.forEach { NotificationCenter.default.removeObserver($0) }
-        textViewObservers = []
-        guard let textView else { return }
-        let center = NotificationCenter.default
-        textViewObservers = [
-            center.addObserver(
-                forName: UITextView.textDidBeginEditingNotification,
-                object: textView,
-                queue: .main
-            ) { [weak self] _ in
-                MainActor.assumeIsolated { self?.onBeginEditing = Date() }
-            },
-            center.addObserver(
-                forName: UITextView.textDidEndEditingNotification,
-                object: textView,
-                queue: .main
-            ) { [weak self] _ in
-                MainActor.assumeIsolated { self?.onDidEndEditing = Date() }
-            },
-        ]
+    override nonisolated func responds(to aSelector: Selector!) -> Bool {
+        super.responds(to: aSelector) || forwardee?.responds(to: aSelector) == true
     }
 
-    deinit {
-        textViewObservers.forEach { NotificationCenter.default.removeObserver($0) }
+    override nonisolated func forwardingTarget(for _: Selector!) -> Any? {
+        forwardee
     }
 }
 
 #Preview {
     @Previewable @State var value: String = "Text Input"
     @Previewable @State var error: String?
-    @Previewable @State var previewType: PreviewType?
+    @Previewable @State var focus: PreviewField? = .first
 
-    return VStack {
-        hFloatingTextField<PreviewType>(
-            masking: .init(type: .none),
-            value: $value,
-            equals: $previewType,
-            focusValue: .first,
-            placeholder: "Label",
-            suffix: "SEK",
-            error: $error
-        )
-        hFloatingTextField<PreviewType>(
-            masking: .init(type: .none),
-            value: $value,
-            equals: $previewType,
-            focusValue: .second,
-            placeholder: "Label",
-            error: $error
-        )
-        .disabled(true)
-        hFloatingTextField<PreviewType>(
-            masking: .init(type: .none),
-            value: $value,
-            equals: $previewType,
-            focusValue: .third,
-            placeholder: "Label",
-            error: $error
-        )
-        .hFieldMultiline()
+    return hForm {
+        VStack {
+            hFloatingTextField(
+                masking: .init(type: .none),
+                value: $value,
+                focus: $focus,
+                focusValue: .first,
+                placeholder: "Label",
+                suffix: "SEK",
+                error: $error
+            )
+            hFloatingTextField(
+                masking: .init(type: .none),
+                value: $value,
+                placeholder: "Label",
+                error: $error
+            )
+            .disabled(true)
+            hFloatingTextField(
+                masking: .init(type: .none),
+                value: $value,
+                placeholder: "Label",
+                error: $error
+            )
+            hFloatingTextField(
+                masking: .init(type: .none),
+                value: $value,
+                placeholder: "Label",
+                error: $error
+            )
+            .hFieldMultiline()
+        }
     }
     .hFieldSize(.large)
 
-    enum PreviewType: Int, CaseIterable, hTextFieldFocusStateCompliant {
-        static var last: PreviewType {
-            PreviewType.allCases.last!
-        }
-
-        var next: PreviewType? {
-            let rawValue = self.rawValue
-            if let next = PreviewType(rawValue: rawValue + 1) {
-                return next
-            }
-            return nil
-        }
-
+    enum PreviewField {
         case first
-        case second
-        case third
+    }
+}
+
+extension hFloatingTextField where Value == Never {
+    /// A field whose focus is only driven by the user, return moves to the next field in the enclosing `hForm`.
+    public init(
+        masking: Masking,
+        value: Binding<String>,
+        placeholder: String? = nil,
+        suffix: String? = nil,
+        error: Binding<String?>? = nil,
+        textFieldPlaceholder: String? = nil,
+        onReturn: @escaping () -> Void = {}
+    ) {
+        self.init(
+            masking: masking,
+            value: value,
+            focus: .constant(nil),
+            optionalFocusValue: nil,
+            placeholder: placeholder,
+            suffix: suffix,
+            error: error,
+            textFieldPlaceholder: textFieldPlaceholder,
+            onReturn: onReturn
+        )
+    }
+}
+
+/// Identifies one `hFloatingTextField` inside an `hFieldFocusScope`
+struct hFieldFocusID: Hashable, Sendable {
+    private let id = UUID()
+}
+
+/// Collects the enabled fields in the order they are declared, which is the order return moves through them
+struct hFieldFocusOrderKey: PreferenceKey {
+    static let defaultValue: [hFieldFocusID] = []
+
+    static func reduce(value: inout [hFieldFocusID], nextValue: () -> [hFieldFocusID]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+@MainActor
+@Observable
+final class hFieldFocusCoordinator {
+    fileprivate var order: [hFieldFocusID] = []
+    /// Set by a field on return, picked up and cleared by the field it names
+    var focusRequest: hFieldFocusID?
+
+    func field(after id: hFieldFocusID) -> hFieldFocusID? {
+        guard let index = order.firstIndex(of: id), index + 1 < order.count else { return nil }
+        return order[index + 1]
+    }
+}
+
+extension EnvironmentValues {
+    @Entry var hFieldFocusCoordinator: hFieldFocusCoordinator? = nil
+}
+
+/// Lets return move between the `hFloatingTextField`s inside it, in the order they are declared.
+/// `hForm` applies it, so it's only needed for fields that aren't in one.
+struct hFieldFocusScopeModifier: ViewModifier {
+    @State private var coordinator = hFieldFocusCoordinator()
+
+    func body(content: Content) -> some View {
+        content
+            .environment(\.hFieldFocusCoordinator, coordinator)
+            .onPreferenceChange(hFieldFocusOrderKey.self) { [coordinator] order in
+                MainActor.assumeIsolated {
+                    // @Observable notifies on every write, which would re-render every field in the scope
+                    if coordinator.order != order {
+                        coordinator.order = order
+                    }
+                }
+            }
+            // An enclosing scope shouldn't chain into the fields of this one
+            .transformPreference(hFieldFocusOrderKey.self) { $0 = [] }
+    }
+}
+
+extension View {
+    public func hFieldFocusScope() -> some View {
+        modifier(hFieldFocusScopeModifier())
     }
 }
 
@@ -428,16 +507,14 @@ extension View {
     }
 }
 
-struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewModifier {
+struct TextFieldClearButtonOrError: ViewModifier {
     @Binding var fieldText: String
-    @Binding var equals: Value?
-    @Binding var animationEnabled: Bool
+    let isFocused: Bool
     @Binding var error: String?
-    let focusValue: Value
     func body(content: Content) -> some View {
         HStack(alignment: .center, spacing: 0) {
             content
-            if fieldText != "", equals == focusValue {
+            if fieldText != "", isFocused {
                 SwiftUI.Button(
                     action: {
                         fieldText = ""
@@ -449,6 +526,7 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
                             .foregroundColor(hTextColor.Opaque.primary)
                     }
                 )
+                .accessibilityLabel(L10n.a11YClearField)
             } else if error != nil {
                 hCoreUIAssets.warningTriangleFilled.view
                     .foregroundColor(hSignalColor.Amber.element)
@@ -458,20 +536,16 @@ struct TextFieldClearButtonOrError<Value: hTextFieldFocusStateCompliant>: ViewMo
 }
 
 extension View {
-    func showClearButtonOrError<Value: hTextFieldFocusStateCompliant>(
+    func showClearButtonOrError(
         _ text: Binding<String>,
-        equals: Binding<Value?>,
-        animationEnabled: Binding<Bool>,
-        error: Binding<String?>,
-        focusValue: Value
+        isFocused: Bool,
+        error: Binding<String?>
     ) -> some View {
         modifier(
             TextFieldClearButtonOrError(
                 fieldText: text,
-                equals: equals,
-                animationEnabled: animationEnabled,
-                error: error,
-                focusValue: focusValue
+                isFocused: isFocused,
+                error: error
             )
         )
     }

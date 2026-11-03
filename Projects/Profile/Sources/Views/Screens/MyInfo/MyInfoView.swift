@@ -48,8 +48,6 @@ public struct MyInfoView: View {
         hFloatingTextField(
             masking: .init(type: .digits),
             value: $vm.currentPhoneInput,
-            equals: $vm.type,
-            focusValue: .phone,
             placeholder: L10n.phoneNumberRowTitle,
             error: $vm.phoneError
         )
@@ -59,8 +57,6 @@ public struct MyInfoView: View {
         hFloatingTextField(
             masking: .init(type: .email),
             value: $vm.currentEmailInput,
-            equals: $vm.type,
-            focusValue: .email,
             placeholder: L10n.emailRowTitle,
             error: $vm.emailError
         )
@@ -97,7 +93,6 @@ public class MyInfoViewModel {
     private let profileService = ProfileService()
     @ObservationIgnored @AppState var profileStore: ProfileStore
     @ObservationIgnored @AppState var homeStore: HomeStore
-    var type: MyInfoViewEditType?
     var currentPhoneInput: String = "" {
         didSet { scheduleValidation() }
     }
@@ -215,24 +210,6 @@ public class MyInfoViewModel {
 
         profileStore.setMemberPhone(newPhone)
         profileStore.setMemberEmail(newEmail)
-    }
-
-    enum MyInfoViewEditType: hTextFieldFocusStateCompliant {
-        static var last: MyInfoViewEditType {
-            MyInfoViewEditType.email
-        }
-
-        var next: MyInfoViewEditType? {
-            switch self {
-            case .phone:
-                return .email
-            case .email:
-                return nil
-            }
-        }
-
-        case phone
-        case email
     }
 }
 

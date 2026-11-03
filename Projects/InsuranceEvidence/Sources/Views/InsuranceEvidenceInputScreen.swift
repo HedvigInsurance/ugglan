@@ -18,8 +18,6 @@ struct InsuranceEvidenceInputScreen: View {
                             hFloatingTextField(
                                 masking: .init(type: .email),
                                 value: $vm.insuranceEvidenceInput.email,
-                                equals: $vm.focused,
-                                focusValue: true,
                                 placeholder: L10n.emailRowTitle
                             )
                         }
@@ -48,7 +46,6 @@ class InsuranceEvidenceInputScreenViewModel {
     @ObservationIgnored weak var insuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel!
     var state: ProcessingState = .loading
     var insuranceEvidenceInput = InsuranceEvidenceInput(email: "")
-    var focused: Bool?
     init(InsuranceEvidenceNavigationViewModel: InsuranceEvidenceNavigationViewModel) {
         insuranceEvidenceNavigationViewModel = InsuranceEvidenceNavigationViewModel
         getData()

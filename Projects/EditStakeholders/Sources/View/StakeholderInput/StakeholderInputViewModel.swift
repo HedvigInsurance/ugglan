@@ -17,7 +17,6 @@ public class StakeholderInputViewModel {
     var showInfoForMissingSSN = false
     var SSN: String
     var birthday: String
-    var type: StakeholderInputType?
     var actionType: StakeholderAction
     let contractId: String
     let stakeholderModel: Stakeholder

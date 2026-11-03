@@ -85,57 +85,62 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         .onChange(of: verticalSizeClass, initial: true) { _, value in
             vm.isVerticalSizeClassRegular = value == .regular
         }
+        .hFieldFocusScope()
     }
 
     private var scrollView: some View {
         GeometryReader { geometry in
-            ScrollView {
-                centerContent
-                    .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: .infinity)
-                    .background {
-                        GeometryReader { geometry in
-                            Group {
-                                if #available(iOS 26.0, *), contentPosition == .compact {
-                                    Color.clear
-                                } else if case .aiPoweredGradient = bottomBackgroundStyle {
-                                    Color.clear
-                                } else {
-                                    hBackgroundColor.primary
+            ScrollViewReader { proxy in
+                ScrollView {
+                    centerContent
+                        .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
+                        .frame(maxWidth: .infinity)
+                        .frame(maxHeight: .infinity)
+                        .background {
+                            GeometryReader { geometry in
+                                Group {
+                                    if #available(iOS 26.0, *), contentPosition == .compact {
+                                        Color.clear
+                                    } else if case .aiPoweredGradient = bottomBackgroundStyle {
+                                        Color.clear
+                                    } else {
+                                        hBackgroundColor.primary
+                                    }
+                                }
+                                .onAppear {
+                                    vm.scrollViewHeight = geometry.size.height
+                                }
+                                .onChange(of: geometry.size) { _, value in
+                                    vm.scrollViewHeight = value.height
                                 }
                             }
-                            .onAppear {
-                                vm.scrollViewHeight = geometry.size.height
-                            }
-                            .onChange(of: geometry.size) { _, value in
-                                vm.scrollViewHeight = value.height
-                            }
-                        }
-                    }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(maxHeight: .infinity)
-            .introspect(.scrollView, on: .iOS(.v17...)) { [vm] scrollView in
-                if scrollView != vm.scrollView {
-                    vm.scrollView = scrollView
-                    vm.keyboardCancellable =
-                        keyboardPublisher
-                        .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
-                        .sink { _ in
-                        } receiveValue: { [weak vm] keyboardHeight in
-                            guard let vm else { return }
-                            // Only react to the keyboard when nothing is presented over the form,
-                            // or when the presented controller is a search or alert controller.
-                            let presented = vm.vc?.presentedViewController
-                            let handlesKeyboard =
-                                presented == nil || presented is UISearchController || presented is UIAlertController
-                            vm.ignoreKeyboard = !handlesKeyboard
                         }
                 }
-            }
-            .introspect(.viewController, on: .iOS(.v17...)) { [vm] vc in
-                vm.vc = vc
+                .frame(maxWidth: .infinity)
+                .frame(maxHeight: .infinity)
+                .introspect(.scrollView, on: .iOS(.v17...)) { [vm] scrollView in
+                    if scrollView != vm.scrollView {
+                        vm.scrollView = scrollView
+                        vm.keyboardCancellable =
+                            keyboardPublisher
+                            .throttle(for: .milliseconds(200), scheduler: DispatchQueue.main, latest: true)
+                            .sink { _ in
+                            } receiveValue: { [weak vm] keyboardHeight in
+                                guard let vm else { return }
+                                // Only react to the keyboard when nothing is presented over the form,
+                                // or when the presented controller is a search or alert controller.
+                                let presented = vm.vc?.presentedViewController
+                                let handlesKeyboard =
+                                    presented == nil || presented is UISearchController
+                                    || presented is UIAlertController
+                                vm.ignoreKeyboard = !handlesKeyboard
+                            }
+                    }
+                }
+                .introspect(.viewController, on: .iOS(.v17...)) { [vm] vc in
+                    vm.vc = vc
+                }
+                .environment(\.hFormScrollProxy, proxy)
             }
         }
     }
@@ -399,6 +404,8 @@ extension EnvironmentValues {
     @Entry public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle = .default
     @Entry public var hFormTitle: (title: hTitle, subTitle: hTitle?)? = nil
     @Entry public var hFormIgnoreBottomPadding: Bool = false
+    /// Lets fields inside the form scroll themselves into view when they get focus
+    @Entry var hFormScrollProxy: ScrollViewProxy? = nil
 }
 
 extension View {

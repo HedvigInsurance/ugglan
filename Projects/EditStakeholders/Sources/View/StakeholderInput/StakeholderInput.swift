@@ -164,8 +164,6 @@ struct AddStakeholderFieldsView: View {
             hFloatingTextField(
                 masking: Masking(type: .personalNumber(minAge: 0)),
                 value: $vm.SSN,
-                equals: $vm.type,
-                focusValue: .SSN,
                 placeholder: L10n.contractPersonalIdentity,
                 textFieldPlaceholder: L10n.editCoinsuredSsnPlaceholder
             )
@@ -183,15 +181,11 @@ struct AddStakeholderFieldsView: View {
                 hFloatingTextField(
                     masking: Masking(type: .firstName),
                     value: $vm.personalData.firstName,
-                    equals: $vm.type,
-                    focusValue: .firstName,
                     placeholder: L10n.contractFirstName
                 )
                 hFloatingTextField(
                     masking: Masking(type: .lastName),
                     value: $vm.personalData.lastName,
-                    equals: $vm.type,
-                    focusValue: .lastName,
                     placeholder: L10n.contractLastName
                 )
             }
@@ -261,28 +255,4 @@ struct DeleteStakeholderFields: View {
         title: "title",
         editStakeholdersNavigation: .init(config: .init(stakeholderType: .coInsured))
     )
-}
-
-enum StakeholderInputType: hTextFieldFocusStateCompliant {
-    static var last: StakeholderInputType {
-        StakeholderInputType.lastName
-    }
-
-    var next: StakeholderInputType? {
-        switch self {
-        case .SSN:
-            return nil
-        case .birthDay:
-            return .firstName
-        case .firstName:
-            return .lastName
-        case .lastName:
-            return nil
-        }
-    }
-
-    case firstName
-    case lastName
-    case SSN
-    case birthDay
 }
