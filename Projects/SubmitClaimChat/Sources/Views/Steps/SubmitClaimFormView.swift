@@ -183,7 +183,7 @@ struct FormFieldView: View {
 
     private var dateField: some View {
         DropdownView(
-            value: fieldViewModel.value,
+            value: fieldViewModel.value.displayDate,
             placeHolder: field.title,
             error: $fieldViewModel.error
         ) { [weak viewModel] in

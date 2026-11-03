@@ -5,7 +5,7 @@ public typealias ServerBasedDate = String
 @MainActor
 extension ServerBasedDate {
     public var displayDate: String {
-        localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+        localDateToDate?.displayDateDDMMMYYYYFormat ?? self
     }
 
     public var displayDateShort: String {
