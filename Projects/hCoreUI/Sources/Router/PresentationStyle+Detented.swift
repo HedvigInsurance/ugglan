@@ -128,6 +128,26 @@ class DetentTransitioningDelegate: NSObject, UIViewControllerTransitioningDelega
     }
 }
 
+extension UIScrollView {
+    private static var _additionalDetentHeight: UInt8 = 1
+
+    /// Extra height outside of the scroll view's content that the `.height` detent should include.
+    /// Set by `hForm` to the height of its always visible bottom view, which sits below the scroll view.
+    public var additionalDetentHeight: CGFloat {
+        get {
+            (objc_getAssociatedObject(self, &UIScrollView._additionalDetentHeight) as? CGFloat) ?? 0
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &UIScrollView._additionalDetentHeight,
+                newValue,
+                objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+}
+
 extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
@@ -216,68 +236,8 @@ public enum Detent: Equatable {
     @MainActor
     public static var height: Detent {
         .custom("scrollViewContentSize") { viewController, _ in
-            let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
-
-            guard
-                let scrollView = allScrollViewDescendants.first(where: { _ in
-                    true
-                })
-            else {
-                return 0
-            }
-            let navigationController =
-                viewController.navigationController ?? findNavigationController(from: viewController)
-            let transitioningDelegate =
-                navigationController?.transitioningDelegate
-                as? DetentTransitioningDelegate
-            let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
-
-            let hasNavigationBar =
-                navigationController?.navigationBar != nil
-                && (navigationController?.isNavigationBarHidden ?? true) == false
-
-            let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
-
-            let navigationBarHeight: CGFloat = navigationBarDynamicHeight ?? 52
-
-            let additionalNavigationSafeAreaInsets =
-                navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
-            let additionalNavigationHeight =
-                additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
-
-            let additionalViewHeight =
-                viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
-            var totalHeight: CGFloat =
-                scrollView.contentSize.height
-                + (hasNavigationBar ? navigationBarHeight : 0)
-                + additionalNavigationHeight
-                + additionalViewHeight
-
-            if keyboardHeight > 0 {
-                let keyWindow = UIApplication.shared.connectedScenes
-                    .filter { $0.activationState == .foregroundActive }
-                    .map { $0 as? UIWindowScene }
-                    .compactMap { $0 }
-                    .first?
-                    .windows
-                    .filter(\.isKeyWindow).first
-                if let keyWindow {
-                    let bottomPadding = keyWindow.safeAreaInsets.bottom
-                    totalHeight -= bottomPadding
-                }
-            }
-            return totalHeight
+            UIViewController.calculateScrollViewContentHeight(for: viewController, includeLargeTitle: false)
         }
-    }
-
-    @MainActor
-    private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
-        if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
-            as? UINavigationController
-        {
-            return viewController
-        }
-        return nil
     }
 
     @MainActor
@@ -367,7 +327,10 @@ public enum Detent: Equatable {
 
 @MainActor
 extension UIViewController {
-    static func calculateScrollViewContentHeight(for viewController: UIViewController) -> CGFloat {
+    static func calculateScrollViewContentHeight(
+        for viewController: UIViewController,
+        includeLargeTitle: Bool = true
+    ) -> CGFloat {
         let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
 
         guard
@@ -387,7 +350,8 @@ extension UIViewController {
         let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
 
         let hasLargeTitle =
-            (navigationController?.navigationBar.prefersLargeTitles ?? false)
+            includeLargeTitle
+            && (navigationController?.navigationBar.prefersLargeTitles ?? false)
             && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
         let hasNavigationBar =
             navigationController?.navigationBar != nil
@@ -406,6 +370,7 @@ extension UIViewController {
             viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
         var totalHeight: CGFloat =
             scrollView.contentSize.height
+            + scrollView.additionalDetentHeight
             + (hasNavigationBar ? navigationBarHeight : 0)
             + additionalNavigationHeight
             + additionalViewHeight
