@@ -79,6 +79,7 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **ColorAnimationView** -- Animated color transition view
 - **CardView / CardStack** -- Card-based layout components
 - **Accordion** -- Expandable/collapsible section used in peril displays
+- **AddonPillowView** -- 48pt `PillowType` pillow with a "plus" badge, used for addon rows (Home, Contracts, CrossSell)
 
 ### Pager & Lists
 - **hPagerDots** -- Page indicator dots for paged content

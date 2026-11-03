@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -27,7 +27,7 @@ public struct CrossSellAddonsSection: View {
                             subtitle: banner.displayDescription,
                             buttonTitle: L10n.crossSellSeePrice,
                             variant: .secondary,
-                            pillow: { AddonPillowView(type: banner.addonType) }
+                            pillow: { AddonPillowView(pillow: banner.addonType.pillowType) }
                         ) {
                             onAddonTap(banner)
                         }

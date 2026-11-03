@@ -23,7 +23,8 @@ tuist generate              # Regenerate Xcode workspace after module changes
 
 | Module | Description |
 |--------|-------------|
-| Addons | Insurance addon discovery and purchase |
+| AddonsCore | Addon models, client protocol, service wrapper and demo data (UI-free) |
+| AddonsUI | SwiftUI views, navigation and ViewModels for addon purchase and removal (built on AddonsCore) |
 | App | Main app entry point, navigation hub, deep linking |
 | AuthenticationCore | Auth protocols, service wrapper, shared state (`OTPState`, `SEBankIDState`) |
 | AuthenticationUI | BankID + OTP login views and tracking conformance |

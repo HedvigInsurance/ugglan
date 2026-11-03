@@ -1,0 +1,78 @@
+import AddonsCore
+import SwiftUI
+import hCore
+import hCoreUI
+
+public struct AddonCardView: View {
+    let openAddon: () -> Void
+    let addon: AddonBanner
+
+    public init(
+        openAddon: @escaping () -> Void,
+        addon: AddonBanner
+    ) {
+        self.openAddon = openAddon
+        self.addon = addon
+    }
+
+    public var body: some View {
+        hSection {
+            hRow {
+                VStack(alignment: .leading, spacing: .padding8) {
+                    HStack {
+                        hText(addon.displayTitle)
+                            .accessibilityRemoveTraits(.isButton)
+                            .accessibilityAddTraits(.isStaticText)
+                        Spacer()
+                        if let badge = addon.badges.first {
+                            hPill(text: badge, color: .grey)
+                                .hFieldSize(.small)
+                        }
+                    }
+                    hText(addon.displayDescription, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+
+                    seePriceButton
+                }
+            }
+        }
+        .hWithoutHorizontalPadding([.section])
+        .sectionContainerStyle(.negative)
+        .overlay(
+            RoundedRectangle(cornerRadius: .cornerRadiusXL).stroke(hBorderColor.primary, lineWidth: 1)
+        )
+        .hCardShadow()
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + " " + L10n.crossSellSeePrice)
+    }
+
+    var seePriceButton: some View {
+        hButton(
+            .small,
+            .secondary,
+            content: .init(title: L10n.crossSellSeePrice),
+            handleSeePrice
+        )
+        .hButtonTakeFullWidth(true)
+    }
+
+    private func handleSeePrice() {
+        openAddon()
+    }
+}
+
+#Preview {
+    hSection {
+        AddonCardView(
+            openAddon: {},
+            addon: .init(
+                contractIds: [""],
+                displayTitle: "Travel Plus",
+                displayDescription: "Extended travel insurance with extra coverage for your travels",
+                badges: ["Popular"],
+                addonType: .travelPlus
+            )
+        )
+    }
+    .sectionContainerStyle(.transparent)
+}

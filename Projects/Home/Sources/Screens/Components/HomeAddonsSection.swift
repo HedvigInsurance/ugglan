@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import AppStateContainer
 import Contracts
 import CrossSell
@@ -24,7 +24,7 @@ struct HomeAddonsSection: View {
                             buttonTitle: L10n.crossSellSeePrice,
                             variant: .secondary,
                             isLoading: navigationVm.isAddonPresented?.contractInfos == input.contractInfos,
-                            pillow: { AddonPillowView(type: banner.addonType) }
+                            pillow: { AddonPillowView(pillow: banner.addonType.pillowType) }
                         ) {
                             withAnimation(.easeInOut(duration: 0.2)) { navigationVm.isAddonPresented = input }
                         }

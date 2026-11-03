@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import Foundation
 
 class TravelInsuranceClientDemo: TravelInsuranceClient {

@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import AppStateContainer
 import Foundation
 import Observation

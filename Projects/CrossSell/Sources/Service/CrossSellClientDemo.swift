@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 
 public class CrossSellClientDemo: CrossSellClient {
     public init() {}
@@ -42,7 +42,7 @@ public class CrossSellClientDemo: CrossSellClient {
         return .init(recommended: nil, others: crossSells)
     }
 
-    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
+    public func getAddonBanners(source: AddonsCore.AddonSource) async throws -> [AddonsCore.AddonBanner] {
         [
             AddonBanner(
                 contractIds: [],

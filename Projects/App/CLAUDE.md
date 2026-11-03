@@ -22,7 +22,7 @@ Main application entry point for the Hedvig iOS app. Manages root navigation (lo
 - `Sources/Service/Notifications/` — NotificationClient protocol + Octopus/Demo implementations.
 
 ## Dependencies
-- Imports: hCore, hCoreUI, hGraphQL, Contracts, Claims, Home, Payment, Forever, Chat, SubmitClaimChat, Profile, Authentication, Market, MoveFlow, TerminateContracts, TravelCertificate, EditStakeholders, ChangeTier, Addons, CrossSell, Campaign, CoreDependencies, AppDependencies, ResourceBundledDependencies.
+- Imports: hCore, hCoreUI, hGraphQL, Contracts, Claims, Home, Payment, Forever, Chat, SubmitClaimChat, Profile, Authentication, Market, MoveFlow, TerminateContracts, TravelCertificate, EditStakeholders, ChangeTier, AddonsCore, AddonsUI, CrossSell, Campaign, CoreDependencies, AppDependencies, ResourceBundledDependencies.
 - No other module depends on App; it is the top-level target. Two app targets exist: `Ugglan` (staging) and `Hedvig` (production).
 
 ## Navigation

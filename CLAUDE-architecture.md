@@ -184,7 +184,7 @@ public class SomeClientDemo: SomeClientProtocol {
 }
 ```
 
-> **Note:** Some modules (Claims, Addons, Profile) have local `OctopusImplementation/` directories containing service wrappers/logging facades — these are not the actual GraphQL client implementations (those live in the App module).
+> **Note:** Some modules (Claims, Profile) have local `OctopusImplementation/` directories containing service wrappers/logging facades — these are not the actual GraphQL client implementations (those live in the App module).
 
 ## Dependency Injection
 

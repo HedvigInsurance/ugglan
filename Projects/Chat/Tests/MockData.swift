@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import CrossSell
 import Foundation
 import Logger
