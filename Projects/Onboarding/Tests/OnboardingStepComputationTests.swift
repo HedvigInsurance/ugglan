@@ -247,7 +247,8 @@ extension FeatureData {
             isTerminationRedirectionEnabled: false,
             isAnalyticsEnabled: isAnalyticsEnabled,
             isResumingOngoingShopSessionsEnabled: false,
-            isCancelInsuranceHiddenFromHomeScreen: false
+            isCancelInsuranceHiddenFromHomeScreen: false,
+            showYearInReview: false
         )
     }
 }

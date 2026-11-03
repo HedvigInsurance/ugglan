@@ -23,6 +23,7 @@ extension FeatureData {
         isNewConversationFromInboxEnabled: Bool = false,
         isResumingOngoingShopSessionsEnabled: Bool = false,
         isCancelInsuranceHiddenFromHomeScreen: Bool = false,
+        showYearInReview: Bool = false,
     ) -> FeatureData {
         FeatureData(
             isUpdateNecessary: false,
@@ -37,6 +38,7 @@ extension FeatureData {
             isAnalyticsEnabled: false,
             isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
             isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen,
+            showYearInReview: showYearInReview,
         )
     }
 }
