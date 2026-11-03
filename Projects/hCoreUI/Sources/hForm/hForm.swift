@@ -60,6 +60,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 .scaledToFill()
                                 .allowsHitTesting(false)
                                 .accessibilityHidden(true)
+                        case let .custom(view):
+                            view
+                                .allowsHitTesting(false)
+                                .accessibilityHidden(true)
                         case .default:
                             if #available(iOS 26.0, *), contentPosition == .compact {
                                 Color.clear
@@ -100,6 +104,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                 if #available(iOS 26.0, *), contentPosition == .compact {
                                     Color.clear
                                 } else if case .aiPoweredGradient = bottomBackgroundStyle {
+                                    Color.clear
+                                } else if case .custom = bottomBackgroundStyle {
                                     Color.clear
                                 } else {
                                     hBackgroundColor.primary
@@ -342,6 +348,7 @@ public enum hFormBottomBackgroundStyle {
     case `default`
     case gradient(from: any hColor, to: any hColor)
     case aiPoweredGradient
+    case custom(AnyView)
 }
 
 public enum HFormTitleSpacingType {
@@ -433,6 +440,10 @@ extension View {
 extension View {
     public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
         environment(\.hFormBottomBackgroundStyle, style)
+    }
+
+    public func hFormBottomBackground<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        environment(\.hFormBottomBackgroundStyle, .custom(AnyView(content())))
     }
 }
 
