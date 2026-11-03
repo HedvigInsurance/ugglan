@@ -249,7 +249,8 @@ extension FeatureData {
             isOnboardingEnabled: true,
             isTerminationRedirectionEnabled: false,
             isAnalyticsEnabled: isAnalyticsEnabled,
-            isResumingOngoingShopSessionsEnabled: false
+            isResumingOngoingShopSessionsEnabled: false,
+            showYearInReview: false
         )
     }
 }
