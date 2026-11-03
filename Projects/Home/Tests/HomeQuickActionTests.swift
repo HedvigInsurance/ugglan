@@ -100,6 +100,72 @@ extension HomeDependencySuite {
         }
 
         @Test
+        func homeQuickActionsKeepCancellationWhenHideFlagIsOff() async {
+            await withCancelInsuranceHiddenFlag(enabled: false) {
+                let editActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .cancellation])
+                let store = await makeStore(
+                    quickActions: [.editInsurance(actions: editActions)],
+                    paymentClient: MockPaymentClient(upcomingPayment: nil)
+                )
+
+                #expect(store.homeQuickActions == [.editInsurance(editActions), .inviteFriend])
+            }
+
+            await resetContainerAndExpectStoreReleased()
+        }
+
+        @Test
+        func homeQuickActionsRemoveCancellationWhenHideFlagIsOn() async {
+            await withCancelInsuranceHiddenFlag(enabled: true) {
+                let editActions = EditInsuranceActionsWrapper(
+                    quickActions: [.editCoInsured, .upgradeCoverage, .cancellation]
+                )
+                let store = await makeStore(
+                    quickActions: [.editInsurance(actions: editActions)],
+                    paymentClient: MockPaymentClient(upcomingPayment: nil)
+                )
+
+                let expectedEditActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .upgradeCoverage])
+                #expect(
+                    store.homeQuickActions == [.editInsurance(expectedEditActions), .upgradeCoverage, .inviteFriend]
+                )
+            }
+
+            await resetContainerAndExpectStoreReleased()
+        }
+
+        @Test
+        func homeQuickActionsOmitEditInsuranceWhenCancellationIsTheOnlyEditActionAndHideFlagIsOn() async {
+            await withCancelInsuranceHiddenFlag(enabled: true) {
+                let editActions = EditInsuranceActionsWrapper(quickActions: [.cancellation])
+                let store = await makeStore(
+                    quickActions: [.editInsurance(actions: editActions), .changeAddress],
+                    paymentClient: MockPaymentClient(upcomingPayment: nil)
+                )
+
+                #expect(store.homeQuickActions == [.changeAddress, .inviteFriend])
+            }
+
+            await resetContainerAndExpectStoreReleased()
+        }
+
+        @Test
+        func quickActionsKeepCancellationWhenHideFlagIsOn() async {
+            await withCancelInsuranceHiddenFlag(enabled: true) {
+                let editActions = EditInsuranceActionsWrapper(quickActions: [.editCoInsured, .cancellation])
+                let quickActions: [QuickAction] = [.editInsurance(actions: editActions), .changeAddress]
+                let store = await makeStore(
+                    quickActions: quickActions,
+                    paymentClient: MockPaymentClient(upcomingPayment: nil)
+                )
+
+                #expect(store.quickActions == quickActions)
+            }
+
+            await resetContainerAndExpectStoreReleased()
+        }
+
+        @Test
         func upcomingPaymentTilePresentsFreshlyFetchedPayment() async {
             do {
                 let paymentClient = MockPaymentClient(upcomingPayment: nil)
@@ -146,6 +212,14 @@ extension HomeDependencySuite {
             let paymentStore: PaymentStore = globalAppStateContainer.get()
             await paymentStore.load()
             return store
+        }
+
+        // The body's locals are released when it returns, before the closing release check.
+        private func withCancelInsuranceHiddenFlag(enabled: Bool, _ body: () async -> Void) async {
+            let previous = FeatureFlags.shared.data
+            FeatureFlags.shared.data = .allOff(isCancelInsuranceHiddenFromHomeScreen: enabled)
+            await body()
+            FeatureFlags.shared.data = previous
         }
 
         // reset before clearing: it cancels the debounced snapshot write that would otherwise land after the wipe

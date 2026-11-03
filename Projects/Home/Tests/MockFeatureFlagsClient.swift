@@ -22,6 +22,7 @@ extension FeatureData {
     static func allOff(
         isNewConversationFromInboxEnabled: Bool = false,
         isResumingOngoingShopSessionsEnabled: Bool = false,
+        isCancelInsuranceHiddenFromHomeScreen: Bool = false,
     ) -> FeatureData {
         FeatureData(
             isUpdateNecessary: false,
@@ -37,6 +38,7 @@ extension FeatureData {
             isTerminationRedirectionEnabled: false,
             isAnalyticsEnabled: false,
             isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
+            isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen,
         )
     }
 }

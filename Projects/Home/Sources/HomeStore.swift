@@ -66,7 +66,7 @@ public final class HomeStore: AppStore {
         let paymentStore: PaymentStore = globalAppStateContainer.get()
         let editActions = quickActions.editInsuranceActions
         let tiles: [HomeQuickAction?] = [
-            editActions.map(HomeQuickAction.editInsurance),
+            homeEditInsuranceActions(from: editActions).map(HomeQuickAction.editInsurance),
             quickActions.contains(.changeAddress) ? HomeQuickAction.changeAddress : nil,
             quickActions.contains(.travelInsurance) ? HomeQuickAction.travelCertificate : nil,
             quickActions.sickAbroadDeflection.map(HomeQuickAction.sickAbroad),
@@ -75,6 +75,17 @@ public final class HomeStore: AppStore {
             paymentStore.paymentData != nil ? HomeQuickAction.upcomingPayment : nil,
         ]
         return tiles.compactMap { $0 }
+    }
+
+    /// Only the Home tile drops cancellation behind the flag; Help Center keeps the full list. Nil when nothing is
+    /// left, so the tile hides instead of opening an empty sheet.
+    private func homeEditInsuranceActions(
+        from editActions: EditInsuranceActionsWrapper?
+    ) -> EditInsuranceActionsWrapper? {
+        guard let editActions else { return nil }
+        guard Dependencies.featureFlags().isCancelInsuranceHiddenFromHomeScreen else { return editActions }
+        let visibleActions = editActions.quickActions.filter { $0 != .cancellation }
+        return visibleActions.isEmpty ? nil : EditInsuranceActionsWrapper(quickActions: visibleActions)
     }
 
     public var upcomingRenewalContracts: [HomeContract] {

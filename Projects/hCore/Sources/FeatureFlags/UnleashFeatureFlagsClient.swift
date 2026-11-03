@@ -126,6 +126,9 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics"),
             isResumingOngoingShopSessionsEnabled: !unleashClient.isEnabled(
                 name: "disable_resuming_ongoing_shop_sessions"
+            ),
+            isCancelInsuranceHiddenFromHomeScreen: unleashClient.isEnabled(
+                name: "hide_cancel_insurance_from_home_screen"
             )
         )
         featureDataPublisher.send(data)
