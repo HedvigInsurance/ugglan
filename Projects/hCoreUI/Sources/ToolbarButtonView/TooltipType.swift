@@ -8,6 +8,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     case chat(hasUnread: Bool)
     case travelCertificate
     case insuranceEvidence
+    case yearInReview
 
     @MainActor
     private static var animateOffer = true
@@ -35,6 +36,12 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             }
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.view
+        case .yearInReview:
+            if #available(iOS 26.0, *) {
+                return hCoreUIAssets.star.view
+            } else {
+                return hCoreUIAssets.yearInReview.view
+            }
         }
     }
     var priority: Int {
@@ -47,6 +54,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 2
         case .travelCertificate, .insuranceEvidence:
             return 3
+        case .yearInReview:
+            return 4
         }
     }
 
@@ -60,6 +69,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.chatConversationInbox
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
+        case .yearInReview:
+            return "Year in review"
         }
     }
 
@@ -86,6 +97,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return "travelCertHint"
         case .insuranceEvidence:
             return "insuranceEvidenceHint"
+        case .yearInReview:
+            return "yearInReviewHint"
         }
     }
 
@@ -101,6 +114,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return "travelCertificate"
         case .insuranceEvidence:
             return "insuranceEvidence"
+        case .yearInReview:
+            return "yearInReview"
         }
     }
 
@@ -118,6 +133,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.Toast.newMessage
         case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
+        case .yearInReview:
+            return "Year in review"
         }
     }
 
@@ -129,6 +146,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 60
         case .crossSell:
             return 60 * 10  // 10 minutes
+        case .yearInReview:
+            return 60 * 60 * 24 * 7  // 1 week
         default:
             return nil
         }
@@ -183,6 +202,18 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
                 return false
             }
             return true
+        case .yearInReview:
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
+
+                if timeIntervalSincePast > timeInterval {
+                    return true
+                }
+                return false
+            }
+            return true
         default:
             return false
         }
@@ -193,7 +224,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .travelCertificate, .insuranceEvidence:
             return 24
-        case .crossSell:
+        case .crossSell, .yearInReview:
             if #available(iOS 26.0, *) {
                 return 20
             }
@@ -222,6 +253,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             hSignalColor.Green.element
         case .firstVet:
             hSignalColor.Blue.firstVet
+        case .yearInReview:
+            hSignalColor.Amber.element
         default:
             hFillColor.Opaque.primary
         }
@@ -238,6 +271,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return hSignalColor.Blue.firstVet.colorFor(.dark, .base).color.uiColor()
         case .chat:
             return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
+        case .yearInReview:
+            return hSignalColor.Amber.fill.colorFor(.dark, .base).color.uiColor()
         }
     }
 
@@ -262,6 +297,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             hFillColor.Opaque.primary
         case .crossSell:
             hSignalColor.Green.fill
+        case .yearInReview:
+            hSignalColor.Amber.fill
         default:
             hFillColor.Opaque.secondary
         }
@@ -272,6 +309,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             hSignalColor.Green.text
+        case .yearInReview:
+            hSignalColor.Amber.text
         default:
             hTextColor.Opaque.negative
         }

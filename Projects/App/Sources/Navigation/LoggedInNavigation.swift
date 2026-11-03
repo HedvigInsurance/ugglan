@@ -852,6 +852,11 @@ struct HomeTab: View {
                 .withDismissButton()
                 .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
         }
+        .modally(presented: $homeNavigationVm.showYearReview) {
+            StoriesScreen()
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: StoriesScreen.self))
+        }
         .environment(\.toolbarTransitionNamespace, toolbarTransitionNamespace)
     }
 
