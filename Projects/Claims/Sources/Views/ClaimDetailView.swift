@@ -8,15 +8,33 @@ import hCore
 import hCoreUI
 
 public struct ClaimDetailView: View {
-    @State var vm: ClaimDetailViewModel
-    @Environment(NavigationRouter.self) var router
+    private let claim: ClaimModel?
+    private let type: ClaimDetailsType
+    @State private var vm: ClaimDetailViewModel?
 
     public init(
         claim: ClaimModel?,
         type: ClaimDetailsType
     ) {
-        _vm = .init(wrappedValue: .init(claim: claim, type: type))
+        self.claim = claim
+        self.type = type
     }
+
+    public var body: some View {
+        if let vm {
+            ClaimDetailContentView(vm: vm)
+        } else {
+            Color.clear
+                .onAppear {
+                    vm = ClaimDetailViewModel(claim: claim, type: type)
+                }
+        }
+    }
+}
+
+private struct ClaimDetailContentView: View {
+    @Bindable var vm: ClaimDetailViewModel
+    @Environment(NavigationRouter.self) var router
 
     private var statusParagraph: String? {
         vm.claim?.statusParagraph
@@ -82,6 +100,9 @@ public struct ClaimDetailView: View {
             )
         )
         .trackVisibility(as: ClaimDetailView.self)
+        .task {
+            vm.start()
+        }
     }
 
     @ViewBuilder
@@ -461,6 +482,7 @@ public class ClaimDetailViewModel {
     let fileGridViewModel: FileGridViewModel
     let type: ClaimDetailsType
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private var hasStarted = false
     public init(
         claim: ClaimModel?,
         type: ClaimDetailsType
@@ -469,21 +491,27 @@ public class ClaimDetailViewModel {
         claimDetailsService = .init(id: type.claimId)
         let store: ClaimsStore = globalAppStateContainer.get()
         self.type = type
-        let isPartnerClaim = claim?.isPartnerClaim == true || type.isPartnerClaim
         let files = store.files[type.claimId] ?? []
         fileGridViewModel = .init(files: files, options: [])
+        if let claim {
+            claimProcessingState = .success
+            if let url = URL(string: claim.signedAudioURL) {
+                player = AudioPlayer(url: url)
+            }
+        }
+    }
+
+    func start() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        let isPartnerClaim = claim?.isPartnerClaim == true || type.isPartnerClaim
         if !isPartnerClaim {
             Task {
                 await fetchFiles()
             }
             handleClaimChat()
         }
-        if let claim {
-            claimProcessingState = .success
-            if let url = URL(string: claim.signedAudioURL) {
-                player = AudioPlayer(url: url)
-            }
-        } else {
+        if claim == nil {
             fetchClaimDetails()
         }
     }
