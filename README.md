@@ -5,15 +5,24 @@ Hedvig is a new approach to insurance currently available in Sweden, we belive i
 
 ## Run the app
 
-1. Install Xcode
+1. Install Xcode 27.2 or later
 
    `get it from Mac App Store`
 
-2. Install mise + tuist
+2. Open `Ugglan.xcworkspace` and build
+
+   The generated Xcode projects (JSON `project.xcproj` format) and codegen output are committed, so a fresh clone
+   builds without any setup.
+
+### Changing modules, assets, strings or GraphQL
+
+Tuist manifests (`Project.swift`, `Tuist/`) are still the source of truth for the projects.
+
+1. Install mise + tuist (once)
 
    `scripts/install-tuist.sh`
 
-3. Run post-checkout
+2. Edit the manifests / assets / strings / `.graphql` files, then regenerate and commit the result
 
    `scripts/post-checkout.sh`
    
