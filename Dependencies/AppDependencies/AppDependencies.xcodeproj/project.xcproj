@@ -1,0 +1,260 @@
+{
+  "organization": "Hedvig",
+  "default-configuration": "Release",
+  "configurations": [
+    { "name": "Debug", "file": "Project/Configurations/Base/Configurations/Debug.xcconfig" },
+    { "name": "Release", "file": "Project/Configurations/Base/Configurations/Release.xcconfig" },
+  ],
+  "localizations": {
+    "development": "en",
+    "supported": [
+      "Base",
+    ],
+  },
+  "packages": [
+    {
+      "kind": "remote",
+      "repository": "https://github.com/DataDog/dd-sdk-ios.git",
+      "version": {
+        "version": "3.17.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/HedvigInsurance/umbrella.git",
+      "version": {
+        "version": "0.0.20261007091044",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/firebase/firebase-ios-sdk",
+      "version": {
+        "up-to-next-major-version": "12.0.0",
+      },
+    }, {
+      "kind": "remote",
+      "repository": "https://github.com/rickclephas/KMP-NativeCoroutines.git",
+      "version": {
+        "version": "1.0.5",
+      },
+    },
+  ],
+  "files": [
+    {
+      "kind": "group",
+      "name": "Products",
+      "children": [
+        { "path": "<PRODUCTS>/AppDependencies.framework", "id": "77AADE1980890F5D0A43C319", "type": "wrapper.framework", "index": false },
+      ],
+    }, {
+      "kind": "group",
+      "name": "Project",
+      "children": [
+        {
+          "kind": "group",
+          "path": "../../Configurations",
+          "children": [
+            {
+              "kind": "group",
+              "path": "Base",
+              "children": [
+                {
+                  "kind": "group",
+                  "path": "Configurations",
+                  "children": [
+                    { "path": "Debug.xcconfig" },
+                    { "path": "Release.xcconfig" },
+                  ],
+                },
+              ],
+            }, {
+              "kind": "group",
+              "path": "iOS",
+              "children": [
+                { "path": "iOS-Framework-Debug.xcconfig" },
+                { "path": "iOS-Framework-Release.xcconfig" },
+              ],
+            },
+          ],
+        }, {
+          "kind": "group",
+          "path": "Derived",
+          "children": [
+            {
+              "kind": "group",
+              "path": "InfoPlists",
+              "children": [
+                { "path": "AppDependencies-Info.plist" },
+              ],
+            },
+          ],
+        }, {
+          "kind": "group",
+          "path": "Sources",
+          "children": [
+            { "path": "Dependencies.swift", "target-membership": [ "AppDependencies/compile-sources" ] },
+          ],
+        },
+      ],
+    },
+  ],
+  "targets": [
+    {
+      "name": "AppDependencies",
+      "id": "74F563B5C74AA81DC95E8AAE",
+      "product": "Products/AppDependencies.framework",
+      "product-type": "framework",
+      "specialized-configurations": [
+        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Framework-Debug.xcconfig" },
+        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Framework-Release.xcconfig" },
+      ],
+      "build-phases": [
+        {
+          "kind": "script",
+          "name": "Build HedvigShared (local umbrella mode)",
+          "log-environment-variables": true,
+          "run-on-every-build": true,
+          "shell": "/bin/sh",
+          "script": "\"$SRCROOT\"/../../scripts/build-local-umbrella.sh ",
+        },
+        "compile-sources",
+        "resources",
+        "frameworks",
+        {
+          "kind": "copy",
+          "name": "Embed Frameworks",
+          "bundle-base-path": "frameworks-directory",
+        },
+      ],
+      "package-product-members": [
+        {
+          "product-name": "DatadogCore",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "DatadogCrashReporting",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "DatadogLogs",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "DatadogRUM",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "DatadogTrace",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "FirebaseAnalytics",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "FirebaseCore",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "HedvigShared",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "product-name": "KMPNativeCoroutinesAsync",
+          "build-phase": { "build-phase": "frameworks" },
+        },
+      ],
+      "build-settings": {
+        "CODE_SIGN_IDENTITY": "",
+        "CURRENT_PROJECT_VERSION": "1",
+        "DEFINES_MODULE": "YES",
+        "DYLIB_COMPATIBILITY_VERSION": "1",
+        "DYLIB_CURRENT_VERSION": "1",
+        "DYLIB_INSTALL_NAME_BASE": "@rpath",
+        "INFOPLIST_FILE": "Derived/InfoPlists/AppDependencies-Info.plist",
+        "INSTALL_PATH": "$(LOCAL_LIBRARY_DIR)/Frameworks",
+        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
+        "LD_RUNPATH_SEARCH_PATHS": [
+          "$(inherited)",
+          "@executable_path/Frameworks",
+          "@loader_path/Frameworks",
+        ],
+        "OTHER_LDFLAGS": [
+          "$(inherited)",
+          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
+        ],
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.AppDependencies",
+        "PRODUCT_NAME": "AppDependencies",
+        "SDKROOT": "iphoneos",
+        "SKIP_INSTALL": "YES",
+        "SUPPORTS_MACCATALYST": "NO",
+        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
+        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
+          "$(inherited)",
+          "DEBUG",
+        ],
+        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
+        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
+        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
+        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
+        "SWIFT_VERSION": "6.3",
+        "TARGETED_DEVICE_FAMILY": "1,2",
+        "VERSIONING_SYSTEM": "apple-generic",
+        "VERSION_INFO_PREFIX": "",
+      },
+    },
+  ],
+  "build-settings": {
+    "ALWAYS_SEARCH_USER_PATHS": "NO",
+    "CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED": "YES",
+    "CLANG_ANALYZER_NONNULL": "YES",
+    "CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION": "YES_AGGRESSIVE",
+    "CLANG_CXX_LANGUAGE_STANDARD": "gnu++14",
+    "CLANG_CXX_LIBRARY": "libc++",
+    "CLANG_ENABLE_MODULES": "YES",
+    "CLANG_ENABLE_OBJC_ARC": "YES",
+    "CLANG_ENABLE_OBJC_WEAK": "YES",
+    "CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING": "YES",
+    "CLANG_WARN_BOOL_CONVERSION": "YES",
+    "CLANG_WARN_COMMA": "YES",
+    "CLANG_WARN_CONSTANT_CONVERSION": "YES",
+    "CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS": "YES",
+    "CLANG_WARN_DIRECT_OBJC_ISA_USAGE": "YES_ERROR",
+    "CLANG_WARN_DOCUMENTATION_COMMENTS": "YES",
+    "CLANG_WARN_EMPTY_BODY": "YES",
+    "CLANG_WARN_ENUM_CONVERSION": "YES",
+    "CLANG_WARN_INFINITE_RECURSION": "YES",
+    "CLANG_WARN_INT_CONVERSION": "YES",
+    "CLANG_WARN_NON_LITERAL_NULL_CONVERSION": "YES",
+    "CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF": "YES",
+    "CLANG_WARN_OBJC_LITERAL_CONVERSION": "YES",
+    "CLANG_WARN_OBJC_ROOT_CLASS": "YES_ERROR",
+    "CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER": "YES",
+    "CLANG_WARN_RANGE_LOOP_ANALYSIS": "YES",
+    "CLANG_WARN_STRICT_PROTOTYPES": "YES",
+    "CLANG_WARN_SUSPICIOUS_MOVE": "YES",
+    "CLANG_WARN_UNGUARDED_AVAILABILITY": "YES_AGGRESSIVE",
+    "CLANG_WARN_UNREACHABLE_CODE": "YES",
+    "CLANG_WARN__DUPLICATE_METHOD_MATCH": "YES",
+    "COPY_PHASE_STRIP": "NO",
+    "DEAD_CODE_STRIPPING": "YES",
+    "DEBUG_INFORMATION_FORMAT[config=Debug]": "dwarf",
+    "DEBUG_INFORMATION_FORMAT[config=Release]": "dwarf-with-dsym",
+    "ENABLE_NS_ASSERTIONS[config=Release]": "NO",
+    "ENABLE_STRICT_OBJC_MSGSEND": "YES",
+    "ENABLE_TESTABILITY[config=Debug]": "YES",
+    "GCC_C_LANGUAGE_STANDARD": "gnu11",
+    "GCC_DYNAMIC_NO_PIC[config=Debug]": "NO",
+    "GCC_NO_COMMON_BLOCKS": "YES",
+    "GCC_OPTIMIZATION_LEVEL[config=Debug]": "0",
+    "GCC_PREPROCESSOR_DEFINITIONS[config=Debug]": [
+      "DEBUG=1",
+      "$(inherited)",
+    ],
+    "GCC_WARN_64_TO_32_BIT_CONVERSION": "YES",
+    "GCC_WARN_ABOUT_RETURN_TYPE": "YES_ERROR",
+    "GCC_WARN_UNDECLARED_SELECTOR": "YES",
+    "GCC_WARN_UNINITIALIZED_AUTOS": "YES_AGGRESSIVE",
+    "GCC_WARN_UNUSED_FUNCTION": "YES",
+    "GCC_WARN_UNUSED_VARIABLE": "YES",
+    "MTL_ENABLE_DEBUG_INFO[config=Debug]": "YES",
+    "MTL_ENABLE_DEBUG_INFO[config=Release]": "NO",
+    "ONLY_ACTIVE_ARCH[config=Debug]": "YES",
+    "PRODUCT_NAME": "$(TARGET_NAME)",
+    "SWIFT_VERSION": "6.3",
+    "VALIDATE_PRODUCT[config=Release]": "YES",
+  },
+  "last-upgrade": "2600.0",
+}

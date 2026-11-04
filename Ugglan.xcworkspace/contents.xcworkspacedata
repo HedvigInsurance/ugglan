@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <Group
+      location = "group:Dependencies"
+      name = "Dependencies">
+      <FileRef
+         location = "group:AppDependencies/AppDependencies.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:CoreDependencies/CoreDependencies.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:DevDependencies/DevDependencies.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:ResourceBundledDependencies/ResourceBundledDependencies.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:TestDependencies/TestDependencies.xcodeproj">
+      </FileRef>
+   </Group>
+   <Group
+      location = "group:Projects"
+      name = "Projects">
+      <FileRef
+         location = "group:Addons/Addons.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:App/Ugglan.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:AuthenticationCore/AuthenticationCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:AuthenticationUI/AuthenticationUI.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:CampaignCore/CampaignCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:CampaignUI/CampaignUI.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:ChangeTier/ChangeTier.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Chat/Chat.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Claims/Claims.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Codegen/Codegen.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Contracts/Contracts.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:CrossSell/CrossSell.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:EditStakeholders/EditStakeholders.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Forever/Forever.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Home/Home.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:InsuranceEvidence/InsuranceEvidence.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Market/Market.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:MoveFlow/MoveFlow.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Onboarding/Onboarding.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Payment/Payment.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:Profile/Profile.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:SubmitClaimChat/SubmitClaimChat.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:TerminateContracts/TerminateContracts.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:TravelCertificate/TravelCertificate.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:hCore/hCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:hCoreUI/hCoreUI.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:hGraphQL/hGraphQL.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>
