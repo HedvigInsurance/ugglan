@@ -9,7 +9,7 @@ DerivedData/
 # Workspace Package.resolved is a symlink to .package.resolved; per-project ones are created by Xcode
 .package.resolved
 **/xcshareddata/swiftpm/
-# Left behind by `tuist generate --path Projects/<Module>` (e.g. scripts/codegen.sh)
+# Left behind by `tuist generate --path Projects/<Module>`
 Projects/*/*.xcworkspace
 # Opt-in local modes; never commit a generation made with these
 .local-umbrella
