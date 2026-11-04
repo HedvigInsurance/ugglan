@@ -17,6 +17,22 @@
       "name": "Products",
       "children": [
         {
+          "path": "<PRODUCTS>/AddonsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "TravelCertificate/frameworks",
+            "TravelCertificateTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/AddonsUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "TravelCertificate/frameworks",
+            "TravelCertificateTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Contracts.framework",
           "type": "wrapper.framework",
           "index": false,

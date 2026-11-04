@@ -17,6 +17,14 @@
       "name": "Products",
       "children": [
         {
+          "path": "<PRODUCTS>/AddonsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Chat.framework",
           "type": "wrapper.framework",
           "index": false,

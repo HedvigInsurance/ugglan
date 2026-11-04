@@ -17,7 +17,7 @@
       "name": "Products",
       "children": [
         {
-          "path": "<PRODUCTS>/Addons.framework",
+          "path": "<PRODUCTS>/AddonsCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

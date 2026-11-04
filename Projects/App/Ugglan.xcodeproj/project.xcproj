@@ -18,7 +18,17 @@
       "name": "Products",
       "children": [
         {
-          "path": "<PRODUCTS>/Addons.framework",
+          "path": "<PRODUCTS>/AddonsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/AddonsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

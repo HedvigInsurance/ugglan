@@ -24,7 +24,10 @@
       location = "group:Projects"
       name = "Projects">
       <FileRef
-         location = "group:Addons/Addons.xcodeproj">
+         location = "group:AddonsCore/AddonsCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:AddonsUI/AddonsUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:App/Ugglan.xcodeproj">

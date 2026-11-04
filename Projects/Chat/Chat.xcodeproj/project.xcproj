@@ -16,6 +16,15 @@
       "kind": "group",
       "name": "Products",
       "children": [
+        {
+          "path": "<PRODUCTS>/AddonsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Chat/frameworks",
+            "ChatTests/frameworks",
+          ],
+        },
         { "path": "<PRODUCTS>/Chat.framework", "id": "EEE28C25EAD3F5DC9E76FFAC", "type": "wrapper.framework", "index": false, "target-membership": [ "ChatTests/frameworks" ] },
         { "path": "<PRODUCTS>/ChatTests.xctest", "id": "082A769CEB29C2CF1616DE7A", "type": "wrapper.cfbundle", "index": false },
         {
