@@ -2,9 +2,8 @@
 """Turn a Swift Package Manager Package.resolved into a GitHub dependency-graph
 snapshot, for the Dependency Submission API.
 
-GitHub parses Package.resolved only at the repo root. Xcode and Tuist projects keep
-it inside the .xcworkspace, and Tuist regenerates it, so the graph never sees the
-Swift dependencies. This prints the snapshot JSON; the caller posts it:
+GitHub parses Package.resolved only at the repo root. Xcode keeps it inside the
+.xcworkspace, so the graph never sees the Swift dependencies. This prints the snapshot JSON; the caller posts it:
 
   python3 scripts/dependency-submission/spm_snapshot.py \\
       Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved \\

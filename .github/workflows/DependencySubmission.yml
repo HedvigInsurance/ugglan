@@ -1,7 +1,7 @@
 # Submits the Swift package tree to this repo's GitHub dependency graph, so the
 # SBOM export and Hedvig's open-source register (prod-env/compliance/oss-register)
 # see what the app ships. GitHub only parses Package.resolved at the repo root;
-# Xcode resolves ours (uncommitted) inside Ugglan.xcworkspace, so without this the graph holds
+# ours is committed inside Ugglan.xcworkspace, so without this the graph holds
 # only the Fastlane gems.
 name: DependencySubmission
 
@@ -20,23 +20,13 @@ concurrency:
 
 jobs:
   submit:
-    runs-on: macos-26
+    # Package.resolved is committed, so this only needs Python and the GitHub API
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
       - run: python3 -m unittest discover -s scripts/dependency-submission
-
-      - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        with:
-          # The committed project.xcproj (JSON) format needs Xcode 27.2+
-          xcode-version: '^27.2'
-
-      # The workspace is committed, so packages resolve straight from the checkout
-      - name: Resolve packages
-        run: |
-          xcodebuild -resolvePackageDependencies -workspace Ugglan.xcworkspace -scheme Ugglan
 
       - name: Submit snapshot
         env:

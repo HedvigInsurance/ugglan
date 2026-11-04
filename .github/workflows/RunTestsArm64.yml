@@ -65,6 +65,7 @@ jobs:
           xcodebuild test \
             -workspace Ugglan.xcworkspace \
             -scheme Ugglan-Workspace \
+            -onlyUsePackageVersionsFromResolvedFile \
             -destination 'platform=iOS Simulator,name=iPhone 16e,OS=latest' \
             -resultBundlePath "${{ github.workspace }}/TestResults.xcresult" \
             -enableCodeCoverage YES \

@@ -9,6 +9,9 @@ let tuist = Tuist(
             // Resolve packages with the system git (replaces the deprecated resolveDependenciesWithSystemScm)
             // The auto-generated "Generate Project" scheme embeds machine-specific absolute paths
             includeGenerateScheme: false,
+            // Package.resolved is committed and owned by Xcode; without this Tuist overwrites it with the
+            // ignored, machine-local .package.resolved
+            disablePackageVersionLocking: true,
             additionalPackageResolutionArguments: ["-scmProvider", "system"],
             projectFormat: .xcproj
         )

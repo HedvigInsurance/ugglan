@@ -56,5 +56,7 @@ if [[ -f "$MARKER" ]]; then
 else
     # The generated projects are committed, so the pinned version must land in the project too
     ( cd "$UGGLAN_ROOT" && tuist generate --no-open )
-    echo "==> Regenerated projects; commit the template and AppDependencies project together."
+    # Package.resolved is committed and pins the umbrella version too
+    ( cd "$UGGLAN_ROOT" && xcodebuild -resolvePackageDependencies -workspace Ugglan.xcworkspace -scheme Ugglan -quiet )
+    echo "==> Regenerated projects and Package.resolved; commit them together with the template."
 fi
