@@ -11,7 +11,7 @@ Handles cross-selling of additional insurance products and addon banners. Fetche
 - `Sources/View/Components/` — UI components: banner, button, pillow, stack, discount progress, and `CrossSellRow` (shared pillow-row shell, also used by Home's addon section)
 
 ## Dependencies
-- hCore, hCoreUI, AppStateContainer, Addons
+- hCore, hCoreUI, AppStateContainer, AddonsCore
 
 ## Gotchas
 - `CrossSellSource` enum controls context-dependent fetching (home, closedClaim, insurances, etc.)

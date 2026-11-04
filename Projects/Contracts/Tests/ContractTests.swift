@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import TestDependencies
 import Testing
 import hCore

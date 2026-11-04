@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import Contracts
 import Foundation
 import hCore

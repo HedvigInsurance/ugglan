@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import Foundation
 import hCore
 
@@ -58,7 +58,7 @@ class MockContractService: FetchContractsClient {
         return data
     }
 
-    func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
+    func getAddonBanners(source: AddonsCore.AddonSource) async throws -> [AddonsCore.AddonBanner] {
         events.append(.getAddonBanners)
         let data = try await fetchAddonBanners()
         return data

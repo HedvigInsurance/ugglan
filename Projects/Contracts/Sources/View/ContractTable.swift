@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import AppStateContainer
 import Combine
 import CrossSell
@@ -222,7 +222,7 @@ struct ContractTable: View {
                             variant: .secondary,
                             isLoading: contractsNavigationVm.isAddonPresented?.contractInfos
                                 == input.contractInfos,
-                            pillow: { AddonPillowView(type: banner.addonType) }
+                            pillow: { AddonPillowView(pillow: banner.addonType.pillowType) }
                         ) {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 contractsNavigationVm.isAddonPresented = input

@@ -19,14 +19,14 @@ Generates travel insurance certificates. Users select a contract, set travel dat
 - Model: `TravelInsuranceContractSpecification` in `Sources/Models/TravelInsuranceContractSpecification.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, Contracts, EditStakeholders, Addons (for `AddonSource`, `ChangeAddonInput`), AppStateContainer
+- Imports: hCore, hCoreUI, Contracts, EditStakeholders, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
 - Depended on by: Home, Profile, App
 
 ## Navigation
 - `TravelCertificateNavigation`: Can operate with its own `RouterHost` or be embedded in an existing navigation stack (`useOwnNavigation` flag).
 - The list screen is always the root. Creating a new certificate is presented modally via `.modally(item:)`.
 - Routes: `TravelCertificateRouterActions` (whoIsTravelling, startDate, list) and `TravelCertificateRouterActionsWithoutBackButton` (processingScreen, startScreen).
-- Integrates with Addons via `.handleAddons(input:)` modifier for travel addon upsell banners.
+- Integrates with AddonsUI via `.handleAddons(input:)` modifier for travel addon upsell banners.
 - PDF preview of existing certificates shown via `.detent`.
 - Entered from Home and Profile modules.
 

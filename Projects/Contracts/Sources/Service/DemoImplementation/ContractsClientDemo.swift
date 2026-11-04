@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import Foundation
 import hCore
 import hCoreUI
@@ -87,7 +87,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }
 
-    public func getAddonBanners(source: Addons.AddonSource) async throws -> [Addons.AddonBanner] {
+    public func getAddonBanners(source: AddonsCore.AddonSource) async throws -> [AddonsCore.AddonBanner] {
         [
             AddonBanner(
                 contractIds: [],

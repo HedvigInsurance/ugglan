@@ -1,4 +1,4 @@
-import Addons
+import AddonsCore
 import Apollo
 import AppStateContainer
 import AuthenticationCore
