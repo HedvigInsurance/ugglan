@@ -126,6 +126,9 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             isAnalyticsEnabled: !unleashClient.isEnabled(name: "disable_analytics"),
             isResumingOngoingShopSessionsEnabled: !unleashClient.isEnabled(
                 name: "disable_resuming_ongoing_shop_sessions"
+            ),
+            showYearInReview: unleashClient.isEnabled(
+                name: "year_in_review"
             )
         )
         featureDataPublisher.send(data)

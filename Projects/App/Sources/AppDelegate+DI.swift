@@ -59,6 +59,7 @@ enum DI {
             let petChipIdClient = PetChipIdClientDemo()
             let onboardingClient = OnboardingClientDemo()
             let puppyGuideClient = PuppyGuideClientDemo()
+            let yearInReviewClient = YearInReviewClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClient })
@@ -83,6 +84,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
             Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
             Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
+            Dependencies.shared.add(module: Module { () -> YearInReviewClient in yearInReviewClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -116,6 +118,8 @@ enum DI {
             let petChipIdClient = PetChipIdClientOctopus()
             let onboardingClient = OnboardingClientOctopus()
             let puppyGuideClient = PuppyGuideClientHedvigShared()
+            // TODO: Use YearInReviewClientOctopus once the backend serves the stories
+            let yearInReviewClient = YearInReviewClientDemo()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
@@ -149,6 +153,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
                 Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
+                Dependencies.shared.add(module: Module { () -> YearInReviewClient in yearInReviewClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
                 Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClientUnleash })
@@ -181,6 +186,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
                 Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
+                Dependencies.shared.add(module: Module { () -> YearInReviewClient in yearInReviewClient })
             }
         }
     }
