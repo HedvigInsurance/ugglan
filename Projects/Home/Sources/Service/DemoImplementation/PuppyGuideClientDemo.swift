@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 import hCoreUI
 
-/// Used in demo mode, previews and Example apps, where the shared Kotlin puppy guide isn't linked.
+/// Used in demo mode and previews, where the shared Kotlin puppy guide isn't linked.
 /// The entry point stays hidden; the screens are an empty placeholder.
 public final class PuppyGuideClientDemo: PuppyGuideClient {
     public init() {}

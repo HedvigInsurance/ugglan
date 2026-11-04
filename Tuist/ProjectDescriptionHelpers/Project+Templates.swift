@@ -5,13 +5,15 @@ public enum FeatureTarget {
     case framework
     case frameworkResources
     case tests
-    case example
+    /// Hosts the tests in a minimal app (sources in the module's `TestHost/` folder), for tests that need a
+    /// running UIApplication and window scene. Without it the tests are a plain logic-test bundle.
+    case testHost
 }
 
 extension Project {
     public static func framework(
         name: String,
-        targets: Set<FeatureTarget> = Set([.framework, .tests, .example]),
+        targets: Set<FeatureTarget> = Set([.framework, .tests]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
         sdks: [String] = []
@@ -40,18 +42,6 @@ extension Project {
                 name: "Release",
                 settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
-            ),
-        ]
-        let appConfigurations: [Configuration] = [
-            .debug(
-                name: "Debug",
-                settings: settings,
-                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
-            ),
-            .release(
-                name: "Release",
-                settings: settings,
-                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
         ]
         let projectConfigurations: [Configuration] = [
@@ -84,6 +74,19 @@ extension Project {
             }
         )
 
+        let appConfigurations: [Configuration] = [
+            .debug(
+                name: "Debug",
+                settings: settings,
+                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+            ),
+            .release(
+                name: "Release",
+                settings: settings,
+                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
+            ),
+        ]
+
         var projectTargets: [Target] = []
 
         if targets.contains(.framework) {
@@ -112,12 +115,10 @@ extension Project {
                 deploymentTargets: .iOS("17.0"),
                 infoPlist: nil,
                 buildableFolders: ["Tests"],
+                // Hosted in the test host app where there is one, otherwise a plain logic-test bundle;
+                // testsDependencies links the framework itself either way
                 dependencies: [
-                    // Hosted in the module's example app where there is one. Modules that only ship
-                    // a framework get a plain logic-test bundle instead, rather than being forced to
-                    // carry an example app to have tests; testsDependencies already links the
-                    // framework itself, so nothing is added here in that case.
-                    targets.contains(.example) ? [.target(name: "\(name)Example")] : [],
+                    targets.contains(.testHost) ? [.target(name: "\(name)TestHost")] : [],
                     [
                         .project(
                             target: "CoreDependencies",
@@ -136,36 +137,17 @@ extension Project {
             projectTargets.append(testTarget)
         }
 
-        if targets.contains(.example) {
-            let exampleTarget = Target.target(
-                name: "\(name)Example",
+        if targets.contains(.testHost) {
+            let testHostTarget = Target.target(
+                name: "\(name)TestHost",
                 destinations: .iOS,
                 product: .app,
-                bundleId: "com.hedvig.example.\(name)Example",
+                bundleId: "com.hedvig.\(name)TestHost",
                 deploymentTargets: .iOS("17.0"),
-                infoPlist: .extendingDefault(with: [
-                    "UIMainStoryboardFile": "",
-                    "NSMicrophoneUsageDescription": "Hedvig uses the microphone to let you record messages and videos.",
-                    "UILaunchStoryboardName": "LaunchScreen",
-                    "UIApplicationSceneManifest": [
-                        "UIApplicationSupportsMultipleScenes": true,
-                        "UISceneConfigurations": [
-                            "UIWindowSceneSessionRoleApplication": [
-                                [
-                                    "UISceneConfigurationName":
-                                        "Default Configuration",
-                                    "UISceneDelegateClassName":
-                                        "\(name)Example.SceneDelegate",
-                                ]
-                            ]
-                        ],
-                    ],
-                ]),
-                sources: ["Example/Sources/**/*.swift", "Sources/Derived/API.swift"],
-                resources: "Example/Resources/**",
-                // Same post-build step as the main app: embeds RiveRuntime (which Tuist doesn't embed) and
-                // fixes up the bundle. Without it, examples linking SubmitClaimChat crash on launch in dyld,
-                // so the app and its SwiftUI previews never start.
+                infoPlist: nil,
+                buildableFolders: ["TestHost"],
+                // Same post-build step as the main app: embeds RiveRuntime (which Tuist doesn't embed) and fixes up
+                // the bundle. Without it, a host linking SubmitClaimChat crashes on launch in dyld.
                 scripts: [
                     .post(
                         path: .relativeToRoot("scripts/post-build-action.sh"),
@@ -174,82 +156,35 @@ extension Project {
                         basedOnDependencyAnalysis: false
                     )
                 ],
-                dependencies: [
-                    [
-                        .target(name: "\(name)"),
-                        .project(
-                            target: "DevDependencies",
-                            path: .relativeToRoot("Dependencies/DevDependencies")
-                        ),
-                    ], targetDependencies,
-                ]
-                .flatMap { $0 },
+                dependencies: [.target(name: "\(name)")] + targetDependencies,
                 settings: .settings(
-                    base: [
-                        "PROVISIONING_PROFILE_SPECIFIER":
-                            "match Development com.hedvig.example.*",
-                        "CODE_SIGN_STYLE": "automatic",
-
-                    ],
+                    base: SettingsDictionary.generatedInfoPlist.merging([
+                        // Gives the app a window scene, which is what the hosted tests need
+                        "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "YES",
+                        "INFOPLIST_KEY_UILaunchScreen_Generation": "YES",
+                        "CODE_SIGN_STYLE": "Automatic",
+                    ]) { _, new in new },
                     configurations: appConfigurations,
                     defaultSettings: .app
                 )
             )
 
-            projectTargets.append(exampleTarget)
+            projectTargets.append(testHostTarget)
         }
 
-        func getTestAction() -> TestAction {
-            TestAction.targets(
-                [
-                    TestableTarget.testableTarget(
-                        target: TargetReference(stringLiteral: "\(name)Tests"),
-                        parallelization: .enabled
-                    )
-                ],
-                arguments: Arguments.arguments(
-                    environmentVariables: [
-                        "SNAPSHOT_ARTIFACTS": .environmentVariable(
-                            // Fixed per module (not a random UUID) so regenerating the committed schemes is
-                            // reproducible, while modules testing in parallel still get separate folders
-                            value: "/tmp/\(name)/__SnapshotFailures__",
-                            isEnabled: true
-                        )
-                    ]
-                ),
-                options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
-            )
-        }
         return Project(
             name: name,
             organizationName: "Hedvig",
             options: .options(
+                automaticSchemesOptions: .disabled,
                 disableBundleAccessors: true,
                 disableSynthesizedResourceAccessors: true
             ),
             packages: [],
             settings: .settings(configurations: projectConfigurations),
             targets: projectTargets,
-            schemes: [
-                Scheme.scheme(
-                    name: name,
-                    shared: true,
-                    buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
-                    testAction: targets.contains(.tests) ? getTestAction() : nil,
-                    runAction: nil
-                ),
-                targets.contains(.example)
-                    ? Scheme.scheme(
-                        name: "\(name)Example",
-                        shared: true,
-                        buildAction: BuildAction.buildAction(targets: [
-                            TargetReference(stringLiteral: "\(name)Example")
-                        ]),
-                        testAction: getTestAction(),
-                        runAction: .runAction(executable: TargetReference(stringLiteral: "\(name)Example"))
-                    ) : nil,
-            ]
-            .compactMap { $0 },
+            // Only the app, workspace and tooling schemes are shared; modules build and test through them
+            schemes: [],
             additionalFiles: name == "hGraphQL" ? [.folderReference(path: "GraphQL")] : []
         )
     }

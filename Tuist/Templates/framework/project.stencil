@@ -5,8 +5,7 @@ let project = Project.framework(
     name: "{{ name }}",
     targets: Set([
        .framework,
-       .tests,
-       .example
+       .tests
     ]),
     dependencies: [],
     sdks: []

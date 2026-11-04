@@ -210,9 +210,7 @@
             { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
-        },
-        { "path": "<PRODUCTS>/libTools.a", "id": "5ED215313336AD2C19F29A8D", "type": "archive.ar", "index": false },
-        {
+        }, {
           "path": "<PRODUCTS>/Market.framework",
           "type": "wrapper.framework",
           "index": false,
@@ -465,12 +463,6 @@
               ],
             },
             { "path": "Tests.swift", "target-membership": [ "AppTests/compile-sources" ] },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Tools",
-          "children": [
-            { "path": "Empty.swift", "target-membership": [ "Tools/compile-sources" ] },
           ],
         },
         { "kind": "folder", "path": "Sources", "target-membership": [ "Hedvig", "Ugglan" ] },
@@ -784,43 +776,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
-      "name": "Tools",
-      "id": "448F16E06AFA7B6CAC046C13",
-      "product": "Products/libTools.a",
-      "product-type": "library.static",
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        },
-      ],
-      "build-settings": {
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "OTHER_LDFLAGS": "-ObjC",
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.tools",
-        "PRODUCT_NAME": "Tools",
-        "SDKROOT": "iphoneos",
-        "SKIP_INSTALL": "YES",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "5",
         "TARGETED_DEVICE_FAMILY": "1,2",
       },
     }, {

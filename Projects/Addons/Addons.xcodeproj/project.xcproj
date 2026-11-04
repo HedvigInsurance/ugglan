@@ -16,18 +16,7 @@
       "kind": "group",
       "name": "Products",
       "children": [
-        {
-          "path": "<PRODUCTS>/Addons.framework",
-          "id": "5A7DB19819342A6DC63BC070",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "AddonsExample/frameworks",
-            { "build-phase": "AddonsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-            "AddonsTests/frameworks",
-          ],
-        },
-        { "path": "<PRODUCTS>/AddonsExample.app", "id": "0165E2ABECE04062C1DD90D2", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/Addons.framework", "id": "5A7DB19819342A6DC63BC070", "type": "wrapper.framework", "index": false, "target-membership": [ "AddonsTests/frameworks" ] },
         { "path": "<PRODUCTS>/AddonsTests.xctest", "id": "A2EACE96CC464AE034A53846", "type": "wrapper.cfbundle", "index": false },
         {
           "path": "<PRODUCTS>/CoreDependencies.framework",
@@ -35,17 +24,7 @@
           "index": false,
           "target-membership": [
             "Addons/frameworks",
-            "AddonsExample/frameworks",
-            { "build-phase": "AddonsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "AddonsTests/frameworks",
-          ],
-        }, {
-          "path": "<PRODUCTS>/DevDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "AddonsExample/frameworks",
-            { "build-phase": "AddonsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
           "path": "<PRODUCTS>/hCore.framework",
@@ -53,8 +32,6 @@
           "index": false,
           "target-membership": [
             "Addons/frameworks",
-            "AddonsExample/frameworks",
-            { "build-phase": "AddonsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "AddonsTests/frameworks",
           ],
         }, {
@@ -63,19 +40,10 @@
           "index": false,
           "target-membership": [
             "Addons/frameworks",
-            "AddonsExample/frameworks",
-            { "build-phase": "AddonsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "AddonsTests/frameworks",
-          ],
-        }, {
-          "path": "<PRODUCTS>/TestDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "AddonsTests/frameworks",
-            { "build-phase": "AddonsTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         },
+        { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "AddonsTests/frameworks" ] },
       ],
     }, {
       "kind": "group",
@@ -102,40 +70,9 @@
               "kind": "group",
               "path": "iOS",
               "children": [
-                { "path": "iOS-Application.xcconfig" },
                 { "path": "iOS-Base.xcconfig" },
                 { "path": "iOS-Framework-Debug.xcconfig" },
                 { "path": "iOS-Framework-Release.xcconfig" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "AddonsExample-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Example",
-          "children": [
-            {
-              "kind": "group",
-              "path": "Resources",
-              "children": [
-                { "path": "Assets.xcassets", "target-membership": [ "AddonsExample/resources" ] },
-              ],
-            }, {
-              "kind": "group",
-              "path": "Sources",
-              "children": [
-                { "path": "AppDelegate.swift", "target-membership": [ "AddonsExample/compile-sources" ] },
               ],
             },
           ],
@@ -211,80 +148,16 @@
         "VERSION_INFO_PREFIX": "",
       },
     }, {
-      "name": "AddonsExample",
-      "id": "F039290B6FEDF60CA6596AAB",
-      "product": "Products/AddonsExample.app",
-      "product-type": "application",
-      "specialized-configurations": [
-        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-      ],
-      "dependencies": [
-        "Addons",
-      ],
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        }, {
-          "kind": "script",
-          "name": "Clean frameworks",
-          "log-environment-variables": true,
-          "run-on-every-build": true,
-          "shell": "/bin/sh",
-          "script": "\"$SRCROOT\"/../../scripts/post-build-action.sh ",
-        },
-      ],
-      "build-settings": {
-        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "CODE_SIGN_STYLE": "automatic",
-        "ENABLE_PREVIEWS": "YES",
-        "INFOPLIST_FILE": "Derived/InfoPlists/AddonsExample-Info.plist",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "LD_RUNPATH_SEARCH_PATHS": [
-          "$(inherited)",
-          "@executable_path/Frameworks",
-        ],
-        "OTHER_LDFLAGS": [
-          "$(inherited)",
-          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-        ],
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.example.AddonsExample",
-        "PRODUCT_NAME": "AddonsExample",
-        "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*",
-        "SDKROOT": "iphoneos",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
       "name": "AddonsTests",
       "id": "BE6175AE64BC1D92433761F6",
       "product": "Products/AddonsTests.xctest",
       "product-type": "bundle.unit-test",
-      "test-host-target": "AddonsExample",
       "specialized-configurations": [
         { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
         { "name": "Release", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
       ],
       "dependencies": [
         "Addons",
-        "AddonsExample",
       ],
       "build-phases": [
         "compile-sources",
@@ -297,7 +170,6 @@
         },
       ],
       "build-settings": {
-        "BUNDLE_LOADER": "$(TEST_HOST)",
         "CODE_SIGN_IDENTITY": "iPhone Developer",
         "EXCLUDED_SOURCE_FILE_NAMES": [
           "$(inherited)",
@@ -332,8 +204,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
         "TARGETED_DEVICE_FAMILY": "1,2",
-        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/AddonsExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AddonsExample",
-        "TEST_TARGET_NAME": "AddonsExample",
       },
     },
   ],

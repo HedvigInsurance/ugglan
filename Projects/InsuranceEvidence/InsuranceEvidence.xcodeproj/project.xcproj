@@ -22,17 +22,7 @@
           "index": false,
           "target-membership": [
             "InsuranceEvidence/frameworks",
-            "InsuranceEvidenceExample/frameworks",
-            { "build-phase": "InsuranceEvidenceExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "InsuranceEvidenceTests/frameworks",
-          ],
-        }, {
-          "path": "<PRODUCTS>/DevDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "InsuranceEvidenceExample/frameworks",
-            { "build-phase": "InsuranceEvidenceExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
           "path": "<PRODUCTS>/hCore.framework",
@@ -40,8 +30,6 @@
           "index": false,
           "target-membership": [
             "InsuranceEvidence/frameworks",
-            "InsuranceEvidenceExample/frameworks",
-            { "build-phase": "InsuranceEvidenceExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "InsuranceEvidenceTests/frameworks",
           ],
         }, {
@@ -50,32 +38,12 @@
           "index": false,
           "target-membership": [
             "InsuranceEvidence/frameworks",
-            "InsuranceEvidenceExample/frameworks",
-            { "build-phase": "InsuranceEvidenceExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-            "InsuranceEvidenceTests/frameworks",
-          ],
-        }, {
-          "path": "<PRODUCTS>/InsuranceEvidence.framework",
-          "id": "9B41313850CE688D4D24E744",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "InsuranceEvidenceExample/frameworks",
-            { "build-phase": "InsuranceEvidenceExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "InsuranceEvidenceTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/InsuranceEvidenceExample.app", "id": "2F45F53A8211E82D9A8DFCA9", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/InsuranceEvidence.framework", "id": "9B41313850CE688D4D24E744", "type": "wrapper.framework", "index": false, "target-membership": [ "InsuranceEvidenceTests/frameworks" ] },
         { "path": "<PRODUCTS>/InsuranceEvidenceTests.xctest", "id": "FB8751F3B4D860D4BB60AF94", "type": "wrapper.cfbundle", "index": false },
-        {
-          "path": "<PRODUCTS>/TestDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "InsuranceEvidenceTests/frameworks",
-            { "build-phase": "InsuranceEvidenceTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
+        { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "InsuranceEvidenceTests/frameworks" ] },
       ],
     }, {
       "kind": "group",
@@ -102,40 +70,9 @@
               "kind": "group",
               "path": "iOS",
               "children": [
-                { "path": "iOS-Application.xcconfig" },
                 { "path": "iOS-Base.xcconfig" },
                 { "path": "iOS-Framework-Debug.xcconfig" },
                 { "path": "iOS-Framework-Release.xcconfig" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "InsuranceEvidenceExample-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Example",
-          "children": [
-            {
-              "kind": "group",
-              "path": "Resources",
-              "children": [
-                { "path": "Assets.xcassets", "target-membership": [ "InsuranceEvidenceExample/resources" ] },
-              ],
-            }, {
-              "kind": "group",
-              "path": "Sources",
-              "children": [
-                { "path": "AppDelegate.swift", "target-membership": [ "InsuranceEvidenceExample/compile-sources" ] },
               ],
             },
           ],
@@ -211,80 +148,16 @@
         "VERSION_INFO_PREFIX": "",
       },
     }, {
-      "name": "InsuranceEvidenceExample",
-      "id": "628A5DB941C868F3A3E87BDD",
-      "product": "Products/InsuranceEvidenceExample.app",
-      "product-type": "application",
-      "specialized-configurations": [
-        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-      ],
-      "dependencies": [
-        "InsuranceEvidence",
-      ],
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        }, {
-          "kind": "script",
-          "name": "Clean frameworks",
-          "log-environment-variables": true,
-          "run-on-every-build": true,
-          "shell": "/bin/sh",
-          "script": "\"$SRCROOT\"/../../scripts/post-build-action.sh ",
-        },
-      ],
-      "build-settings": {
-        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "CODE_SIGN_STYLE": "automatic",
-        "ENABLE_PREVIEWS": "YES",
-        "INFOPLIST_FILE": "Derived/InfoPlists/InsuranceEvidenceExample-Info.plist",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "LD_RUNPATH_SEARCH_PATHS": [
-          "$(inherited)",
-          "@executable_path/Frameworks",
-        ],
-        "OTHER_LDFLAGS": [
-          "$(inherited)",
-          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-        ],
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.example.InsuranceEvidenceExample",
-        "PRODUCT_NAME": "InsuranceEvidenceExample",
-        "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*",
-        "SDKROOT": "iphoneos",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
       "name": "InsuranceEvidenceTests",
       "id": "291E8ED15D14559C8D1B3EC7",
       "product": "Products/InsuranceEvidenceTests.xctest",
       "product-type": "bundle.unit-test",
-      "test-host-target": "InsuranceEvidenceExample",
       "specialized-configurations": [
         { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
         { "name": "Release", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
       ],
       "dependencies": [
         "InsuranceEvidence",
-        "InsuranceEvidenceExample",
       ],
       "build-phases": [
         "compile-sources",
@@ -297,7 +170,6 @@
         },
       ],
       "build-settings": {
-        "BUNDLE_LOADER": "$(TEST_HOST)",
         "CODE_SIGN_IDENTITY": "iPhone Developer",
         "EXCLUDED_SOURCE_FILE_NAMES": [
           "$(inherited)",
@@ -332,8 +204,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
         "TARGETED_DEVICE_FAMILY": "1,2",
-        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/InsuranceEvidenceExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/InsuranceEvidenceExample",
-        "TEST_TARGET_NAME": "InsuranceEvidenceExample",
       },
     },
   ],

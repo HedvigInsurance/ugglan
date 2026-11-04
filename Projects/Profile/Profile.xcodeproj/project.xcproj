@@ -16,15 +16,12 @@
       "kind": "group",
       "name": "Products",
       "children": [
-        { "path": "<PRODUCTS>/Addons.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {
           "path": "<PRODUCTS>/AuthenticationCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -33,23 +30,14 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
-        },
-        { "path": "<PRODUCTS>/CampaignCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/CampaignUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/ChangeTier.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/Chat.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
+        }, {
           "path": "<PRODUCTS>/Claims.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -58,8 +46,6 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -68,31 +54,14 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
-        },
-        { "path": "<PRODUCTS>/CrossSell.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/DevDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
-        { "path": "<PRODUCTS>/EditStakeholders.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/Forever.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
+        }, {
           "path": "<PRODUCTS>/hCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -101,8 +70,6 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -111,8 +78,6 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -121,8 +86,6 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         }, {
@@ -131,44 +94,18 @@
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/Payment.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/Profile.framework",
-          "id": "FCFEAF10AB4C6CB5C0ED0FD9",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-            "ProfileTests/frameworks",
-          ],
-        },
-        { "path": "<PRODUCTS>/ProfileExample.app", "id": "CFDC2DF621DE9C9C8D153A87", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/Profile.framework", "id": "FCFEAF10AB4C6CB5C0ED0FD9", "type": "wrapper.framework", "index": false, "target-membership": [ "ProfileTests/frameworks" ] },
         { "path": "<PRODUCTS>/ProfileTests.xctest", "id": "9F4C29F643D75828F3D61EBA", "type": "wrapper.cfbundle", "index": false },
-        { "path": "<PRODUCTS>/ResourceBundledDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/SubmitClaimChat.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/TerminateContracts.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ProfileTests/frameworks" ] },
         {
-          "path": "<PRODUCTS>/TestDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ProfileTests/frameworks",
-            { "build-phase": "ProfileTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        }, {
           "path": "<PRODUCTS>/TravelCertificate.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Profile/frameworks",
-            "ProfileExample/frameworks",
-            { "build-phase": "ProfileExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ProfileTests/frameworks",
           ],
         },
@@ -198,40 +135,9 @@
               "kind": "group",
               "path": "iOS",
               "children": [
-                { "path": "iOS-Application.xcconfig" },
                 { "path": "iOS-Base.xcconfig" },
                 { "path": "iOS-Framework-Debug.xcconfig" },
                 { "path": "iOS-Framework-Release.xcconfig" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "ProfileExample-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Example",
-          "children": [
-            {
-              "kind": "group",
-              "path": "Resources",
-              "children": [
-                { "path": "Assets.xcassets", "target-membership": [ "ProfileExample/resources" ] },
-              ],
-            }, {
-              "kind": "group",
-              "path": "Sources",
-              "children": [
-                { "path": "AppDelegate.swift", "target-membership": [ "ProfileExample/compile-sources" ] },
               ],
             },
           ],
@@ -307,80 +213,16 @@
         "VERSION_INFO_PREFIX": "",
       },
     }, {
-      "name": "ProfileExample",
-      "id": "041D41CE22BC7D8823230076",
-      "product": "Products/ProfileExample.app",
-      "product-type": "application",
-      "specialized-configurations": [
-        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-      ],
-      "dependencies": [
-        "Profile",
-      ],
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        }, {
-          "kind": "script",
-          "name": "Clean frameworks",
-          "log-environment-variables": true,
-          "run-on-every-build": true,
-          "shell": "/bin/sh",
-          "script": "\"$SRCROOT\"/../../scripts/post-build-action.sh ",
-        },
-      ],
-      "build-settings": {
-        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "CODE_SIGN_STYLE": "automatic",
-        "ENABLE_PREVIEWS": "YES",
-        "INFOPLIST_FILE": "Derived/InfoPlists/ProfileExample-Info.plist",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "LD_RUNPATH_SEARCH_PATHS": [
-          "$(inherited)",
-          "@executable_path/Frameworks",
-        ],
-        "OTHER_LDFLAGS": [
-          "$(inherited)",
-          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-        ],
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.example.ProfileExample",
-        "PRODUCT_NAME": "ProfileExample",
-        "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*",
-        "SDKROOT": "iphoneos",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
       "name": "ProfileTests",
       "id": "68EACFC189B2CF16BE7CDC81",
       "product": "Products/ProfileTests.xctest",
       "product-type": "bundle.unit-test",
-      "test-host-target": "ProfileExample",
       "specialized-configurations": [
         { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
         { "name": "Release", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
       ],
       "dependencies": [
         "Profile",
-        "ProfileExample",
       ],
       "build-phases": [
         "compile-sources",
@@ -393,7 +235,6 @@
         },
       ],
       "build-settings": {
-        "BUNDLE_LOADER": "$(TEST_HOST)",
         "CODE_SIGN_IDENTITY": "iPhone Developer",
         "EXCLUDED_SOURCE_FILE_NAMES": [
           "$(inherited)",
@@ -428,8 +269,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
         "TARGETED_DEVICE_FAMILY": "1,2",
-        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ProfileExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ProfileExample",
-        "TEST_TARGET_NAME": "ProfileExample",
       },
     },
   ],

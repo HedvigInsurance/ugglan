@@ -51,7 +51,7 @@ public enum ExternalDependencies: CaseIterable {
     public var isResourceBundledDependency: Bool { false }
 
     /// Linked only by the App target (via AppDependencies), never by feature modules. Keep anything that only
-    /// App imports here: whatever stays in CoreDependencies is linked into every module, Example app and
+    /// App imports here: whatever stays in CoreDependencies is linked into every module, test bundle and
     /// SwiftUI preview, and an oversized CoreDependencies makes previews time out on launch.
     /// Datadog must stay next to `umbrella`: HedvigShared (Kotlin) calls Datadog RUM directly (`DDRUMMonitor`).
     /// HedvigShared is static, so only one framework (AppDependencies) may link it.
@@ -295,6 +295,7 @@ extension Project {
             name: name,
             organizationName: "Hedvig",
             options: .options(
+                automaticSchemesOptions: .disabled,
                 disableBundleAccessors: true,
                 disableSynthesizedResourceAccessors: true
             ),
@@ -316,15 +317,6 @@ extension Project {
                         base: baseSettings.merging(.generatedInfoPlist) { current, _ in current },
                         configurations: frameworkConfigurations
                     )
-                )
-            ],
-            schemes: [
-                Scheme.scheme(
-                    name: name,
-                    shared: true,
-                    buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
-                    testAction: nil,
-                    runAction: nil
                 )
             ]
         )

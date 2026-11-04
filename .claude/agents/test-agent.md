@@ -165,7 +165,8 @@ module's test target):
 xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' 2>&1 | tail -20
 ```
 
-For a single module, use that module's scheme instead (e.g. `-scheme Payment`).
+Modules have no schemes of their own; to build one module's tests add `-only-testing:<Module>Tests`
+(e.g. `-only-testing:PaymentTests`).
 
 ---
 
@@ -222,12 +223,12 @@ Run all tests (the same scheme CI uses):
 xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
 ```
 
-Run one module's tests with its own scheme:
+Run one module's tests (modules have no schemes of their own, so filter the workspace scheme):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme <Module> -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'<Module>Tests'
 ```
 
 Run a specific suite (nested suites include the parent):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme <Module> -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'ModuleTests/ModuleDependencySuite/SomeTests'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'ModuleTests/ModuleDependencySuite/SomeTests'
 ```

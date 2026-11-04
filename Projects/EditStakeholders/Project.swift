@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "EditStakeholders",
-    targets: Set([.framework, .example, .tests]),
+    targets: Set([.framework, .tests]),
     projects: ["hCore", "hCoreUI", "CrossSell"],
     sdks: []
 )

@@ -24,6 +24,8 @@ public final class ProfileStore: AppStore {
     @Transient public private(set) var updateLanguageError: String?
 
     public init() {
+        // UNUserNotificationCenter asserts outside an app bundle (e.g. hostless unit-test bundles)
+        guard Bundle.main.bundleURL.pathExtension == "app" else { return }
         Task { [weak self] in
             let settings = await UNUserNotificationCenter.current().notificationSettings()
             self?.pushNotificationStatus = settings.authorizationStatus.rawValue

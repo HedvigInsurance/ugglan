@@ -28,20 +28,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F039290B6FEDF60CA6596AAB"
-               BuildableName = "AddonsExample.app"
-               BlueprintName = "AddonsExample"
-               ReferencedContainer = "container:Projects/Addons/Addons.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "BE6175AE64BC1D92433761F6"
                BuildableName = "AddonsTests.xctest"
                BlueprintName = "AddonsTests"
@@ -112,20 +98,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8654ED80CAF4985DE782FE3C"
-               BuildableName = "AuthenticationCoreExample.app"
-               BlueprintName = "AuthenticationCoreExample"
-               ReferencedContainer = "container:Projects/AuthenticationCore/AuthenticationCore.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "8A9E89C8342EE80B2D51B56E"
                BuildableName = "AuthenticationCoreTests.xctest"
                BlueprintName = "AuthenticationCoreTests"
@@ -157,20 +129,6 @@
                BlueprintIdentifier = "7332695945DB2B778EB8A725"
                BuildableName = "CampaignCore.framework"
                BlueprintName = "CampaignCore"
-               ReferencedContainer = "container:Projects/CampaignCore/CampaignCore.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0CCC81BE6A4B537C006C5D19"
-               BuildableName = "CampaignCoreExample.app"
-               BlueprintName = "CampaignCoreExample"
                ReferencedContainer = "container:Projects/CampaignCore/CampaignCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -224,20 +182,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3B1E049E6037FDFCB1754BAF"
-               BuildableName = "ChangeTierExample.app"
-               BlueprintName = "ChangeTierExample"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "EA07CA1A2F0064D5EA9EA1EA"
                BuildableName = "ChangeTierTests.xctest"
                BlueprintName = "ChangeTierTests"
@@ -266,20 +210,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5CAEB7E1A57F59A88DBD6E7F"
-               BuildableName = "ChatExample.app"
-               BlueprintName = "ChatExample"
-               ReferencedContainer = "container:Projects/Chat/Chat.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "29A5754732A963CB16195C61"
                BuildableName = "ChatTests.xctest"
                BlueprintName = "ChatTests"
@@ -297,20 +227,6 @@
                BlueprintIdentifier = "33FC44F308DEED7668315739"
                BuildableName = "Claims.framework"
                BlueprintName = "Claims"
-               ReferencedContainer = "container:Projects/Claims/Claims.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3439FD6F60EF35D384F55A83"
-               BuildableName = "ClaimsExample.app"
-               BlueprintName = "ClaimsExample"
                ReferencedContainer = "container:Projects/Claims/Claims.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -364,20 +280,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3CB7DFFB59170BA252981284"
-               BuildableName = "ContractsExample.app"
-               BlueprintName = "ContractsExample"
-               ReferencedContainer = "container:Projects/Contracts/Contracts.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "A00B240D748555188FBD7B39"
                BuildableName = "ContractsTests.xctest"
                BlueprintName = "ContractsTests"
@@ -409,20 +311,6 @@
                BlueprintIdentifier = "F2895C5638993FF778BEDA5B"
                BuildableName = "CrossSell.framework"
                BlueprintName = "CrossSell"
-               ReferencedContainer = "container:Projects/CrossSell/CrossSell.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5EEF0AF591F237BA947EC173"
-               BuildableName = "CrossSellExample.app"
-               BlueprintName = "CrossSellExample"
                ReferencedContainer = "container:Projects/CrossSell/CrossSell.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -476,20 +364,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BFF48EC0789F5694B3A5EB2C"
-               BuildableName = "EditStakeholdersExample.app"
-               BlueprintName = "EditStakeholdersExample"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "9905DB3D2271B59C13FA2DE4"
                BuildableName = "EditStakeholdersTests.xctest"
                BlueprintName = "EditStakeholdersTests"
@@ -507,20 +381,6 @@
                BlueprintIdentifier = "6469E82D1EC41D3406639F9B"
                BuildableName = "Forever.framework"
                BlueprintName = "Forever"
-               ReferencedContainer = "container:Projects/Forever/Forever.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "92B6743C464BD26ECFBEDA81"
-               BuildableName = "ForeverExample.app"
-               BlueprintName = "ForeverExample"
                ReferencedContainer = "container:Projects/Forever/Forever.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -574,20 +434,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A414949769DD1845183AC5F6"
-               BuildableName = "HomeExample.app"
-               BlueprintName = "HomeExample"
-               ReferencedContainer = "container:Projects/Home/Home.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF31213DA71B06E9B09EA3F0"
                BuildableName = "HomeTests.xctest"
                BlueprintName = "HomeTests"
@@ -605,20 +451,6 @@
                BlueprintIdentifier = "CB9CE0DAC73BD5B402B36B09"
                BuildableName = "InsuranceEvidence.framework"
                BlueprintName = "InsuranceEvidence"
-               ReferencedContainer = "container:Projects/InsuranceEvidence/InsuranceEvidence.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "628A5DB941C868F3A3E87BDD"
-               BuildableName = "InsuranceEvidenceExample.app"
-               BlueprintName = "InsuranceEvidenceExample"
                ReferencedContainer = "container:Projects/InsuranceEvidence/InsuranceEvidence.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -661,20 +493,6 @@
                BlueprintIdentifier = "3234B81966731CBADB213C12"
                BuildableName = "MoveFlow.framework"
                BlueprintName = "MoveFlow"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2E325060ADEA4B6A759C960B"
-               BuildableName = "MoveFlowExample.app"
-               BlueprintName = "MoveFlowExample"
                ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -742,20 +560,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E114CF39069F23631C93E10A"
-               BuildableName = "OnboardingExample.app"
-               BlueprintName = "OnboardingExample"
-               ReferencedContainer = "container:Projects/Onboarding/Onboarding.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "DA88977530A9E72DBD7E283A"
                BuildableName = "OnboardingTests.xctest"
                BlueprintName = "OnboardingTests"
@@ -784,20 +588,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FE86901B9187623AD4C06005"
-               BuildableName = "PaymentExample.app"
-               BlueprintName = "PaymentExample"
-               ReferencedContainer = "container:Projects/Payment/Payment.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "963F8AF78FF4A53AC7A856E5"
                BuildableName = "PaymentTests.xctest"
                BlueprintName = "PaymentTests"
@@ -815,20 +605,6 @@
                BlueprintIdentifier = "A1A9B9ADD24CE94AF2019CFC"
                BuildableName = "Profile.framework"
                BlueprintName = "Profile"
-               ReferencedContainer = "container:Projects/Profile/Profile.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "041D41CE22BC7D8823230076"
-               BuildableName = "ProfileExample.app"
-               BlueprintName = "ProfileExample"
                ReferencedContainer = "container:Projects/Profile/Profile.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -882,9 +658,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AF8530CB15CB58E2A50CB557"
-               BuildableName = "SubmitClaimChatExample.app"
-               BlueprintName = "SubmitClaimChatExample"
+               BlueprintIdentifier = "94B2112A238801E0B09E668E"
+               BuildableName = "SubmitClaimChatTestHost.app"
+               BlueprintName = "SubmitClaimChatTestHost"
                ReferencedContainer = "container:Projects/SubmitClaimChat/SubmitClaimChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -924,20 +700,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "265925966C48091044288B2F"
-               BuildableName = "TerminateContractsExample.app"
-               BlueprintName = "TerminateContractsExample"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "C7138964FC51BA607DBF5296"
                BuildableName = "TerminateContractsTests.xctest"
                BlueprintName = "TerminateContractsTests"
@@ -966,37 +728,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "448F16E06AFA7B6CAC046C13"
-               BuildableName = "libTools.a"
-               BlueprintName = "Tools"
-               ReferencedContainer = "container:Projects/App/Ugglan.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "BB7A398120E8FDE6727E8474"
                BuildableName = "TravelCertificate.framework"
                BlueprintName = "TravelCertificate"
-               ReferencedContainer = "container:Projects/TravelCertificate/TravelCertificate.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DE7564FCE0E283734585B33B"
-               BuildableName = "TravelCertificateExample.app"
-               BlueprintName = "TravelCertificateExample"
                ReferencedContainer = "container:Projects/TravelCertificate/TravelCertificate.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -1106,20 +840,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "14C394176CABA62B42E5E8A8"
-               BuildableName = "hGraphQLExample.app"
-               BlueprintName = "hGraphQLExample"
-               ReferencedContainer = "container:Projects/hGraphQL/hGraphQL.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "94B23B25CE51A7A76B51DD8B"
                BuildableName = "hGraphQLTests.xctest"
                BlueprintName = "hGraphQLTests"
@@ -1157,8 +877,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3FEA6C6C9DB6543ABE225DA1"

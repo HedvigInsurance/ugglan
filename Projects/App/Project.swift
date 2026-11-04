@@ -152,6 +152,7 @@ let project = Project(
     name: "Ugglan",
     organizationName: "Hedvig",
     options: .options(
+        automaticSchemesOptions: .disabled,
         disableBundleAccessors: true,
         disableSynthesizedResourceAccessors: true
     ),
@@ -261,15 +262,6 @@ let project = Project(
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
-        Target.target(
-            name: "Tools",
-            destinations: .iOS,
-            product: .staticLibrary,
-            bundleId: "com.hedvig.tools",
-            deploymentTargets: .iOS("17.0"),
-            sources: ["Tools/Empty.swift"],
-            dependencies: []
-        ),
     ],
     schemes: [
         Scheme.scheme(
@@ -300,33 +292,18 @@ let project = Project(
             ),
             runAction: .runAction(executable: "Ugglan")
         ),
+        // Run the extension inside the app that hosts it (what Xcode's automatic extension scheme did)
         Scheme.scheme(
-            name: "UITests",
+            name: "NotificationService",
             shared: true,
-            buildAction: BuildAction.buildAction(
-                targets: ["Ugglan"]
-            ),
-            testAction: .targets(
-                [
-                    TestableTarget.testableTarget(
-                        target: TargetReference(stringLiteral: "AppUITests"),
-                        parallelization: .enabled
-                    )
-                ],
-                arguments: Arguments.arguments(
-                    environmentVariables: [
-                        "SNAPSHOT_ARTIFACTS": EnvironmentVariable.environmentVariable(
-                            value: "/tmp/__SnapshotFailures__",
-                            isEnabled: true
-                        )
-                    ],
-                    launchArguments: [
-                        .launchArgument(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
-                        .launchArgument(name: "-UICTContentSizeCategoryM", isEnabled: true),
-                    ]
-                )
-            ),
+            buildAction: BuildAction.buildAction(targets: ["NotificationService", "Ugglan"]),
             runAction: .runAction(executable: "Ugglan")
+        ),
+        Scheme.scheme(
+            name: "NotificationServiceProd",
+            shared: true,
+            buildAction: BuildAction.buildAction(targets: ["NotificationServiceProd", "Hedvig"]),
+            runAction: .runAction(executable: "Hedvig")
         ),
         Scheme.scheme(
             name: "Hedvig",
@@ -335,102 +312,6 @@ let project = Project(
                 targets: ["Hedvig"]
             ),
             runAction: .runAction(executable: "Hedvig")
-        ),
-        Scheme.scheme(
-            name: "Run Translations",
-            shared: true,
-            buildAction: .buildAction(
-                targets: ["Tools"],
-                preActions: [
-                    .executionAction(
-                        title: "translations.sh",
-                        scriptText: #"""
-                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
-                            LOG="/tmp/hedvig-translations.log"
-                            : > "$LOG"
-                            /usr/bin/osascript -e 'display notification "Running translations.sh — tail /tmp/hedvig-translations.log" with title "Hedvig"' &
-                            nohup /bin/zsh -l -c "
-                                [ -f ~/.zshrc ] && source ~/.zshrc
-                                cd '$REPO_ROOT'
-                                ./scripts/translations.sh > '$LOG' 2>&1
-                                S=\$?
-                                if [ \$S -eq 0 ]; then
-                                    /usr/bin/osascript -e 'display notification \"translations.sh done\" with title \"Hedvig\" sound name \"Glass\"'
-                                else
-                                    /usr/bin/osascript -e \"display notification 'translations.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
-                                fi
-                            " >/dev/null 2>&1 &
-                            disown
-                            """#,
-                        target: "Ugglan",
-                        shellPath: "/bin/zsh"
-                    )
-                ]
-            )
-        ),
-        Scheme.scheme(
-            name: "Run Codegen",
-            shared: true,
-            buildAction: .buildAction(
-                targets: ["Tools"],
-                preActions: [
-                    .executionAction(
-                        title: "codegen.sh",
-                        scriptText: #"""
-                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
-                            LOG="/tmp/hedvig-codegen.log"
-                            : > "$LOG"
-                            /usr/bin/osascript -e 'display notification "Running codegen.sh — tail /tmp/hedvig-codegen.log" with title "Hedvig"' &
-                            nohup /bin/zsh -l -c "
-                                [ -f ~/.zshrc ] && source ~/.zshrc
-                                cd '$REPO_ROOT'
-                                ./scripts/codegen.sh > '$LOG' 2>&1
-                                S=\$?
-                                if [ \$S -eq 0 ]; then
-                                    /usr/bin/osascript -e 'display notification \"codegen.sh done\" with title \"Hedvig\" sound name \"Glass\"'
-                                else
-                                    /usr/bin/osascript -e \"display notification 'codegen.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
-                                fi
-                            " >/dev/null 2>&1 &
-                            disown
-                            """#,
-                        target: "Ugglan",
-                        shellPath: "/bin/zsh"
-                    )
-                ]
-            )
-        ),
-        Scheme.scheme(
-            name: "Run Post Checkout",
-            shared: true,
-            buildAction: .buildAction(
-                targets: ["Tools"],
-                preActions: [
-                    .executionAction(
-                        title: "post-checkout.sh",
-                        scriptText: #"""
-                            REPO_ROOT="$(cd "${SRCROOT}/../.." && pwd)"
-                            LOG="/tmp/hedvig-post-checkout.log"
-                            : > "$LOG"
-                            /usr/bin/osascript -e 'display notification "Running post-checkout.sh — tail /tmp/hedvig-post-checkout.log" with title "Hedvig"' &
-                            nohup /bin/zsh -l -c "
-                                [ -f ~/.zshrc ] && source ~/.zshrc
-                                cd '$REPO_ROOT'
-                                ./scripts/post-checkout.sh > '$LOG' 2>&1
-                                S=\$?
-                                if [ \$S -eq 0 ]; then
-                                    /usr/bin/osascript -e 'display notification \"post-checkout.sh done\" with title \"Hedvig\" sound name \"Glass\"'
-                                else
-                                    /usr/bin/osascript -e \"display notification 'post-checkout.sh FAILED (exit \$S)' with title 'Hedvig' sound name 'Basso'\"
-                                fi
-                            " >/dev/null 2>&1 &
-                            disown
-                            """#,
-                        target: "Ugglan",
-                        shellPath: "/bin/zsh"
-                    )
-                ]
-            )
         ),
     ],
     additionalFiles: []

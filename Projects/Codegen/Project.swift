@@ -4,6 +4,7 @@ import ProjectDescriptionHelpers
 let project = Project(
     name: "Codegen",
     organizationName: "Hedvig AB",
+    options: .options(automaticSchemesOptions: .disabled),
     packages: ExternalDependencies.apollo.swiftPackages() + ExternalDependencies.apolloIosCodegen.swiftPackages()
         + ExternalDependencies.argumentParser.swiftPackages(),
     settings: .settings(base: [
@@ -29,7 +30,8 @@ let project = Project(
     ],
     schemes: [
         Scheme.scheme(
-            name: "Apollo Codegen",
+            // scripts/codegen.sh builds this scheme
+            name: "Codegen",
             shared: true,
             buildAction: BuildAction.buildAction(targets: ["Codegen"]),
             runAction: .runAction(executable: .init(stringLiteral: "Codegen"))

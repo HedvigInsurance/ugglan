@@ -16,32 +16,16 @@
       "kind": "group",
       "name": "Products",
       "children": [
-        { "path": "<PRODUCTS>/Addons.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/CampaignCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/CampaignUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/ChangeTier.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {
           "path": "<PRODUCTS>/Chat.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-            "ClaimsTests/frameworks",
-          ],
-        }, {
-          "path": "<PRODUCTS>/Claims.framework",
-          "id": "B6659731E6883417A8E987DF",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/ClaimsExample.app", "id": "5EF4C75D0D73E18C3896AAF8", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/Claims.framework", "id": "B6659731E6883417A8E987DF", "type": "wrapper.framework", "index": false, "target-membership": [ "ClaimsTests/frameworks" ] },
         { "path": "<PRODUCTS>/ClaimsTests.xctest", "id": "8961C08E496C395DD6C8968D", "type": "wrapper.cfbundle", "index": false },
         {
           "path": "<PRODUCTS>/Contracts.framework",
@@ -49,8 +33,6 @@
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
         }, {
@@ -59,31 +41,14 @@
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
-        },
-        { "path": "<PRODUCTS>/CrossSell.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/DevDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
-        { "path": "<PRODUCTS>/EditStakeholders.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/Forever.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
+        }, {
           "path": "<PRODUCTS>/hCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
         }, {
@@ -92,8 +57,6 @@
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
         }, {
@@ -102,22 +65,10 @@
           "index": false,
           "target-membership": [
             "Claims/frameworks",
-            "ClaimsExample/frameworks",
-            { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ClaimsTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/ResourceBundledDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/TerminateContracts.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ClaimsExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/TestDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ClaimsTests/frameworks",
-            { "build-phase": "ClaimsTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
+        { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ClaimsTests/frameworks" ] },
       ],
     }, {
       "kind": "group",
@@ -144,41 +95,9 @@
               "kind": "group",
               "path": "iOS",
               "children": [
-                { "path": "iOS-Application.xcconfig" },
                 { "path": "iOS-Base.xcconfig" },
                 { "path": "iOS-Framework-Debug.xcconfig" },
                 { "path": "iOS-Framework-Release.xcconfig" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "ClaimsExample-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Example",
-          "children": [
-            {
-              "kind": "group",
-              "path": "Resources",
-              "children": [
-                { "path": "Assets.xcassets", "target-membership": [ "ClaimsExample/resources" ] },
-              ],
-            }, {
-              "kind": "group",
-              "path": "Sources",
-              "children": [
-                { "path": "AppDelegate.swift", "target-membership": [ "ClaimsExample/compile-sources" ] },
-                { "path": "SceneDelegate.swift", "target-membership": [ "ClaimsExample/compile-sources" ] },
               ],
             },
           ],
@@ -254,80 +173,16 @@
         "VERSION_INFO_PREFIX": "",
       },
     }, {
-      "name": "ClaimsExample",
-      "id": "3439FD6F60EF35D384F55A83",
-      "product": "Products/ClaimsExample.app",
-      "product-type": "application",
-      "specialized-configurations": [
-        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-      ],
-      "dependencies": [
-        "Claims",
-      ],
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        }, {
-          "kind": "script",
-          "name": "Clean frameworks",
-          "log-environment-variables": true,
-          "run-on-every-build": true,
-          "shell": "/bin/sh",
-          "script": "\"$SRCROOT\"/../../scripts/post-build-action.sh ",
-        },
-      ],
-      "build-settings": {
-        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "CODE_SIGN_STYLE": "automatic",
-        "ENABLE_PREVIEWS": "YES",
-        "INFOPLIST_FILE": "Derived/InfoPlists/ClaimsExample-Info.plist",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "LD_RUNPATH_SEARCH_PATHS": [
-          "$(inherited)",
-          "@executable_path/Frameworks",
-        ],
-        "OTHER_LDFLAGS": [
-          "$(inherited)",
-          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-        ],
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.example.ClaimsExample",
-        "PRODUCT_NAME": "ClaimsExample",
-        "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*",
-        "SDKROOT": "iphoneos",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
       "name": "ClaimsTests",
       "id": "673556FAD307B16C7BF7064E",
       "product": "Products/ClaimsTests.xctest",
       "product-type": "bundle.unit-test",
-      "test-host-target": "ClaimsExample",
       "specialized-configurations": [
         { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
         { "name": "Release", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
       ],
       "dependencies": [
         "Claims",
-        "ClaimsExample",
       ],
       "build-phases": [
         "compile-sources",
@@ -340,7 +195,6 @@
         },
       ],
       "build-settings": {
-        "BUNDLE_LOADER": "$(TEST_HOST)",
         "CODE_SIGN_IDENTITY": "iPhone Developer",
         "EXCLUDED_SOURCE_FILE_NAMES": [
           "$(inherited)",
@@ -375,8 +229,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
         "TARGETED_DEVICE_FAMILY": "1,2",
-        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ClaimsExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClaimsExample",
-        "TEST_TARGET_NAME": "ClaimsExample",
       },
     },
   ],

@@ -16,20 +16,7 @@
       "kind": "group",
       "name": "Products",
       "children": [
-        { "path": "<PRODUCTS>/Addons.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/ChangeTier.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/Chat.framework",
-          "id": "EEE28C25EAD3F5DC9E76FFAC",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-            "ChatTests/frameworks",
-          ],
-        },
-        { "path": "<PRODUCTS>/ChatExample.app", "id": "987E19378B0544F659D05B19", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/Chat.framework", "id": "EEE28C25EAD3F5DC9E76FFAC", "type": "wrapper.framework", "index": false, "target-membership": [ "ChatTests/frameworks" ] },
         { "path": "<PRODUCTS>/ChatTests.xctest", "id": "082A769CEB29C2CF1616DE7A", "type": "wrapper.cfbundle", "index": false },
         {
           "path": "<PRODUCTS>/Contracts.framework",
@@ -37,8 +24,6 @@
           "index": false,
           "target-membership": [
             "Chat/frameworks",
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ChatTests/frameworks",
           ],
         }, {
@@ -47,8 +32,6 @@
           "index": false,
           "target-membership": [
             "Chat/frameworks",
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ChatTests/frameworks",
           ],
         }, {
@@ -57,28 +40,14 @@
           "index": false,
           "target-membership": [
             "Chat/frameworks",
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ChatTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/DevDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
-        { "path": "<PRODUCTS>/EditStakeholders.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
           "path": "<PRODUCTS>/hCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
             "Chat/frameworks",
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ChatTests/frameworks",
           ],
         }, {
@@ -87,21 +56,10 @@
           "index": false,
           "target-membership": [
             "Chat/frameworks",
-            "ChatExample/frameworks",
-            { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "ChatTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/TerminateContracts.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "ChatExample/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
-          "path": "<PRODUCTS>/TestDependencies.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "ChatTests/frameworks",
-            { "build-phase": "ChatTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
-          ],
-        },
+        { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ChatTests/frameworks" ] },
       ],
     }, {
       "kind": "group",
@@ -128,40 +86,9 @@
               "kind": "group",
               "path": "iOS",
               "children": [
-                { "path": "iOS-Application.xcconfig" },
                 { "path": "iOS-Base.xcconfig" },
                 { "path": "iOS-Framework-Debug.xcconfig" },
                 { "path": "iOS-Framework-Release.xcconfig" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "ChatExample-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
-          "path": "Example",
-          "children": [
-            {
-              "kind": "group",
-              "path": "Resources",
-              "children": [
-                { "path": "Assets.xcassets", "target-membership": [ "ChatExample/resources" ] },
-              ],
-            }, {
-              "kind": "group",
-              "path": "Sources",
-              "children": [
-                { "path": "AppDelegate.swift", "target-membership": [ "ChatExample/compile-sources" ] },
               ],
             },
           ],
@@ -237,80 +164,16 @@
         "VERSION_INFO_PREFIX": "",
       },
     }, {
-      "name": "ChatExample",
-      "id": "5CAEB7E1A57F59A88DBD6E7F",
-      "product": "Products/ChatExample.app",
-      "product-type": "application",
-      "specialized-configurations": [
-        { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-        { "name": "Release", "file": "Project/Configurations/iOS/iOS-Application.xcconfig" },
-      ],
-      "dependencies": [
-        "Chat",
-      ],
-      "build-phases": [
-        "compile-sources",
-        "resources",
-        "frameworks",
-        {
-          "kind": "copy",
-          "name": "Embed Frameworks",
-          "bundle-base-path": "frameworks-directory",
-        }, {
-          "kind": "script",
-          "name": "Clean frameworks",
-          "log-environment-variables": true,
-          "run-on-every-build": true,
-          "shell": "/bin/sh",
-          "script": "\"$SRCROOT\"/../../scripts/post-build-action.sh ",
-        },
-      ],
-      "build-settings": {
-        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
-        "CODE_SIGN_IDENTITY": "iPhone Developer",
-        "CODE_SIGN_STYLE": "automatic",
-        "ENABLE_PREVIEWS": "YES",
-        "INFOPLIST_FILE": "Derived/InfoPlists/ChatExample-Info.plist",
-        "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
-        "LD_RUNPATH_SEARCH_PATHS": [
-          "$(inherited)",
-          "@executable_path/Frameworks",
-        ],
-        "OTHER_LDFLAGS": [
-          "$(inherited)",
-          "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",
-        ],
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.example.ChatExample",
-        "PRODUCT_NAME": "ChatExample",
-        "PROVISIONING_PROFILE_SPECIFIER": "match Development com.hedvig.example.*",
-        "SDKROOT": "iphoneos",
-        "SUPPORTS_MACCATALYST": "NO",
-        "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
-        "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
-        "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
-        "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
-        "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
-        "SWIFT_VERSION": "6.3",
-        "TARGETED_DEVICE_FAMILY": "1,2",
-      },
-    }, {
       "name": "ChatTests",
       "id": "29A5754732A963CB16195C61",
       "product": "Products/ChatTests.xctest",
       "product-type": "bundle.unit-test",
-      "test-host-target": "ChatExample",
       "specialized-configurations": [
         { "name": "Debug", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
         { "name": "Release", "file": "Project/Configurations/iOS/iOS-Base.xcconfig" },
       ],
       "dependencies": [
         "Chat",
-        "ChatExample",
       ],
       "build-phases": [
         "compile-sources",
@@ -323,7 +186,6 @@
         },
       ],
       "build-settings": {
-        "BUNDLE_LOADER": "$(TEST_HOST)",
         "CODE_SIGN_IDENTITY": "iPhone Developer",
         "EXCLUDED_SOURCE_FILE_NAMES": [
           "$(inherited)",
@@ -358,8 +220,6 @@
         "SWIFT_OPTIMIZATION_LEVEL[config=Release]": "-O",
         "SWIFT_VERSION": "6.3",
         "TARGETED_DEVICE_FAMILY": "1,2",
-        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ChatExample.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ChatExample",
-        "TEST_TARGET_NAME": "ChatExample",
       },
     },
   ],
