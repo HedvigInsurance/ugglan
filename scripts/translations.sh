@@ -26,3 +26,5 @@ curl -sfL https://raw.githubusercontent.com/lokalise/lokalise-cli-2-go/master/in
 mv ./bin/lokalise2 /tmp/lokalise2
 
 runLokalise
+# Strings.swift is committed, so it must be regenerated alongside the .strings files
+scripts/swiftgen.sh
