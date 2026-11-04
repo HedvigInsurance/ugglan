@@ -93,11 +93,11 @@ extension Project {
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
                 deploymentTargets: .iOS("17.0"),
-                infoPlist: .default,
+                infoPlist: nil,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
                 buildableFolders: ["Sources"],
                 dependencies: targetDependencies,
-                settings: .settings(base: [:], configurations: frameworkConfigurations)
+                settings: .settings(base: .generatedInfoPlist, configurations: frameworkConfigurations)
             )
 
             projectTargets.append(frameworkTarget)
@@ -110,7 +110,7 @@ extension Project {
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
                 deploymentTargets: .iOS("17.0"),
-                infoPlist: .default,
+                infoPlist: nil,
                 buildableFolders: ["Tests"],
                 dependencies: [
                     // Hosted in the module's example app where there is one. Modules that only ship
@@ -130,7 +130,7 @@ extension Project {
                     ], testsDependencies,
                 ]
                 .flatMap { $0 },
-                settings: .settings(base: [:], configurations: testsConfigurations)
+                settings: .settings(base: .generatedInfoPlist, configurations: testsConfigurations)
             )
 
             projectTargets.append(testTarget)
@@ -210,7 +210,9 @@ extension Project {
                 arguments: Arguments.arguments(
                     environmentVariables: [
                         "SNAPSHOT_ARTIFACTS": .environmentVariable(
-                            value: "/tmp/\(UUID().uuidString)/__SnapshotFailures__",
+                            // Fixed per module (not a random UUID) so regenerating the committed schemes is
+                            // reproducible, while modules testing in parallel still get separate folders
+                            value: "/tmp/\(name)/__SnapshotFailures__",
                             isEnabled: true
                         )
                     ]

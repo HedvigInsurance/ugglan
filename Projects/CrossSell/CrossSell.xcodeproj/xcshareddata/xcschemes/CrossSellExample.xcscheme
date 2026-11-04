@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/BB27C0E2-77F5-4480-9958-03684DD3728F/__SnapshotFailures__"
+            value = "/tmp/CrossSell/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

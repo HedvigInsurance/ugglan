@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/856B39B5-ADE0-4126-8AEB-7032F7FE19A7/__SnapshotFailures__"
+            value = "/tmp/CampaignCore/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

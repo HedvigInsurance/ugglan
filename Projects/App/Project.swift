@@ -182,7 +182,7 @@ let project = Project(
             product: .unitTests,
             bundleId: "com.hedvig.AppTests",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            infoPlist: nil,
             sources: .sourceFilesList(globs: [.glob("Tests/**", excluding: ["Tests/UITests/**"])]),
             resources: [],
             scripts: [],
@@ -196,7 +196,7 @@ let project = Project(
                 ]
             ]
             .flatMap { $0 },
-            settings: .settings(configurations: testsConfigurations)
+            settings: .settings(base: .generatedInfoPlist, configurations: testsConfigurations)
         ),
         Target.target(
             name: "AppUITests",
@@ -204,14 +204,14 @@ let project = Project(
             product: .uiTests,
             bundleId: "com.hedvig.AppUITests",
             deploymentTargets: .iOS("17.0"),
-            infoPlist: .default,
+            infoPlist: nil,
             sources: .sourceFilesList(globs: [.glob("Tests/UITests/**")]),
             resources: [],
             scripts: [],
             dependencies: [
                 .target(name: "Ugglan")
             ],
-            settings: .settings(configurations: testsConfigurations)
+            settings: .settings(base: .generatedInfoPlist, configurations: testsConfigurations)
         ),
         Target.target(
             name: "Hedvig",

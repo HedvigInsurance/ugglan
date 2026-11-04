@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/5D9D4C34-7CB9-4709-9FE1-07F69B7AED13/__SnapshotFailures__"
+            value = "/tmp/hCoreUI/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

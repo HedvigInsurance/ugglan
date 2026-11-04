@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/EC9D18BD-DC7F-4559-942A-CB317F4F53F0/__SnapshotFailures__"
+            value = "/tmp/AuthenticationCore/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

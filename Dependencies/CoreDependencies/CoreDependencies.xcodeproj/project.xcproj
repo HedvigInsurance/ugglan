@@ -143,18 +143,6 @@
           ],
         }, {
           "kind": "group",
-          "path": "Derived",
-          "children": [
-            {
-              "kind": "group",
-              "path": "InfoPlists",
-              "children": [
-                { "path": "CoreDependencies-Info.plist" },
-              ],
-            },
-          ],
-        }, {
-          "kind": "group",
           "path": "Sources",
           "children": [
             { "path": "Dependencies.swift", "target-membership": [ "CoreDependencies/compile-sources" ] },
@@ -256,7 +244,7 @@
         "DYLIB_COMPATIBILITY_VERSION": "1",
         "DYLIB_CURRENT_VERSION": "1",
         "DYLIB_INSTALL_NAME_BASE": "@rpath",
-        "INFOPLIST_FILE": "Derived/InfoPlists/CoreDependencies-Info.plist",
+        "GENERATE_INFOPLIST_FILE": "YES",
         "INSTALL_PATH": "$(LOCAL_LIBRARY_DIR)/Frameworks",
         "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
         "LD_RUNPATH_SEARCH_PATHS": [
@@ -264,6 +252,7 @@
           "@executable_path/Frameworks",
           "@loader_path/Frameworks",
         ],
+        "MARKETING_VERSION": "1.0",
         "OTHER_LDFLAGS": [
           "$(inherited)",
           "-L$(DT_TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)",

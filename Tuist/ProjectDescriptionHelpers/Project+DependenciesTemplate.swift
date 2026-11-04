@@ -307,12 +307,15 @@ extension Project {
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
                     deploymentTargets: deploymentTargets,
-                    infoPlist: .default,
+                    infoPlist: nil,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
                     scripts: scripts,
                     dependencies: dependencies,
-                    settings: .settings(base: baseSettings, configurations: frameworkConfigurations)
+                    settings: .settings(
+                        base: baseSettings.merging(.generatedInfoPlist) { current, _ in current },
+                        configurations: frameworkConfigurations
+                    )
                 )
             ],
             schemes: [

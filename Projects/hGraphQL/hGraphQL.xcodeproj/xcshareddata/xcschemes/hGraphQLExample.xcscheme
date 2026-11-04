@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/8B720A41-4139-4AD4-B7C1-D7A1115D5106/__SnapshotFailures__"
+            value = "/tmp/hGraphQL/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

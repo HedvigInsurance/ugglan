@@ -47,7 +47,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "SNAPSHOT_ARTIFACTS"
-            value = "/tmp/A2702B58-B911-44AA-A46A-22386DAC20BE/__SnapshotFailures__"
+            value = "/tmp/SubmitClaimChat/__SnapshotFailures__"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
