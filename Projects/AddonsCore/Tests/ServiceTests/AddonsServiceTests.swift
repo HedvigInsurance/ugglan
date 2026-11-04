@@ -18,18 +18,25 @@ extension AddonsDependencySuite {
         @Test
         func fetchAddonDataSuccess() async {
             await recordingErrors {
+                var receivedSource: AddonSource?
                 let mockService = MockData.createMockAddonsService(
-                    fetchAddonOffer: { _, _ in .offer(testTravelOfferNoActive) }
+                    fetchAddonOffer: { _, source in
+                        receivedSource = source
+                        return .offer(testTravelOfferNoActive)
+                    }
                 )
 
                 sut = mockService
 
-                let respondedAddonData = try await mockService.getAddonOffer(
-                    contractInfo: testAddonContractInfo,
-                    source: .insurances
-                )
+                let respondedAddonData = try await AddonsService()
+                    .getAddonOffer(
+                        contractInfo: testAddonContractInfo,
+                        source: .insurances
+                    )
 
                 #expect(respondedAddonData == .offer(testTravelOfferNoActive))
+                #expect(receivedSource == .insurances)
+                #expect(mockService.events == [.getAddon])
             }
 
             expectServiceReleased()
@@ -44,27 +51,13 @@ extension AddonsDependencySuite {
 
                 sut = mockService
 
-                let respondedAddonData = try await mockService.getAddonOffer(
-                    contractInfo: testAddonContractInfo,
-                    source: .insurances
-                )
+                let respondedAddonData = try await AddonsService()
+                    .getAddonOffer(
+                        contractInfo: testAddonContractInfo,
+                        source: .insurances
+                    )
 
                 #expect(respondedAddonData == .deflect(testDeflectUpgradeTier))
-            }
-
-            expectServiceReleased()
-        }
-
-        @Test
-        func getAddonBannersSuccess() async {
-            await recordingErrors {
-                let mockService = MockData.createMockAddonsService(fetchBanners: { _ in [testAddonBanner] })
-
-                sut = mockService
-
-                let respondedBanners = try await mockService.getAddonBanners(source: .insurances)
-
-                #expect(respondedBanners == [testAddonBanner])
             }
 
             expectServiceReleased()
@@ -77,9 +70,10 @@ extension AddonsDependencySuite {
 
                 sut = mockService
 
-                let respondedOffer = try await mockService.getAddonRemoveOffer(
-                    contractInfo: .init(contractId: "cId", displayName: "dName", exposureName: "eName")
-                )
+                let respondedOffer = try await AddonsService()
+                    .getAddonRemoveOffer(
+                        contractInfo: testAddonContractInfo
+                    )
 
                 #expect(respondedOffer == testRemoveOffer)
                 #expect(mockService.events == [.getAddonRemoveOffer])
@@ -91,13 +85,22 @@ extension AddonsDependencySuite {
         @Test
         func confirmAddonRemovalSuccess() async {
             await recordingErrors {
-                let mockService = MockData.createMockAddonsService(confirmAddonRemoval: { _, _ in })
+                var received: (contractId: String, addonIds: Set<String>)?
+                let mockService = MockData.createMockAddonsService(
+                    confirmAddonRemoval: { contractId, addonIds in received = (contractId, addonIds) }
+                )
 
                 sut = mockService
 
-                try await mockService.confirmAddonRemoval(contractId: "cId", addonIds: ["aId"])
+                let elapsed = try await ContinuousClock()
+                    .measure {
+                        try await AddonsService().confirmAddonRemoval(contractId: "cId", addonIds: ["aId"])
+                    }
 
                 #expect(mockService.events == [.confirmAddonRemoval])
+                #expect(received?.contractId == "cId")
+                #expect(received?.addonIds == ["aId"])
+                #expect(elapsed >= .seconds(3), "the processing screen relies on a minimum duration")
             }
 
             expectServiceReleased()
@@ -106,13 +109,22 @@ extension AddonsDependencySuite {
         @Test
         func submitAddonsSuccess() async {
             await recordingErrors {
-                let mockService = MockData.createMockAddonsService(addonsSubmit: { _, _ in })
+                var received: (quoteId: String, addonIds: Set<String>)?
+                let mockService = MockData.createMockAddonsService(
+                    addonsSubmit: { quoteId, addonIds in received = (quoteId, addonIds) }
+                )
 
                 sut = mockService
 
-                try await mockService.submitAddons(quoteId: "qId", addonIds: ["aId"])
+                let elapsed = try await ContinuousClock()
+                    .measure {
+                        try await AddonsService().submitAddons(quoteId: "qId", selectedAddonIds: ["aId"])
+                    }
 
                 #expect(mockService.events == [.submitAddon])
+                #expect(received?.quoteId == "qId")
+                #expect(received?.addonIds == ["aId"])
+                #expect(elapsed >= .seconds(3), "the processing screen relies on a minimum duration")
             }
 
             expectServiceReleased()
@@ -121,12 +133,12 @@ extension AddonsDependencySuite {
         @Test
         func getAddonOfferCostSuccess() async {
             await recordingErrors {
-                let expectedCost = ItemCost(premium: .init(gross: .sek(348), net: .sek(328)), discounts: [])
+                let expectedCost = testAddonOfferCost
                 let mockService = MockData.createMockAddonsService(fetchAddonOfferCost: { _, _ in expectedCost })
 
                 sut = mockService
 
-                let respondedCost = try await mockService.getAddonOfferCost(quoteId: "qId", addonIds: ["aId"])
+                let respondedCost = try await AddonsService().getAddonOfferCost(quoteId: "qId", addonIds: ["aId"])
 
                 #expect(respondedCost == expectedCost)
                 #expect(mockService.events == [.getAddonOfferCost])
@@ -138,12 +150,16 @@ extension AddonsDependencySuite {
         @Test
         func getAddonRemoveOfferCostSuccess() async {
             await recordingErrors {
-                let expectedCost = ItemCost(premium: .init(gross: .sek(399), net: .sek(399)), discounts: [])
+                let expectedCost = testAddonOfferCost
                 let mockService = MockData.createMockAddonsService(fetchAddonRemoveOfferCost: { _, _ in expectedCost })
 
                 sut = mockService
 
-                let respondedCost = try await mockService.getAddonRemoveOfferCost(contractId: "cId", addonIds: ["aId"])
+                let respondedCost = try await AddonsService()
+                    .getAddonRemoveOfferCost(
+                        contractId: "cId",
+                        addonIds: ["aId"]
+                    )
 
                 #expect(respondedCost == expectedCost)
                 #expect(mockService.events == [.getAddonRemoveOfferCost])

@@ -1,4 +1,3 @@
-import AddonsCore
 import Testing
 
 @Suite(.serialized)

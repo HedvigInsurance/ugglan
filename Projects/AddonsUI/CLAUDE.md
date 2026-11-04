@@ -16,12 +16,12 @@ SwiftUI views, navigation and ViewModels for insurance addon purchase and remova
 
 ## Dependencies
 - Imports: hCore, hCoreUI, AddonsCore
-- Depended on by: Contracts, TravelCertificate, App (via `handleAddons`, `handleRemoveAddons`, `AddonCardView`)
+- Depended on by: Contracts (`handleAddons`, `handleRemoveAddons`), TravelCertificate (`handleAddons`, `AddonCardView`), App (`handleAddons`)
 
 ## Navigation
 - Public entry via `View.handleAddons(input:)` modifier -- attach to any view, bind a `ChangeAddonInput?`, and the coordinator handles fetching offers and presenting the flow modally.
 - Public entry for removal via `View.handleRemoveAddons(input:)` modifier with `RemoveAddonInput?`.
-- `ChangeAddonNavigation` uses `RouterHost` with `routerDestination` for landing -> summary flow. Detents for sub-option selection, learn-more, PDF preview, and info.
+- `ChangeAddonNavigation` uses `hNavigationStack` with a `NavigationRouter` and `routerDestination` for the landing -> summary flow. Detents for sub-option selection, learn-more, PDF preview, and info.
 - `RemoveAddonNavigation` follows the same pattern for the removal flow.
 - `analyticsUserFlow` in `ChangeAddonViewModel` maps each `AddonSource` case to the Firebase `addon_purchased` `user_flow` value.
 

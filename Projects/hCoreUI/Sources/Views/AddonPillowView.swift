@@ -28,6 +28,7 @@ public struct AddonPillowView: View {
                 }
         }
         .hCardShadow()
+        .accessibilityHidden(true)
     }
 }
 

@@ -16,7 +16,6 @@ Data and domain layer for insurance addons: models, the client protocol, the `Ad
 
 ## Consumers
 - `AddonsUI` (views, navigation and ViewModels built on top)
-- `AddonBanner.AddonType.pillowType` maps to hCore `PillowType`; render it with hCoreUI `AddonPillowView(pillow:)`
 - `App` (DI registration, Octopus impl)
 - `Contracts`, `CrossSell`, `TravelCertificate`, `Home`, `Chat` (models such as `AddonBanner`, `AddonSource`, `AddonContractInfo`)
 
@@ -24,3 +23,4 @@ Data and domain layer for insurance addons: models, the client protocol, the `Ad
 - `AddonSource` raw values mirror Android's `AddonBannerSource` so the Datadog `flow` attribute is queryable across platforms — don't rename them.
 - `AddonsService.submitAddons` and `confirmAddonRemoval` run the network call inside `Task.withMinimumDuration(.seconds(3))`, so the processing screen shows for a minimum duration.
 - ViewModels are in `AddonsUI`, not here, because they build hCoreUI types (`QuoteDisplayItem`, `QuoteSummary`).
+- `AddonBanner.AddonType.pillowType` maps to hCore `PillowType`; render it with hCoreUI `AddonPillowView(pillow:)`
