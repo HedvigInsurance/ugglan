@@ -16,17 +16,10 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
           xcode-version: latest-stable
-      - name: Post checkout pre
-        run: scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Post checkout post
-        run: scripts/post-checkout.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # agvtool can't read the JSON project.xcproj format, so read the version from the Info.plist
       - name: Get Version
         id: get-version
-        run: cd Projects/App && echo version=$(agvtool what-marketing-version -terse1) >> "$GITHUB_OUTPUT"
+        run: echo version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Projects/App/Config/Production/Info.plist) >> "$GITHUB_OUTPUT"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

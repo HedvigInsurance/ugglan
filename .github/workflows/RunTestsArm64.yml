@@ -15,8 +15,8 @@ concurrency:
 jobs:
   test:
     name: Run Tests (arm64)
-    # macos-15 is Apple Silicon (arm64)
-    runs-on: macos-15
+    # macos-26 is Apple Silicon (arm64)
+    runs-on: macos-26
     timeout-minutes: 90
     permissions:
       contents: read
@@ -33,27 +33,11 @@ jobs:
       - name: Checkout ugglan
         uses: actions/checkout@v5
 
+      # The committed project.xcproj (JSON) format needs Xcode 27.2+: newest installed 27.x at or above 27.2
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
-          xcode-version: latest-stable
-
-      - name: Install mise + Tuist
-        run: |
-          chmod +x scripts/install-tuist.sh
-          scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Small generic cache for the downloaded SwiftGen binary (a tool, not a
-      # build product) so we don't re-download it every run.
-      - name: Cache SwiftGen binary
-        uses: actions/cache@v5
-        with:
-          path: build/swiftgen-6.6.3
-          key: ${{ runner.os }}-swiftgen-${{ hashFiles('scripts/swiftgen.sh') }}
-          restore-keys: |
-            ${{ runner.os }}-swiftgen-
+          xcode-version: '^27.2'
 
       # iOS-specialised cache: persists Xcode DerivedData + the resolved SwiftPM
       # packages AND restores file modification times. The mtime restore is the
@@ -68,15 +52,8 @@ jobs:
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
           swiftpm-package-resolved-file: Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
-      - name: Post-checkout prep (swiftgen, codegen, tuist generate)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          chmod +x scripts/post-checkout.sh
-          # Clean Derived directories to ensure fresh generation in CI
-          rm -rf Projects/*/Sources/Derived
-          scripts/post-checkout.sh
-
+      # No generation step: the projects and codegen output are committed and built as is.
+      # The verify-generated job checks they are up to date.
 
       # Same scheme + workspace as the Xcode Cloud "Tests" action. iPhone 16e is an
       # arm64 simulator on the arm64 runner and shares the iPhone 16 screen geometry
@@ -121,3 +98,47 @@ jobs:
           path: ${{ github.workspace }}/TestResults.xcresult
           if-no-files-found: ignore
           retention-days: 14
+
+  # Fails if the committed Tuist projects or SwiftGen output don't match their sources (manifests, assets,
+  # strings). GraphQL codegen is not checked: it introspects the live dev schema, which changes on its own.
+  verify-generated:
+    name: Verify generated files
+    runs-on: macos-26
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout ugglan
+        uses: actions/checkout@v5
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
+        with:
+          xcode-version: '^27.2'
+
+      - name: Install mise + Tuist
+        run: scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cache SwiftGen binary
+        uses: actions/cache@v5
+        with:
+          path: build/swiftgen-6.6.3
+          key: ${{ runner.os }}-swiftgen-${{ hashFiles('scripts/swiftgen.sh') }}
+          restore-keys: |
+            ${{ runner.os }}-swiftgen-
+
+      - name: Regenerate
+        run: |
+          scripts/swiftgen.sh
+          tuist generate --no-open
+
+      - name: Check for differences
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            git diff --stat
+            echo "::error::Generated files are out of date. Run scripts/post-checkout.sh and commit the result."
+            exit 1
+          fi

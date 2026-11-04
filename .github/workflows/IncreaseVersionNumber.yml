@@ -16,16 +16,15 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
         with:
           xcode-version: latest-stable
-      - name: Post checkout pre
-        run: scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Post checkout
-        run: scripts/post-checkout.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # agvtool can't read the JSON project.xcproj format, so set the version in the Info.plists directly
+      # (PlistBuddy would re-sort the keys, so only the version string is replaced)
       - name: Bump version
-        run: cd Projects/App && xcrun agvtool new-marketing-version ${{ github.event.inputs.versionNumber }}
+        env:
+          VERSION: ${{ github.event.inputs.versionNumber }}
+        run: |
+          for plist in Projects/App/Config/Production/Info.plist Projects/App/Config/Test/Info.plist Projects/NotificationService/Info.plist; do
+            perl -0pi -e 's|(<key>CFBundleShortVersionString</key>\s*<string>)[^<]*(</string>)|${1}$ENV{VERSION}${2}|' "$plist"
+          done
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
