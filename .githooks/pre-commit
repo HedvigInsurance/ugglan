@@ -1,8 +1,23 @@
 #!/bin/bash
 
+# The generated projects are committed, so refuse a generation made in a machine-local mode
+STAGED_PROJECTS=$(git diff --name-only --cached --diff-filter=AMRCT | grep "project.xcproj$")
+if [ -f .local-umbrella ] && echo "$STAGED_PROJECTS" | grep -q "^Dependencies/AppDependencies/"; then
+    echo "error: AppDependencies project is staged while in local-umbrella mode." >&2
+    echo "       Run scripts/use-released-umbrella.sh and re-stage it." >&2
+    exit 1
+fi
+for project in $STAGED_PROJECTS; do
+    if git show ":$project" | grep -q "RevealServer"; then
+        echo "error: $project links RevealServer. Regenerate without TUIST_ENABLE_REVEAL and re-stage it." >&2
+        exit 1
+    fi
+done
+
 SWIFT_FORMAT_PATH=$(find . -type f -name swift-format | grep -v '.dSYM')
 
-for file_path in $(git diff --name-only --cached --diff-filter=AMRCT | grep ".swift$"); do
+# Derived/ is committed generator output (swiftgen, Apollo); formatting it would make every regeneration a diff
+for file_path in $(git diff --name-only --cached --diff-filter=AMRCT | grep ".swift$" | grep -v "/Derived/"); do
     if [ "$(basename "$file_path")" = "Package.swift" ]; then
         continue
     fi
