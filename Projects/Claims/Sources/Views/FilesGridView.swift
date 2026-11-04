@@ -17,14 +17,12 @@ public struct FilesGridView: View {
 
     public var body: some View {
         VStack(alignment: .trailing, spacing: .padding4) {
-            ForEach(Array(stride(from: 0, to: vm.files.count, by: 3)), id: \.self) { rowIndex in
+            ForEach(Array(vm.rows.enumerated()), id: \.offset) { _, row in
                 HStack(spacing: .padding4) {
                     if alignment == .trailing {
                         Spacer()
                     }
-                    ForEach(Array(stride(from: rowIndex, to: min(rowIndex + 3, vm.files.count), by: 1)), id: \.self) {
-                        index in
-                        let file = vm.files[index]
+                    ForEach(row) { file in
                         ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                             FileView(file: file) {
                                 vm.show(file: file)
@@ -90,6 +88,10 @@ public class FileGridViewModel {
     var fileModel: FileUrlModel?
 
     private(set) var columns: [GridItem] = []
+
+    var rows: [[File]] {
+        stride(from: 0, to: files.count, by: 3).map { Array(files[$0..<min($0 + 3, files.count)]) }
+    }
     @ObservationIgnored public var onDelete: ((_ file: File) -> Void)?
 
     public init(
@@ -123,7 +125,9 @@ public class FileGridViewModel {
                 title: L10n.claimsFileUploadRemoveConfirm,
                 style: .default,
                 handler: { [weak self] _ in
-                    self?.onDelete?(file)
+                    withAnimation {
+                        self?.onDelete?(file)
+                    }
                 }
             )
         )
