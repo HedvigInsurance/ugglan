@@ -20,18 +20,19 @@ concurrency:
 
 jobs:
   submit:
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
       - run: python3 -m unittest discover -s scripts/dependency-submission
 
+      # The committed project.xcproj (JSON) format needs Xcode 27.2+. The xcode-27 image ships 27.2 as a
+      # Release Candidate, which setup-xcode's SemVer matching isn't documented to pick, so select it by path.
       - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        with:
-          # The committed project.xcproj (JSON) format needs Xcode 27.2+
-          xcode-version: '^27.2'
+        run: |
+          sudo xcode-select -s /Applications/Xcode_27.2.app
+          xcodebuild -version
 
       # Package.resolved isn't committed; resolving the committed workspace writes it
       - name: Resolve packages
