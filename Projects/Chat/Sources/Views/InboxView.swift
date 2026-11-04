@@ -85,6 +85,9 @@ public struct InboxView: View {
                     tracking: String(describing: InboxNewMessageSheet.self)
                 )
         }
+        .task {
+            vm.configureFetching()
+        }
     }
 
     @ViewBuilder
@@ -236,7 +239,6 @@ class InboxViewModel {
     }
 
     init() {
-        configureFetching()
         // A cancellable rather than an observer token: it unsubscribes when the model is freed, which a
         // nonisolated deinit cannot reliably do for a main-actor property.
         chatClosedCancellable = NotificationCenter.default.publisher(for: .chatClosed)
