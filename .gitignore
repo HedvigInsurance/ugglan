@@ -6,12 +6,10 @@ build/
 DerivedData/
 
 ## Tuist
-# Ugglan.xcworkspace's Package.resolved is committed (pins every package); per-project ones are created by
-# Xcode when a single project is opened. .package.resolved is Tuist's old, machine-local lock file.
+# Package.resolved isn't committed: packages resolve from the version rules in the projects on every machine.
+# .package.resolved is Tuist's machine-local package lock.
 .package.resolved
 **/xcshareddata/swiftpm/
-!Ugglan.xcworkspace/xcshareddata/swiftpm/
-Ugglan.xcworkspace/xcshareddata/swiftpm/configuration/
 # Left behind by `tuist generate --path Projects/<Module>`
 Projects/*/*.xcworkspace
 # Opt-in local modes; never commit a generation made with these

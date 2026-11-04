@@ -15,9 +15,8 @@ tuist generate              # Regenerate Xcode workspace after module changes â€
 ```
 
 - Don't commit a generation made in local-umbrella mode or with `TUIST_ENABLE_REVEAL=1`.
-- `Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved` is committed and pins every Swift package; CI and
-  Xcode Cloud resolve only those versions. After changing a package version rule, resolve in Xcode (or
-  `xcodebuild -resolvePackageDependencies -workspace Ugglan.xcworkspace -scheme Ugglan`) and commit it.
+- `Package.resolved` isn't committed: Swift packages resolve from the version rules in the Tuist manifests, so
+  builds can pick up newer versions within those rules.
 - CI builds the committed files as is; the `Verify generated files` job fails if Tuist/SwiftGen output is stale
   (GraphQL isn't checked â€” it depends on the live dev schema).
 

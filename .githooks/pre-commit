@@ -2,10 +2,9 @@
 
 # The generated projects are committed, so refuse a generation made in a machine-local mode
 STAGED_PROJECTS=$(git diff --name-only --cached --diff-filter=AMRCT | grep "project.xcproj$")
-STAGED_RESOLVED=$(git diff --name-only --cached --diff-filter=AMRCT | grep "Ugglan.xcworkspace/xcshareddata/swiftpm/Package.resolved")
-if [ -f .local-umbrella ] && { echo "$STAGED_PROJECTS" | grep -q "^Dependencies/AppDependencies/" || [ -n "$STAGED_RESOLVED" ]; }; then
-    echo "error: AppDependencies project or Package.resolved is staged while in local-umbrella mode" >&2
-    echo "       (local mode drops the umbrella package). Run scripts/use-released-umbrella.sh and re-stage." >&2
+if [ -f .local-umbrella ] && echo "$STAGED_PROJECTS" | grep -q "^Dependencies/AppDependencies/"; then
+    echo "error: AppDependencies project is staged while in local-umbrella mode." >&2
+    echo "       Run scripts/use-released-umbrella.sh and re-stage it." >&2
     exit 1
 fi
 for project in $STAGED_PROJECTS; do
