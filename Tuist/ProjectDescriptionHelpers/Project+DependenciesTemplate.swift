@@ -170,7 +170,11 @@ public enum ExternalDependencies: CaseIterable {
             let destinationPath =
                 "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
 
-            guard FileManager.default.fileExists(atPath: path.pathString) else {
+            // Opt-in (`TUIST_ENABLE_REVEAL=1 tuist generate`) so the committed project files never depend on
+            // whether the machine that generated them has Reveal installed. Don't commit a Reveal-enabled generation.
+            guard Environment.enableReveal.getBoolean(default: false),
+                FileManager.default.fileExists(atPath: path.pathString)
+            else {
                 return []
             }
 
