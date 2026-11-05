@@ -10,6 +10,10 @@ DerivedData/
 # .package.resolved is Tuist's machine-local package lock.
 .package.resolved
 **/xcshareddata/swiftpm/
+# Xcode recreates each project's inner workspace on open, and builds go through Ugglan.xcworkspace
+**/*.xcodeproj/project.xcworkspace/
+# Empty marker Tuist rewrites on every generate
+Ugglan.xcworkspace/.tuist-generated
 # Left behind by `tuist generate --path Projects/<Module>`
 Projects/*/*.xcworkspace
 # Opt-in local modes; never commit a generation made with these
@@ -30,6 +34,8 @@ IDEWorkspaceChecks.plist
 .DS_Store
 
 ## Tooling
+# Personal Claude Code settings; shared ones go in .claude/settings.json
+.claude/settings.local.json
 .worktrees/
 __pycache__/
 *.pyc

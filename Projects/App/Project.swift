@@ -292,19 +292,6 @@ let project = Project(
             ),
             runAction: .runAction(executable: "Ugglan")
         ),
-        // Run the extension inside the app that hosts it (what Xcode's automatic extension scheme did)
-        Scheme.scheme(
-            name: "NotificationService",
-            shared: true,
-            buildAction: BuildAction.buildAction(targets: ["NotificationService", "Ugglan"]),
-            runAction: .runAction(executable: "Ugglan")
-        ),
-        Scheme.scheme(
-            name: "NotificationServiceProd",
-            shared: true,
-            buildAction: BuildAction.buildAction(targets: ["NotificationServiceProd", "Hedvig"]),
-            runAction: .runAction(executable: "Hedvig")
-        ),
         Scheme.scheme(
             name: "Hedvig",
             shared: true,
