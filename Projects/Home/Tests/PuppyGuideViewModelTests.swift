@@ -11,7 +11,7 @@ extension HomeDependencySuite {
     final class PuppyGuideViewModelTests {
         private weak var sut: MockPuppyGuideClient?
         private weak var store: HomeStore?
-        private weak var listViewModel: PuppyGuideViewModel?
+        private weak var guideViewModel: PuppyGuideViewModel?
         private weak var articleViewModel: PuppyArticleViewModel?
 
         init() {
@@ -25,7 +25,7 @@ extension HomeDependencySuite {
             resetContainer()
             await delay(0.0000001)
 
-            #expect(listViewModel == nil, "the list view model must not outlive the test that created it")
+            #expect(guideViewModel == nil, "the guide view model must not outlive the test that created it")
             #expect(articleViewModel == nil, "the article view model must not outlive the test that created it")
             #expect(store == nil, "the home store must be released once the container is reset")
             #expect(sut == nil, "the mock client must not outlive its dependency registration")
@@ -38,7 +38,7 @@ extension HomeDependencySuite {
 
         private func makeListViewModel() -> PuppyGuideViewModel {
             let viewModel = PuppyGuideViewModel()
-            listViewModel = viewModel
+            guideViewModel = viewModel
             store = globalAppStateContainer.get(HomeStore.self)
             return viewModel
         }
