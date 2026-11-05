@@ -11,8 +11,8 @@ extension MockData {
     @discardableResult
     static func createMockPuppyGuideClient(
         fetchPuppyGuide: @escaping FetchPuppyGuide = { .mock() },
-        setStoryRead: @escaping SetPuppyGuideStoryRead = { _ in },
-        setStoryRating: @escaping SetPuppyGuideStoryRating = { _, _ in }
+        setStoryRead: SetPuppyGuideStoryRead? = nil,
+        setStoryRating: SetPuppyGuideStoryRating? = nil
     ) -> MockPuppyGuideClient {
         let client = MockPuppyGuideClient(
             fetchPuppyGuide: fetchPuppyGuide,
@@ -27,8 +27,8 @@ extension MockData {
 class MockPuppyGuideClient: PuppyGuideClient {
     var events = [Event]()
     var fetchPuppyGuide: FetchPuppyGuide
-    var setStoryRead: SetPuppyGuideStoryRead
-    var setStoryRating: SetPuppyGuideStoryRating
+    var setStoryRead: SetPuppyGuideStoryRead?
+    var setStoryRating: SetPuppyGuideStoryRating?
 
     enum Event: Equatable {
         case getPuppyGuide
@@ -38,8 +38,8 @@ class MockPuppyGuideClient: PuppyGuideClient {
 
     init(
         fetchPuppyGuide: @escaping FetchPuppyGuide,
-        setStoryRead: @escaping SetPuppyGuideStoryRead,
-        setStoryRating: @escaping SetPuppyGuideStoryRating
+        setStoryRead: SetPuppyGuideStoryRead?,
+        setStoryRating: SetPuppyGuideStoryRating?
     ) {
         self.fetchPuppyGuide = fetchPuppyGuide
         self.setStoryRead = setStoryRead
@@ -53,12 +53,12 @@ class MockPuppyGuideClient: PuppyGuideClient {
 
     func setStoryRead(name: String) async throws {
         events.append(.setStoryRead(name: name))
-        try await setStoryRead(name)
+        try await setStoryRead?(name)
     }
 
     func setStoryRating(name: String, rating: Int) async throws {
         events.append(.setStoryRating(name: name, rating: rating))
-        try await setStoryRating(name, rating)
+        try await setStoryRating?(name, rating)
     }
 }
 
