@@ -222,7 +222,7 @@ extension HomeDependencySuite {
                 await viewModel.markAsRead()
 
                 #expect(viewModel.story?.isRead == true)
-                #expect(store?.puppyGuideStory(named: "feeding")?.isRead == true)
+                #expect(store?.puppyGuideStory(id: "feeding")?.isRead == true)
                 #expect(client.events == [.getPuppyGuide, .setStoryRead(name: "feeding")])
             }
 
@@ -240,7 +240,7 @@ extension HomeDependencySuite {
                 await viewModel.rate(5)
 
                 #expect(viewModel.story?.rating == 5)
-                #expect(store?.puppyGuideStory(named: "feeding")?.rating == 5)
+                #expect(store?.puppyGuideStory(id: "feeding")?.rating == 5)
                 #expect(client.events == [.getPuppyGuide, .setStoryRating(name: "feeding", rating: 5)])
             }
 
