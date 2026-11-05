@@ -6,11 +6,11 @@ import hGraphQL
 class PuppyGuideClientOctopus: PuppyGuideClient {
     @Inject private var octopus: hOctopus
 
-    func getPuppyGuide() async throws -> PuppyGuide {
+    func getPuppyGuide() async throws -> PuppyGuide? {
         let data = try await octopus.client.fetch(query: OctopusGraphQL.PuppyGuideQuery())
-        let puppyGuide = data.currentMember.puppyGuide
+        guard let puppyGuide = data.currentMember.puppyGuide else { return nil }
         return .init(
-            stories: (puppyGuide?.stories ?? [])
+            stories: puppyGuide.stories
                 .map { story in
                     .init(
                         name: story.name,

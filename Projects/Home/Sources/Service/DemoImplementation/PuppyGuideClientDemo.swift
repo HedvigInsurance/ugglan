@@ -39,7 +39,7 @@ public class PuppyGuideClientDemo: PuppyGuideClient {
 
     public init() {}
 
-    public func getPuppyGuide() async throws -> PuppyGuide {
+    public func getPuppyGuide() async throws -> PuppyGuide? {
         puppyGuide
     }
 

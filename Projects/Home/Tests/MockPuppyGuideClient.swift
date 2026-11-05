@@ -3,7 +3,7 @@ import hCore
 
 @testable import Home
 
-typealias FetchPuppyGuide = () async throws -> PuppyGuide
+typealias FetchPuppyGuide = () async throws -> PuppyGuide?
 typealias SetPuppyGuideStoryRead = (String) async throws -> Void
 typealias SetPuppyGuideStoryRating = (String, Int) async throws -> Void
 
@@ -46,7 +46,7 @@ class MockPuppyGuideClient: PuppyGuideClient {
         self.setStoryRating = setStoryRating
     }
 
-    func getPuppyGuide() async throws -> PuppyGuide {
+    func getPuppyGuide() async throws -> PuppyGuide? {
         events.append(.getPuppyGuide)
         return try await fetchPuppyGuide()
     }
