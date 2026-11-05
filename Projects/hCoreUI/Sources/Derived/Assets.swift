@@ -140,7 +140,6 @@ public enum hCoreUIAssets {
   public static let bigPillowVacationHome = ImageAsset(name: "big.pillow.vacationHome")
   public static let bigPillowVilla = ImageAsset(name: "big.pillow.villa")
   public static let eurobonus = ImageAsset(name: "eurobonus")
-  public static let hundarBadarPet = ImageAsset(name: "hundarBadarPet")
   public static let campaignQuickNav = ImageAsset(name: "CampaignQuickNav")
   public static let chatQuickNav = ImageAsset(name: "ChatQuickNav")
   public static let firstVetQuickNav = ImageAsset(name: "FirstVetQuickNav")
