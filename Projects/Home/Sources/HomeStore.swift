@@ -186,7 +186,11 @@ public final class HomeStore: AppStore {
         guard puppyGuideState.needsLoading else { return }
         puppyGuideState = .loading
         do {
-            puppyGuideState = .loaded(try await puppyGuideClient.getPuppyGuide())
+            guard let puppyGuide = try await puppyGuideClient.getPuppyGuide() else {
+                puppyGuideState = .failed(errorMessage: L10n.General.errorBody)
+                return
+            }
+            puppyGuideState = .loaded(puppyGuide)
         } catch {
             puppyGuideState = .failed(errorMessage: L10n.General.errorBody)
         }
