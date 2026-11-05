@@ -192,33 +192,35 @@ public final class HomeStore: AppStore {
         }
     }
 
-    func markPuppyGuideStoryAsRead(name: String) async {
-        guard let story = puppyGuideStory(named: name), !story.isRead else { return }
-        updatePuppyGuideStory(named: name) { $0.isRead = true }
+    func markPuppyGuideStoryAsRead(id: String) async {
+        guard let story = puppyGuideStory(id: id), !story.isRead else { return }
+        updatePuppyGuideStory(id: id) { $0.isRead = true }
         do {
-            try await puppyGuideClient.setStoryRead(name: name)
+            try await puppyGuideClient.setStoryRead(name: story.name)
         } catch {
-            log.error("Failed to mark puppy guide story as read", error: error, attributes: ["story": name])
+            log.error("Failed to mark puppy guide story as read", error: error, attributes: ["story": story.name])
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
 
     func ratePuppyGuideStory(name: String, rating: Int) async {
-        guard let story = puppyGuideStory(named: name), story.rating != rating else { return }
-        updatePuppyGuideStory(named: name) { $0.rating = rating }
+        guard let story = puppyGuideStory(id: name), story.rating != rating else { return }
+        updatePuppyGuideStory(id: name) { $0.rating = rating }
         do {
             try await puppyGuideClient.setStoryRating(name: name, rating: rating)
         } catch {
             log.error("Failed to rate puppy guide story", error: error, attributes: ["story": name])
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
 
-    func puppyGuideStory(named name: String) -> PuppyGuideStory? {
-        puppyGuideState.value?.stories.first { $0.name == name }
+    func puppyGuideStory(id: String) -> PuppyGuideStory? {
+        puppyGuideState.value?.stories.first { $0.id == id }
     }
 
-    private func updatePuppyGuideStory(named name: String, _ update: (inout PuppyGuideStory) -> Void) {
+    private func updatePuppyGuideStory(id: String, _ update: (inout PuppyGuideStory) -> Void) {
         guard let puppyGuide = puppyGuideState.value,
-            let index = puppyGuide.stories.firstIndex(where: { $0.name == name })
+            let index = puppyGuide.stories.firstIndex(where: { $0.id == id })
         else { return }
         var stories = puppyGuide.stories
         update(&stories[index])

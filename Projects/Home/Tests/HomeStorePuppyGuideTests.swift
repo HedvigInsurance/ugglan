@@ -181,12 +181,12 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
-                let story = try #require(store.puppyGuideStory(named: "feeding"))
+                let story = try #require(store.puppyGuideStory(id: "feeding"))
                 #expect(story.isRead)
                 #expect(story.showsAsRead)
-                #expect(store.puppyGuideStory(named: "walking")?.isRead == false)
+                #expect(store.puppyGuideStory(id: "walking")?.isRead == false)
                 #expect(client.events == [.setStoryRead(name: "feeding")])
             }
 
@@ -199,13 +199,13 @@ extension HomeDependencySuite {
                 var isReadDuringCall: Bool?
                 weak var weakStore: HomeStore?
                 let client = MockData.createMockPuppyGuideClient(setStoryRead: { name in
-                    isReadDuringCall = weakStore?.puppyGuideStory(named: name)?.isRead
+                    isReadDuringCall = weakStore?.puppyGuideStory(id: name)?.isRead
                 })
                 sut = client
 
                 let store = await makeLoadedStore(client)
                 weakStore = store
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
                 #expect(isReadDuringCall == true)
             }
@@ -220,8 +220,8 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
                 #expect(client.events == [.setStoryRead(name: "feeding")])
             }
@@ -238,9 +238,9 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
-                #expect(store.puppyGuideStory(named: "feeding")?.isRead == true)
+                #expect(store.puppyGuideStory(id: "feeding")?.isRead == true)
                 #expect(client.events.isEmpty)
             }
 
@@ -255,7 +255,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.markPuppyGuideStoryAsRead(name: "unknown")
+                await store.markPuppyGuideStoryAsRead(id: "unknown")
 
                 #expect(store.puppyGuideState == .loaded(loaded))
                 #expect(client.events.isEmpty)
@@ -271,7 +271,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = makeStore()
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
                 #expect(store.puppyGuideState == .notLoaded)
                 #expect(client.events.isEmpty)
@@ -289,9 +289,9 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.markPuppyGuideStoryAsRead(name: "feeding")
+                await store.markPuppyGuideStoryAsRead(id: "feeding")
 
-                #expect(store.puppyGuideStory(named: "feeding")?.isRead == true)
+                #expect(store.puppyGuideStory(id: "feeding")?.isRead == true)
                 #expect(client.events == [.setStoryRead(name: "feeding")])
             }
 
@@ -307,11 +307,11 @@ extension HomeDependencySuite {
                 let store = await makeLoadedStore(client)
                 await store.ratePuppyGuideStory(name: "walking", rating: 4)
 
-                let story = try #require(store.puppyGuideStory(named: "walking"))
+                let story = try #require(store.puppyGuideStory(id: "walking"))
                 #expect(story.rating == 4)
                 #expect(story.isRead == false)
                 #expect(story.showsAsRead)
-                #expect(store.puppyGuideStory(named: "feeding")?.rating == nil)
+                #expect(store.puppyGuideStory(id: "feeding")?.rating == nil)
                 #expect(client.events == [.setStoryRating(name: "walking", rating: 4)])
             }
 
@@ -324,7 +324,7 @@ extension HomeDependencySuite {
                 var ratingDuringCall: Int?
                 weak var weakStore: HomeStore?
                 let client = MockData.createMockPuppyGuideClient(setStoryRating: { name, _ in
-                    ratingDuringCall = weakStore?.puppyGuideStory(named: name)?.rating
+                    ratingDuringCall = weakStore?.puppyGuideStory(id: name)?.rating
                 })
                 sut = client
 
@@ -348,7 +348,7 @@ extension HomeDependencySuite {
                 await store.ratePuppyGuideStory(name: "walking", rating: 4)
                 await store.ratePuppyGuideStory(name: "walking", rating: 2)
 
-                #expect(store.puppyGuideStory(named: "walking")?.rating == 2)
+                #expect(store.puppyGuideStory(id: "walking")?.rating == 2)
                 #expect(
                     client.events == [
                         .setStoryRating(name: "walking", rating: 4),
@@ -371,7 +371,7 @@ extension HomeDependencySuite {
                 let store = await makeLoadedStore(client)
                 await store.ratePuppyGuideStory(name: "walking", rating: 5)
 
-                #expect(store.puppyGuideStory(named: "walking")?.rating == 5)
+                #expect(store.puppyGuideStory(id: "walking")?.rating == 5)
                 #expect(client.events.isEmpty)
             }
 
@@ -422,7 +422,7 @@ extension HomeDependencySuite {
                 let store = await makeLoadedStore(client)
                 await store.ratePuppyGuideStory(name: "walking", rating: 1)
 
-                #expect(store.puppyGuideStory(named: "walking")?.rating == 1)
+                #expect(store.puppyGuideStory(id: "walking")?.rating == 1)
                 #expect(client.events == [.setStoryRating(name: "walking", rating: 1)])
             }
 
