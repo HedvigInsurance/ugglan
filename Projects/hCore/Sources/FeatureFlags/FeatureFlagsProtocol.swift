@@ -17,6 +17,7 @@ public struct FeatureData: Codable, Equatable {
     public let isDemoMode: Bool
     public let isAddonsRemovalFromMovingFlowEnabled: Bool
     public let isNewConversationFromInboxEnabled: Bool
+    public let isPuppyGuideEnabled: Bool
     public let isResumeClaimEnabled: Bool
     public let isOnboardingEnabled: Bool
     public let isTerminationRedirectionEnabled: Bool
@@ -32,6 +33,7 @@ public struct FeatureData: Codable, Equatable {
         isDemoMode: Bool,
         isAddonsRemovalFromMovingFlowEnabled: Bool,
         isNewConversationFromInboxEnabled: Bool,
+        isPuppyGuideEnabled: Bool,
         isResumeClaimEnabled: Bool,
         isOnboardingEnabled: Bool,
         isTerminationRedirectionEnabled: Bool,
@@ -46,6 +48,7 @@ public struct FeatureData: Codable, Equatable {
         self.isDemoMode = isDemoMode
         self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
         self.isNewConversationFromInboxEnabled = isNewConversationFromInboxEnabled
+        self.isPuppyGuideEnabled = isPuppyGuideEnabled
         self.isResumeClaimEnabled = isResumeClaimEnabled
         self.isOnboardingEnabled = isOnboardingEnabled
         self.isTerminationRedirectionEnabled = isTerminationRedirectionEnabled
@@ -84,6 +87,7 @@ public class FeatureFlags {
         isDemoMode: false,
         isAddonsRemovalFromMovingFlowEnabled: false,
         isNewConversationFromInboxEnabled: false,
+        isPuppyGuideEnabled: false,
         isResumeClaimEnabled: false,
         isOnboardingEnabled: false,
         isTerminationRedirectionEnabled: false,

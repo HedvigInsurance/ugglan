@@ -7,6 +7,10 @@ import hCoreUI
 @MainActor
 @Observable
 public class HelpCenterNavigationViewModel {
+    // Set by the deep-link handler before/after the help-center modal opens.
+    // Consumed by `HelpCenterNavigation` via .task(id:) so the push runs after
+    // the NavigationStack has mounted and registered its destination modifiers.
+    public var pendingPuppyGuideRoute: PuppyGuideRoute?
     public let quickActionsVm = QuickActionsViewModel()
     public let router = NavigationRouter()
 
@@ -19,6 +23,18 @@ public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
     }
 
     case inbox
+}
+
+public enum PuppyGuideRoute: Hashable, TrackingViewNameProtocol {
+    case list
+    case article(storyName: String)
+
+    public var nameForTracking: String {
+        switch self {
+        case .list: return "PuppyGuideList"
+        case .article: return "PuppyGuideArticle"
+        }
+    }
 }
 
 private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
@@ -76,7 +92,21 @@ public struct HelpCenterNavigation<Content: View>: View {
                 InboxView()
                     .navigationTitle(L10n.chatConversationInbox)
             }
+            .routerDestination(for: PuppyGuideRoute.self) { route in
+                switch route {
+                case .list:
+                    PuppyGuideScreen()
+                case let .article(storyName):
+                    PuppyArticleScreen(storyName: storyName)
+                }
+            }
             .modifier(PaymentMethodsFromQuickActions(vm: helpCenterVm.quickActionsVm))
+            .task(id: helpCenterVm.pendingPuppyGuideRoute) {
+                guard let route = helpCenterVm.pendingPuppyGuideRoute else { return }
+                helpCenterVm.router.popToRoot()
+                helpCenterVm.router.push(route)
+                helpCenterVm.pendingPuppyGuideRoute = nil
+            }
         }
         .ignoresSafeArea()
         .handleQuickActions(with: helpCenterVm.quickActionsVm, redirect: redirect)
