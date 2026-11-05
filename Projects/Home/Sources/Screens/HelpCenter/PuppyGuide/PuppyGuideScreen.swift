@@ -45,7 +45,7 @@ struct PuppyGuideScreen: View {
                     stories: puppyGuide.stories(in: category),
                     focusedCategory: $focusedCategory
                 ) { story in
-                    router.push(PuppyGuideRoute.article(storyName: story.name))
+                    router.push(PuppyGuideRoute.article(id: story.id))
                 }
                 .id(category)
                 .padding(.bottom, .padding48)

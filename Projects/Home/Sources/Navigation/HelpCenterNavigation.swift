@@ -27,7 +27,7 @@ public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
 
 public enum PuppyGuideRoute: Hashable, TrackingViewNameProtocol {
     case list
-    case article(storyName: String)
+    case article(id: String)
 
     public var nameForTracking: String {
         switch self {
@@ -96,8 +96,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                 switch route {
                 case .list:
                     PuppyGuideScreen()
-                case let .article(storyName):
-                    PuppyArticleScreen(storyName: storyName)
+                case let .article(id):
+                    PuppyArticleScreen(id: id)
                 }
             }
             .modifier(PaymentMethodsFromQuickActions(vm: helpCenterVm.quickActionsVm))
