@@ -18,7 +18,7 @@ struct PuppyArticleScreen: View {
             }
         }
         .animation(.smooth(duration: 0.3), value: vm.story != nil)
-        .loading(.init(get: { vm.viewState }, set: { _ in }))
+        .loading(.constant(vm.viewState))
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(buttonAction: {
