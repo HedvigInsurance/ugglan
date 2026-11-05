@@ -10,9 +10,9 @@ class PuppyGuideClientOctopus: PuppyGuideClient {
         let data = try await octopus.client.fetch(query: OctopusGraphQL.PuppyGuideQuery())
         guard let puppyGuide = data.currentMember.puppyGuide else { return nil }
         return .init(
-            stories: puppyGuide.stories
+            stories: (puppyGuide.stories ?? [])
                 .map { story in
-                    .init(
+                    PuppyGuideStory(
                         name: story.name,
                         title: story.title,
                         subtitle: story.subtitle,
@@ -23,7 +23,7 @@ class PuppyGuideClientOctopus: PuppyGuideClient {
                         isRead: story.read
                     )
                 },
-            isForYoungDog: puppyGuide?.forYoungDog
+            isForYoungDog: puppyGuide.forYoungDog
         )
     }
 
