@@ -70,7 +70,6 @@
           ],
         },
         { "path": "<PRODUCTS>/Payment.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/ResourceBundledDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {
           "path": "<PRODUCTS>/SubmitClaimChat.framework",
           "id": "95568C04B42DC22B2E0DEE3D",

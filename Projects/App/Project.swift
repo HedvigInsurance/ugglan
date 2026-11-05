@@ -118,10 +118,6 @@ let appDependencies: [TargetDependency] = [
         .project(target: "CampaignUI", path: .relativeToRoot("Projects/CampaignUI")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
-        .project(
-            target: "ResourceBundledDependencies",
-            path: .relativeToRoot("Dependencies/ResourceBundledDependencies")
-        ),
     ],
     sdkFrameworks,
 ]

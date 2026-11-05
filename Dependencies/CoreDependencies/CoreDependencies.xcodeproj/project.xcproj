@@ -185,9 +185,6 @@
           "product-name": "Apollo",
           "build-phase": { "build-phase": "frameworks" },
         }, {
-          "product-name": "ApolloWebSocket",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
           "product-name": "AppStateContainer",
           "build-phase": { "build-phase": "frameworks" },
         }, {

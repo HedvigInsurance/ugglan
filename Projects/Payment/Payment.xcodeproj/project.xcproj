@@ -75,7 +75,6 @@
         },
         { "path": "<PRODUCTS>/Payment.framework", "id": "11CD4E167C69816F2B88CCD5", "type": "wrapper.framework", "index": false, "target-membership": [ "PaymentTests/frameworks" ] },
         { "path": "<PRODUCTS>/PaymentTests.xctest", "id": "FF1805D216DDEE546A024DD7", "type": "wrapper.cfbundle", "index": false },
-        { "path": "<PRODUCTS>/ResourceBundledDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "Payment/frameworks" ] },
         { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "PaymentTests/frameworks" ] },
       ],
     }, {

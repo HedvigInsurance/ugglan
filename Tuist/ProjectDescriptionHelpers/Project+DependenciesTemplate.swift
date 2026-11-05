@@ -44,12 +44,6 @@ public enum ExternalDependencies: CaseIterable {
     case rive
     case firebaseAnalytics
     case trustlyIosSdk
-    public var isTestDependency: Bool { false }
-
-    public var isDevDependency: Bool { false }
-
-    public var isResourceBundledDependency: Bool { false }
-
     /// Linked only by the App target (via AppDependencies), never by feature modules. Keep anything that only
     /// App imports here: whatever stays in CoreDependencies is linked into every module, test bundle and
     /// SwiftUI preview, and an oversized CoreDependencies makes previews time out on launch.
@@ -63,8 +57,7 @@ public enum ExternalDependencies: CaseIterable {
     }
 
     public var isCoreDependency: Bool {
-        !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
-            && self != .apolloIosCodegen
+        !isAppDependency && self != .apolloIosCodegen
     }
 
     public func swiftPackages() -> [Package] {
@@ -158,7 +151,7 @@ public enum ExternalDependencies: CaseIterable {
     public func targetDependencies() -> [TargetDependency] {
         switch self {
         case .kingfisher: return [.package(product: "Kingfisher")]
-        case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
+        case .apollo: return [.package(product: "Apollo")]
         case .dynamiccolor: return [.package(product: "DynamicColor")]
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]

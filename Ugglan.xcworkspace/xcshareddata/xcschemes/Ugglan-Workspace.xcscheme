@@ -364,20 +364,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FD03666E384BF2661D5D0444"
-               BuildableName = "DevDependencies.framework"
-               BlueprintName = "DevDependencies"
-               ReferencedContainer = "container:Dependencies/DevDependencies/DevDependencies.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AC6CD3BBC1B2D6E2D62FCA00"
                BuildableName = "EditStakeholders.framework"
                BlueprintName = "EditStakeholders"
@@ -648,20 +634,6 @@
                BuildableName = "ProfileTests.xctest"
                BlueprintName = "ProfileTests"
                ReferencedContainer = "container:Projects/Profile/Profile.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D3C8DB55B8A9C03E61B8AEA5"
-               BuildableName = "ResourceBundledDependencies.framework"
-               BlueprintName = "ResourceBundledDependencies"
-               ReferencedContainer = "container:Dependencies/ResourceBundledDependencies/ResourceBundledDependencies.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry

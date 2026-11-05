@@ -1,5 +1,4 @@
 import Apollo
-import ApolloWebSocket
 import Environment
 import Foundation
 import SwiftUI

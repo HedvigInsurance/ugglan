@@ -51,7 +51,6 @@
         },
         { "path": "<PRODUCTS>/MoveFlow.framework", "id": "DAC2088058486BD0060CE422", "type": "wrapper.framework", "index": false, "target-membership": [ "MoveFlowTests/frameworks" ] },
         { "path": "<PRODUCTS>/MoveFlowTests.xctest", "id": "DC0C2DF900FB443A8AD5671C", "type": "wrapper.cfbundle", "index": false },
-        { "path": "<PRODUCTS>/ResourceBundledDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "MoveFlow/frameworks" ] },
         { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "MoveFlowTests/frameworks" ] },
       ],
     }, {

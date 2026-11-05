@@ -11,12 +11,6 @@
          location = "group:CoreDependencies/CoreDependencies.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:DevDependencies/DevDependencies.xcodeproj">
-      </FileRef>
-      <FileRef
-         location = "group:ResourceBundledDependencies/ResourceBundledDependencies.xcodeproj">
-      </FileRef>
-      <FileRef
          location = "group:TestDependencies/TestDependencies.xcodeproj">
       </FileRef>
    </Group>

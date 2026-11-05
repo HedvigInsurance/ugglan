@@ -5,6 +5,6 @@ let project = Project.framework(
     name: "Payment",
     targets: Set([.framework, .tests]),
     projects: ["hCore", "hCoreUI", "Contracts", "Forever", "CampaignCore", "CampaignUI"],
-    dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
+    dependencies: ["CoreDependencies"],
     sdks: []
 )
