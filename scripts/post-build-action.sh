@@ -19,27 +19,6 @@ rm -rf "${APP_BUNDLE}/Frameworks/HedvigShared.framework"
 # Strip nested Frameworks/ directories some embedded frameworks ship with.
 rm -rf "${APP_BUNDLE}/Frameworks/"*".framework"/Frameworks
 
-# --- Compose resources: lift them to where Bundle.main looks ---
-
-# Compose Multiplatform's iOS resource reader uses Bundle.main, expecting resources
-# at <App>.app/compose-resources/composeResources/...
-#   Local mode    → resources end up inside AppDependencies.framework (with the
-#                   compose-resources/ prefix). Move (not copy) so the framework's
-#                   sealed file list matches its on-disk contents.
-#   Released mode → resources are inside the SPM-extracted HedvigShared.framework
-#                   in ${CONFIGURATION_BUILD_DIR}. Copy them, synthesizing the
-#                   compose-resources/ parent.
-LOCAL_RESOURCES="${APP_BUNDLE}/Frameworks/AppDependencies.framework/compose-resources"
-RELEASED_RESOURCES_SRC="${CONFIGURATION_BUILD_DIR}/HedvigShared.framework/composeResources"
-
-rm -rf "${APP_BUNDLE}/compose-resources"
-if [ -d "$LOCAL_RESOURCES" ]; then
-    mv "$LOCAL_RESOURCES" "${APP_BUNDLE}/compose-resources"
-elif [ -d "$RELEASED_RESOURCES_SRC" ]; then
-    mkdir -p "${APP_BUNDLE}/compose-resources"
-    cp -rf "$RELEASED_RESOURCES_SRC" "${APP_BUNDLE}/compose-resources/composeResources"
-fi
-
 # --- Re-sign every framework now that the bundle layout is final ---
 
 # Scope to this target's own bundle. TARGET_BUILD_DIR is shared by every target, so scanning it

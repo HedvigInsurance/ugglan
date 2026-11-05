@@ -186,13 +186,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self?.isForcingLogout = false
             }
         }
-        Main_nativeKt.doInitDiGraph(
-            accessTokenFetcher: IosAccessTokenFetcher(),
-            deviceIdFetcher: IosDeviceIdFetcher(),
-            featureManager: IosFeatureManager(isFeatureEnabledBlock: { _ in false }),
-            languageStorage: IosLanguageStorage(),
-            appBuildConfig: IosAppBuildConfig()
-        )
         IosLogcatLogger.companion.install()
         ApolloClient.bundle = Bundle.main
 

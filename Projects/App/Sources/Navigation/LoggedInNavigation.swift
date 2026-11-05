@@ -249,8 +249,6 @@ class DeepLinkHandler {
             handleHelpCenterTopic(url)
         case .helpCenterQuestion:
             handleHelpCenterQuestion(url)
-        case .puppyGuide:
-            handlePuppyGuideDeeplink()
         case .moveContract:
             viewModel?.isMoveContractPresented =
                 url.getParameter(property: .source) == DeepLink.terminateContract.rawValue
@@ -388,16 +386,6 @@ class DeepLinkHandler {
                     viewModel?.isFaqPresented = question
                 }
             }
-        }
-    }
-
-    private func handlePuppyGuideDeeplink() {
-        let featureFlags = Dependencies.featureFlags()
-        guard featureFlags.isPuppyGuideEnabled else { return }
-        viewModel?.helpCenterVm.pendingPuppyGuideRoute = .list
-        if viewModel?.homeNavigationVm.isHelpCenterPresented != true {
-            dismissAndSelectTab(0)
-            viewModel?.homeNavigationVm.isHelpCenterPresented = true
         }
     }
 

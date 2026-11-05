@@ -112,4 +112,4 @@ scripts/use-released-umbrella.sh
 
 Both scripts wipe Ugglan's DerivedData (mixing artifacts from both modes silently corrupts signatures) and refuse to run if Xcode is open. Run `scripts/umbrella-status.sh` to see which mode you're currently in.
 
-`scripts/post-build-action.sh` does the iOS-side surgery that makes both modes work — removes the static `HedvigShared.framework` from the bundle, lifts `compose-resources/` to the right path for `Bundle.main`, re-signs the app. Read the comments in the script if you ever debug an install error or a `MissingResourceException`.
+`scripts/post-build-action.sh` does the iOS-side surgery that makes both modes work — removes the static `HedvigShared.framework` from the bundle and re-signs the app. Read the comments in the script if you ever debug an install error.
