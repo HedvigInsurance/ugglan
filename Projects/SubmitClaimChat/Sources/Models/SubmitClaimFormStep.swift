@@ -104,7 +104,7 @@ final class SubmitClaimFormStep: ClaimIntentStepHandler {
                     valueToDisplay += " \(suffix)"
                 }
                 let isSkipped = userEnteredValues.isEmpty || userEnteredValues.contains(where: { $0 == "" })
-                let value = isSkipped ? L10n.claimChatSkippedStep : valueToDisplay
+                let value = isSkipped ? L10n.claimChatSkippedStep : valueToDisplay.displayDate
                 return .init(skipped: isSkipped, key: field.title, type: .text(value: value))
             }
     }

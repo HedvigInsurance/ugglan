@@ -62,7 +62,7 @@ struct SubmitClaimSummaryView: View {
                             hText(item.title)
                                 .multilineTextAlignment(.leading)
                             Spacer()
-                            hText(item.value)
+                            hText(item.value.displayDate)
                                 .multilineTextAlignment(.trailing)
                         }
                         .foregroundColor(hTextColor.Opaque.secondary)
