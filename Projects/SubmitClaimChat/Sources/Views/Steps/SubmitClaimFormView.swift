@@ -24,6 +24,8 @@ struct SubmitClaimFormView: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        // Not always inside an hForm, depending on the layout of the chat
+        .hFieldFocusScope()
         .detent(
             item: $viewModel.isDatePickerPresented,
             presentationStyle: .detent(style: [.height])
@@ -148,8 +150,6 @@ struct FormFieldView: View {
         hFloatingTextField(
             masking: .init(type: .digits),
             value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error
@@ -160,21 +160,17 @@ struct FormFieldView: View {
         hFloatingTextField(
             masking: .init(type: .none),
             value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error
         )
-        .hFieldMultiline(true)
+        //        .hFieldMultiline(true)
     }
 
     var phoneNumberView: some View {
         hFloatingTextField(
             masking: .init(type: .phoneNumber),
             value: $fieldViewModel.value,
-            equals: .constant(nil),
-            focusValue: false,
             placeholder: field.title,
             suffix: field.suffix,
             error: $fieldViewModel.error

@@ -55,7 +55,7 @@ public struct OTPCodeEntryView: View {
                 hFloatingTextField(
                     masking: .init(type: .digits),
                     value: $otpVM.code,
-                    equals: vm.$focusCodeField,
+                    focus: vm.$focusCodeField,
                     focusValue: true
                 )
                 .opacity(0)

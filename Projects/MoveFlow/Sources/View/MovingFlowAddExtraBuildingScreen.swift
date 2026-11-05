@@ -64,8 +64,6 @@ struct MovingFlowAddExtraBuildingScreen: View {
         hFloatingTextField(
             masking: .init(type: .digits),
             value: $vm.livingArea,
-            equals: $vm.type,
-            focusValue: .livingArea,
             placeholder: L10n.changeAddressExtraBuildingSizeLabel,
             suffix: "m\u{00B2}",
             error: $vm.livingAreaError
@@ -102,22 +100,8 @@ struct MovingFlowAddExtraBuildingScreen: View {
     }
 }
 
-enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
-    static var last: AddExtraBuildingType {
-        AddExtraBuildingType.livingArea
-    }
-
-    var next: AddExtraBuildingType? {
-        nil
-    }
-
-    case livingArea
-}
-
 @Observable
 public class MovingFlowAddExtraBuildingViewModel {
-    var type: AddExtraBuildingType?
-
     var buildingType: ExtraBuildingType?
     var livingArea: String = ""
     var connectedToWater = false

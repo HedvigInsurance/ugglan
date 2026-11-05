@@ -18,7 +18,7 @@ public struct OTPEntryView: View {
                     hFloatingTextField(
                         masking: vm.masking,
                         value: $otpVM.input,
-                        equals: vm.$focusInputField,
+                        focus: vm.$focusInputField,
                         focusValue: true,
                         placeholder: L10n.emailRowTitle,
                         error: $otpVM.otpInputErrorMessage

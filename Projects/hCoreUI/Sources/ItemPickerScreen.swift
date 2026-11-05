@@ -187,7 +187,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             hFloatingTextField(
                 masking: Masking(type: .none),
                 value: $config.manualInput.brandName,
-                equals: $config.type,
+                focus: $config.type,
                 focusValue: .inputField,
                 placeholder: config.manualInput.placeholder
             )
@@ -430,22 +430,8 @@ extension View {
     }
 }
 
-enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
-    static var last: ItemPickerFieldType {
-        ItemPickerFieldType.inputField
-    }
-
-    var next: ItemPickerFieldType? {
-        switch self {
-        case .inputField:
-            return nil
-        case .none:
-            return nil
-        }
-    }
-
+enum ItemPickerFieldType: Hashable {
     case inputField
-    case none
 }
 
 extension EnvironmentValues {

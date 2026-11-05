@@ -64,8 +64,6 @@ struct OnboardingPhoneScreen: View, KeyboardReadable {
                     hFloatingTextField(
                         masking: phoneVm.masking,
                         value: $phoneVm.phone,
-                        equals: $phoneVm.focus,
-                        focusValue: .phone,
                         placeholder: L10n.phoneNumberRowTitle,
                         error: $phoneVm.error
                     )
@@ -103,12 +101,6 @@ struct OnboardingPhoneScreen: View, KeyboardReadable {
     }
 }
 
-private enum OnboardingPhoneField: hTextFieldFocusStateCompliant {
-    case phone
-    static let last: OnboardingPhoneField = .phone
-    var next: OnboardingPhoneField? { nil }
-}
-
 @MainActor
 @Observable
 class OnboardingPhoneViewModel {
@@ -117,7 +109,6 @@ class OnboardingPhoneViewModel {
     var isLoading = false
     var error: String?
     let masking = Masking(type: .phoneNumber)
-    fileprivate var focus: OnboardingPhoneField?
 
     // NOTE: contact info arrives via the `.phoneNumber` step's payload (fetched once in
     // getOnboardingSteps); updateContactInfo takes phone and the screen passes

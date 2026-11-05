@@ -30,7 +30,7 @@ struct SwishPayoutSetupScreen: View {
             hFloatingTextField(
                 masking: .init(type: .phoneNumber),
                 value: $vm.phoneNumber,
-                equals: $vm.focusedField,
+                focus: $vm.focusedField,
                 focusValue: .phoneNumber,
                 placeholder: L10n.phoneNumberRowTitle,
                 error: $vm.phoneNumberError
@@ -140,16 +140,8 @@ class SwishPayoutSetupViewModel {
     }
 }
 
-enum SwishPayoutField: hTextFieldFocusStateCompliant {
+enum SwishPayoutField: Hashable {
     case phoneNumber
-
-    static var last: SwishPayoutField { .phoneNumber }
-
-    var next: SwishPayoutField? {
-        switch self {
-        case .phoneNumber: return nil
-        }
-    }
 }
 
 #Preview {

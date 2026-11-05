@@ -68,7 +68,7 @@ struct MovingFlowHouseScreen: View {
             hFloatingTextField(
                 masking: Masking(type: .digits),
                 value: $houseInformationInputvm.yearOfConstruction,
-                equals: $houseInformationInputvm.type,
+                focus: $houseInformationInputvm.type,
                 focusValue: .yearOfConstruction,
                 placeholder: L10n.changeAddressYearOfConstructionLabel,
                 error: $houseInformationInputvm.yearOfConstructionError
@@ -81,7 +81,7 @@ struct MovingFlowHouseScreen: View {
             hFloatingTextField(
                 masking: Masking(type: .digits),
                 value: $houseInformationInputvm.ancillaryArea,
-                equals: $houseInformationInputvm.type,
+                focus: $houseInformationInputvm.type,
                 focusValue: .ancillaryArea,
                 placeholder: L10n.changeAddressAncillaryAreaLabel,
                 suffix: "m\u{00B2}",
@@ -223,20 +223,7 @@ struct MovingFlowHouseScreen: View {
         .environment(MovingFlowNavigationViewModel())
 }
 
-enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
-    static var last: MovingFlowHouseFieldType {
-        MovingFlowHouseFieldType.ancillaryArea
-    }
-
-    var next: MovingFlowHouseFieldType? {
-        switch self {
-        case .yearOfConstruction:
-            return .ancillaryArea
-        case .ancillaryArea:
-            return nil
-        }
-    }
-
+enum MovingFlowHouseFieldType: Hashable {
     case yearOfConstruction
     case ancillaryArea
 }

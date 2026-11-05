@@ -21,7 +21,7 @@ public struct TextInputView: View {
                     hFloatingTextField(
                         masking: vm.masking,
                         value: $vm.input,
-                        equals: $vm.type,
+                        focus: $vm.type,
                         focusValue: .textField,
                         placeholder: vm.title,
                         error: $vm.error
@@ -59,15 +59,7 @@ public struct TextInputView: View {
         .sectionContainerStyle(.transparent)
     }
 
-    enum InputViewFocus: hTextFieldFocusStateCompliant {
-        static var last: InputViewFocus {
-            InputViewFocus.textField
-        }
-
-        var next: InputViewFocus? {
-            nil
-        }
-
+    enum InputViewFocus: Hashable {
         case textField
     }
 }
