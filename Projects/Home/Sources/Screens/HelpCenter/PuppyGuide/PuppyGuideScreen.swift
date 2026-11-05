@@ -19,7 +19,7 @@ struct PuppyGuideScreen: View {
             }
             .animation(.smooth(duration: 0.4), value: vm.puppyGuide != nil)
         }
-        .loading(.init(get: { vm.viewState }, set: { _ in }))
+        .loading(.constant(vm.viewState))
         .hStateViewButtonConfig(
             .init(
                 actionButton: .init(buttonAction: {
