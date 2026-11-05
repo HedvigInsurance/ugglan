@@ -106,6 +106,16 @@ private struct NavigationBarVisibilityModifier: ViewModifier {
     }
 }
 
+private struct DisableNavigationBarMinimizationModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 27.0, *) {
+            content.toolbarMinimizationBehavior(.never, for: .navigationBar)
+        } else {
+            content
+        }
+    }
+}
+
 public struct hNavigationStack<Screen: View>: View {
     @Bindable var router: NavigationRouter
     let options: RouterOptions
@@ -129,6 +139,7 @@ public struct hNavigationStack<Screen: View>: View {
             initialView()
                 .navigationBarTitleDisplayMode(.inline)
                 .modifier(NavigationBarVisibilityModifier(options: options))
+                .modifier(DisableNavigationBarMinimizationModifier())
                 .trackNavigation(name: tracking.nameForTracking)
         }
         .introspect(.navigationStack, on: .iOS(.v17...)) { navController in
@@ -189,6 +200,7 @@ struct NavigationStackDestinationOptionsModifier: ViewModifier {
                 options.contains(.hidesBottomBarWhenPushed) ? .hidden : .automatic,
                 for: .tabBar
             )
+            .modifier(DisableNavigationBarMinimizationModifier())
             .ifLet(navigationTitle) { view, title in
                 view.navigationTitle(title)
             }
