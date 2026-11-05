@@ -69,11 +69,3 @@ fragment MemberChargeFragment on MemberCharge{
       paymentInvoiceUrl
       paymentProvider
 }
-
-fragment MemberChargeBreakdownItemDiscountFragment on MemberChargeBreakdownItemDiscount {
-    code
-    description
-    discount {
-        ...MoneyFragment
-    }
-}

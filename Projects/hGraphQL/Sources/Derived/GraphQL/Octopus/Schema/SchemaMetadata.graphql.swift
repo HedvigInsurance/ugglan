@@ -105,9 +105,6 @@ public extension OctopusGraphQL {
       "Deductible": OctopusGraphQL.Objects.Deductible,
       "FirstVetAction": OctopusGraphQL.Objects.FirstVetAction,
       "FirstVetSection": OctopusGraphQL.Objects.FirstVetSection,
-      "Icon": OctopusGraphQL.Objects.Icon,
-      "IconVariant": OctopusGraphQL.Objects.IconVariant,
-      "IconVariants": OctopusGraphQL.Objects.IconVariants,
       "InsurableLimit": OctopusGraphQL.Objects.InsurableLimit,
       "InsuranceDocument": OctopusGraphQL.Objects.InsuranceDocument,
       "InsuranceEvidenceInformation": OctopusGraphQL.Objects.InsuranceEvidenceInformation,
@@ -120,7 +117,6 @@ public extension OctopusGraphQL {
       "MemberActions": OctopusGraphQL.Objects.MemberActions,
       "MemberCharge": OctopusGraphQL.Objects.MemberCharge,
       "MemberChargeBreakdownItem": OctopusGraphQL.Objects.MemberChargeBreakdownItem,
-      "MemberChargeBreakdownItemDiscount": OctopusGraphQL.Objects.MemberChargeBreakdownItemDiscount,
       "MemberChargeBreakdownItemPeriod": OctopusGraphQL.Objects.MemberChargeBreakdownItemPeriod,
       "MemberChargePriceBreakdownItem": OctopusGraphQL.Objects.MemberChargePriceBreakdownItem,
       "MemberFAQ": OctopusGraphQL.Objects.MemberFAQ,
@@ -188,7 +184,6 @@ public extension OctopusGraphQL {
       "TravelCertificate": OctopusGraphQL.Objects.TravelCertificate,
       "TravelCertificateContractSpecification": OctopusGraphQL.Objects.TravelCertificateContractSpecification,
       "TravelCertificateSpecification": OctopusGraphQL.Objects.TravelCertificateSpecification,
-      "UpsellTravelAddonBanner": OctopusGraphQL.Objects.UpsellTravelAddonBanner,
       "UserError": OctopusGraphQL.Objects.UserError
     ]
 
