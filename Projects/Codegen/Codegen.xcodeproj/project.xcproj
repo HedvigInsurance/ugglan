@@ -104,10 +104,7 @@
         "PRODUCT_BUNDLE_IDENTIFIER": "com.hedvig.codegen",
         "PRODUCT_NAME": "Codegen",
         "SDKROOT": "macosx",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": "DEBUG",
         "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
         "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
         "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",

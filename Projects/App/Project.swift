@@ -15,6 +15,7 @@ let ugglanConfigurations: [Configuration] = [
             "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
@@ -35,6 +36,7 @@ let hedvigConfigurations: [Configuration] = [
         settings: [
             "SWIFT_VERSION": swiftVersion,
             "CODE_SIGN_STYLE": "automatic",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
@@ -74,6 +76,7 @@ let notificationConfiguration: [Configuration] = [
             "SWIFT_VERSION": swiftVersion,
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
             "CODE_SIGN_STYLE": "automatic",
+            "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),

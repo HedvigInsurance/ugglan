@@ -253,7 +253,10 @@ extension Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: ["SWIFT_VERSION": swiftVersion],
+                settings: SettingsDictionary.debugCompilationConditions.merging(["SWIFT_VERSION": swiftVersion]) {
+                    _,
+                    new in new
+                },
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(

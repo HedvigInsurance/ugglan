@@ -19,10 +19,11 @@ extension Project {
         sdks: [String] = []
     ) -> Project {
         let settings: [String: SettingValue] = ["SWIFT_VERSION": swiftVersion]
+        let debugSettings = settings.merging(.debugCompilationConditions) { _, new in new }
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: settings,
+                settings: debugSettings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
@@ -35,7 +36,7 @@ extension Project {
         let testsConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: settings,
+                settings: debugSettings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
             .release(
@@ -77,7 +78,7 @@ extension Project {
         let appConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: settings,
+                settings: debugSettings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
             .release(
