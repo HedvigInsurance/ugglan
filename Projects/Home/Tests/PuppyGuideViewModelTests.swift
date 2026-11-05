@@ -43,8 +43,8 @@ extension HomeDependencySuite {
             return viewModel
         }
 
-        private func makeArticleViewModel(storyName: String = "feeding") -> PuppyArticleViewModel {
-            let viewModel = PuppyArticleViewModel(storyName: storyName)
+        private func makeArticleViewModel(id: String = "feeding") -> PuppyArticleViewModel {
+            let viewModel = PuppyArticleViewModel(id: id)
             articleViewModel = viewModel
             store = globalAppStateContainer.get(HomeStore.self)
             return viewModel
@@ -148,7 +148,7 @@ extension HomeDependencySuite {
 
                 let viewModel = makeArticleViewModel()
 
-                #expect(viewModel.storyName == "feeding")
+                #expect(viewModel.id == "feeding")
                 #expect(viewModel.viewState == .loading)
                 #expect(viewModel.story == nil)
                 #expect(client.events.isEmpty)
@@ -163,7 +163,7 @@ extension HomeDependencySuite {
                 let client = MockData.createMockPuppyGuideClient()
                 sut = client
 
-                let viewModel = makeArticleViewModel(storyName: "walking")
+                let viewModel = makeArticleViewModel(id: "walking")
                 await viewModel.load()
 
                 #expect(viewModel.viewState == .success)
@@ -180,7 +180,7 @@ extension HomeDependencySuite {
                 let client = MockData.createMockPuppyGuideClient()
                 sut = client
 
-                let viewModel = makeArticleViewModel(storyName: "unknown")
+                let viewModel = makeArticleViewModel(id: "unknown")
                 await viewModel.load()
                 await viewModel.markAsRead()
                 await viewModel.rate(4)
@@ -291,7 +291,7 @@ extension HomeDependencySuite {
 
                 let list = makeListViewModel()
                 await list.load()
-                let article = makeArticleViewModel(storyName: "walking")
+                let article = makeArticleViewModel(id: "walking")
                 await article.load()
                 await article.rate(2)
 

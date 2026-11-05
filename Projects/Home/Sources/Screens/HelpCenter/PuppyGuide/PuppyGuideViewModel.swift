@@ -19,14 +19,14 @@ final class PuppyGuideViewModel {
 @MainActor
 @Observable
 final class PuppyArticleViewModel {
-    let storyName: String
+    let id: String
     @ObservationIgnored private let store: HomeStore = globalAppStateContainer.get()
 
-    init(storyName: String) {
-        self.storyName = storyName
+    init(id: String) {
+        self.id = id
     }
 
-    var story: PuppyGuideStory? { store.puppyGuideStory(named: storyName) }
+    var story: PuppyGuideStory? { store.puppyGuideStory(id: id) }
 
     var viewState: ProcessingState {
         if case .loaded = store.puppyGuideState, story == nil {
@@ -40,10 +40,10 @@ final class PuppyArticleViewModel {
     }
 
     func markAsRead() async {
-        await store.markPuppyGuideStoryAsRead(name: storyName)
+        await store.markPuppyGuideStoryAsRead(id: id)
     }
 
     func rate(_ rating: Int) async {
-        await store.ratePuppyGuideStory(name: storyName, rating: rating)
+        await store.ratePuppyGuideStory(name: id, rating: rating)
     }
 }
