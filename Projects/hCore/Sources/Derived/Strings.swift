@@ -105,6 +105,10 @@ public enum L10n {
   public static var authenticationBankidLoginTitle: String { L10n.tr("Localizable", "AUTHENTICATION_BANKID_LOGIN_TITLE") }
   /// Open BankID
   public static var authenticationBankidOpenButton: String { L10n.tr("Localizable", "AUTHENTICATION_BANKID_OPEN_BUTTON") }
+  /// Something went wrong on our side. Try again in a few minutes.
+  public static var authenticationLoginUnavailableBody: String { L10n.tr("Localizable", "AUTHENTICATION_LOGIN_UNAVAILABLE_BODY") }
+  /// We can’t log you in right now
+  public static var authenticationLoginUnavailableTitle: String { L10n.tr("Localizable", "AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE") }
   /// Read more
   public static var automatedMessageInfoCardButton: String { L10n.tr("Localizable", "AUTOMATED_MESSAGE_INFO_CARD_BUTTON") }
   /// Payout to a Swedish bank account
@@ -1265,8 +1269,18 @@ public enum L10n {
   public static var profileTitle: String { L10n.tr("Localizable", "PROFILE_TITLE") }
   /// Go to guides
   public static var puppyGuideGoButton: String { L10n.tr("Localizable", "PUPPY_GUIDE_GO_BUTTON") }
+  /// In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.
+  public static var puppyGuideInfo: String { L10n.tr("Localizable", "PUPPY_GUIDE_INFO") }
   /// Featured guides
   public static var puppyGuideLabel: String { L10n.tr("Localizable", "PUPPY_GUIDE_LABEL") }
+  /// Read
+  public static var puppyGuideLabelRead: String { L10n.tr("Localizable", "PUPPY_GUIDE_LABEL_READ") }
+  /// Not helpful
+  public static var puppyGuideRatingNotHelpful: String { L10n.tr("Localizable", "PUPPY_GUIDE_RATING_NOT_HELPFUL") }
+  /// Was this article helpful?
+  public static var puppyGuideRatingQuestion: String { L10n.tr("Localizable", "PUPPY_GUIDE_RATING_QUESTION") }
+  /// Very helpful
+  public static var puppyGuideRatingVeryHelpful: String { L10n.tr("Localizable", "PUPPY_GUIDE_RATING_VERY_HELPFUL") }
   /// Helpful guides for you and your puppy
   public static var puppyGuideSubtitle: String { L10n.tr("Localizable", "PUPPY_GUIDE_SUBTITLE") }
   /// Puppy Guide
