@@ -244,6 +244,7 @@ extension FeatureData {
             isDemoMode: false,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: false,
+            isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
             isOnboardingEnabled: true,
             isTerminationRedirectionEnabled: false,

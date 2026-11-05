@@ -32,6 +32,7 @@ extension FeatureData {
             isDemoMode: true,
             isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
+            isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,
             isOnboardingEnabled: false,
             isTerminationRedirectionEnabled: false,
