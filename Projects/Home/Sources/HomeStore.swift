@@ -36,6 +36,7 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 @Observable
 public final class HomeStore: AppStore {
     @ObservationIgnored @Inject private var homeService: HomeClient
+    @ObservationIgnored @Inject private var puppyGuideClient: PuppyGuideClient
 
     public private(set) var memberContractState: MemberContractState = .loading
     public private(set) var memberInfo: MemberInfo?
@@ -57,6 +58,7 @@ public final class HomeStore: AppStore {
     @Transient public private(set) var fetchQuickActionsError: String?
     @Transient public private(set) var fetchFAQError: String?
     @Transient public private(set) var fetchMemberStateError: String?
+    @Transient private(set) var puppyGuideState: LoadState<PuppyGuide> = .notLoaded
 
     @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
     private let dismissedQuotes = DismissedOngoingQuotesTracker()
@@ -178,6 +180,49 @@ public final class HomeStore: AppStore {
             fetchFAQError = L10n.General.errorBody
         }
         isFetchingFAQ = false
+    }
+
+    func fetchPuppyGuideIfNeeded() async {
+        guard puppyGuideState.needsLoading else { return }
+        puppyGuideState = .loading
+        do {
+            puppyGuideState = .loaded(try await puppyGuideClient.getPuppyGuide())
+        } catch {
+            puppyGuideState = .failed(errorMessage: L10n.General.errorBody)
+        }
+    }
+
+    func markPuppyGuideStoryAsRead(name: String) async {
+        guard let story = puppyGuideStory(named: name), !story.isRead else { return }
+        updatePuppyGuideStory(named: name) { $0.isRead = true }
+        do {
+            try await puppyGuideClient.setStoryRead(name: name)
+        } catch {
+            log.error("Failed to mark puppy guide story as read", error: error, attributes: ["story": name])
+        }
+    }
+
+    func ratePuppyGuideStory(name: String, rating: Int) async {
+        guard let story = puppyGuideStory(named: name), story.rating != rating else { return }
+        updatePuppyGuideStory(named: name) { $0.rating = rating }
+        do {
+            try await puppyGuideClient.setStoryRating(name: name, rating: rating)
+        } catch {
+            log.error("Failed to rate puppy guide story", error: error, attributes: ["story": name])
+        }
+    }
+
+    func puppyGuideStory(named name: String) -> PuppyGuideStory? {
+        puppyGuideState.value?.stories.first { $0.name == name }
+    }
+
+    private func updatePuppyGuideStory(named name: String, _ update: (inout PuppyGuideStory) -> Void) {
+        guard let puppyGuide = puppyGuideState.value,
+            let index = puppyGuide.stories.firstIndex(where: { $0.name == name })
+        else { return }
+        var stories = puppyGuide.stories
+        update(&stories[index])
+        puppyGuideState = .loaded(.init(stories: stories, isForYoungDog: puppyGuide.isForYoungDog))
     }
 
     public func fetchChatNotifications() async {
