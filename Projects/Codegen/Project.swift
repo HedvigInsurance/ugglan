@@ -25,7 +25,11 @@ let project = Project(
             dependencies: [
                 .package(product: "ApolloCodegenLib"),
                 .package(product: "ArgumentParser"),
-            ]
+            ],
+            settings: .settings(configurations: [
+                .debug(name: "Debug", settings: .debugCompilationConditions),
+                .release(name: "Release"),
+            ])
         )
     ],
     schemes: [

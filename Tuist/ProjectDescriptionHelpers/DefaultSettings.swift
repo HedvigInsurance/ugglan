@@ -16,4 +16,11 @@ extension SettingsDictionary {
         "GENERATE_INFOPLIST_FILE": "YES",
         "MARKETING_VERSION": "1.0",
     ]
+
+    // Tuist's default Debug settings write SWIFT_ACTIVE_COMPILATION_CONDITIONS as a list, which Xcode rewrites into
+    // a single string whenever it saves a project. Writing the string form up front keeps those saves diff-free.
+    // No $(inherited): Tuist would merge that back into its list. DEBUG is all Debug.xcconfig sets anyway.
+    public static let debugCompilationConditions: SettingsDictionary = [
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG"
+    ]
 }

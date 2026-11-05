@@ -142,10 +142,7 @@
         "SUPPORTS_MACCATALYST": "NO",
         "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
         "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": "DEBUG",
         "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
         "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
         "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
@@ -202,10 +199,7 @@
         "SUPPORTS_MACCATALYST": "NO",
         "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "YES",
         "SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD": "NO",
-        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": [
-          "$(inherited)",
-          "DEBUG",
-        ],
+        "SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]": "DEBUG",
         "SWIFT_COMPILATION_MODE[config=Debug]": "singlefile",
         "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
         "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
