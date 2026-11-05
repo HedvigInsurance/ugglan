@@ -6,8 +6,8 @@ import hCoreUI
 struct PuppyArticleScreen: View {
     @State private var vm: PuppyArticleViewModel
 
-    init(storyName: String) {
-        _vm = State(initialValue: PuppyArticleViewModel(storyName: storyName))
+    init(id: String) {
+        _vm = State(initialValue: PuppyArticleViewModel(id: id))
     }
 
     var body: some View {
@@ -162,5 +162,5 @@ private struct ScrolledIntoViewModifier: ViewModifier {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return PuppyArticleScreen(storyName: "puppy-training")
+    return PuppyArticleScreen(id: "puppy-training")
 }
