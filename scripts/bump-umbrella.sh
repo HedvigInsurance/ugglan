@@ -51,5 +51,10 @@ echo "    $CURRENT_TAG -> $LATEST_TAG"
 if [[ -f "$MARKER" ]]; then
     echo
     echo "note: $MARKER exists, so tuist generate will keep using the local XCFramework."
-    echo "      Run scripts/use-released-umbrella.sh once you're ready to consume the bumped package."
+    echo "      Run scripts/use-released-umbrella.sh once you're ready to consume the bumped package,"
+    echo "      then commit the regenerated AppDependencies project."
+else
+    # The generated projects are committed, so the pinned version must land in the project too
+    ( cd "$UGGLAN_ROOT" && tuist generate --no-open )
+    echo "==> Regenerated projects; commit the template and AppDependencies project together."
 fi

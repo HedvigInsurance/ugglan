@@ -3,8 +3,8 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "MoveFlow",
-    targets: Set([.framework, .tests, .example]),
+    targets: Set([.framework, .tests]),
     projects: ["hCore", "hCoreUI", "Contracts"],
-    dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
+    dependencies: ["CoreDependencies"],
     sdks: []
 )

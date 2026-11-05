@@ -1,10 +1,5 @@
-mkdir -p Projects/hCoreUI/Sources/Derived
-mkdir -p Projects/App/Sources/Derived
-mkdir -p Projects/hCore/Sources/Derived
-mkdir -p Projects/Forever/Sources/Derived
-mkdir -p Projects/Contracts/Sources/Derived
-mkdir -p Projects/Home/Sources/Derived
-mkdir -p Projects/Market/Sources/Derived
+#!/usr/bin/env bash
+set -e
 
 SWIFTGEN_VERSION=6.6.3
 mise install swiftgen@$SWIFTGEN_VERSION

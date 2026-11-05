@@ -1,7 +1,7 @@
 # Submits the Swift package tree to this repo's GitHub dependency graph, so the
 # SBOM export and Hedvig's open-source register (prod-env/compliance/oss-register)
 # see what the app ships. GitHub only parses Package.resolved at the repo root;
-# Tuist generates ours inside Ugglan.xcworkspace, so without this the graph holds
+# Xcode resolves ours (uncommitted) inside Ugglan.xcworkspace, so without this the graph holds
 # only the Fastlane gems.
 name: DependencySubmission
 
@@ -20,28 +20,23 @@ concurrency:
 
 jobs:
   submit:
-    runs-on: macos-latest
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v5
 
       - run: python3 -m unittest discover -s scripts/dependency-submission
 
+      # The committed project.xcproj (JSON) format needs Xcode 27.2+. The xcode-27 image ships 27.2 as a
+      # Release Candidate, which setup-xcode's SemVer matching isn't documented to pick, so select it by path.
       - name: Select Xcode
-        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        with:
-          xcode-version: latest-stable
+        run: |
+          sudo xcode-select -s /Applications/Xcode_27.2.app
+          xcodebuild -version
 
-      # Puts the mise shims on PATH for the steps after it, so generate must be a
-      # separate step.
-      - name: Install mise + Tuist
-        run: scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      # Package.resolved isn't committed; resolving the committed workspace writes it
       - name: Resolve packages
         run: |
-          tuist generate --no-open
           xcodebuild -resolvePackageDependencies -workspace Ugglan.xcworkspace -scheme Ugglan
 
       - name: Submit snapshot

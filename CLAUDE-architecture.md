@@ -206,4 +206,4 @@ Apollo iOS client. `.graphql` files live in `Projects/hGraphQL/GraphQL/Octopus/<
 2. Run Codegen project (`scripts/post-checkout.sh` or Codegen scheme in Xcode)
 3. Use the generated type in your OctopusImplementation
 
-Never edit files in `Sources/Derived/` — they are generated and will be overwritten.
+Never edit files in `Sources/Derived/` — they are generated and will be overwritten. They are committed: regenerate and commit them together with the `.graphql` / asset / strings change.

@@ -4,11 +4,21 @@ Tuist-managed iOS monorepo. Latest Swift, targeting iOS 17+.
 
 ## Build & Run
 
+Generated Xcode projects (`project.xcproj`, JSON format, Xcode 27.2+) and codegen output (`Derived/`) are
+committed — a fresh clone opens and builds directly. Tuist manifests remain the source of truth: never hand-edit
+`project.xcproj`; change `Project.swift` / `Tuist/` and regenerate, then commit the generated diff.
+
 ```bash
 scripts/install-tuist.sh   # One-time: installs mise + tuist (mise is required by swiftgen.sh)
-scripts/post-checkout.sh   # Full setup after fresh clone (generates workspace, codegen, etc.)
-tuist generate              # Regenerate Xcode workspace after module changes
+scripts/post-checkout.sh   # Regenerate everything (workspace, swiftgen, GraphQL codegen) — commit the result
+tuist generate              # Regenerate Xcode workspace after module changes — commit the result
 ```
+
+- Don't commit a generation made in local-umbrella mode or with `TUIST_ENABLE_REVEAL=1`.
+- `Package.resolved` isn't committed: Swift packages resolve from the version rules in the Tuist manifests, so
+  builds can pick up newer versions within those rules.
+- CI builds the committed files as is; the `Verify generated files` job fails if Tuist/SwiftGen output is stale
+  (GraphQL isn't checked — it depends on the live dev schema).
 
 - **"Ugglan"** scheme for dev builds, **"Hedvig"** for production.
 

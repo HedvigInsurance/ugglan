@@ -18,7 +18,7 @@ Handles the address change (moving) flow for insurance contracts. Guides users t
 
 ## Dependencies
 - Imports: hCore, hCoreUI, Contracts, ChangeTier (for `ChangeTierNavigation`, `ChangeTierQuoteDataProvider`, `ChangeTierIntentModel`)
-- Additional build dependencies: CoreDependencies, ResourceBundledDependencies
+- Additional build dependencies: CoreDependencies
 - Depended on by: App
 
 ## Navigation

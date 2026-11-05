@@ -12,6 +12,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+      # mise is needed by scripts/swiftgen.sh to regenerate Strings.swift
+      - name: Install mise
+        run: scripts/install-tuist.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Fetch translations
         run: scripts/translations.sh
         env:

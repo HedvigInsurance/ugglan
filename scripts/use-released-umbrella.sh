@@ -29,5 +29,7 @@ if [[ -d "$TUIST_MANIFEST_CACHE" ]]; then
 fi
 
 rm -f "$UGGLAN_ROOT/.local-umbrella"
-( cd "$UGGLAN_ROOT" && scripts/post-checkout.sh )
+# Only the AppDependencies project changes between modes; a full post-checkout.sh would also
+# re-download the GraphQL schema and rewrite the committed codegen output
+( cd "$UGGLAN_ROOT" && tuist generate --no-open )
 echo "==> Reverted to released umbrella."

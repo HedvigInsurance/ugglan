@@ -2,22 +2,22 @@
 set -e
 set -x
 
-curl https://mise.run | sh
-export PATH="$HOME/.local/bin:$PATH"
-TUIST_VERSION=$(cat "$CI_PRIMARY_REPOSITORY_PATH/.tuist-version")
-mise install tuist@"$TUIST_VERSION"
-eval "$(mise activate bash --shims)" # Addds the activated tools to $PATH
-echo "👉 Setting mise globally:"
-mise use -g tuist@"$TUIST_VERSION"
+# The generated projects and codegen output are committed, so Xcode Cloud builds the checkout as is.
 
-cd $CI_PRIMARY_REPOSITORY_PATH;
+# Package.resolved isn't committed, and Xcode Cloud disables automatic package resolution by default
+# ("a resolved file is required when automatic dependency resolution is disabled"). Let xcodebuild
+# resolve packages from the version rules in the projects.
+defaults write com.apple.dt.Xcode IDEPackageOnlyUseVersionsFromResolvedFile -bool NO
+defaults write com.apple.dt.Xcode IDEDisableAutomaticPackageResolution -bool NO
 
+# mise is only needed for Node.js, which ci_post_xcodebuild.sh uses to upload symbols to Datadog.
 if [ "${DATADOG_API_KEY+x}" ]; then
+  curl https://mise.run | sh
+  export PATH="$HOME/.local/bin:$PATH"
+  eval "$(mise activate bash --shims)" # Adds the activated tools to $PATH
+
   echo "===== Installing Node.js via mise ====="
   NODE_VERSION=22
   mise install node@$NODE_VERSION
   mise use -g node@$NODE_VERSION
 fi
-scripts/post-checkout.sh
-
-

@@ -21,8 +21,8 @@ jobs:
       - name: Find all Swift files
         id: find-files
         run: |
-          # Find all Swift files except tests
-          find Projects -name "*.swift" -type f | grep -v Test > swift_files.txt
+          # Find all Swift files except tests and committed generator output
+          find Projects -name "*.swift" -type f -not -path "*/Derived/*" | grep -v Test > swift_files.txt
           FILES=$(cat swift_files.txt | tr '\n' ' ')
           echo "swift_files=$FILES" >> $GITHUB_OUTPUT
           echo "Found $(wc -l < swift_files.txt) Swift files to check"

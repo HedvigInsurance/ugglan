@@ -1,96 +1,44 @@
-# Xcode
-#
-# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+# Generated Xcode projects and codegen output (Derived/) are committed: regenerate with
+# scripts/post-checkout.sh after changing manifests, assets, strings or GraphQL, and commit the result.
 
-## Build generated
+## Build output
 build/
 DerivedData/
-Derived/
-Carthage
-*.xcworkspace
-*.xcodeproj
-UITestsImages/FailureDiffs
-.githooks/release
-.githooks/bin
+
+## Tuist
+# Package.resolved isn't committed: packages resolve from the version rules in the projects on every machine.
+# .package.resolved is Tuist's machine-local package lock.
 .package.resolved
-__MACOSX
-vendor/bundle
-AppleIncRootCertificate.cer
-Dependencies/CoreDependencies/RevealServer.xcframework
+**/xcshareddata/swiftpm/
+# Xcode recreates each project's inner workspace on open, and builds go through Ugglan.xcworkspace
+**/*.xcodeproj/project.xcworkspace/
+# Empty marker Tuist rewrites on every generate
+Ugglan.xcworkspace/.tuist-generated
+# Left behind by `tuist generate --path Projects/<Module>`
+Projects/*/*.xcworkspace
+# Opt-in local modes; never commit a generation made with these
 .local-umbrella
+Dependencies/CoreDependencies/RevealServer.xcframework
 
-## Various settings
-*.pbxuser
-!default.pbxuser
-*.mode1v3
-!default.mode1v3
-*.mode2v3
-!default.mode2v3
-*.perspectivev3
-!default.perspectivev3
+## Swift packages
+LocalModules/*/.build/
+LocalModules/*/Package.resolved
+LocalModules/*/.swiftpm/configuration/registries.json
+LocalModules/*/.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
+
+## Xcode / macOS local state
 xcuserdata/
-.bundle/config
-
-## Other
-*.moved-aside
-*.xccheckout
-*.xcscmblueprint
+**/xcshareddata/xcodecloud/
+IDEWorkspaceChecks.plist
 .DS_Store
-node_modules
-.idea/
 
-## Obj-C/Swift specific
-*.hmap
-*.ipa
-*.dSYM.zip
-*.dSYM
-
-# CocoaPods
-#
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
-#
-Pods/
-#*.xcworkspace
-
-# Carthage
-#
-# Add this line if you want to avoid checking in source code from Carthage dependencies.
-# Carthage/Checkouts
-
-Carthage/Build
-
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://docs.fastlane.tools/best-practices/source-control/#source-control
-
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots/**/*.png
-fastlane/test_output
-scan_derived_data
-gym_derived_data
-
-# Code Injection
-#
-# After new code Injection tools there's a generated folder /iOSInjectionProject
-# https://github.com/johnno1962/injectionforxcode
-
-iOSInjectionProject/
-
-LocalModules/AutomaticLog/Package.resolved
-
-# GitHub Actions workflow artifacts
-accessibility-report.md
-swift_files.txt
-
-# Worktrees
+## Tooling
+# Personal Claude Code settings; shared ones go in .claude/settings.json
+.claude/settings.local.json
 .worktrees/
-
-# Python bytecode from scripts/accessibility
 __pycache__/
 *.pyc
+# GitHub Actions accessibility workflow artifacts
+accessibility-report.md
+swift_files.txt

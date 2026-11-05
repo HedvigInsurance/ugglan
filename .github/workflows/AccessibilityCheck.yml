@@ -25,6 +25,8 @@ jobs:
           sha: ${{ github.event.pull_request.head.sha }}
           files: |
             **/*.swift
+          files_ignore: |
+            **/Derived/**
 
       - name: Run Accessibility Check
         id: check

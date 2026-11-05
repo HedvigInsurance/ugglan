@@ -1,11 +1,3 @@
-query Claims {
-    currentMember {
-        claims {
-			...ClaimFragment
-        }
-    }
-}
-
 query ActiveClaims {
     currentMember {
         claimsActive {

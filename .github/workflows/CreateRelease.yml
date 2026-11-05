@@ -9,32 +9,22 @@ on:
 jobs:
   deploy:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
-    runs-on: macos-latest
+    # Only reads a plist and calls the GitHub API, so no Xcode/macOS runner is needed
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        with:
-          xcode-version: latest-stable
-      - name: Post checkout pre
-        run: scripts/install-tuist.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Post checkout post
-        run: scripts/post-checkout.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v5
+      # agvtool can't read the JSON project.xcproj format, so read the version from the Info.plist
       - name: Get Version
         id: get-version
-        run: cd Projects/App && echo version=$(agvtool what-marketing-version -terse1) >> "$GITHUB_OUTPUT"
+        run: |
+          VERSION=$(python3 -c "import plistlib; print(plistlib.load(open('Projects/App/Config/Production/Info.plist', 'rb'))['CFBundleShortVersionString'])")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      # actions/create-release is archived; gh ships on every runner
       - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get-version.outputs.version }}
-          release_name: Release-${{ steps.get-version.outputs.version }}
-          body: Release
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.get-version.outputs.version }}
+        run: gh release create "$VERSION" --title "Release-$VERSION" --notes "Release" --target "$GITHUB_SHA"

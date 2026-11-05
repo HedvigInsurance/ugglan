@@ -44,14 +44,8 @@ public enum ExternalDependencies: CaseIterable {
     case rive
     case firebaseAnalytics
     case trustlyIosSdk
-    public var isTestDependency: Bool { false }
-
-    public var isDevDependency: Bool { false }
-
-    public var isResourceBundledDependency: Bool { false }
-
     /// Linked only by the App target (via AppDependencies), never by feature modules. Keep anything that only
-    /// App imports here: whatever stays in CoreDependencies is linked into every module, Example app and
+    /// App imports here: whatever stays in CoreDependencies is linked into every module, test bundle and
     /// SwiftUI preview, and an oversized CoreDependencies makes previews time out on launch.
     /// Datadog must stay next to `umbrella`: HedvigShared (Kotlin) calls Datadog RUM directly (`DDRUMMonitor`).
     /// HedvigShared is static, so only one framework (AppDependencies) may link it.
@@ -63,8 +57,7 @@ public enum ExternalDependencies: CaseIterable {
     }
 
     public var isCoreDependency: Bool {
-        !isTestDependency && !isDevDependency && !isResourceBundledDependency && !isAppDependency
-            && self != .apolloIosCodegen
+        !isAppDependency && self != .apolloIosCodegen
     }
 
     public func swiftPackages() -> [Package] {
@@ -158,7 +151,7 @@ public enum ExternalDependencies: CaseIterable {
     public func targetDependencies() -> [TargetDependency] {
         switch self {
         case .kingfisher: return [.package(product: "Kingfisher")]
-        case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
+        case .apollo: return [.package(product: "Apollo")]
         case .dynamiccolor: return [.package(product: "DynamicColor")]
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
@@ -170,7 +163,11 @@ public enum ExternalDependencies: CaseIterable {
             let destinationPath =
                 "\(FileManager.default.currentDirectoryPath)/Dependencies/CoreDependencies/RevealServer.xcframework"
 
-            guard FileManager.default.fileExists(atPath: path.pathString) else {
+            // Opt-in (`TUIST_ENABLE_REVEAL=1 tuist generate`) so the committed project files never depend on
+            // whether the machine that generated them has Reveal installed. Don't commit a Reveal-enabled generation.
+            guard Environment.enableReveal.getBoolean(default: false),
+                FileManager.default.fileExists(atPath: path.pathString)
+            else {
                 return []
             }
 
@@ -291,6 +288,7 @@ extension Project {
             name: name,
             organizationName: "Hedvig",
             options: .options(
+                automaticSchemesOptions: .disabled,
                 disableBundleAccessors: true,
                 disableSynthesizedResourceAccessors: true
             ),
@@ -303,21 +301,15 @@ extension Project {
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
                     deploymentTargets: deploymentTargets,
-                    infoPlist: .default,
+                    infoPlist: nil,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
                     scripts: scripts,
                     dependencies: dependencies,
-                    settings: .settings(base: baseSettings, configurations: frameworkConfigurations)
-                )
-            ],
-            schemes: [
-                Scheme.scheme(
-                    name: name,
-                    shared: true,
-                    buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
-                    testAction: nil,
-                    runAction: nil
+                    settings: .settings(
+                        base: baseSettings.merging(.generatedInfoPlist) { current, _ in current },
+                        configurations: frameworkConfigurations
+                    )
                 )
             ]
         )

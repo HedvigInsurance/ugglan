@@ -6,7 +6,6 @@ let project = Project.framework(
     targets: Set([
         .framework,
         .tests,
-        .example,
     ]),
     projects: [
         "hCore"
