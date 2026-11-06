@@ -45,6 +45,8 @@
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Logga in med BankID";
 "AUTHENTICATION_BANKID_OPEN_BUTTON" = "Öppna BankID";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_BODY" = "Något gick fel hos oss. Försök igen om några minuter.";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE" = "Vi kan inte logga in dig just nu";
 "AUTH_OTP_YOUR_EMAIL" = "din email";
 "AUTOMATED_MESSAGE_INFO_CARD_BUTTON" = "Läs mer";
 "BANKID_LOGIN_TITLE" = "Logga in";
@@ -398,6 +400,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.";
 "INSURANCE_EVIDENCE.READ_MORE_TITLE" = "Vad är ett giltighetsintyg?";
 "INSURANCE_OFFERS_SUBHEADING" = "Erbjudanden";
+"INSURANCE_PERILS_INFO" = "Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks.";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?";
 "KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
 "LEGAL_A11Y" = "Tillgänglighet";
@@ -591,7 +594,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
+"PUPPY_GUIDE_INFO" = "I valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.";
 "PUPPY_GUIDE_LABEL" = "Utvalda guider";
+"PUPPY_GUIDE_LABEL_READ" = "Läst";
+"PUPPY_GUIDE_RATING_NOT_HELPFUL" = "Inte hjälpsam";
+"PUPPY_GUIDE_RATING_QUESTION" = "Var den här artikeln hjälpsam?";
+"PUPPY_GUIDE_RATING_VERY_HELPFUL" = "Mycket hjälpsam";
 "PUPPY_GUIDE_SUBTITLE" = "Hjälpsamma guider för dig och din valp";
 "PUPPY_GUIDE_TITLE" = "Valpguiden";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Inte nu";

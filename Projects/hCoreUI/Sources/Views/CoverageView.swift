@@ -42,13 +42,7 @@ public struct CoverageView: View {
                     }
                 } else {
                     hSection {
-                        // TODO: Add "The descriptions below are simplified. Your terms always decide what’s covered." /
-                        // "Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks."
-                        // to Lokalise
-                        InfoCard(
-                            text: "The descriptions below are simplified. Your terms always decide what’s covered.",
-                            type: .neutral
-                        )
+                        InfoCard(text: L10n.insurancePerilsInfo, type: .neutral)
                     }
                     .padding(.bottom, .padding8)
                 }

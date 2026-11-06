@@ -45,6 +45,8 @@
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Open the BankID app on your phone or scan the QR-code to login";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Login with BankID";
 "AUTHENTICATION_BANKID_OPEN_BUTTON" = "Open BankID";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_BODY" = "Something went wrong on our side. Try again in a few minutes.";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE" = "We can’t log you in right now";
 "AUTH_OTP_YOUR_EMAIL" = "your email";
 "AUTOMATED_MESSAGE_INFO_CARD_BUTTON" = "Read more";
 "BANKID_LOGIN_TITLE" = "Login";
@@ -398,6 +400,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.";
 "INSURANCE_EVIDENCE.READ_MORE_TITLE" = "What is a certificate of validity?";
 "INSURANCE_OFFERS_SUBHEADING" = "Offers";
+"INSURANCE_PERILS_INFO" = "The descriptions below are simplified. Your terms always decide what’s covered.";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?";
 "KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LEGAL_A11Y" = "Accessibility";
@@ -591,7 +594,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Connect direct debit";
 "PROFILE_TITLE" = "Your profile";
 "PUPPY_GUIDE_GO_BUTTON" = "Go to guides";
+"PUPPY_GUIDE_INFO" = "In the puppy guide, you’ll find helpful articles covering everything from the first vet visit to choosing the right food.";
 "PUPPY_GUIDE_LABEL" = "Featured guides";
+"PUPPY_GUIDE_LABEL_READ" = "Read";
+"PUPPY_GUIDE_RATING_NOT_HELPFUL" = "Not helpful";
+"PUPPY_GUIDE_RATING_QUESTION" = "Was this article helpful?";
+"PUPPY_GUIDE_RATING_VERY_HELPFUL" = "Very helpful";
 "PUPPY_GUIDE_SUBTITLE" = "Helpful guides for you and your puppy";
 "PUPPY_GUIDE_TITLE" = "Puppy Guide";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Not now";
