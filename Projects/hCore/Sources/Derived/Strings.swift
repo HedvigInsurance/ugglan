@@ -839,6 +839,8 @@ public enum L10n {
   public static var insuranceDetailsDecommissionInfo: String { L10n.tr("Localizable", "INSURANCE_DETAILS_DECOMMISSION_INFO") }
   /// Offers
   public static var insuranceOffersSubheading: String { L10n.tr("Localizable", "INSURANCE_OFFERS_SUBHEADING") }
+  /// The descriptions below are simplified. Your terms always decide what’s covered.
+  public static var insurancePerilsInfo: String { L10n.tr("Localizable", "INSURANCE_PERILS_INFO") }
   /// Get a price quote
   public static var insurancesTabMovingFlowInfoButtonTitle: String { L10n.tr("Localizable", "insurances_tab_moving_flow_info_button_title") }
   /// Are you moving? See if we can offer you a better price on your new home.

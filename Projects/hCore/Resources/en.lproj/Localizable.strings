@@ -400,6 +400,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "A certificate of validity confirms the periods during which you have had valid and paid home insurance with Hedvig, as well as its details, for example which address was insured and the amount you’ve paid.\n\nThe certificate can be used to confirm your insurance period when applying for legal protection with another insurance company, or in matters involving banks or authorities.";
 "INSURANCE_EVIDENCE.READ_MORE_TITLE" = "What is a certificate of validity?";
 "INSURANCE_OFFERS_SUBHEADING" = "Offers";
+"INSURANCE_PERILS_INFO" = "The descriptions below are simplified. Your terms always decide what’s covered.";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "Do you want to pay your insurance via direct debit and enable quick payouts in the event of claims?";
 "KIVRA_PAYMENT_INFO" = "The invoice is sent to your Kivra inbox 14 days before the due date each month.";
 "LEGAL_A11Y" = "Accessibility";

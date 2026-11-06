@@ -43,7 +43,8 @@ public struct CoverageView: View {
                 }
                 VStack(spacing: .padding4) {
                     PerilCollection(
-                        perils: peril.perils
+                        perils: peril.perils,
+                        disclaimer: L10n.insurancePerilsInfo
                     )
                 }
             }

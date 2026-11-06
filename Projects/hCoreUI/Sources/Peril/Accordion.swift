@@ -5,17 +5,20 @@ public struct AccordionView: View {
     let peril: Perils?
     let title: String
     let description: String
+    let disclaimer: String?
     @State private var extended = false
-    public init(peril: Perils) {
+    public init(peril: Perils, disclaimer: String? = nil) {
         self.peril = peril
         title = peril.title
         description = peril.description
+        self.disclaimer = disclaimer
     }
 
     public init(title: String, description: String) {
         self.title = title
         self.description = description
         peril = nil
+        disclaimer = nil
     }
 
     public var body: some View {
@@ -30,7 +33,7 @@ public struct AccordionView: View {
                     .padding(.bottom, .padding18)
                     .accessibilityAddTraits(.isButton)
                 if extended {
-                    AccordionBody(peril: peril, description: description, extended: $extended)
+                    AccordionBody(peril: peril, description: description, disclaimer: disclaimer, extended: $extended)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -105,6 +108,7 @@ struct AccordionHeader: View {
 struct AccordionBody: View {
     let peril: Perils?
     let description: String
+    let disclaimer: String?
     @Binding var extended: Bool
 
     var body: some View {
@@ -125,6 +129,15 @@ struct AccordionBody: View {
                             }
                             .fixedSize(horizontal: false, vertical: true)
                         }
+                    }
+                }
+                if let disclaimer {
+                    VStack(alignment: .leading, spacing: .padding16) {
+                        Rectangle()
+                            .fill(hBorderColor.primary)
+                            .frame(height: 1)
+                        hText(disclaimer, style: .label)
+                            .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
             }
