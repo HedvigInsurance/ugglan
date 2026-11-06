@@ -31,52 +31,54 @@ struct PuppyArticleScreen: View {
     }
 
     private func content(for story: PuppyGuideStory) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hFillColor.Opaque.disabled
-                .aspectRatio(16 / 9, contentMode: .fit)
-                .frame(maxWidth: .infinity)
-                .overlay {
-                    KFImage(story.imageUrl)
-                        .fade(duration: 0.25)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
+        hSection {
+            VStack(alignment: .leading, spacing: 0) {
+                hFillColor.Opaque.disabled
+                    .aspectRatio(16 / 9, contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .overlay {
+                        KFImage(story.imageUrl)
+                            .fade(duration: 0.25)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                    .accessibilityHidden(true)
+                    .padding(.top, .padding8)
+                    .padding(.bottom, .padding16)
+                hText(story.title, style: .heading2)
+                    .accessibilityAddTraits(.isHeader)
+                    .padding(.bottom, .padding4)
+                hText(story.subtitle, style: .label)
+                    .foregroundColor(hTextColor.Translucent.secondary)
+                    .padding(.bottom, .padding24)
+                MarkdownView(
+                    config: .init(
+                        text: story.content,
+                        fontStyle: .body1,
+                        color: hTextColor.Translucent.secondary,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .single,
+                        isSelectable: false
+                    ) { url in
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    }
+                )
+                .padding(.bottom, .padding48)
+                hText(L10n.puppyGuideRatingQuestion)
+                    .padding(.bottom, .padding16)
+                PuppyArticleRatingSection(selectedRating: story.rating) { rating in
+                    Task { await vm.rate(rating) }
                 }
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                .accessibilityHidden(true)
-                .padding(.top, .padding8)
                 .padding(.bottom, .padding16)
-            hText(story.title, style: .heading2)
-                .accessibilityAddTraits(.isHeader)
-                .padding(.bottom, .padding4)
-            hText(story.subtitle, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
-                .padding(.bottom, .padding24)
-            MarkdownView(
-                config: .init(
-                    text: story.content,
-                    fontStyle: .body1,
-                    color: hTextColor.Translucent.secondary,
-                    linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .single,
-                    isSelectable: false
-                ) { url in
-                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                }
-            )
-            .padding(.bottom, .padding48)
-            hText(L10n.puppyGuideRatingQuestion)
-                .padding(.bottom, .padding16)
-            PuppyArticleRatingSection(selectedRating: story.rating) { rating in
-                Task { await vm.rate(rating) }
+                Color.clear
+                    .frame(height: 1)
+                    .onScrolledIntoView {
+                        Task { await vm.markAsRead() }
+                    }
             }
-            .padding(.bottom, .padding16)
-            Color.clear
-                .frame(height: 1)
-                .onScrolledIntoView {
-                    Task { await vm.markAsRead() }
-                }
         }
-        .padding(.horizontal, .padding16)
+        .sectionContainerStyle(.transparent)
     }
 }
 
