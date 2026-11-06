@@ -64,7 +64,7 @@ public struct CoverageView: View {
     }
 }
 
-#Preview{
+#Preview {
     CoverageView(
         limits: [],
         didTapInsurableLimit: { _ in
