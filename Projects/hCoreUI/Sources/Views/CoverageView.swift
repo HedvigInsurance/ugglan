@@ -40,15 +40,11 @@ public struct CoverageView: View {
                     hSection {
                         titleSection(title)
                     }
-                } else {
-                    hSection {
-                        InfoCard(text: L10n.insurancePerilsInfo, type: .neutral)
-                    }
-                    .padding(.bottom, .padding8)
                 }
                 VStack(spacing: .padding4) {
                     PerilCollection(
-                        perils: peril.perils
+                        perils: peril.perils,
+                        disclaimer: L10n.insurancePerilsInfo
                     )
                 }
             }

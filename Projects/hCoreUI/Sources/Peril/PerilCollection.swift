@@ -3,23 +3,26 @@ import hCore
 
 public struct PerilCollection: View {
     public var perils: [Perils]
+    let disclaimer: String?
 
     public init(
-        perils: [Perils]
+        perils: [Perils],
+        disclaimer: String? = nil
     ) {
         self.perils = perils
+        self.disclaimer = disclaimer
     }
 
     public var body: some View {
         ForEach(perils, id: \.title) { peril in
             hSection {
-                AccordionView(peril: peril)
+                AccordionView(peril: peril, disclaimer: disclaimer)
             }
         }
     }
 }
 
-#Preview {
+#Preview{
     let perils: [Perils] =
         [
             .init(
