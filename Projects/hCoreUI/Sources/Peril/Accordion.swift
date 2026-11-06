@@ -160,7 +160,7 @@ extension Perils {
     }
 }
 
-#Preview{
+#Preview {
     hSection {
         AccordionView(
             peril: .init(

@@ -22,7 +22,7 @@ public struct PerilCollection: View {
     }
 }
 
-#Preview{
+#Preview {
     let perils: [Perils] =
         [
             .init(
