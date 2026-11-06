@@ -146,6 +146,22 @@ extension HomeDependencySuite {
         }
 
         @Test
+        func fetchPuppyGuideIfNeededNoGuideFails() async {
+            do {
+                let client = MockData.createMockPuppyGuideClient(fetchPuppyGuide: { nil })
+                sut = client
+
+                let store = makeStore()
+                await store.fetchPuppyGuideIfNeeded()
+
+                #expect(store.puppyGuideState == .failed(errorMessage: L10n.General.errorBody))
+                #expect(client.events == [.getPuppyGuide])
+            }
+
+            await expectReleased()
+        }
+
+        @Test
         func fetchPuppyGuideIfNeededAfterFailureRetries() async {
             do {
                 let client = MockData.createMockPuppyGuideClient(fetchPuppyGuide: {
@@ -281,7 +297,7 @@ extension HomeDependencySuite {
         }
 
         @Test
-        func markPuppyGuideStoryAsReadFailureKeepsLocalUpdate() async {
+        func markPuppyGuideStoryAsReadFailureRevertsLocalUpdate() async {
             do {
                 let client = MockData.createMockPuppyGuideClient(setStoryRead: { _ in
                     throw PuppyGuideError.engagementNotSaved
@@ -291,7 +307,7 @@ extension HomeDependencySuite {
                 let store = await makeLoadedStore(client)
                 await store.markPuppyGuideStoryAsRead(id: "feeding")
 
-                #expect(store.puppyGuideStory(id: "feeding")?.isRead == true)
+                #expect(store.puppyGuideStory(id: "feeding")?.isRead == false)
                 #expect(client.events == [.setStoryRead(name: "feeding")])
             }
 
@@ -412,17 +428,20 @@ extension HomeDependencySuite {
         }
 
         @Test
-        func ratePuppyGuideStoryFailureKeepsLocalUpdate() async {
+        func ratePuppyGuideStoryFailureRevertsLocalUpdate() async {
             do {
-                let client = MockData.createMockPuppyGuideClient(setStoryRating: { _, _ in
-                    throw PuppyGuideError.engagementNotSaved
-                })
+                let client = MockData.createMockPuppyGuideClient(
+                    fetchPuppyGuide: { .mock(stories: [.mock(name: "walking", rating: 3)]) },
+                    setStoryRating: { _, _ in
+                        throw PuppyGuideError.engagementNotSaved
+                    }
+                )
                 sut = client
 
                 let store = await makeLoadedStore(client)
                 await store.ratePuppyGuideStory(id: "walking", rating: 1)
 
-                #expect(store.puppyGuideStory(id: "walking")?.rating == 1)
+                #expect(store.puppyGuideStory(id: "walking")?.rating == 3)
                 #expect(client.events == [.setStoryRating(name: "walking", rating: 1)])
             }
 
