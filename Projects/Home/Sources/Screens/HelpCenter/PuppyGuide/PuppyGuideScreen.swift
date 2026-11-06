@@ -34,9 +34,9 @@ struct PuppyGuideScreen: View {
     private func content(for puppyGuide: PuppyGuide, scrollProxy: ScrollViewProxy) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-                .padding(.horizontal, .padding16)
                 .padding(.top, .padding8)
                 .padding(.bottom, .padding48)
+                .withSectionPadding()
             categoriesRow(puppyGuide.categories, scrollProxy: scrollProxy)
                 .padding(.bottom, .padding24)
             ForEach(puppyGuide.categories, id: \.self) { category in
@@ -83,7 +83,7 @@ struct PuppyGuideScreen: View {
                 }
             }
         }
-        .contentMargins(.horizontal, .padding16, for: .scrollContent)
+        .withSectionContentPadding()
     }
 }
 
@@ -98,7 +98,7 @@ private struct PuppyGuideCategorySection: View {
             hText(category, style: .heading2)
                 .accessibilityAddTraits(.isHeader)
                 .accessibilityFocused(focusedCategory, equals: category)
-                .padding(.horizontal, .padding16)
+                .withSectionPadding()
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: .padding24) {
                     ForEach(stories) { story in
@@ -108,7 +108,7 @@ private struct PuppyGuideCategorySection: View {
                     }
                 }
             }
-            .contentMargins(.horizontal, .padding16, for: .scrollContent)
+            .withSectionContentPadding()
         }
     }
 }
