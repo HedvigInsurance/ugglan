@@ -33,7 +33,7 @@ Displays and manages the status of insurance claims after submission. Provides a
 - `Tests/MockData.swift` -- `MockFetchClaimsService` conforming to `hFetchClaimsClient` with injectable closures. Factory method `createMockFetchClaimService` registers the mock into `Dependencies`.
 
 ## Dependencies
-- Imports: hCore (DI, File model, MonetaryAmount, logging), hCoreUI (UI components, Router, hForm, hSection, hRow, hButton, StatusCard, InfoCard, PDFPreview, DocumentPreview, AudioPlayer, TrackPlayerView, InfoCardScrollView), AppStateContainer (`AppStore`, `@AppObservedObject`, `globalAppStateContainer`), Chat (Conversation model, ChatType), CrossSell (CrossSellInfo), Kingfisher (image loading in file views), Combine, Photos, SwiftUI.
+- Imports: hCore (DI, File model, MonetaryAmount, logging), hCoreUI (UI components, Router, hForm, hSection, hRow, hButton, StatusCard, InfoCard, PDFPreview, DocumentPreview, AudioPlayer, TrackPlayerView, InfoCardScrollView), AppStateContainer (`AppStore`, `@AppObservedObject`, `globalAppStateContainer`), Chat (Conversation model, ChatType), CrossSellCore (CrossSellInfo), Kingfisher (image loading in file views), Combine, Photos, SwiftUI.
 - Project-level dependencies declared in `Project.swift`: hCore, hCoreUI, Contracts, Chat, Payment.
 - Dependents (modules that import Claims): App, Home, Profile, SubmitClaimChat.
 

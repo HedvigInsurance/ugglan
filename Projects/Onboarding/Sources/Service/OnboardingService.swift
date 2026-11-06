@@ -1,5 +1,5 @@
 import AutomaticLog
-import CrossSell
+import CrossSellCore
 import Foundation
 import hCore
 

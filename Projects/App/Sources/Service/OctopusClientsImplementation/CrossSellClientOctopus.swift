@@ -1,5 +1,5 @@
 import AddonsCore
-import CrossSell
+import CrossSellCore
 import Foundation
 import hCore
 import hGraphQL

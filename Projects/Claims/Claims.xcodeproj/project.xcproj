@@ -44,6 +44,14 @@
             "ClaimsTests/frameworks",
           ],
         }, {
+          "path": "<PRODUCTS>/CrossSellCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Claims/frameworks",
+            "ClaimsTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/hCore.framework",
           "type": "wrapper.framework",
           "index": false,

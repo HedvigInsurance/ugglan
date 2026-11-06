@@ -1,0 +1,159 @@
+import Foundation
+
+public struct CrossSells: Codable, Equatable, Hashable, Sendable, Identifiable {
+    public let id = UUID()
+    public let recommended: RecommendedCrossSell?
+    public let others: [CrossSell]
+    enum CodingKeys: String, CodingKey {
+        case id
+        case recommended
+        case others
+    }
+
+    var hasRecommendation: Bool {
+        recommended != nil
+    }
+
+    public init(recommended: RecommendedCrossSell?, others: [CrossSell]) {
+        self.recommended = recommended
+        self.others = others
+    }
+}
+
+public enum RecommendedCrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
+    case insurance(CrossSell)
+    case addon(AddonCrossSell)
+
+    public var id: String {
+        switch self {
+        case let .insurance(insurance): return insurance.id
+        case let .addon(addon): return addon.id
+        }
+    }
+
+    public var title: String {
+        switch self {
+        case let .insurance(insurance): return insurance.title
+        case let .addon(addon): return addon.title
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case let .insurance(insurance): return insurance.description
+        case let .addon(addon): return addon.description
+        }
+    }
+
+    public var buttonTitle: String {
+        switch self {
+        case let .insurance(insurance): return insurance.buttonTitle
+        case let .addon(addon): return addon.buttonText
+        }
+    }
+
+    public var bannerText: String? {
+        switch self {
+        case let .insurance(insurance): return insurance.bannerText
+        case let .addon(addon): return addon.bannerText
+        }
+    }
+
+    public var destination: Destination {
+        switch self {
+        case let .insurance(insurance): return .storeURL(insurance.webActionURL)
+        case let .addon(addon): return .deepLink(addon.deepLink)
+        }
+    }
+
+    public enum Destination: Equatable, Sendable {
+        case storeURL(String?)
+        case deepLink(String)
+    }
+}
+
+public struct AddonCrossSell: Codable, Equatable, Hashable, Sendable {
+    public let id: String
+    public let title: String
+    public let description: String
+    public let buttonText: String
+    public let deepLink: String
+    /// Optional banner text shown above the card; callers fall back to a default when nil.
+    public let bannerText: String?
+    /// Benefit rows shown as a checkmark list; empty when there are none.
+    public let benefits: [String]
+    public let imageUrl: URL?
+
+    public init(
+        id: String,
+        title: String,
+        description: String,
+        buttonText: String,
+        deepLink: String,
+        bannerText: String? = nil,
+        benefits: [String] = [],
+        imageUrl: URL?
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.buttonText = buttonText
+        self.deepLink = deepLink
+        self.bannerText = bannerText
+        self.benefits = benefits
+        self.imageUrl = imageUrl
+    }
+}
+
+public struct CrossSell: Codable, Equatable, Hashable, Sendable, Identifiable {
+    public let id: String
+    /// The flow this offer was fetched for, reported with every event about it.
+    public let source: CrossSellSource
+    public let title: String
+    public let description: String
+    public let buttonTitle: String
+    public let webActionURL: String?
+    public let imageUrl: URL?
+    public let bannerText: String?
+    public let buttonText: String?
+    public let discountText: String?
+    public let buttonDescription: String
+    public let leftImage: URL?
+    public let rightImage: URL?
+    public let discountPercent: Int?
+    public let numberOfEligibleContracts: Int
+
+    public init(
+        id: String,
+        source: CrossSellSource,
+        title: String,
+        description: String,
+        buttonTitle: String,
+        webActionURL: String,
+        bannerText: String? = nil,
+        buttonText: String? = nil,
+        discountText: String? = nil,
+        imageUrl: URL?,
+        buttonDescription: String,
+        discountPercent: Int? = nil,
+        leftImage: URL? = nil,
+        rightImage: URL? = nil,
+        numberOfEligibleContracts: Int = 0
+    ) {
+        self.id = id
+        self.source = source
+        self.title = title
+        self.description = description
+        self.buttonTitle = buttonTitle
+        self.webActionURL = webActionURL
+        self.imageUrl = imageUrl
+        self.bannerText = bannerText
+        self.buttonText = buttonText
+        self.discountText = discountText
+        self.buttonDescription = buttonDescription
+        self.leftImage = leftImage
+        self.rightImage = rightImage
+        self.numberOfEligibleContracts = numberOfEligibleContracts
+        self.discountPercent = discountPercent
+    }
+}

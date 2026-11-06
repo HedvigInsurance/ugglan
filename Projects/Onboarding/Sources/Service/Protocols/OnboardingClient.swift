@@ -1,4 +1,4 @@
-import CrossSell
+import CrossSellCore
 import Foundation
 
 @MainActor

@@ -45,7 +45,8 @@
             "SubmitClaimChatTests/frameworks",
           ],
         },
-        { "path": "<PRODUCTS>/CrossSell.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/CrossSellCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/CrossSellUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         { "path": "<PRODUCTS>/EditStakeholders.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         { "path": "<PRODUCTS>/Forever.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {

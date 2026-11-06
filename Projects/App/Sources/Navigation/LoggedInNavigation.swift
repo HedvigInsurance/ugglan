@@ -6,7 +6,8 @@ import Chat
 import Claims
 import Combine
 import Contracts
-import CrossSell
+import CrossSellCore
+import CrossSellUI
 import EditStakeholders
 import Environment
 import Forever

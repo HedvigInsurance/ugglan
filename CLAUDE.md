@@ -47,7 +47,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | Claims | Claims list, status tracking, claim details |
 | Codegen | GraphQL code generation tooling |
 | Contracts | Insurance contract management and details |
-| CrossSell | Cross-selling insurance products |
+| CrossSellCore | Cross-sell models, client protocol, service, store, tracking and demo data (UI-free) |
+| CrossSellUI | SwiftUI views for cross-sell offers and addon banners (built on CrossSellCore) |
 | EditStakeholders | Co-insured and co-owner management |
 | Forever | Referral program |
 | hCore | Core utilities, DI container, state management, extensions |

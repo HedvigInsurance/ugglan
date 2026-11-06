@@ -19,7 +19,7 @@ Handles insurance plan tier upgrades and downgrades. Users can compare coverage 
 - Model: `ChangeTierIntentModel` in `Sources/Models/ChangeTierIntentModel.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, CrossSell
+- Imports: hCore, hCoreUI, CrossSellCore
 - Depended on by: Contracts, TerminateContracts, MoveFlow, App
 
 ## Navigation

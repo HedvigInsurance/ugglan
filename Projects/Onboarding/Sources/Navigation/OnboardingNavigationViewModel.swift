@@ -1,7 +1,7 @@
 import AppStateContainer
 import Combine
 import Contracts
-import CrossSell
+import CrossSellCore
 import EditStakeholders
 import Payment
 import SwiftUI
