@@ -406,6 +406,27 @@ private struct hSectionPadding: ViewModifier {
     }
 }
 
+extension View {
+    public func withSectionContentPadding() -> some View {
+        modifier(hSectionContentPadding())
+    }
+}
+
+private struct hSectionContentPadding: ViewModifier {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
+    @Environment(\.hFieldSize) var fieldSize
+    func body(content: Content) -> some View {
+        content
+            .contentMargins(
+                .horizontal,
+                hWithoutHorizontalPadding.contains(.section)
+                    ? 0 : (horizontalSizeClass == .regular ? .padding60 : fieldSize.horizontalPadding),
+                for: .scrollContent
+            )
+    }
+}
+
 extension hSection where Header == EmptyView {
     public init(@RowViewBuilder _ builder: @escaping () -> Content) {
         self.init(header: nil, builder)
