@@ -305,7 +305,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.ratePuppyGuideStory(name: "walking", rating: 4)
+                await store.ratePuppyGuideStory(id: "walking", rating: 4)
 
                 let story = try #require(store.puppyGuideStory(id: "walking"))
                 #expect(story.rating == 4)
@@ -330,7 +330,7 @@ extension HomeDependencySuite {
 
                 let store = await makeLoadedStore(client)
                 weakStore = store
-                await store.ratePuppyGuideStory(name: "walking", rating: 3)
+                await store.ratePuppyGuideStory(id: "walking", rating: 3)
 
                 #expect(ratingDuringCall == 3)
             }
@@ -345,8 +345,8 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.ratePuppyGuideStory(name: "walking", rating: 4)
-                await store.ratePuppyGuideStory(name: "walking", rating: 2)
+                await store.ratePuppyGuideStory(id: "walking", rating: 4)
+                await store.ratePuppyGuideStory(id: "walking", rating: 2)
 
                 #expect(store.puppyGuideStory(id: "walking")?.rating == 2)
                 #expect(
@@ -369,7 +369,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.ratePuppyGuideStory(name: "walking", rating: 5)
+                await store.ratePuppyGuideStory(id: "walking", rating: 5)
 
                 #expect(store.puppyGuideStory(id: "walking")?.rating == 5)
                 #expect(client.events.isEmpty)
@@ -386,7 +386,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.ratePuppyGuideStory(name: "unknown", rating: 3)
+                await store.ratePuppyGuideStory(id: "unknown", rating: 3)
 
                 #expect(store.puppyGuideState == .loaded(loaded))
                 #expect(client.events.isEmpty)
@@ -402,7 +402,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = makeStore()
-                await store.ratePuppyGuideStory(name: "walking", rating: 3)
+                await store.ratePuppyGuideStory(id: "walking", rating: 3)
 
                 #expect(store.puppyGuideState == .notLoaded)
                 #expect(client.events.isEmpty)
@@ -420,7 +420,7 @@ extension HomeDependencySuite {
                 sut = client
 
                 let store = await makeLoadedStore(client)
-                await store.ratePuppyGuideStory(name: "walking", rating: 1)
+                await store.ratePuppyGuideStory(id: "walking", rating: 1)
 
                 #expect(store.puppyGuideStory(id: "walking")?.rating == 1)
                 #expect(client.events == [.setStoryRating(name: "walking", rating: 1)])

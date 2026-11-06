@@ -202,18 +202,20 @@ public final class HomeStore: AppStore {
         do {
             try await puppyGuideClient.setStoryRead(name: story.name)
         } catch {
+            updatePuppyGuideStory(id: id) { $0.isRead = false }
             log.error("Failed to mark puppy guide story as read", error: error, attributes: ["story": story.name])
             Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
 
-    func ratePuppyGuideStory(name: String, rating: Int) async {
-        guard let story = puppyGuideStory(id: name), story.rating != rating else { return }
-        updatePuppyGuideStory(id: name) { $0.rating = rating }
+    func ratePuppyGuideStory(id: String, rating: Int) async {
+        guard let story = puppyGuideStory(id: id), story.rating != rating else { return }
+        updatePuppyGuideStory(id: id) { $0.rating = rating }
         do {
-            try await puppyGuideClient.setStoryRating(name: name, rating: rating)
+            try await puppyGuideClient.setStoryRating(name: story.name, rating: rating)
         } catch {
-            log.error("Failed to rate puppy guide story", error: error, attributes: ["story": name])
+            updatePuppyGuideStory(id: id) { $0.rating = story.rating }
+            log.error("Failed to rate puppy guide story", error: error, attributes: ["story": story.name])
             Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
