@@ -40,6 +40,6 @@ echo "==> Marker created at $UGGLAN_ROOT/.local-umbrella"
 
 # Only the AppDependencies project changes between modes; a full post-checkout.sh would also
 # re-download the GraphQL schema and rewrite the committed codegen output
-( cd "$UGGLAN_ROOT" && tuist generate --no-open )
+"$UGGLAN_ROOT/scripts/generate.sh" --no-open
 echo "==> Done. Open Ugglan.xcworkspace and build."
 echo "    Run scripts/use-released-umbrella.sh to revert."

@@ -11,9 +11,11 @@ committed — a fresh clone opens and builds directly. Tuist manifests remain th
 ```bash
 scripts/install-tuist.sh   # One-time: installs mise + tuist (mise is required by swiftgen.sh)
 scripts/post-checkout.sh   # Regenerate everything (workspace, swiftgen, GraphQL codegen) — commit the result
-tuist generate              # Regenerate Xcode workspace after module changes — commit the result
+scripts/generate.sh         # Regenerate Xcode workspace after module changes — commit the result
 ```
 
+- Use `scripts/generate.sh`, not a bare `tuist generate`: it also rewrites the schemes into the form Xcode saves
+  (`scripts/normalize-schemes.py`), otherwise Xcode rewrites them on the next reload and leaves a diff.
 - Don't commit a generation made in local-umbrella mode or with `TUIST_ENABLE_REVEAL=1`.
 - `Package.resolved` isn't committed: Swift packages resolve from the version rules in the Tuist manifests, so
   builds can pick up newer versions within those rules.

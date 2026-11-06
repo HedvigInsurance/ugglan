@@ -55,6 +55,6 @@ if [[ -f "$MARKER" ]]; then
     echo "      then commit the regenerated AppDependencies project."
 else
     # The generated projects are committed, so the pinned version must land in the project too
-    ( cd "$UGGLAN_ROOT" && tuist generate --no-open )
+    "$UGGLAN_ROOT/scripts/generate.sh" --no-open
     echo "==> Regenerated projects; commit the template and AppDependencies project together."
 fi
