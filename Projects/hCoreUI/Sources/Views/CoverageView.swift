@@ -40,6 +40,17 @@ public struct CoverageView: View {
                     hSection {
                         titleSection(title)
                     }
+                } else {
+                    hSection {
+                        // TODO: Add "The descriptions below are simplified. Your terms always decide what’s covered." /
+                        // "Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks."
+                        // to Lokalise
+                        InfoCard(
+                            text: "The descriptions below are simplified. Your terms always decide what’s covered.",
+                            type: .neutral
+                        )
+                    }
+                    .padding(.bottom, .padding8)
                 }
                 VStack(spacing: .padding4) {
                     PerilCollection(
@@ -59,7 +70,7 @@ public struct CoverageView: View {
     }
 }
 
-#Preview {
+#Preview{
     CoverageView(
         limits: [],
         didTapInsurableLimit: { _ in
