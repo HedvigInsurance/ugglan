@@ -6,13 +6,26 @@ import hCoreUI
 
 public struct HelpCenterStartView: View {
     @State var vm = HelpCenterStartViewModel()
+    private var puppyGuideDisplay: PuppyGuideEntryPlacement? {
+        let store: HomeStore = globalAppStateContainer.get()
+        return store.puppyGuideState.value?.entryPlacement
+    }
     let onQuickAction: (QuickAction) -> Void
     @Environment(NavigationRouter.self) var router
+    @InjectObservableObject var featureFlags: FeatureFlags
 
     public init(
         onQuickAction: @escaping (QuickAction) -> Void
     ) {
         self.onQuickAction = onQuickAction
+    }
+
+    private var showsFullPuppyGuideCard: Bool {
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .fullCard
+    }
+
+    private var showsPuppyGuideQuickActionRow: Bool {
+        featureFlags.isPuppyGuideEnabled && puppyGuideDisplay == .quickAction
     }
 
     public var body: some View {
@@ -33,16 +46,25 @@ public struct HelpCenterStartView: View {
                             }
                             .padding(.top, 20)
                         } else {
-                            HStack {
-                                Spacer()
-                                hCoreUIAssets.bigPillowBlack.view
-                                    .resizable()
-                                    .frame(width: 160, height: 160)
-                                    .padding(.bottom, 26)
-                                    .padding(.top, 39)
-                                Spacer()
+                            ZStack {
+                                if showsFullPuppyGuideCard {
+                                    puppyGuideEntry
+                                        .transition(.opacity)
+                                } else {
+                                    HStack {
+                                        Spacer()
+                                        hCoreUIAssets.bigPillowBlack.view
+                                            .resizable()
+                                            .frame(width: 160, height: 160)
+                                            .padding(.bottom, 26)
+                                            .padding(.top, 39)
+                                        Spacer()
+                                    }
+                                    .accessibilityHidden(true)
+                                    .transition(.opacity)
+                                }
                             }
-                            .accessibilityHidden(true)
+                            .animation(.smooth, value: showsFullPuppyGuideCard)
                             .padding(.top, 24)
                             .padding(.bottom, 48)
                             VStack(alignment: .leading, spacing: .padding8) {
@@ -52,8 +74,11 @@ public struct HelpCenterStartView: View {
                             }
                             .accessibilityElement(children: .combine)
                             .padding(.bottom, 40)
-                            displayQuickActions(from: vm.quickActions)
-                                .padding(.bottom, 40)
+                            displayQuickActions(
+                                from: vm.quickActions,
+                                showPuppyGuideRow: showsPuppyGuideQuickActionRow
+                            )
+                            .padding(.bottom, 40)
                             displayTopics()
                                 .padding(.bottom, 40)
                             if let helpCenterModel = vm.helpCenterModel {
@@ -93,11 +118,52 @@ public struct HelpCenterStartView: View {
             vc.definesPresentationContext = true
             vm.updateColors()
         }
+        // Only resolve the client while the guide is enabled: demo mode, previews and tests disable the flag and
+        // don't have to register a PuppyGuideClient.
+        .task(id: featureFlags.isPuppyGuideEnabled) {
+            guard featureFlags.isPuppyGuideEnabled else { return }
+            let store: HomeStore = globalAppStateContainer.get()
+            await store.fetchPuppyGuideIfNeeded()
+        }
+    }
+
+    private var puppyGuideEntry: some View {
+        CardView {
+            ZStack(alignment: .topLeading) {
+                hCoreUIAssets.hundarBadarPet.view
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 182)
+                    .clipped()
+                    .accessibilityHidden(true)
+                hPill(text: L10n.puppyGuideLabel, color: .pink)
+                    .hFieldSize(.small)
+                    .padding(.padding16)
+            }
+            VStack(alignment: .leading, spacing: .padding16) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.puppyGuideTitle)
+                    hText(L10n.puppyGuideSubtitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                .accessibilityElement(children: .combine)
+                hButton(.medium, .ghost, content: hButtonContent(title: L10n.puppyGuideGoButton)) {
+                    router.push(PuppyGuideRoute.list)
+                }
+                .hButtonWithBorder
+                .hButtonTakeFullWidth(true)
+            }
+            .padding(.padding16)
+        }
+        .hWithoutHorizontalPadding([.section])
+        .onTapGesture { router.push(PuppyGuideRoute.list) }
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder
-    func displayQuickActions(from quickActions: [QuickAction]) -> some View {
-        if !quickActions.isEmpty {
+    func displayQuickActions(from quickActions: [QuickAction], showPuppyGuideRow: Bool = false) -> some View {
+        if !quickActions.isEmpty || showPuppyGuideRow {
             VStack(alignment: .leading, spacing: .padding4) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                     .padding(.bottom, .padding4)
@@ -105,6 +171,11 @@ public struct HelpCenterStartView: View {
                 ForEach(quickActions, id: \.displayTitle) { [onQuickAction] quickAction in
                     QuickActionView(quickAction: quickAction) {
                         onQuickAction(quickAction)
+                    }
+                }
+                if showPuppyGuideRow {
+                    PuppyGuideQuickActionRow {
+                        router.push(PuppyGuideRoute.list)
                     }
                 }
             }
