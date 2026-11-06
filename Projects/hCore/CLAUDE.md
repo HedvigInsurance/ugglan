@@ -95,6 +95,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `Observable+Publisher.swift` -- `publisher(for:)` on `Observable`, a re-arming `withObservationTracking` bridge to Combine for watching an `@Observable` from outside a view
 - `Task.swift` -- `eraseToAnyCancellable()` on Task, `Task.withMinimumDuration(_:tolerance:_:)` (enforces a minimum elapsed time on an async operation, including when it throws)
 - `AsyncDelay.swift` -- Free function `delay(_ timeInterval:)` for async sleep
+- `LoadState.swift` -- Generic `LoadState<Value>` (notLoaded, loading, loaded, failed) for a value loaded once and kept, e.g. in a store; `value`, `needsLoading`, and `processingState` for `.loading(_:)`
 - `TakeLeft-Right.swift` -- `takeLeft`/`takeRight` combinator functions
 - `GaussianDistGenerator.swift` -- `generateGaussianHeights` for random distribution (used in UI animations)
 - `LiquidGlass.swift` -- Global `isLiquidGlassEnabled` flag

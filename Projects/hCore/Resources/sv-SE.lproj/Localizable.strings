@@ -45,6 +45,8 @@
 "AUTHENTICATION_BANKID_LOGIN_LABEL" = "Öppna BankID-appen på din telefon eller skanna QR-koden för att logga in";
 "AUTHENTICATION_BANKID_LOGIN_TITLE" = "Logga in med BankID";
 "AUTHENTICATION_BANKID_OPEN_BUTTON" = "Öppna BankID";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_BODY" = "Något gick fel hos oss. Försök igen om några minuter.";
+"AUTHENTICATION_LOGIN_UNAVAILABLE_TITLE" = "Vi kan inte logga in dig just nu";
 "AUTH_OTP_YOUR_EMAIL" = "din email";
 "AUTOMATED_MESSAGE_INFO_CARD_BUTTON" = "Läs mer";
 "BANKID_LOGIN_TITLE" = "Logga in";
@@ -591,7 +593,12 @@ A message is then appended under the image next to the timestamp to indicate tha
 "PROFILE_PAYMENT_CONNECT_DIRECT_DEBIT_BUTTON" = "Koppla autogiro";
 "PROFILE_TITLE" = "Din profil";
 "PUPPY_GUIDE_GO_BUTTON" = "Se guider";
+"PUPPY_GUIDE_INFO" = "I valpguiden får du svar på de vanligaste frågorna som rör valpens första tid.";
 "PUPPY_GUIDE_LABEL" = "Utvalda guider";
+"PUPPY_GUIDE_LABEL_READ" = "Läst";
+"PUPPY_GUIDE_RATING_NOT_HELPFUL" = "Inte hjälpsam";
+"PUPPY_GUIDE_RATING_QUESTION" = "Var den här artikeln hjälpsam?";
+"PUPPY_GUIDE_RATING_VERY_HELPFUL" = "Mycket hjälpsam";
 "PUPPY_GUIDE_SUBTITLE" = "Hjälpsamma guider för dig och din valp";
 "PUPPY_GUIDE_TITLE" = "Valpguiden";
 "PUSH_NOTIFICATIONS_ALERT_ACTION_NOT_NOW" = "Inte nu";
