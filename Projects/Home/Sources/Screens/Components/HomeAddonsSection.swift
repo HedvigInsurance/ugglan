@@ -1,7 +1,8 @@
 import AddonsCore
 import AppStateContainer
 import Contracts
-import CrossSell
+import CrossSellCore
+import CrossSellUI
 import SwiftUI
 import hCore
 import hCoreUI

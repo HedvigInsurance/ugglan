@@ -24,14 +24,6 @@
             "EditStakeholders/frameworks",
             "EditStakeholdersTests/frameworks",
           ],
-        }, {
-          "path": "<PRODUCTS>/CrossSell.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "EditStakeholders/frameworks",
-            "EditStakeholdersTests/frameworks",
-          ],
         },
         { "path": "<PRODUCTS>/EditStakeholders.framework", "id": "2B9B9F5DF389077341F10624", "type": "wrapper.framework", "index": false, "target-membership": [ "EditStakeholdersTests/frameworks" ] },
         { "path": "<PRODUCTS>/EditStakeholdersTests.xctest", "id": "C15819CE8BACE174E905D214", "type": "wrapper.cfbundle", "index": false },

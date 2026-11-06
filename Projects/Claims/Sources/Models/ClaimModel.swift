@@ -1,6 +1,6 @@
 import AutomaticLog
 import Chat
-import CrossSell
+import CrossSellCore
 import Foundation
 import hCore
 import hCoreUI

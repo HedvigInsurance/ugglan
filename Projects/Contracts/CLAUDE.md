@@ -20,7 +20,7 @@ Displays active, pending, and terminated insurance contracts with details on cov
 
 ## Dependencies
 
-- Imports: hCore, hCoreUI, AppStateContainer, AddonsCore, AddonsUI, TerminateContracts, EditStakeholders, ChangeTier, CrossSell, Apollo
+- Imports: hCore, hCoreUI, AppStateContainer, AddonsCore, AddonsUI, TerminateContracts, EditStakeholders, ChangeTier, CrossSellCore, CrossSellUI, Apollo
 - Depended on by: Home (contract data for navigation, renewal cards), App (insurances tab)
 
 ## Navigation

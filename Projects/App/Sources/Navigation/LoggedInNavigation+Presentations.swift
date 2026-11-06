@@ -3,7 +3,7 @@ import AddonsUI
 import AppStateContainer
 import ChangeTier
 import Contracts
-import CrossSell
+import CrossSellCore
 import EditStakeholders
 import Forever
 import Foundation
