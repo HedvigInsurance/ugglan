@@ -68,6 +68,22 @@ extension HomeDependencySuite {
         }
 
         @Test
+        func fetchPuppyGuideIfNeededNilGuideFails() async {
+            do {
+                let client = MockData.createMockPuppyGuideClient(fetchPuppyGuide: { nil })
+                sut = client
+
+                let store = makeStore()
+                await store.fetchPuppyGuideIfNeeded()
+
+                #expect(store.puppyGuideState == .failed(errorMessage: L10n.General.errorBody))
+                #expect(client.events == [.getPuppyGuide])
+            }
+
+            await expectReleased()
+        }
+
+        @Test
         func fetchPuppyGuideIfNeededSetsLoadingWhileInFlight() async {
             do {
                 var stateDuringCall: LoadState<PuppyGuide>?
