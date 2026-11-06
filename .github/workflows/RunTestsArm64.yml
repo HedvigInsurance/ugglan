@@ -135,7 +135,7 @@ jobs:
       - name: Regenerate
         run: |
           scripts/swiftgen.sh
-          tuist generate --no-open
+          scripts/generate.sh --no-open
 
       - name: Check for differences
         run: |
