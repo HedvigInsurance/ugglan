@@ -44,6 +44,6 @@ final class PuppyArticleViewModel {
     }
 
     func rate(_ rating: Int) async {
-        await store.ratePuppyGuideStory(name: id, rating: rating)
+        await store.ratePuppyGuideStory(id: id, rating: rating)
     }
 }
