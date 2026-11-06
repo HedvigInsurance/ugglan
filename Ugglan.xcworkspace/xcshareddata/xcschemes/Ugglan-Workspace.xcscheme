@@ -336,10 +336,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F2895C5638993FF778BEDA5B"
-               BuildableName = "CrossSell.framework"
-               BlueprintName = "CrossSell"
-               ReferencedContainer = "container:Projects/CrossSell/CrossSell.xcodeproj">
+               BlueprintIdentifier = "54F8B5FFB50802BF00F8310B"
+               BuildableName = "CrossSellCore.framework"
+               BlueprintName = "CrossSellCore"
+               ReferencedContainer = "container:Projects/CrossSellCore/CrossSellCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -350,10 +350,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "87C2F53EAD410157F44D6124"
-               BuildableName = "CrossSellTests.xctest"
-               BlueprintName = "CrossSellTests"
-               ReferencedContainer = "container:Projects/CrossSell/CrossSell.xcodeproj">
+               BlueprintIdentifier = "6737AD12E379919762C1E154"
+               BuildableName = "CrossSellCoreTests.xctest"
+               BlueprintName = "CrossSellCoreTests"
+               ReferencedContainer = "container:Projects/CrossSellCore/CrossSellCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FB8309B858B2EFBAC9E51CF2"
+               BuildableName = "CrossSellUI.framework"
+               BlueprintName = "CrossSellUI"
+               ReferencedContainer = "container:Projects/CrossSellUI/CrossSellUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -968,10 +982,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "87C2F53EAD410157F44D6124"
-               BuildableName = "CrossSellTests.xctest"
-               BlueprintName = "CrossSellTests"
-               ReferencedContainer = "container:Projects/CrossSell/CrossSell.xcodeproj">
+               BlueprintIdentifier = "6737AD12E379919762C1E154"
+               BuildableName = "CrossSellCoreTests.xctest"
+               BlueprintName = "CrossSellCoreTests"
+               ReferencedContainer = "container:Projects/CrossSellCore/CrossSellCore.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

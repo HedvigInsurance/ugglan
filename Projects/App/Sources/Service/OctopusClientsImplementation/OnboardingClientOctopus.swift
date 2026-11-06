@@ -1,6 +1,6 @@
 import AppStateContainer
 import Contracts
-import CrossSell
+import CrossSellCore
 import Forever
 import Foundation
 import Onboarding

@@ -17,7 +17,7 @@ Data and domain layer for insurance addons: models, the client protocol, the `Ad
 ## Consumers
 - `AddonsUI` (views, navigation and ViewModels built on top)
 - `App` (DI registration, Octopus impl)
-- `Contracts`, `CrossSell`, `TravelCertificate`, `Home`, `Chat` (models such as `AddonBanner`, `AddonSource`, `AddonContractInfo`)
+- `Contracts`, `CrossSellCore`, `TravelCertificate`, `Home`, `Chat` (models such as `AddonBanner`, `AddonSource`, `AddonContractInfo`)
 
 ## Gotchas
 - `AddonSource` raw values mirror Android's `AddonBannerSource` so the Datadog `flow` attribute is queryable across platforms — don't rename them.

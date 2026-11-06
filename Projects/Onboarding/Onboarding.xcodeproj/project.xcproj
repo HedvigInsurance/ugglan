@@ -33,7 +33,15 @@
             "OnboardingTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/CrossSell.framework",
+          "path": "<PRODUCTS>/CrossSellCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Onboarding/frameworks",
+            "OnboardingTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/CrossSellUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

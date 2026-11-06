@@ -1,7 +1,8 @@
 import AddonsCore
 import AppStateContainer
 import Combine
-import CrossSell
+import CrossSellCore
+import CrossSellUI
 import Foundation
 import SwiftUI
 import hCore

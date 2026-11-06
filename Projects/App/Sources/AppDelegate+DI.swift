@@ -7,7 +7,7 @@ import ChangeTier
 import Chat
 import Claims
 import Contracts
-import CrossSell
+import CrossSellCore
 import EditStakeholders
 import Environment
 import Forever

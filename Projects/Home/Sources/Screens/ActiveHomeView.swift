@@ -1,7 +1,7 @@
 import AppStateContainer
 import Claims
 import Contracts
-import CrossSell
+import CrossSellCore
 import Payment
 import SwiftUI
 import hCore

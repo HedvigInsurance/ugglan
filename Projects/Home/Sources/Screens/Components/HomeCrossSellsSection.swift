@@ -1,4 +1,5 @@
-import CrossSell
+import CrossSellCore
+import CrossSellUI
 import SwiftUI
 import hCore
 

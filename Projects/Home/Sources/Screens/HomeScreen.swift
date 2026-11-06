@@ -3,7 +3,7 @@ import Chat
 import Claims
 import Combine
 import Contracts
-import CrossSell
+import CrossSellCore
 import Foundation
 import Payment
 import SwiftUI
