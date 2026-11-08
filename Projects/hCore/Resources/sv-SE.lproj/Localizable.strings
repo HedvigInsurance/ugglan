@@ -400,7 +400,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "INSURANCE_EVIDENCE.READ_MORE_DESCRIPTION" = "Ett giltighetsintyg styrker under vilka perioder du haft en giltig och betald hemförsäkring hos Hedvig, samt dess detaljer - till exempel vilken adress som varit försäkrad och vad du har betalat.\n\nGiltighetsintyget kan exempelvis användas för att styrka din försäkringsperiod vid ansökan om rättsskydd hos ett annat försäkringsbolag, eller i ärenden hos bank och myndigheter.";
 "INSURANCE_EVIDENCE.READ_MORE_TITLE" = "Vad är ett giltighetsintyg?";
 "INSURANCE_OFFERS_SUBHEADING" = "Erbjudanden";
-"INSURANCE_PERILS_INFO" = "Beskrivningarna nedan är förenklade. Det är alltid dina villkor som avgör vad som täcks.";
+"INSURANCE_PERILS_INFO" = "Det här är en förenklad sammanfattning. Dina villkor avgör alltid vad som täcks.";
 "KIVRA_NOTIFICATION_BOX_TEXT" = "Vill du betala din försäkring via autogiro och möjliggöra snabba utbetalningar vid skador?";
 "KIVRA_PAYMENT_INFO" = "Fakturan skickas till din Kivra-inkorg 14 dagar före förfallodatumet varje månad.";
 "LEGAL_A11Y" = "Tillgänglighet";
