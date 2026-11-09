@@ -26,11 +26,9 @@ extension FeatureData {
     ) -> FeatureData {
         FeatureData(
             isUpdateNecessary: false,
-            isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
             isDemoMode: true,
-            isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: isNewConversationFromInboxEnabled,
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,

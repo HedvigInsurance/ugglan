@@ -238,11 +238,9 @@ extension FeatureData {
     fileprivate static func mock(isAnalyticsEnabled: Bool) -> FeatureData {
         .init(
             isUpdateNecessary: false,
-            isSubmitClaimEnabled: false,
             osVersionTooLow: false,
             emailPreferencesEnabled: false,
             isDemoMode: false,
-            isAddonsRemovalFromMovingFlowEnabled: false,
             isNewConversationFromInboxEnabled: false,
             isPuppyGuideEnabled: false,
             isResumeClaimEnabled: false,

@@ -11,11 +11,9 @@ public protocol FeatureFlagsClient {
 
 public struct FeatureData: Codable, Equatable {
     public let isUpdateNecessary: Bool
-    public let isSubmitClaimEnabled: Bool
     public let osVersionTooLow: Bool
     public let emailPreferencesEnabled: Bool
     public let isDemoMode: Bool
-    public let isAddonsRemovalFromMovingFlowEnabled: Bool
     public let isNewConversationFromInboxEnabled: Bool
     public let isPuppyGuideEnabled: Bool
     public let isResumeClaimEnabled: Bool
@@ -27,11 +25,9 @@ public struct FeatureData: Codable, Equatable {
 
     public init(
         isUpdateNecessary: Bool,
-        isSubmitClaimEnabled: Bool,
         osVersionTooLow: Bool,
         emailPreferencesEnabled: Bool,
         isDemoMode: Bool,
-        isAddonsRemovalFromMovingFlowEnabled: Bool,
         isNewConversationFromInboxEnabled: Bool,
         isPuppyGuideEnabled: Bool,
         isResumeClaimEnabled: Bool,
@@ -42,11 +38,9 @@ public struct FeatureData: Codable, Equatable {
         isCancelInsuranceHiddenFromHomeScreen: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
-        self.isSubmitClaimEnabled = isSubmitClaimEnabled
         self.osVersionTooLow = osVersionTooLow
         self.emailPreferencesEnabled = emailPreferencesEnabled
         self.isDemoMode = isDemoMode
-        self.isAddonsRemovalFromMovingFlowEnabled = isAddonsRemovalFromMovingFlowEnabled
         self.isNewConversationFromInboxEnabled = isNewConversationFromInboxEnabled
         self.isPuppyGuideEnabled = isPuppyGuideEnabled
         self.isResumeClaimEnabled = isResumeClaimEnabled
@@ -81,11 +75,9 @@ public class FeatureFlags {
     @ObservationIgnored private var featureDataCancellable: AnyCancellable?
     public var data: FeatureData = .init(
         isUpdateNecessary: false,
-        isSubmitClaimEnabled: false,
         osVersionTooLow: false,
         emailPreferencesEnabled: false,
         isDemoMode: false,
-        isAddonsRemovalFromMovingFlowEnabled: false,
         isNewConversationFromInboxEnabled: false,
         isPuppyGuideEnabled: false,
         isResumeClaimEnabled: false,
