@@ -8,7 +8,7 @@ on:
 
 jobs:
   accessibility-audit:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write

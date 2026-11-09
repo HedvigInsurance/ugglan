@@ -4,21 +4,21 @@ on:
   pull_request:
     branches: ["*"]
     # swift-format only touches Swift, so skip PRs that change none — a .strings-only
-    # translations PR or a workflow-only PR shouldn't spin up a macOS runner.
+    # translations PR or a workflow-only PR shouldn't spin up a runner.
     paths:
       - "**/*.swift"
       - ".swift-format"
 
 jobs:
   format:
-    runs-on: macos-latest
+    # swift-format is cross-platform, so this runs on Linux. The container pins the toolchain to the
+    # swift-format branch in scripts/install-swift-format.sh — bump both together.
+    runs-on: ubuntu-latest
+    container: swift:6.3-noble
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1
-        with:
-          xcode-version: latest-stable
       # Keyed on the install script so bumping the swift-format branch rebuilds it
       - name: Cache
         uses: actions/cache@v5
