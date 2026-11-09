@@ -95,6 +95,7 @@ public struct InboxView: View {
         hSection(vm.conversations) { conversation in
             rowView(for: conversation)
                 .onTapGesture {
+                    vm.stopFetching()
                     NotificationCenter.default.post(
                         name: .openChat,
                         object: ChatType.conversationId(id: conversation.id)
@@ -261,6 +262,11 @@ class InboxViewModel {
                     await self?.fetchMessages()
                 }
             })
+    }
+
+    func stopFetching() {
+        pollTimerCancellable?.cancel()
+        pollTimerCancellable = nil
     }
     @MainActor
     func fetchMessages() async {
