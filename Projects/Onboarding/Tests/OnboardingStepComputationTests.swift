@@ -1,5 +1,5 @@
 import Contracts
-import CrossSell
+import CrossSellCore
 import EditStakeholders
 import Testing
 import hCore

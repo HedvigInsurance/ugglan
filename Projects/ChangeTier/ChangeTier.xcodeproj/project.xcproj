@@ -27,7 +27,7 @@
             "ChangeTierTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/CrossSell.framework",
+          "path": "<PRODUCTS>/CrossSellCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

@@ -1,6 +1,6 @@
 import AutomaticLog
 import Contracts
-import CrossSell
+import CrossSellCore
 import Forever
 import Foundation
 import hCore

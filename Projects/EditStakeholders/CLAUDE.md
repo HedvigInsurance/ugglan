@@ -15,7 +15,7 @@ Manages stakeholder editing for insurance contracts (co-insured and co-owners). 
 - Models: `StakeholderModel`, `StakeholdersConfig`, `ContractModel`, `IntentData`, `PersonalData` in `Sources/Models/`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, CrossSell
+- Imports: hCore, hCoreUI
 - Depended on by: TravelCertificate, Contracts
 
 ## Navigation
