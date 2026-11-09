@@ -1,6 +1,6 @@
 import AddonsCore
 import AppStateContainer
-import EditStakeholders
+import EditStakeholdersCore
 import Foundation
 import Observation
 import hCore

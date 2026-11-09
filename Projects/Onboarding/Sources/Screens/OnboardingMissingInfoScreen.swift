@@ -1,5 +1,6 @@
 import Contracts
-import EditStakeholders
+import EditStakeholdersCore
+import EditStakeholdersUI
 import SwiftUI
 import hCore
 import hCoreUI

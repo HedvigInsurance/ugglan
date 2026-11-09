@@ -65,6 +65,22 @@
             "HomeTests/frameworks",
           ],
         }, {
+          "path": "<PRODUCTS>/EditStakeholdersCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/EditStakeholdersUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/hCore.framework",
           "type": "wrapper.framework",
           "index": false,

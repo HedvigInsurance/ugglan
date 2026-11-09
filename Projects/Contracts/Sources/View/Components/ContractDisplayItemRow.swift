@@ -1,4 +1,4 @@
-import EditStakeholders
+import EditStakeholdersCore
 import SwiftUI
 import hCore
 import hCoreUI

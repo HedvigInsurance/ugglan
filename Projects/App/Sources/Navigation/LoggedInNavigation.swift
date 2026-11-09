@@ -8,7 +8,8 @@ import Combine
 import Contracts
 import CrossSellCore
 import CrossSellUI
-import EditStakeholders
+import EditStakeholdersCore
+import EditStakeholdersUI
 import Environment
 import Forever
 import Foundation

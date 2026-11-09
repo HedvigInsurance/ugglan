@@ -2,7 +2,8 @@ import AddonsCore
 import AddonsUI
 import AppStateContainer
 import ChangeTier
-import EditStakeholders
+import EditStakeholdersCore
+import EditStakeholdersUI
 import Foundation
 import SafariServices
 import SwiftUI

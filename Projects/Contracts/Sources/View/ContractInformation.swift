@@ -1,7 +1,8 @@
 import AddonsCore
 import AppStateContainer
 import Combine
-import EditStakeholders
+import EditStakeholdersCore
+import EditStakeholdersUI
 import Foundation
 import SwiftUI
 import UnleashProxyClientSwift

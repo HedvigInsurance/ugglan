@@ -60,7 +60,10 @@
          location = "group:CrossSellUI/CrossSellUI.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:EditStakeholders/EditStakeholders.xcodeproj">
+         location = "group:EditStakeholdersCore/EditStakeholdersCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:Forever/Forever.xcodeproj">

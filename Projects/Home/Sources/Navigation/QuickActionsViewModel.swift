@@ -2,7 +2,8 @@ import AppStateContainer
 import ChangeTier
 import Chat
 import Contracts
-import EditStakeholders
+import EditStakeholdersCore
+import EditStakeholdersUI
 import Payment
 import SafariServices
 import SubmitClaimChat

@@ -4,7 +4,7 @@ import AppStateContainer
 import ChangeTier
 import Contracts
 import CrossSellCore
-import EditStakeholders
+import EditStakeholdersUI
 import Forever
 import Foundation
 import Home

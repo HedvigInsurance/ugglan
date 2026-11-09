@@ -1,4 +1,4 @@
-import EditStakeholders
+import EditStakeholdersCore
 import Foundation
 import hCore
 import hGraphQL
@@ -142,7 +142,7 @@ extension Agreement {
     }
 }
 
-extension EditStakeholders.ProductVariant {
+extension EditStakeholdersCore.ProductVariant {
     public init(
         data: OctopusGraphQL.ProductVariantFragment
     ) {

@@ -49,7 +49,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | Contracts | Insurance contract management and details |
 | CrossSellCore | Cross-sell models, client protocol, service, store, tracking and demo data (UI-free) |
 | CrossSellUI | SwiftUI views for cross-sell offers and addon banners (built on CrossSellCore) |
-| EditStakeholders | Co-insured and co-owner management |
+| EditStakeholdersCore | Stakeholder (co-insured/co-owner) models, client protocol and service (UI-free) |
+| EditStakeholdersUI | Co-insured and co-owner management flow and ViewModels (built on EditStakeholdersCore) |
 | Forever | Referral program |
 | hCore | Core utilities, DI container, state management, extensions |
 | hCoreUI | Design system: components, colors, spacing, typography |
