@@ -14,7 +14,6 @@ extension HomeDependencySuite {
         init() {
             resetContainer()
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         }
 
         // Test bodies are scoped in a do block so their locals are released before this check.
@@ -216,10 +215,10 @@ extension HomeDependencySuite {
 
         // The body's locals are released when it returns, before the closing release check.
         private func withCancelInsuranceHiddenFlag(enabled: Bool, _ body: () async -> Void) async {
-            let previous = FeatureFlags.shared.data
-            FeatureFlags.shared.data = .allOff(isCancelInsuranceHiddenFromHomeScreen: enabled)
+            let previous = Dependencies.featureFlags().data
+            Dependencies.featureFlags().data = .allOff(isCancelInsuranceHiddenFromHomeScreen: enabled)
             await body()
-            FeatureFlags.shared.data = previous
+            Dependencies.featureFlags().data = previous
         }
 
         // reset before clearing: it cancels the debounced snapshot write that would otherwise land after the wipe

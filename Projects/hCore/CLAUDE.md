@@ -16,7 +16,8 @@ Foundational module providing dependency injection, shared models, localization,
 - `Dependencies/Dependencies.swift` -- `Dependencies` container, `Module` registration, `@Inject` and `@InjectObservableObject` property wrappers
 
 ### Feature Flags
-- `FeatureFlags/FeatureFlagsProtocol.swift` -- `FeatureFlagsClient` protocol, `FeatureData` struct, `FeatureFlags` `@Observable` singleton
+- `FeatureFlags/FeatureFlagsProtocol.swift` -- `FeatureFlagsClient` protocol, `FeatureData` struct
+- `FeatureFlags/FeatureFlagsStore.swift` -- `FeatureFlagsStore` `@PersistableStore` `AppStore` singleton (persists the last fetch, minus `isUpdateNecessary`/`osVersionTooLow`)
 - `FeatureFlags/UnleashFeatureFlagsClient.swift` -- Production Unleash-backed implementation of `FeatureFlagsClient` and `ExperimentProvider`
 - `FeatureFlags/FeatureFlagsDemo.swift` -- Demo/testing implementation that returns all flags disabled with `isDemoMode = true`
 
@@ -133,7 +134,7 @@ Foundational module providing dependency injection, shared models, localization,
 ### Key Types
 - `Dependencies` -- Singleton DI container; register with `add(module:)`, resolve with `resolve()`
 - `Module` -- DI registration unit wrapping a factory closure
-- `FeatureFlags` -- `@Observable` singleton exposing a `FeatureData` value for each feature flag
+- `FeatureFlagsStore` -- `@PersistableStore` `AppStore` singleton exposing a `FeatureData` value for each feature flag
 - `ApplicationState` -- Persisted app screen state and locale preferences
 - `ApplicationContext` -- Actor for login state with Combine publisher
 - `DeepLink` -- Enum of all deep link destinations with URL parsing

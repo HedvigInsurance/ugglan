@@ -9,7 +9,7 @@ struct SettingsView: View {
     @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
     @AppStorage(ThemeOption.storageKey) private var themeRawValue = ThemeOption.system.rawValue
     @AppStorage(AnalyticsConsent.hasConsentedKey) private var analyticsConsentGiven: Bool?
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
 
     var body: some View {
         hForm {

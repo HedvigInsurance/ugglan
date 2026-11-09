@@ -27,7 +27,6 @@ import hGraphQL
 @MainActor
 enum DI {
     static func initServices() {
-        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
     }
 

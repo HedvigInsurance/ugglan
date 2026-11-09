@@ -101,14 +101,14 @@ public final class HomeStore: AppStore {
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
 
-        FeatureFlags.shared.publisher(for: \.data)
+        Dependencies.featureFlags().publisher(for: \.data)
             .map(\.isNewConversationFromInboxEnabled)
             .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
 
-        FeatureFlags.shared.publisher(for: \.data)
+        Dependencies.featureFlags().publisher(for: \.data)
             .map(\.isResumingOngoingShopSessionsEnabled)
             .dropFirst()
             .removeDuplicates()

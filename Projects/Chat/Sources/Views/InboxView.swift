@@ -1,3 +1,4 @@
+import AppStateContainer
 import Combine
 import SwiftUI
 import hCore
@@ -5,7 +6,7 @@ import hCoreUI
 
 public struct InboxView: View {
     @State var vm = InboxViewModel()
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
     @Namespace var animationNamespace
     @State private var isNewMessageSheetPresented = false
     public init() {}

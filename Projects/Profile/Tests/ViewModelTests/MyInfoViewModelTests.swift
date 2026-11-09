@@ -18,7 +18,6 @@ extension ProfileDependencySuite {
             globalAppStateContainer.clearPersistence()
             Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         }
 
         // Test bodies are scoped so their locals are released before this check runs.
@@ -26,7 +25,6 @@ extension ProfileDependencySuite {
             Dependencies.shared.remove(for: ProfileClient.self)
             Dependencies.shared.remove(for: HomeClient.self)
             Dependencies.shared.remove(for: FeatureFlagsClient.self)
-            Dependencies.shared.remove(for: FeatureFlags.self)
             await delay(0.0000001)
             #expect(sut == nil, "the mock service must not outlive its dependency registration")
         }

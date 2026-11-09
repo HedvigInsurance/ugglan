@@ -62,9 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         await ApolloClient.deleteToken()
 
         clearData()
-        // The profile store was just reset, so this drops the member from the Unleash context and the flags and
-        // experiments stop being theirs.
-        updateFeatureFlagsContext()
     }
 
     func applicationWillTerminate(_: UIApplication) {

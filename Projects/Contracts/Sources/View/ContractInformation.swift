@@ -299,7 +299,6 @@ public struct MissingStakeholderInfoCard: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
 
     let store: ContractStore = globalAppStateContainer.get()

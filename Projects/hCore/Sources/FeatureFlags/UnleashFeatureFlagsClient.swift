@@ -106,7 +106,7 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             return
         }
         experiments = experimentsForCurrentMember(unleashClient)
-        memberExperiments.send(contextInEffect[FeatureFlags.userId] != nil ? experiments : nil)
+        memberExperiments.send(contextInEffect[FeatureFlagsStore.userId] != nil ? experiments : nil)
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),

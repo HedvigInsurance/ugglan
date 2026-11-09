@@ -21,7 +21,7 @@ struct MainNavigation: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
-    @InjectObservableObject var featureFlags: FeatureFlags
+    private var featureFlags: FeatureFlagsStore { vm.featureFlags }
 
     var body: some Scene {
         WindowGroup {
@@ -101,6 +101,8 @@ class MainNavigationViewModel {
     var hasLaunchFinished = false
     @ObservationIgnored private var analyticsService = AnalyticsService()
     var showLaunchScreen = true
+    // Observed, so swapping in the fresh store after logout re-renders MainNavigation against it
+    var featureFlags = Dependencies.featureFlags()
     @ObservationIgnored lazy var notLoggedInVm = NotLoggedViewModel()
     @ObservationIgnored var loggedInVm = LoggedInNavigationViewModel()
     @ObservationIgnored private var pushNotificationCancellable: AnyCancellable?
@@ -145,6 +147,10 @@ class MainNavigationViewModel {
                     Task {
                         await self.appDelegate.logout()
                         self.loggedInVm = .init()
+                        // logout reset the feature flags store, so the fresh one needs its own client; the profile
+                        // store is empty now, so the flags and experiments are no longer the member's
+                        self.featureFlags = Dependencies.featureFlags()
+                        self.checkForFeatureFlags()
                     }
                 default:
                     break

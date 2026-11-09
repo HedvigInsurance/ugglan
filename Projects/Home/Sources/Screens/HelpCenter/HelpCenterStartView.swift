@@ -12,7 +12,7 @@ public struct HelpCenterStartView: View {
     }
     let onQuickAction: (QuickAction) -> Void
     @Environment(NavigationRouter.self) var router
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
 
     public init(
         onQuickAction: @escaping (QuickAction) -> Void
@@ -213,7 +213,6 @@ public struct HelpCenterStartView: View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })

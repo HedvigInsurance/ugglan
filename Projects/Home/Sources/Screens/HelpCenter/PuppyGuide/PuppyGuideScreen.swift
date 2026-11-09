@@ -187,7 +187,6 @@ private struct PuppyGuideReadLabel: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> PuppyGuideClient in PuppyGuideClientDemo() })
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })

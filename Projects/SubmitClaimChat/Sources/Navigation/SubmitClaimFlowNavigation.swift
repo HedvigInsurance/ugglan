@@ -1,3 +1,4 @@
+import AppStateContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -22,7 +23,7 @@ public struct SubmitClaimChatInput: Equatable, Identifiable {
 
 struct SubmitClaimFlowNavigation: View {
     @State var viewModel: SubmitClaimChatViewModel
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
 
     init(
         startInput: SubmitClaimChatInput,
