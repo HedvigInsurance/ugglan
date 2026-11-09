@@ -109,13 +109,9 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
         memberExperiments.send(contextInEffect[FeatureFlags.userId] != nil ? experiments : nil)
         let data = FeatureData(
             isUpdateNecessary: unleashClient.isEnabled(name: "update_necessary"),
-            isSubmitClaimEnabled: true,
             osVersionTooLow: unleashClient.isEnabled(name: "update_os_version"),
             emailPreferencesEnabled: true,
             isDemoMode: false,
-            isAddonsRemovalFromMovingFlowEnabled: unleashClient.isEnabled(
-                name: "enable_addons_removal_from_moving_flow"
-            ),
             isNewConversationFromInboxEnabled: unleashClient.isEnabled(
                 name: "enable_new_conversation_from_inbox"
             ),
