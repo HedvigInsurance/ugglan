@@ -29,17 +29,15 @@ public struct HomeScreen: View {
 class HomeVM {
     @ObservationIgnored private var chatNotificationsTimerCancellable: AnyCancellable?
     @ObservationIgnored private var claimsTimerCancellable: AnyCancellable?
+    @ObservationIgnored private var isObservingDidBecomeActive = false
     private let contractStore: ContractStore = globalAppStateContainer.get()
     private let homeStore: HomeStore = globalAppStateContainer.get()
     private let claimsStore: ClaimsStore = globalAppStateContainer.get()
     private let crossSellStore: CrossSellStore = globalAppStateContainer.get()
     private let paymentStore: PaymentStore = globalAppStateContainer.get()
 
-    init() {
-        addObserverForApplicationDidBecomeActive()
-    }
-
     func fetchHomeState() {
+        addObserverForApplicationDidBecomeActive()
         Task { await homeStore.fetchMemberState() }
         Task { await homeStore.fetchImportantMessages() }
         Task { await homeStore.fetchQuickActions() }
@@ -51,7 +49,6 @@ class HomeVM {
         Task { await paymentStore.fetchPaymentStatus() }
         Task { await paymentStore.load() }
         Task { await paymentStore.fetchPaymentNoticeData() }
-        Task { await homeStore.fetchChatNotifications() }
         Task { await claimsStore.fetchActiveClaims() }
         Task { await claimsStore.fetchClaimInProgress() }
         Task { await paymentStore.getMissedPayment() }
@@ -79,7 +76,11 @@ class HomeVM {
             }
     }
 
+    /// Registered on first fetch rather than in `init`: `@State var vm = HomeVM()` builds a throwaway
+    /// instance on every `HomeScreen` init, and each one would otherwise add its own observer.
     private func addObserverForApplicationDidBecomeActive() {
+        guard !isObservingDidBecomeActive else { return }
+        isObservingDidBecomeActive = true
         Task {
             let isLoggedIn = await ApplicationContext.shared.isLoggedIn
             if isLoggedIn {
@@ -94,6 +95,7 @@ class HomeVM {
     }
 
     @objc func notification(notification _: Notification) {
+        guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
         Task { [weak self] in
             self?.fetchHomeState()
         }

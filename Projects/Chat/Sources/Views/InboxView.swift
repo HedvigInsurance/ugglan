@@ -88,6 +88,13 @@ public struct InboxView: View {
         .task {
             vm.configureFetching()
         }
+        .onAppear {
+            vm.isOnScreen = true
+        }
+        .onDisappear {
+            vm.isOnScreen = false
+            vm.stopFetching()
+        }
     }
 
     @ViewBuilder
@@ -222,6 +229,8 @@ class InboxViewModel {
     @ObservationIgnored private var chatClosedCancellable: AnyCancellable?
     var processingState: ProcessingState = .loading
     @ObservationIgnored private var hasFetchedOnce = false
+    /// Lets `.chatClosed` resume polling only for an inbox that is currently on screen.
+    @ObservationIgnored var isOnScreen = false
 
     var isInboxEmpty: Bool {
         conversations.isEmpty && processingState == .success
@@ -245,7 +254,8 @@ class InboxViewModel {
         chatClosedCancellable = NotificationCenter.default.publisher(for: .chatClosed)
             .sink { [weak self] _ in
                 Task { @MainActor [weak self] in
-                    self?.configureFetching()
+                    guard let self, self.isOnScreen else { return }
+                    self.configureFetching()
                 }
             }
     }
