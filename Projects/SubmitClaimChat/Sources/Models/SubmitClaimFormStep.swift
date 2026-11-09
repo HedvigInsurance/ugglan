@@ -149,7 +149,7 @@ final class FormStepValue {
     }
     var value: String = "" {
         didSet {
-            values = [value]
+            values = value.isEmpty ? [] : [value]
             error = nil
         }
     }
