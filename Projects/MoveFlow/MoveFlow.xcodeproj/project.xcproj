@@ -17,6 +17,22 @@
       "name": "Products",
       "children": [
         {
+          "path": "<PRODUCTS>/ChangeTierCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "MoveFlow/frameworks",
+            "MoveFlowTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ChangeTierUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "MoveFlow/frameworks",
+            "MoveFlowTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Contracts.framework",
           "type": "wrapper.framework",
           "index": false,

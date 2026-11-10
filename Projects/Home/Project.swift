@@ -7,7 +7,7 @@ let project = Project.framework(
     projects: [
         "hCore", "hCoreUI", "AddonsCore", "TravelCertificate", "TerminateContractsCore", "TerminateContractsUI",
         "Payment", "Chat", "Claims", "SubmitClaimChat", "CrossSellCore", "CrossSellUI", "EditStakeholdersCore",
-        "EditStakeholdersUI",
+        "EditStakeholdersUI", "ChangeTierCore", "ChangeTierUI",
     ],
     sdks: []
 )

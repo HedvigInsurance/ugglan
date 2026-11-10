@@ -20,7 +20,8 @@
         { "path": "<PRODUCTS>/AddonsUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         { "path": "<PRODUCTS>/CampaignCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         { "path": "<PRODUCTS>/CampaignUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        { "path": "<PRODUCTS>/ChangeTier.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/ChangeTierCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/ChangeTierUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         { "path": "<PRODUCTS>/Chat.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {
           "path": "<PRODUCTS>/Claims.framework",

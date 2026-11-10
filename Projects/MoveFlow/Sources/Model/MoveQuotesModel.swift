@@ -1,4 +1,4 @@
-import ChangeTier
+import ChangeTierCore
 import Foundation
 import hCore
 import hCoreUI

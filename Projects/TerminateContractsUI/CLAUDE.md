@@ -13,7 +13,7 @@ SwiftUI flow built on `TerminateContractsCore`. Multi-step contract cancellation
 - Service, client protocol, demo client and models (`TerminationConfirmConfig`, `TerminationSurveyData`, `DeflectScreenContent`, …): see TerminateContractsCore
 
 ## Dependencies
-- hCore, hCoreUI, TerminateContractsCore, ChangeTier
+- hCore, hCoreUI, TerminateContractsCore, ChangeTierCore, ChangeTierUI
 - Depended on by: App, Contracts, Home
 
 ## Gotchas
