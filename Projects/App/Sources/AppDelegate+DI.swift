@@ -103,7 +103,7 @@ enum DI {
             let travelInsuranceService = TravelInsuranceClientOctopus()
             let featureFlagsClientUnleash = UnleashFeatureFlagsClient(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
-            let eventTrackingClient = EventTrackingClientFirebase()
+            let eventTrackingClient = UserIdRetainingEventTrackingClient(EventTrackingClientFirebase())
             let notificationService = NotificationClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
