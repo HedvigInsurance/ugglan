@@ -38,20 +38,14 @@ class HomeVM {
 
     func fetchHomeState() {
         addObserverForApplicationDidBecomeActive()
-        Task { await homeStore.fetchMemberState() }
-        Task { await homeStore.fetchImportantMessages() }
-        Task { await homeStore.fetchQuickActions() }
+        Task { await homeStore.fetchHomeData() }
         Task { await homeStore.fetchOngoingQuotes() }
         Task { await homeStore.fetchChatNotifications() }
         Task { await crossSellStore.fetchHomeCrossSells() }
         Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }
-        Task { await paymentStore.fetchPaymentStatus() }
-        Task { await paymentStore.load() }
-        Task { await paymentStore.fetchPaymentNoticeData() }
-        Task { await claimsStore.fetchActiveClaims() }
-        Task { await claimsStore.fetchClaimInProgress() }
-        Task { await paymentStore.getMissedPayment() }
+        Task { await paymentStore.fetchAllPaymentData() }
+        Task { await fetchClaims() }
 
         chatNotificationsTimerCancellable = Timer.publish(every: 10, on: .main, in: .common)
             .autoconnect()
@@ -68,12 +62,14 @@ class HomeVM {
             .sink { [weak self] _ in
                 guard let self else { return }
                 guard VisibleScreenTracker.isVisible(HomeScreen.self) else { return }
-                Task {
-                    async let fetchActive = self.claimsStore.fetchActiveClaims()
-                    async let fetchInProgress: Void = self.claimsStore.fetchClaimInProgress()
-                    _ = await (fetchActive, fetchInProgress)
-                }
+                Task { await self.fetchClaims() }
             }
+    }
+
+    private func fetchClaims() async {
+        async let activeClaims: () = claimsStore.fetchActiveClaims()
+        async let claimInProgress: () = claimsStore.fetchClaimInProgress()
+        _ = await (activeClaims, claimInProgress)
     }
 
     /// Registered on first fetch rather than in `init`: `@State var vm = HomeVM()` builds a throwaway

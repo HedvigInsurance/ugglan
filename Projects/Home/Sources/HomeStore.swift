@@ -116,18 +116,36 @@ public final class HomeStore: AppStore {
             .store(in: &cancellables)
     }
 
+    /// Member state, important messages and quick actions in one request.
+    func fetchHomeData() async {
+        isFetchingQuickActions = true
+        do {
+            let data = try await homeService.getHomeData()
+            apply(memberState: data.memberState)
+            importantMessages = data.importantMessages
+            apply(quickActions: data.quickActions)
+        } catch {
+            fetchMemberStateError = L10n.General.errorBody
+            fetchQuickActionsError = L10n.General.errorBody
+        }
+        isFetchingQuickActions = false
+    }
+
     public func fetchMemberState() async {
         do {
-            let memberData = try await homeService.getMemberState()
-            memberContractState = memberData.contractState
-            contracts = memberData.contracts
-            futureStatus = memberData.futureState
-            memberInfo = memberData.memberInfo
-            hideDismissedQuotes(forMember: memberData.memberInfo.id)
-            fetchMemberStateError = nil
+            apply(memberState: try await homeService.getMemberState())
         } catch {
             fetchMemberStateError = L10n.General.errorBody
         }
+    }
+
+    private func apply(memberState memberData: MemberState) {
+        memberContractState = memberData.contractState
+        contracts = memberData.contracts
+        futureStatus = memberData.futureState
+        memberInfo = memberData.memberInfo
+        hideDismissedQuotes(forMember: memberData.memberInfo.id)
+        fetchMemberStateError = nil
     }
 
     public func fetchImportantMessages() async {
@@ -139,14 +157,17 @@ public final class HomeStore: AppStore {
     public func fetchQuickActions() async {
         isFetchingQuickActions = true
         do {
-            let actions = try await homeService.getQuickActions()
-            quickActions = actions
-            fetchQuickActionsError = nil
-            updateToolbarTypes()
+            apply(quickActions: try await homeService.getQuickActions())
         } catch {
             fetchQuickActionsError = L10n.General.errorBody
         }
         isFetchingQuickActions = false
+    }
+
+    private func apply(quickActions actions: [QuickAction]) {
+        quickActions = actions
+        fetchQuickActionsError = nil
+        updateToolbarTypes()
     }
 
     public func fetchOngoingQuotes() async {

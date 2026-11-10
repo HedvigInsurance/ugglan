@@ -9,53 +9,114 @@ class HomeClientOctopus: HomeClient {
     @Inject private var octopus: hOctopus
 
     func getImportantMessages() async throws -> [ImportantMessage] {
-        let data =
-            try await octopus
-            .client
-            .fetch(query: OctopusGraphQL.ImportantMessagesQuery())
-        let messages = data.currentMember.importantMessages.map { data in
-            let link: ImportantMessage.LinkInfo? = {
+        try await fetchHome().asImportantMessages
+    }
+
+    func getMemberState() async throws -> MemberState {
+        try await fetchHome().asMemberState
+    }
+
+    func getQuickActions() async throws -> [QuickAction] {
+        try await fetchHome().asQuickActions
+    }
+
+    func getHomeData() async throws -> HomeData {
+        let member = try await fetchHome()
+        return .init(
+            memberState: member.asMemberState,
+            importantMessages: member.asImportantMessages,
+            quickActions: member.asQuickActions
+        )
+    }
+
+    /// Member state, important messages and quick actions all come from the same `HomeQuery`.
+    private func fetchHome() async throws -> OctopusGraphQL.HomeQuery.Data.CurrentMember {
+        try await octopus.client.fetch(query: OctopusGraphQL.HomeQuery()).currentMember
+    }
+
+    func getMessagesState() async throws -> MessageState {
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.ConversationsTimeStampQuery()
+        )
+
+        var conversationsTimestamps = data.currentMember.conversations.map {
+            $0.newestMessage?.sentAt.localDateToIso8601Date
+        }
+        let hasNewMessages =
+            (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
+                .currentMember.legacyConversation?
+                .unreadMessageCount ?? 0) > 0
+        let hasSentOrRecievedAtLeastOneMessage: Bool =
+            !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
+
+        if let legacyConversation = data.currentMember.legacyConversation {
+            if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
+                conversationsTimestamps.append(date)
+            }
+        }
+        let maxDate = conversationsTimestamps.compactMap { $0 }.max()
+
+        return .init(
+            hasNewMessages: hasNewMessages,
+            hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
+            lastMessageTimeStamp: maxDate
+        )
+    }
+
+    func getOngoingQuotes() async throws -> [OngoingQuote] {
+        let data = try await octopus.client
+            .fetch(query: OctopusGraphQL.OngoingShopSessionsQuery())
+
+        return data.currentMember.ongoingShopSessions.compactMap { session in
+            guard let resumeUrl = URL(string: session.display.resumeUrl) else { return nil }
+            return OngoingQuote(
+                id: session.id,
+                title: session.display.title,
+                subtitle: session.display.subtitle,
+                monthlyNet: .init(optionalFragment: session.display.monthlyNet?.fragments.moneyFragment),
+                resumeUrl: resumeUrl,
+                pillowImageUrl: URL(string: session.display.pillowImage?.fragments.storyblokImageAssetFragment.src)
+            )
+        }
+    }
+
+    func getFAQ() async throws -> HelpCenterFAQModel {
+        let query = OctopusGraphQL.MemberFAQQuery()
+        let data = try await octopus.client.fetch(query: query)
+        return data.asHelpCenterModel
+    }
+}
+
+@MainActor
+extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
+    fileprivate var asMemberState: MemberState {
+        .init(
+            memberInfo: .init(
+                id: id,
+                firstName: firstName,
+                isContactInfoUpdateNeeded: memberActions?.isContactInfoUpdateNeeded ?? false
+            ),
+            contracts: activeContracts.map { HomeContract(contract: $0) },
+            contractState: homeState,
+            futureState: futureStatus
+        )
+    }
+
+    fileprivate var asImportantMessages: [Home.ImportantMessage] {
+        let messages = importantMessages.map { data in
+            let link: Home.ImportantMessage.LinkInfo? = {
                 if let linkInfo = data.linkInfo, let url = URL(string: linkInfo.url) {
                     return .init(link: url, text: linkInfo.buttonText)
                 }
                 return nil
             }()
-            return ImportantMessage(id: data.id, message: data.message, linkInfo: link)
+            return Home.ImportantMessage(id: data.id, message: data.message, linkInfo: link)
         }
         return messages
     }
 
-    func getMemberState() async throws -> MemberState {
-        let data =
-            try await octopus
-            .client
-            .fetch(query: OctopusGraphQL.HomeQuery())
-
-        let memberId = data.currentMember.id
-        let isContactInfoUpdateNeeded = data.currentMember.memberActions?.isContactInfoUpdateNeeded ?? false
-        let contracts = data.currentMember.activeContracts.map { HomeContract(contract: $0) }
-        let contractState = data.currentMember.homeState
-        let futureStatus = data.currentMember.futureStatus
-
-        return .init(
-            memberInfo: .init(
-                id: memberId,
-                firstName: data.currentMember.firstName,
-                isContactInfoUpdateNeeded: isContactInfoUpdateNeeded
-            ),
-            contracts: contracts,
-            contractState: contractState,
-            futureState: futureStatus
-        )
-    }
-
-    func getQuickActions() async throws -> [QuickAction] {
-        let data = try await octopus.client
-            .fetch(
-                query: OctopusGraphQL.MemberActionsQuery()
-            )
-
-        guard let actions = data.currentMember.memberActions else { return [] }
+    fileprivate var asQuickActions: [QuickAction] {
+        guard let actions = memberActions else { return [] }
 
         var quickActions = [QuickAction]()
         var contractAction = [QuickAction]()
@@ -125,58 +186,6 @@ class HomeClientOctopus: HomeClient {
             quickActions.append(.sickAbroad(deflection: deflection))
         }
         return quickActions
-    }
-
-    func getMessagesState() async throws -> MessageState {
-        let data = try await octopus.client.fetch(
-            query: OctopusGraphQL.ConversationsTimeStampQuery()
-        )
-
-        var conversationsTimestamps = data.currentMember.conversations.map {
-            $0.newestMessage?.sentAt.localDateToIso8601Date
-        }
-        let hasNewMessages =
-            (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
-                .currentMember.legacyConversation?
-                .unreadMessageCount ?? 0) > 0
-        let hasSentOrRecievedAtLeastOneMessage: Bool =
-            !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
-
-        if let legacyConversation = data.currentMember.legacyConversation {
-            if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
-                conversationsTimestamps.append(date)
-            }
-        }
-        let maxDate = conversationsTimestamps.compactMap { $0 }.max()
-
-        return .init(
-            hasNewMessages: hasNewMessages,
-            hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
-            lastMessageTimeStamp: maxDate
-        )
-    }
-
-    func getOngoingQuotes() async throws -> [OngoingQuote] {
-        let data = try await octopus.client
-            .fetch(query: OctopusGraphQL.OngoingShopSessionsQuery())
-
-        return data.currentMember.ongoingShopSessions.compactMap { session in
-            guard let resumeUrl = URL(string: session.display.resumeUrl) else { return nil }
-            return OngoingQuote(
-                id: session.id,
-                title: session.display.title,
-                subtitle: session.display.subtitle,
-                monthlyNet: .init(optionalFragment: session.display.monthlyNet?.fragments.moneyFragment),
-                resumeUrl: resumeUrl,
-                pillowImageUrl: URL(string: session.display.pillowImage?.fragments.storyblokImageAssetFragment.src)
-            )
-        }
-    }
-
-    func getFAQ() async throws -> HelpCenterFAQModel {
-        let query = OctopusGraphQL.MemberFAQQuery()
-        let data = try await octopus.client.fetch(query: query)
-        return data.asHelpCenterModel
     }
 }
 
