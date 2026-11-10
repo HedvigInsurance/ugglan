@@ -7,7 +7,8 @@ import EditStakeholdersUI
 import Foundation
 import SafariServices
 import SwiftUI
-import TerminateContracts
+import TerminateContractsCore
+import TerminateContractsUI
 import hCore
 import hCoreUI
 

@@ -19,7 +19,7 @@ import Onboarding
 import Payment
 import Profile
 import SubmitClaimChat
-import TerminateContracts
+import TerminateContractsCore
 import TravelCertificate
 import hCore
 import hGraphQL
