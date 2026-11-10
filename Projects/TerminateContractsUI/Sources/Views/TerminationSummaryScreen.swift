@@ -1,0 +1,222 @@
+import SwiftUI
+import TerminateContractsCore
+import hCore
+import hCoreUI
+
+struct TerminationSummaryScreen: View {
+    @Environment(TerminationFlowNavigationViewModel.self) var terminationNavigationVm
+
+    init() {}
+
+    var body: some View {
+        hForm {}
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.terminationFlowCancellationTitle,
+                    alignment: .leading
+                ),
+                subTitle: .init(
+                    .small,
+                    .heading2,
+                    L10n.terminationFlowSummarySubtitle
+                )
+            )
+            .hFormAttachToBottom {
+                VStack(spacing: .padding16) {
+                    VStack(spacing: .padding4) {
+                        insuranceDetailsView
+                        terminationDateView
+                        infoCard
+                    }
+
+                    hSection {
+                        VStack(spacing: .padding8) {
+                            hButton(
+                                .large,
+                                .primary,
+                                content: .init(title: L10n.terminationButton)
+                            ) {
+                                terminationNavigationVm.isConfirmTerminationPresented = true
+                            }
+                            hButton(
+                                .large,
+                                .ghost,
+                                content: .init(title: L10n.terminationKeepInsuranceButton)
+                            ) { terminationNavigationVm.router.dismiss() }
+                        }
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+            }
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        HStack(spacing: .padding12) {
+            let image =
+                terminationNavigationVm.config?.typeOfContract?.pillowType.bgImage ?? hCoreUIAssets.pillowHome.view
+
+            image
+                .resizable()
+                .frame(width: 48, height: 48)
+            VStack(alignment: .leading, spacing: 0) {
+                hText(terminationNavigationVm.config?.contractDisplayName ?? "")
+                hText(terminationNavigationVm.config?.contractExposureName ?? "")
+                    .foregroundColor(hTextColor.Translucent.secondary)
+            }
+        }
+        .padding(.bottom, .padding16)
+    }
+
+    private var addonContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            hText(L10n.terminationAddonCoverageTitle)
+            ForEach(terminationNavigationVm.extraCoverage, id: \.self) { item in
+                getRow(for: item)
+            }
+        }
+    }
+
+    private func getRow(for item: ExtraCoverageItem) -> some View {
+        HStack {
+            hText(item.displayName)
+            Spacer()
+            if let displayValue = item.displayValue {
+                hText(displayValue)
+            }
+        }
+        .foregroundColor(hTextColor.Translucent.secondary)
+    }
+
+    @ViewBuilder
+    private var infoCard: some View {
+        if let notification = terminationNavigationVm.notification {
+            let type: NotificationType = {
+                switch notification.type {
+                case .info:
+                    return .info
+                case .warning:
+                    return .attention
+                }
+            }()
+            hSection {
+                InfoCard(text: notification.message, type: type)
+            }
+            .accessibilitySortPriority(1)
+        }
+    }
+
+    private var insuranceDetailsView: some View {
+        let withAddonView = !terminationNavigationVm.extraCoverage.isEmpty
+        return hSection {
+            StatusCard(
+                onSelected: {},
+                mainContent: mainContent,
+                bottomComponent: !withAddonView
+                    ? nil
+                    : {
+                        addonContent
+                    }
+            )
+            .hCardWithoutSpacing
+            .hCardWithDivider
+        }
+    }
+
+    @ViewBuilder
+    private var terminationDateView: some View {
+        if let date = terminationNavigationVm.selectedDate {
+            hSection {
+                hFloatingField(
+                    value: date.displayDateDDMMMYYYYFormat,
+                    placeholder: L10n.terminationFlowDateFieldText
+                ) {}
+            }
+        }
+    }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    let navigationModel = TerminationFlowNavigationViewModel(
+        configs: [
+            .init(
+                contractId: "1",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
+        ],
+        terminateInsuranceViewModel: .init()
+    )
+    navigationModel.selectedDate = Date()
+    navigationModel.config = .init(
+        contractId: "2",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
+    )
+    navigationModel.notification = .init(
+        message: "This is a message for the user to see in the notification.",
+        type: .info
+    )
+
+    return TerminationSummaryScreen()
+        .environment(
+            navigationModel
+        )
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    let navigationModel = TerminationFlowNavigationViewModel(
+        configs: [
+            .init(
+                contractId: "1",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
+            .init(
+                contractId: "2",
+                contractDisplayName: "Homeowner",
+                contractExposureName: "Bellmansgsatan 19A",
+                activeFrom: "2024-12-15",
+                typeOfContract: .seApartmentBrf
+            ),
+        ],
+        terminateInsuranceViewModel: .init()
+    )
+    navigationModel.config = .init(
+        contractId: "",
+        contractDisplayName: "Homeowner",
+        contractExposureName: "Bellmansgsatan 19A",
+        activeFrom: "2024-12-15",
+        typeOfContract: .seApartmentBrf
+    )
+    navigationModel.notification = .init(
+        message: "This is a message for the user to see in the notification.",
+        type: .info
+    )
+
+    return TerminationSummaryScreen()
+        .environment(
+            navigationModel
+        )
+}

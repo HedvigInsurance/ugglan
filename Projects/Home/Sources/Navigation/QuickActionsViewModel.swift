@@ -8,7 +8,8 @@ import Payment
 import SafariServices
 import SubmitClaimChat
 import SwiftUI
-import TerminateContracts
+import TerminateContractsCore
+import TerminateContractsUI
 import hCore
 import hCoreUI
 
