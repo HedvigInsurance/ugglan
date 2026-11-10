@@ -84,7 +84,10 @@
          location = "group:Market/Market.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:MoveFlow/MoveFlow.xcodeproj">
+         location = "group:MoveFlowCore/MoveFlowCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:MoveFlowUI/MoveFlowUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:Onboarding/Onboarding.xcodeproj">

@@ -1,0 +1,319 @@
+import MoveFlowCore
+import SwiftUI
+import hCore
+import hCoreUI
+
+struct MovingFlowHouseScreen: View {
+    @Bindable var houseInformationInputvm: HouseInformationInputModel
+    @Environment(MovingFlowNavigationViewModel.self) var movingFlowNavigationVm
+    @Environment(NavigationRouter.self) var router
+
+    var body: some View {
+        form.loadingWithButtonLoading($houseInformationInputvm.viewState)
+            .hStateViewButtonConfig(
+                .init(
+                    actionButton: .init(buttonAction: {
+                        houseInformationInputvm.viewState = .success
+                    }),
+                    dismissButton: nil
+                )
+            )
+            .onDisappear {
+                houseInformationInputvm.clearErrors()
+            }
+    }
+
+    var form: some View {
+        hForm {
+            VStack(spacing: 16) {
+                VStack(spacing: 8) {
+                    yearOfConstructionField
+                    ancillaryAreaField
+                    bathroomsField
+                    isSubleted
+                    extraBuildingTypes
+                }
+                .hFieldSize(.medium)
+                .disabled(houseInformationInputvm.viewState == .loading)
+            }
+            .padding(.bottom, .padding8)
+        }
+        .hFormAlwaysAttachToBottom {
+            hSection {
+                hButton(
+                    .large,
+                    .primary,
+                    content: .init(title: L10n.saveAndContinueButtonLabel)
+                ) { continuePressed() }
+            }
+        }
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.movingEmbarkTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .standard,
+                .heading2,
+                L10n.changeAddressInformationAboutYourHouse
+            )
+        )
+        .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.bottom)
+    }
+
+    private var yearOfConstructionField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $houseInformationInputvm.yearOfConstruction,
+                focus: $houseInformationInputvm.type,
+                focusValue: .yearOfConstruction,
+                placeholder: L10n.changeAddressYearOfConstructionLabel,
+                error: $houseInformationInputvm.yearOfConstructionError
+            )
+        }
+    }
+
+    private var ancillaryAreaField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .digits),
+                value: $houseInformationInputvm.ancillaryArea,
+                focus: $houseInformationInputvm.type,
+                focusValue: .ancillaryArea,
+                placeholder: L10n.changeAddressAncillaryAreaLabel,
+                suffix: "m\u{00B2}",
+                error: $houseInformationInputvm.ancillaryAreaError
+            )
+        }
+    }
+
+    private var bathroomsField: some View {
+        hSection {
+            hCounterField(
+                value: $houseInformationInputvm.bathrooms,
+                placeholder: L10n.changeAddressBathroomsLabel,
+                minValue: 1,
+                maxValue: 10,
+                error: $houseInformationInputvm.bathroomsError
+            ) { value in
+                houseInformationInputvm.type = nil
+                if value == 0 {
+                    return nil
+                } else {
+                    return "\(value)"
+                }
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    private var extraBuildingTypes: some View {
+        hSection {
+            hRow {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        hText(L10n.changeAddressExtraBuildingsLabel, style: .label)
+                        Spacer()
+                    }
+                    ForEach(Array(houseInformationInputvm.extraBuildings.enumerated()), id: \.element.id) {
+                        offset,
+                        extraBuilding in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText(extraBuilding.type.displayName, style: .body1)
+                                HStack(spacing: 0) {
+                                    hText(extraBuilding.descriptionText, style: .label)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                            }
+                            Spacer()
+                            Button {
+                                withAnimation {
+                                    houseInformationInputvm.remove(extraBuilding: extraBuilding)
+                                }
+                            } label: {
+                                hCoreUIAssets.closeSmall.view
+                                    .resizable()
+                                    .frame(width: 16, height: 16)
+                                    .foregroundColor(hTextColor.Opaque.primary)
+                            }
+                        }
+                        .padding(.vertical, .padding12)
+                        if offset + 1 < houseInformationInputvm.extraBuildings.count {
+                            hRowDivider()
+                                .hWithoutHorizontalPadding([.divider])
+                        }
+                    }
+                    hButton(
+                        .medium,
+                        .primaryAlt,
+                        content: .init(
+                            title: L10n.changeAddressAddBuilding,
+                            buttonImage: .init(
+                                image: hCoreUIAssets.plusSmall.view,
+                                alignment: .leading
+                            )
+                        )
+                    ) { addExtraBuilding() }
+                    .hButtonDontShowLoadingWhenDisabled(true)
+                    .hUseLightMode
+                    .padding(.top, .padding8)
+                }
+            }
+            .verticalPadding(0)
+            .padding(.top, .padding12)
+            .padding(.bottom, .padding16)
+        }
+        .sectionContainerStyle(.opaque)
+        .padding(.top, .padding6)
+    }
+
+    @ViewBuilder
+    private var isSubleted: some View {
+        CheckboxToggleView(
+            title: L10n.changeAddressSubletLabel,
+            isOn: $houseInformationInputvm.isSubleted.animation(.default)
+        )
+        .onTapGesture {
+            withAnimation {
+                houseInformationInputvm.type = nil
+                houseInformationInputvm.isSubleted.toggle()
+            }
+        }
+        .accessibilityAddTraits(.isButton)
+    }
+
+    func addExtraBuilding() {
+        UIApplication.dismissKeyboard()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            movingFlowNavigationVm.isAddExtraBuildingPresented = houseInformationInputvm
+        }
+    }
+
+    func continuePressed() {
+        if houseInformationInputvm.isInputValid() {
+            Task {
+                if let requestVm = await houseInformationInputvm.requestMoveIntent(
+                    intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
+                    addressInputModel: movingFlowNavigationVm.addressInputModel,
+                    selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? "",
+                    source: movingFlowNavigationVm.source
+                ) {
+                    movingFlowNavigationVm.moveQuotesModel = requestVm
+
+                    if let changeTierModel = requestVm.changeTierModel {
+                        router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
+                    } else {
+                        router.push(MovingFlowRouterActions.confirm)
+                    }
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    Localization.Locale.currentLocale.send(.sv_SE)
+    Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
+        .environment(MovingFlowNavigationViewModel())
+}
+
+enum MovingFlowHouseFieldType: Hashable {
+    case yearOfConstruction
+    case ancillaryArea
+}
+
+@MainActor
+@Observable
+public class HouseInformationInputModel: @MainActor Equatable, @MainActor Identifiable {
+    public static func == (_: HouseInformationInputModel, _: HouseInformationInputModel) -> Bool {
+        true
+    }
+    @ObservationIgnored @Inject private var service: MoveFlowClient
+    var type: MovingFlowHouseFieldType?
+    public var yearOfConstruction: String = ""
+    public var ancillaryArea: String = ""
+    public var bathrooms: Int = 1
+    public var isSubleted = false
+    var yearOfConstructionError: String?
+    var ancillaryAreaError: String?
+    var bathroomsError: String?
+    public var extraBuildings: [ExtraBuilding] = []
+    var viewState: ProcessingState = .success
+
+    init() {}
+
+    @MainActor
+    func requestMoveIntent(
+        intentId: String,
+        addressInputModel: AddressInputModel,
+        selectedAddressId: String,
+        source: MovingFlowSource
+    ) async -> MoveQuotesModel? {
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        do {
+            let input = RequestMoveIntentInput(
+                intentId: intentId,
+                address: addressInputModel.asMoveAddressInput,
+                houseInformation: asMoveHouseInformationInput,
+                selectedAddressId: selectedAddressId,
+                source: source
+            )
+            let movingFlowData = try await service.requestMoveIntent(input: input)
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return movingFlowData
+        } catch {
+            viewState = .error(errorMessage: error.localizedDescription)
+        }
+        return nil
+    }
+
+    func isInputValid() -> Bool {
+        func validate() -> Bool {
+            withAnimation {
+                yearOfConstructionError = !yearOfConstruction.isEmpty ? nil : L10n.changeAddressYearOfConstructionError
+                ancillaryAreaError = !ancillaryArea.isEmpty ? nil : L10n.changeAddressAncillaryAreaError
+                bathroomsError = bathrooms == 0 ? L10n.changeAddressBathroomsError : nil
+                return yearOfConstructionError == nil && ancillaryAreaError == nil && bathroomsError == nil
+            }
+        }
+        return validate()
+    }
+
+    func remove(extraBuilding: ExtraBuilding) {
+        UIApplication.dismissKeyboard()
+        extraBuildings.removeAll(where: { $0.id == extraBuilding.id })
+    }
+
+    func clearErrors() {
+        viewState = .success
+        yearOfConstructionError = nil
+        ancillaryAreaError = nil
+        bathroomsError = nil
+    }
+}
+
+extension HouseInformationInputModel {
+    var asMoveHouseInformationInput: MoveHouseInformationInput {
+        .init(
+            yearOfConstruction: yearOfConstruction,
+            ancillaryArea: ancillaryArea,
+            bathrooms: bathrooms,
+            isSubleted: isSubleted,
+            extraBuildings: extraBuildings
+        )
+    }
+}

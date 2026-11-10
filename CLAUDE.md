@@ -60,7 +60,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | Home | Home screen dashboard, important messages |
 | InsuranceEvidence | Insurance evidence/certificate display |
 | Market | Market/country selection |
-| MoveFlow | Address change flow |
+| MoveFlowCore | Address change models, client protocol and inputs, demo client (UI-free) |
+| MoveFlowUI | Address change flow, navigation and ViewModels (built on MoveFlowCore) |
 | NotificationService | Push notification handling |
 | Payment | Payment methods, payment history, direct debit |
 | Profile | User profile, settings, app info |
