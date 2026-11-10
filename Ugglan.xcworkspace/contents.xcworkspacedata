@@ -108,7 +108,10 @@
          location = "group:TerminateContractsUI/TerminateContractsUI.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:TravelCertificate/TravelCertificate.xcodeproj">
+         location = "group:TravelCertificateCore/TravelCertificateCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:TravelCertificateUI/TravelCertificateUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:hCore/hCore.xcodeproj">
