@@ -8,7 +8,7 @@ service wrapper. No SwiftUI or hCoreUI.
 - `Sources/Models/StakeholdersConfig.swift` — `StakeholdersConfig` (per-contract edit input) and `StakeholderType`
   (`.coInsured` / `.coOwner`) with its localized strings and tracking names
 - `Sources/Models/ContractModel.swift` — module-local `Contract`/`Agreement`/`ProductVariant` returned by
-  `EditStakeholdersClient.fetchContracts()` (not the Contracts module's `Contract`)
+  `EditStakeholdersClient.fetchContracts()` (not ContractsCore's `Contract`)
 - `Sources/Models/ExistingStakeholders.swift` — protocol implemented by `ContractStore` to supply stakeholders already
   on other contracts
 - `Sources/Models/IntentData.swift`, `PersonalData.swift` — midterm change intent and SSN lookup results
@@ -17,7 +17,7 @@ service wrapper. No SwiftUI or hCoreUI.
 
 ## Dependencies
 - hCore (+ AutomaticLog)
-- Depended on by: EditStakeholdersUI, Contracts, Home, Onboarding, TravelCertificate, App
+- Depended on by: EditStakeholdersUI, ContractsCore, ContractsUI, Home, Onboarding, TravelCertificate, App
   (`EditStakeholdersClientOctopus`, DI)
 
 ## Gotchas

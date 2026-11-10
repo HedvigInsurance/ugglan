@@ -1,4 +1,5 @@
-import Contracts
+import ContractsCore
+import ContractsUI
 import EditStakeholdersCore
 import EditStakeholdersUI
 import SwiftUI
@@ -225,12 +226,12 @@ struct OnboardingMissingInfoScreen: View {
 }
 
 @MainActor
-extension Contracts.Contract {
+extension ContractsCore.Contract {
     fileprivate static func mock(
         id: String,
         exposureName: String,
         typeOfContract: TypeOfContract = .seHouse
-    ) -> Contracts.Contract {
+    ) -> ContractsCore.Contract {
         .init(
             id: id,
             currentAgreement: .init(

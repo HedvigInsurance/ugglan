@@ -5,7 +5,6 @@ import AutomaticLog
 import Chat
 import Claims
 import Combine
-import Contracts
 import CoreDependencies
 import DatadogLogs
 import Forever

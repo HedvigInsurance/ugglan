@@ -47,7 +47,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | Chat | Customer support messaging |
 | Claims | Claims list, status tracking, claim details |
 | Codegen | GraphQL code generation tooling |
-| Contracts | Insurance contract management and details |
+| ContractsCore | Contract models, `ContractStore`, client protocols, pet chip id service and demo clients (UI-free) |
+| ContractsUI | Insurance contract list, details and actions (built on ContractsCore) |
 | CrossSellCore | Cross-sell models, client protocol, service, store, tracking and demo data (UI-free) |
 | CrossSellUI | SwiftUI views for cross-sell offers and addon banners (built on CrossSellCore) |
 | EditStakeholdersCore | Stakeholder (co-insured/co-owner) models, client protocol and service (UI-free) |

@@ -15,13 +15,13 @@ SwiftUI flow built on `EditStakeholdersCore`. Manages stakeholder editing for in
 
 ## Dependencies
 - Imports: hCore, hCoreUI, EditStakeholdersCore
-- Depended on by: App, Contracts, Home, Onboarding, TravelCertificate
+- Depended on by: App, ContractsUI, Home, Onboarding, TravelCertificate
 
 ## Navigation
 - `EditStakeholdersNavigation`: Main flow using `RouterHost`, presents `StakeholdersScreen` as root. Uses `.modally` and `.detent` for sub-flows (input, select, progress).
 - `EditStakeholdersSelectInsuranceNavigation`: Shown when multiple contracts support stakeholders; user picks which contract to edit.
 - `EditStakeholdersAlertNavigation`: Presents a missing-stakeholder alert that can open the full edit flow.
-- Entered from Contracts module (contract detail) and TravelCertificate (via `EditStakeholdersViewModel` as an `@Environment`).
+- Entered from ContractsUI (contract detail) and TravelCertificate (via `EditStakeholdersViewModel` as an `@Environment`).
 
 ## Gotchas
 - `EditStakeholdersViewModel` requires an `ExistingStakeholders` conformer at init, which couples it to whichever module provides current stakeholder data (typically ContractStore).

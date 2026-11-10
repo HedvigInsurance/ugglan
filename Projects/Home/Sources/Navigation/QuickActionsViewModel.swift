@@ -2,7 +2,7 @@ import AppStateContainer
 import ChangeTierCore
 import ChangeTierUI
 import Chat
-import Contracts
+import ContractsCore
 import EditStakeholdersCore
 import EditStakeholdersUI
 import Payment
@@ -71,7 +71,7 @@ public final class QuickActionsViewModel {
         }
     }
 
-    func terminationConfigs(from contracts: [Contracts.Contract]) -> [TerminationConfirmConfig] {
+    func terminationConfigs(from contracts: [ContractsCore.Contract]) -> [TerminationConfirmConfig] {
         contracts
             .filter(\.supportsTermination)
             .map(\.asTerminationConfirmConfig)

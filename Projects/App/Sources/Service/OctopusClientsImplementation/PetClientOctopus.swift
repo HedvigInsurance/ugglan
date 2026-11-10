@@ -1,4 +1,4 @@
-import Contracts
+import ContractsCore
 import Foundation
 import hCore
 import hGraphQL

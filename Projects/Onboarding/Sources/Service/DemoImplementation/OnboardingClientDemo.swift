@@ -1,4 +1,4 @@
-import Contracts
+import ContractsCore
 import CrossSellCore
 import EditStakeholdersCore
 import Foundation

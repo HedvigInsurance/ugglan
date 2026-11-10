@@ -1,6 +1,5 @@
 import AppStateContainer
 import Combine
-import Contracts
 import CrossSellCore
 import Foundation
 import Payment

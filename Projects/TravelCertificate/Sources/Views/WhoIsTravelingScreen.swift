@@ -1,5 +1,5 @@
 import AppStateContainer
-import Contracts
+import ContractsCore
 import EditStakeholdersCore
 import Foundation
 import SwiftUI
@@ -73,7 +73,7 @@ class WhoIsTravelingViewModel {
     var hasMissingCoInsuredData = false
     @ObservationIgnored var isPolicyHolderIncluded = true
     var isLoading = false
-    let contract: Contracts.Contract?
+    let contract: ContractsCore.Contract?
     let router: NavigationRouter
     let contractStore: ContractStore = globalAppStateContainer.get()
     init(specification: TravelInsuranceContractSpecification, router: NavigationRouter) {

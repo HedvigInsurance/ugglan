@@ -6,7 +6,8 @@ import ChangeTierUI
 import Chat
 import Claims
 import Combine
-import Contracts
+import ContractsCore
+import ContractsUI
 import CrossSellCore
 import CrossSellUI
 import EditStakeholdersCore
@@ -119,7 +120,7 @@ class PushNotificationHandler {
     }
 
     func handleChangeTier(contractId: String?) {
-        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
+        if let contractId, let contract: ContractsCore.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.isChangeTierPresented = .init(
                     source: .changeTier,
@@ -346,7 +347,7 @@ class DeepLinkHandler {
     private func handleContractDeeplink(_ url: URL) {
         dismissAndSelectTab(1)
         let contractId = url.getParameter(property: .contractId)
-        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
+        if let contractId, let contract: ContractsCore.Contract = contractStore.contractForId(contractId) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak viewModel] in
                 viewModel?.contractsNavigationVm.contractsRouter.popToRoot()
                 viewModel?.contractsNavigationVm.contractsRouter.push(contract)
@@ -407,7 +408,7 @@ class DeepLinkHandler {
     private func handleTerminateContract(_ url: URL) {
         guard let viewModel = viewModel else { return }
         let contractId = url.getParameter(property: .contractId)
-        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
+        if let contractId, let contract: ContractsCore.Contract = contractStore.contractForId(contractId) {
             Task { [weak viewModel] in
                 do {
                     await delay(0.2)
@@ -470,7 +471,7 @@ class DeepLinkHandler {
         guard let viewModel = viewModel else { return }
         Task {
             if let contractId = url.getParameter(property: .contractId),
-                let contract: Contracts.Contract = contractStore.contractForId(contractId)
+                let contract: ContractsCore.Contract = contractStore.contractForId(contractId)
             {
                 let contractConfig: StakeholdersConfig = .init(
                     contract: contract,
@@ -1136,7 +1137,7 @@ class LoggedInNavigationViewModel {
 
     @objc func openChangeTier(notification: Notification) {
         let contractId = notification.object as? String
-        if let contractId, let contract: Contracts.Contract = contractStore.contractForId(contractId) {
+        if let contractId, let contract: ContractsCore.Contract = contractStore.contractForId(contractId) {
             isChangeTierPresented = .init(
                 source: .betterCoverage,
                 contracts: [

@@ -57,6 +57,22 @@
             "HomeTests/frameworks",
           ],
         }, {
+          "path": "<PRODUCTS>/ContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ContractsUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/CoreDependencies.framework",
           "type": "wrapper.framework",
           "index": false,

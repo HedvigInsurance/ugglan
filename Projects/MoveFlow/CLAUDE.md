@@ -17,7 +17,7 @@ Handles the address change (moving) flow for insurance contracts. Guides users t
 - Models: `MoveConfigurationModel` in `Sources/Model/MoveConfigurationModel.swift`, `MoveQuotesModel` in `Sources/Model/MoveQuotesModel.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, Contracts, CrossSellCore, ChangeTierCore (`ChangeTierIntentModel`), ChangeTierUI
+- Imports: hCore, hCoreUI, CrossSellCore, ChangeTierCore (`ChangeTierIntentModel`), ChangeTierUI
   (`ChangeTierNavigation`, `ChangeTierQuoteDataProvider`)
 - Additional build dependencies: CoreDependencies
 - Depended on by: App

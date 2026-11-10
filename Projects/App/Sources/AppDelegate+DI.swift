@@ -6,7 +6,7 @@ import CampaignCore
 import ChangeTierCore
 import Chat
 import Claims
-import Contracts
+import ContractsCore
 import CrossSellCore
 import EditStakeholdersCore
 import Environment

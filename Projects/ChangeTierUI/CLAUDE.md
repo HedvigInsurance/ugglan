@@ -19,7 +19,7 @@ SwiftUI flow built on `ChangeTierCore`. Handles insurance plan tier upgrades and
 
 ## Dependencies
 - Imports: hCore, hCoreUI, ChangeTierCore, CrossSellCore
-- Depended on by: Contracts, TerminateContractsUI, MoveFlow, Home, App
+- Depended on by: ContractsUI, TerminateContractsUI, MoveFlow, Home, App
 
 ## Navigation
 - `ChangeTierNavigation`: Entry point SwiftUI view. Accepts `ChangeTierInput` (single contract) or `ChangeTierContractsInput` (multiple contracts with selection screen). Uses `RouterHost` with `routerDestination` for summary and processing screens.

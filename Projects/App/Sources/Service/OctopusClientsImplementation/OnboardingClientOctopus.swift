@@ -1,5 +1,5 @@
 import AppStateContainer
-import Contracts
+import ContractsCore
 import CrossSellCore
 import Forever
 import Foundation

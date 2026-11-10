@@ -4,7 +4,7 @@ import Testing
 import hCore
 
 @testable import Claims
-@testable import Contracts
+@testable import ContractsCore
 @testable import Profile
 
 extension ProfileDependencySuite {

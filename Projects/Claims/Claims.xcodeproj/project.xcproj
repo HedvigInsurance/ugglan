@@ -28,14 +28,6 @@
         { "path": "<PRODUCTS>/Claims.framework", "id": "B6659731E6883417A8E987DF", "type": "wrapper.framework", "index": false, "target-membership": [ "ClaimsTests/frameworks" ] },
         { "path": "<PRODUCTS>/ClaimsTests.xctest", "id": "8961C08E496C395DD6C8968D", "type": "wrapper.cfbundle", "index": false },
         {
-          "path": "<PRODUCTS>/Contracts.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "Claims/frameworks",
-            "ClaimsTests/frameworks",
-          ],
-        }, {
           "path": "<PRODUCTS>/CoreDependencies.framework",
           "type": "wrapper.framework",
           "index": false,
