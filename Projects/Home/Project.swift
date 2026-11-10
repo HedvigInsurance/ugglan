@@ -6,7 +6,7 @@ let project = Project.framework(
     targets: Set([.framework, .tests]),
     projects: [
         "hCore", "hCoreUI", "AddonsCore", "TerminateContractsCore", "TerminateContractsUI",
-        "Payment", "Chat", "Claims", "SubmitClaimChat", "CrossSellCore", "CrossSellUI", "EditStakeholdersCore",
+        "Payment", "ChatUI", "Claims", "SubmitClaimChat", "CrossSellCore", "CrossSellUI", "EditStakeholdersCore",
         "EditStakeholdersUI", "ChangeTierCore", "ChangeTierUI", "ContractsCore", "ContractsUI",
     ],
     sdks: []

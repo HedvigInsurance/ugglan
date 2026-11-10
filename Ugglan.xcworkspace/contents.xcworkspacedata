@@ -45,7 +45,10 @@
          location = "group:ChangeTierUI/ChangeTierUI.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:Chat/Chat.xcodeproj">
+         location = "group:ChatCore/ChatCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:ChatUI/ChatUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:Claims/Claims.xcodeproj">

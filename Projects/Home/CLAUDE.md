@@ -29,7 +29,7 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 
 ## Navigation
 - **Routes defined here**:
-  - `HomeRouterAction.inbox` -- pushes the Chat `InboxView` within the Home tab
+  - `HomeRouterAction.inbox` -- pushes the ChatUI `InboxView` within the Home tab
   - `HelpCenterNavigationRouterType.inbox` -- pushes `InboxView` inside the Help Center
   - `HelpCenterRedirectType` -- `.travelInsurance`, `.moveFlow`, `.deflect` for flows Home cannot present itself; defined in `Navigation/QuickActionsViewModel.swift` and supplied by whichever host mounts `handleQuickActions` (App resolves all three in one shared `quickActionRedirect(for:)`)
 - **Entry from other modules**: Home is a root tab in the main tab bar (configured in App). `HomeNavigationViewModel` listens for `.openChat` and `.openCrossSell` notifications from anywhere in the app.
