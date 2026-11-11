@@ -92,7 +92,7 @@ public final class PaymentStore: AppStore {
     }
 
     /// Everything the payments screen renders, fetched concurrently.
-    func fetchAllPaymentData(forceUpdate: Bool = false) async {
+    public func fetchAllPaymentData(forceUpdate: Bool = false) async {
         async let load: () = load(forceUpdate: forceUpdate)
         async let noticeData: () = fetchPaymentNoticeData(forceUpdate: forceUpdate)
         async let status: () = fetchPaymentStatus()

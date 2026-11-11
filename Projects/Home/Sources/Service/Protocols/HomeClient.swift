@@ -8,6 +8,30 @@ public protocol HomeClient {
     func getOngoingQuotes() async throws -> [OngoingQuote]
     func getMessagesState() async throws -> MessageState
     func getFAQ() async throws -> HelpCenterFAQModel
+    func getHomeData() async throws -> HomeData
+}
+
+extension HomeClient {
+    /// Composes the single calls, for clients that have no combined request (demo, tests).
+    public func getHomeData() async throws -> HomeData {
+        try await .init(
+            memberState: getMemberState(),
+            importantMessages: getImportantMessages(),
+            quickActions: getQuickActions()
+        )
+    }
+}
+
+public struct HomeData {
+    let memberState: MemberState
+    let importantMessages: [ImportantMessage]
+    let quickActions: [QuickAction]
+
+    public init(memberState: MemberState, importantMessages: [ImportantMessage], quickActions: [QuickAction]) {
+        self.memberState = memberState
+        self.importantMessages = importantMessages
+        self.quickActions = quickActions
+    }
 }
 
 public struct MemberState: Sendable {

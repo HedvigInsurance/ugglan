@@ -9,8 +9,8 @@ public extension OctopusGraphQL {
     public static let operationName: String = "Home"
     public static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query Home { currentMember { __typename id firstName activeContracts { __typename ...ContractFragment } pendingContracts { __typename externalInsuranceCancellationHandledByHedvig exposureDisplayName id } memberActions { __typename isContactInfoUpdateNeeded } } }"#,
-        fragments: [AddonVariantFragment.self, AgreementFragment.self, CoInsuredFragment.self, CoOwnerFragment.self, ContractFragment.self, InsuranceDocumentFragment.self, MoneyFragment.self, PerilFragment.self, ProductVariantFragment.self]
+        #"query Home { currentMember { __typename id firstName activeContracts { __typename ...ContractFragment } pendingContracts { __typename externalInsuranceCancellationHandledByHedvig exposureDisplayName id } importantMessages { __typename id message linkInfo { __typename buttonText url } } memberActions { __typename sickAbroadDeflect { __typename ...DeflectFragment } isTravelCertificateEnabled isMovingEnabled isConnectPaymentEnabled isEditCoInsuredEnabled isEditCoOwnersEnabled isCancelInsuranceEnabled isContactInfoUpdateNeeded isChangeTierEnabled firstVetAction { __typename sections { __typename buttonTitle description url title } } } } }"#,
+        fragments: [AddonVariantFragment.self, AgreementFragment.self, ClaimIntentOutcomeDeflectionPartnerFragment.self, ClaimIntentOutcomeDeflectionSimplePartnerFragment.self, CoInsuredFragment.self, CoOwnerFragment.self, ContractFragment.self, DeflectFragment.self, InsuranceDocumentFragment.self, MoneyFragment.self, PerilFragment.self, ProductVariantFragment.self]
       ))
 
     public init() {}
@@ -45,6 +45,7 @@ public extension OctopusGraphQL {
           .field("firstName", String.self),
           .field("activeContracts", [ActiveContract].self),
           .field("pendingContracts", [PendingContract].self),
+          .field("importantMessages", [ImportantMessage].self),
           .field("memberActions", MemberActions?.self),
         ] }
         @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
@@ -58,6 +59,9 @@ public extension OctopusGraphQL {
         public var activeContracts: [ActiveContract] { __data["activeContracts"] }
         /// Fetch all the pending contracts for this member.
         public var pendingContracts: [PendingContract] { __data["pendingContracts"] }
+        /// Carries messages to be shown to a logged in member, such as possible delays
+        /// in service or outage announcements.
+        public var importantMessages: [ImportantMessage] { __data["importantMessages"] }
         public var memberActions: MemberActions? { __data["memberActions"] }
 
         /// CurrentMember.ActiveContract
@@ -163,6 +167,50 @@ public extension OctopusGraphQL {
           public var id: OctopusGraphQL.UUID { __data["id"] }
         }
 
+        /// CurrentMember.ImportantMessage
+        ///
+        /// Parent Type: `MemberImportantMessage`
+        nonisolated public struct ImportantMessage: OctopusGraphQL.SelectionSet {
+          @_spi(Unsafe) public let __data: DataDict
+          @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+          @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.MemberImportantMessage }
+          @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
+            .field("__typename", String.self),
+            .field("id", OctopusGraphQL.ID.self),
+            .field("message", String.self),
+            .field("linkInfo", LinkInfo?.self),
+          ] }
+          @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
+            HomeQuery.Data.CurrentMember.ImportantMessage.self
+          ] }
+
+          public var id: OctopusGraphQL.ID { __data["id"] }
+          public var message: String { __data["message"] }
+          public var linkInfo: LinkInfo? { __data["linkInfo"] }
+
+          /// CurrentMember.ImportantMessage.LinkInfo
+          ///
+          /// Parent Type: `LinkInfo`
+          nonisolated public struct LinkInfo: OctopusGraphQL.SelectionSet {
+            @_spi(Unsafe) public let __data: DataDict
+            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+            @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.LinkInfo }
+            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
+              .field("__typename", String.self),
+              .field("buttonText", String.self),
+              .field("url", OctopusGraphQL.Url.self),
+            ] }
+            @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
+              HomeQuery.Data.CurrentMember.ImportantMessage.LinkInfo.self
+            ] }
+
+            public var buttonText: String { __data["buttonText"] }
+            public var url: OctopusGraphQL.Url { __data["url"] }
+          }
+        }
+
         /// CurrentMember.MemberActions
         ///
         /// Parent Type: `MemberActions`
@@ -173,14 +221,124 @@ public extension OctopusGraphQL {
           @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.MemberActions }
           @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
             .field("__typename", String.self),
+            .field("sickAbroadDeflect", SickAbroadDeflect?.self),
+            .field("isTravelCertificateEnabled", Bool?.self),
+            .field("isMovingEnabled", Bool.self),
+            .field("isConnectPaymentEnabled", Bool.self),
+            .field("isEditCoInsuredEnabled", Bool.self),
+            .field("isEditCoOwnersEnabled", Bool.self),
+            .field("isCancelInsuranceEnabled", Bool.self),
             .field("isContactInfoUpdateNeeded", Bool.self),
+            .field("isChangeTierEnabled", Bool.self),
+            .field("firstVetAction", FirstVetAction?.self),
           ] }
           @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
             HomeQuery.Data.CurrentMember.MemberActions.self
           ] }
 
+          /// Returns a deflection to emergency partners if the member has an active contract that includes travel insurance coverage.
+          /// Reuses the ClaimIntentStepContentDeflection type for convenience.
+          public var sickAbroadDeflect: SickAbroadDeflect? { __data["sickAbroadDeflect"] }
+          /// Indicate whether the travel certificate option should be displayed.
+          public var isTravelCertificateEnabled: Bool? { __data["isTravelCertificateEnabled"] }
+          public var isMovingEnabled: Bool { __data["isMovingEnabled"] }
+          public var isConnectPaymentEnabled: Bool { __data["isConnectPaymentEnabled"] }
+          public var isEditCoInsuredEnabled: Bool { __data["isEditCoInsuredEnabled"] }
+          public var isEditCoOwnersEnabled: Bool { __data["isEditCoOwnersEnabled"] }
+          public var isCancelInsuranceEnabled: Bool { __data["isCancelInsuranceEnabled"] }
           /// Indicates that the member should review their phone number or add if it is missing.
           public var isContactInfoUpdateNeeded: Bool { __data["isContactInfoUpdateNeeded"] }
+          public var isChangeTierEnabled: Bool { __data["isChangeTierEnabled"] }
+          public var firstVetAction: FirstVetAction? { __data["firstVetAction"] }
+
+          /// CurrentMember.MemberActions.SickAbroadDeflect
+          ///
+          /// Parent Type: `ClaimIntentStepContentDeflection`
+          nonisolated public struct SickAbroadDeflect: OctopusGraphQL.SelectionSet {
+            @_spi(Unsafe) public let __data: DataDict
+            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+            @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.ClaimIntentStepContentDeflection }
+            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
+              .field("__typename", String.self),
+              .fragment(DeflectFragment.self),
+            ] }
+            @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
+              HomeQuery.Data.CurrentMember.MemberActions.SickAbroadDeflect.self,
+              DeflectFragment.self
+            ] }
+
+            public var infoText: String? { __data["infoText"] }
+            public var warningText: String? { __data["warningText"] }
+            public var partnersInfo: PartnersInfo? { __data["partnersInfo"] }
+            public var content: Content { __data["content"] }
+            public var faq: [Faq] { __data["faq"] }
+            public var title: String? { __data["title"] }
+            public var partners: [Partner] { __data["partners"] }
+            public var simplePartners: [SimplePartner] { __data["simplePartners"] }
+            public var buttonTitle: String { __data["buttonTitle"] }
+
+            public struct Fragments: FragmentContainer {
+              @_spi(Unsafe) public let __data: DataDict
+              @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+              public var deflectFragment: DeflectFragment { _toFragment() }
+            }
+
+            public typealias PartnersInfo = DeflectFragment.PartnersInfo
+
+            public typealias Content = DeflectFragment.Content
+
+            public typealias Faq = DeflectFragment.Faq
+
+            public typealias Partner = DeflectFragment.Partner
+
+            public typealias SimplePartner = DeflectFragment.SimplePartner
+          }
+
+          /// CurrentMember.MemberActions.FirstVetAction
+          ///
+          /// Parent Type: `FirstVetAction`
+          nonisolated public struct FirstVetAction: OctopusGraphQL.SelectionSet {
+            @_spi(Unsafe) public let __data: DataDict
+            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+            @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.FirstVetAction }
+            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
+              .field("__typename", String.self),
+              .field("sections", [Section].self),
+            ] }
+            @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
+              HomeQuery.Data.CurrentMember.MemberActions.FirstVetAction.self
+            ] }
+
+            public var sections: [Section] { __data["sections"] }
+
+            /// CurrentMember.MemberActions.FirstVetAction.Section
+            ///
+            /// Parent Type: `FirstVetSection`
+            nonisolated public struct Section: OctopusGraphQL.SelectionSet {
+              @_spi(Unsafe) public let __data: DataDict
+              @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+              @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.FirstVetSection }
+              @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
+                .field("__typename", String.self),
+                .field("buttonTitle", String?.self),
+                .field("description", String?.self),
+                .field("url", String?.self),
+                .field("title", String?.self),
+              ] }
+              @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
+                HomeQuery.Data.CurrentMember.MemberActions.FirstVetAction.Section.self
+              ] }
+
+              public var buttonTitle: String? { __data["buttonTitle"] }
+              public var description: String? { __data["description"] }
+              public var url: String? { __data["url"] }
+              public var title: String? { __data["title"] }
+            }
+          }
         }
       }
     }

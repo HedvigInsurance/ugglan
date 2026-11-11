@@ -10,8 +10,53 @@ query Home {
       exposureDisplayName
       id
     }
+    importantMessages {
+      id
+      message
+      linkInfo {
+        buttonText
+        url
+      }
+    }
     memberActions {
-        isContactInfoUpdateNeeded
+      sickAbroadDeflect {
+        ...DeflectFragment
+      }
+      isTravelCertificateEnabled
+      isMovingEnabled
+      isConnectPaymentEnabled
+      isEditCoInsuredEnabled
+      isEditCoOwnersEnabled
+      isCancelInsuranceEnabled
+      isContactInfoUpdateNeeded
+      isChangeTierEnabled
+      firstVetAction {
+        sections {
+          buttonTitle
+          description
+          url
+          title
+        }
+      }
+    }
+  }
+}
+
+query ConversationsTimeStamp {
+  currentMember {
+    conversations {
+      id
+      newestMessage {
+        sentAt
+      }
+      unreadMessageCount
+    }
+    legacyConversation {
+      id
+      newestMessage {
+        sentAt
+      }
+      unreadMessageCount
     }
   }
 }
