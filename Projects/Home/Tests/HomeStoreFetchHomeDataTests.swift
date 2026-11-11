@@ -15,7 +15,6 @@ extension HomeDependencySuite {
         init() {
             globalAppStateContainer.clearPersistence()
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         }
 
         // Test bodies are scoped in a do block so their locals are released before this check.
