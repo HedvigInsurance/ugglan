@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import Observation
 
 @MainActor
 public protocol FeatureFlagsClient {
@@ -9,7 +8,7 @@ public protocol FeatureFlagsClient {
     func updateContext(context: [String: String])
 }
 
-public struct FeatureData: Codable, Equatable {
+public struct FeatureData: Codable, Equatable, Sendable {
     public let isUpdateNecessary: Bool
     public let osVersionTooLow: Bool
     public let emailPreferencesEnabled: Bool
@@ -54,69 +53,4 @@ public struct FeatureData: Codable, Equatable {
 
 public enum PaymentType {
     case trustly
-}
-
-@MainActor
-extension Dependencies {
-    public static func featureFlags() -> FeatureFlags {
-        let featureFlags: FeatureFlags = shared.resolve()
-        return featureFlags
-    }
-}
-
-@MainActor
-@dynamicMemberLookup
-@Observable
-public class FeatureFlags {
-    public static let userId = "userId"
-
-    @ObservationIgnored public static let shared = FeatureFlags()
-    @ObservationIgnored private var client: FeatureFlagsClient?
-    @ObservationIgnored private var featureDataCancellable: AnyCancellable?
-    public var data: FeatureData = .init(
-        isUpdateNecessary: false,
-        osVersionTooLow: false,
-        emailPreferencesEnabled: false,
-        isDemoMode: false,
-        isNewConversationFromInboxEnabled: false,
-        isPuppyGuideEnabled: false,
-        isResumeClaimEnabled: false,
-        isOnboardingEnabled: false,
-        isTerminationRedirectionEnabled: false,
-        isAnalyticsEnabled: false,
-        isResumingOngoingShopSessionsEnabled: false,
-        isCancelInsuranceHiddenFromHomeScreen: false
-    )
-
-    public var hasFetchedInitialData = false
-
-    public subscript<T>(dynamicMember keyPath: KeyPath<FeatureData, T>) -> T {
-        data[keyPath: keyPath]
-    }
-
-    private init() {}
-
-    public func setup(with context: [String: String]) async throws {
-        let client: FeatureFlagsClient = Dependencies.shared.resolve()
-        featureDataCancellable = client.featureData
-            .receive(on: RunLoop.main)
-            .removeDuplicates()
-            .sink { [weak self] data in
-                guard let self = self else { return }
-                Task {
-                    log.info(
-                        "Feature flag set",
-                        attributes: ["featureFlags": data]
-                    )
-                }
-                self.data = data
-                self.hasFetchedInitialData = true
-            }
-        self.client = client
-        try await client.setup(with: context)
-    }
-
-    public func updateContext(context: [String: String]) {
-        client?.updateContext(context: context)
-    }
 }

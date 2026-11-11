@@ -16,7 +16,7 @@ extension View {
 
 private struct OnboardingFlowLauncher: ViewModifier {
     @State var onboardingStepsWrapper: OnboardingStepsWrapper?
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
 
     func body(content: Content) -> some View {
         content

@@ -50,7 +50,6 @@ extension HomeDependencySuite {
         init() {
             globalAppStateContainer.clearPersistence()
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
             MockData.createMockHomeService()
         }
 

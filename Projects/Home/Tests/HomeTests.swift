@@ -15,7 +15,6 @@ extension HomeDependencySuite {
             globalAppStateContainer.clearPersistence()
             UserDefaults.standard.removeObject(forKey: DismissedOngoingQuotesTracker.storageKey)
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         }
 
         // Test bodies are scoped in a do block or recordingErrors so their locals are released before this check.
@@ -173,10 +172,10 @@ extension HomeDependencySuite {
                 let mockClient = MockFeatureFlagsClient()
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
 
-                try await FeatureFlags.shared.setup(with: [:])
+                try await Dependencies.featureFlags().setup(with: [:])
                 mockClient.send(.allOff(isResumingOngoingShopSessionsEnabled: false))
                 await waitUntil(description: "Flag arrives switched off") {
-                    FeatureFlags.shared.isResumingOngoingShopSessionsEnabled == false
+                    Dependencies.featureFlags().isResumingOngoingShopSessionsEnabled == false
                 }
 
                 let quotes = [Self.makeOngoingQuote(id: "1")]
@@ -378,10 +377,10 @@ extension HomeDependencySuite {
         }
 
         private func withOngoingQuotesFlag(enabled: Bool, _ body: () async -> Void) async {
-            let previous = FeatureFlags.shared.data
-            FeatureFlags.shared.data = .allOff(isResumingOngoingShopSessionsEnabled: enabled)
+            let previous = Dependencies.featureFlags().data
+            Dependencies.featureFlags().data = .allOff(isResumingOngoingShopSessionsEnabled: enabled)
             await body()
-            FeatureFlags.shared.data = previous
+            Dependencies.featureFlags().data = previous
         }
 
         private static func makeOngoingQuote(
@@ -450,11 +449,11 @@ extension HomeDependencySuite {
                 let mockClient = MockFeatureFlagsClient()
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
 
-                try await FeatureFlags.shared.setup(with: [:])
+                try await Dependencies.featureFlags().setup(with: [:])
                 mockClient.send(.allOff(isNewConversationFromInboxEnabled: true))
 
-                await waitUntil(description: "Flag propagates to FeatureFlags singleton") {
-                    FeatureFlags.shared.isNewConversationFromInboxEnabled == true
+                await waitUntil(description: "Flag propagates to FeatureFlagsStore store") {
+                    Dependencies.featureFlags().isNewConversationFromInboxEnabled == true
                 }
 
                 let mockService = MockData.createMockHomeService(
@@ -477,7 +476,7 @@ extension HomeDependencySuite {
 
                 mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
                 await waitUntil(description: "Flag resets") {
-                    FeatureFlags.shared.isNewConversationFromInboxEnabled == false
+                    Dependencies.featureFlags().isNewConversationFromInboxEnabled == false
                 }
             }
 

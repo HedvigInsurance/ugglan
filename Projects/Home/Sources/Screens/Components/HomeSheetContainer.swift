@@ -39,7 +39,6 @@ struct HomeSheetContainer: View {
 
 @MainActor private func setUpHomeSheetContainerPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
 }
 

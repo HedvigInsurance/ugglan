@@ -19,7 +19,6 @@ extension HomeDependencySuite {
         init() {
             resetContainer()
             Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
         }
 
         private func expectReleased() async {

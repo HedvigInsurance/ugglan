@@ -26,7 +26,7 @@ public final class ClaimsStore: AppStore {
     @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
-        FeatureFlags.shared.publisher(for: \.data)
+        Dependencies.featureFlags().publisher(for: \.data)
             .map(\.isResumeClaimEnabled)
             .removeDuplicates()
             .dropFirst()

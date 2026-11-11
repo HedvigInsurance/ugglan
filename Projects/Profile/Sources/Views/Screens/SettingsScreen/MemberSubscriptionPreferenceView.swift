@@ -7,7 +7,7 @@ struct MemberSubscriptionPreferenceView: View {
     let vm: MemberSubscriptionPreferenceViewModel
     @Environment(ProfileNavigationViewModel.self) var profileNavigationVm
 
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
     @ViewBuilder
     var body: some View {
         @Bindable var profileNavigationVm = profileNavigationVm

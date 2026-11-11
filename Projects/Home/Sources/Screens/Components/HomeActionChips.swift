@@ -8,7 +8,7 @@ import hCoreUI
 struct HomeActionChips: View {
     @Environment(HomeNavigationViewModel.self) var navigationVm
     @AppObservedObject var store: ClaimsStore
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -82,7 +82,5 @@ struct HomeActionChips: View {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
-
-    return HomeActionChips().environment(HomeNavigationViewModel())
+    HomeActionChips().environment(HomeNavigationViewModel())
 }

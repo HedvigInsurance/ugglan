@@ -10,8 +10,7 @@ extension OnboardingDependencySuite {
     @MainActor
     final class OnboardingStepComputationTests {
         init() {
-            Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
-            FeatureFlags.shared.data = .mock(isAnalyticsEnabled: true)
+            Dependencies.featureFlags().data = .mock(isAnalyticsEnabled: true)
         }
 
         @Test
@@ -33,7 +32,7 @@ extension OnboardingDependencySuite {
 
         @Test
         func analyticsConsentStepHiddenWhenAnalyticsDisabled() {
-            FeatureFlags.shared.data = .mock(isAnalyticsEnabled: false)
+            Dependencies.featureFlags().data = .mock(isAnalyticsEnabled: false)
             let steps = OnboardingStepList.compute(
                 contracts: [],
                 isPaymentConnected: true,

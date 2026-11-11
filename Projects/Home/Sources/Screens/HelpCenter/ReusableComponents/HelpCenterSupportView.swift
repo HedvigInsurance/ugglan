@@ -7,7 +7,7 @@ import hCoreUI
 struct SupportView: View {
     let router: NavigationRouter
     @AppObservedObject private var store: HomeStore
-    @InjectObservableObject var featureFlags: FeatureFlags
+    @AppObservedObject var featureFlags: FeatureFlagsStore
     @State private var isNewMessageSheetPresented = false
 
     init(

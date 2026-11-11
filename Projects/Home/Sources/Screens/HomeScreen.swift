@@ -109,7 +109,6 @@ class HomeVM {
 @MainActor private func fetchDependenciesForPreview() {
     Localization.Locale.currentLocale.send(.en_SE)
     Dependencies.shared.add(module: Module { () -> HomeClient in HomeClientDemo() })
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlags.shared })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
