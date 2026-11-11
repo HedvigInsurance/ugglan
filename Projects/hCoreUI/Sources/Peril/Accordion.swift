@@ -133,11 +133,11 @@ struct AccordionBody: View {
                 }
                 if let disclaimer {
                     VStack(alignment: .leading, spacing: .padding16) {
-                        Rectangle()
-                            .fill(hBorderColor.primary)
-                            .frame(height: 1)
+                        hRowDivider()
+                            .hWithoutHorizontalPadding(.all)
                         hText(disclaimer, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
