@@ -104,17 +104,16 @@ private struct QuickActions<RedirectContent: View>: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .detent(
-                item: $vm.firstVetPartners,
-                presentationStyle: .detent(style: [.large])
-            ) { partnersWrapper in
+            .sheet(item: $vm.firstVetPartners) { partnersWrapper in
                 FirstVetView(partners: partnersWrapper.partners)
                     .navigationTitle(QuickAction.firstVet(partners: []).displayTitle)
                     .withDismissButton()
                     .embededInNavigation(
-                        options: [.navigationType(type: .large), .extendedNavigationWidth],
+                        options: [.extendedNavigationWidth],
                         tracking: QuickActionDetentType.firstVet
                     )
+                    .presentationDragIndicator(.visible)
+                    .zoomTransition(from: .firstVet)
             }
             .modally(
                 item: $vm.isChangeTierPresented

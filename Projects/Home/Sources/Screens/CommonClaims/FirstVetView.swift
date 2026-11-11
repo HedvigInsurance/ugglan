@@ -51,6 +51,7 @@ public struct FirstVetView: View {
         .hFormAlwaysAttachToBottom {
             buttonComponent
         }
+        .hSetScrollBounce(to: true)
         .navigationBarTitleDisplayMode(.inline)
     }
 

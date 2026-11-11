@@ -4,6 +4,7 @@ import hCore
 
 public struct ToolbarButtonView: View {
     @Environment(\.tooltipDirection) private var tooltipDirection
+    @Environment(\.toolbarTransitionNamespace) private var transitionNamespace
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     let type: ToolbarOptionType
@@ -93,7 +94,17 @@ public struct ToolbarButtonView: View {
         .showTooltip(type: type, placement: placement, direction: tooltipDirection)
     }
 
+    @ViewBuilder
     private func imageFor(type: ToolbarOptionType) -> some View {
+        let image = icon(for: type)
+        if #available(iOS 18.0, *), let transitionNamespace {
+            image.matchedTransitionSource(id: type.toolbarItemId, in: transitionNamespace)
+        } else {
+            image
+        }
+    }
+
+    private func icon(for type: ToolbarOptionType) -> some View {
         type.image
             .resizable()
             .scaledToFill()
@@ -307,6 +318,29 @@ extension ToolbarContent {
             visibilityPriority(.high)
         } else {
             self
+        }
+    }
+}
+
+extension EnvironmentValues {
+    @Entry public var toolbarTransitionNamespace: Namespace.ID? = nil
+}
+
+extension View {
+    public func zoomTransition(from type: ToolbarOptionType) -> some View {
+        modifier(ToolbarZoomTransitionModifier(type: type))
+    }
+}
+
+private struct ToolbarZoomTransitionModifier: ViewModifier {
+    @Environment(\.toolbarTransitionNamespace) private var namespace
+    let type: ToolbarOptionType
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *), let namespace {
+            content.navigationTransition(.zoom(sourceID: type.toolbarItemId, in: namespace))
+        } else {
+            content
         }
     }
 }

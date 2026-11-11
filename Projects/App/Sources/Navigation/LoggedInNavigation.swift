@@ -713,6 +713,7 @@ struct HomeTab: View {
     let loggedInVm: LoggedInNavigationViewModel
     @AppObservedObject private var crossSellStore: CrossSellStore
     @AppObservedObject private var contractStore: ContractStore
+    @Namespace private var toolbarTransitionNamespace
 
     /// Add-on rows in the cross-sell sheets open the purchase flow rather than a store URL,
     /// and the flow's input needs contract data the CrossSell module cannot reach.
@@ -791,6 +792,10 @@ struct HomeTab: View {
                 }
             )
         }
+        .sheet(item: $homeNavigationVm.navBarItems.isNewOfferSheetPresentedModal) { crossSells in
+            CrossSellingModal(crossSells: crossSells)
+                .zoomTransition(from: .crossSell(hasNewOffer: false))
+        }
         .detent(
             item: $homeNavigationVm.openChat,
             presentationStyle: .detent(style: [.large]),
@@ -842,6 +847,7 @@ struct HomeTab: View {
                 .withDismissButton()
                 .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
         }
+        .environment(\.toolbarTransitionNamespace, toolbarTransitionNamespace)
     }
 
     @ViewBuilder
