@@ -138,85 +138,42 @@ struct TerminationSummaryScreen: View {
     }
 }
 
-#Preview {
+@MainActor
+private func previewNavigationModel(contractId: String) -> TerminationFlowNavigationViewModel {
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
 
+    func config(_ contractId: String) -> TerminationConfirmConfig {
+        .init(
+            contractId: contractId,
+            contractDisplayName: "Homeowner",
+            contractExposureName: "Bellmansgsatan 19A",
+            activeFrom: "2024-12-15",
+            typeOfContract: .seApartmentBrf
+        )
+    }
+
     let navigationModel = TerminationFlowNavigationViewModel(
-        configs: [
-            .init(
-                contractId: "1",
-                contractDisplayName: "Homeowner",
-                contractExposureName: "Bellmansgsatan 19A",
-                activeFrom: "2024-12-15",
-                typeOfContract: .seApartmentBrf
-            ),
-            .init(
-                contractId: "2",
-                contractDisplayName: "Homeowner",
-                contractExposureName: "Bellmansgsatan 19A",
-                activeFrom: "2024-12-15",
-                typeOfContract: .seApartmentBrf
-            ),
-        ],
+        configs: [config("1"), config("2")],
         terminateInsuranceViewModel: .init()
     )
-    navigationModel.selectedDate = Date()
-    navigationModel.config = .init(
-        contractId: "2",
-        contractDisplayName: "Homeowner",
-        contractExposureName: "Bellmansgsatan 19A",
-        activeFrom: "2024-12-15",
-        typeOfContract: .seApartmentBrf
-    )
+    navigationModel.config = config(contractId)
     navigationModel.notification = .init(
         message: "This is a message for the user to see in the notification.",
         type: .info
     )
-
-    return TerminationSummaryScreen()
-        .environment(
-            navigationModel
-        )
+    return navigationModel
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
-    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-
-    let navigationModel = TerminationFlowNavigationViewModel(
-        configs: [
-            .init(
-                contractId: "1",
-                contractDisplayName: "Homeowner",
-                contractExposureName: "Bellmansgsatan 19A",
-                activeFrom: "2024-12-15",
-                typeOfContract: .seApartmentBrf
-            ),
-            .init(
-                contractId: "2",
-                contractDisplayName: "Homeowner",
-                contractExposureName: "Bellmansgsatan 19A",
-                activeFrom: "2024-12-15",
-                typeOfContract: .seApartmentBrf
-            ),
-        ],
-        terminateInsuranceViewModel: .init()
-    )
-    navigationModel.config = .init(
-        contractId: "",
-        contractDisplayName: "Homeowner",
-        contractExposureName: "Bellmansgsatan 19A",
-        activeFrom: "2024-12-15",
-        typeOfContract: .seApartmentBrf
-    )
-    navigationModel.notification = .init(
-        message: "This is a message for the user to see in the notification.",
-        type: .info
-    )
+    let navigationModel = previewNavigationModel(contractId: "2")
+    navigationModel.selectedDate = Date()
 
     return TerminationSummaryScreen()
-        .environment(
-            navigationModel
-        )
+        .environment(navigationModel)
+}
+
+#Preview {
+    TerminationSummaryScreen()
+        .environment(previewNavigationModel(contractId: ""))
 }
