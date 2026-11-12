@@ -11,6 +11,7 @@ public struct ChatScreen: View {
     @State var chatScrollViewDelegate = ChatScrollViewDelegate()
     @Environment(ChatNavigationViewModel.self) var chatNavigationVm
     @State private var isTargetedForDropdown = false
+    @State private var isClosedInfoDismissed = false
     @AccessibilityFocusState private var isChatInputFocused: Bool
     public init(
         vm: ChatScreenViewModel
@@ -193,7 +194,8 @@ public struct ChatScreen: View {
     // away from the status message, but sits alongside the closed notice, which tells the
     // member nobody will reply. All three hide while the keyboard is up; the offer and the
     // closed notice come back when it is dismissed, while the status message rides on
-    // `shouldShowBanner`, which latches off for the session.
+    // `shouldShowBanner`, which latches off for the session. Both info cards can also be
+    // dismissed by the member; once dismissed they stay hidden while the screen is shown.
     //
     // offer | status | closed | shows               | after keyboard open/close
     // ------+--------+--------+---------------------+--------------------------
@@ -220,10 +222,14 @@ public struct ChatScreen: View {
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             if showsClosedInfo {
-                infoCard(text: L10n.chatConversationClosedInfo)
+                infoCard(text: L10n.chatConversationClosedInfo) {
+                    isClosedInfoDismissed = true
+                }
             }
             if showsStatusInfo, let banner = conversationVm.banner {
-                infoCard(text: banner)
+                infoCard(text: banner) {
+                    conversationVm.shouldShowBanner = false
+                }
             }
         }
         .animation(.spring, value: showsCrossSell)
@@ -238,7 +244,7 @@ public struct ChatScreen: View {
     }
 
     private var showsClosedInfo: Bool {
-        conversationVm.conversationStatus == .closed && !conversationVm.isKeyboardShown
+        conversationVm.conversationStatus == .closed && !conversationVm.isKeyboardShown && !isClosedInfoDismissed
     }
 
     private var showsStatusInfo: Bool {
@@ -247,24 +253,50 @@ public struct ChatScreen: View {
             && conversationVm.shouldShowBanner
     }
 
-    private func infoCard(text: Markdown) -> some View {
+    private func infoCard(text: Markdown, onDismiss: @escaping () -> Void) -> some View {
         InfoCard(text: "", type: .info)
             .hInfoCardCustomView {
-                MarkdownView(
-                    config: .init(
-                        text: text,
-                        fontStyle: .label,
-                        color: hSignalColor.Blue.text,
-                        linkColor: hSignalColor.Blue.text,
-                        linkUnderlineStyle: .single,
-                        isSelectable: false
-                    ) { url in
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    }
-                )
+                HStack(alignment: .top, spacing: .padding8) {
+                    MarkdownView(
+                        config: .init(
+                            text: text,
+                            fontStyle: .label,
+                            color: hSignalColor.Blue.text,
+                            linkColor: hSignalColor.Blue.text,
+                            linkUnderlineStyle: .single,
+                            isSelectable: false
+                        ) { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    infoCardDismissButton(action: onDismiss)
+                }
             }
             .hInfoCardLayoutStyle(.bannerStyle)
             .transition(.opacity)
+    }
+
+    private func infoCardDismissButton(action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.spring) {
+                action()
+            }
+            // The card (and the focused button) is removed, which would otherwise send
+            // VoiceOver focus back to the top of the screen.
+            isChatInputFocused = true
+        } label: {
+            hCoreUIAssets.closeSmall.view
+                .resizable()
+                .frame(width: 20, height: 20)
+                .foregroundColor(hSignalColor.Blue.text)
+                // Keeps a 44pt hit area without growing the banner.
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding(-.padding12)
+        .accessibilityLabel(L10n.generalCloseButton)
     }
 }
 
