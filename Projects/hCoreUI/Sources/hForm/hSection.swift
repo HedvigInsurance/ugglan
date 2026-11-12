@@ -171,7 +171,7 @@ public struct SectionContainerVisualAdjustmnets: OptionSet, Sendable {
     }
 
     public let rawValue: UInt
-    public static let none = SectionContainerVisualAdjustmnets(rawValue: 0 << 0)
+    public static let none: SectionContainerVisualAdjustmnets = []
     public static let shadow = SectionContainerVisualAdjustmnets(rawValue: 1 << 0)
     public static let borders = SectionContainerVisualAdjustmnets(rawValue: 1 << 1)
 }
