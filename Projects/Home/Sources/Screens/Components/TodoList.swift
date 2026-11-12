@@ -31,7 +31,7 @@ struct TodoList: View {
             }
             .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
-            .hSectionContainerVisualAdjustments([.borders, .shadow])
+            .sectionContainerDecorations([.border, .shadow])
         }
     }
 

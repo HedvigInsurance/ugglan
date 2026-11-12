@@ -116,7 +116,8 @@ public struct PaymentsView: View {
                     router.push(paymentData)
                 }
             }
-            .sectionContainerStyle(.primaryWithShadow)
+            .sectionContainerStyle(.primary)
+            .sectionContainerDecorations([.border, .shadow])
         }
     }
 

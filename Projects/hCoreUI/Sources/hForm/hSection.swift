@@ -136,7 +136,7 @@ public enum hSectionContainerStyle {
     case translucent
     case black
     case negative
-    case primaryWithShadow
+    case primary
 
     var cornerRadius: CGFloat {
         switch self {
@@ -146,7 +146,7 @@ public enum hSectionContainerStyle {
             return .cornerRadiusL
         case .negative:
             return .cornerRadiusXL
-        case .primaryWithShadow:
+        case .primary:
             return .cornerRadiusXXL
         }
     }
@@ -155,26 +155,27 @@ public enum hSectionContainerStyle {
 extension EnvironmentValues {
     @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
     @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
-    @Entry var hSectionContainerVisualAdjustments: SectionContainerVisualAdjustmnets = .none
+    @Entry var hSectionContainerDecorations: hSectionContainerDecoration = .none
 }
 
 extension View {
-    /// set section container style
-    public func hSectionContainerVisualAdjustments(_ style: SectionContainerVisualAdjustmnets) -> some View {
-        environment(\.hSectionContainerVisualAdjustments, style)
+    /// adds a border and/or shadow around the section container
+    public func sectionContainerDecorations(_ decorations: hSectionContainerDecoration) -> some View {
+        environment(\.hSectionContainerDecorations, decorations)
     }
 }
 
-public struct SectionContainerVisualAdjustmnets: OptionSet, Sendable {
+public struct hSectionContainerDecoration: OptionSet, Sendable {
     public init(rawValue: UInt) {
         self.rawValue = rawValue
     }
 
     public let rawValue: UInt
-    public static let none: SectionContainerVisualAdjustmnets = []
-    public static let shadow = SectionContainerVisualAdjustmnets(rawValue: 1 << 0)
-    public static let borders = SectionContainerVisualAdjustmnets(rawValue: 1 << 1)
+    public static let none: hSectionContainerDecoration = []
+    public static let shadow = hSectionContainerDecoration(rawValue: 1 << 0)
+    public static let border = hSectionContainerDecoration(rawValue: 1 << 1)
 }
+
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
@@ -212,17 +213,11 @@ struct hSectionContainerStyleModifier: ViewModifier {
                 )
             )
             .clipShape(RoundedRectangle(cornerRadius: containerStyle.cornerRadius))
-        case .primaryWithShadow:
+        case .primary:
             content.background(
                 hBackgroundColor.primary
             )
             .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
-            .hCardShadow()
-            .overlay(
-                RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
-                    .inset(by: 0.5)
-                    .stroke(hBorderColor.primary, lineWidth: 1)
-            )
         case .negative:
             content.background(
                 hFillColor.Opaque.negative
@@ -232,31 +227,27 @@ struct hSectionContainerStyleModifier: ViewModifier {
     }
 }
 
-struct hSectionContainerVisualAdjustmnetsModifier: ViewModifier {
-    @Environment(\.hSectionContainerVisualAdjustments) var visualAdjustments
+struct hSectionContainerDecorationModifier: ViewModifier {
+    @Environment(\.hSectionContainerDecorations) var decorations
     @Environment(\.hSectionContainerStyle) var containerStyle
+    @Environment(\.hSectionContainerCornerMaskedCorners) var maskedCorners
+
     func body(content: Content) -> some View {
-        if visualAdjustments.contains([.borders, .shadow]) {
-            content
-                .overlay {
-                    RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
-                        .stroke(hBorderColor.primary, lineWidth: 1)
-                }
-                .hCardShadow()
-        } else if visualAdjustments.contains([.borders]) {
-            content
-                .overlay {
-                    RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
-                        .stroke(hBorderColor.primary, lineWidth: 1)
-                }
-        } else if visualAdjustments.contains([.shadow]) {
-            content
-                .hCardShadow()
+        let bordered = content.overlay {
+            if decorations.contains(.border) {
+                hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+                    .padding(0.5)
+            }
+        }
+        if decorations.contains(.shadow) {
+            bordered.hCardShadow()
         } else {
-            content
+            bordered
         }
     }
 }
+
 public struct HorizontalPadding: OptionSet, Sendable {
     public init(rawValue: UInt) {
         self.rawValue = rawValue
@@ -311,7 +302,7 @@ struct hSectionContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .modifier(hSectionContainerStyleModifier())
-        .modifier(hSectionContainerVisualAdjustmnetsModifier())
+        .modifier(hSectionContainerDecorationModifier())
     }
 }
 
