@@ -137,13 +137,44 @@ public enum hSectionContainerStyle {
     case black
     case negative
     case primaryWithShadow
+
+    var cornerRadius: CGFloat {
+        switch self {
+        case .transparent:
+            return 0
+        case .opaque, .translucent, .black:
+            return .cornerRadiusL
+        case .negative:
+            return .cornerRadiusXL
+        case .primaryWithShadow:
+            return .cornerRadiusXXL
+        }
+    }
 }
 
 extension EnvironmentValues {
     @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
     @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
+    @Entry var hSectionContainerVisualAdjustments: SectionContainerVisualAdjustmnets = .none
 }
 
+extension View {
+    /// set section container style
+    public func hSectionContainerVisualAdjustments(_ style: SectionContainerVisualAdjustmnets) -> some View {
+        environment(\.hSectionContainerVisualAdjustments, style)
+    }
+}
+
+public struct SectionContainerVisualAdjustmnets: OptionSet, Sendable {
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
+    public let rawValue: UInt
+    public static let none = SectionContainerVisualAdjustmnets(rawValue: 0 << 0)
+    public static let shadow = SectionContainerVisualAdjustmnets(rawValue: 1 << 0)
+    public static let borders = SectionContainerVisualAdjustmnets(rawValue: 1 << 1)
+}
 extension View {
     /// set section container style
     public func sectionContainerStyle(_ style: hSectionContainerStyle) -> some View {
@@ -167,12 +198,12 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content
         case .translucent:
             content.background(hSurfaceColor.Translucent.secondary)
-                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
+                .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         case .opaque:
             content.background(
                 hSurfaceColor.Opaque.primary
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         case .black:
             content.background(
                 hColorScheme(
@@ -180,15 +211,15 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     dark: hSurfaceColor.Opaque.primary
                 )
             )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            .clipShape(RoundedRectangle(cornerRadius: containerStyle.cornerRadius))
         case .primaryWithShadow:
             content.background(
                 hBackgroundColor.primary
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXXL, corners: maskedCorners))
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
             .hCardShadow()
             .overlay(
-                RoundedRectangle(cornerRadius: .cornerRadiusXXL)
+                RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
                     .inset(by: 0.5)
                     .stroke(hBorderColor.primary, lineWidth: 1)
             )
@@ -196,11 +227,36 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content.background(
                 hFillColor.Opaque.negative
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXL, corners: maskedCorners))
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         }
     }
 }
 
+struct hSectionContainerVisualAdjustmnetsModifier: ViewModifier {
+    @Environment(\.hSectionContainerVisualAdjustments) var visualAdjustments
+    @Environment(\.hSectionContainerStyle) var containerStyle
+    func body(content: Content) -> some View {
+        if visualAdjustments.contains([.borders, .shadow]) {
+            content
+                .overlay {
+                    RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
+                .hCardShadow()
+        } else if visualAdjustments.contains([.borders]) {
+            content
+                .overlay {
+                    RoundedRectangle(cornerRadius: containerStyle.cornerRadius)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
+        } else if visualAdjustments.contains([.shadow]) {
+            content
+                .hCardShadow()
+        } else {
+            content
+        }
+    }
+}
 public struct HorizontalPadding: OptionSet, Sendable {
     public init(rawValue: UInt) {
         self.rawValue = rawValue
@@ -255,6 +311,7 @@ struct hSectionContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .modifier(hSectionContainerStyleModifier())
+        .modifier(hSectionContainerVisualAdjustmnetsModifier())
     }
 }
 
