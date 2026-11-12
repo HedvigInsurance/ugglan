@@ -25,7 +25,7 @@ struct MockData {
             ]
         },
         fetchLatestMessageState: @escaping FetchLatestMessageState = {
-            .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: false, lastMessageTimeStamp: nil)
+            .init(hasNewMessages: false, lastMessageTimeStamp: nil)
         },
         fetchFAQ: @escaping FetchFAQ = {
             .init(topics: [], commonQuestions: [])
