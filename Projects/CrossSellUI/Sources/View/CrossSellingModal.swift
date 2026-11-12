@@ -6,7 +6,7 @@ import hCoreUI
 public struct CrossSellingModal: View {
     let crossSells: CrossSells
     @State private var shownTracker = CrossSellShownTracker()
-
+    @Environment(\.dismiss) private var dismiss
     public init(
         crossSells: CrossSells
     ) {
@@ -32,7 +32,15 @@ public struct CrossSellingModal: View {
                     }
                     CrossSellStackComponent(crossSells: crossSells.others, shownTracker: shownTracker)
                 }
-                .padding(.bottom, .padding16)
+            }
+            .hFormAttachToBottom {
+                hSection {
+                    hCloseButton {
+                        dismiss()
+                    }
+                }
+                .sectionContainerStyle(.transparent)
+                .padding(.top, .padding16)
             }
             .withDismissButton()
             .embededInNavigation(
