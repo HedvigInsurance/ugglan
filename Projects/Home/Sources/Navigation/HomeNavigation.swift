@@ -56,7 +56,12 @@ public class HomeNavigationViewModel {
                 if let recommended = crossSells.recommended, crossSells.others.isEmpty {
                     self?.navBarItems.isNewOfferPresentedCenter = recommended
                 } else if crossSells.recommended != nil {
-                    self?.navBarItems.isNewOfferPresentedModal = crossSells
+                    // Other sources keep `.detent()`, which can open on top of a presented flow.
+                    if #available(iOS 18.0, *), crossSellInfo.type == .homeXSell {
+                        self?.navBarItems.isNewOfferSheetPresentedModal = crossSells
+                    } else {
+                        self?.navBarItems.isNewOfferPresentedModal = crossSells
+                    }
                 } else if !crossSells.others.isEmpty {
                     self?.navBarItems.isNewOfferPresentedDetent = crossSells
                 }
@@ -105,6 +110,7 @@ public class HomeNavigationViewModel {
         public var isNewOfferPresentedModal: CrossSells?
         public var isNewOfferPresentedCenter: RecommendedCrossSell?
         public var isNewOfferPresentedDetent: CrossSells?
+        public var isNewOfferSheetPresentedModal: CrossSells?
     }
 
     deinit {
