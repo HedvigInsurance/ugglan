@@ -320,7 +320,10 @@ private struct ClaimDetailContentView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
+                                content: .init(
+                                    title: vm.fileGridViewModel.files.count == 0
+                                        ? L10n.ClaimStatusDetail.addFiles : L10n.ClaimStatusDetail.addMoreFiles
+                                )
                             ) { vm.showFileSourcePicker = true }
                             .showFileSourcePicker(
                                 $vm.showFileSourcePicker,
