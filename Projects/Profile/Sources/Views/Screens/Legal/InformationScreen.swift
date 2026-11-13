@@ -100,13 +100,23 @@ struct InformationScreen: View {
             buttonSize: .secondary
         )
         .environment(OTPState())
-        .alert(isPresented: $showSubmitBugAlert) {
-            Alert(
-                title: Text(L10n.AppInfo.SubmitBug.warning),
-                message: nil,
-                primaryButton: .cancel(Text(L10n.alertCancel)),
-                secondaryButton: .destructive(Text(L10n.generalContinueButton)) {
-                    hasPressedSubmitBugOk = true
+        .detent(presented: $showSubmitBugAlert) {
+            SubmitBugWarningScreen(
+                onContinue: {
+                    showSubmitBugAlert = false
+                    // The email client picker can't present until the sheet has finished dismissing.
+                    // Toggled, as the button only reacts to changes and the member may come back again.
+                    Task {
+                        await delay(0.5)
+                        hasPressedSubmitBugOk.toggle()
+                    }
+                },
+                onCancel: {
+                    showSubmitBugAlert = false
+                },
+                onWriteToUs: {
+                    showSubmitBugAlert = false
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             )
         }

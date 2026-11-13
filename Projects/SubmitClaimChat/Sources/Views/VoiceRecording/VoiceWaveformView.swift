@@ -153,21 +153,10 @@ public struct VoiceWaveformView: View {
     }
 
     private func dotHeight(for level: CGFloat, at index: Int, total: Int) -> CGFloat {
-        var adjustedLevel = level
+        // Bars shrink towards both edges so the waveform tapers off instead of ending in full-height spikes
+        let edgeMultiplier = edgeMultiplier(at: index, total: total)
 
-        // Apply edge fade effect only during recording
         if isRecording {
-            let edgeFadeWidth = min(10, total / 4)
-
-            let edgeMultiplier: CGFloat
-            if index < edgeFadeWidth {
-                edgeMultiplier = CGFloat(index) / CGFloat(edgeFadeWidth)
-            } else if index >= total - edgeFadeWidth {
-                edgeMultiplier = CGFloat(total - index - 1) / CGFloat(edgeFadeWidth)
-            } else {
-                edgeMultiplier = 1.0
-            }
-
             // Apply noise gate to filter background noise
             let noiseThreshold: CGFloat = 0.1
             let gatedLevel = level < noiseThreshold ? 0 : (level - noiseThreshold) / (1.0 - noiseThreshold)
@@ -175,15 +164,26 @@ public struct VoiceWaveformView: View {
             // Amplify to get taller bars while preserving variation
             let amplifiedLevel = min(1.0, pow(gatedLevel, 0.8) * 1.2)
 
-            adjustedLevel = amplifiedLevel * edgeMultiplier
+            let adjustedLevel = amplifiedLevel * edgeMultiplier
             let height = max(minDotHeight * edgeMultiplier, adjustedLevel * maxHeight)
             return max(min(height, maxHeight), minDotHeight)
         } else {
-            // For playback: simple amplification without edge fade
+            // For playback: simple amplification
             let amplifiedLevel = min(1.0, pow(level, 0.8) * 1.2)
-            let height = max(minDotHeight, amplifiedLevel * maxHeight)
+            let height = max(minDotHeight, amplifiedLevel * edgeMultiplier * maxHeight)
             return min(height, maxHeight)
         }
+    }
+
+    private func edgeMultiplier(at index: Int, total: Int) -> CGFloat {
+        let edgeFadeWidth = min(10, total / 4)
+        guard edgeFadeWidth > 0 else { return 1.0 }
+        if index < edgeFadeWidth {
+            return CGFloat(index) / CGFloat(edgeFadeWidth)
+        } else if index >= total - edgeFadeWidth {
+            return CGFloat(total - index - 1) / CGFloat(edgeFadeWidth)
+        }
+        return 1.0
     }
 }
 

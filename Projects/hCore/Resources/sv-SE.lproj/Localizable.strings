@@ -824,8 +824,12 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "app_info.submit_bug.prefilled_letter_body" = "Jag stötte på ett tekniskt problem i Hedvig-appen!\n\nBeskrivning av det tekniska problemet: \n(Håll det kort och enkelt)\n\nBifoga skärmdump:\n(Har du en skärmdump? Bifoga den i det här e-postmeddelandet)\n\nInformation för utvecklare (Ändra inte)\nMITT: %@\nDID: %@\nAVC: %@\nSV: %@";
 /* Prefilled letter subject text (sent from our app to email client app when member wants to report a bug in our app). "Bug report" or something like that? */
 "app_info.submit_bug.prefilled_letter_subject" = "Rapport om tekniska problem";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports.  */
-"app_info.submit_bug.warning" = "Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor, skicka ett meddelande direkt här i appen.";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 1 */
+"app_info_submit_bug_warning_with_chat_link_1" = "Observera att du endast kan rapportera tekniska problem gällande Hedvig-appen. För skaderelaterade frågor,";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 2 */
+"app_info_submit_bug_warning_with_chat_link_2" = "skicka ett meddelande";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 3 */
+"app_info_submit_bug_warning_with_chat_link_3" = "direkt här i appen.";
 /* Figma */
 "bankid_missing_login.email_button" = "Logga in med e-post";
 /* Figma */
@@ -1058,6 +1062,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "travel_certificate.select_contract_title" = "Välj den adress där du är skriven";
 "travel_certificate.start_date_info" = "Reseintyget gäller i %1$d dagar från avresedatum.";
 "travel_certificate.start_date_title" = "Avresedatum";
+"travel_certificate.travel_certificate_ready_description" = "Vi har skickat reseintyget till din e-post. Du kan även ladda ner beviset via knappen nedan.";
 "travel_certificate.we_have_sent_copy_to_your_email" = "Reseintyget är nu skickat till din e-post.";
 "travel_certificate.when_is_your_trip" = "När ska du resa?";
 "travel_certificate.who_is_traveling" = "Vem ska resa?";

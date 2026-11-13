@@ -89,6 +89,12 @@ public enum L10n {
   public static var addonTravelDisplayName: String { L10n.tr("Localizable", "ADDON_TRAVEL_DISPLAY_NAME") }
   /// Cancel
   public static var alertCancel: String { L10n.tr("Localizable", "ALERT_CANCEL") }
+  /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please
+  public static var appInfoSubmitBugWarningWithChatLink1: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_1") }
+  /// write to us
+  public static var appInfoSubmitBugWarningWithChatLink2: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_2") }
+  /// here in the app.
+  public static var appInfoSubmitBugWarningWithChatLink3: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_3") }
   /// Listen
   public static var audioRecorderListen: String { L10n.tr("Localizable", "AUDIO_RECORDER_LISTEN") }
   /// Start
@@ -1811,8 +1817,6 @@ public enum L10n {
       }
       /// Technical Issue Report
       public static var prefilledLetterSubject: String { L10n.tr("Localizable", "app_info.submit_bug.prefilled_letter_subject") }
-      /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.
-      public static var warning: String { L10n.tr("Localizable", "app_info.submit_bug.warning") }
     }
   }
 
@@ -2293,6 +2297,8 @@ public enum L10n {
     }
     /// Departure date
     public static var startDateTitle: String { L10n.tr("Localizable", "travel_certificate.start_date_title") }
+    /// We have sent the travel certificate to your email. You can also download the certificate to your phone through the button below.
+    public static var travelCertificateReadyDescription: String { L10n.tr("Localizable", "travel_certificate.travel_certificate_ready_description") }
     /// The travel certificate has been sent to your email.
     public static var weHaveSentCopyToYourEmail: String { L10n.tr("Localizable", "travel_certificate.we_have_sent_copy_to_your_email") }
     /// When is your departure?
