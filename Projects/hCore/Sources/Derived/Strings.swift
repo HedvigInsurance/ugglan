@@ -89,6 +89,12 @@ public enum L10n {
   public static var addonTravelDisplayName: String { L10n.tr("Localizable", "ADDON_TRAVEL_DISPLAY_NAME") }
   /// Cancel
   public static var alertCancel: String { L10n.tr("Localizable", "ALERT_CANCEL") }
+  /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please
+  public static var appInfoSubmitBugWarningWithChatLink1: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_1") }
+  /// write to us
+  public static var appInfoSubmitBugWarningWithChatLink2: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_2") }
+  /// here in the app.
+  public static var appInfoSubmitBugWarningWithChatLink3: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_3") }
   /// Listen
   public static var audioRecorderListen: String { L10n.tr("Localizable", "AUDIO_RECORDER_LISTEN") }
   /// Start
@@ -1811,8 +1817,6 @@ public enum L10n {
       }
       /// Technical Issue Report
       public static var prefilledLetterSubject: String { L10n.tr("Localizable", "app_info.submit_bug.prefilled_letter_subject") }
-      /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.
-      public static var warning: String { L10n.tr("Localizable", "app_info.submit_bug.warning") }
     }
   }
 

@@ -824,8 +824,12 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "app_info.submit_bug.prefilled_letter_body" = "I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %@\nDID: %@\nAVC: %@\nSV: %@";
 /* Prefilled letter subject text (sent from our app to email client app when member wants to report a bug in our app). "Bug report" or something like that? */
 "app_info.submit_bug.prefilled_letter_subject" = "Technical Issue Report";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports.  */
-"app_info.submit_bug.warning" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 1 */
+"app_info_submit_bug_warning_with_chat_link_1" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 2 */
+"app_info_submit_bug_warning_with_chat_link_2" = "write to us";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 3 */
+"app_info_submit_bug_warning_with_chat_link_3" = "here in the app.";
 /* Figma */
 "bankid_missing_login.email_button" = "Log in with email";
 /* Figma */
