@@ -10,7 +10,7 @@ struct PaymentMethodListScreen: View {
 
     var body: some View {
         if let statusData = store.paymentStatusData {
-            let paymentMethods = statusData.payinMethods
+            let paymentMethods = statusData.payinMethods.sortedForDisplay(direction: .payin)
             if paymentMethods.isEmpty {
                 StateView(
                     type: .empty,
