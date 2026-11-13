@@ -1058,6 +1058,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "travel_certificate.select_contract_title" = "What is your primary address to be written on the travel certificate?";
 "travel_certificate.start_date_info" = "The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs";
 "travel_certificate.start_date_title" = "Departure date";
+"travel_certificate.travel_certificate_ready_description" = "We have sent the travel certificate to your email. You can also download the certificate to your phone through the button below.";
 "travel_certificate.we_have_sent_copy_to_your_email" = "The travel certificate has been sent to your email.";
 "travel_certificate.when_is_your_trip" = "When is your departure?";
 "travel_certificate.who_is_traveling" = "Who is travelling?";

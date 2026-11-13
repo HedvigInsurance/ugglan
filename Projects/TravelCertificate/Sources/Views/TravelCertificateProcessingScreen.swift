@@ -12,7 +12,7 @@ struct TravelCertificateProcessingScreen: View {
         ProcessingStateView(
             loadingViewText: L10n.Certificates.generating,
             successViewTitle: L10n.Certificates.emailSent,
-            successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
+            successViewBody: L10n.TravelCertificate.travelCertificateReadyDescription,
             state: $vm.viewState
         )
         .hStateViewBottomAttachedView {
@@ -150,7 +150,6 @@ class ProcessingViewModel {
             WhoIsTravelingViewModel(
                 specification: .init(
                     contractId: "contractId",
-                    displayName: "display name",
                     exposureDisplayName: "exposure display name",
                     minStartDate: Date(),
                     maxStartDate: "2025-12-12".localDateToDate ?? Date(),

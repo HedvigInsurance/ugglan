@@ -16,19 +16,15 @@ class TravelInsuranceClientOctopus: TravelInsuranceClient {
         let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
         let activeContracts = data.currentMember.activeContracts
 
-        let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
-            data in
-            TravelInsuranceContractSpecification(
+        return data.currentMember.travelCertificateSpecifications.contractSpecifications.map { data in
+            let contract = activeContracts.first(where: { $0.id == data.contractId })
+            return TravelInsuranceContractSpecification(
                 data,
                 email: email,
                 fullName: fullName,
-                displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
-                    .productVariant.displayName ?? "",
-                exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
-                    ?? ""
+                exposureDisplayName: contract.map(\.travelCertificateExposureName) ?? ""
             )
         }
-        return specification
     }
 
     @MainActor
@@ -112,12 +108,10 @@ extension TravelInsuranceContractSpecification {
             .ContractSpecification,
         email: String,
         fullName: String,
-        displayName: String,
         exposureDisplayName: String
     ) {
         self.init(
             contractId: data.contractId,
-            displayName: displayName,
             exposureDisplayName: exposureDisplayName,
             minStartDate: data.minStartDate.localDateToDate ?? Date(),
             maxStartDate: data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90),
@@ -125,6 +119,13 @@ extension TravelInsuranceContractSpecification {
             email: email,
             fullName: fullName
         )
+    }
+}
+
+extension OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.ActiveContract {
+    /// The short exposure name, falling back to the full one when the backend has no short variant.
+    fileprivate var travelCertificateExposureName: String {
+        exposureDisplayNameShort.isEmpty ? exposureDisplayName : exposureDisplayNameShort
     }
 }
 

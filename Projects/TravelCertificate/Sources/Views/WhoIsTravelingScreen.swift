@@ -129,7 +129,6 @@ class WhoIsTravelingViewModel {
         vm: .init(
             specification: .init(
                 contractId: "",
-                displayName: "display name",
                 exposureDisplayName: "exposure display name",
                 minStartDate: Date(),
                 maxStartDate: Date(),

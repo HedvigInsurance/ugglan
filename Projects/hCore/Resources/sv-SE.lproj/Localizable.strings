@@ -1058,6 +1058,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "travel_certificate.select_contract_title" = "Välj den adress där du är skriven";
 "travel_certificate.start_date_info" = "Reseintyget gäller i %1$d dagar från avresedatum.";
 "travel_certificate.start_date_title" = "Avresedatum";
+"travel_certificate.travel_certificate_ready_description" = "Vi har skickat reseintyget till din e-post. Du kan även ladda ner beviset via knappen nedan.";
 "travel_certificate.we_have_sent_copy_to_your_email" = "Reseintyget är nu skickat till din e-post.";
 "travel_certificate.when_is_your_trip" = "När ska du resa?";
 "travel_certificate.who_is_traveling" = "Vem ska resa?";

@@ -2293,6 +2293,8 @@ public enum L10n {
     }
     /// Departure date
     public static var startDateTitle: String { L10n.tr("Localizable", "travel_certificate.start_date_title") }
+    /// We have sent the travel certificate to your email. You can also download the certificate to your phone through the button below.
+    public static var travelCertificateReadyDescription: String { L10n.tr("Localizable", "travel_certificate.travel_certificate_ready_description") }
     /// The travel certificate has been sent to your email.
     public static var weHaveSentCopyToYourEmail: String { L10n.tr("Localizable", "travel_certificate.we_have_sent_copy_to_your_email") }
     /// When is your departure?

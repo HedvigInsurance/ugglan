@@ -18,7 +18,7 @@ struct TravelCertificateSelectInsuranceScreen: View {
             items: specifications.map {
                 (
                     object: $0,
-                    displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName)
+                    displayName: .init(title: $0.exposureDisplayName, subTitle: nil)
                 )
             },
             preSelectedItems: {
