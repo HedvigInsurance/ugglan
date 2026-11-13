@@ -15,7 +15,6 @@ import MoveFlow
 import Payment
 import Profile
 import SwiftUI
-import TerminateContracts
 import TravelCertificate
 import UserNotifications
 import hCore

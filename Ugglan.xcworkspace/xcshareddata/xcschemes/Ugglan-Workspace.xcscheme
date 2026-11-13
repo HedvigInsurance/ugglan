@@ -714,10 +714,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C1AF85FBE08864A9EF175AF3"
-               BuildableName = "TerminateContracts.framework"
-               BlueprintName = "TerminateContracts"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "AAB921D1743078907E656F4B"
+               BuildableName = "TerminateContractsCore.framework"
+               BlueprintName = "TerminateContractsCore"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -728,10 +728,38 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C7138964FC51BA607DBF5296"
-               BuildableName = "TerminateContractsTests.xctest"
-               BlueprintName = "TerminateContractsTests"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "6098B8AF5C41FA48A0A80696"
+               BuildableName = "TerminateContractsCoreTests.xctest"
+               BlueprintName = "TerminateContractsCoreTests"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1889C4D13DBAD79FD079005A"
+               BuildableName = "TerminateContractsUI.framework"
+               BlueprintName = "TerminateContractsUI"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6756779AB35C8A93CC53DF21"
+               BuildableName = "TerminateContractsUITests.xctest"
+               BlueprintName = "TerminateContractsUITests"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -1106,10 +1134,21 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C7138964FC51BA607DBF5296"
-               BuildableName = "TerminateContractsTests.xctest"
-               BlueprintName = "TerminateContractsTests"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "6098B8AF5C41FA48A0A80696"
+               BuildableName = "TerminateContractsCoreTests.xctest"
+               BlueprintName = "TerminateContractsCoreTests"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6756779AB35C8A93CC53DF21"
+               BuildableName = "TerminateContractsUITests.xctest"
+               BlueprintName = "TerminateContractsUITests"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

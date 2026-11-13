@@ -13,7 +13,7 @@ import MoveFlow
 import Onboarding
 import Profile
 import SwiftUI
-import TerminateContracts
+import TerminateContractsUI
 import TravelCertificate
 import hCore
 import hCoreUI

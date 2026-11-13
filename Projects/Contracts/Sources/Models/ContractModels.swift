@@ -2,7 +2,7 @@ import AppStateContainer
 import AutomaticLog
 import EditStakeholdersCore
 import Foundation
-import TerminateContracts
+import TerminateContractsCore
 import hCore
 import hCoreUI
 
