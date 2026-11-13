@@ -55,12 +55,10 @@ public struct MemberState: Sendable {
 
 public struct MessageState: Sendable {
     let hasNewMessages: Bool
-    let hasSentOrRecievedAtLeastOneMessage: Bool
     let lastMessageTimeStamp: Date?
 
-    public init(hasNewMessages: Bool, hasSentOrRecievedAtLeastOneMessage: Bool, lastMessageTimeStamp: Date?) {
+    public init(hasNewMessages: Bool, lastMessageTimeStamp: Date?) {
         self.hasNewMessages = hasNewMessages
-        self.hasSentOrRecievedAtLeastOneMessage = hasSentOrRecievedAtLeastOneMessage
         self.lastMessageTimeStamp = lastMessageTimeStamp
     }
 }
