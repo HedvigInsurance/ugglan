@@ -31,6 +31,7 @@ struct TodoList: View {
             }
             .withHeader(title: L10n.homeTodoSectionTitle)
             .sectionContainerStyle(.negative)
+            .sectionContainerDecorations([.border, .shadow])
         }
     }
 

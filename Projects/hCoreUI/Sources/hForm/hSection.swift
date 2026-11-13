@@ -136,12 +136,44 @@ public enum hSectionContainerStyle {
     case translucent
     case black
     case negative
-    case primaryWithShadow
+    case primary
+
+    var cornerRadius: CGFloat {
+        switch self {
+        case .transparent:
+            return 0
+        case .opaque, .translucent, .black:
+            return .cornerRadiusL
+        case .negative:
+            return .cornerRadiusXL
+        case .primary:
+            return .cornerRadiusXXL
+        }
+    }
 }
 
 extension EnvironmentValues {
     @Entry var hSectionContainerStyle: hSectionContainerStyle = .opaque
     @Entry var hSectionContainerCornerMaskedCorners: UIRectCorner = UIRectCorner.allCorners
+    @Entry var hSectionContainerDecorations: hSectionContainerDecoration = .none
+}
+
+extension View {
+    /// adds a border and/or shadow around the section container
+    public func sectionContainerDecorations(_ decorations: hSectionContainerDecoration) -> some View {
+        environment(\.hSectionContainerDecorations, decorations)
+    }
+}
+
+public struct hSectionContainerDecoration: OptionSet, Sendable {
+    public init(rawValue: UInt) {
+        self.rawValue = rawValue
+    }
+
+    public let rawValue: UInt
+    public static let none: hSectionContainerDecoration = []
+    public static let shadow = hSectionContainerDecoration(rawValue: 1 << 0)
+    public static let border = hSectionContainerDecoration(rawValue: 1 << 1)
 }
 
 extension View {
@@ -167,12 +199,12 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content
         case .translucent:
             content.background(hSurfaceColor.Translucent.secondary)
-                .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
+                .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         case .opaque:
             content.background(
                 hSurfaceColor.Opaque.primary
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusL, corners: maskedCorners))
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         case .black:
             content.background(
                 hColorScheme(
@@ -180,23 +212,38 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     dark: hSurfaceColor.Opaque.primary
                 )
             )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-        case .primaryWithShadow:
+            .clipShape(RoundedRectangle(cornerRadius: containerStyle.cornerRadius))
+        case .primary:
             content.background(
                 hBackgroundColor.primary
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXXL, corners: maskedCorners))
-            .hCardShadow()
-            .overlay(
-                RoundedRectangle(cornerRadius: .cornerRadiusXXL)
-                    .inset(by: 0.5)
-                    .stroke(hBorderColor.primary, lineWidth: 1)
-            )
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
         case .negative:
             content.background(
                 hFillColor.Opaque.negative
             )
-            .clipShape(hRoundedRectangle(cornerRadius: .cornerRadiusXL, corners: maskedCorners))
+            .clipShape(hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners))
+        }
+    }
+}
+
+struct hSectionContainerDecorationModifier: ViewModifier {
+    @Environment(\.hSectionContainerDecorations) var decorations
+    @Environment(\.hSectionContainerStyle) var containerStyle
+    @Environment(\.hSectionContainerCornerMaskedCorners) var maskedCorners
+
+    func body(content: Content) -> some View {
+        let bordered = content.overlay {
+            if decorations.contains(.border) {
+                hRoundedRectangle(cornerRadius: containerStyle.cornerRadius, corners: maskedCorners)
+                    .stroke(hBorderColor.primary, lineWidth: 1)
+                    .padding(0.5)
+            }
+        }
+        if decorations.contains(.shadow) {
+            bordered.hCardShadow()
+        } else {
+            bordered
         }
     }
 }
@@ -255,6 +302,7 @@ struct hSectionContainer<Content: View>: View {
         }
         .frame(maxWidth: .infinity)
         .modifier(hSectionContainerStyleModifier())
+        .modifier(hSectionContainerDecorationModifier())
     }
 }
 
