@@ -50,7 +50,7 @@ public struct ContractsNavigation<Content: View>: View {
         ) { insurableLimit in
             InfoView(
                 infoViewModel: .init(
-                    title: L10n.contractCoverageMoreInfo,
+                    title: insurableLimit.label,
                     description: insurableLimit.description
                 )
             )
