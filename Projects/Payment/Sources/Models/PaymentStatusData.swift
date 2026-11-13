@@ -124,6 +124,14 @@ extension Sequence where Element == ConnectedPaymentMethod {
     var hasMethodInProgress: Bool {
         contains(where: { $0.status == .pending && $0.isDefault })
     }
+
+    /// Sorted alphabetically by the title shown for `direction`.
+    func sortedForDisplay(direction: PaymentDirection) -> [ConnectedPaymentMethod] {
+        sorted { lhs, rhs in
+            lhs.provider.title(for: direction)
+                .localizedStandardCompare(rhs.provider.title(for: direction)) == .orderedAscending
+        }
+    }
 }
 
 public struct ConnectedPaymentMethod: Codable, Equatable, Sendable, Hashable, Identifiable {
