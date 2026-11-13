@@ -29,7 +29,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 connectedToWater
                 hSection {
                     VStack {
-                        hSaveButton {
+                        hSaveButton(.primary) {
                             withAnimation {
                                 addExtraBuilding()
                             }
