@@ -18,12 +18,14 @@ public struct CoverageView: View {
 
     public var body: some View {
         VStack(spacing: .padding16) {
-            InsurableLimitsSectionView(
-                limits: limits
-            ) { limit in
-                didTapInsurableLimit(limit)
+            if !limits.isEmpty {
+                InsurableLimitsSectionView(
+                    limits: limits
+                ) { limit in
+                    didTapInsurableLimit(limit)
+                }
+                .hWithoutHorizontalPadding([.row, .divider])
             }
-            .hWithoutHorizontalPadding([.row, .divider])
             VStack(spacing: .padding32) {
                 ForEach(perils, id: \.title) { perils in
                     perilInfo(for: perils)

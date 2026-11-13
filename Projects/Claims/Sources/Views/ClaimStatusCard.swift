@@ -110,6 +110,9 @@ struct ClaimStatusCard: View {
 @MainActor
 extension ClaimModel {
     fileprivate var getSubTitle: String? {
+        if let productVariantDisplayName = productVariant?.displayName {
+            return productVariantDisplayName
+        }
         guard let formatted = self.submittedAt?.displayDateDDMMMYYYYFormat else { return nil }
         return L10n.ClaimStatus.ClaimDetails.submitted + " " + formatted
     }

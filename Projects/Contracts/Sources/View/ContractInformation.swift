@@ -251,10 +251,7 @@ struct ContractInformationView: View {
 
     @ViewBuilder
     private func moveAddressButton(contract: Contract) -> some View {
-        let contractsThatSupportsMoving = store.activeContracts.filter(\.supportsAddressChange)
-        if contract.supportsAddressChange,
-            contractsThatSupportsMoving.count < 2, !contract.isTerminated
-        {
+        if contract.supportsAddressChange, !contract.isTerminated {
             hButton(
                 .large,
                 .ghost,
