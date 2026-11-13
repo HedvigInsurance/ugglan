@@ -53,7 +53,11 @@ struct TravelCertificateProcessingScreen: View {
                         vm: vm.modalPresentationSourceWrapperViewModel
                     )
                     .fixedSize(horizontal: false, vertical: true)
-                    hCloseButton {
+                    hButton(
+                        .large,
+                        .ghost,
+                        content: .init(title: L10n.generalDoneButton)
+                    ) {
                         router.dismiss()
                     }
                 }
