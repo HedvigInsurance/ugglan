@@ -8,7 +8,7 @@ import Chat
 import Claims
 import Contracts
 import CrossSellCore
-import EditStakeholders
+import EditStakeholdersCore
 import Environment
 import Forever
 import Foundation

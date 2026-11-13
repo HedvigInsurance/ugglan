@@ -378,10 +378,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC6CD3BBC1B2D6E2D62FCA00"
-               BuildableName = "EditStakeholders.framework"
-               BlueprintName = "EditStakeholders"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "27A6D24437CFAA29B6A446FE"
+               BuildableName = "EditStakeholdersCore.framework"
+               BlueprintName = "EditStakeholdersCore"
+               ReferencedContainer = "container:Projects/EditStakeholdersCore/EditStakeholdersCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -392,10 +392,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9905DB3D2271B59C13FA2DE4"
-               BuildableName = "EditStakeholdersTests.xctest"
-               BlueprintName = "EditStakeholdersTests"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "05B5B18DC60DE0733E2814D8"
+               BuildableName = "EditStakeholdersUI.framework"
+               BlueprintName = "EditStakeholdersUI"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "70544C2F54654A5EC331F67F"
+               BuildableName = "EditStakeholdersUITests.xctest"
+               BlueprintName = "EditStakeholdersUITests"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -993,10 +1007,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9905DB3D2271B59C13FA2DE4"
-               BuildableName = "EditStakeholdersTests.xctest"
-               BlueprintName = "EditStakeholdersTests"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "70544C2F54654A5EC331F67F"
+               BuildableName = "EditStakeholdersUITests.xctest"
+               BlueprintName = "EditStakeholdersUITests"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

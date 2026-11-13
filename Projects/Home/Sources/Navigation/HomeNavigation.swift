@@ -3,7 +3,7 @@ import AppStateContainer
 import Combine
 import Contracts
 import CrossSellCore
-import EditStakeholders
+import EditStakeholdersUI
 import Foundation
 import Payment
 import SubmitClaimChat

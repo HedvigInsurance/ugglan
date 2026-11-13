@@ -1,6 +1,6 @@
 import AppStateContainer
 import AutomaticLog
-import EditStakeholders
+import EditStakeholdersCore
 import Foundation
 import TerminateContracts
 import hCore

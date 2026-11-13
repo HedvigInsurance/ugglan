@@ -49,7 +49,15 @@
             "OnboardingTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/EditStakeholders.framework",
+          "path": "<PRODUCTS>/EditStakeholdersCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Onboarding/frameworks",
+            "OnboardingTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/EditStakeholdersUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

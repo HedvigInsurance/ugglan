@@ -24,7 +24,7 @@ The Home module is the main dashboard of the Hedvig app. It displays the member'
 - **Derived views**: `Screens/HomeBottomScrollView.swift`, `Screens/CommonClaims/FirstVetView.swift`
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, TravelCertificate, TerminateContracts, Payment, Chat, Claims, SubmitClaimChat, CrossSellCore, CrossSellUI (via Project.swift). Also imports Contracts, EditStakeholders, ChangeTier at the file level.
+- **Imports**: hCore, hCoreUI, TravelCertificate, TerminateContracts, Payment, Chat, Claims, SubmitClaimChat, CrossSellCore, CrossSellUI, EditStakeholdersCore, EditStakeholdersUI (via Project.swift). Also imports Contracts, ChangeTier at the file level.
 - **Depended on by**: Profile (imports Home), App (direct dependency)
 
 ## Navigation

@@ -19,7 +19,7 @@ Generates travel insurance certificates. Users select a contract, set travel dat
 - Model: `TravelInsuranceContractSpecification` in `Sources/Models/TravelInsuranceContractSpecification.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, Contracts, EditStakeholders, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
+- Imports: hCore, hCoreUI, Contracts, EditStakeholdersCore, EditStakeholdersUI, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
 - Depended on by: Home, Profile, App
 
 ## Navigation

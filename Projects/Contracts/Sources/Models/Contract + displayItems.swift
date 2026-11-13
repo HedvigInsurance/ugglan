@@ -1,4 +1,4 @@
-import EditStakeholders
+import EditStakeholdersCore
 import hCore
 
 extension Contract {

@@ -2,7 +2,7 @@ import AddonsCore
 import AddonsUI
 import AppStateContainer
 import Contracts
-import EditStakeholders
+import EditStakeholdersUI
 import Foundation
 import SwiftUI
 import hCore

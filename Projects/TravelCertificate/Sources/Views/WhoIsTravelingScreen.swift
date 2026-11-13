@@ -1,6 +1,6 @@
 import AppStateContainer
 import Contracts
-import EditStakeholders
+import EditStakeholdersCore
 import Foundation
 import SwiftUI
 import hCore
