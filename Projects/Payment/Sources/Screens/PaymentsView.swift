@@ -94,8 +94,7 @@ public struct PaymentsView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack(alignment: .top, spacing: 8) {
                             hText(
-                                paymentData.status == .upcoming
-                                    ? L10n.paymentsUpcomingPayment : L10n.paymentsProcessingPayment
+                                paymentData.title
                             )
                             Spacer()
                             hText(paymentData.payment.net.formattedAmount)
