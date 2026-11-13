@@ -1,6 +1,6 @@
 import AppStateContainer
 import SubmitClaimChat
-import TerminateContractsUI
+import TerminateContractsCore
 import Testing
 import hCore
 

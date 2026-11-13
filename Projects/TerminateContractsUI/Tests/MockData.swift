@@ -4,12 +4,16 @@ import hCore
 
 @testable import TerminateContractsUI
 
-/// Stub that answers immediately and never throws; the view model tests only vary the notification.
 class MockTerminateContractsClient: TerminateContractsClient {
+    var surveyDataToReturn: TerminationSurveyData = MockTerminationData.terminateSurveyData
+    var terminateResultToReturn: TerminationContractResult = .success
+    var deleteResultToReturn: TerminationContractResult = .success
     var notificationToReturn: TerminationNotification?
+    var errorToThrow: Error?
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
-        MockTerminationData.terminateSurveyData
+        if let error = errorToThrow { throw error }
+        return surveyDataToReturn
     }
 
     func terminateContract(
@@ -18,7 +22,8 @@ class MockTerminateContractsClient: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        .success
+        if let error = errorToThrow { throw error }
+        return terminateResultToReturn
     }
 
     func deleteContract(
@@ -26,17 +31,24 @@ class MockTerminateContractsClient: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
-        .success
+        if let error = errorToThrow { throw error }
+        return deleteResultToReturn
     }
 
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
-        notificationToReturn
+        if let error = errorToThrow { throw error }
+        return notificationToReturn
     }
 }
 
 enum MockTerminationData {
+    static let basicOptions: [TerminationSurveyOption] = [
+        .init(id: "opt1", title: "Better price", feedbackRequired: false, suggestion: nil, subOptions: []),
+        .init(id: "opt2", title: "Moving abroad", feedbackRequired: true, suggestion: nil, subOptions: []),
+    ]
+
     static let terminateSurveyData = TerminationSurveyData(
-        options: [],
+        options: basicOptions,
         action: .terminateWithDate(
             minDate: "2026-04-01",
             maxDate: "2026-07-01",
@@ -44,7 +56,12 @@ enum MockTerminationData {
         )
     )
 
-    static let deleteSurveyData = TerminationSurveyData(options: [], action: .deleteInsurance(extraCoverage: []))
+    static let deleteSurveyData = TerminationSurveyData(
+        options: basicOptions,
+        action: .deleteInsurance(
+            extraCoverage: [.init(displayName: "Accident coverage", displayValue: "29 kr/mo")]
+        )
+    )
 
     static let testConfig = TerminationConfirmConfig(
         contractId: "contract-123",
