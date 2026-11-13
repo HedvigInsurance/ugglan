@@ -611,7 +611,7 @@ extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
     }
 }
 
-extension DeflectScreenContent: TrackingViewNameProtocol {
+extension DeflectScreenContent: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         .init(describing: TerminationDeflectScreen.self)
     }

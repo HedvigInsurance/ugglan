@@ -3,7 +3,7 @@ import Foundation
 import hCore
 
 @MainActor
-public class TerminateContractsService {
+public final class TerminateContractsService {
     @Inject private var client: TerminateContractsClient
 
     public init() {}
