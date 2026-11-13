@@ -230,7 +230,8 @@ struct MovingFlowAddressScreen: View {
         func validate() -> Bool {
             withAnimation {
                 vm.addressError = !vm.address.isEmpty ? nil : L10n.changeAddressStreetError
-                vm.postalCodeError = !vm.postalCode.isEmpty ? nil : L10n.changeAddressPostalCodeError
+                vm.postalCodeError =
+                    Masking(type: .postalCode).isValid(text: vm.postalCode) ? nil : L10n.changeAddressPostalCodeError
                 validateSquareArea()
                 vm.accessDateError = vm.accessDate?.localDateString != nil ? nil : L10n.changeAddressMovingDateError
                 return vm.addressError == nil && vm.postalCodeError == nil && vm.squareAreaError == nil
