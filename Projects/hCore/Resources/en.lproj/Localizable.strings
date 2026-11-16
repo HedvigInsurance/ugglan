@@ -158,6 +158,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIMS_USE_AUDIO_RECORDING" = "Use voice recording";
 "CLAIMS_VOICE_RECORDING_SENDING" = "Sending...";
 "CLAIMS_YOUR_CLAIM" = "Your claim";
+"CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_AUTHORIZED_DIAGNOSIS" = "Do not repair the appliance on your own just yet. If a repair is needed, we will require an assessment or repair quote from an authorized technician approved by us in advance.";
+"CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_PHYSICAL_INSPECTION" = "Keep the appliance and do not dispose of it, as we may need to collect or inspect it physically to assess the damage and approve coverage.";
+"CLAIM_CHAT_AGENT_NOTICE_GLASS_AUTHORIZED_GLAZIER" = "Do not order the replacement or repair of the glass before we have approved it. The work must be carried out by the authorized glazier we assign.";
+"CLAIM_CHAT_AGENT_NOTICE_PROOF_OF_OWNERSHIP_AND_VALUE" = "Please gather or attach receipts, warranty certificates, or bank statements for the items you're claiming. Under your terms, you need to verify ownership, age, and original purchase price, so we can assess and calculate the right compensation.";
 "CLAIM_CHAT_AI_INFO" = "We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.";
 "CLAIM_CHAT_AUDIO_RECORDING_LABEL" = "Voice recording";
 "CLAIM_CHAT_CUSTOM_ITEM_SUBTITLE" = "Other item";
@@ -824,8 +828,12 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "app_info.submit_bug.prefilled_letter_body" = "I came across a technical issue in the Hedvig app!\n\nDescription of the technical issue step-by-step: \n(Keep it short and simple)\n\nAttached a screenshot:\n(Got a screenshot? Please attach it to this email.)\n\nInfo for developers (Do not modify)\nMID: %@\nDID: %@\nAVC: %@\nSV: %@";
 /* Prefilled letter subject text (sent from our app to email client app when member wants to report a bug in our app). "Bug report" or something like that? */
 "app_info.submit_bug.prefilled_letter_subject" = "Technical Issue Report";
-/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports.  */
-"app_info.submit_bug.warning" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 1 */
+"app_info_submit_bug_warning_with_chat_link_1" = "Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 2 */
+"app_info_submit_bug_warning_with_chat_link_2" = "write to us";
+/* Text for an alert dialog saying members can not submit claims here, only technical feedback or bug reports. Part 3 */
+"app_info_submit_bug_warning_with_chat_link_3" = "here in the app.";
 /* Figma */
 "bankid_missing_login.email_button" = "Log in with email";
 /* Figma */
@@ -1058,6 +1066,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "travel_certificate.select_contract_title" = "What is your primary address to be written on the travel certificate?";
 "travel_certificate.start_date_info" = "The certificate is valid for up to %1$d days when travelling to countries that are not prohibited by the Swedish Department of Foreign Affairs";
 "travel_certificate.start_date_title" = "Departure date";
+"travel_certificate.travel_certificate_ready_description" = "We have sent the travel certificate to your email. You can also download the certificate to your phone through the button below.";
 "travel_certificate.we_have_sent_copy_to_your_email" = "The travel certificate has been sent to your email.";
 "travel_certificate.when_is_your_trip" = "When is your departure?";
 "travel_certificate.who_is_traveling" = "Who is travelling?";

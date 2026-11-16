@@ -89,6 +89,12 @@ public enum L10n {
   public static var addonTravelDisplayName: String { L10n.tr("Localizable", "ADDON_TRAVEL_DISPLAY_NAME") }
   /// Cancel
   public static var alertCancel: String { L10n.tr("Localizable", "ALERT_CANCEL") }
+  /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please
+  public static var appInfoSubmitBugWarningWithChatLink1: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_1") }
+  /// write to us
+  public static var appInfoSubmitBugWarningWithChatLink2: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_2") }
+  /// here in the app.
+  public static var appInfoSubmitBugWarningWithChatLink3: String { L10n.tr("Localizable", "app_info_submit_bug_warning_with_chat_link_3") }
   /// Listen
   public static var audioRecorderListen: String { L10n.tr("Localizable", "AUDIO_RECORDER_LISTEN") }
   /// Start
@@ -295,6 +301,14 @@ public enum L10n {
   public static var chipIdNoInsurances: String { L10n.tr("Localizable", "CHIP_ID_NO_INSURANCES") }
   /// Update ID-number
   public static var chipIdTopTitle: String { L10n.tr("Localizable", "CHIP_ID_TOP_TITLE") }
+  /// Do not repair the appliance on your own just yet. If a repair is needed, we will require an assessment or repair quote from an authorized technician approved by us in advance.
+  public static var claimChatAgentNoticeApplianceAuthorizedDiagnosis: String { L10n.tr("Localizable", "CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_AUTHORIZED_DIAGNOSIS") }
+  /// Keep the appliance and do not dispose of it, as we may need to collect or inspect it physically to assess the damage and approve coverage.
+  public static var claimChatAgentNoticeAppliancePhysicalInspection: String { L10n.tr("Localizable", "CLAIM_CHAT_AGENT_NOTICE_APPLIANCE_PHYSICAL_INSPECTION") }
+  /// Do not order the replacement or repair of the glass before we have approved it. The work must be carried out by the authorized glazier we assign.
+  public static var claimChatAgentNoticeGlassAuthorizedGlazier: String { L10n.tr("Localizable", "CLAIM_CHAT_AGENT_NOTICE_GLASS_AUTHORIZED_GLAZIER") }
+  /// Please gather or attach receipts, warranty certificates, or bank statements for the items you're claiming. Under your terms, you need to verify ownership, age, and original purchase price, so we can assess and calculate the right compensation.
+  public static var claimChatAgentNoticeProofOfOwnershipAndValue: String { L10n.tr("Localizable", "CLAIM_CHAT_AGENT_NOTICE_PROOF_OF_OWNERSHIP_AND_VALUE") }
   /// We use AI to support the process of submitting and handling your claim. Our team always reviews your claim before any decision is made.
   public static var claimChatAiInfo: String { L10n.tr("Localizable", "CLAIM_CHAT_AI_INFO") }
   /// Voice recording
@@ -1811,8 +1825,6 @@ public enum L10n {
       }
       /// Technical Issue Report
       public static var prefilledLetterSubject: String { L10n.tr("Localizable", "app_info.submit_bug.prefilled_letter_subject") }
-      /// Please note that you can only report technical issues regarding the Hedvig app. For claims related questions, please write to us here in the app.
-      public static var warning: String { L10n.tr("Localizable", "app_info.submit_bug.warning") }
     }
   }
 
@@ -2293,6 +2305,8 @@ public enum L10n {
     }
     /// Departure date
     public static var startDateTitle: String { L10n.tr("Localizable", "travel_certificate.start_date_title") }
+    /// We have sent the travel certificate to your email. You can also download the certificate to your phone through the button below.
+    public static var travelCertificateReadyDescription: String { L10n.tr("Localizable", "travel_certificate.travel_certificate_ready_description") }
     /// The travel certificate has been sent to your email.
     public static var weHaveSentCopyToYourEmail: String { L10n.tr("Localizable", "travel_certificate.we_have_sent_copy_to_your_email") }
     /// When is your departure?
