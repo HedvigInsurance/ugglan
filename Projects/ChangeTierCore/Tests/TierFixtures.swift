@@ -3,7 +3,8 @@ import hCore
 
 @testable import ChangeTierCore
 
-/// Tier data shared by the ChangeTier suites, so each suite doesn't carry its own copy.
+/// Tier data shared by the ChangeTier suites, so each suite doesn't carry its own copy. ChangeTierUITests compiles
+/// this file too (see ChangeTierUI/Project.swift).
 @MainActor
 enum TierFixtures {
     static let currentTier = Tier(

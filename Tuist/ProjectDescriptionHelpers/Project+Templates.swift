@@ -16,7 +16,10 @@ extension Project {
         targets: Set<FeatureTarget> = Set([.framework, .tests]),
         projects: [String] = [],
         dependencies: [String] = ["CoreDependencies"],
-        sdks: [String] = []
+        sdks: [String] = [],
+        /// Test helper files from another module (paths relative to the repo root) compiled into this module's
+        /// tests too, so a UI module's tests can reuse its Core module's mocks instead of keeping a copy.
+        sharedTestSources: [String] = []
     ) -> Project {
         let settings: [String: SettingValue] = ["SWIFT_VERSION": swiftVersion]
         let debugSettings = settings.merging(.debugCompilationConditions) { _, new in new }
@@ -115,6 +118,8 @@ extension Project {
                 bundleId: "com.hedvig.\(name)Tests",
                 deploymentTargets: .iOS("17.0"),
                 infoPlist: nil,
+                sources: sharedTestSources.isEmpty
+                    ? nil : .sourceFilesList(globs: sharedTestSources.map { .glob(.relativeToRoot($0)) }),
                 buildableFolders: ["Tests"],
                 // Hosted in the test host app where there is one, otherwise a plain logic-test bundle;
                 // testsDependencies links the framework itself either way

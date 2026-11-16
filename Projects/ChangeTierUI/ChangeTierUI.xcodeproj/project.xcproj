@@ -68,6 +68,19 @@
       "children": [
         {
           "kind": "group",
+          "path": "../ChangeTierCore",
+          "children": [
+            {
+              "kind": "group",
+              "path": "Tests",
+              "children": [
+                { "path": "MockData.swift", "target-membership": [ "ChangeTierUITests/compile-sources" ] },
+                { "path": "TierFixtures.swift", "target-membership": [ "ChangeTierUITests/compile-sources" ] },
+              ],
+            },
+          ],
+        }, {
+          "kind": "group",
           "path": "../../Configurations",
           "children": [
             {
