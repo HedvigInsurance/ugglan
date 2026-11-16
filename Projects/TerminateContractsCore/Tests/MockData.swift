@@ -4,7 +4,7 @@ import hCore
 @testable import TerminateContractsCore
 
 class MockTerminateContractsClient: TerminateContractsClient {
-    var surveyDataToReturn: TerminationSurveyData?
+    var surveyDataToReturn: TerminationSurveyData = MockTerminationData.terminateSurveyData
     var terminateResultToReturn: TerminationContractResult = .success
     var deleteResultToReturn: TerminationContractResult = .success
     var notificationToReturn: TerminationNotification?
@@ -12,7 +12,7 @@ class MockTerminateContractsClient: TerminateContractsClient {
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
         if let error = errorToThrow { throw error }
-        return surveyDataToReturn!
+        return surveyDataToReturn
     }
 
     func terminateContract(

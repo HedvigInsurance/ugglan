@@ -58,6 +58,7 @@ enum DI {
             let petChipIdClient = PetChipIdClientDemo()
             let onboardingClient = OnboardingClientDemo()
             let puppyGuideClient = PuppyGuideClientDemo()
+            let terminateContractsClient = TerminateContractsClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClient })
@@ -82,6 +83,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
             Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
             Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
+            Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
