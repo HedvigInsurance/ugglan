@@ -20,7 +20,7 @@ public struct MyInfoView: View {
                 hSection {
                     VStack(spacing: .padding16) {
                         VStack(spacing: .padding4) {
-                            infoCardView
+                            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
                             emailField
                             phoneNumberField
 
@@ -35,13 +35,6 @@ public struct MyInfoView: View {
                 .disabled(vm.viewState == .loading)
             }
             .hFormContentPosition(presentationMode == .sheet ? .compact : .top)
-    }
-
-    @ViewBuilder
-    private var infoCardView: (some View)? {
-        if vm.showInfoCard, case .navigation = presentationMode {
-            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
-        }
     }
 
     private var phoneNumberField: some View {
@@ -106,23 +99,12 @@ public class MyInfoViewModel {
     var disabledSaveButton: Bool = false
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
-    var showInfoCard: Bool
 
     init() {
         let store: ProfileStore = globalAppStateContainer.get()
-        showInfoCard = store.memberDetails?.isContactInfoUpdateNeeded ?? false
         currentPhoneInput = store.memberDetails?.phone ?? ""
         currentEmailInput = store.memberDetails?.email ?? ""
         isValid()
-
-        store.publisher(for: \.memberDetails)
-            .receive(on: RunLoop.main)
-            .map { $0?.isContactInfoUpdateNeeded }
-            .removeDuplicates()
-            .sink { [weak self] state in
-                self?.showInfoCard = state ?? false
-            }
-            .store(in: &cancellables)
     }
 
     /// Validates after a short delay so the text field has time to clear its error for the new input first.

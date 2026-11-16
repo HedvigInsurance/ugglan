@@ -28,11 +28,11 @@ public struct QuoteDisplayItemView: View {
     @ViewBuilder
     private var displayTitleView: some View {
         if displayItem.crossDisplayTitle {
-            hText(displayItem.displayTitle, style: .label)
+            hText(displayItem.displayTitle, style: .body1)
                 .strikethrough()
                 .accessibilityHidden(true)
         } else {
-            hText(displayItem.displayTitle, style: .label)
+            hText(displayItem.displayTitle, style: .body1)
         }
     }
 
@@ -40,11 +40,11 @@ public struct QuoteDisplayItemView: View {
     private var displayValueView: some View {
         let displayValue = displayItem.displayValue
         if displayItem.crossDisplayTitle {
-            hText(displayValue, style: .label)
+            hText(displayValue, style: .body1)
                 .strikethrough()
                 .accessibilityHidden(true)
         } else {
-            hText(displayValue, style: .label)
+            hText(displayValue, style: .body1)
         }
     }
 }

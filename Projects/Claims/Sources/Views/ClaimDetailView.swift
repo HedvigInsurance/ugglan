@@ -189,7 +189,7 @@ private struct ClaimDetailContentView: View {
         if let claim = vm.claim {
             VStack(spacing: .padding16) {
                 hSection {
-                    VStack(spacing: .padding8) {
+                    VStack(spacing: .padding4) {
                         ForEach(claim.displayItems.filter({ $0.displayValue != "" })) { item in
                             HStack {
                                 hText(item.displayTitle)
@@ -320,7 +320,10 @@ private struct ClaimDetailContentView: View {
                             hButton(
                                 .medium,
                                 .primary,
-                                content: .init(title: L10n.ClaimStatus.UploadedFiles.uploadButton)
+                                content: .init(
+                                    title: vm.fileGridViewModel.files.count == 0
+                                        ? L10n.ClaimStatusDetail.addFiles : L10n.ClaimStatusDetail.addMoreFiles
+                                )
                             ) { vm.showFileSourcePicker = true }
                             .showFileSourcePicker(
                                 $vm.showFileSourcePicker,
