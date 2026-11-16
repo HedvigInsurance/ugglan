@@ -102,7 +102,7 @@ struct ContractDetails: View {
                     }
                     PriceField(
                         viewModel: .init(
-                            initialValue: nil,
+                            initialValue: contract.grossAmount,
                             newValue: contract.netAmount,
                             title: L10n.paymentsAmountToPay
                         )

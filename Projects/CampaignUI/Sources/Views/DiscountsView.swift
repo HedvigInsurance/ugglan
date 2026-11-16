@@ -56,7 +56,7 @@ struct DiscountsView: View {
             .buttons(
                 [
                     .init(
-                        buttonTitle: L10n.paymentsInviteFriends,
+                        buttonTitle: L10n.ImportantMessage.readMore,
                         buttonAction: {
                             router.push(CampaignRouterAction.forever)
                         }

@@ -29,7 +29,7 @@ public struct DropdownView: View {
             )
             .hFieldTrailingView {
                 Group {
-                    if backgroundOption.contains(.locked) && !isEnabled {
+                    if isLocked {
                         hCoreUIAssets.lock.view
                     } else {
                         hCoreUIAssets.chevronDown.view
@@ -42,10 +42,17 @@ public struct DropdownView: View {
         .hAnimateField(false)
     }
 
+    private var isLocked: Bool {
+        backgroundOption.contains(.locked) && !isEnabled
+    }
+
+    /// The lock matches the locked field's label colour, like the locked fields in ChangeTier.
     @hColorBuilder
     var imageColor: some hColor {
         if isEnabled {
             hFillColor.Opaque.primary
+        } else if isLocked {
+            hTextColor.Translucent.secondary
         } else {
             hFillColor.Opaque.disabled
         }

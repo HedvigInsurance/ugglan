@@ -152,7 +152,9 @@ extension PaymentStatusData {
 
     /// Falls back to the default method on its own for a response that reports it outside the list.
     fileprivate var displayedPayoutMethods: [ConnectedPaymentMethod] {
-        payoutMethods.isEmpty ? [defaultOrFirstDefaultPayoutMethod].compactMap { $0 } : payoutMethods
+        payoutMethods.isEmpty
+            ? [defaultOrFirstDefaultPayoutMethod].compactMap { $0 }
+            : payoutMethods.sortedForDisplay(direction: .payout)
     }
 }
 #Preview {
