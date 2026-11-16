@@ -93,7 +93,10 @@
          location = "group:SubmitClaimChat/SubmitClaimChat.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:TerminateContracts/TerminateContracts.xcodeproj">
+         location = "group:TerminateContractsCore/TerminateContractsCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:TerminateContractsUI/TerminateContractsUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:TravelCertificate/TravelCertificate.xcodeproj">

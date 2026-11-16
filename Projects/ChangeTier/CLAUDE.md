@@ -20,7 +20,7 @@ Handles insurance plan tier upgrades and downgrades. Users can compare coverage 
 
 ## Dependencies
 - Imports: hCore, hCoreUI, CrossSellCore
-- Depended on by: Contracts, TerminateContracts, MoveFlow, App
+- Depended on by: Contracts, TerminateContractsUI, MoveFlow, App
 
 ## Navigation
 - `ChangeTierNavigation`: Entry point SwiftUI view. Accepts `ChangeTierInput` (single contract) or `ChangeTierContractsInput` (multiple contracts with selection screen). Uses `RouterHost` with `routerDestination` for summary and processing screens.

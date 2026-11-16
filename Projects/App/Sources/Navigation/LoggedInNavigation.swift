@@ -23,7 +23,7 @@ import SafariServices
 import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
-import TerminateContracts
+import TerminateContractsUI
 import TravelCertificate
 import hCore
 import hCoreUI

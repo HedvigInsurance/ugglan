@@ -85,7 +85,8 @@
         },
         { "path": "<PRODUCTS>/SubmitClaimChatTestHost.app", "id": "A950D4A2F8E9FF56AB67F9EF", "type": "wrapper.application", "index": false },
         { "path": "<PRODUCTS>/SubmitClaimChatTests.xctest", "id": "E970648F62E9205660D43882", "type": "wrapper.cfbundle", "index": false },
-        { "path": "<PRODUCTS>/TerminateContracts.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/TerminateContractsCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
+        { "path": "<PRODUCTS>/TerminateContractsUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
         {
           "path": "<PRODUCTS>/TestDependencies.framework",
           "type": "wrapper.framework",

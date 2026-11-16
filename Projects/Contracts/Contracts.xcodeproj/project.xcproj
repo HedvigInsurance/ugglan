@@ -100,7 +100,15 @@
             "ContractsTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/TerminateContracts.framework",
+          "path": "<PRODUCTS>/TerminateContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Contracts/frameworks",
+            "ContractsTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/TerminateContractsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

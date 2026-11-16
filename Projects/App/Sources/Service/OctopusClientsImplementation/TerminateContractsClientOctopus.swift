@@ -1,5 +1,5 @@
 import Foundation
-import TerminateContracts
+import TerminateContractsCore
 import hCore
 import hGraphQL
 
