@@ -81,15 +81,20 @@ public struct ScrollableSegmentedView<Content: View>: View {
     @ViewBuilder
     var selectedPageHeaderBackground: some View {
         if #available(iOS 26.0, *) {
+            // The indicator starts at 0x0 until title positions are measured. Rendering glass in a shape smaller
+            // than its corner radius traps in GlassMaterialProvider/SDFStyle `distanceRange`, so skip it until sized.
+            let cornerRadius = min(.cornerRadiusL, min(vm.selectedIndicatorWidth, vm.selectedIndicatorHeight) / 2)
             RoundedRectangle(cornerRadius: .cornerRadiusL)
                 .fill(.clear)
                 .asAnyView
                 .background {
-                    RoundedRectangle(cornerRadius: .cornerRadiusL)
-                        .fill(.clear)
-                        .asAnyView
-                        .glassEffect(.regular, in: .rect(cornerRadius: .cornerRadiusL))
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                    if cornerRadius > 0 {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .fill(.clear)
+                            .asAnyView
+                            .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    }
                 }
                 .allowsHitTesting(false)
                 .frame(width: vm.selectedIndicatorWidth, height: vm.selectedIndicatorHeight)
