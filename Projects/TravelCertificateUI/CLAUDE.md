@@ -1,6 +1,6 @@
-# TravelCertificate
+# TravelCertificateUI
 
-Generates travel insurance certificates. Users select a contract, set travel dates, specify travelers (including co-insured), and receive a downloadable PDF certificate.
+SwiftUI flow built on `TravelCertificateCore`. Generates travel insurance certificates. Users select a contract, set travel dates, specify travelers (including co-insured), and receive a downloadable PDF certificate.
 
 ## Architecture
 - Pattern: ViewModel (`@MainActor @Observable class`). `TravelInsuranceService` uses `@Inject var client: TravelInsuranceClient`.
@@ -12,15 +12,13 @@ Generates travel insurance certificates. Users select a contract, set travel dat
 ## Key Files
 - Entry point / Navigation: `TravelCertificateNavigation` in `Sources/TravelCertificateNavigation.swift`
 - Navigation VM: `TravelCertificateNavigationViewModel` in `Sources/TravelCertificateNavigation.swift`
-- Service protocol: `TravelInsuranceClient` in `Sources/Service/Protocols/TravelInsuranceClient.swift`
-- Service implementation: `TravelInsuranceService` in `Sources/Service/TravelInsuranceService.swift`
-- Demo: `TravelInsuranceClientDemo` in `Sources/Service/DemoImplementation/TravelInsuranceClientDemo.swift`
 - Screens: `TravelCertificatesListScreen`, `TravelCertificateSelectInsuranceScreen`, `StartDateScreen`, `WhoIsTravelingScreen`, `TravelCertificateProcessingScreen` in `Sources/Views/`
-- Model: `TravelInsuranceContractSpecification` in `Sources/Models/TravelInsuranceContractSpecification.swift`
+- `Sources/Models/TravelCertificateModel+UI.swift` — `TravelCertificateModel.textColor`
+- Client, service, demo and models (`TravelInsuranceClient`, `TravelInsuranceService`, `TravelCertificateModel`, …): see TravelCertificateCore
 
 ## Dependencies
-- Imports: hCore, hCoreUI, ContractsCore, EditStakeholdersCore, EditStakeholdersUI, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
-- Depended on by: Home, Profile, App
+- Imports: hCore, hCoreUI, TravelCertificateCore, ContractsCore, EditStakeholdersCore, EditStakeholdersUI, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
+- Depended on by: Profile, App
 
 ## Navigation
 - `TravelCertificateNavigation`: Can operate with its own `RouterHost` or be embedded in an existing navigation stack (`useOwnNavigation` flag).

@@ -27,7 +27,7 @@ import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContractsUI
-import TravelCertificate
+import TravelCertificateUI
 import hCore
 import hCoreUI
 

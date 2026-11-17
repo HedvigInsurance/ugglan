@@ -68,7 +68,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | SubmitClaimChat | Claims submission flow (current, chat-based) |
 | TerminateContractsCore | Termination models, client protocol, service wrapper and demo client (UI-free) |
 | TerminateContractsUI | SwiftUI contract cancellation flow, navigation and ViewModels (built on TerminateContractsCore) |
-| TravelCertificate | Travel insurance certificate generation |
+| TravelCertificateCore | Travel certificate models, client protocol, service wrapper and demo client (UI-free) |
+| TravelCertificateUI | Travel insurance certificate list and generation flow (built on TravelCertificateCore) |
 
 ## Project Structure
 

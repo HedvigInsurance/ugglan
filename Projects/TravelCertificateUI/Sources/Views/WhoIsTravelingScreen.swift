@@ -3,6 +3,7 @@ import ContractsCore
 import EditStakeholdersCore
 import Foundation
 import SwiftUI
+import TravelCertificateCore
 import hCore
 import hCoreUI
 

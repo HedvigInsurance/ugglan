@@ -4,6 +4,7 @@ import AppStateContainer
 import ContractsCore
 import Foundation
 import SwiftUI
+import TravelCertificateCore
 import hCore
 import hCoreUI
 

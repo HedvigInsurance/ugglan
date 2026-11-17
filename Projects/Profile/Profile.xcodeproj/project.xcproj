@@ -101,7 +101,7 @@
         { "path": "<PRODUCTS>/ProfileTests.xctest", "id": "9F4C29F643D75828F3D61EBA", "type": "wrapper.cfbundle", "index": false },
         { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ProfileTests/frameworks" ] },
         {
-          "path": "<PRODUCTS>/TravelCertificate.framework",
+          "path": "<PRODUCTS>/TravelCertificateUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
