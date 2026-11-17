@@ -110,7 +110,7 @@ class MovingFlowHousingTypeViewModel {
     init() {}
 }
 
-extension HousingType: TrackingViewNameProtocol {
+extension HousingType: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .apartment:
