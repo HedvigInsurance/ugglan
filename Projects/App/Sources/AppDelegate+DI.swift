@@ -3,7 +3,7 @@ import Apollo
 import AppStateContainer
 import AuthenticationCore
 import CampaignCore
-import ChangeTier
+import ChangeTierCore
 import Chat
 import Claims
 import Contracts

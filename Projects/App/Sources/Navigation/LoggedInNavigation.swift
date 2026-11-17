@@ -1,7 +1,8 @@
 import AddonsCore
 import AddonsUI
 import AppStateContainer
-import ChangeTier
+import ChangeTierCore
+import ChangeTierUI
 import Chat
 import Claims
 import Combine

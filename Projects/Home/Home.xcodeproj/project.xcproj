@@ -25,6 +25,22 @@
             "HomeTests/frameworks",
           ],
         }, {
+          "path": "<PRODUCTS>/ChangeTierCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ChangeTierUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Chat.framework",
           "type": "wrapper.framework",
           "index": false,

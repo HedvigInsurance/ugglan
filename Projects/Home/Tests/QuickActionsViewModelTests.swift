@@ -4,7 +4,7 @@ import TerminateContractsCore
 import Testing
 import hCore
 
-@testable import ChangeTier
+@testable import ChangeTierCore
 @testable import Contracts
 @testable import Home
 

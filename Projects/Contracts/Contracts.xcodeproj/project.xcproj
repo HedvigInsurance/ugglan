@@ -33,7 +33,7 @@
             "ContractsTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/ChangeTier.framework",
+          "path": "<PRODUCTS>/ChangeTierUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

@@ -5,7 +5,7 @@ Handles the address change (moving) flow for insurance contracts. Guides users t
 ## Architecture
 - Pattern: ViewModel (`@MainActor @Observable class`). `MovingFlowNavigationViewModel` uses `@Inject private var service: MoveFlowClient`.
 - Key services: `MoveFlowClient` (protocol)
-- Data flow: `MovingFlowNavigationViewModel` is the central VM that fetches move intent configuration, manages address/house input models, handles quote selection, and implements `ChangeTierQuoteDataProvider` to integrate with the ChangeTier module for tier selection. `MovingFlowQuoteManager` is a helper that builds summary view models and updates quote costs.
+- Data flow: `MovingFlowNavigationViewModel` is the central VM that fetches move intent configuration, manages address/house input models, handles quote selection, and implements `ChangeTierQuoteDataProvider` to integrate with the ChangeTierUI module for tier selection. `MovingFlowQuoteManager` is a helper that builds summary view models and updates quote costs.
 
 ## Key Files
 - Entry point: `MovingFlowNavigation` in `Sources/Navigation/MovingFlowNavigation.swift`
@@ -17,7 +17,8 @@ Handles the address change (moving) flow for insurance contracts. Guides users t
 - Models: `MoveConfigurationModel` in `Sources/Model/MoveConfigurationModel.swift`, `MoveQuotesModel` in `Sources/Model/MoveQuotesModel.swift`
 
 ## Dependencies
-- Imports: hCore, hCoreUI, Contracts, ChangeTier (for `ChangeTierNavigation`, `ChangeTierQuoteDataProvider`, `ChangeTierIntentModel`)
+- Imports: hCore, hCoreUI, Contracts, CrossSellCore, ChangeTierCore (`ChangeTierIntentModel`), ChangeTierUI
+  (`ChangeTierNavigation`, `ChangeTierQuoteDataProvider`)
 - Additional build dependencies: CoreDependencies
 - Depended on by: App
 
@@ -25,7 +26,7 @@ Handles the address change (moving) flow for insurance contracts. Guides users t
 - `MovingFlowNavigation`: Uses `RouterHost` with `routerDestination` for multi-step flow.
 - Routes: `MovingFlowRouterActions` (housing, confirm, houseFill, selectTier) and `MovingFlowRouterWithHiddenBackButtonActions` (processing).
 - Initial screen depends on whether the user has multiple home addresses (shows contract selection) or one (shows housing type selection directly).
-- Integrates ChangeTier inline by pushing `ChangeTierNavigation` with the move flow's own router and data provider.
+- Integrates ChangeTierUI inline by pushing `ChangeTierNavigation` with the move flow's own router and data provider.
 - Detent presentations for extra building input, PDF preview, and building type picker.
 - Calls `onMoved()` callback via `.onDeinit` when the flow is dismissed.
 

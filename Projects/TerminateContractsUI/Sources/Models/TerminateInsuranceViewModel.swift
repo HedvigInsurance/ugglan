@@ -1,4 +1,4 @@
-import ChangeTier
+import ChangeTierUI
 import Combine
 import Foundation
 import Observation

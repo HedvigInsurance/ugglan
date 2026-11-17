@@ -19,7 +19,7 @@ Data and domain layer for cross-selling additional insurance products and addon 
 ## Consumers
 - `CrossSellUI` (views built on top)
 - `App` (DI registration, Octopus impl)
-- `ChangeTier`, `Claims`, `MoveFlow` (`CrossSellInfo`), `Chat` (`CrossSellClient`, `CrossSellShownTracker`), `Contracts`, `Home`, `Onboarding`
+- `ChangeTierUI`, `Claims`, `MoveFlow` (`CrossSellInfo`), `Chat` (`CrossSellClient`, `CrossSellShownTracker`), `Contracts`, `Home`, `Onboarding`
 
 ## Gotchas
 - `CrossSellSource` enum controls context-dependent fetching (home, closedClaim, insurances, etc.)

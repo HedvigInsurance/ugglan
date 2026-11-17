@@ -1,4 +1,5 @@
-import ChangeTier
+import ChangeTierCore
+import ChangeTierUI
 import Combine
 import SwiftUI
 import hCore

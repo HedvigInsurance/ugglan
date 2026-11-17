@@ -196,10 +196,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "247DAA8BBB4EB06C8948B35A"
-               BuildableName = "ChangeTier.framework"
-               BlueprintName = "ChangeTier"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "BF8902098A7B49F5E90DD101"
+               BuildableName = "ChangeTierCore.framework"
+               BlueprintName = "ChangeTierCore"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -210,10 +210,38 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA07CA1A2F0064D5EA9EA1EA"
-               BuildableName = "ChangeTierTests.xctest"
-               BlueprintName = "ChangeTierTests"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "DC0F73F4090B8F2C264F77CF"
+               BuildableName = "ChangeTierCoreTests.xctest"
+               BlueprintName = "ChangeTierCoreTests"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C5D0315B328AA6A0B32973DC"
+               BuildableName = "ChangeTierUI.framework"
+               BlueprintName = "ChangeTierUI"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "77B833A1A18B861B5B6A0ECF"
+               BuildableName = "ChangeTierUITests.xctest"
+               BlueprintName = "ChangeTierUITests"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -980,10 +1008,21 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA07CA1A2F0064D5EA9EA1EA"
-               BuildableName = "ChangeTierTests.xctest"
-               BlueprintName = "ChangeTierTests"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "DC0F73F4090B8F2C264F77CF"
+               BuildableName = "ChangeTierCoreTests.xctest"
+               BlueprintName = "ChangeTierCoreTests"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "77B833A1A18B861B5B6A0ECF"
+               BuildableName = "ChangeTierUITests.xctest"
+               BlueprintName = "ChangeTierUITests"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

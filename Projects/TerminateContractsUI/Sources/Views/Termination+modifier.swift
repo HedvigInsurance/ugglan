@@ -1,4 +1,4 @@
-import ChangeTier
+import ChangeTierUI
 import Foundation
 import SwiftUI
 import TerminateContractsCore
