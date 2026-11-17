@@ -14,7 +14,7 @@ client and the service wrapper. No SwiftUI or hCoreUI.
 
 ## Dependencies
 - hCore (+ AutomaticLog)
-- Depended on by: ChangeTierUI, TerminateContractsUI, MoveFlow, Home, App (`ChangeTierClientOctopus`,
+- Depended on by: ChangeTierUI, TerminateContractsUI, MoveFlowCore, MoveFlowUI, Home, App (`ChangeTierClientOctopus`,
   `MoveFlowClientOctopus`, DI)
 
 ## Gotchas

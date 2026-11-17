@@ -18,7 +18,8 @@ import Foundation
 import Home
 import InsuranceEvidence
 import Market
-import MoveFlow
+import MoveFlowCore
+import MoveFlowUI
 import Payment
 import Profile
 import SafariServices

@@ -574,10 +574,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3234B81966731CBADB213C12"
-               BuildableName = "MoveFlow.framework"
-               BlueprintName = "MoveFlow"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "A7EE93F0C9137542E0AB10C0"
+               BuildableName = "MoveFlowCore.framework"
+               BlueprintName = "MoveFlowCore"
+               ReferencedContainer = "container:Projects/MoveFlowCore/MoveFlowCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -588,10 +588,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "16033B536D7AACD73A965389"
-               BuildableName = "MoveFlowTests.xctest"
-               BlueprintName = "MoveFlowTests"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "C6726B99265227EC0432507A"
+               BuildableName = "MoveFlowUI.framework"
+               BlueprintName = "MoveFlowUI"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4A94E989810E4CA2369E3F63"
+               BuildableName = "MoveFlowUITests.xctest"
+               BlueprintName = "MoveFlowUITests"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -1132,10 +1146,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "16033B536D7AACD73A965389"
-               BuildableName = "MoveFlowTests.xctest"
-               BlueprintName = "MoveFlowTests"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "4A94E989810E4CA2369E3F63"
+               BuildableName = "MoveFlowUITests.xctest"
+               BlueprintName = "MoveFlowUITests"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

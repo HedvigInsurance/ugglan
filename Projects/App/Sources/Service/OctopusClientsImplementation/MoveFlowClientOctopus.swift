@@ -1,6 +1,6 @@
 import ChangeTierCore
 import Foundation
-import MoveFlow
+import MoveFlowCore
 import hCore
 import hCoreUI
 import hGraphQL
@@ -23,18 +23,18 @@ class MoveFlowClientOctopus: MoveFlowClient {
     func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             moveToAddress: .init(
-                street: input.addressInputModel.address,
-                postalCode: input.addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
+                street: input.address.address,
+                postalCode: input.address.postalCode.replacingOccurrences(of: " ", with: "")
             ),
             moveFromAddressId: input.selectedAddressId,
-            movingDate: input.addressInputModel.accessDate?.localDateString ?? "",
-            numberCoInsured: Int32(input.addressInputModel.nbOfCoInsured),
-            squareMeters: Int32(input.addressInputModel.squareArea) ?? 0,
-            apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: input.addressInputModel)),
+            movingDate: input.address.accessDate?.localDateString ?? "",
+            numberCoInsured: Int32(input.address.nbOfCoInsured),
+            squareMeters: Int32(input.address.squareArea) ?? 0,
+            apartment: GraphQLNullable(optionalValue: apartmentInput(address: input.address)),
             house: GraphQLNullable(
                 optionalValue: houseInput(
-                    selectedHousingType: input.addressInputModel.selectedHousingType,
-                    houseInformationInputModel: input.houseInformationInputModel
+                    selectedHousingType: input.address.selectedHousingType,
+                    houseInformation: input.houseInformation
                 )
             ),
             source: GraphQLNullable(optionalValue: input.source.asMoveIntentSourceInput)
@@ -79,12 +79,12 @@ class MoveFlowClientOctopus: MoveFlowClient {
         return newContractId
     }
 
-    private func apartmentInput(addressInputModel: AddressInputModel) -> OctopusGraphQL.MoveToApartmentInput? {
-        switch addressInputModel.selectedHousingType {
+    private func apartmentInput(address: MoveAddressInput) -> OctopusGraphQL.MoveToApartmentInput? {
+        switch address.selectedHousingType {
         case .apartment, .rental:
             return OctopusGraphQL.MoveToApartmentInput(
-                subType: addressInputModel.selectedHousingType.asMoveApartmentSubType,
-                isStudent: addressInputModel.isStudent
+                subType: address.selectedHousingType.asMoveApartmentSubType,
+                isStudent: address.isStudent
             )
         case .house:
             return nil
@@ -93,19 +93,19 @@ class MoveFlowClientOctopus: MoveFlowClient {
 
     private func houseInput(
         selectedHousingType: HousingType,
-        houseInformationInputModel: HouseInformationInputModel?
+        houseInformation: MoveHouseInformationInput?
     ) -> OctopusGraphQL.MoveToHouseInput? {
         switch selectedHousingType {
         case .apartment, .rental:
             return nil
         case .house:
-            guard let houseInformationInputModel = houseInformationInputModel else { return nil }
+            guard let houseInformation else { return nil }
             return OctopusGraphQL.MoveToHouseInput(
-                ancillaryArea: Int32(houseInformationInputModel.ancillaryArea) ?? 0,
-                yearOfConstruction: Int32(houseInformationInputModel.yearOfConstruction) ?? 0,
-                numberOfBathrooms: Int32(houseInformationInputModel.bathrooms),
-                isSubleted: houseInformationInputModel.isSubleted,
-                extraBuildings: houseInformationInputModel.extraBuildings.map {
+                ancillaryArea: Int32(houseInformation.ancillaryArea) ?? 0,
+                yearOfConstruction: Int32(houseInformation.yearOfConstruction) ?? 0,
+                numberOfBathrooms: Int32(houseInformation.bathrooms),
+                isSubleted: houseInformation.isSubleted,
+                extraBuildings: houseInformation.extraBuildings.map {
                     OctopusGraphQL.MoveExtraBuildingInput(
                         area: Int32($0.livingArea),
                         type: $0.type.type,

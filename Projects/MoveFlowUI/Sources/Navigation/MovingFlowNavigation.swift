@@ -1,0 +1,469 @@
+import ChangeTierCore
+import ChangeTierUI
+import Combine
+import MoveFlowCore
+import SwiftUI
+import hCore
+import hCoreUI
+
+// MARK: - Helper Classes
+
+@MainActor
+class MovingFlowQuoteManager {
+    func createQuoteSummary(
+        moveQuotesModel: MoveQuotesModel?,
+        selectedHomeQuote: MovingFlowQuote?,
+        totalPremium: Premium,
+        removedAddonIds: [String]
+    ) -> QuoteSummary {
+        let movingFlowQuotes = getQuotes(
+            moveQuotesModel: moveQuotesModel,
+            selectedHomeQuote: selectedHomeQuote
+        )
+
+        let contractInfos = movingFlowQuotes.map { quote in
+            createContractInfo(for: quote, removedAddonIds: removedAddonIds)
+        }
+
+        return QuoteSummary(
+            contracts: contractInfos,
+            activationDate: movingFlowQuotes.first?.startDate,
+            noticeInfo: contractInfos.count > 1 ? L10n.changeAddressOtherInsurancesInfoText : nil,
+            totalPrice: .comparison(old: totalPremium.gross, new: totalPremium.net)
+        )
+    }
+
+    private func createContractInfo(
+        for quote: MovingFlowQuote,
+        removedAddonIds: [String]
+    ) -> QuoteSummary.ContractInfo {
+        var documents: [hPDFDocument] = quote.documents.map {
+            .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+        }
+
+        var displayItems: [QuoteDisplayItem] = []
+        displayItems.append(.init(title: quote.displayName, value: quote.baseGrossPremium.formattedAmountPerMonth))
+
+        for addon in quote.addons {
+            if !removedAddonIds.contains(addon.id) {
+                documents.append(contentsOf: addon.addonVariant.documents)
+                displayItems.append(
+                    .init(title: addon.addonVariant.displayName, value: addon.grossPremium.formattedAmountPerMonth)
+                )
+            }
+        }
+
+        displayItems.append(
+            contentsOf: quote.priceBreakdownItems.map { .init(title: $0.displayTitle, value: $0.displayValue) }
+        )
+
+        return QuoteSummary.ContractInfo(
+            id: quote.id,
+            title: quote.displayName,
+            subtitle: quote.exposureName ?? "",
+            premium: quote.totalPremium,
+            documents: documents,
+            displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
+            insuranceLimits: quote.insurableLimits,
+            typeOfContract: quote.contractType,
+            priceBreakdownItems: displayItems
+        )
+    }
+
+    private func getQuotes(
+        moveQuotesModel: MoveQuotesModel?,
+        selectedHomeQuote: MovingFlowQuote?
+    ) -> [MovingFlowQuote] {
+        var allQuotes = moveQuotesModel?.mtaQuotes ?? []
+        if let selectedHomeQuote = selectedHomeQuote {
+            allQuotes.insert(selectedHomeQuote, at: 0)
+        }
+        return allQuotes
+    }
+
+    func updateQuotesWithCost(
+        moveQuotesModel: inout MoveQuotesModel?,
+        quoteCosts: [QuoteCost]
+    ) {
+        moveQuotesModel?.homeQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.homeQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.homeQuotes[index].priceBreakdownItems = cost.discounts.map {
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    }
+                }
+            }
+
+        moveQuotesModel?.mtaQuotes.enumerated()
+            .forEach { (index, quote) in
+                if let cost = quoteCosts.first(where: { $0.id == quote.id })?.cost {
+                    moveQuotesModel?.mtaQuotes[index].totalPremium = cost.premium
+                    moveQuotesModel?.mtaQuotes[index].priceBreakdownItems = cost.discounts.map {
+                        .init(displayTitle: $0.displayName, displayValue: $0.displayValue)
+                    }
+                }
+            }
+    }
+}
+
+// MARK: - View Model
+
+@MainActor
+@Observable
+public class MovingFlowNavigationViewModel: ChangeTierQuoteDataProvider {
+    @ObservationIgnored @Inject private var service: MoveFlowClient
+
+    // MARK: - Helper Properties
+    private let quoteManager = MovingFlowQuoteManager()
+
+    // MARK: - UI State
+    var isAddExtraBuildingPresented: HouseInformationInputModel?
+    var document: hPDFDocument?
+    var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+
+    // MARK: - Properties
+    var viewState: ProcessingState = .loading
+    @ObservationIgnored var errorTitle: String?
+    var moveConfigurationModel: MoveConfigurationModel?
+    var moveQuotesModel: MoveQuotesModel?
+    var addressInputModel = AddressInputModel()
+    var houseInformationInputvm = HouseInformationInputModel()
+    var selectedHomeQuote: MovingFlowQuote?
+    var selectedHomeAddress: MoveAddress?
+    @ObservationIgnored var totalPremium: Premium!
+    @ObservationIgnored var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
+    @ObservationIgnored var removedAddonIds: [String] = []
+    let source: MovingFlowSource
+
+    @ObservationIgnored fileprivate var initialTrackingType: MovingFlowDetentType?
+
+    init(source: MovingFlowSource = .insurance) {
+        self.source = source
+        initializeData()
+    }
+
+    private func initializeData() {
+        Task {
+            await getMoveIntent()
+        }
+    }
+
+    @MainActor
+    func getMoveIntent() async {
+        withAnimation {
+            self.viewState = .loading
+            errorTitle = nil
+        }
+
+        do {
+            let intentVm = try await service.sendMoveIntent()
+
+            if intentVm.currentHomeAddresses.count == 1 {
+                selectedHomeAddress = intentVm.currentHomeAddresses.first
+            }
+            addressInputModel.nbOfCoInsured = selectedHomeAddress?.suggestedNumberCoInsured ?? 0
+            moveConfigurationModel = intentVm
+            initialTrackingType = intentVm.currentHomeAddresses.count == 1 ? .selectHousingType : .selectContract
+            withAnimation {
+                self.viewState = .success
+            }
+        } catch {
+            if let error = error as? MovingFlowError {
+                errorTitle = error.title
+                viewState = .error(errorMessage: error.localizedDescription)
+            } else {
+                viewState = .error(errorMessage: L10n.General.errorBody)
+            }
+        }
+    }
+
+    func createQuoteSummary() -> QuoteSummary {
+        quoteManager.createQuoteSummary(
+            moveQuotesModel: moveQuotesModel,
+            selectedHomeQuote: selectedHomeQuote,
+            totalPremium: totalPremium,
+            removedAddonIds: removedAddonIds
+        )
+    }
+
+    var movingDate: String {
+        (selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate)?.displayDateDDMMMYYYYFormat ?? ""
+    }
+
+    public func getTotal(
+        selectedQuoteId: String,
+        includedAddonIds: [String]
+    ) async throws -> (premium: hCore.Premium, displayItems: [hCoreUI.QuoteDisplayItem]) {
+        removedAddonIds =
+            moveQuotesModel?.homeQuotes.first(where: { $0.id == selectedQuoteId })?.addons
+            .filter({ !includedAddonIds.contains($0.id) }).map { $0.id } ?? []
+
+        let data = try await service.getMoveIntentCost(
+            input: .init(
+                intentId: moveConfigurationModel?.id ?? "",
+                selectedHomeQuoteId: selectedQuoteId,
+                selectedAddons: includedAddonIds
+            )
+        )
+
+        let quote = data.quoteCosts.first(where: { $0.id == selectedQuoteId })!
+        totalPremium = data.totalCost
+
+        quoteManager.updateQuotesWithCost(moveQuotesModel: &moveQuotesModel, quoteCosts: data.quoteCosts)
+
+        return (
+            quote.cost.premium,
+            quote.cost.discounts.map { .init(title: $0.displayName, value: $0.displayValue) }
+        )
+    }
+}
+
+enum MovingFlowRouterWithHiddenBackButtonActions: Hashable {
+    case processing
+}
+
+extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .processing:
+            return .init(describing: MovingFlowProcessingScreen.self)
+        }
+    }
+}
+
+enum MovingFlowRouterActions: Hashable {
+    case housing
+    case confirm
+    case houseFill
+    case selectTier(changeTierModel: ChangeTierIntentModel)
+}
+
+extension MovingFlowRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .confirm:
+            return .init(describing: MovingFlowConfirmScreen.self)
+        case .houseFill:
+            return .init(describing: MovingFlowHouseScreen.self)
+        case .selectTier:
+            return .init(describing: ChangeTierLandingScreen.self)
+        case .housing:
+            return .init(describing: MovingFlowHousingTypeScreen.self)
+        }
+    }
+}
+
+struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
+    static func == (lhs: ExtraBuildingTypeNavigationModel, rhs: ExtraBuildingTypeNavigationModel) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    var id = UUID().uuidString
+    var extraBuildingType: ExtraBuildingType?
+
+    var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
+}
+
+public struct MovingFlowNavigation: View {
+    @State private var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @State var router = NavigationRouter()
+    private let onMoved: () -> Void
+
+    public init(
+        source: MovingFlowSource = .insurance,
+        onMoved: @escaping () -> Void
+    ) {
+        _movingFlowNavigationVm = State(wrappedValue: MovingFlowNavigationViewModel(source: source))
+        self.onMoved = onMoved
+    }
+
+    public var body: some View {
+        hNavigationStack(
+            router: router,
+            options: .extendedNavigationWidth,
+            tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType
+        ) {
+            getInitalScreen()
+                .routerDestination(for: HousingType.self) { _ in
+                    openApartmentFillScreen()
+                }
+                .routerDestination(for: MovingFlowRouterWithHiddenBackButtonActions.self, options: .hidesBackButton) {
+                    action in
+                    switch action {
+                    case .processing:
+                        openProcessingView(confirmVm: movingFlowNavigationVm.movingFlowConfirmViewModel!)
+                    }
+                }
+                .routerDestination(for: MovingFlowRouterActions.self) { action in
+                    switch action {
+                    case .housing:
+                        openSelectHousingScreen()
+                    case .confirm:
+                        openConfirmScreen()
+                    case .houseFill:
+                        openHouseFillScreen()
+                    case let .selectTier(model):
+                        openChangeTier(model: model)
+                    }
+                }
+        }
+        .loading(
+            $movingFlowNavigationVm.viewState,
+            errorTitle: movingFlowNavigationVm.errorTitle,
+            errorTrackingNameWithRouter: (MovingFlowDetentType.error, router)
+        )
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonTitle: L10n.openChat,
+                    buttonAction: { [weak router] in
+                        router?.dismiss()
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                    }
+                )
+            )
+        )
+        .environment(movingFlowNavigationVm)
+        .detent(
+            item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
+            presentationStyle: .detent(style: [.height])
+        ) { houseInformationInputModel in
+            MovingFlowAddExtraBuildingScreen(
+                houseInformationInputVm: houseInformationInputModel
+            )
+            .environment(movingFlowNavigationVm)
+            .navigationTitle(L10n.changeAddressAddBuilding)
+            .embededInNavigation(
+                options: [.navigationType(type: .large)],
+                tracking: MovingFlowDetentType.addExtraBuilding
+            )
+        }
+        .detent(
+            item: $movingFlowNavigationVm.document,
+            presentationStyle: .detent(style: [.large])
+        ) { document in
+            PDFPreview(document: document)
+        }
+        .detent(
+            item: $movingFlowNavigationVm.isBuildingTypePickerPresented,
+
+            options: .constant([.alwaysOpenOnTop])
+        ) { model in
+            openTypeOfBuildingPicker(
+                for: model.extraBuildingType,
+                addExtraBuilingViewModel: model.addExtraBuildingVm
+            )
+        }
+        .onDeinit {
+            onMoved()
+        }
+    }
+
+    @ViewBuilder
+    func getInitalScreen() -> some View {
+        let intentVm = movingFlowNavigationVm.moveConfigurationModel
+        if intentVm?.currentHomeAddresses.count ?? 0 > 1 {
+            openSelectInsuranceScreen()
+        } else {
+            openSelectHousingScreen()
+        }
+    }
+
+    func openSelectInsuranceScreen() -> some View {
+        MovingFlowSelectContractScreen(navigationVm: movingFlowNavigationVm, router: router)
+    }
+
+    func openSelectHousingScreen() -> some View {
+        MovingFlowHousingTypeScreen(movingFlowNavigationVm: movingFlowNavigationVm)
+            .withAlertDismiss()
+    }
+
+    func openApartmentFillScreen() -> some View {
+        MovingFlowAddressScreen(vm: movingFlowNavigationVm.addressInputModel)
+            .withAlertDismiss()
+    }
+
+    func openHouseFillScreen() -> some View {
+        MovingFlowHouseScreen(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
+            .withAlertDismiss()
+    }
+
+    func openConfirmScreen() -> some View {
+        MovingFlowConfirmScreen(navigationVm: movingFlowNavigationVm, router: router)
+            .navigationTitle(L10n.changeAddressSummaryTitle)
+    }
+
+    func openProcessingView(confirmVm: MovingFlowConfirmViewModel) -> some View {
+        MovingFlowProcessingScreen(
+            onSuccessButtonAction: {
+                router.dismiss()
+            },
+            onErrorButtonAction: {
+                router.pop()
+            },
+            movingFlowConfirmVm: confirmVm
+        )
+    }
+
+    func openChangeTier(model: ChangeTierIntentModel) -> some View {
+        let model = ChangeTierInput.existingIntent(intent: model) {
+            [weak movingFlowNavigationVm, weak router] _, quote in
+            guard movingFlowNavigationVm?.totalPremium != nil else { return }
+            let requestVm = movingFlowNavigationVm?.moveQuotesModel
+            let id = quote.id
+            if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {
+                movingFlowNavigationVm?.selectedHomeQuote = currentHomeQuote
+            }
+            if let requestVm {
+                movingFlowNavigationVm?.moveQuotesModel = requestVm
+            }
+
+            router?.push(MovingFlowRouterActions.confirm)
+        }
+        return ChangeTierNavigation(
+            input: model,
+            dataProvider: movingFlowNavigationVm,
+            router: router
+        )
+    }
+
+    func openTypeOfBuildingPicker(
+        for currentlySelected: ExtraBuildingType?,
+        addExtraBuilingViewModel: MovingFlowAddExtraBuildingViewModel
+    ) -> some View {
+        TypeOfBuildingPickerScreen(
+            currentlySelected: currentlySelected,
+            movingFlowNavigationVm: movingFlowNavigationVm,
+            addExtraBuidlingViewModel: addExtraBuilingViewModel
+        )
+        .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
+        .embededInNavigation(
+            options: [.navigationType(type: .large)],
+            tracking: MovingFlowDetentType.typeOfBuildingPicker
+        )
+    }
+}
+
+private enum MovingFlowDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .selectHousingType:
+            return .init(describing: MovingFlowHousingTypeScreen.self)
+        case .addExtraBuilding:
+            return .init(describing: MovingFlowAddExtraBuildingScreen.self)
+        case .typeOfBuildingPicker:
+            return .init(describing: TypeOfBuildingPickerScreen.self)
+        case .selectContract:
+            return .init(describing: MovingFlowSelectContractScreen.self)
+        case .error:
+            return "Moving flow error screen"
+        }
+    }
+
+    case selectHousingType
+    case addExtraBuilding
+    case typeOfBuildingPicker
+    case selectContract
+    case error
+}

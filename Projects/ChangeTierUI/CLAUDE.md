@@ -4,7 +4,7 @@ SwiftUI flow built on `ChangeTierCore`. Handles insurance plan tier upgrades and
 
 ## Architecture
 - Pattern: ViewModel (`@MainActor @Observable class`). `ChangeTierService` uses `@Inject var client: ChangeTierClient`.
-- Key services: `ChangeTierClient` (protocol), `ChangeTierService` (thin wrapper with `@Log` macro), `ChangeTierQuoteDataProvider` (protocol for external cost calculation, e.g. from MoveFlow)
+- Key services: `ChangeTierClient` (protocol), `ChangeTierService` (thin wrapper with `@Log` macro), `ChangeTierQuoteDataProvider` (protocol for external cost calculation, e.g. from MoveFlowUI)
 - Data flow: `ChangeTierViewModel` fetches tier data via `ChangeTierService`, maintains selected tier/quote/addon state, and calculates totals. `ChangeTierNavigationViewModel` manages navigation state and detent presentations.
 
 ## Key Files
@@ -19,15 +19,15 @@ SwiftUI flow built on `ChangeTierCore`. Handles insurance plan tier upgrades and
 
 ## Dependencies
 - Imports: hCore, hCoreUI, ChangeTierCore, CrossSellCore
-- Depended on by: ContractsUI, TerminateContractsUI, MoveFlow, Home, App
+- Depended on by: ContractsUI, TerminateContractsUI, MoveFlowUI, Home, App
 
 ## Navigation
 - `ChangeTierNavigation`: Entry point SwiftUI view. Accepts `ChangeTierInput` (single contract) or `ChangeTierContractsInput` (multiple contracts with selection screen). Uses `RouterHost` with `routerDestination` for summary and processing screens.
 - Routes: `ChangeTierRouterActions.summary`, `ChangeTierRouterActionsWithoutBackButton.commitTier`
 - Detent presentations for tier/deductible editing (`EditScreen`), insurable limits info, compare tiers, and PDF preview.
-- Can optionally accept an external `Router` and `ChangeTierQuoteDataProvider` (used by MoveFlow to embed tier selection inline).
+- Can optionally accept an external `Router` and `ChangeTierQuoteDataProvider` (used by MoveFlowUI to embed tier selection inline).
 
 ## Gotchas
-- `ChangeTierQuoteDataProvider` is an external protocol that MoveFlow implements to provide cost calculations. When provided, the VM delegates total cost calculation to the provider instead of using the quote's built-in cost.
+- `ChangeTierQuoteDataProvider` is an external protocol that MoveFlowUI implements to provide cost calculations. When provided, the VM delegates total cost calculation to the provider instead of using the quote's built-in cost.
 - `ChangeTierNavigation` has two init paths: one for direct use (creates its own `RouterHost`) and one for embedding in another flow (uses the provided router).
 - The `ChangeTierNavigationViewModel.vm` property is force-unwrapped in several places; it is set during init but the multi-contract path defers it.
