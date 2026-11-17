@@ -5,7 +5,7 @@ import Testing
 import hCore
 
 @testable import ChangeTierCore
-@testable import Contracts
+@testable import ContractsCore
 @testable import Home
 
 extension HomeDependencySuite {

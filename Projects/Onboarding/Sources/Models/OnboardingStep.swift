@@ -1,5 +1,4 @@
 import AutomaticLog
-import Contracts
 import CrossSellCore
 import Foundation
 import Payment

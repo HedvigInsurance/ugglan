@@ -1,6 +1,6 @@
 import AppStateContainer
 import Combine
-import Contracts
+import ContractsCore
 import Forever
 import Home
 import Market

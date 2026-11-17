@@ -1,6 +1,7 @@
 import AppStateContainer
 import Combine
-import Contracts
+import ContractsCore
+import ContractsUI
 import CrossSellCore
 import EditStakeholdersCore
 import EditStakeholdersUI

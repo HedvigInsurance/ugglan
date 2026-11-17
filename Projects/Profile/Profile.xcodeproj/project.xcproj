@@ -41,7 +41,7 @@
             "ProfileTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/Contracts.framework",
+          "path": "<PRODUCTS>/ContractsCore.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

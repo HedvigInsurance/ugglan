@@ -2,7 +2,6 @@ import Apollo
 import AppStateContainer
 import Chat
 import Claims
-import Contracts
 import CoreDependencies
 import Environment
 import Foundation

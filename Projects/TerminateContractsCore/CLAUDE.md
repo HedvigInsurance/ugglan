@@ -4,7 +4,7 @@ UI-free data layer for the contract cancellation flow: termination models, the c
 the service wrapper. No SwiftUI or hCoreUI.
 
 ## Key Files
-- `Sources/Models/TerminationConfig.swift` — `TerminationConfirmConfig` (per-contract flow input, built by Contracts'
+- `Sources/Models/TerminationConfig.swift` — `TerminationConfirmConfig` (per-contract flow input, built by ContractsCore's
   `asTerminationConfirmConfig`)
 - `Sources/Models/TerminationFlowSurveyStepModel.swift` — `TerminationSurveyData`, `TerminationSurveyOption`,
   `TerminationSuggestion(Type)`, `TerminationRedirection`, `TerminationAction`, `TerminationContractResult`,
@@ -19,7 +19,7 @@ the service wrapper. No SwiftUI or hCoreUI.
 
 ## Dependencies
 - hCore (+ AutomaticLog)
-- Depended on by: TerminateContractsUI, Contracts, Home, App (`TerminateContractsClientOctopus`, DI)
+- Depended on by: TerminateContractsUI, ContractsCore, ContractsUI, Home, App (`TerminateContractsClientOctopus`, DI)
 
 ## Tests
 - `DeflectScreenContentTests`, `TerminationSuggestionTests`, `TerminateContractsTests` (service, with

@@ -1,7 +1,7 @@
 import AddonsCore
 import AddonsUI
 import AppStateContainer
-import Contracts
+import ContractsCore
 import Foundation
 import SwiftUI
 import hCore

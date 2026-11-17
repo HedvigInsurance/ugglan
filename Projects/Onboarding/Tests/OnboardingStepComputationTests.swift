@@ -1,4 +1,4 @@
-import Contracts
+import ContractsCore
 import CrossSellCore
 import EditStakeholdersCore
 import Testing
@@ -206,7 +206,7 @@ extension OnboardingDependencySuite.OnboardingStepComputationTests {
         coOwners: [Stakeholder] = [],
         missingPetChipId: Bool = false,
         terminationDate: String? = nil
-    ) -> Contracts.Contract {
+    ) -> ContractsCore.Contract {
         .init(
             id: "contractId",
             currentAgreement: nil,

@@ -14,7 +14,7 @@ SwiftUI flow built on `TerminateContractsCore`. Multi-step contract cancellation
 
 ## Dependencies
 - hCore, hCoreUI, TerminateContractsCore, ChangeTierCore, ChangeTierUI
-- Depended on by: App, Contracts, Home
+- Depended on by: App, ContractsUI, Home
 
 ## Gotchas
 - `TerminationFlowNavigationViewModel.swift` is a large file (~740 lines) containing the main ViewModel, helper classes (`TerminationRedirectHandler`, `TerminationStepHandler`), the navigation view, and all routing enums

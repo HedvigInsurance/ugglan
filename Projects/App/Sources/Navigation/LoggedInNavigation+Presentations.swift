@@ -2,7 +2,8 @@ import AddonsCore
 import AddonsUI
 import AppStateContainer
 import ChangeTierUI
-import Contracts
+import ContractsCore
+import ContractsUI
 import CrossSellCore
 import EditStakeholdersUI
 import Forever
