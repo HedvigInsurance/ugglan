@@ -78,7 +78,7 @@ private struct BankIDSandboxToggle: ViewModifier {
     func body(content: Content) -> some View {
         if BankIDSandboxState.isAvailable {
             content.onTapGesture(count: 3) { toggle() }
-            .accessibilityAddTraits(.isButton)
+                .accessibilityAddTraits(.isButton)
         } else {
             content
         }
@@ -108,7 +108,16 @@ struct NotLoggedInView_Previews: PreviewProvider {
 class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
-    var showLogin = false
+    var showLogin = false {
+        didSet {
+            // A power of attorney login only applies to the login it was opened for
+            if !showLogin {
+                powerOfAttorneyId = nil
+            }
+        }
+    }
+    /// Set when the login was opened from a power of attorney link
+    var powerOfAttorneyId: String?
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()
@@ -126,6 +135,13 @@ class NotLoggedViewModel {
             name: .openDeepLink,
             object: nil
         )
+    }
+
+    /// Opens the BankID login for the person named in a power of attorney link.
+    func startPowerOfAttorneyLogin(id: String) {
+        showLogin = false
+        powerOfAttorneyId = id
+        showLogin = true
     }
 
     @objc func openDeeplingLink(_ notification: Notification) {

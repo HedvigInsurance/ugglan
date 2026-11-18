@@ -2,7 +2,7 @@ import Foundation
 
 @MainActor
 public final class KeychainHelper {
-    static let standard = KeychainHelper()
+    public static let standard = KeychainHelper()
     private init() {}
     private let account: String = "hedvig"
 

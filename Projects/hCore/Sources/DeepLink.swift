@@ -36,6 +36,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     case missingPetChipId = "pet-id"
     case payout = "payout"
     case manualCharge = "manual-charge"
+    /// Shared power of attorney link (`/poa?id=`): the person it was granted to logs in to the member's account
+    case powerOfAttorney = "poa"
 
     public func getDeeplinkTextFor(contractName: String?) -> String {
         switch self {
@@ -84,6 +86,8 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .manualCharge: L10n.paymentsPaymentOverdueTitle
         case .connectPayment: L10n.paymentConnectTitle
         case .connectSwish: "Swish"
+        // TODO: Localize via Lokalise
+        case .powerOfAttorney: "Power of attorney"
         }
     }
 

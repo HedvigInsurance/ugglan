@@ -104,7 +104,10 @@ class MockAuthenticationService: AuthenticationClient {
         try await resendAuth(otpState)
     }
 
-    func startSeBankId(updateStatusTo: @escaping (AuthenticationCore.ObserveStatusResponseType) -> Void) async throws {
+    func startSeBankId(
+        powerOfAttorneyId _: String?,
+        updateStatusTo: @escaping (AuthenticationCore.ObserveStatusResponseType) -> Void
+    ) async throws {
         events.append(.startSeBankId)
         try await startSeBankIdAuth(updateStatusTo)
     }
@@ -122,5 +125,9 @@ class MockAuthenticationService: AuthenticationClient {
     func exchange(refreshToken: String) async throws {
         events.append(.exchangeToken)
         try await exchangeToken(refreshToken)
+    }
+
+    func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
+        nil
     }
 }

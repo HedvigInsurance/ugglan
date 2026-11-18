@@ -1,4 +1,6 @@
+import Apollo
 import AppStateContainer
+import AuthenticationCore
 import Combine
 import ContractsCore
 import Forever
@@ -10,6 +12,7 @@ import SafariServices
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 @main
 struct MainNavigation: App {
@@ -19,6 +22,7 @@ struct MainNavigation: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State var vm = MainNavigationViewModel()
+    @State private var powerOfAttorneyRouter = NavigationRouter()
     @AppStorage(ApplicationState.key) var state: ApplicationState.Screen = .notLoggedIn
     private var featureFlags: FeatureFlagsStore { vm.featureFlags }
 
@@ -69,8 +73,17 @@ struct MainNavigation: App {
     private var loggedInContent: some View {
         switch vm.stateToShow {
         case .loggedIn:
-            LoggedInNavigation(vm: vm.loggedInVm)
-                .environment(vm)
+            if vm.hasLimitedPowerOfAttorneyAccess {
+                HomeTab(homeNavigationVm: vm.loggedInVm.homeNavigationVm, loggedInVm: vm.loggedInVm)
+                    .environment(powerOfAttorneyRouter)
+                    .environment(\.isHomeLimitedAccess, true)
+                    .environment(\.homeActingPowerOfAttorney, vm.actingPowerOfAttorney)
+                    .environment(vm)
+            } else {
+                LoggedInNavigation(vm: vm.loggedInVm)
+                    .environment(vm)
+                    .environment(\.homeActingPowerOfAttorney, vm.actingPowerOfAttorney)
+            }
         case .impersonation:
             ImpersonationSettings()
                 .trackViewName(name: .init(describing: ImpersonationSettings.self))
@@ -106,6 +119,21 @@ class MainNavigationViewModel {
     @ObservationIgnored var loggedInVm = LoggedInNavigationViewModel()
     @ObservationIgnored private var pushNotificationCancellable: AnyCancellable?
     @ObservationIgnored private var deepLinkCancellable: AnyCancellable?
+    /// Power of attorney link waiting for the logout the member confirmed, then opened in the fresh login
+    @ObservationIgnored private var pendingPowerOfAttorneyId: String?
+    /// Set when someone logged in with a power of attorney link (from the access token's `poa` claim)
+    private(set) var powerOfAttorney: PowerOfAttorneyClaim?
+    @ObservationIgnored private let authenticationService = AuthenticationService()
+
+    /// Only a `Full` power of attorney gets the logged in app, other levels get a limited screen
+    var actingPowerOfAttorney: HomeActingPowerOfAttorney? {
+        powerOfAttorney.map { .init(name: $0.name, hasFullAccess: $0.hasFullAccess) }
+    }
+
+    var hasLimitedPowerOfAttorneyAccess: Bool {
+        guard let powerOfAttorney else { return false }
+        return !powerOfAttorney.hasFullAccess
+    }
 
     @ObservationIgnored @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -119,6 +147,7 @@ class MainNavigationViewModel {
                     withAnimation {
                         hasLaunchFinished = false
                     }
+                    await loadPowerOfAttorney()
                     let contractStore: ContractStore = globalAppStateContainer.get()
                     await contractStore.fetchContracts()
                     let profileStore: ProfileStore = globalAppStateContainer.get()
@@ -133,7 +162,12 @@ class MainNavigationViewModel {
                     }
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
+                    powerOfAttorney = nil
                     notLoggedInVm = .init()
+                    if let powerOfAttorneyId = pendingPowerOfAttorneyId {
+                        pendingPowerOfAttorneyId = nil
+                        startPowerOfAttorneyLogin(id: powerOfAttorneyId, after: 0.5)
+                    }
                     analyticsService.clearUserId()
                     analyticsService = AnalyticsService()
                     // Recreate loggedInVm only AFTER clearData() has reset the
@@ -165,6 +199,8 @@ class MainNavigationViewModel {
     init() {
         Task { @MainActor [weak self] in
             await UIApplication.shared.appDelegate.initialSetup()
+            // Before the launch finishes, so a limited power of attorney session never shows the logged in app
+            await self?.loadPowerOfAttorney()
             self?.setCachedUserIdIfLoggedIn()
             self?.checkForFeatureFlags()
             withAnimation(.easeInOut) {
@@ -243,9 +279,68 @@ class MainNavigationViewModel {
 
         let timeSinceLaunch = appDelegate.applicationLaunchTimestamp.timeIntervalSinceNow
         let isColdStart = abs(timeSinceLaunch) < 1
+        // Power of attorney links log in someone else, so they mustn't wait for (and then run in) a logged in app
+        if DeepLink.getType(from: deepLinkUrl) == .powerOfAttorney {
+            handlePowerOfAttorneyLink(deepLinkUrl, isColdStart: isColdStart)
+            return
+        }
         whenLoggedIn(after: isColdStart ? 2 : 0.2, storingIn: \.deepLinkCancellable) { [weak self] in
             self?.loggedInVm.handleDeepLink(deepLinkUrl)
         }
+    }
+
+    // MARK: - Power of attorney link (flow 2)
+
+    /// Reads who is using the app with a power of attorney (`ssn`, `name`, `level`) from the auth service, which
+    /// stored it when the power of attorney login completed (that login fails if it couldn't be fetched).
+    private func loadPowerOfAttorney() async {
+        guard state == .loggedIn else {
+            powerOfAttorney = nil
+            return
+        }
+        powerOfAttorney = await authenticationService.getPowerOfAttorney()
+    }
+
+    private func handlePowerOfAttorneyLink(_ url: URL, isColdStart: Bool) {
+        guard let id = url.getParameter(property: .id), !id.isEmpty else { return }
+        // Same delays as other deep links: give the root UI (on a cold start, the launch) time to settle
+        let delay: Double = isColdStart ? 2 : 0.2
+        if stateToShow.isOneOf([.loggedIn, .impersonation]) {
+            Task { @MainActor [weak self] in
+                try? await Task.sleep(for: .seconds(delay))
+                self?.confirmLogoutForPowerOfAttorneyLogin(id: id)
+            }
+        } else {
+            startPowerOfAttorneyLogin(id: id, after: delay)
+        }
+    }
+
+    private func startPowerOfAttorneyLogin(id: String, after delay: Double) {
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(delay))
+            self?.notLoggedInVm.startPowerOfAttorneyLogin(id: id)
+        }
+    }
+
+    /// The link can only be used logged out. Presented with UIKit so it shows above any presented sheet or detent.
+    private func confirmLogoutForPowerOfAttorneyLogin(id: String) {
+        guard let presenter = UIApplication.shared.getTopViewController() else { return }
+        let alert = UIAlertController(
+            // TODO: Localize via Lokalise
+            title: "Log out to use the power of attorney?",
+            // TODO: Localize via Lokalise
+            message: "You are logged in. To log in with this power of attorney link you need to log out first.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: L10n.logoutAlertActionCancel, style: .cancel))
+        alert.addAction(
+            UIAlertAction(title: L10n.logoutAlertActionConfirm, style: .destructive) { [weak self] _ in
+                self?.pendingPowerOfAttorneyId = id
+                ApplicationState.preserveState(.notLoggedIn)
+                ApplicationState.state = .notLoggedIn
+            }
+        )
+        presenter.present(alert, animated: true)
     }
 
     // On a cold start the `state` didSet never fires, so the user id is restored from the cached member details.

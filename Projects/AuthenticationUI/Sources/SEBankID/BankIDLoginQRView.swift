@@ -5,13 +5,21 @@ import hCore
 import hCoreUI
 
 public struct BankIDLoginQRView: View {
-    @State var vm = BankIDViewModel()
+    @State var vm: BankIDViewModel
     @Environment(NavigationRouter.self) var router
     @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     private var onStartDemoMode: () async -> Void
-    public init(onStartDemoMode: @escaping () async -> Void) {
+
+    /// - Parameter powerOfAttorneyId: Id from a power of attorney link. When set, the person named in that power of
+    ///   attorney logs in to the member's account (no email login or demo mode).
+    public init(powerOfAttorneyId: String? = nil, onStartDemoMode: @escaping () async -> Void) {
+        _vm = State(initialValue: BankIDViewModel(powerOfAttorneyId: powerOfAttorneyId))
         self.onStartDemoMode = onStartDemoMode
+    }
+
+    private var isPowerOfAttorneyLogin: Bool {
+        vm.powerOfAttorneyId != nil
     }
 
     public var body: some View {
@@ -37,10 +45,14 @@ public struct BankIDLoginQRView: View {
                             }
                         }
                         .onLongPressGesture(minimumDuration: 3.0) {
-                            vm.showAlert = true
+                            if !isPowerOfAttorneyLogin {
+                                vm.showAlert = true
+                            }
                         }
                         .accessibilityAction(named: Text(L10n.demoModeStart)) {
-                            vm.showAlert = true
+                            if !isPowerOfAttorneyLogin {
+                                vm.showAlert = true
+                            }
                         }
                         .alert(isPresented: $vm.showAlert) {
                             Alert(
@@ -60,8 +72,12 @@ public struct BankIDLoginQRView: View {
 
                         hSection {
                             VStack(spacing: 0) {
-                                hText(L10n.authenticationBankidLoginTitle)
-                                    .foregroundColor(hTextColor.Translucent.primary)
+                                // TODO: Localize "Log in with power of attorney" via Lokalise
+                                hText(
+                                    isPowerOfAttorneyLogin
+                                        ? "Log in with power of attorney" : L10n.authenticationBankidLoginTitle
+                                )
+                                .foregroundColor(hTextColor.Translucent.primary)
                                 hSection {
                                     hText(L10n.authenticationBankidLoginLabel)
                                         .foregroundColor(hTextColor.Translucent.secondary)
@@ -92,13 +108,15 @@ public struct BankIDLoginQRView: View {
                                 ) { vm.openBankId() }
                             }
 
-                            hButton(
-                                .large,
-                                .ghost,
-                                content: .init(title: L10n.BankidMissingLogin.emailButton)
-                            ) {
-                                router.push(AuthenticationRouterType.emailLogin)
-                                vm.cancelLogin()
+                            if !isPowerOfAttorneyLogin {
+                                hButton(
+                                    .large,
+                                    .ghost,
+                                    content: .init(title: L10n.BankidMissingLogin.emailButton)
+                                ) {
+                                    router.push(AuthenticationRouterType.emailLogin)
+                                    vm.cancelLogin()
+                                }
                             }
                         }
                         .padding(.bottom, .padding16)
@@ -139,11 +157,13 @@ class BankIDViewModel {
     var hasBankIdApp = false
     var isLoading = true
     var hasAlreadyOpenedBankId = false
+    let powerOfAttorneyId: String?
     @ObservationIgnored private var seBankIdState: SEBankIDState = .init()
     @ObservationIgnored var authenticationService = AuthenticationService()
     @ObservationIgnored private var observeLoginTask: AnyCancellable?
     @ObservationIgnored var router: NavigationRouter?
-    init() {
+    init(powerOfAttorneyId: String? = nil) {
+        self.powerOfAttorneyId = powerOfAttorneyId
         checkIfCanOpenBankId()
     }
 
@@ -152,7 +172,7 @@ class BankIDViewModel {
             observeLoginTask = Task { @MainActor [weak self] in
                 do {
                     try await self?.authenticationService
-                        .startSeBankId { [weak self] newStatus in
+                        .startSeBankId(powerOfAttorneyId: self?.powerOfAttorneyId) { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {
                                 case let .started(code):

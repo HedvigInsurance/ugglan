@@ -32,7 +32,7 @@ struct LoginNavigation: View {
             )
         }
         .detent(presented: $vm.showLogin, presentationStyle: .detent(style: [.large])) {
-            BankIDLoginQRView {
+            BankIDLoginQRView(powerOfAttorneyId: vm.powerOfAttorneyId) {
                 await handleDemoModeActivation()
             }
             .environment(otpState)

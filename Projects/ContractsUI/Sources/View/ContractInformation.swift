@@ -13,6 +13,7 @@ import hCoreUI
 struct ContractInformationView: View {
     @AppObservedObject var store: ContractStore
     @Environment(ContractsNavigationViewModel.self) private var contractsNavigationVm
+    @Environment(\.isContractEditingDisabled) private var isEditingDisabled
     let id: String
 
     var body: some View {
@@ -29,32 +30,8 @@ struct ContractInformationView: View {
                     .sectionContainerStyle(.opaque)
                     .hWithoutHorizontalPadding([.section])
 
-                    missingStakeholderInfoCards(for: contract)
-                    missingPetIdInfoCard(for: contract)
-
-                    addonsView(contract: contract)
-
-                    VStack(spacing: .padding8) {
-                        if contract.showEditInfo {
-                            hButton(
-                                .large,
-                                .secondary,
-                                content: .init(title: contract.showEditInfoButtonText)
-                            ) {
-                                if contract.onlyCoInsured() {
-                                    let contract: StakeholdersConfig = .init(
-                                        contract: contract,
-                                        stakeholderType: .coInsured,
-                                        fromInfoCard: false
-                                    )
-
-                                    contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
-                                } else {
-                                    contractsNavigationVm.changeYourInformationContract = contract
-                                }
-                            }
-                        }
-                        moveAddressButton(contract: contract)
+                    if !isEditingDisabled {
+                        editActions(contract: contract)
                     }
                 }
                 .padding(.horizontal, .padding16)
@@ -63,10 +40,41 @@ struct ContractInformationView: View {
         }
     }
 
+    @ViewBuilder
+    private func editActions(contract: ContractsCore.Contract) -> some View {
+        missingStakeholderInfoCards(for: contract)
+        missingPetIdInfoCard(for: contract)
+
+        addonsView(contract: contract)
+
+        VStack(spacing: .padding8) {
+            if contract.showEditInfo {
+                hButton(
+                    .large,
+                    .secondary,
+                    content: .init(title: contract.showEditInfoButtonText)
+                ) {
+                    if contract.onlyCoInsured() {
+                        let contract: StakeholdersConfig = .init(
+                            contract: contract,
+                            stakeholderType: .coInsured,
+                            fromInfoCard: false
+                        )
+
+                        contractsNavigationVm.editStakeholdersVm.start(fromContract: contract)
+                    } else {
+                        contractsNavigationVm.changeYourInformationContract = contract
+                    }
+                }
+            }
+            moveAddressButton(contract: contract)
+        }
+    }
+
     private func stakeholderRow(_ stakeholderItem: StakeholderItem?, contract: ContractsCore.Contract) -> some View {
         hRow {
             if let stakeholderItem {
-                let isEditable = contract.canEditStakeholder(stakeholderItem.stakeholder)
+                let isEditable = !isEditingDisabled && contract.canEditStakeholder(stakeholderItem.stakeholder)
                 if stakeholderItem.stakeholder.hasMissingInfo {
                     StakeholderField(
                         accessoryView: missingInfoAccessory(isEditable: isEditable),

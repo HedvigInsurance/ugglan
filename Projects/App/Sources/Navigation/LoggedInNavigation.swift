@@ -298,6 +298,9 @@ class DeepLinkHandler {
             viewModel?.showPayout()
         case .manualCharge:
             handleManualCharge()
+        case .powerOfAttorney:
+            // Handled by MainNavigationViewModel, it needs a logged out app
+            break
         case .connectPayment:
             viewModel?.homeNavigationVm.isPaymentMethodsPresented = true
         case .connectSwish:
@@ -739,8 +742,18 @@ struct HomeTab: View {
                     InboxView()
                         .environment(homeNavigationVm)
                 }
+                // Only reached from the limited home's contracts list, so details are read-only.
+                .routerDestination(for: ContractsCore.Contract.self) { contract in
+                    ContractDetail(id: contract.id)
+                        .environment(homeNavigationVm.contractsNavigationVm)
+                        .environment(\.isContractEditingDisabled, true)
+                        .navigationTitle(contract.currentAgreement?.productVariant.displayName ?? "")
+                }
         }
         .environment(homeNavigationVm)
+        .handleContractInformationSheets(contractsNavigationVm: homeNavigationVm.contractsNavigationVm) { document in
+            PDFPreview(document: document)
+        }
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)
         .handlePaymentMethods(presented: $homeNavigationVm.isPaymentMethodsPresented)
         .handlePayinSetupDeepLink(provider: $homeNavigationVm.payinSetupProvider)

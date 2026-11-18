@@ -25,9 +25,12 @@ public class AuthenticationService {
         try await client.resend(otp: otpState)
     }
 
-    @Log(.error)
-    public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
-        try await client.startSeBankId(updateStatusTo: updateStatusTo)
+    @Log(.error, masked: ["powerOfAttorneyId"])
+    public func startSeBankId(
+        powerOfAttorneyId: String? = nil,
+        updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void
+    ) async throws {
+        try await client.startSeBankId(powerOfAttorneyId: powerOfAttorneyId, updateStatusTo: updateStatusTo)
     }
 
     @Log(.error)
@@ -43,6 +46,10 @@ public class AuthenticationService {
     @Log(.error, masked: ["refreshToken"])
     public func exchange(refreshToken: String) async throws {
         try await client.exchange(refreshToken: refreshToken)
+    }
+
+    public func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
+        await client.getPowerOfAttorney()
     }
 
     public static var logAuthResourceStart: ((_ key: String, _ URL: URL) -> Void) = { _, _ in }

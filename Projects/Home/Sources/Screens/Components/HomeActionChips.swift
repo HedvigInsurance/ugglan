@@ -7,6 +7,7 @@ import hCoreUI
 
 struct HomeActionChips: View {
     @Environment(HomeNavigationViewModel.self) var navigationVm
+    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
     @AppObservedObject var store: ClaimsStore
     @AppObservedObject var featureFlags: FeatureFlagsStore
 
@@ -24,7 +25,7 @@ struct HomeActionChips: View {
                     navigationVm.claimsAutomationStartInput = .init(type: store.startClaimType)
                 }
 
-                if !featureFlags.isDemoMode {
+                if !featureFlags.isDemoMode && !isLimitedAccess {
                     chip(label: L10n.HomeTab.getHelp, style: .light) {
                         navigationVm.isHelpCenterPresented = true
                     }

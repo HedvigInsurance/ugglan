@@ -1,16 +1,18 @@
 import AppStateContainer
 import Claims
 import ContractsCore
+import ContractsUI
 import CrossSellCore
 import Payment
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct ActiveHomeView: View {
+public struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
     @Environment(HomeNavigationViewModel.self) private var navigationVm
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
     @State private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
@@ -35,7 +37,9 @@ struct ActiveHomeView: View {
     /// How far the content dissolves before it slips under the pinned header.
     private let contentFadeHeight: CGFloat = 4
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
             ScrollView(.vertical, showsIndicators: false) {
@@ -129,11 +133,15 @@ struct ActiveHomeView: View {
         // Folded, the column is too short for more than one button, so the options share one
         // menu button rather than spilling into the system's overflow menu, which shows them empty.
         .setHomeNavigationBars(
-            with: isSystemToolbarOnSide ? $homeStore.toolbarOptionTypes : .constant([]),
+            with: isSystemToolbarOnSide ? toolbarOptionTypes : .constant([]),
             action: toolbarAction,
             collapsesIntoMenu: verticalSizeClass == .compact
         )
         .toolbar(isSystemToolbarOnSide ? .visible : .hidden, for: .navigationBar)
+    }
+
+    private var toolbarOptionTypes: Binding<[ToolbarOptionType]> {
+        isLimitedAccess ? .constant(homeStore.toolbarOptionTypes.limitedAccess) : $homeStore.toolbarOptionTypes
     }
 
     private var showNavigation: Bool {
@@ -179,6 +187,7 @@ private struct ConnectPaymentCardSection: View {
 }
 
 private struct HomeSheetContent: View {
+    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
@@ -190,26 +199,13 @@ private struct HomeSheetContent: View {
 
     var body: some View {
         VStack(spacing: .padding40) {
-            if bottomVm.showsConnectPaymentCard {
-                ConnectPaymentCardSection()
-            } else if let missedPaymentData = paymentStore.missedPaymentData {
-                MissedPaymentCardView(
-                    amountDue: missedPaymentData.paymentData.payment.net,
-                    buttonType: .secondary,
-                    onReviewPayment: {
-                        NotificationCenter.default.post(name: .openDeepLink, object: DeepLink.manualCharge.url)
-                    }
-                )
+            if isLimitedAccess {
+                ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
+                LimitedAccessContractsSection()
+                LimitedAccessLogoutSection()
+            } else {
+                fullContent
             }
-            ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
-            infoMessagesCarouselSection
-            TodoList(todos: bottomVm.todos)
-            HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes) { quoteId in
-                withAnimation { homeStore.dismissOngoingQuote(id: quoteId) }
-            }
-            HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
-            HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
-            HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
         }
         // Keeps the first card clear of the fade band while the sheet sits at rest. Once
         // scrolled, the band travels down through the content and this no longer compensates.
@@ -223,10 +219,81 @@ private struct HomeSheetContent: View {
         }
     }
 
+    @ViewBuilder private var fullContent: some View {
+        if bottomVm.showsConnectPaymentCard {
+            ConnectPaymentCardSection()
+        } else if let missedPaymentData = paymentStore.missedPaymentData {
+            MissedPaymentCardView(
+                amountDue: missedPaymentData.paymentData.payment.net,
+                buttonType: .secondary,
+                onReviewPayment: {
+                    NotificationCenter.default.post(name: .openDeepLink, object: DeepLink.manualCharge.url)
+                }
+            )
+        }
+        ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
+        infoMessagesCarouselSection
+        TodoList(todos: bottomVm.todos)
+        HomeOngoingQuotesSection(quotes: homeStore.ongoingQuotes) { quoteId in
+            withAnimation { homeStore.dismissOngoingQuote(id: quoteId) }
+        }
+        HomeQuickActionsSection(quickActions: homeStore.homeQuickActions)
+        HomeCrossSellsSection(crossSells: crossSellStore.homeCrossSells)
+        HomeAddonsSection(addonBanners: crossSellStore.addonBanners)
+    }
+
     @ViewBuilder private var infoMessagesCarouselSection: some View {
         if !bottomVm.items.isEmpty {
             hSection { HomeBottomScrollView(vm: bottomVm) }
                 .sectionContainerStyle(.transparent)
+        }
+    }
+}
+
+/// The member's insurances, opening read-only contract details, on the limited home.
+private struct LimitedAccessContractsSection: View {
+    @Environment(HomeNavigationViewModel.self) private var navigationVm
+    @AppObservedObject private var contractStore: ContractStore
+
+    var body: some View {
+        let contracts = contractStore.activeContracts + contractStore.pendingContracts
+        if !contracts.isEmpty {
+            hSection {
+                VStack(spacing: .padding8) {
+                    ForEach(contracts) { contract in
+                        ContractRow(contract: contract) { [weak navigationVm] in
+                            navigationVm?.router.push(contract)
+                        }
+                    }
+                }
+            }
+            .withHeader(title: L10n.InsurancesTab.title)
+            .sectionContainerStyle(.transparent)
+        }
+    }
+}
+
+/// Lets a member acting with a partial power of attorney, who has no profile tab, log out from home.
+private struct LimitedAccessLogoutSection: View {
+    @State private var showAlert = false
+
+    var body: some View {
+        hSection {
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.logoutButton),
+                { showAlert = true }
+            )
+            .hUseButtonTextColor(.red)
+            .foregroundColor(hSignalColor.Red.element)
+        }
+        .alert(L10n.logoutAlertTitle, isPresented: $showAlert) {
+            Button(L10n.logoutAlertActionCancel, role: .cancel) {}
+            Button(L10n.logoutAlertActionConfirm, role: .destructive) {
+                ApplicationState.preserveState(.notLoggedIn)
+                ApplicationState.state = .notLoggedIn
+            }
         }
     }
 }
@@ -249,11 +316,16 @@ private struct TopFadeMask: View {
 }
 
 private struct HomeNavigationBar: View {
+    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
     @AppObservedObject private var homeStore: HomeStore
     let action: (ToolbarOptionType) -> Void
 
+    private var types: [ToolbarOptionType] {
+        isLimitedAccess ? homeStore.toolbarOptionTypes.limitedAccess : homeStore.toolbarOptionTypes
+    }
+
     var body: some View {
-        if !homeStore.toolbarOptionTypes.isEmpty {
+        if !types.isEmpty {
             if #available(iOS 26.0, *) {
                 GlassEffectContainer(spacing: .padding8) {
                     toolbar()
@@ -266,7 +338,7 @@ private struct HomeNavigationBar: View {
 
     private func toolbar() -> some View {
         HStack(spacing: .padding8) {
-            ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
+            ForEach(types, id: \.self) { type in
                 barButton(for: type)
             }
         }
@@ -285,6 +357,24 @@ private struct HomeNavigationBar: View {
             button.glassEffect(.regular.interactive(), in: Circle())
         } else {
             button
+        }
+    }
+}
+
+extension EnvironmentValues {
+    /// Limits home to First Vet, the inbox, making a claim, contacting us and the claims list,
+    /// for a member logged in with a power of attorney that doesn't grant full access.
+    @Entry public var isHomeLimitedAccess = false
+}
+
+extension [ToolbarOptionType] {
+    /// The toolbar options kept when home is limited: First Vet (if available) and the inbox.
+    fileprivate var limitedAccess: [ToolbarOptionType] {
+        filter {
+            switch $0 {
+            case .firstVet, .chat: true
+            case .crossSell, .travelCertificate, .insuranceEvidence: false
+            }
         }
     }
 }

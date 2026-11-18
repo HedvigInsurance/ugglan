@@ -18,6 +18,20 @@ BankID, then sharing the resulting link via the system share sheet.
   shown in the BankID sign text). The app opens BankID / shows the QR code and `POST`s `{pollUrl}` every second
   (`liveQrCodeData` changes on every poll), showing `statusText`, until `COMPLETED` (with `powerOfAttorney.id`) or
   `FAILED`. The share link is built client side: `Environment.current.deepLinkUrl` + `/poa?id={id}`.
+- **Login with the link (flow 2, lives outside this module)**: `DeepLink.powerOfAttorney` (`/poa?id=`) is handled
+  in App's `MainNavigationViewModel` (not `DeepLinkHandler`, which only runs logged in). Logged out: opens
+  `BankIDLoginQRView(powerOfAttorneyId:)`. Logged in: alert, and on confirm log out then open that login.
+  `AuthenticationClient.startSeBankId(powerOfAttorneyId:)` starts it with `POST /member-login
+  {method: SE_BANKID, powerOfAttorneyId}` (the auth library can't), then polls / exchanges the code like a normal
+  login. The resulting tokens carry a `poa` claim (`ssn`, `name`, `level`). `MainNavigationViewModel` gets it as a
+  `PowerOfAttorneyClaim` from `AuthenticationService.getPowerOfAttorney()` (AuthenticationCore; the Octopus
+  client calls `GET /power-of-attorney/current` right after the PoA BankID login completes, failing the login if
+  it can't, and stores the result in the keychain until logout) after login and on launch: `Full` (or no claim)
+  shows the logged in app, any other level shows only App's `HomeTab` with `isHomeLimitedAccess` set (First Vet,
+  inbox, make a claim, contact us, claims, and contracts whose details hide every editing action via
+  `isContractEditingDisabled`). Both levels greet the person by their PoA name (`homeActingPowerOfAttorney`).
+- **Current**: `GET /power-of-attorney/current` returns `{name, ssn, level}` of the power of attorney the caller is
+  logged in with (404 when logged in as the member).
 - **List**: `GET /power-of-attorney` returns `[{id, name, ssn, level}]` of the granted powers of attorney, oldest first.
 
 ## Key Files

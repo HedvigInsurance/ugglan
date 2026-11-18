@@ -47,22 +47,7 @@ public struct ContractsNavigation<Content: View>: View {
                 }
         }
         .disabled(contractsNavigationVm.isAddonPresented != nil)
-        .detent(
-            item: $contractsNavigationVm.insurableLimit,
-            presentationStyle: .detent(style: [.height])
-        ) { insurableLimit in
-            InfoView(
-                infoViewModel: .init(
-                    title: insurableLimit.label,
-                    description: insurableLimit.description
-                )
-            )
-        }
-        .detent(
-            item: $contractsNavigationVm.document,
-            presentationStyle: .detent(style: [.large]),
-            options: .constant(.alwaysOpenOnTop)
-        ) { document in
+        .handleContractInformationSheets(contractsNavigationVm: contractsNavigationVm) { document in
             redirect(.pdf(document: document))
         }
         .detent(
@@ -128,20 +113,6 @@ public struct ContractsNavigation<Content: View>: View {
             redirect(.changeTier(input: input))
         }
         .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
-        .detent(
-            item: $contractsNavigationVm.insuranceUpdate,
-            presentationStyle: .detent(style: [.height])
-        ) { agreement in
-            UpcomingChangesScreen(
-                agreement: agreement
-            )
-            .navigationTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
-            .embededInNavigation(
-                options: [.navigationType(type: .large), .extendedNavigationWidth],
-                tracking: ContractsDetentType.upcomingChanges
-            )
-            .environment(contractsNavigationVm)
-        }
         .handleRemoveAddons(input: $contractsNavigationVm.isRemoveAddonPresented)
         .detent(item: $contractsNavigationVm.addonActionPresented) { addonAction in
             AddonActionSheet(
@@ -190,6 +161,63 @@ public class ContractsNavigationViewModel {
     )
 
     public init() {}
+}
+
+extension EnvironmentValues {
+    /// Hides every action in a contract's details that changes the insurance (editing, moving, stakeholders,
+    /// addons, missing info), for a member logged in with a power of attorney that doesn't grant full access.
+    @Entry public var isContractEditingDisabled = false
+}
+
+extension View {
+    /// The read-only sheets a contract's details open: insurable limits, documents and upcoming changes.
+    public func handleContractInformationSheets<Pdf: View>(
+        contractsNavigationVm: ContractsNavigationViewModel,
+        @ViewBuilder pdf: @escaping (hPDFDocument) -> Pdf
+    ) -> some View {
+        modifier(ContractInformationSheets(contractsNavigationVm: contractsNavigationVm, pdf: pdf))
+    }
+}
+
+private struct ContractInformationSheets<Pdf: View>: ViewModifier {
+    @Bindable var contractsNavigationVm: ContractsNavigationViewModel
+    let pdf: (hPDFDocument) -> Pdf
+
+    func body(content: Content) -> some View {
+        content
+            .detent(
+                item: $contractsNavigationVm.insurableLimit,
+                presentationStyle: .detent(style: [.height])
+            ) { insurableLimit in
+                InfoView(
+                    infoViewModel: .init(
+                        title: insurableLimit.label,
+                        description: insurableLimit.description
+                    )
+                )
+            }
+            .detent(
+                item: $contractsNavigationVm.document,
+                presentationStyle: .detent(style: [.large]),
+                options: .constant(.alwaysOpenOnTop)
+            ) { document in
+                pdf(document)
+            }
+            .detent(
+                item: $contractsNavigationVm.insuranceUpdate,
+                presentationStyle: .detent(style: [.height])
+            ) { agreement in
+                UpcomingChangesScreen(
+                    agreement: agreement
+                )
+                .navigationTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
+                .embededInNavigation(
+                    options: [.navigationType(type: .large), .extendedNavigationWidth],
+                    tracking: ContractsDetentType.upcomingChanges
+                )
+                .environment(contractsNavigationVm)
+            }
+    }
 }
 
 public enum RedirectType {

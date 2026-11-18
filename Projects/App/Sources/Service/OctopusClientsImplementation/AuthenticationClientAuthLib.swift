@@ -91,7 +91,14 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
+    func startSeBankId(
+        powerOfAttorneyId: String?,
+        updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void
+    ) async throws {
+        if let powerOfAttorneyId {
+            try await startPowerOfAttorneyBankIdLogin(id: powerOfAttorneyId, updateStatusTo: updateStatusTo)
+            return
+        }
         do {
             let authUrl = Environment.current.authUrl
             AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
@@ -112,42 +119,11 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             switch data {
             case let properties as AuthAttemptResultBankIdProperties:
                 updateStatusTo(.started(code: properties.autoStartToken))
-                let sequence = asyncSequence(
-                    for: networkAuthRepository.observeLoginStatus(statusUrl: .init(url: properties.statusUrl.url))
+                try await observeLoginStatus(
+                    statusUrl: properties.statusUrl.url,
+                    isPowerOfAttorneyLogin: false,
+                    updateStatusTo: updateStatusTo
                 )
-                for try await status in sequence {
-                    let key = UUID().uuidString
-                    AuthenticationService.logAuthResourceStart(key, authUrl)
-
-                    AuthenticationService.logAuthResourceStop(
-                        key,
-                        HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
-                    )
-
-                    switch status {
-                    case let failed as LoginStatusResultFailed:
-                        let message = failed.localisedMessage
-                        log.error(
-                            "LOGIN FAILED",
-                            error: NSError(domain: message, code: 1000),
-                            attributes: [
-                                "message": message,
-                                "statusUrl": properties.statusUrl.url,
-                            ]
-                        )
-                        throw AuthenticationError.loginFailure(message: failed.localisedMessage)
-                    case _ as LoginStatusResultException:
-                        throw AuthenticationError.loginFailure(message: nil)
-                    case let completed as LoginStatusResultCompleted:
-                        try await exchange(code: completed.authorizationCode.code)
-                        updateStatusTo(.completed)
-                        return
-                    case let pending as LoginStatusResultPending:
-                        updateStatusTo(.pending(qrCode: pending.bankIdProperties?.liveQrCodeData))
-                    default:
-                        throw AuthenticationError.loginFailure(message: nil)
-                    }
-                }
             case let error as AuthAttemptResultError:
                 var localizedMessage = L10n.General.errorBody
                 var logMessage = "Got Error when signing in with BankId"
@@ -190,7 +166,97 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
+    /// Polls the BankID login status until it completes (then exchanges the authorization code) or fails.
+    private func observeLoginStatus(
+        statusUrl: String,
+        isPowerOfAttorneyLogin: Bool,
+        updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void
+    ) async throws {
+        let authUrl = Environment.current.authUrl
+        let sequence = asyncSequence(
+            for: networkAuthRepository.observeLoginStatus(statusUrl: .init(url: statusUrl))
+        )
+        for try await status in sequence {
+            let key = UUID().uuidString
+            AuthenticationService.logAuthResourceStart(key, authUrl)
+
+            AuthenticationService.logAuthResourceStop(
+                key,
+                HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
+            )
+
+            switch status {
+            case let failed as LoginStatusResultFailed:
+                let message = failed.localisedMessage
+                log.error(
+                    "LOGIN FAILED",
+                    error: NSError(domain: message, code: 1000),
+                    attributes: [
+                        "message": message,
+                        "statusUrl": statusUrl,
+                    ]
+                )
+                throw AuthenticationError.loginFailure(message: failed.localisedMessage)
+            case _ as LoginStatusResultException:
+                throw AuthenticationError.loginFailure(message: nil)
+            case let completed as LoginStatusResultCompleted:
+                try await exchange(code: completed.authorizationCode.code)
+                try await storePowerOfAttorney(isPowerOfAttorneyLogin: isPowerOfAttorneyLogin)
+                updateStatusTo(.completed)
+                return
+            case let pending as LoginStatusResultPending:
+                updateStatusTo(.pending(qrCode: pending.bankIdProperties?.liveQrCodeData))
+            default:
+                throw AuthenticationError.loginFailure(message: nil)
+            }
+        }
+    }
+
+    /// Power of attorney login (flow 2): like a normal BankID login, but started with the id from the power of attorney
+    /// link instead of a personal number. The auth library can't start it, so `POST /member-login` is done here; the
+    /// status polling and the code exchange are the same as for a normal login.
+    private func startPowerOfAttorneyBankIdLogin(
+        id: String,
+        updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void
+    ) async throws {
+        do {
+            var request = URLRequest(url: Environment.current.authUrl.appending(path: "member-login"))
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            for (key, value) in await ApolloClient.headers() {
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+            if BankIDSandboxState.isEnabled {
+                request.setValue("true", forHTTPHeaderField: "Hedvig-Bankid-Sandbox")
+            }
+            request.httpBody = try JSONEncoder()
+                .encode(PowerOfAttorneyLoginBody(method: "SE_BANKID", powerOfAttorneyId: id))
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let response = try JSONDecoder().decode(PowerOfAttorneyLoginResponse.self, from: data)
+            guard response.result == "success",
+                let statusUrl = response.statusUrl,
+                let autoStartToken = response.seBankIdProperties?.autoStartToken
+            else {
+                // `reason` explains why the link isn't valid
+                throw AuthenticationError.loginFailure(message: response.reason ?? L10n.General.errorBody)
+            }
+            updateStatusTo(.started(code: autoStartToken))
+            try await observeLoginStatus(
+                statusUrl: statusUrl,
+                isPowerOfAttorneyLogin: true,
+                updateStatusTo: updateStatusTo
+            )
+        } catch {
+            log.error("Got Error when signing in with power of attorney", error: error, attributes: [:])
+            if let error = error as? AuthenticationError {
+                throw error
+            }
+            throw AuthenticationError.loginFailure(message: nil)
+        }
+    }
+
     func logout() async throws {
+        await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
         do {
             if let token = try await ApolloClient.retreiveToken() {
                 let data = try await asyncFunction(
@@ -210,6 +276,61 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         } catch {
             throw AuthenticationError.logoutFailure
         }
+    }
+
+    private static let powerOfAttorneyKey = "powerOfAttorney"
+
+    func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
+        try? await KeychainHelper.standard.read(key: Self.powerOfAttorneyKey, type: PowerOfAttorneyClaim.self)
+    }
+
+    /// Right after a BankID login: a power of attorney login stores who logged in, a normal login clears what an
+    /// earlier one stored. If it can't be fetched the login fails (and its tokens are dropped), so the app never opens
+    /// without knowing what the person may see.
+    private func storePowerOfAttorney(isPowerOfAttorneyLogin: Bool) async throws {
+        guard isPowerOfAttorneyLogin else {
+            await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
+            return
+        }
+        do {
+            guard let powerOfAttorney = try await fetchCurrentPowerOfAttorney() else {
+                throw URLError(.badServerResponse)
+            }
+            KeychainHelper.standard.save(powerOfAttorney, key: Self.powerOfAttorneyKey)
+        } catch {
+            log.error("Got Error when fetching the power of attorney after login", error: error, attributes: [:])
+            try? await logout()
+            await ApolloClient.deleteToken()
+            throw AuthenticationError.loginFailure(message: L10n.General.defaultError)
+        }
+    }
+
+    /// `GET /power-of-attorney/current`: the power of attorney the caller is logged in with (`name`, `ssn`, `level`).
+    /// A member logged in as themselves gets 404.
+    private func fetchCurrentPowerOfAttorney() async throws -> PowerOfAttorneyClaim? {
+        var request = URLRequest(url: Environment.current.authUrl.appending(path: "power-of-attorney/current"))
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        try await TokenRefresher.shared.refreshIfNeeded()
+        for (key, value) in await ApolloClient.headers() {
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+        if statusCode == 404 {
+            return nil
+        }
+        guard (200..<300).contains(statusCode) else {
+            throw URLError(.badServerResponse)
+        }
+        let current = try JSONDecoder().decode(CurrentPowerOfAttorney.self, from: data)
+        return .init(ssn: current.ssn, name: current.name, level: current.level)
+    }
+
+    private struct CurrentPowerOfAttorney: Decodable {
+        let name: String
+        let ssn: String
+        let level: String
     }
 
     func exchange(code: String) async throws {
@@ -297,5 +418,21 @@ extension HedvigShared.AuthTokenResultError {
         case let unknownError as AuthTokenResultErrorUnknownError: return unknownError.message
         default: return "Unknown error"
         }
+    }
+}
+
+private struct PowerOfAttorneyLoginBody: Encodable {
+    let method: String
+    let powerOfAttorneyId: String
+}
+
+private struct PowerOfAttorneyLoginResponse: Decodable {
+    let result: String
+    let statusUrl: String?
+    let seBankIdProperties: BankIdProperties?
+    let reason: String?
+
+    struct BankIdProperties: Decodable {
+        let autoStartToken: String?
     }
 }
