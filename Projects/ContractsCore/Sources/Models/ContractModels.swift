@@ -20,6 +20,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         supportsCoOwners: Bool,
         supportsTravelCertificate: Bool,
         supportsChangeTier: Bool,
+        supportsChangeMileage: Bool = false,
         supportsTermination: Bool,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
@@ -43,6 +44,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
         self.supportsChangeTier = supportsChangeTier
+        self.supportsChangeMileage = supportsChangeMileage
         self.supportsTermination = supportsTermination
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
@@ -64,6 +66,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let terminationDate: String?
     public let supportsAddressChange: Bool
     public let supportsChangeTier: Bool
+    public let supportsChangeMileage: Bool
     public let supportsCoInsured: Bool
     public let supportsCoOwners: Bool
     public let supportsTravelCertificate: Bool

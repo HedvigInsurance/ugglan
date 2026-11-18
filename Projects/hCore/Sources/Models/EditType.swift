@@ -3,6 +3,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     case coInsured
     case coOwners
     case changeTier
+    case changeMileage
     case cancellation
     case removeAddons
 
@@ -14,6 +15,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         case .changeTier:
             return isPaymentProtection ? L10n.InsuranceDetails.changeAmount : L10n.InsuranceDetails.changeCoverage
+        // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
+        case .changeMileage: return "Ändra körsträcka"
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
         case .removeAddons: return L10n.removeAddonButtonTitle
         }
@@ -27,6 +30,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeTier:
             return isPaymentProtection
                 ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.hcQuickActionsUpgradeCoverageSubtitle
+        // TODO: Add "How far the car is driven per year" / "Hur långt bilen körs per år" to Lokalise
+        case .changeMileage: return "Hur långt bilen körs per år"
         case .cancellation: return L10n.hcQuickActionsTerminationSubtitle
         case .removeAddons: return L10n.hcQuickActionsRemoveAddonSubtitle
         }

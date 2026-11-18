@@ -3,6 +3,7 @@ import Apollo
 import AppStateContainer
 import AuthenticationCore
 import CampaignCore
+import ChangeMileageCore
 import ChangeTierCore
 import Chat
 import Claims
@@ -50,6 +51,7 @@ enum DI {
             let notificationClient = NotificationClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let changeTierClient = ChangeTierClientDemo()
+            let changeMileageClient = ChangeMileageClientDemo()
             let addonClient = AddonsClientDemo()
             let fetchClaimDetailsDemoClient = FetchClaimDetailsClientDemo()
             let crossSellClient = CrossSellClientDemo()
@@ -75,6 +77,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+            Dependencies.shared.add(module: Module { () -> ChangeMileageClient in changeMileageClient })
             Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
             Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
             Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
@@ -109,6 +112,7 @@ enum DI {
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
             let changeTierClient = ChangeTierClientOctopus()
+            let changeMileageClient = ChangeMileageClientOctopus()
             let addonClient = AddonsClientOctopus()
             let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             let crossSellClient = CrossSellClientOctopus()
@@ -140,6 +144,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> ChangeMileageClient in changeMileageClient })
                 Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
@@ -172,6 +177,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> ChangeMileageClient in changeMileageClient })
                 Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
                 Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })

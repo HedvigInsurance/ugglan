@@ -42,6 +42,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | AuthenticationUI | BankID + OTP login views and tracking conformance |
 | CampaignCore | Discounts/referrals models, service protocol, and root ViewModel (UI-free) |
 | CampaignUI | SwiftUI views and navigation for the discounts/referrals screen (built on CampaignCore) |
+| ChangeMileageCore | Car mileage change models, client protocol, service wrapper and demo client (UI-free) |
+| ChangeMileageUI | SwiftUI flow for changing a car's yearly mileage, navigation and ViewModel (built on ChangeMileageCore) |
 | ChangeTierCore | Tier change models, client protocol, service wrapper and demo client (UI-free) |
 | ChangeTierUI | SwiftUI tier upgrade/downgrade flow, navigation and ViewModels (built on ChangeTierCore) |
 | Chat | Customer support messaging |
