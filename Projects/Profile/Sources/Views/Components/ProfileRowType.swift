@@ -5,6 +5,7 @@ import hCoreUI
 
 enum ProfileRowType {
     case myInfo, settings, travelCertificate, certificates, insuranceEvidence, claimHistory, information
+    case powerOfAttorney
     case devSettings
     case eurobonus(hasEnteredNumber: Bool)
 
@@ -26,6 +27,9 @@ enum ProfileRowType {
             return L10n.Profile.ClaimHistory.title
         case .information:
             return L10n.profileInfoLabel
+        case .powerOfAttorney:
+            // TODO: Localize via Lokalise
+            return "Power of attorney"
         case .devSettings:
             // Ugglan-only screen, intentionally not localized
             return "Dev settings"
@@ -45,7 +49,7 @@ enum ProfileRowType {
             } else {
                 return hCoreUIAssets.eurobonus.view
             }
-        case .travelCertificate, .certificates, .insuranceEvidence:
+        case .travelCertificate, .certificates, .insuranceEvidence, .powerOfAttorney:
             return hCoreUIAssets.document.view
         case .claimHistory:
             return hCoreUIAssets.clock.view

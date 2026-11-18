@@ -112,6 +112,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "MoveFlowCore", path: .relativeToRoot("Projects/MoveFlowCore")),
         .project(target: "MoveFlowUI", path: .relativeToRoot("Projects/MoveFlowUI")),
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
+        .project(target: "PowerOfAttorney", path: .relativeToRoot("Projects/PowerOfAttorney")),
         .project(target: "AuthenticationCore", path: .relativeToRoot("Projects/AuthenticationCore")),
         .project(target: "AuthenticationUI", path: .relativeToRoot("Projects/AuthenticationUI")),
         .project(target: "EditStakeholdersCore", path: .relativeToRoot("Projects/EditStakeholdersCore")),

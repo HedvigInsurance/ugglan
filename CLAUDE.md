@@ -64,6 +64,7 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | MoveFlowUI | Address change flow, navigation and ViewModels (built on MoveFlowCore) |
 | NotificationService | Push notification handling |
 | Payment | Payment methods, payment history, direct debit |
+| PowerOfAttorney | Granted powers of attorney list and BankID-signed sharing with co-insured |
 | Profile | User profile, settings, app info |
 | SubmitClaimChat | Claims submission flow (current, chat-based) |
 | TerminateContractsCore | Termination models, client protocol, service wrapper and demo client (UI-free) |

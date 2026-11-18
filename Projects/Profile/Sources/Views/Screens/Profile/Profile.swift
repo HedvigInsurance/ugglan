@@ -22,6 +22,7 @@ public struct ProfileView: View {
                     )
                 }
                 ProfileRow(row: .claimHistory)
+                ProfileRow(row: .powerOfAttorney)
                 ProfileRow(row: .information)
                 if Environment.current != .production {
                     ProfileRow(row: .settings)

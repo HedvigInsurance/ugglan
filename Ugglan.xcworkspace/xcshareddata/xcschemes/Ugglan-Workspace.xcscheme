@@ -700,6 +700,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A449612FBB1F1412BA615285"
+               BuildableName = "PowerOfAttorney.framework"
+               BlueprintName = "PowerOfAttorney"
+               ReferencedContainer = "container:Projects/PowerOfAttorney/PowerOfAttorney.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "A1A9B9ADD24CE94AF2019CFC"
                BuildableName = "Profile.framework"
                BlueprintName = "Profile"

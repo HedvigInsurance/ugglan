@@ -1,6 +1,7 @@
 import Claims
 import InsuranceEvidence
 import Market
+import PowerOfAttorney
 import SwiftUI
 import TravelCertificate
 import hCore
@@ -79,6 +80,8 @@ public struct ProfileNavigation<Content: View>: View {
                         InformationScreen()
                     case .devSettings:
                         DevSettingsView()
+                    case .powerOfAttorney:
+                        PowerOfAttorneyListScreen()
                     }
                 }
                 .routerDestination(
@@ -158,6 +161,7 @@ public enum ProfileRouterType: Hashable {
     case travelCertificates
     case information
     case devSettings
+    case powerOfAttorney
 }
 
 public enum ProfileRouterTypeWithHiddenBottomBar: Hashable {
@@ -205,6 +209,8 @@ extension ProfileRouterType: TrackingViewNameProtocol {
             return .init(describing: InformationScreen.self)
         case .devSettings:
             return .init(describing: DevSettingsView.self)
+        case .powerOfAttorney:
+            return .init(describing: PowerOfAttorneyListScreen.self)
         }
     }
 }
@@ -231,6 +237,9 @@ extension ProfileRouterType: NavigationTitleProtocol {
         case .devSettings:
             // Ugglan-only screen, intentionally not localized
             "Dev settings"
+        case .powerOfAttorney:
+            // TODO: Localize via Lokalise
+            "Power of attorney"
         }
     }
 }

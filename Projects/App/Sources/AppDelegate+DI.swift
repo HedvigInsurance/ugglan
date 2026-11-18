@@ -17,6 +17,7 @@ import InsuranceEvidence
 import MoveFlowCore
 import Onboarding
 import Payment
+import PowerOfAttorney
 import Profile
 import SubmitClaimChat
 import TerminateContractsCore
@@ -59,6 +60,7 @@ enum DI {
             let onboardingClient = OnboardingClientDemo()
             let puppyGuideClient = PuppyGuideClientDemo()
             let terminateContractsClient = TerminateContractsClientDemo()
+            let powerOfAttorneyClient = PowerOfAttorneyClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClient })
@@ -84,6 +86,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
             Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
             Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsClient })
+            Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in powerOfAttorneyClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()
@@ -147,6 +150,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
                 Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
@@ -179,6 +183,7 @@ enum DI {
                 Dependencies.shared.add(module: Module { () -> ClaimIntentClient in claimIntentClient })
                 Dependencies.shared.add(module: Module { () -> hSubmitClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AuthorizationCodeClient in networkClient })
+                Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> PetChipIdClient in petChipIdClient })
                 Dependencies.shared.add(module: Module { () -> OnboardingClient in onboardingClient })
                 Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })

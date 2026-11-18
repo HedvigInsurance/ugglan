@@ -96,6 +96,14 @@
             "Profile/frameworks",
             "ProfileTests/frameworks",
           ],
+        }, {
+          "path": "<PRODUCTS>/PowerOfAttorney.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Profile/frameworks",
+            "ProfileTests/frameworks",
+          ],
         },
         { "path": "<PRODUCTS>/Profile.framework", "id": "FCFEAF10AB4C6CB5C0ED0FD9", "type": "wrapper.framework", "index": false, "target-membership": [ "ProfileTests/frameworks" ] },
         { "path": "<PRODUCTS>/ProfileTests.xctest", "id": "9F4C29F643D75828F3D61EBA", "type": "wrapper.cfbundle", "index": false },
