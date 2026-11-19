@@ -3,10 +3,10 @@
 SwiftUI screens for the in-app Messages inbox, built on MessagesCore: inbox list, filter sheet and opened message.
 
 ## Key Files
-- `Sources/Navigation/MessagesNavigation.swift` — `MessagesRouterAction` (`.inbox`, `.message(id:)`) and `.messagesRouterDestinations()`, which registers both screens on the enclosing `hNavigationStack` (applied in App's `HomeTab`).
+- `Sources/Navigation/MessagesNavigation.swift` — `MessagesNavigation`, the inbox in its own navigation stack with a close button, presented by App's `HomeTab` as a `.sheet` zooming out of the Home bell (`.zoomTransition(from: .messages)`, like FirstVet); `MessagesRouterAction` (`.inbox` for tracking, `.message(id:)` pushed inside the modal).
 - `Sources/Views/MessagesInboxScreen.swift` — inbox screen (one card, newest first), `MessageRow` (titled by channel), loading skeleton, empty/error states.
 - `Sources/Views/MessagesInboxViewModel.swift` — type filter and date range over `MessagesStore` (always newest first).
-- `Sources/Views/MessagesFilterToolbarButton.swift` — envelope (type) and calendar (date) buttons in the navigation bar, next to the title; a blue dot marks the active filter. The calendar is an SF Symbol because the Hedvig UI kit has none.
+- `Sources/Views/MessagesFilterToolbarButton.swift` — envelope (type) and calendar (date) buttons in the navigation bar, placed with `hSecondaryToolbarPlacement` (leading, since the modal close button holds the trailing side); a blue dot marks the active filter. The calendar is an SF Symbol because the Hedvig UI kit has none.
 - `Sources/Views/MessagesFilterSheet.swift` — "Show" sheet with `hRadioOptionList`; picking an option applies it and closes the sheet (only "Cancel" below).
 - `Sources/Views/MessagesDateFilterSheet.swift` — "Date" sheet with a `MultiDatePicker` shown straight away: first tap = start, second tap = end, the days between are highlighted; a single day filters to that day. "Clear dates" removes the range.
 - `Sources/Components/MessagesSheetLayout.swift` — shared sheet layout: title, subtitle, content, glass button pair, content-fitted detent.
@@ -19,7 +19,7 @@ SwiftUI screens for the in-app Messages inbox, built on MessagesCore: inbox list
 - `hCore`, `hCoreUI`, `MessagesCore`
 
 ## Consumers
-- `Home` (pushes `MessagesRouterAction.inbox` from the bell), `App` (registers the destinations).
+- `Home` (the bell sets `HomeNavigationViewModel.isMessagesPresented`), `App` (presents `MessagesNavigation`).
 
 ## Gotchas
 - **Liquid Glass is native.** Pills and sheet buttons use `.glass` / `.glassProminent` on iOS 26 (`.messagesGlassButton`), with hCoreUI capsules as the fallback. The filter sheet is a system `.sheet` (not the app's `.detent`) so it gets the iOS 26 glass sheet; its height is measured from its content.

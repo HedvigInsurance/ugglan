@@ -14,10 +14,22 @@ public enum MessagesRouterAction: Hashable, TrackingViewNameProtocol {
     }
 }
 
+/// The Messages inbox in its own navigation stack, for presenting modally; opened messages push inside it.
+public struct MessagesNavigation: View {
+    public init() {}
+
+    public var body: some View {
+        MessagesInboxScreen()
+            .withDismissButton()
+            .messagesRouterDestinations()
+            .embededInNavigation(options: [.extendedNavigationWidth], tracking: MessagesRouterAction.inbox)
+    }
+}
+
 extension View {
-    /// Registers the Messages screens on the enclosing `hNavigationStack`, so they can be pushed with
-    /// `router.push(MessagesRouterAction.inbox)`.
-    public func messagesRouterDestinations() -> some View {
+    /// Registers the opened-message screen on the enclosing `hNavigationStack`, so it can be pushed with
+    /// `router.push(MessagesRouterAction.message(id:))`.
+    func messagesRouterDestinations() -> some View {
         routerDestination(for: MessagesRouterAction.self) { action in
             switch action {
             case .inbox:

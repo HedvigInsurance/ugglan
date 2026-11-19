@@ -2,7 +2,6 @@ import AppStateContainer
 import Claims
 import ContractsCore
 import CrossSellCore
-import MessagesUI
 import Payment
 import SwiftUI
 import hCore
@@ -153,7 +152,7 @@ struct ActiveHomeView: View {
             case .chat:
                 navigationVm?.router.push(HomeRouterAction.inbox)
             case .messages:
-                navigationVm?.router.push(MessagesRouterAction.inbox)
+                navigationVm?.isMessagesPresented = true
             case .travelCertificate, .insuranceEvidence:
                 break
             }

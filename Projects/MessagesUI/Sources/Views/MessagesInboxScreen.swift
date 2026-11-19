@@ -7,17 +7,19 @@ import hCoreUI
 struct MessagesInboxScreen: View {
     @State private var vm = MessagesInboxViewModel()
     @Environment(NavigationRouter.self) private var router
+    /// Leading while the modal close button holds the trailing side.
+    @Environment(\.hSecondaryToolbarPlacement) private var filtersPlacement
 
     var body: some View {
         MessagesScreenLayout(title: L10n.MessagesInbox.title) {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: filtersPlacement) {
                 MessagesFilterToolbarButton(kind: .type, vm: vm)
             }
             if #available(iOS 26.0, *) {
                 // Keeps the two filters as separate glass circles instead of one shared capsule.
-                ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                ToolbarSpacer(.fixed, placement: filtersPlacement)
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: filtersPlacement) {
                 MessagesFilterToolbarButton(kind: .date, vm: vm)
             }
         } content: {
@@ -159,18 +161,12 @@ private struct MessagesLoadingView: View {
 
 #Preview("Light") {
     setUpPreview()
-    return hNavigationStack(router: NavigationRouter(), tracking: "MessagesPreview") {
-        MessagesInboxScreen()
-            .messagesRouterDestinations()
-    }
-    .preferredColorScheme(.light)
+    return MessagesNavigation()
+        .preferredColorScheme(.light)
 }
 
 #Preview("Dark") {
     setUpPreview()
-    return hNavigationStack(router: NavigationRouter(), tracking: "MessagesPreview") {
-        MessagesInboxScreen()
-            .messagesRouterDestinations()
-    }
-    .preferredColorScheme(.dark)
+    return MessagesNavigation()
+        .preferredColorScheme(.dark)
 }

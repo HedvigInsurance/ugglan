@@ -740,7 +740,6 @@ struct HomeTab: View {
                     InboxView()
                         .environment(homeNavigationVm)
                 }
-                .messagesRouterDestinations()
         }
         .environment(homeNavigationVm)
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)
@@ -797,6 +796,11 @@ struct HomeTab: View {
                     presentAddon(for: banner)
                 }
             )
+        }
+        .sheet(isPresented: $homeNavigationVm.isMessagesPresented) {
+            MessagesNavigation()
+                .presentationDragIndicator(.visible)
+                .zoomTransition(from: .messages)
         }
         .sheet(item: $homeNavigationVm.navBarItems.isNewOfferSheetPresentedModal) { crossSells in
             CrossSellingModal(crossSells: crossSells)
