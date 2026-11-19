@@ -22,7 +22,7 @@
       "kind": "remote",
       "repository": "https://github.com/HedvigInsurance/umbrella.git",
       "version": {
-        "version": "0.0.20261104115422",
+        "version": "0.0.20261119224044",
       },
     }, {
       "kind": "remote",
@@ -34,7 +34,7 @@
       "kind": "remote",
       "repository": "https://github.com/rickclephas/KMP-NativeCoroutines.git",
       "version": {
-        "version": "1.0.5",
+        "version": "1.0.6",
       },
     },
   ],
