@@ -57,6 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } catch _ {}
         }
         await ApolloClient.deleteToken()
+        KotlinReads.sessionEnded()
 
         clearData()
     }
@@ -180,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self?.isForcingLogout = false
             }
         }
-        IosLogcatLogger.companion.install()
+        KotlinReads.installLogging()
         ApolloClient.bundle = Bundle.main
 
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
