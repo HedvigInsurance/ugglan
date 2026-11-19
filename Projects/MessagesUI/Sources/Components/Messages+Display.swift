@@ -33,8 +33,8 @@ extension InboxDateRange {
 }
 
 extension MessageChannel {
-    /// Title of the opened message screen.
-    var detailTitle: String {
+    /// Name of the channel; titles the inbox row and the opened message screen.
+    var title: String {
         switch self {
         case .email: L10n.MessagesInbox.detailTitleEmail
         case .sms: L10n.MessagesInbox.detailTitleSms
@@ -45,7 +45,7 @@ extension MessageChannel {
 
 @MainActor
 extension InboxMessage {
-    /// Trailing label of a read row: the time today, "Yesterday", otherwise e.g. "3 Nov".
+    /// Trailing label of an inbox row: the time today, "Yesterday", otherwise e.g. "3 Nov".
     var listDateLabel: String {
         let calendar = Calendar.current
         if calendar.isDateInToday(receivedAt) {

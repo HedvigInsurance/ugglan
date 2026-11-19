@@ -3,7 +3,7 @@ import Foundation
 import Observation
 import hCore
 
-/// Shared because the Home bell badge and the Messages screens both read the unread state.
+/// Shared because Home loads the inbox and the Messages screens read it.
 @MainActor
 @PersistableStore
 @Observable
@@ -15,8 +15,6 @@ public final class MessagesStore: AppStore {
 
     public var messages: [InboxMessage] { state.value ?? [] }
 
-    public var unreadCount: Int { messages.filter { !$0.isRead }.count }
-
     public init() {}
 
     public func fetchMessages() async {
@@ -25,7 +23,16 @@ public final class MessagesStore: AppStore {
             state = .loading
         }
         do {
-            state = .loaded(try await service.getMessages())
+            let fetched = try await service.getMessages()
+            // Bodies aren't part of the list; keep the ones already loaded so reopening a message is instant.
+            let loadedBodies = messages.reduce(into: [String: String]()) { $0[$1.id] = $1.body }
+            state = .loaded(
+                fetched.map { message in
+                    var message = message
+                    message.body = message.body ?? loadedBodies[message.id]
+                    return message
+                }
+            )
         } catch {
             if state.value == nil {
                 state = .failed(errorMessage: error.localizedDescription)
@@ -37,22 +44,15 @@ public final class MessagesStore: AppStore {
         messages.first { $0.id == id }
     }
 
-    /// Optimistic: the message reads as opened at once, and goes back to unread if the request fails.
-    public func markAsRead(messageId: String) async {
-        guard let message = message(with: messageId), !message.isRead else { return }
-        setIsRead(true, for: messageId)
-        do {
-            try await service.markAsRead(messageId: messageId)
-        } catch {
-            setIsRead(false, for: messageId)
-        }
-    }
-
-    private func setIsRead(_ isRead: Bool, for messageId: String) {
+    /// Fetches the body of a message once and keeps it on the message, along with its preheader if the list had none.
+    public func loadBody(messageId: String) async throws {
+        guard let message = message(with: messageId), message.body == nil else { return }
+        let content = try await service.getMessageContent(messageId: messageId)
         guard var messages = state.value, let index = messages.firstIndex(where: { $0.id == messageId }) else {
             return
         }
-        messages[index].isRead = isRead
+        messages[index].body = content.body
+        messages[index].preview = messages[index].preview ?? content.preview
         state = .loaded(messages)
     }
 }

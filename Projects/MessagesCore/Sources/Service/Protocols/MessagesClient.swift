@@ -3,18 +3,19 @@ import hCore
 
 @MainActor
 public protocol MessagesClient {
+    /// The inbox without message bodies; those are fetched one at a time with `getMessageContent`.
     func getMessages() async throws -> [InboxMessage]
-    func markAsRead(messageId: String) async throws
+    func getMessageContent(messageId: String) async throws -> InboxMessageContent
 }
 
 public enum MessagesError: Error {
-    case notImplemented
+    case missingBody
 }
 
 extension MessagesError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .notImplemented:
+        case .missingBody:
             return L10n.General.errorBody
         }
     }

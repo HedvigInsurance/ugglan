@@ -9,43 +9,43 @@ public enum MessageChannel: String, CaseIterable, Codable, Hashable, Sendable {
 public struct InboxMessage: Identifiable, Hashable, Codable, Sendable {
     public let id: String
     public let channel: MessageChannel
-    /// Product or topic the message is about, e.g. "Home insurance" or "Claim".
-    public let category: String
-    public let subject: String
-    public let preview: String
+    /// Nil for messages without one, e.g. SMS.
+    public let subject: String?
+    /// Email preheader. Nil when the message has none or the backend hasn't fetched it yet; filled in on open
+    /// by `MessagesStore.loadBody(messageId:)` if the content has one.
+    public var preview: String?
     public let receivedAt: Date
-    public var isRead: Bool
-    public let sender: String
-    public let senderAddress: String
-    /// Set for emails only.
-    public let htmlBody: String?
-    /// Set for SMS and Kivra messages.
-    public let textBody: String?
+    /// The address the message was sent from, when known.
+    public let sender: String?
+    /// HTML for emails, plain text otherwise. Nil until loaded with `MessagesStore.loadBody(messageId:)`.
+    public var body: String?
 
     public init(
         id: String,
         channel: MessageChannel,
-        category: String,
-        subject: String,
-        preview: String,
+        subject: String?,
+        preview: String?,
         receivedAt: Date,
-        isRead: Bool,
-        sender: String,
-        senderAddress: String,
-        htmlBody: String?,
-        textBody: String?
+        sender: String?,
+        body: String?
     ) {
         self.id = id
         self.channel = channel
-        self.category = category
         self.subject = subject
         self.preview = preview
         self.receivedAt = receivedAt
-        self.isRead = isRead
         self.sender = sender
-        self.senderAddress = senderAddress
-        self.htmlBody = htmlBody
-        self.textBody = textBody
+        self.body = body
+    }
+}
+
+public struct InboxMessageContent: Hashable, Sendable {
+    public let body: String
+    public let preview: String?
+
+    public init(body: String, preview: String?) {
+        self.body = body
+        self.preview = preview
     }
 }
 
@@ -68,7 +68,6 @@ public enum InboxSort: Hashable, CaseIterable, Sendable {
     case oldestFirst
 }
 
-/// Received-date filter. Either end may be open; both ends include their whole day.
 public struct InboxDateRange: Hashable, Sendable {
     public let from: Date?
     public let to: Date?
@@ -94,12 +93,10 @@ public struct InboxDateRange: Hashable, Sendable {
     }
 }
 
-/// The inbox split into the "Unread" and "Earlier" sections, each filtered and sorted.
-public struct InboxSections: Equatable, Sendable {
-    public let unread: [InboxMessage]
-    public let earlier: [InboxMessage]
+public struct InboxList: Equatable, Sendable {
+    public let messages: [InboxMessage]
 
-    public var isEmpty: Bool { unread.isEmpty && earlier.isEmpty }
+    public var isEmpty: Bool { messages.isEmpty }
 
     public init(
         messages: [InboxMessage],
@@ -107,7 +104,8 @@ public struct InboxSections: Equatable, Sendable {
         sort: InboxSort,
         dateRange: InboxDateRange? = nil
     ) {
-        let sorted = messages
+        self.messages =
+            messages
             .filter(filter.includes)
             .filter { dateRange?.includes($0.receivedAt) ?? true }
             .sorted { lhs, rhs in
@@ -116,7 +114,5 @@ public struct InboxSections: Equatable, Sendable {
                 case .oldestFirst: lhs.receivedAt < rhs.receivedAt
                 }
             }
-        unread = sorted.filter { !$0.isRead }
-        earlier = sorted.filter(\.isRead)
     }
 }

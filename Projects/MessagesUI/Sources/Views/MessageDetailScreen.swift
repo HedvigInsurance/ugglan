@@ -7,11 +7,14 @@ import hCoreUI
 struct MessageDetailScreen: View {
     let messageId: String
     @AppObservedObject private var store: MessagesStore
+    @State private var bodyLoadFailed = false
 
     var body: some View {
         if let message = store.message(with: messageId) {
-            MessageDetailContent(message: message)
-                .task { await store.markAsRead(messageId: messageId) }
+            MessageDetailContent(message: message, bodyLoadFailed: bodyLoadFailed) {
+                Task { await loadBody() }
+            }
+            .task { await loadBody() }
         } else if case .loaded = store.state {
             GenericErrorView(formPosition: .center)
         } else {
@@ -22,18 +25,39 @@ struct MessageDetailScreen: View {
                 }
         }
     }
+
+    private func loadBody() async {
+        bodyLoadFailed = false
+        do {
+            try await store.loadBody(messageId: messageId)
+        } catch {
+            bodyLoadFailed = true
+        }
+    }
 }
 
 private struct MessageDetailContent: View {
     let message: InboxMessage
+    let bodyLoadFailed: Bool
+    let onRetry: () -> Void
 
     var body: some View {
-        MessagesScreenLayout(title: message.channel.detailTitle) {
+        MessagesScreenLayout(title: message.channel.title) {
             VStack(alignment: .leading, spacing: .padding24) {
-                hText(message.subject, style: .heading2)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .accessibilityAddTraits(.isHeader)
+                if message.subject != nil || message.preview != nil {
+                    VStack(alignment: .leading, spacing: .padding8) {
+                        if let subject = message.subject {
+                            hText(subject, style: .heading2)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .accessibilityAddTraits(.isHeader)
+                        }
+                        if let preview = message.preview {
+                            hText(preview, style: .body1)
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                        }
+                    }
                     .padding(.horizontal, .padding16)
+                }
                 senderRow
                     .padding(.horizontal, .padding16)
                 if message.channel == .email {
@@ -59,11 +83,9 @@ private struct MessageDetailContent: View {
         HStack(spacing: .padding16) {
             HedvigAvatar()
             VStack(alignment: .leading, spacing: 0) {
-                HStack(alignment: .firstTextBaseline, spacing: 0) {
-                    hText(message.sender, style: .body1)
+                if let sender = message.sender {
+                    hText(sender, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
-                    hText(" · \(message.senderAddress)", style: .body1)
-                        .foregroundColor(hTextColor.Translucent.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
@@ -71,21 +93,29 @@ private struct MessageDetailContent: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
-        // Spelled out so VoiceOver skips the " · " separator and never reads the truncated address.
+        // Spelled out so VoiceOver never reads a truncated address.
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(
-            [message.sender, message.senderAddress, message.receivedAtLabel].joined(separator: ", ")
-        )
+        .accessibilityLabel([message.sender, message.receivedAtLabel].compactMap { $0 }.joined(separator: ", "))
     }
 
     @ViewBuilder
     private var messageBody: some View {
-        if let html = message.htmlBody {
-            EmailWebView(html: html)
+        if let body = message.body {
+            if message.channel == .email {
+                EmailWebView(html: body)
+            } else {
+                hText(body, style: .body1)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        } else if bodyLoadFailed {
+            GenericErrorView(formPosition: nil)
+                .hStateViewButtonConfig(.init(actionButton: .init(buttonAction: onRetry)))
         } else {
-            hText(message.textBody ?? message.preview, style: .body1)
-                .foregroundColor(hTextColor.Opaque.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            DotsActivityIndicator(.standard)
+                .frame(maxWidth: .infinity)
+                .accessibilityElement()
+                .accessibilityLabel(L10n.embarkLoading)
         }
     }
 }

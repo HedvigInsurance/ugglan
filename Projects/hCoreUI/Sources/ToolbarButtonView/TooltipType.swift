@@ -8,7 +8,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     case chat(hasUnread: Bool)
     case travelCertificate
     case insuranceEvidence
-    case messages(unreadCount: Int)
+    case messages
 
     @MainActor
     private static var animateOffer = true
@@ -65,9 +65,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.chatConversationInbox
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
-        case let .messages(unreadCount):
-            guard unreadCount > 0 else { return L10n.MessagesInbox.title }
-            return "\(L10n.MessagesInbox.title), \(L10n.MessagesInbox.accessibilityUnreadCount(unreadCount))"
+        case .messages:
+            return L10n.MessagesInbox.title
         }
     }
 
@@ -77,8 +76,6 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return hasNewOffser
         case let .chat(hasUnread):
             return hasUnread
-        case let .messages(unreadCount):
-            return unreadCount > 0
         default:
             return false
         }

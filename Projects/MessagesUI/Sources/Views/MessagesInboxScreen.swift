@@ -45,32 +45,15 @@ struct MessagesInboxScreen: View {
                 )
                 .padding(.vertical, .padding64)
         case .loaded:
-            let sections = vm.sections
-            if sections.isEmpty {
+            let messages = vm.list.messages
+            if messages.isEmpty {
                 StateView(type: .empty, title: vm.emptyStateTitle, bodyText: nil)
                     .padding(.vertical, .padding64)
             } else {
-                VStack(alignment: .leading, spacing: .padding24) {
-                    section(title: L10n.MessagesInbox.sectionUnread, messages: sections.unread)
-                    section(title: L10n.MessagesInbox.sectionEarlier, messages: sections.earlier)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func section(title: String, messages: [InboxMessage]) -> some View {
-        if !messages.isEmpty {
-            VStack(alignment: .leading, spacing: .padding12) {
-                hText(title, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .padding(.horizontal, .padding16 + .padding4)
-                    .accessibilityAddTraits(.isHeader)
                 MessagesCard {
                     VStack(spacing: 0) {
                         ForEach(messages) { message in
                             MessageRow(message: message) {
-                                vm.open(message)
                                 router.push(MessagesRouterAction.message(id: message.id))
                             }
                             if message.id != messages.last?.id {
@@ -94,18 +77,23 @@ struct MessageRow: View {
                 HedvigAvatar()
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .firstTextBaseline, spacing: .padding8) {
-                        hText(message.category, style: .body1)
+                        hText(message.channel.title, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        trailingLabel
+                        hText(message.listDateLabel, style: .label)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
-                    hText(message.subject, style: .body1)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                    hText(message.preview, style: .label)
-                        .foregroundColor(hTextColor.Translucent.primary)
-                        .lineLimit(2)
-                        .padding(.top, .padding8)
+                    if let subject = message.subject {
+                        hText(subject, style: .body1)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if let preview = message.preview {
+                        hText(preview, style: .label)
+                            .foregroundColor(hTextColor.Translucent.primary)
+                            .lineLimit(2)
+                            .padding(.top, .padding8)
+                    }
                 }
                 .multilineTextAlignment(.leading)
             }
@@ -118,30 +106,12 @@ struct MessageRow: View {
         .accessibilityAddTraits(.isButton)
     }
 
-    @ViewBuilder
-    private var trailingLabel: some View {
-        if message.isRead {
-            hText(message.listDateLabel, style: .label)
-                .foregroundColor(hTextColor.Opaque.secondary)
-        } else {
-            hText(L10n.MessagesInbox.newMessage, style: .label)
-                .foregroundColor(hSignalColor.Blue.text)
-                .padding(.vertical, .padding3)
-                .padding(.horizontal, .padding6)
-                .background {
-                    RoundedRectangle(cornerRadius: .cornerRadiusXS)
-                        .fill(hHighlightColor.Blue.fillTwo)
-                }
-        }
-    }
-
     private var accessibilityText: String {
         let parts: [String?] = [
-            message.isRead ? nil : L10n.MessagesInbox.sectionUnread,
-            message.category,
+            message.channel.title,
             message.subject,
             message.preview,
-            message.isRead ? message.listDateLabel : nil,
+            message.listDateLabel,
         ]
         return parts.compactMap { $0 }.joined(separator: ", ")
     }
@@ -159,7 +129,7 @@ private struct MessageRowDivider: View {
     }
 }
 
-/// Skeleton of one section while the inbox loads.
+/// Skeleton of the list while the inbox loads.
 private struct MessagesLoadingView: View {
     private let placeholder = MessagesClientDemo.sampleMessages().first
 

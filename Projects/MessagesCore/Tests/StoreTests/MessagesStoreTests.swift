@@ -13,14 +13,9 @@ extension MessagesDependencySuite {
         private weak var sut: MockMessagesClient?
 
         private let messages: [InboxMessage] = [
-            MockData.message(id: "unread-1", receivedAt: .init(timeIntervalSince1970: 300)),
-            MockData.message(id: "unread-2", channel: .sms, receivedAt: .init(timeIntervalSince1970: 200)),
-            MockData.message(
-                id: "read-1",
-                channel: .kivra,
-                receivedAt: .init(timeIntervalSince1970: 100),
-                isRead: true
-            ),
+            MockData.message(id: "email-1", receivedAt: .init(timeIntervalSince1970: 300)),
+            MockData.message(id: "sms-1", channel: .sms, receivedAt: .init(timeIntervalSince1970: 200)),
+            MockData.message(id: "kivra-1", channel: .kivra, receivedAt: .init(timeIntervalSince1970: 100)),
         ]
 
         init() {
@@ -66,7 +61,6 @@ extension MessagesDependencySuite {
 
                 #expect(store.state.isFailed)
                 #expect(store.messages.isEmpty)
-                #expect(store.unreadCount == 0)
                 #expect(client.events == [.getMessages])
             }
 
@@ -117,7 +111,6 @@ extension MessagesDependencySuite {
 
                 #expect(observedStateDuringRefresh == messages, "refresh must not replace the list with a loader")
                 #expect(store.state.value == messages)
-                #expect(store.unreadCount == 2)
                 #expect(client.events == [.getMessages, .getMessages])
             }
 
@@ -139,23 +132,6 @@ extension MessagesDependencySuite {
                 await store.fetchMessages()
 
                 #expect(store.messages == refreshed)
-                #expect(store.unreadCount == 1)
-            }
-
-            await expectStoreReleased()
-        }
-
-        @Test
-        func unreadCountCountsUnreadMessages() async {
-            do {
-                let messages = self.messages
-                sut = MockData.createMockMessagesClient(fetchMessages: { messages })
-                let store = MessagesStore()
-                self.store = store
-
-                #expect(store.unreadCount == 0)
-                await store.fetchMessages()
-                #expect(store.unreadCount == 2)
             }
 
             await expectStoreReleased()
@@ -170,7 +146,7 @@ extension MessagesDependencySuite {
                 self.store = store
                 await store.fetchMessages()
 
-                #expect(store.message(with: "unread-2")?.channel == .sms)
+                #expect(store.message(with: "sms-1")?.channel == .sms)
                 #expect(store.message(with: "missing") == nil)
             }
 
@@ -178,77 +154,172 @@ extension MessagesDependencySuite {
         }
 
         @Test
-        func markAsReadOptimisticUpdateSuccess() async {
-            do {
+        func fetchMessagesRefreshKeepsLoadedBodies() async {
+            await recordingErrors {
                 let messages = self.messages
-                var readStateDuringRequest: Bool?
-                weak var weakStore: MessagesStore?
                 let client = MockData.createMockMessagesClient(
                     fetchMessages: { messages },
-                    markAsRead: { id in readStateDuringRequest = weakStore?.message(with: id)?.isRead }
+                    getMessageContent: { id in .init(body: "body \(id)", preview: nil) }
                 )
                 sut = client
                 let store = MessagesStore()
-                weakStore = store
                 self.store = store
                 await store.fetchMessages()
+                try await store.loadBody(messageId: "email-1")
+                try await store.loadBody(messageId: "sms-1")
 
-                await store.markAsRead(messageId: "unread-1")
+                // The refreshed list carries no bodies, drops sms-1 and adds a new message.
+                let refreshed = [
+                    MockData.message(id: "email-1", receivedAt: .init(timeIntervalSince1970: 300)),
+                    MockData.message(id: "new", receivedAt: .init(timeIntervalSince1970: 400)),
+                ]
+                client.fetchMessages = { refreshed }
+                await store.fetchMessages()
 
-                #expect(readStateDuringRequest == true, "the message must read as opened before the request finishes")
-                #expect(store.message(with: "unread-1")?.isRead == true)
-                #expect(store.unreadCount == 1)
-                #expect(client.events == [.getMessages, .markAsRead(messageId: "unread-1")])
+                #expect(store.messages.map(\.id) == ["email-1", "new"])
+                #expect(store.message(with: "email-1")?.body == "body email-1")
+                #expect(store.message(with: "new")?.body == nil)
+                #expect(store.message(with: "sms-1") == nil)
+                #expect(
+                    client.events == [
+                        .getMessages,
+                        .getMessageContent(messageId: "email-1"),
+                        .getMessageContent(messageId: "sms-1"),
+                        .getMessages,
+                    ]
+                )
             }
 
             await expectStoreReleased()
         }
 
         @Test
-        func markAsReadRevertsOnFailure() async {
-            do {
+        func fetchMessagesRefreshPrefersFetchedBody() async {
+            await recordingErrors {
                 let messages = self.messages
-                var readStateDuringRequest: Bool?
-                weak var weakStore: MessagesStore?
                 let client = MockData.createMockMessagesClient(
                     fetchMessages: { messages },
-                    markAsRead: { id in
-                        readStateDuringRequest = weakStore?.message(with: id)?.isRead
-                        throw MockMessagesError.markAsRead
-                    }
+                    getMessageContent: { _ in .init(body: "loaded body", preview: nil) }
                 )
                 sut = client
                 let store = MessagesStore()
-                weakStore = store
                 self.store = store
                 await store.fetchMessages()
+                try await store.loadBody(messageId: "email-1")
 
-                await store.markAsRead(messageId: "unread-1")
+                let refreshed = [
+                    MockData.message(id: "email-1", receivedAt: .init(timeIntervalSince1970: 300), body: "fetched body")
+                ]
+                client.fetchMessages = { refreshed }
+                await store.fetchMessages()
 
-                #expect(readStateDuringRequest == true)
-                #expect(store.message(with: "unread-1")?.isRead == false)
-                #expect(store.unreadCount == 2)
-                #expect(store.messages == messages)
-                #expect(client.events == [.getMessages, .markAsRead(messageId: "unread-1")])
+                #expect(store.message(with: "email-1")?.body == "fetched body")
             }
 
             await expectStoreReleased()
         }
 
         @Test
-        func markAsReadAlreadyReadSkipsClient() async {
-            do {
+        func loadBodySuccess() async {
+            await recordingErrors {
                 let messages = self.messages
+                let client = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { id in .init(body: "<p>body \(id)</p>", preview: nil) }
+                )
+                sut = client
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                try await store.loadBody(messageId: "sms-1")
+
+                #expect(store.message(with: "sms-1")?.body == "<p>body sms-1</p>")
+                #expect(store.message(with: "email-1")?.body == nil, "only the requested message gets a body")
+                #expect(store.messages.map(\.id) == messages.map(\.id), "loading a body must not reorder the list")
+                #expect(client.events == [.getMessages, .getMessageContent(messageId: "sms-1")])
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyFillsMissingPreviewSuccess() async {
+            await recordingErrors {
+                let messages = [MockData.message(id: "email-1", preview: nil)]
+                sut = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { _ in .init(body: "body", preview: "preheader") }
+                )
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                try await store.loadBody(messageId: "email-1")
+
+                #expect(store.message(with: "email-1")?.preview == "preheader")
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyKeepsExistingPreviewSuccess() async {
+            await recordingErrors {
+                let messages = [MockData.message(id: "email-1", preview: "from list")]
+                sut = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { _ in .init(body: "body", preview: "from content") }
+                )
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                try await store.loadBody(messageId: "email-1")
+
+                #expect(store.message(with: "email-1")?.preview == "from list")
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyAlreadyLoadedSkipsClient() async {
+            await recordingErrors {
+                let messages = self.messages
+                let client = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { _ in .init(body: "body", preview: nil) }
+                )
+                sut = client
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                try await store.loadBody(messageId: "email-1")
+                client.getMessageContent = { _ in .init(body: "another body", preview: nil) }
+                try await store.loadBody(messageId: "email-1")
+
+                #expect(store.message(with: "email-1")?.body == "body")
+                #expect(client.events == [.getMessages, .getMessageContent(messageId: "email-1")])
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyFetchedWithListSkipsClient() async {
+            await recordingErrors {
+                let messages = [MockData.message(id: "with-body", body: "from list")]
                 let client = MockData.createMockMessagesClient(fetchMessages: { messages })
                 sut = client
                 let store = MessagesStore()
                 self.store = store
                 await store.fetchMessages()
 
-                await store.markAsRead(messageId: "read-1")
+                try await store.loadBody(messageId: "with-body")
 
-                #expect(store.message(with: "read-1")?.isRead == true)
-                #expect(store.unreadCount == 2)
+                #expect(store.message(with: "with-body")?.body == "from list")
                 #expect(client.events == [.getMessages])
             }
 
@@ -256,8 +327,8 @@ extension MessagesDependencySuite {
         }
 
         @Test
-        func markAsReadUnknownIdSkipsClient() async {
-            do {
+        func loadBodyUnknownIdSkipsClient() async {
+            await recordingErrors {
                 let messages = self.messages
                 let client = MockData.createMockMessagesClient(fetchMessages: { messages })
                 sut = client
@@ -265,7 +336,7 @@ extension MessagesDependencySuite {
                 self.store = store
                 await store.fetchMessages()
 
-                await store.markAsRead(messageId: "missing")
+                try await store.loadBody(messageId: "missing")
 
                 #expect(store.messages == messages)
                 #expect(client.events == [.getMessages])
@@ -275,13 +346,87 @@ extension MessagesDependencySuite {
         }
 
         @Test
-        func messagesStoreDeallocatesAfterFetchAndMarkAsRead() async {
+        func loadBodyBeforeFetchSkipsClient() async {
+            await recordingErrors {
+                let client = MockData.createMockMessagesClient()
+                sut = client
+                let store = MessagesStore()
+                self.store = store
+
+                try await store.loadBody(messageId: "email-1")
+
+                #expect(store.state.isNotLoaded)
+                #expect(client.events.isEmpty)
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyFailure() async {
             do {
+                let messages = self.messages
+                let client = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { _ in throw MockMessagesError.getMessageContent }
+                )
+                sut = client
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                await #expect(throws: MockMessagesError.self) {
+                    try await store.loadBody(messageId: "email-1")
+                }
+
+                #expect(store.message(with: "email-1")?.body == nil)
+                #expect(store.messages == messages)
+                #expect(client.events == [.getMessages, .getMessageContent(messageId: "email-1")])
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func loadBodyRetriesAfterFailureSuccess() async {
+            await recordingErrors {
+                let messages = self.messages
+                let client = MockData.createMockMessagesClient(
+                    fetchMessages: { messages },
+                    getMessageContent: { _ in throw MockMessagesError.getMessageContent }
+                )
+                sut = client
+                let store = MessagesStore()
+                self.store = store
+                await store.fetchMessages()
+
+                await #expect(throws: MockMessagesError.self) {
+                    try await store.loadBody(messageId: "email-1")
+                }
+                client.getMessageContent = { _ in .init(body: "body", preview: nil) }
+                try await store.loadBody(messageId: "email-1")
+
+                #expect(store.message(with: "email-1")?.body == "body")
+                #expect(
+                    client.events == [
+                        .getMessages,
+                        .getMessageContent(messageId: "email-1"),
+                        .getMessageContent(messageId: "email-1"),
+                    ]
+                )
+            }
+
+            await expectStoreReleased()
+        }
+
+        @Test
+        func messagesStoreDeallocatesAfterFetchAndLoadBody() async {
+            await recordingErrors {
                 let messages = self.messages
                 sut = MockData.createMockMessagesClient(fetchMessages: { messages })
-                await assertDeallocates({ MessagesStore() }) { store in
+                try await assertDeallocates({ MessagesStore() }) { store in
                     await store.fetchMessages()
-                    await store.markAsRead(messageId: "unread-1")
+                    try await store.loadBody(messageId: "email-1")
                 }
             }
 

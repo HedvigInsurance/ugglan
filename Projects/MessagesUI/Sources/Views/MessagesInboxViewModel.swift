@@ -20,8 +20,8 @@ final class MessagesInboxViewModel {
 
     var state: LoadState<[InboxMessage]> { store.state }
 
-    var sections: InboxSections {
-        InboxSections(messages: store.messages, filter: filter, sort: .newestFirst, dateRange: dateRange)
+    var list: InboxList {
+        InboxList(messages: store.messages, filter: filter, sort: .newestFirst, dateRange: dateRange)
     }
 
     var emptyStateTitle: String {
@@ -34,9 +34,5 @@ final class MessagesInboxViewModel {
 
     func load() async {
         await store.fetchMessages()
-    }
-
-    func open(_ message: InboxMessage) {
-        Task { await store.markAsRead(messageId: message.id) }
     }
 }

@@ -4,11 +4,11 @@ import hCore
 @testable import MessagesCore
 
 typealias FetchMessages = () async throws -> [InboxMessage]
-typealias MarkAsRead = (String) async throws -> Void
+typealias GetMessageContent = (String) async throws -> InboxMessageContent
 
 enum MockMessagesError: Error {
     case fetchMessages
-    case markAsRead
+    case getMessageContent
 }
 
 @MainActor
@@ -16,9 +16,9 @@ struct MockData {
     @discardableResult
     static func createMockMessagesClient(
         fetchMessages: @escaping FetchMessages = { [] },
-        markAsRead: @escaping MarkAsRead = { _ in }
+        getMessageContent: @escaping GetMessageContent = { id in .init(body: "<p>\(id)</p>", preview: nil) }
     ) -> MockMessagesClient {
-        let client = MockMessagesClient(fetchMessages: fetchMessages, markAsRead: markAsRead)
+        let client = MockMessagesClient(fetchMessages: fetchMessages, getMessageContent: getMessageContent)
         Dependencies.shared.add(module: Module { () -> MessagesClient in client })
         return client
     }
@@ -27,20 +27,17 @@ struct MockData {
         id: String,
         channel: MessageChannel = .email,
         receivedAt: Date = Date(timeIntervalSince1970: 0),
-        isRead: Bool = false
+        preview: String? = "preview",
+        body: String? = nil
     ) -> InboxMessage {
         .init(
             id: id,
             channel: channel,
-            category: "category",
             subject: "subject \(id)",
-            preview: "preview \(id)",
+            preview: preview,
             receivedAt: receivedAt,
-            isRead: isRead,
-            sender: "Hedvig",
-            senderAddress: "noreply@hedvig.com",
-            htmlBody: channel == .email ? "<p>\(id)</p>" : nil,
-            textBody: channel == .email ? nil : id
+            sender: "noreply@hedvig.com",
+            body: body
         )
     }
 }
@@ -49,16 +46,16 @@ struct MockData {
 final class MockMessagesClient: MessagesClient {
     var events = [Event]()
     var fetchMessages: FetchMessages
-    var markAsRead: MarkAsRead
+    var getMessageContent: GetMessageContent
 
     enum Event: Equatable {
         case getMessages
-        case markAsRead(messageId: String)
+        case getMessageContent(messageId: String)
     }
 
-    init(fetchMessages: @escaping FetchMessages, markAsRead: @escaping MarkAsRead) {
+    init(fetchMessages: @escaping FetchMessages, getMessageContent: @escaping GetMessageContent) {
         self.fetchMessages = fetchMessages
-        self.markAsRead = markAsRead
+        self.getMessageContent = getMessageContent
     }
 
     func getMessages() async throws -> [InboxMessage] {
@@ -66,8 +63,8 @@ final class MockMessagesClient: MessagesClient {
         return try await fetchMessages()
     }
 
-    func markAsRead(messageId: String) async throws {
-        events.append(.markAsRead(messageId: messageId))
-        try await markAsRead(messageId)
+    func getMessageContent(messageId: String) async throws -> InboxMessageContent {
+        events.append(.getMessageContent(messageId: messageId))
+        return try await getMessageContent(messageId)
     }
 }

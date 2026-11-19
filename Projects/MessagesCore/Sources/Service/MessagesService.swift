@@ -13,7 +13,7 @@ public class MessagesService {
     }
 
     @Log
-    public func markAsRead(messageId: String) async throws {
-        try await client.markAsRead(messageId: messageId)
+    public func getMessageContent(messageId: String) async throws -> InboxMessageContent {
+        try await client.getMessageContent(messageId: messageId)
     }
 }

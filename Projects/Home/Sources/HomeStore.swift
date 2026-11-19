@@ -100,12 +100,6 @@ public final class HomeStore: AppStore {
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
 
-        let messagesStore: MessagesStore = globalAppStateContainer.get()
-        messagesStore.publisher(for: \.unreadCount)
-            .removeDuplicates()
-            .sink { [weak self] _ in self?.updateToolbarTypes() }
-            .store(in: &cancellables)
-
         Dependencies.featureFlags().publisher(for: \.data)
             .map(\.isMessagesInboxEnabled)
             .dropFirst()
@@ -319,8 +313,7 @@ public final class HomeStore: AppStore {
 
         // The Messages bell sits furthest to the left of the row.
         if Dependencies.featureFlags().isMessagesInboxEnabled {
-            let messagesStore: MessagesStore = globalAppStateContainer.get()
-            types.append(.messages(unreadCount: messagesStore.unreadCount))
+            types.append(.messages)
         }
 
         if crossSellStore.hasNewOffer {
