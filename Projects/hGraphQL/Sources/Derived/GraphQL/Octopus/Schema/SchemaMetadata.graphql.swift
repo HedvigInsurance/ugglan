@@ -61,6 +61,8 @@ public extension OctopusGraphQL {
       "ChatMessagePage": OctopusGraphQL.Objects.ChatMessagePage,
       "ChatMessageText": OctopusGraphQL.Objects.ChatMessageText,
       "ChatMessageTextAction": OctopusGraphQL.Objects.ChatMessageTextAction,
+      "CioMessageContent": OctopusGraphQL.Objects.CioMessageContent,
+      "CioMessageDetails": OctopusGraphQL.Objects.CioMessageDetails,
       "Claim": OctopusGraphQL.Objects.Claim,
       "ClaimDisplayItem": OctopusGraphQL.Objects.ClaimDisplayItem,
       "ClaimFile": OctopusGraphQL.Objects.ClaimFile,

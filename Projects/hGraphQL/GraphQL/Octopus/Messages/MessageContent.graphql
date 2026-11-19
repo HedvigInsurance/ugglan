@@ -1,0 +1,8 @@
+query MessageContent($messageId: ID!) {
+  currentMember {
+    cioMessageContent(messageId: $messageId) {
+      content
+      preheader
+    }
+  }
+}

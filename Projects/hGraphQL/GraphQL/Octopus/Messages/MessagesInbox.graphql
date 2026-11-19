@@ -1,0 +1,12 @@
+query MessagesInbox {
+  currentMember {
+    cioMessages {
+      externalMessageId
+      messageType
+      subject
+      preheader
+      sender
+      timestamp
+    }
+  }
+}
