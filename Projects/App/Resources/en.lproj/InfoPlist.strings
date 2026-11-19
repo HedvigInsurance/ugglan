@@ -9,3 +9,4 @@ NSPhotoLibraryUsageDescription = "Hedvig uses the camera library to let you uplo
 NSMicrophoneUsageDescription = "Hedvig uses the microphone to let you record messages and videos.";
 NSCameraUsageDescription = "Hedvig uses the camera to let you record videos and take photos to send to us.";
 NSPhotoLibraryAddUsageDescription = "Hedvig uses the camera library to let you upload files.";
+NSFaceIDUsageDescription = "Hedvig uses Face ID to confirm it's you before you make changes to your insurance.";

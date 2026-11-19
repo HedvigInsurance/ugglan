@@ -81,22 +81,19 @@ public struct QuoteSummaryScreen: View {
     }
 
     private var openConfirmChangesScreen: some View {
-        let confirmChangesView =
-            ConfirmChangesScreen(
-                title: L10n.confirmChangesTitle,
-                subTitle: L10n.confirmChangesSubtitle(
-                    quoteSummary.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
-                ),
-                buttons: .init(
-                    mainButton: .init(buttonAction: {
-                        isConfirmChangesPresented = false
-                        onConfirm()
-                    }),
-                    dismissButton: .init(buttonAction: {
-                        isConfirmChangesPresented = false
-                    })
-                )
-            )
+        let confirmChangesView = AuthenticatedConfirmChangesScreen(
+            title: L10n.confirmChangesTitle,
+            subTitle: L10n.confirmChangesSubtitle(
+                quoteSummary.activationDate?.displayDateDDMMMYYYYFormat ?? Date().displayDateDDMMMYYYYFormat
+            ),
+            onConfirm: {
+                isConfirmChangesPresented = false
+                onConfirm()
+            },
+            onDismiss: {
+                isConfirmChangesPresented = false
+            }
+        )
 
         return
             confirmChangesView
@@ -371,3 +368,59 @@ private struct PriceSummarySection: View {
         return QuoteSummaryScreen(quoteSummary: quoteSummary, onDocumentTap: { _ in }) {}
     }
 )
+
+/// `ConfirmChangesScreen` that requires local authentication (Face ID / Touch ID / passcode) before confirming.
+/// Owns its own alert state, since the sheet content is hosted by `.detent` and doesn't track the parent's state.
+private struct AuthenticatedConfirmChangesScreen: View {
+    let title: String
+    let subTitle: String
+    let onConfirm: () -> Void
+    let onDismiss: () -> Void
+
+    @State private var authenticationErrorMessage: String?
+
+    var body: some View {
+        confirmChangesScreen
+            .alert(
+                L10n.generalError,
+                isPresented: Binding(
+                    get: { authenticationErrorMessage != nil },
+                    set: { if !$0 { authenticationErrorMessage = nil } }
+                ),
+                presenting: authenticationErrorMessage
+            ) { _ in
+                Button(L10n.discountRedeemSuccessButton, role: .cancel) {}
+            } message: { message in
+                Text(message)
+            }
+    }
+
+    private var confirmChangesScreen: ConfirmChangesScreen {
+        ConfirmChangesScreen(
+            title: title,
+            subTitle: subTitle,
+            buttons: .init(
+                mainButton: .init(buttonAction: {
+                    Task {
+                        // Keep the confirmation sheet open if the user fails or cancels local authentication.
+                        do {
+                            try await Dependencies.localAuthenticator.authenticate(reason: title)
+                            onConfirm()
+                        } catch LocalAuthenticationError.cancelledBySystem {
+                            // The prompt was interrupted, not refused by the user, so there's nothing to tell them.
+                        } catch {
+                            authenticationErrorMessage = error.localizedDescription
+                        }
+                    }
+                }),
+                dismissButton: .init(buttonAction: onDismiss)
+            )
+        )
+    }
+}
+
+extension AuthenticatedConfirmChangesScreen: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        confirmChangesScreen.nameForTracking
+    }
+}
