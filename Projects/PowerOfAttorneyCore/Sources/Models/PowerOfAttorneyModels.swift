@@ -27,6 +27,32 @@ public struct PowerOfAttorney: Equatable, Hashable, Identifiable, Sendable {
     }
 }
 
+/// A power of attorney another member has granted to the member.
+public struct ReceivedPowerOfAttorney: Equatable, Hashable, Identifiable, Sendable {
+    public let id: String
+    /// The member who granted the power of attorney.
+    public let memberId: String
+    /// The member's own name, as the granting member entered it when signing.
+    public let name: String
+    public let level: PowerOfAttorneyLevel
+    /// Link that logs in with the power of attorney, the same one the granting member shares.
+    public let loginUrl: URL?
+
+    public init(
+        id: String,
+        memberId: String,
+        name: String,
+        level: PowerOfAttorneyLevel,
+        loginUrl: URL?
+    ) {
+        self.id = id
+        self.memberId = memberId
+        self.name = name
+        self.level = level
+        self.loginUrl = loginUrl
+    }
+}
+
 /// A person a power of attorney can be granted to (e.g. a co-insured).
 @Loggable
 public struct PowerOfAttorneyUser: Equatable, Hashable, Identifiable, Sendable {

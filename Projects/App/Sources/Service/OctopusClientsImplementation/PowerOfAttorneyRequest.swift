@@ -8,6 +8,8 @@ import hGraphQL
 enum PowerOfAttorneyRequest {
     /// `GET /power-of-attorney`: the powers of attorney the member has granted.
     case list
+    /// `GET /power-of-attorney/received`: the powers of attorney other members have granted to the member.
+    case received
     /// `POST /power-of-attorney`: starts a BankID sign order for a new power of attorney.
     case start(personalNumber: String, name: String, level: PowerOfAttorneyLevel)
     /// `POST {pollUrl}`: the sign order's status. Unlike the login status call (GET), this poll is a POST.
@@ -23,6 +25,9 @@ enum PowerOfAttorneyRequest {
         switch self {
         case .list:
             request = URLRequest(url: authUrl.appending(path: "power-of-attorney"))
+            request.httpMethod = "GET"
+        case .received:
+            request = URLRequest(url: authUrl.appending(path: "power-of-attorney/received"))
             request.httpMethod = "GET"
         case let .start(personalNumber, name, level):
             request = URLRequest(url: authUrl.appending(path: "power-of-attorney"))
@@ -57,7 +62,7 @@ enum PowerOfAttorneyRequest {
     private var requiresAuthorization: Bool {
         switch self {
         case .memberLogin: false
-        case .list, .start, .poll, .current: true
+        case .list, .received, .start, .poll, .current: true
         }
     }
 }
@@ -86,6 +91,14 @@ struct GrantedPowerOfAttorneyResponse: Decodable, Sendable {
     let id: String
     let name: String
     let ssn: String
+    let level: String
+}
+
+struct ReceivedPowerOfAttorneyResponse: Decodable, Sendable {
+    let id: String
+    /// The member who granted the power of attorney.
+    let memberId: String
+    let name: String
     let level: String
 }
 

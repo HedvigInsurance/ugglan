@@ -17,6 +17,16 @@ public class PowerOfAttorneyService {
         try await client.getPowerOfAttorneys()
     }
 
+    @Log
+    public func getReceivedPowerOfAttorneys() async throws -> [ReceivedPowerOfAttorney] {
+        try await client.getReceivedPowerOfAttorneys()
+    }
+
+    @Log
+    public func revokePowerOfAttorney(id: String) async throws {
+        try await client.revokePowerOfAttorney(id: id)
+    }
+
     /// Co-insured on the member's active contracts that have a personal number (needed to grant a power of attorney).
     @Log
     public func getCoInsured() async throws -> [PowerOfAttorneyUser] {

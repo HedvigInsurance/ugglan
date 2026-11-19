@@ -41,7 +41,15 @@ public struct PopoverShareButton: View {
         ) { [url, presenter] in
             presenter.present(url: url)
         }
-        .background(ShareSheetAnchorView(presenter: presenter))
+        .shareSheetPopoverAnchor(presenter)
+    }
+}
+
+extension View {
+    /// Makes this view the anchor the presenter's share sheet popover points at, so `presenter.present(url:)` works
+    /// without a `PopoverShareButton`, e.g. when tapping a whole row.
+    public func shareSheetPopoverAnchor(_ presenter: ShareSheetPopoverPresenter) -> some View {
+        background(ShareSheetAnchorView(presenter: presenter))
     }
 }
 

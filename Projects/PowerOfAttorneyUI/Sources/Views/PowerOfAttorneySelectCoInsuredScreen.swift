@@ -20,15 +20,6 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
                     dismissButton: nil
                 )
             )
-            .detent(presented: $vm.isUserPickerPresented) {
-                userPicker
-                    // TODO: Localize via Lokalise
-                    .navigationTitle("Co-insured")
-                    .embededInNavigation(
-                        options: .navigationType(type: .large),
-                        tracking: PowerOfAttorneyDetentType.userPicker
-                    )
-            }
             .detent(presented: $vm.isLevelPickerPresented) {
                 levelPicker
                     // TODO: Localize via Lokalise
@@ -48,18 +39,15 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
 
     private var form: some View {
         hForm {
-            VStack(spacing: .padding8) {
-                VStack(spacing: .padding4) {
-                    if vm.enterPersonalNumber || vm.users.isEmpty {
-                        personalNumberFields
-                    } else {
-                        userDropdown
-                    }
-                    if !vm.users.isEmpty {
-                        enterPersonalNumberToggle
-                    }
+            VStack(spacing: .padding4) {
+                if vm.enterPersonalNumber || vm.users.isEmpty {
+                    personalNumberFields
+                } else {
+                    userList
                 }
-                levelDropdown
+                if !vm.users.isEmpty {
+                    enterPersonalNumberToggle
+                }
             }
             .hFieldSize(.medium)
         }
@@ -81,7 +69,7 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
                     .large,
                     .primary,
                     // TODO: Localize "Share" via Lokalise
-                    content: .init(title: vm.needsPersonalNumberLookup ? L10n.contractSsnFetchInfo : "Share")
+                    content: .init(title: vm.needsPersonalNumberLookup ? L10n.contractSsnFetchInfo : "Add")
                 ) { [vm] in
                     await vm.primaryAction()
                 }
@@ -91,18 +79,32 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.vertical, .padding16)
         }
+        .animation(.easeInOut, value: vm.enterPersonalNumber)
     }
 
-    private var userDropdown: some View {
-        DropdownView(
-            value: vm.selectedUser?.fullName ?? "",
-            // TODO: Localize via Lokalise
-            placeHolder: "Co-insured",
-            error: $vm.userError
-        ) { [vm] in
-            vm.isUserPickerPresented = true
+    private var userList: some View {
+        hSection {
+            hRadioOptionList(vm.users) { user in
+                hRadioOption(
+                    value: user,
+                    selection: userSelection,
+                    item: .init(title: user.fullName, subTitle: user.ssn)
+                )
+            }
+            .addFieldError(animate: .constant(false), error: $vm.userError)
         }
         .sectionContainerStyle(.transparent)
+    }
+
+    private var userSelection: Binding<PowerOfAttorneyUser?> {
+        Binding(
+            get: { [vm] in vm.selectedUser },
+            set: { [vm] user in
+                if let user {
+                    vm.select(user: user)
+                }
+            }
+        )
     }
 
     /// Same fields as when adding a co-insured: personal number, then the name looked up from it (locked).
@@ -140,56 +142,18 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
         )
     }
 
-    private var levelDropdown: some View {
-        DropdownView(
-            value: vm.selectedLevel?.displayName ?? "",
-            // TODO: Localize via Lokalise
-            placeHolder: "Level",
-            error: $vm.levelError
-        ) { [vm] in
-            vm.isLevelPickerPresented = true
-        }
-        .sectionContainerStyle(.transparent)
-    }
-
-    private var userPicker: some View {
-        ItemPickerScreen<PowerOfAttorneyUser>(
-            config: .init(
-                items: vm.users.map { user in
-                    (object: user, displayName: .init(title: user.fullName, subTitle: user.ssn))
-                },
-                preSelectedItems: { [vm] in
-                    vm.selectedUser.map { [$0] } ?? []
-                },
-                onSelected: { [vm] selected in
-                    if let user = selected.first?.0 {
-                        vm.select(user: user)
-                    }
-                    vm.isUserPickerPresented = false
-                },
-                onCancel: { [vm] in
-                    vm.isUserPickerPresented = false
-                }
-            )
-        )
-        .hItemPickerAttributes([.singleSelect, .disableIfNoneSelected])
-        .hFormContentPosition(.compact)
-    }
-
     private var levelPicker: some View {
         ItemPickerScreen<PowerOfAttorneyLevel>(
             config: .init(
                 items: PowerOfAttorneyLevel.allCases.map { level in
                     (object: level, displayName: .init(title: level.displayName))
                 },
-                preSelectedItems: { [vm] in
-                    vm.selectedLevel.map { [$0] } ?? []
-                },
+                preSelectedItems: { [] },
                 onSelected: { [vm] selected in
-                    if let level = selected.first?.0 {
-                        vm.select(level: level)
-                    }
                     vm.isLevelPickerPresented = false
+                    if let level = selected.first?.0 {
+                        vm.shareWithSelectedUser(level: level)
+                    }
                 },
                 onCancel: { [vm] in
                     vm.isLevelPickerPresented = false
@@ -203,13 +167,10 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
 }
 
 enum PowerOfAttorneyDetentType: TrackingViewNameProtocol {
-    case userPicker
     case levelPicker
 
     var nameForTracking: String {
         switch self {
-        case .userPicker:
-            return "PowerOfAttorneyUserPicker"
         case .levelPicker:
             return "PowerOfAttorneyLevelPicker"
         }
@@ -225,7 +186,6 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
     // Picking one of the co-insured
     var selectedUser: PowerOfAttorneyUser?
     var userError: String?
-    var isUserPickerPresented = false
 
     // Entering a personal number instead
     var enterPersonalNumber = false {
@@ -247,8 +207,7 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
     var personalNumberError: String?
     var isLookingUpPersonalNumber = false
 
-    var selectedLevel: PowerOfAttorneyLevel?
-    var levelError: String?
+    /// Shown after pressing add with a co-insured selected. An entered personal number always gets full access.
     var isLevelPickerPresented = false
 
     @ObservationIgnored var onShare: ((PowerOfAttorneyUser, PowerOfAttorneyLevel) -> Void)?
@@ -283,11 +242,6 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
         userError = nil
     }
 
-    func select(level: PowerOfAttorneyLevel) {
-        selectedLevel = level
-        levelError = nil
-    }
-
     func primaryAction() async {
         if needsPersonalNumberLookup {
             await lookUpPersonalNumber()
@@ -313,19 +267,20 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
     }
 
     private func share() {
-        let user = enterPersonalNumber ? lookedUpUser : selectedUser
-        withAnimation {
-            if user == nil {
-                // TODO: Localize via Lokalise
-                userError = "Choose a co-insured"
-            }
-            if selectedLevel == nil {
-                // TODO: Localize via Lokalise
-                levelError = "Choose a level"
-            }
+        if enterPersonalNumber {
+            guard let lookedUpUser else { return }
+            onShare?(lookedUpUser, .full)
+        } else if selectedUser == nil {
+            // TODO: Localize via Lokalise
+            withAnimation { userError = "Choose a co-insured" }
+        } else {
+            isLevelPickerPresented = true
         }
-        guard let user, let selectedLevel else { return }
-        onShare?(user, selectedLevel)
+    }
+
+    func shareWithSelectedUser(level: PowerOfAttorneyLevel) {
+        guard let selectedUser else { return }
+        onShare?(selectedUser, level)
     }
 }
 
@@ -333,6 +288,8 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
     Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in PowerOfAttorneyClientDemo() })
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
     Dependencies.shared.add(module: Module { () -> EditStakeholdersClient in EditStakeholdersClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
     return PowerOfAttorneySelectCoInsuredScreen()
         .environment(NavigationRouter())
 }

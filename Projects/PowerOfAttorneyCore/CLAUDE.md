@@ -5,8 +5,10 @@ hCoreUI.
 
 ## Key Files
 - `Sources/Models/PowerOfAttorneyModels.swift` — `PowerOfAttorney` (granted: name, ssn, level, share url),
+  `ReceivedPowerOfAttorney` (granted to the member: granting member id, name, level, login url),
   `PowerOfAttorneyUser`, `PowerOfAttorneySigningSession`, `PowerOfAttorneySigningStatus`, `PowerOfAttorneyError`
-- `Sources/Service/Protocols/PowerOfAttorneyClient.swift` — `getPowerOfAttorneys()`, `startSigning(for:level:)`,
+- `Sources/Service/Protocols/PowerOfAttorneyClient.swift` — `getPowerOfAttorneys()`,
+  `getReceivedPowerOfAttorneys()`, `revokePowerOfAttorney(id:)`, `startSigning(for:level:)`,
   `observeSigningStatus(pollUrl:)`
 - `Sources/Service/PowerOfAttorneyService.swift` — `@Log` wrapper around the client, plus the composition that
   isn't a power of attorney endpoint: `getCoInsured()` (from `FetchContractsClient`) and `getUser(personalNumber:)`
@@ -20,11 +22,16 @@ AuthenticationCore, Home, ContractsUI and App need them too.
 Plain HTTPS against `Environment.current.authUrl`, not GraphQL. The Octopus client is App's
 `NetworkClient+PowerOfAttorneyClient`; every request (also the login ones) is built by App's `PowerOfAttorneyRequest`.
 - `GET /power-of-attorney` — `[{id, name, ssn, level}]`, oldest first
+- `GET /power-of-attorney/received` — `[{id, memberId, name, level}]`, oldest first: the powers of attorney whose
+  personal number matches the member's. `memberId` is the granting member, `name` is the member's own name as the
+  granter typed it (the granter's name isn't returned). 403 for a power of attorney login
+- Revoke has no endpoint yet: the Octopus `revokePowerOfAttorney(id:)` always throws, only the demo client succeeds
 - `POST /power-of-attorney {personalNumber, name, level}` — `id`, `pollUrl`, BankID properties (`name` is shown in
   the BankID sign text)
 - `POST {pollUrl}` every second (`liveQrCodeData` changes on every poll) until `COMPLETED` (with
   `powerOfAttorney.id`) or `FAILED`. 404 once the BankID order expires (~3 min) → `PowerOfAttorneyError.signingExpired`
-- The share link is built client side: `Environment.current.deepLinkUrl` + `/poa?id={id}`
+- The share link (and a received one's login url) is built client side: `Environment.current.deepLinkUrl` +
+  `/poa?id={id}`
 
 ## Dependencies
 - hCore (+ AutomaticLog), ContractsCore, EditStakeholdersCore

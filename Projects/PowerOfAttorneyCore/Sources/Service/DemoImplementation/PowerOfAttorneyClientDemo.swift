@@ -13,6 +13,16 @@ public class PowerOfAttorneyClientDemo: PowerOfAttorneyClient {
         ]
     }
 
+    public func getReceivedPowerOfAttorneys() async throws -> [ReceivedPowerOfAttorney] {
+        [
+            .init(id: "3", memberId: "12345678", name: "Demo Member", level: .full, loginUrl: demoUrl)
+        ]
+    }
+
+    public func revokePowerOfAttorney(id _: String) async throws {
+        try await Task.sleep(for: .seconds(1))
+    }
+
     public func startSigning(
         for _: PowerOfAttorneyUser,
         level _: PowerOfAttorneyLevel

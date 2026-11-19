@@ -3,7 +3,8 @@ import Foundation
 import PowerOfAttorneyCore
 import hCore
 
-/// Flow: `GET /power-of-attorney` lists the granted powers of attorney. `POST /power-of-attorney` starts a BankID sign
+/// Flow: `GET /power-of-attorney` lists the granted powers of attorney, `GET /power-of-attorney/received` the ones
+/// granted to the member. `POST /power-of-attorney` starts a BankID sign
 /// order, then `POST {pollUrl}` is polled until the status is `COMPLETED` (with the power of attorney id) or `FAILED`.
 extension NetworkClient: @retroactive PowerOfAttorneyClient {
     public func getPowerOfAttorneys() async throws -> [PowerOfAttorney] {
@@ -24,6 +25,32 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
                 shareUrl: powerOfAttorneyShareUrl(id: powerOfAttorney.id)
             )
         }
+    }
+
+    public func getReceivedPowerOfAttorneys() async throws -> [ReceivedPowerOfAttorney] {
+        //        let request = try await PowerOfAttorneyRequest.received.asRequest()
+        //        let (data, response) = try await sessionClient.data(for: request)
+        //        let received: [ReceivedPowerOfAttorneyResponse] = try await handleResponseForced(
+        //            data: data,
+        //            response: response,
+        //            error: nil
+        //        )
+        //        return received.compactMap { powerOfAttorney -> ReceivedPowerOfAttorney? in
+        //            guard let level = PowerOfAttorneyLevel(rawValue: powerOfAttorney.level) else { return nil }
+        //            return ReceivedPowerOfAttorney(
+        //                id: powerOfAttorney.id,
+        //                memberId: powerOfAttorney.memberId,
+        //                name: powerOfAttorney.name,
+        //                level: level,
+        //                loginUrl: powerOfAttorneyShareUrl(id: powerOfAttorney.id)
+        //            )
+        //        }
+        []
+    }
+
+    public func revokePowerOfAttorney(id _: String) async throws {
+        // TODO: Implement once the auth service has a revoke endpoint
+        throw PowerOfAttorneyError.error(message: L10n.General.errorBody)
     }
 
     public func startSigning(
@@ -118,7 +145,8 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
         }
     }
 
-    /// The deep link the member shares with the person the power of attorney is granted to.
+    /// The deep link the member shares with the person the power of attorney is granted to. Opening it starts the
+    /// power of attorney login.
     private func powerOfAttorneyShareUrl(id: String) -> URL? {
         var components = URLComponents(
             url: Environment.current.deepLinkUrl.appending(path: "poa"),

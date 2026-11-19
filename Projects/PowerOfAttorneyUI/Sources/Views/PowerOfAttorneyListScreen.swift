@@ -36,22 +36,38 @@ public struct PowerOfAttorneyListScreen: View {
 
     private var content: some View {
         hForm {
-            if vm.powerOfAttorneys.isEmpty {
+            if vm.isEmpty {
                 StateView(
                     type: .empty,
                     // TODO: Localize via Lokalise
                     title: "No power of attorney",
                     // TODO: Localize via Lokalise
-                    bodyText: "You haven't shared a power of attorney with anyone"
+                    bodyText: "You haven't shared or received a power of attorney"
                 )
                 .hStateViewButtonConfig(nil)
             } else {
-                if !vm.powerOfAttorneys.isEmpty {
-                    hSection(vm.powerOfAttorneys) { powerOfAttorney in
-                        PowerOfAttorneyRow(powerOfAttorney: powerOfAttorney)
+                VStack(spacing: .padding16) {
+                    if !vm.powerOfAttorneys.isEmpty {
+                        hSection(vm.powerOfAttorneys) { powerOfAttorney in
+                            PowerOfAttorneyRow(
+                                powerOfAttorney: powerOfAttorney,
+                                isRevoking: vm.revokingIds.contains(powerOfAttorney.id)
+                            ) { [vm] in
+                                Task { await vm.revoke(powerOfAttorney) }
+                            }
+                        }
+                        // TODO: Localize via Lokalise
+                        .withHeader(title: "Shared with")
+                        .sectionContainerStyle(.opaque)
                     }
-                    .sectionContainerStyle(.transparent)
-                    .hWithoutHorizontalPadding([.row, .divider])
+                    if !vm.receivedPowerOfAttorneys.isEmpty {
+                        hSection(vm.receivedPowerOfAttorneys) { powerOfAttorney in
+                            ReceivedPowerOfAttorneyRow(powerOfAttorney: powerOfAttorney)
+                        }
+                        // TODO: Localize via Lokalise
+                        .withHeader(title: "Invited")
+                        .sectionContainerStyle(.opaque)
+                    }
                 }
             }
         }
@@ -69,7 +85,7 @@ public struct PowerOfAttorneyListScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding16)
         }
-        .hFormContentPosition(vm.powerOfAttorneys.isEmpty ? .center : .top)
+        .hFormContentPosition(vm.isEmpty ? .center : .top)
         .hSetScrollBounce(to: true)
         .onPullToRefresh { [vm] in
             await vm.fetchPowerOfAttorneys()
@@ -79,45 +95,104 @@ public struct PowerOfAttorneyListScreen: View {
 
 private struct PowerOfAttorneyRow: View {
     let powerOfAttorney: PowerOfAttorney
-    // Shared with the share button, so tapping anywhere on the row opens the share popover anchored to the button
+    let isRevoking: Bool
+    let onRevoke: () -> Void
+    // Tapping the row opens the share popover anchored to the row itself
     @State private var sharePresenter = ShareSheetPopoverPresenter()
+    @State private var isRevokeAlertPresented = false
 
     var body: some View {
         hRow {
-            VStack(spacing: .padding4) {
-                HStack(alignment: .top, spacing: .padding8) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(powerOfAttorney.name)
+            HStack(alignment: .top, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(powerOfAttorney.name)
+                    HStack(spacing: .padding4) {
                         hText(powerOfAttorney.ssn, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
-                    Spacer()
-                    hPill(text: powerOfAttorney.level.displayName, color: .blue)
-                        .hFieldSize(.small)
                 }
-                if let shareUrl = powerOfAttorney.shareUrl {
-                    // TODO: Localize "Share" via Lokalise
-                    PopoverShareButton(
-                        url: shareUrl,
-                        title: "Share",
-                        size: .small,
-                        type: .secondary,
-                        presenter: sharePresenter
-                    )
-                    .hButtonTakeFullWidth(true)
-                    // The whole row is the share button for VoiceOver, so the inner button isn't a separate element
-                    .accessibilityHidden(true)
+
+                Spacer()
+                Button {
+                    isRevokeAlertPresented = true
+                } label: {
+                    Group {
+                        if isRevoking {
+                            ProgressView()
+                                .tint(hTextColor.Opaque.white)
+                        } else {
+                            hCoreUIAssets.trash.view
+                                .resizable()
+                                .frame(width: .padding16, height: .padding16)
+                                .foregroundColor(hTextColor.Opaque.white)
+                        }
+                    }
+                    // Square as tall as the pill next to it
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .aspectRatio(1, contentMode: .fit)
+                    .padding(.padding4)
+                    .background(hSignalColor.Red.element)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
                 }
+                .disabled(isRevoking)
+                // TODO: Localize via Lokalise
+                .accessibilityLabel("Revoke")
+                .fixedSize(horizontal: true, vertical: true)
             }
             .accessibilityElement(children: .combine)
+            .accessibilityHidden(powerOfAttorney.shareUrl != nil)
         }
         .onTap(if: powerOfAttorney.shareUrl != nil) { [sharePresenter, shareUrl = powerOfAttorney.shareUrl] in
             if let shareUrl {
                 sharePresenter.present(url: shareUrl)
             }
         }
+        .shareSheetPopoverAnchor(sharePresenter)
         // TODO: Localize via Lokalise
         .accessibilityHint(powerOfAttorney.shareUrl != nil ? "Shares the power of attorney link" : "")
+        // TODO: Localize via Lokalise
+        .accessibilityAction(named: "Revoke") {
+            if !isRevoking {
+                isRevokeAlertPresented = true
+            }
+        }
+        // TODO: Localize via Lokalise
+        .alert("Revoke power of attorney?", isPresented: $isRevokeAlertPresented) {
+            Button(L10n.generalCancelButton, role: .cancel) {}
+            // TODO: Localize via Lokalise
+            Button("Revoke", role: .destructive) {
+                onRevoke()
+            }
+        } message: {
+            // TODO: Localize via Lokalise
+            Text("\(powerOfAttorney.name) will no longer be able to log in with this power of attorney.")
+        }
+    }
+}
+
+private struct ReceivedPowerOfAttorneyRow: View {
+    let powerOfAttorney: ReceivedPowerOfAttorney
+
+    var body: some View {
+        hRow {
+            HStack(alignment: .top, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(powerOfAttorney.name)
+                }
+                Spacer()
+                hPill(text: powerOfAttorney.level.displayName, color: .blue)
+                    .hFieldSize(.small)
+            }
+            .accessibilityElement(children: .combine)
+        }
+        .onTap(if: powerOfAttorney.loginUrl != nil) { [loginUrl = powerOfAttorney.loginUrl] in
+            // Same flow as opening a shared power of attorney link: asks to log out, then opens the BankID login
+            if let loginUrl {
+                NotificationCenter.default.post(name: .openDeepLink, object: loginUrl)
+            }
+        }
+        // TODO: Localize via Lokalise
+        .accessibilityHint(powerOfAttorney.loginUrl != nil ? "Logs in with the power of attorney" : "")
     }
 }
 
@@ -125,9 +200,16 @@ private struct PowerOfAttorneyRow: View {
 @Observable
 final class PowerOfAttorneyListViewModel {
     var powerOfAttorneys: [PowerOfAttorney] = []
+    var receivedPowerOfAttorneys: [ReceivedPowerOfAttorney] = []
     var viewState: ProcessingState = .loading
+    /// Ids of the powers of attorney being revoked, their revoke buttons show a loader
+    var revokingIds = Set<String>()
     @ObservationIgnored private let service = PowerOfAttorneyService()
     @ObservationIgnored private var hasLoaded = false
+
+    var isEmpty: Bool {
+        powerOfAttorneys.isEmpty && receivedPowerOfAttorneys.isEmpty
+    }
 
     func fetchPowerOfAttorneys() async {
         // Only show the full screen loader on the first load, refreshes keep the current list visible.
@@ -135,14 +217,31 @@ final class PowerOfAttorneyListViewModel {
             withAnimation { viewState = .loading }
         }
         do {
-            let powerOfAttorneys = try await service.getPowerOfAttorneys()
+            async let powerOfAttorneys = service.getPowerOfAttorneys()
+            async let receivedPowerOfAttorneys = service.getReceivedPowerOfAttorneys()
+            let (granted, received) = try await (powerOfAttorneys, receivedPowerOfAttorneys)
             hasLoaded = true
             withAnimation {
-                self.powerOfAttorneys = powerOfAttorneys
+                self.powerOfAttorneys = granted
+                self.receivedPowerOfAttorneys = received
                 viewState = .success
             }
         } catch {
             withAnimation { viewState = .error(errorMessage: error.localizedDescription) }
+        }
+    }
+
+    func revoke(_ powerOfAttorney: PowerOfAttorney) async {
+        guard revokingIds.insert(powerOfAttorney.id).inserted else { return }
+        defer { revokingIds.remove(powerOfAttorney.id) }
+        do {
+            try await service.revokePowerOfAttorney(id: powerOfAttorney.id)
+            withAnimation {
+                powerOfAttorneys.removeAll { $0.id == powerOfAttorney.id }
+            }
+        } catch {
+            // Keep the list visible, a failed revoke only needs a message
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: error.localizedDescription))
         }
     }
 }
