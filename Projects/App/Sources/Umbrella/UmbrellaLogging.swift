@@ -1,41 +1,12 @@
-import Apollo
 import Foundation
 @preconcurrency import HedvigShared
 import Logger
-import hCore
-import hGraphQL
 import os
 
-/// Kotlin asks for the token before each member request, from any thread. The refresh goes through `TokenRefresher`,
-/// the app's only refresh path, and the token stays in the Keychain. Nil when logged out.
-final class KotlinAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked Sendable {
-    func fetch() async throws -> String? {
-        guard try await ApolloClient.retreiveToken() != nil else { return nil }
-        try await TokenRefresher.shared.refreshIfNeeded()
-        return try await ApolloClient.retreiveToken()?.accessToken
-    }
-}
-
-final class KotlinDeviceIdFetcher: NSObject, DeviceIdFetcher, @unchecked Sendable {
-    func fetch() async throws -> String? {
-        await ApolloClient.getDeviceIdentifier()
-    }
-}
-
-/// Called from any thread; `currentLocale` is a subject whose value is safe to read off the main thread.
-final class KotlinLanguageSource: NSObject, IosLanguageSource, @unchecked Sendable {
-    func currentLanguage() -> Language {
-        switch Localization.Locale.currentLocale.value {
-        case .sv_SE: .svSe
-        case .en_SE: .enSe
-        }
-    }
-}
-
 /// Forwards Kotlin's log lines to the app logger, which Release builds send to Datadog. Kotlin calls it from any
-/// thread; lines reach `KotlinLogDestination` on the main queue in the order they were logged. Debug builds also write
+/// thread; lines reach `UmbrellaLogDestination` on the main queue in the order they were logged. Debug builds also write
 /// each line to the unified log, since the app logger prints nothing to the console.
-final class KotlinLogForwarder: NSObject, IosLogSink, @unchecked Sendable {
+final class UmbrellaLogForwarder: NSObject, IosLogSink, @unchecked Sendable {
     static var minimumPriority: LogPriority {
         #if DEBUG
             .debug
@@ -49,7 +20,7 @@ final class KotlinLogForwarder: NSObject, IosLogSink, @unchecked Sendable {
     #endif
 
     func log(priority: LogPriority, tag: String?, message: String) {
-        let level = KotlinLogLevel(priority)
+        let level = UmbrellaLogLevel(priority)
         #if DEBUG
             let label = level.label
             Self.console.log("\(label, privacy: .public) [\(tag ?? "", privacy: .public)] \(message, privacy: .public)")
@@ -57,7 +28,7 @@ final class KotlinLogForwarder: NSObject, IosLogSink, @unchecked Sendable {
         let attributes: [AttributeKey: AttributeValue] = ["source": "kotlin", "tag": tag ?? ""]
         DispatchQueue.main.async {
             MainActor.assumeIsolated {
-                KotlinLogDestination.shared.write(level, message, attributes: attributes)
+                UmbrellaLogDestination.shared.write(level, message, attributes: attributes)
             }
         }
     }
@@ -67,11 +38,11 @@ final class KotlinLogForwarder: NSObject, IosLogSink, @unchecked Sendable {
 /// already have logged, so lines are held here until `attach` and then written in order. Holds at most `capacity`
 /// lines; beyond that the oldest are dropped and their count is logged on attach.
 @MainActor
-final class KotlinLogDestination {
-    static let shared = KotlinLogDestination()
+final class UmbrellaLogDestination {
+    static let shared = UmbrellaLogDestination()
 
     struct Line {
-        let level: KotlinLogLevel
+        let level: UmbrellaLogLevel
         let message: String
         let attributes: [AttributeKey: AttributeValue]
     }
@@ -85,7 +56,7 @@ final class KotlinLogDestination {
         self.capacity = capacity
     }
 
-    func write(_ level: KotlinLogLevel, _ message: String, attributes: [AttributeKey: AttributeValue]) {
+    func write(_ level: UmbrellaLogLevel, _ message: String, attributes: [AttributeKey: AttributeValue]) {
         if let logger {
             level.write(message, attributes: attributes, to: logger)
             return
@@ -115,7 +86,7 @@ final class KotlinLogDestination {
     }
 }
 
-enum KotlinLogLevel: Equatable {
+enum UmbrellaLogLevel: Equatable {
     case debug, info, warn, error, critical
 
     init(_ priority: LogPriority) {

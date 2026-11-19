@@ -12,46 +12,46 @@ import hGraphQL
 /// hosted by the app, against the real Kotlin framework, without a network request.
 @MainActor
 @Suite(.serialized)
-struct KotlinReadsTests {
+struct UmbrellaTests {
     @Test
     func theSwitchIsOffWithoutTheLaunchArgument() {
-        #expect(!ProcessInfo.processInfo.arguments.contains(KotlinReadsSwitch.launchArgument))
-        #expect(!KotlinReadsSwitch.current.isOn)
-        #expect(!KotlinReads.isEnabled)
-        #expect(KotlinReads.holder == nil)
+        #expect(!ProcessInfo.processInfo.arguments.contains(UmbrellaSwitch.launchArgument))
+        #expect(!UmbrellaSwitch.current.isOn)
+        #expect(!Umbrella.isEnabled)
+        #expect(Umbrella.holder == nil)
     }
 
     /// Creates the process's one holder, which builds nothing and calls no input, so no request is sent.
     @Test
     func theHolderIsCreatedOncePerProcess() {
-        let first = KotlinReads.existingOrNewHolder()
-        let second = KotlinReads.existingOrNewHolder()
+        let first = Umbrella.existingOrNewHolder()
+        let second = Umbrella.existingOrNewHolder()
         #expect(first === second)
-        KotlinReads.sessionStarted()
-        KotlinReads.sessionEnded()
+        Umbrella.sessionStarted()
+        Umbrella.sessionEnded()
     }
 
     @Test
     func theRemoteFlagIsOffUntilItExists() {
-        #expect(!KotlinReadsRemoteFlag.isOn)
+        #expect(!UmbrellaRemoteFlag.isOn)
     }
 
     @Test
     func theLaunchArgumentTurnsTheSwitchOnAloneOrWithAYesValue() {
-        #expect(KotlinReadsSwitch.isOn(arguments: ["app", "-kotlinReads"]))
-        #expect(KotlinReadsSwitch.isOn(arguments: ["app", "-kotlinReads", "YES"]))
-        #expect(KotlinReadsSwitch.isOn(arguments: ["app", "-kotlinReads", "-other"]))
-        #expect(!KotlinReadsSwitch.isOn(arguments: ["app", "-kotlinReads", "NO"]))
-        #expect(!KotlinReadsSwitch.isOn(arguments: ["app", "-kotlinReads", "0"]))
-        #expect(!KotlinReadsSwitch.isOn(arguments: ["app", "-other"]))
+        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads"]))
+        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "YES"]))
+        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "-other"]))
+        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "NO"]))
+        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "0"]))
+        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-other"]))
     }
 
     @Test
     func aReadWhileTheSwitchIsOffFailsWithoutCreatingAHolder() async {
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
-            await #expect(throws: KotlinReadFailure.disabled) {
-                _ = try await kotlinRead { _ in Self.succeeding("unused") }
+            await #expect(throws: UmbrellaReadFailure.disabled) {
+                _ = try await Umbrella.read { _ in Self.succeeding("unused") }
             }
         }
         #expect(logger.lines.map(\.level) == ["error"])
@@ -61,7 +61,7 @@ struct KotlinReadsTests {
     func aSuccessfulReadReturnsItsValueAndLogsNothing() async throws {
         let logger = RecordingLogger()
         let value = try await withGraphQlLogger(logger) {
-            try await awaitKotlinRead(Self.succeeding("value"))
+            try await Umbrella.awaitRead(Self.succeeding("value"))
         }
         #expect(value == "value")
         #expect(logger.lines.isEmpty)
@@ -73,7 +73,7 @@ struct KotlinReadsTests {
         await withGraphQlLogger(logger) {
             await #expect(throws: CancellationError.self) {
                 let call: NativeSuspend<String, Error, KotlinUnit> = Self.failing(NSError(domain: "test", code: 1))
-                _ = try await awaitKotlinRead(call)
+                _ = try await Umbrella.awaitRead(call)
             }
         }
         #expect(logger.lines.isEmpty)
@@ -86,13 +86,13 @@ struct KotlinReadsTests {
             return { KotlinUnit() }
         }
         await #expect(throws: CancellationError.self) {
-            _ = try await awaitKotlinRead(call)
+            _ = try await Umbrella.awaitRead(call)
         }
     }
 
     @Test
     func aGeneralFailureIsThrownAndReportedAsAnError() async {
-        let failure = KotlinReadFailure(
+        let failure = UmbrellaReadFailure(
             kind: .general,
             reason: .graphqlErrors,
             readName: "example.read",
@@ -101,7 +101,7 @@ struct KotlinReadsTests {
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
             await #expect(throws: failure) {
-                _ = try await awaitKotlinRead(
+                _ = try await Umbrella.awaitRead(
                     Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
                     failureOf: { _ in failure }
                 )
@@ -113,10 +113,10 @@ struct KotlinReadsTests {
 
     @Test
     func aNetworkFailureIsReportedAsAWarning() async {
-        let failure = KotlinReadFailure(kind: .general, reason: .timeout, readName: "a", operationName: "A")
+        let failure = UmbrellaReadFailure(kind: .general, reason: .timeout, readName: "a", operationName: "A")
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
-            _ = try? await awaitKotlinRead(
+            _ = try? await Umbrella.awaitRead(
                 Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
                 failureOf: { _ in failure }
             )
@@ -126,11 +126,11 @@ struct KotlinReadsTests {
 
     @Test
     func anEndedSessionIsThrownAndReportedAtDebug() async {
-        let failure = KotlinReadFailure(kind: .sessionEnded, reason: .sessionEnded, readName: "a", operationName: "A")
+        let failure = UmbrellaReadFailure(kind: .sessionEnded, reason: .sessionEnded, readName: "a", operationName: "A")
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
             await #expect(throws: failure) {
-                _ = try await awaitKotlinRead(
+                _ = try await Umbrella.awaitRead(
                     Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
                     failureOf: { _ in failure }
                 )
@@ -141,26 +141,26 @@ struct KotlinReadsTests {
 
     @Test
     func kotlinsFailureKindsMapToSwiftKinds() {
-        #expect(KotlinReadFailure.Kind(ReadFailureKind.general) == .general)
-        #expect(KotlinReadFailure.Kind(ReadFailureKind.sessionEnded) == .sessionEnded)
+        #expect(UmbrellaReadFailure.Kind(ReadFailureKind.general) == .general)
+        #expect(UmbrellaReadFailure.Kind(ReadFailureKind.sessionEnded) == .sessionEnded)
     }
 
     @Test
     func kotlinsFailureReasonsMapToSwiftReasonsWithKotlinsNames() {
-        let pairs: [(ReadFailureReason, KotlinReadFailure.Reason)] = [
+        let pairs: [(ReadFailureReason, UmbrellaReadFailure.Reason)] = [
             (.graphqlErrors, .graphqlErrors), (.network, .network), (.http, .http), (.timeout, .timeout),
             (.stuck, .stuck), (.sessionEnded, .sessionEnded), (.unexpected, .unexpected),
         ]
         #expect(pairs.count == ReadFailureReason.entries.count)
         for (kotlin, swift) in pairs {
-            #expect(KotlinReadFailure.Reason(kotlin) == swift)
+            #expect(UmbrellaReadFailure.Reason(kotlin) == swift)
             #expect(swift.rawValue == kotlin.name)
         }
     }
 
     @Test
     func kotlinLinesBeforeTheLoggerIsReadyAreHeldAndWrittenInOrderOnAttach() {
-        let destination = KotlinLogDestination(capacity: 10)
+        let destination = UmbrellaLogDestination(capacity: 10)
         destination.write(.info, "first", attributes: ["source": "kotlin"])
         destination.write(.warn, "second", attributes: ["source": "kotlin"])
         #expect(destination.pending.count == 2)
@@ -176,7 +176,7 @@ struct KotlinReadsTests {
 
     @Test
     func heldKotlinLinesAreBoundedAndTheDropIsReported() {
-        let destination = KotlinLogDestination(capacity: 2)
+        let destination = UmbrellaLogDestination(capacity: 2)
         for message in ["a", "b", "c", "d"] {
             destination.write(.info, message, attributes: [:])
         }
@@ -192,37 +192,37 @@ struct KotlinReadsTests {
 
     @Test
     func theFlavorFollowsTheEnvironmentAndBuild() {
-        #expect(KotlinAppFlavor.flavor(for: .production, isDebugBuild: true) == .production)
-        #expect(KotlinAppFlavor.flavor(for: .production, isDebugBuild: false) == .production)
-        #expect(KotlinAppFlavor.flavor(for: .staging, isDebugBuild: true) == .develop)
-        #expect(KotlinAppFlavor.flavor(for: .staging, isDebugBuild: false) == .staging)
+        #expect(UmbrellaAppFlavor.flavor(for: .production, isDebugBuild: true) == .production)
+        #expect(UmbrellaAppFlavor.flavor(for: .production, isDebugBuild: false) == .production)
+        #expect(UmbrellaAppFlavor.flavor(for: .staging, isDebugBuild: true) == .develop)
+        #expect(UmbrellaAppFlavor.flavor(for: .staging, isDebugBuild: false) == .staging)
     }
 
     @Test
     func productionLogsOnlyGraphqlErrorText() {
-        let production = KotlinNetworkLogPolicy.policy(for: .production)
+        let production = UmbrellaNetworkLogPolicy.policy(for: .production)
         #expect(!production.logsHttpBodies)
         #expect(!production.logsGraphqlData)
         #expect(production.logsGraphqlErrors)
         for flavor in [Flavor.staging, Flavor.develop] {
-            let policy = KotlinNetworkLogPolicy.policy(for: flavor)
+            let policy = UmbrellaNetworkLogPolicy.policy(for: flavor)
             #expect(policy.logsHttpBodies && policy.logsGraphqlData && policy.logsGraphqlErrors)
         }
     }
 
     @Test
     func kotlinLogPrioritiesMapToLoggerLevels() {
-        #expect(KotlinLogLevel(LogPriority.verbose) == .debug)
-        #expect(KotlinLogLevel(LogPriority.debug) == .debug)
-        #expect(KotlinLogLevel(LogPriority.info) == .info)
-        #expect(KotlinLogLevel(LogPriority.warn) == .warn)
-        #expect(KotlinLogLevel(LogPriority.error) == .error)
-        #expect(KotlinLogLevel(LogPriority.assert) == .critical)
+        #expect(UmbrellaLogLevel(LogPriority.verbose) == .debug)
+        #expect(UmbrellaLogLevel(LogPriority.debug) == .debug)
+        #expect(UmbrellaLogLevel(LogPriority.info) == .info)
+        #expect(UmbrellaLogLevel(LogPriority.warn) == .warn)
+        #expect(UmbrellaLogLevel(LogPriority.error) == .error)
+        #expect(UmbrellaLogLevel(LogPriority.assert) == .critical)
     }
 
     @Test
     func theLanguageSourceFollowsTheAppLocale() {
-        let source = KotlinLanguageSource()
+        let source = UmbrellaLanguageSource()
         #expect(
             [Language.svSe, Language.enSe].contains(source.currentLanguage())
         )

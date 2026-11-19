@@ -6,7 +6,7 @@ import Logger
 import hGraphQL
 
 /// Why a Kotlin read failed, in Swift terms. Carries no member data, so every field may be logged.
-struct KotlinReadFailure: Error, Equatable, Sendable {
+struct UmbrellaReadFailure: Error, Equatable, Sendable {
     enum Kind: Equatable, Sendable {
         /// The read failed; show the general error and allow a retry.
         case general
@@ -33,7 +33,7 @@ struct KotlinReadFailure: Error, Equatable, Sendable {
     let operationName: String
 }
 
-extension KotlinReadFailure {
+extension UmbrellaReadFailure {
     init(_ failure: ReadFailure) {
         self.init(
             kind: Kind(failure.kind),
@@ -44,13 +44,13 @@ extension KotlinReadFailure {
     }
 
     /// Kotlin reads are switched off, so no holder exists to read from.
-    static let disabled = KotlinReadFailure(kind: .general, reason: .disabled, readName: "", operationName: "")
+    static let disabled = UmbrellaReadFailure(kind: .general, reason: .disabled, readName: "", operationName: "")
 }
 
 /// Kotlin exports its enums as open `NS_ENUM`s, which Swift 6 cannot switch over without `@unknown default`. These two
 /// mappings are the only such switches; a case Kotlin adds still warns here, and the rest of the app switches over
 /// the Swift enums with no default.
-extension KotlinReadFailure.Kind {
+extension UmbrellaReadFailure.Kind {
     init(_ kind: ReadFailureKind) {
         switch kind.nsEnum {
         case .general: self = .general
@@ -60,7 +60,7 @@ extension KotlinReadFailure.Kind {
     }
 }
 
-extension KotlinReadFailure.Reason {
+extension UmbrellaReadFailure.Reason {
     init(_ reason: ReadFailureReason) {
         switch reason.nsEnum {
         case .graphqlErrors: self = .graphqlErrors
@@ -75,44 +75,44 @@ extension KotlinReadFailure.Reason {
     }
 }
 
-/// Runs one Kotlin read. Every Kotlin read goes through here: feature code passes the read, as in
-/// `try await kotlinRead { $0.fooReads().bar() }`, and never awaits Kotlin itself.
-///
-/// Throws `KotlinReadFailure` when the read failed, and `CancellationError` when the awaiting task cancelled it.
-/// Failures are reported to `graphQlLogger` with names and kinds only.
-@MainActor
-func kotlinRead<Result>(
-    _ read: (IosGraphHolder) -> NativeSuspend<Result, Error, KotlinUnit>
-) async throws -> Result {
-    guard let holder = KotlinReads.holder else {
-        KotlinReadFailureLog.report(.disabled)
-        throw KotlinReadFailure.disabled
+extension Umbrella {
+    /// Runs one Kotlin read. Every Kotlin read goes through here: feature code passes the read, as in
+    /// `try await Umbrella.read { $0.fooReads().bar() }`, and never awaits Kotlin itself.
+    ///
+    /// Throws `UmbrellaReadFailure` when the read failed, and `CancellationError` when the awaiting task cancelled it.
+    /// Failures are reported to `graphQlLogger` with names and kinds only.
+    static func read<Result>(
+        _ read: (IosGraphHolder) -> NativeSuspend<Result, Error, KotlinUnit>
+    ) async throws -> Result {
+        guard let holder else {
+            UmbrellaReadFailureLog.report(.disabled)
+            throw UmbrellaReadFailure.disabled
+        }
+        return try await awaitRead(read(holder))
     }
-    return try await awaitKotlinRead(read(holder))
-}
 
-/// Awaits `call` and maps its error. `failureOf` reads the Kotlin failure out of an error; nil means a cancel.
-@MainActor
-func awaitKotlinRead<Result>(
-    _ call: sending @escaping NativeSuspend<Result, Error, KotlinUnit>,
-    failureOf: (Error) -> KotlinReadFailure? = { error in
-        ReadFailures.shared.from(error: error as NSError).map(KotlinReadFailure.init)
-    }
-) async throws -> Result {
-    do {
-        return try await asyncFunction(for: call)
-    } catch {
-        guard let failure = failureOf(error) else { throw CancellationError() }
-        KotlinReadFailureLog.report(failure)
-        throw failure
+    /// Awaits `call` and maps its error. `failureOf` reads the Kotlin failure out of an error; nil means a cancel.
+    static func awaitRead<Result>(
+        _ call: sending @escaping NativeSuspend<Result, Error, KotlinUnit>,
+        failureOf: (Error) -> UmbrellaReadFailure? = { error in
+            ReadFailures.shared.from(error: error as NSError).map(UmbrellaReadFailure.init)
+        }
+    ) async throws -> Result {
+        do {
+            return try await asyncFunction(for: call)
+        } catch {
+            guard let failure = failureOf(error) else { throw CancellationError() }
+            UmbrellaReadFailureLog.report(failure)
+            throw failure
+        }
     }
 }
 
 /// Reports a failed Kotlin read the way Octopus reports its failures: no answer as a warning, anything else as an
 /// error, and a session change, which is expected, at debug.
 @MainActor
-enum KotlinReadFailureLog {
-    static func report(_ failure: KotlinReadFailure) {
+enum UmbrellaReadFailureLog {
+    static func report(_ failure: UmbrellaReadFailure) {
         let operation = failure.operationName
         let attributes: [AttributeKey: AttributeValue] = [
             "readName": failure.readName,

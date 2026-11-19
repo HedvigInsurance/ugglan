@@ -1,16 +1,19 @@
+import Apollo
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
+import Logger
 import hCore
+import hGraphQL
 import os
 
-/// The shared Kotlin graph that Kotlin reads run in. It exists only while `KotlinReadsSwitch` is on, and then at most
+/// The shared Kotlin graph that Kotlin reads run in. It exists only while `UmbrellaSwitch` is on, and then at most
 /// once per process: the holder is created by the first read that needs it, and Kotlin builds its graph on that same
 /// first use.
 @MainActor
-enum KotlinReads {
+enum Umbrella {
     /// Read once per process: turning the switch on or off takes a relaunch.
-    static let isEnabled: Bool = KotlinReadsSwitch.current.isOn
+    static let isEnabled: Bool = UmbrellaSwitch.current.isOn
 
     private static var created: IosGraphHolder?
 
@@ -24,11 +27,11 @@ enum KotlinReads {
     static func existingOrNewHolder() -> IosGraphHolder {
         if let created { return created }
         let holder = IosGraphHolderKt.createIosGraphHolder(
-            appFlavor: KotlinAppFlavor.current,
-            accessTokenFetcher: KotlinAccessTokenFetcher(),
-            deviceIdFetcher: KotlinDeviceIdFetcher(),
-            languageSource: KotlinLanguageSource(),
-            networkLogPolicy: KotlinNetworkLogPolicy.current
+            appFlavor: UmbrellaAppFlavor.current,
+            accessTokenFetcher: UmbrellaAccessTokenFetcher(),
+            deviceIdFetcher: UmbrellaDeviceIdFetcher(),
+            languageSource: UmbrellaLanguageSource(),
+            networkLogPolicy: UmbrellaNetworkLogPolicy.current
         )
         created = holder
         note("created the graph holder")
@@ -42,16 +45,21 @@ enum KotlinReads {
             return
         }
         IosLogcatLogger.companion.install(
-            sink: KotlinLogForwarder(),
-            minimumPriority: KotlinLogForwarder.minimumPriority
+            sink: UmbrellaLogForwarder(),
+            minimumPriority: UmbrellaLogForwarder.minimumPriority
         )
         note("on, Kotlin logs go to the app logger")
+    }
+
+    /// Called once the app logger is the Datadog logger: writes the Kotlin lines held until now, then every later one.
+    static func attachLogger(_ logger: any Logging) {
+        UmbrellaLogDestination.shared.attach(logger)
     }
 
     private static func note(_ event: String) {
         log.info("Kotlin reads: \(event)")
         #if DEBUG
-            KotlinLogForwarder.console.log("Kotlin reads: \(event, privacy: .public)")
+            UmbrellaLogForwarder.console.log("Kotlin reads: \(event, privacy: .public)")
         #endif
     }
 
@@ -72,7 +80,7 @@ enum KotlinReads {
 
 /// Whether Kotlin reads run at all. Off unless a Debug build is launched with `-kotlinReads`, or the remote flag turns
 /// it on.
-struct KotlinReadsSwitch {
+struct UmbrellaSwitch {
     static let launchArgument = "-kotlinReads"
 
     let launchArgumentIsOn: Bool
@@ -81,13 +89,13 @@ struct KotlinReadsSwitch {
     var isOn: Bool { launchArgumentIsOn || remoteFlagIsOn }
 
     @MainActor
-    static var current: KotlinReadsSwitch {
+    static var current: UmbrellaSwitch {
         #if DEBUG
             let launchArgumentIsOn = isOn(arguments: ProcessInfo.processInfo.arguments)
         #else
             let launchArgumentIsOn = false
         #endif
-        return KotlinReadsSwitch(launchArgumentIsOn: launchArgumentIsOn, remoteFlagIsOn: KotlinReadsRemoteFlag.isOn)
+        return UmbrellaSwitch(launchArgumentIsOn: launchArgumentIsOn, remoteFlagIsOn: UmbrellaRemoteFlag.isOn)
     }
 
     /// `-kotlinReads` alone or followed by a value other than `NO`, `false` or `0`.
@@ -101,13 +109,13 @@ struct KotlinReadsSwitch {
 
 /// Where the remote flag for Kotlin reads will be read, from `FeatureFlagsClient`, once it exists. Until then it is off
 /// in every build.
-enum KotlinReadsRemoteFlag {
+enum UmbrellaRemoteFlag {
     static var isOn: Bool { false }
 }
 
 /// The only build fact Swift gives Kotlin; it also picks the backend. A custom endpoint has no Kotlin flavor and gets
 /// staging.
-enum KotlinAppFlavor {
+enum UmbrellaAppFlavor {
     @MainActor
     static var current: Flavor { flavor(for: Environment.current, isDebugBuild: isDebugBuild) }
 
@@ -129,9 +137,9 @@ enum KotlinAppFlavor {
 
 /// Staging logs HTTP bodies and GraphQL data and errors. Production logs GraphQL error text only, never bodies, data,
 /// variables or tokens; Kotlin also forces bodies and data off for a production flavor.
-enum KotlinNetworkLogPolicy {
+enum UmbrellaNetworkLogPolicy {
     @MainActor
-    static var current: NetworkLogPolicy { policy(for: KotlinAppFlavor.current) }
+    static var current: NetworkLogPolicy { policy(for: UmbrellaAppFlavor.current) }
 
     static func policy(for flavor: Flavor) -> NetworkLogPolicy {
         let logsMemberData = flavor != .production
@@ -140,5 +148,31 @@ enum KotlinNetworkLogPolicy {
             logsGraphqlData: logsMemberData,
             logsGraphqlErrors: true
         )
+    }
+}
+
+/// Kotlin asks for the token before each member request, from any thread. The refresh goes through `TokenRefresher`,
+/// the app's only refresh path, and the token stays in the Keychain. Nil when logged out.
+final class UmbrellaAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked Sendable {
+    func fetch() async throws -> String? {
+        guard try await ApolloClient.retreiveToken() != nil else { return nil }
+        try await TokenRefresher.shared.refreshIfNeeded()
+        return try await ApolloClient.retreiveToken()?.accessToken
+    }
+}
+
+final class UmbrellaDeviceIdFetcher: NSObject, DeviceIdFetcher, @unchecked Sendable {
+    func fetch() async throws -> String? {
+        await ApolloClient.getDeviceIdentifier()
+    }
+}
+
+/// Called from any thread; `currentLocale` is a subject whose value is safe to read off the main thread.
+final class UmbrellaLanguageSource: NSObject, IosLanguageSource, @unchecked Sendable {
+    func currentLanguage() -> Language {
+        switch Localization.Locale.currentLocale.value {
+        case .sv_SE: .svSe
+        case .en_SE: .enSe
+        }
     }
 }

@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } catch _ {}
         }
         await ApolloClient.deleteToken()
-        KotlinReads.sessionEnded()
+        Umbrella.sessionEnded()
 
         clearData()
     }
@@ -181,7 +181,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self?.isForcingLogout = false
             }
         }
-        KotlinReads.installLogging()
+        Umbrella.installLogging()
         ApolloClient.bundle = Bundle.main
 
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
@@ -207,7 +207,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let datadogLogger = Logger.create(with: config)
         hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
         log = DatadogLogger(datadogLogger: datadogLogger)
-        KotlinLogDestination.shared.attach(log)
+        Umbrella.attachLogger(log)
         AutomaticLog.loginClosure = { message in
             Task { @MainActor in
                 log.info(message, error: nil, attributes: nil)
