@@ -107,3 +107,19 @@ extension MessagesGlassButtonStyle {
         }
     }
 }
+
+extension View {
+    /// Animates changes driven by `value`, unless Reduce Motion is on.
+    func messagesAnimation(value: some Equatable) -> some View {
+        modifier(MessagesAnimation(value: value))
+    }
+}
+
+private struct MessagesAnimation<Value: Equatable>: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let value: Value
+
+    func body(content: Content) -> some View {
+        content.animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: value)
+    }
+}

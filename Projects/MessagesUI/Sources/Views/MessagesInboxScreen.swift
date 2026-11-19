@@ -11,7 +11,24 @@ struct MessagesInboxScreen: View {
     @Environment(\.hSecondaryToolbarPlacement) private var filtersPlacement
 
     var body: some View {
-        MessagesScreenLayout(title: L10n.MessagesInbox.title) {
+        Group {
+            if vm.phase == .empty {
+                // Full-screen and centred, like the chat Inbox's empty state.
+                StateView(type: .empty, title: vm.emptyStateTitle, bodyText: nil, formPosition: .center)
+                    .hStateViewButtonConfig(emptyStateButton)
+                    .navigationTitle(L10n.MessagesInbox.title)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .transition(.opacity)
+            } else {
+                MessagesScreenLayout(title: L10n.MessagesInbox.title) {
+                    content
+                        .padding(.bottom, .padding32)
+                }
+                .transition(.opacity)
+            }
+        }
+        .messagesAnimation(value: vm.phase)
+        .toolbar {
             ToolbarItem(placement: filtersPlacement) {
                 MessagesFilterToolbarButton(kind: .type, vm: vm)
             }
@@ -22,9 +39,6 @@ struct MessagesInboxScreen: View {
             ToolbarItem(placement: filtersPlacement) {
                 MessagesFilterToolbarButton(kind: .date, vm: vm)
             }
-        } content: {
-            content
-                .padding(.bottom, .padding32)
         }
         .task { await vm.load() }
         .sheet(isPresented: $vm.isFilterSheetPresented) {
@@ -35,36 +49,42 @@ struct MessagesInboxScreen: View {
         }
     }
 
+    /// A filter that matches nothing offers a way back to every message; an empty inbox has nothing to offer.
+    private var emptyStateButton: StateViewButtonConfig? {
+        guard vm.hasActiveFilters else { return nil }
+        return .init(actionButton: .init(buttonTitle: L10n.MessagesInbox.filterAll) { vm.clearFilters() })
+    }
+
     @ViewBuilder
     private var content: some View {
-        switch vm.state {
-        case .notLoaded, .loading:
+        switch vm.phase {
+        case .loading:
             MessagesLoadingView()
+                .transition(.opacity)
         case let .failed(errorMessage):
             GenericErrorView(description: errorMessage, formPosition: nil)
                 .hStateViewButtonConfig(
                     .init(actionButton: .init { Task { await vm.load() } })
                 )
                 .padding(.vertical, .padding64)
-        case .loaded:
+                .transition(.opacity)
+        case .loaded, .empty:
             let messages = vm.list.messages
-            if messages.isEmpty {
-                StateView(type: .empty, title: vm.emptyStateTitle, bodyText: nil)
-                    .padding(.vertical, .padding64)
-            } else {
-                MessagesCard {
-                    VStack(spacing: 0) {
-                        ForEach(messages) { message in
-                            MessageRow(message: message) {
-                                router.push(MessagesRouterAction.message(id: message.id))
-                            }
-                            if message.id != messages.last?.id {
-                                MessageRowDivider()
-                            }
+            MessagesCard {
+                VStack(spacing: 0) {
+                    ForEach(messages) { message in
+                        MessageRow(message: message) {
+                            router.push(MessagesRouterAction.message(id: message.id))
+                        }
+                        if message.id != messages.last?.id {
+                            MessageRowDivider()
                         }
                     }
                 }
+                // Rows fade in and out as the filters change.
+                .messagesAnimation(value: messages.map(\.id))
             }
+            .transition(.opacity)
         }
     }
 }

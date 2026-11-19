@@ -54,9 +54,13 @@ private struct MessageDetailContent: View {
                         if let preview = message.preview {
                             hText(preview, style: .body1)
                                 .foregroundColor(hTextColor.Translucent.secondary)
+                                .transition(.opacity)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, .padding16)
+                    // The preheader can arrive with the body, after the screen is shown.
+                    .messagesAnimation(value: message.preview)
                 }
                 senderRow
                     .padding(.horizontal, .padding16)
@@ -72,6 +76,7 @@ private struct MessageDetailContent: View {
                     messageBody
                         .padding(.horizontal, .padding24)
                         .padding(.vertical, .padding24 + .padding8)
+                        .messagesAnimation(value: BodyPhase(message: message, failed: bodyLoadFailed))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,22 +106,38 @@ private struct MessageDetailContent: View {
     @ViewBuilder
     private var messageBody: some View {
         if let body = message.body {
-            if message.channel == .email {
-                EmailWebView(html: body)
-            } else {
-                hText(body, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            Group {
+                if message.channel == .email {
+                    EmailWebView(html: body)
+                } else {
+                    hText(body, style: .body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
+            .transition(.opacity)
         } else if bodyLoadFailed {
             GenericErrorView(formPosition: nil)
                 .hStateViewButtonConfig(.init(actionButton: .init(buttonAction: onRetry)))
+                .transition(.opacity)
         } else {
             DotsActivityIndicator(.standard)
                 .frame(maxWidth: .infinity)
                 .accessibilityElement()
                 .accessibilityLabel(L10n.embarkLoading)
+                .transition(.opacity)
         }
+    }
+}
+
+/// Which of loader, error and body the message card shows; drives its cross-fade.
+private enum BodyPhase: Equatable {
+    case loading
+    case failed
+    case loaded
+
+    init(message: InboxMessage, failed: Bool) {
+        self = message.body != nil ? .loaded : failed ? .failed : .loading
     }
 }
 
