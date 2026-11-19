@@ -44,6 +44,9 @@ public enum ExternalDependencies: CaseIterable {
     case rive
     case firebaseAnalytics
     case trustlyIosSdk
+    /// ElevenLabs Agents SDK (voice claim submission). Pulls in LiveKit/WebRTC, so it lives in its own
+    /// VoiceDependencies framework that only SubmitClaimChat links, never in CoreDependencies.
+    case elevenLabs
     /// Linked only by the App target (via AppDependencies), never by feature modules. Keep anything that only
     /// App imports here: whatever stays in CoreDependencies is linked into every module, test bundle and
     /// SwiftUI preview, and an oversized CoreDependencies makes previews time out on launch.
@@ -56,8 +59,13 @@ public enum ExternalDependencies: CaseIterable {
         }
     }
 
+    /// Linked only by VoiceDependencies (and through it SubmitClaimChat).
+    public var isVoiceDependency: Bool {
+        self == .elevenLabs
+    }
+
     public var isCoreDependency: Bool {
-        !isAppDependency && self != .apolloIosCodegen
+        !isAppDependency && !isVoiceDependency && self != .apolloIosCodegen
     }
 
     public func swiftPackages() -> [Package] {
@@ -144,6 +152,10 @@ public enum ExternalDependencies: CaseIterable {
         case .trustlyIosSdk:
             return [
                 .package(url: "https://github.com/trustly/TrustlyIosSdk.git", .upToNextMajor(from: "4.0.1"))
+            ]
+        case .elevenLabs:
+            return [
+                .package(url: "https://github.com/elevenlabs/elevenlabs-swift-sdk.git", .exact("4.0.0"))
             ]
         }
     }
@@ -237,6 +249,8 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .trustlyIosSdk:
             return [.package(product: "TrustlyIosSdk")]
+        case .elevenLabs:
+            return [.package(product: "ElevenLabs")]
         }
     }
 }

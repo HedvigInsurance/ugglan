@@ -784,6 +784,20 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6BFDEC9B0CC08C199F315B21"
+               BuildableName = "VoiceDependencies.framework"
+               BlueprintName = "VoiceDependencies"
+               ReferencedContainer = "container:Dependencies/VoiceDependencies/VoiceDependencies.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "2CF3271D7DE41D68273D7C08"
                BuildableName = "hCore.framework"
                BlueprintName = "hCore"

@@ -21,6 +21,8 @@ public struct FeatureData: Codable, Equatable, Sendable {
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
     public let isCancelInsuranceHiddenFromHomeScreen: Bool
+    /// Offers "Talk it through" (the ElevenLabs voice agent) after the honesty pledge. POC, internal only.
+    public let isVoiceClaimEnabled: Bool
 
     public init(
         isUpdateNecessary: Bool,
@@ -34,7 +36,8 @@ public struct FeatureData: Codable, Equatable, Sendable {
         isTerminationRedirectionEnabled: Bool,
         isAnalyticsEnabled: Bool,
         isResumingOngoingShopSessionsEnabled: Bool,
-        isCancelInsuranceHiddenFromHomeScreen: Bool
+        isCancelInsuranceHiddenFromHomeScreen: Bool,
+        isVoiceClaimEnabled: Bool = false
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.osVersionTooLow = osVersionTooLow
@@ -48,6 +51,7 @@ public struct FeatureData: Codable, Equatable, Sendable {
         self.isAnalyticsEnabled = isAnalyticsEnabled
         self.isResumingOngoingShopSessionsEnabled = isResumingOngoingShopSessionsEnabled
         self.isCancelInsuranceHiddenFromHomeScreen = isCancelInsuranceHiddenFromHomeScreen
+        self.isVoiceClaimEnabled = isVoiceClaimEnabled
     }
 }
 

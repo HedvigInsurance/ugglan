@@ -106,6 +106,17 @@ public enum Environment: Hashable {
         }
     }
 
+    /// Public ElevenLabs agent for the voice claim POC (ElevenLabs dashboard → Agents → agent ID).
+    /// `nil` hides the voice option. Not a secret, but anyone holding it can spend the agent's credits,
+    /// so keep a spend cap on the agent and move to conversation tokens before a pilot.
+    public var elevenLabsClaimAgentId: String? {
+        switch self {
+        // "Hedvig voice claim (POC)": public, Swedish + English, 50 calls a day. Setup: SubmitClaimChat/VoiceAgent.md
+        case .staging, .custom: return "agent_5601m7spgj24ez8v0kv4y82074rh"
+        case .production: return nil
+        }
+    }
+
     public var botServiceApiURL: URL {
         switch self {
         case .staging: return URL(string: "https://gateway.dev.hedvigit.com/bot-service/")!

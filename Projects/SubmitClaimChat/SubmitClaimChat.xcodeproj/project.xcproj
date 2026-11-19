@@ -32,9 +32,17 @@
             { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
             "SubmitClaimChatTests/frameworks",
           ],
-        },
-        { "path": "<PRODUCTS>/Contracts.framework", "type": "wrapper.framework", "index": false, "target-membership": [ { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" } ] },
-        {
+        }, {
+          "path": "<PRODUCTS>/Contracts.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "SubmitClaimChat/frameworks",
+            "SubmitClaimChatTestHost/frameworks",
+            { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "SubmitClaimChatTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/CoreDependencies.framework",
           "type": "wrapper.framework",
           "index": false,
@@ -92,6 +100,15 @@
           "target-membership": [
             "SubmitClaimChatTests/frameworks",
             { "build-phase": "SubmitClaimChatTests/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/VoiceDependencies.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "SubmitClaimChat/frameworks",
+            "SubmitClaimChatTestHost/frameworks",
+            { "build-phase": "SubmitClaimChatTestHost/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         },
       ],
