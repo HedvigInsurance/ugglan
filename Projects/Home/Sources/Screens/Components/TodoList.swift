@@ -1,3 +1,5 @@
+import AppStateContainer
+import Claims
 import EditStakeholdersCore
 import EditStakeholdersUI
 import SwiftUI
@@ -38,6 +40,9 @@ struct TodoList: View {
 
     private func open(_ todo: Todo) {
         switch todo {
+        case .claimFollowupOpen:
+            let claimsStore: ClaimsStore = globalAppStateContainer.get()
+            navigationVm.claimFollowup = claimsStore.firstOpenFollowup
         case .payoutMethodMissing: navigationVm.isPayoutMethodPresented = true
         case .petChipIdMissing: NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
         case .contactDetailsMissing: NotificationCenter.default.post(name: .openReviewContactInfo, object: nil)
@@ -68,17 +73,19 @@ enum Todo: Identifiable, Comparable, Hashable {
 
     private var sortOrder: Int {
         switch self {
-        case .payoutMethodMissing: 0
-        case .petChipIdMissing: 1
-        case .contactDetailsMissing: 2
-        case .dataCollectionPermissionMissing: 3
-        case .coInsuredMissing: 4
-        case .coOwnerMissing: 5
+        case .claimFollowupOpen: 0
+        case .payoutMethodMissing: 1
+        case .petChipIdMissing: 2
+        case .contactDetailsMissing: 3
+        case .dataCollectionPermissionMissing: 4
+        case .coInsuredMissing: 5
+        case .coOwnerMissing: 6
         }
     }
 
     var title: String {
         switch self {
+        case .claimFollowupOpen: L10n.homeTodoClaimFollowupTitle
         case .payoutMethodMissing: L10n.homeTodoMissingPayoutMethodTitle
         case .petChipIdMissing: L10n.homeTodoMissingChipIdTitle
         case .contactDetailsMissing: L10n.homeTodoUpdateContactDetailsTitle
@@ -92,6 +99,7 @@ enum Todo: Identifiable, Comparable, Hashable {
     @ViewBuilder
     var image: some View {
         switch self {
+        case .claimFollowupOpen: hCoreUIAssets.penEdit.view
         case .payoutMethodMissing: hCoreUIAssets.payments.view
         case .petChipIdMissing: hCoreUIAssets.id.view
         case .contactDetailsMissing: hCoreUIAssets.infoOutlined.view
@@ -101,6 +109,7 @@ enum Todo: Identifiable, Comparable, Hashable {
         }
     }
 
+    case claimFollowupOpen
     case payoutMethodMissing
     case petChipIdMissing
     case contactDetailsMissing

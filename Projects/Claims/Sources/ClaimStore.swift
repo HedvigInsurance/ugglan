@@ -9,6 +9,7 @@ import hCore
 @Observable
 public final class ClaimsStore: AppStore {
     @ObservationIgnored @Inject private var fetchClaimsClient: hFetchClaimsClient
+    @ObservationIgnored @Inject private var followupClient: hClaimFollowupClient
 
     public internal(set) var activeClaims: [ClaimModel] = [] {
         didSet {
@@ -23,6 +24,7 @@ public final class ClaimsStore: AppStore {
         }
     }
     public internal(set) var allActiveClaims: [ActiveClaimType] = []
+    @Transient public internal(set) var followups: [ClaimFollowup] = []
     @ObservationIgnored @Transient private var cancellables = Set<AnyCancellable>()
 
     public init() {
@@ -54,6 +56,22 @@ public final class ClaimsStore: AppStore {
             }
         } catch {
         }
+    }
+
+    public func fetchFollowups() async {
+        do {
+            followups = try await followupClient.getFollowups()
+        } catch {
+            followups = []
+        }
+    }
+
+    public func openFollowup(claimId: String) -> ClaimFollowup? {
+        followups.first { $0.claimId == claimId && $0.isOpen }
+    }
+
+    public var firstOpenFollowup: ClaimFollowup? {
+        followups.first(where: \.isOpen)
     }
 
     public func fetchHistoryClaims() async {

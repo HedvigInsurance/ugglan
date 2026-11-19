@@ -1,0 +1,79 @@
+# Parked on purpose: this folder is two levels below Octopus/, and codegen only scans Octopus/*.graphql and Octopus/<Folder>/*.graphql.
+# Move it up to Octopus/Claims/ once the follow-up schema is published.
+query ClaimFollowups {
+    currentMember {
+        claimFollowups {
+            ...ClaimFollowupFragment
+        }
+    }
+}
+
+fragment ClaimFollowupFragment on ClaimFollowup {
+    id
+    claimId
+    status
+    questions {
+        id
+        text
+        state
+        cantAnswerComment
+        content {
+            ... on ClaimFollowupBinary { currentValue }
+            ... on ClaimFollowupFreeText {
+                uploadUri
+                minLength
+                maxLength
+                currentValue
+                currentAudio { id url contentType fileName relevance }
+            }
+            ... on ClaimFollowupDate { currentValue }
+            ... on ClaimFollowupNumber { currentValue min max }
+            ... on ClaimFollowupPhoneNumber { currentValue }
+            ... on ClaimFollowupFileUpload {
+                uploadUri
+                currentFiles { id url contentType fileName relevance }
+            }
+        }
+    }
+}
+
+fragment ClaimFollowupOutputFragment on ClaimFollowupOutput {
+    followup { ...ClaimFollowupFragment }
+    userError { message }
+}
+
+mutation ClaimFollowupAnswerBinary($followupId: ID!, $questionId: ID!, $value: String!) {
+    claimFollowupAnswerBinary(followupId: $followupId, questionId: $questionId, value: $value) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerFreeText($followupId: ID!, $questionId: ID!, $text: String!) {
+    claimFollowupAnswerFreeText(followupId: $followupId, questionId: $questionId, text: $text) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerAudio($followupId: ID!, $questionId: ID!, $audioFileId: ID!) {
+    claimFollowupAnswerAudio(followupId: $followupId, questionId: $questionId, audioFileId: $audioFileId) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerDate($followupId: ID!, $questionId: ID!, $value: String!) {
+    claimFollowupAnswerDate(followupId: $followupId, questionId: $questionId, value: $value) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerNumber($followupId: ID!, $questionId: ID!, $value: String!) {
+    claimFollowupAnswerNumber(followupId: $followupId, questionId: $questionId, value: $value) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerPhoneNumber($followupId: ID!, $questionId: ID!, $value: String!) {
+    claimFollowupAnswerPhoneNumber(followupId: $followupId, questionId: $questionId, value: $value) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupAnswerFileUpload($followupId: ID!, $questionId: ID!, $fileIds: [ID!]!) {
+    claimFollowupAnswerFileUpload(followupId: $followupId, questionId: $questionId, fileIds: $fileIds) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupCantAnswer($followupId: ID!, $questionId: ID!, $comment: String) {
+    claimFollowupCantAnswer(followupId: $followupId, questionId: $questionId, comment: $comment) { ...ClaimFollowupOutputFragment }
+}
+
+mutation ClaimFollowupSend($followupId: ID!) {
+    claimFollowupSend(followupId: $followupId) { ...ClaimFollowupOutputFragment }
+}

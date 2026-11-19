@@ -4,6 +4,7 @@ import hCoreUI
 
 struct VoiceRecordingCardContent: View {
     let voiceRecorder: VoiceRecorder
+    var title: String = L10n.claimsTriagingWhatHappenedTitle
     let onSend: () async throws -> Void
     let onClose: () -> Void
     @State private var waveformWidth: CGFloat = 0
@@ -97,7 +98,7 @@ struct VoiceRecordingCardContent: View {
 
     private var headerSection: some View {
         VStack(spacing: 0) {
-            hText(L10n.claimsTriagingWhatHappenedTitle)
+            hText(title)
                 .foregroundColor(titleColor)
                 .accessibilityHidden(voiceRecorder.isCountingDown || voiceRecorder.isRecording)
             Group {

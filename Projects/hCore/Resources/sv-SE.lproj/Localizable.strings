@@ -192,6 +192,31 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_USE_AUDIO_SHORT" = "Spela in";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Beskriv i text";
 "CLAIM_CHAT_USE_TEXT_INPUT_SHORT" = "Skriv";
+"CLAIM_FOLLOWUP_ANSWER_BUTTON" = "Svara på följdfrågor";
+"CLAIM_FOLLOWUP_ANSWER_PLACEHOLDER" = "Ditt svar";
+"CLAIM_FOLLOWUP_AUDIO_ADDED" = "Inspelning tillagd";
+"CLAIM_FOLLOWUP_CANT_ANSWER_BODY" = "Vi behöver svaret längre fram och kan inte slutföra din skadeanmälan utan det. Berätta gärna varför du hoppar över frågan.";
+"CLAIM_FOLLOWUP_CANT_ANSWER_BUTTON" = "Hoppa över";
+"CLAIM_FOLLOWUP_CANT_ANSWER_COMMENT_PLACEHOLDER" = "Anledning (valfritt)";
+"CLAIM_FOLLOWUP_CANT_ANSWER_DISCARD" = "Ditt nuvarande svar tas bort.";
+"CLAIM_FOLLOWUP_CANT_ANSWER_STATE" = "Hoppade över";
+"CLAIM_FOLLOWUP_CANT_ANSWER_TITLE" = "Hoppa över frågan?";
+"CLAIM_FOLLOWUP_DATE_PLACEHOLDER" = "Välj datum";
+"CLAIM_FOLLOWUP_FILE_ADDED" = "Tillagd";
+"CLAIM_FOLLOWUP_FILE_MISMATCH_HINT" = "Det här ser inte ut att vara det vi bad om. Du kan använda filen ändå eller välja en annan.";
+"CLAIM_FOLLOWUP_FILE_REPLACE" = "Välj en annan fil";
+"CLAIM_FOLLOWUP_FILE_USE_ANYWAY" = "Använd ändå";
+"CLAIM_FOLLOWUP_INTRO" = "Vi behöver några saker till för att kunna gå vidare med din skadeanmälan.";
+"CLAIM_FOLLOWUP_NUMBER_OUT_OF_RANGE" = "Värdet ser ovanligt ut. Kontrollera att det stämmer, du kan behålla det ändå.";
+"CLAIM_FOLLOWUP_PHONE_INVALID" = "Ange ett giltigt telefonnummer";
+"CLAIM_FOLLOWUP_QUESTIONS_LEFT" = "%d kvar";
+"CLAIM_FOLLOWUP_SEND_BUTTON" = "Bekräfta";
+"CLAIM_FOLLOWUP_STATE_ANSWERED" = "Besvarad";
+"CLAIM_FOLLOWUP_STATE_TODO" = "Väntar på ditt svar";
+"CLAIM_FOLLOWUP_SUCCESS_TITLE" = "Svaren är skickade";
+"CLAIM_FOLLOWUP_TEXT_EMPTY" = "Skriv ett svar";
+"CLAIM_FOLLOWUP_TEXT_TOO_LONG" = "Max %d tecken";
+"CLAIM_FOLLOWUP_TITLE" = "Följdfrågor";
 "COINSURED_EDIT_TITLE" = "Försäkrade personer";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Ange manuellt";
 "COINSURED_SSN_NOT_FOUND" = "Personnumret hittades inte";
@@ -373,6 +398,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Lägg till medägare";
+"HOME_TODO_CLAIM_FOLLOWUP_TITLE" = "Svara på följdfrågor om din skadeanmälan";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Chip-ID för husdjur saknas";
 "HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Betalningsmetod saknas";
 "HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Utbetalningsmetod saknas";
@@ -849,6 +875,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim.status_bar.closed" = "Stängt";
 /* Figma */
 "claim.status_bar.submitted" = "Inskickat";
+"claim.status_bar.waiting_for_you" = "Väntar på dig";
 "claim_history.empty_state.body" = "Dina tidigare skador visas här automatiskt efter att de har hanterats.";
 "claim_history.empty_state.title" = "Ingen skadehistorik";
 "claim_outcome_unresponsive_support_text" = "Ditt skadeärende har stängts eftersom vi inte har fått någon återkoppling från dig. Se konversation för mer information.";

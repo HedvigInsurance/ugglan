@@ -69,7 +69,8 @@ class HomeVM {
     private func fetchClaims() async {
         async let activeClaims: () = claimsStore.fetchActiveClaims()
         async let claimInProgress: () = claimsStore.fetchClaimInProgress()
-        _ = await (activeClaims, claimInProgress)
+        async let followups: () = claimsStore.fetchFollowups()
+        _ = await (activeClaims, claimInProgress, followups)
     }
 
     /// Registered on first fetch rather than in `init`: `@State var vm = HomeVM()` builds a throwaway
@@ -110,6 +111,7 @@ class HomeVM {
     Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> hClaimFollowupClient in ClaimFollowupClientDemo() })
     Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
 }
 

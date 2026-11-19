@@ -7,12 +7,14 @@ struct ClaimStatusCard: View {
     var claimType: ClaimsStore.ActiveClaimType
     var enableTap: Bool
     @Environment(NavigationRouter.self) var homeRouter
+    @AppObservedObject private var claimsStore: ClaimsStore
     @State private var showDeleteConfirmation = false
     @State private var showExpiredAlert = false
 
     var body: some View {
         switch claimType {
         case let .claim(claim):
+            let openFollowup = claim.status == .closed ? nil : claimsStore.openFollowup(claimId: claim.id)
             StatusCard(
                 onSelected: nil,
                 mainContent: ClaimPills(claim: claim),
@@ -20,7 +22,22 @@ struct ClaimStatusCard: View {
                 subTitle: claim.getSubTitle,
                 bottomComponent: {
                     VStack(spacing: .padding16) {
-                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                        ClaimStatusBar(
+                            status: claim.status,
+                            outcome: claim.outcome,
+                            isWaitingForYou: openFollowup != nil
+                        )
+                        if let openFollowup {
+                            hButton(
+                                .medium,
+                                .primary,
+                                content: .init(title: L10n.claimFollowupAnswerButton),
+                                {
+                                    NotificationCenter.default.post(name: .openClaimFollowup, object: openFollowup)
+                                }
+                            )
+                            .hButtonTakeFullWidth(true)
+                        }
                         if enableTap {
                             hButton(
                                 .medium,

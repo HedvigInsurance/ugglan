@@ -5,9 +5,17 @@ import hCoreUI
 struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus
     let outcome: ClaimModel.ClaimOutcome?
+    var isWaitingForYou = false
+
+    private func isWaitingSegment(_ segment: ClaimModel.ClaimStatus) -> Bool {
+        isWaitingForYou && status != .closed && segment == .beingHandled
+    }
 
     func accessibilityText(segment: ClaimModel.ClaimStatus) -> String? {
         let claimStatusText = L10n.ClaimStatus.title
+        if isWaitingSegment(segment) {
+            return claimStatusText + " " + L10n.Claim.StatusBar.waitingForYou
+        }
 
         switch status {
         case .submitted:
@@ -47,6 +55,14 @@ struct ClaimStatusBar: View {
     }
 
     @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
+        if isWaitingSegment(segment) {
+            hSignalColor.Amber.element
+        } else {
+            statusBarColor(segment: segment)
+        }
+    }
+
+    @hColorBuilder private func statusBarColor(segment: ClaimModel.ClaimStatus) -> some hColor {
         switch status {
         case .submitted:
             if segment == .submitted {
@@ -84,7 +100,9 @@ struct ClaimStatusBar: View {
     }
 
     @hColorBuilder func textColor(segment: ClaimModel.ClaimStatus) -> some hColor {
-        if outcome == .paid {
+        if isWaitingSegment(segment) {
+            hTextColor.Opaque.primary
+        } else if outcome == .paid {
             hTextColor.Opaque.primary
         } else {
             switch status {
@@ -125,8 +143,11 @@ struct ClaimStatusBar: View {
                             .fill(barColor(segment: segment))
                             .frame(height: 4)
                             .cornerRadius(.cornerRadiusXS)
-                        hText(segment.title, style: .label)
-                            .foregroundColor(textColor(segment: segment))
+                        hText(
+                            isWaitingSegment(segment) ? L10n.Claim.StatusBar.waitingForYou : segment.title,
+                            style: .label
+                        )
+                        .foregroundColor(textColor(segment: segment))
                     }
                     .frame(maxWidth: .infinity)
                     .accessibilityLabel(accessibilityText(segment: segment) ?? "")

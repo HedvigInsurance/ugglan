@@ -1,4 +1,5 @@
 import AppStateContainer
+import Claims
 import Combine
 import ContractsCore
 import Payment
@@ -68,6 +69,7 @@ class HomeBottomScrollViewModel {
         handleStatusMessage()
         handleUpdateContactInfo()
         handleMissingPetChipIds()
+        handleClaimFollowups()
         handleDataCollectionPermission()
     }
 
@@ -240,6 +242,18 @@ class HomeBottomScrollViewModel {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] undecided in self?.handleTodo(.dataCollectionPermissionMissing, with: undecided) }
+            .store(in: &cancellables)
+    }
+
+    private func handleClaimFollowups() {
+        let claimsStore: ClaimsStore = globalAppStateContainer.get()
+        claimsStore.publisher(for: \.followups)
+            .map { $0.contains(where: \.isOpen) }
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink(receiveValue: { [weak self] show in
+                self?.handleTodo(.claimFollowupOpen, with: show)
+            })
             .store(in: &cancellables)
     }
 

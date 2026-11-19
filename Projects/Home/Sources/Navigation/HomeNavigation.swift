@@ -1,5 +1,6 @@
 import AddonsCore
 import AppStateContainer
+import Claims
 import Combine
 import ContractsCore
 import CrossSellCore
@@ -41,6 +42,14 @@ public class HomeNavigationViewModel {
                         self?.openChat = openChat
                     }
                 }
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: .openClaimFollowup, object: nil, queue: nil) {
+            [weak self] notification in
+            guard let followup = notification.object as? ClaimFollowup else { return }
+            Task { @MainActor in
+                self?.claimFollowup = followup
             }
         }
 
@@ -103,6 +112,7 @@ public class HomeNavigationViewModel {
 
     public var navBarItems = NavBarItems()
 
+    public var claimFollowup: ClaimFollowup?
     public var openChat: ChatConversation?
     public var openChatOptions: DetentPresentationOption = []
 

@@ -18,6 +18,7 @@ extension Notification.Name {
     public static let didChargeOutstandingPayment = Notification.Name("didChargeOutstandingPayment")
     public static let startClaim = Notification.Name("startClaim")
     public static let openAnalyticsConsent = Notification.Name("openAnalyticsConsent")
+    public static let openClaimFollowup = Notification.Name("openClaimFollowup")
 }
 
 public enum StartClaimInputType: Equatable {

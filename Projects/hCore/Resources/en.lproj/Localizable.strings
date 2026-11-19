@@ -192,6 +192,31 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_CHAT_USE_AUDIO_SHORT" = "Record";
 "CLAIM_CHAT_USE_TEXT_INPUT" = "Describe using text";
 "CLAIM_CHAT_USE_TEXT_INPUT_SHORT" = "Write";
+"CLAIM_FOLLOWUP_ANSWER_BUTTON" = "Answer questions";
+"CLAIM_FOLLOWUP_ANSWER_PLACEHOLDER" = "Your answer";
+"CLAIM_FOLLOWUP_AUDIO_ADDED" = "Recording added";
+"CLAIM_FOLLOWUP_CANT_ANSWER_BODY" = "We'll need this answer later and can't finish your claim without it. Tell us why you're skipping it.";
+"CLAIM_FOLLOWUP_CANT_ANSWER_BUTTON" = "Skip";
+"CLAIM_FOLLOWUP_CANT_ANSWER_COMMENT_PLACEHOLDER" = "Reason (optional)";
+"CLAIM_FOLLOWUP_CANT_ANSWER_DISCARD" = "Your current answer will be removed.";
+"CLAIM_FOLLOWUP_CANT_ANSWER_STATE" = "Skipped";
+"CLAIM_FOLLOWUP_CANT_ANSWER_TITLE" = "Skip this question?";
+"CLAIM_FOLLOWUP_DATE_PLACEHOLDER" = "Choose date";
+"CLAIM_FOLLOWUP_FILE_ADDED" = "Added";
+"CLAIM_FOLLOWUP_FILE_MISMATCH_HINT" = "This doesn't look like what we asked for. You can use it anyway or choose another file.";
+"CLAIM_FOLLOWUP_FILE_REPLACE" = "Choose another file";
+"CLAIM_FOLLOWUP_FILE_USE_ANYWAY" = "Use anyway";
+"CLAIM_FOLLOWUP_INTRO" = "We need a few more things to move your claim forward.";
+"CLAIM_FOLLOWUP_NUMBER_OUT_OF_RANGE" = "This value looks unusual. Check it's right; you can keep it anyway.";
+"CLAIM_FOLLOWUP_PHONE_INVALID" = "Enter a valid phone number";
+"CLAIM_FOLLOWUP_QUESTIONS_LEFT" = "%d left";
+"CLAIM_FOLLOWUP_SEND_BUTTON" = "Confirm";
+"CLAIM_FOLLOWUP_STATE_ANSWERED" = "Answered";
+"CLAIM_FOLLOWUP_STATE_TODO" = "Waiting for your answer";
+"CLAIM_FOLLOWUP_SUCCESS_TITLE" = "Answers sent";
+"CLAIM_FOLLOWUP_TEXT_EMPTY" = "Write an answer";
+"CLAIM_FOLLOWUP_TEXT_TOO_LONG" = "At most %d characters";
+"CLAIM_FOLLOWUP_TITLE" = "Additional questions";
 "COINSURED_EDIT_TITLE" = "Insured people";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Enter manually";
 "COINSURED_SSN_NOT_FOUND" = "SSN not found";
@@ -373,6 +398,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_QUOTES_SECTION_TITLE" = "Your quotes";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Add co-insured";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Add co-owner";
+"HOME_TODO_CLAIM_FOLLOWUP_TITLE" = "Answer questions about your claim";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Missing pet chip-ID";
 "HOME_TODO_MISSING_PAYMENT_METHOD_TITLE" = "Missing payment method";
 "HOME_TODO_MISSING_PAYOUT_METHOD_TITLE" = "Missing payout method";
@@ -849,6 +875,7 @@ We want members to submit a bug report to us directly instead of writing bad rev
 "claim.status_bar.closed" = "Closed";
 /* Figma */
 "claim.status_bar.submitted" = "Submitted";
+"claim.status_bar.waiting_for_you" = "Waiting for you";
 "claim_history.empty_state.body" = "Your past claims will appear here automatically once processed.";
 "claim_history.empty_state.title" = "No claims in history";
 "claim_outcome_unresponsive_support_text" = "Your claim was closed as we didn’t hear back from you. Please see conversation for more details.";

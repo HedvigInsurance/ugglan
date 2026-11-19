@@ -753,6 +753,11 @@ struct HomeTab: View {
                 await store.fetchClaimInProgress()
             }
         }
+        .modally(item: $homeNavigationVm.claimFollowup, options: .constant(.alwaysOpenOnTop)) { followup in
+            ClaimFollowupScreen(followup: followup)
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: ClaimFollowupScreen.self))
+        }
         .handleAddons(input: $homeNavigationVm.isAddonPresented)
         .handleQuickActions(with: homeNavigationVm.quickActionsVm) { redirectType in
             quickActionRedirect(for: redirectType)
