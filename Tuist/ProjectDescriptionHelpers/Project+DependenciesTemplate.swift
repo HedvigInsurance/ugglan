@@ -91,7 +91,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .kmpNativeCoroutines:
             return [
-                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.5"))
+                .package(url: "https://github.com/rickclephas/KMP-NativeCoroutines.git", .exact("1.0.6"))
             ]
         case .tagkit:
             return [
