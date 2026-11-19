@@ -6,6 +6,7 @@ import hCoreUI
 struct ChangeMileageSummaryScreen: View {
     let vm: ChangeMileageViewModel
     @Environment(ChangeMileageNavigationViewModel.self) var navigationVm
+    @State private var isCancelAlertPresented = false
 
     var body: some View {
         hForm {
@@ -27,7 +28,7 @@ struct ChangeMileageSummaryScreen: View {
                             vm.commit()
                         }
                         hCancelButton {
-                            navigationVm.router.dismiss()
+                            isCancelAlertPresented = true
                         }
                     }
                 }
@@ -35,6 +36,14 @@ struct ChangeMileageSummaryScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .withAlertDismiss()
+        .alert(L10n.General.areYouSure, isPresented: $isCancelAlertPresented) {
+            Button(L10n.General.no, role: .cancel) {}
+            Button(L10n.General.yes, role: .destructive) {
+                navigationVm.router.dismiss()
+            }
+        } message: {
+            Text(L10n.General.progressWillBeLostAlert)
+        }
     }
 
     @ViewBuilder

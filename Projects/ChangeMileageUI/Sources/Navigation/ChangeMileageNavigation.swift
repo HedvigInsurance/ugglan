@@ -93,10 +93,19 @@ public struct ChangeMileageNavigation: View {
     @ViewBuilder
     private var root: some View {
         if navigationVm.input.contracts.isEmpty {
-            GenericErrorView(
-                title: L10n.somethingWentWrong,
-                description: L10n.General.defaultError,
+            StateView(
+                type: .empty,
+                title: L10n.changeMileageEmptyState,
+                bodyText: nil,
                 formPosition: .center
+            )
+            .hStateViewButtonConfig(
+                .init(
+                    dismissButton: .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: { navigationVm.router.dismiss() }
+                    )
+                )
             )
             .withDismissButton()
         } else if navigationVm.vm != nil, navigationVm.input.contracts.count == 1 {

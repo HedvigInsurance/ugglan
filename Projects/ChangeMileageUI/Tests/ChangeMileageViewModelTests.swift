@@ -70,6 +70,22 @@ extension ChangeMileageDependencySuite {
 
                 await waitUntil(description: "intent failed") { model.viewState != .loading }
                 #expect(model.viewState == .error(errorMessage: "Not now"))
+                #expect(!model.canRetryIntent)
+            }
+            await expectClientAndViewModelReleased()
+        }
+
+        @Test
+        func genericErrorCanBeRetried() async {
+            do {
+                client = MockData.createMockChangeMileage(createIntent: { _ in
+                    throw ChangeMileageError.somethingWentWrong
+                })
+                let model = ChangeMileageViewModel(contract: MileageFixtures.contract)
+                vm = model
+
+                await waitUntil(description: "intent failed") { model.viewState != .loading }
+                #expect(model.canRetryIntent)
             }
             await expectClientAndViewModelReleased()
         }

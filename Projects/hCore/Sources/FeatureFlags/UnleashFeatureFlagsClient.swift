@@ -125,7 +125,8 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             ),
             isCancelInsuranceHiddenFromHomeScreen: unleashClient.isEnabled(
                 name: "hide_cancel_insurance_from_home_screen"
-            )
+            ),
+            isChangeMileageEnabled: unleashClient.isEnabled(name: "allow-change-mileage")
         )
         featureDataPublisher.send(data)
     }

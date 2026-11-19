@@ -20,7 +20,7 @@ struct ChangeMileageLandingScreen: View {
 
     private var errorButtons: StateViewButtonConfig {
         .init(
-            actionButton: .init(buttonAction: { [weak vm] in vm?.fetchIntent() }),
+            actionButton: vm.canRetryIntent ? .init(buttonAction: { [weak vm] in vm?.fetchIntent() }) : nil,
             dismissButton: .init(buttonAction: { navigationVm.router.dismiss() })
         )
     }

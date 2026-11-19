@@ -13,6 +13,8 @@ public class ChangeMileageViewModel {
     /// Loading the mileage options; an error carries the backend's message when it explains why.
     var viewState: ProcessingState = .loading
     var commitState: ProcessingState = .loading
+    /// False when the backend explained why the mileage can't be changed, since asking again gives the same answer.
+    private(set) var canRetryIntent = true
 
     private(set) var intent: ChangeMileageIntent?
     private(set) var selectedQuote: MileageQuote?
@@ -47,6 +49,11 @@ public class ChangeMileageViewModel {
                 selectedQuote = current
                 withAnimation { viewState = .success }
             } catch {
+                if case .userError = error as? ChangeMileageError {
+                    canRetryIntent = false
+                } else {
+                    canRetryIntent = true
+                }
                 withAnimation { viewState = .error(errorMessage: error.localizedDescription) }
             }
         }

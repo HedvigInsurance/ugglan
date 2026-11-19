@@ -7,7 +7,7 @@ extension EditType {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
-        if contract.supportsChangeMileage {
+        if contract.supportsChangeMileage && Dependencies.featureFlags().isChangeMileageEnabled {
             editTypes.append(.changeMileage)
         }
 

@@ -1285,6 +1285,7 @@ class LoggedInNavigationViewModel {
 
     /// Opens the flow for the given contract, or lets the member choose among the contracts that support it.
     func handleChangeMileage(contractId: String?) {
+        guard Dependencies.featureFlags().isChangeMileageEnabled else { return }
         let eligibleContracts = contractStore.activeContracts.filter(\.supportsChangeMileage)
         if let contract = eligibleContracts.first(where: { $0.id == contractId }) {
             isChangeMileagePresented = .init(contracts: [contract.asChangeMileageContract])
