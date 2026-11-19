@@ -28,24 +28,23 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
     }
 
     public func getReceivedPowerOfAttorneys() async throws -> [ReceivedPowerOfAttorney] {
-        //        let request = try await PowerOfAttorneyRequest.received.asRequest()
-        //        let (data, response) = try await sessionClient.data(for: request)
-        //        let received: [ReceivedPowerOfAttorneyResponse] = try await handleResponseForced(
-        //            data: data,
-        //            response: response,
-        //            error: nil
-        //        )
-        //        return received.compactMap { powerOfAttorney -> ReceivedPowerOfAttorney? in
-        //            guard let level = PowerOfAttorneyLevel(rawValue: powerOfAttorney.level) else { return nil }
-        //            return ReceivedPowerOfAttorney(
-        //                id: powerOfAttorney.id,
-        //                memberId: powerOfAttorney.memberId,
-        //                name: powerOfAttorney.name,
-        //                level: level,
-        //                loginUrl: powerOfAttorneyShareUrl(id: powerOfAttorney.id)
-        //            )
-        //        }
-        []
+        let request = try await PowerOfAttorneyRequest.received.asRequest()
+        let (data, response) = try await sessionClient.data(for: request)
+        let received: [ReceivedPowerOfAttorneyResponse] = try await handleResponseForced(
+            data: data,
+            response: response,
+            error: nil
+        )
+        return received.compactMap { powerOfAttorney -> ReceivedPowerOfAttorney? in
+            guard let level = PowerOfAttorneyLevel(rawValue: powerOfAttorney.level) else { return nil }
+            return ReceivedPowerOfAttorney(
+                id: powerOfAttorney.id,
+                memberId: powerOfAttorney.memberId,
+                name: powerOfAttorney.name,
+                level: level,
+                loginUrl: powerOfAttorneyShareUrl(id: powerOfAttorney.id)
+            )
+        }
     }
 
     public func revokePowerOfAttorney(id _: String) async throws {
