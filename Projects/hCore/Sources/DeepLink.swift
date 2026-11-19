@@ -72,8 +72,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .chat: L10n.chatConversationInbox
         case .inbox: L10n.chatConversationInbox
         case .changeTier: L10n.InsuranceDetails.changeCoverage
-        // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
-        case .changeMileage: "Ändra körsträcka"
+        case .changeMileage: L10n.changeMileageOptionTitle
         case .travelAddon: L10n.addonTravelDisplayName
         case .editCoInsured: L10n.hcQuickActionsEditCoinsured
         case .editCoOwners: L10n.editCoownerTitle  // TODO: fix lokalise?

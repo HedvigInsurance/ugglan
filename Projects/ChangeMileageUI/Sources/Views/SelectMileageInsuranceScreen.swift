@@ -24,8 +24,7 @@ struct SelectMileageInsuranceScreen: View {
     var body: some View {
         ContractSelectView(
             itemPickerConfig: itemPickerConfig,
-            // TODO: Add "Change mileage" / "Ändra körsträcka" to Lokalise
-            title: "Ändra körsträcka",
+            title: L10n.changeMileageOptionTitle,
             subtitle: L10n.tierFlowSelectInsuranceSubtitle
         )
     }

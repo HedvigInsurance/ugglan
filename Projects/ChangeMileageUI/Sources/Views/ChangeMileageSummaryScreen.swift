@@ -18,8 +18,7 @@ struct ChangeMileageSummaryScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
-                    // TODO: Add "Your new price will be charged from your next payment." / "Ditt nya pris dras från och med nästa betalning." to Lokalise
-                    hText("Ditt nya pris dras från och med nästa betalning.", style: .label)
+                    hText(L10n.changeMileageSummaryFooter, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .multilineTextAlignment(.center)
                     VStack(spacing: .padding8) {

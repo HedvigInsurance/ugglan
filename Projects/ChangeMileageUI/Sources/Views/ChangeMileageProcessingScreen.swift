@@ -29,8 +29,7 @@ struct ChangeMileageProcessingScreen: View {
         let mileage = vm.selectedQuote?.displayName ?? ""
         let date = vm.intent?.activationDate.displayDateDDMMMYYYYFormat ?? ""
         let price = vm.selectedQuote?.totalCost.net.formattedAmountPerMonth ?? ""
-        // TODO: Add "Your mileage will be %1$@ per year from %2$@, and your new price is %3$@." / "Din körsträcka blir %1$@ per år från %2$@ och ditt nya pris är %3$@." to Lokalise
-        return "Din körsträcka blir \(mileage) per år från \(date) och ditt nya pris är \(price)."
+        return L10n.changeMileageSuccess(mileage, date, price)
     }
 
     private var errorButtons: StateViewButtonConfig {

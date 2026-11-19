@@ -233,6 +233,34 @@ public enum L10n {
   }
   /// Fetching insurance amount...
   public static var changeInsuranceAmountProcessing: String { L10n.tr("Localizable", "CHANGE_INSURANCE_AMOUNT_PROCESSING") }
+  /// Current
+  public static var changeMileageCurrentLabel: String { L10n.tr("Localizable", "CHANGE_MILEAGE_CURRENT_LABEL") }
+  /// You have no car insurance where the mileage can be changed
+  public static var changeMileageEmptyState: String { L10n.tr("Localizable", "CHANGE_MILEAGE_EMPTY_STATE") }
+  /// How far do I drive?
+  public static var changeMileageInfoButton: String { L10n.tr("Localizable", "CHANGE_MILEAGE_INFO_BUTTON") }
+  /// Include all driving over a year, by everyone who drives the car. It may help to compare the odometer reading with the one from last year's inspection.
+  public static var changeMileageInfoText: String { L10n.tr("Localizable", "CHANGE_MILEAGE_INFO_TEXT") }
+  /// Mileage per year
+  public static var changeMileageLabel: String { L10n.tr("Localizable", "CHANGE_MILEAGE_LABEL") }
+  /// Fetching mileage options...
+  public static var changeMileageLoadingState: String { L10n.tr("Localizable", "CHANGE_MILEAGE_LOADING_STATE") }
+  /// If the car is driven further than you have chosen, the compensation can be lower in case of damage. You can change the mileage whenever you want.
+  public static var changeMileageNotice: String { L10n.tr("Localizable", "CHANGE_MILEAGE_NOTICE") }
+  /// How far the car is driven per year
+  public static var changeMileageOptionSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_OPTION_SUBTITLE") }
+  /// Change mileage
+  public static var changeMileageOptionTitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_OPTION_TITLE") }
+  /// How far the car is driven per year, by everyone who drives it
+  public static var changeMileagePickerSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_PICKER_SUBTITLE") }
+  /// Choose how far the car is driven per year
+  public static var changeMileageScreenSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_SCREEN_SUBTITLE") }
+  /// Your mileage will be %@ per year from %@, and your new price is %@.
+  public static func changeMileageSuccess(_ p1: String, _ p2: String, _ p3: String) -> String {
+    return L10n.tr("Localizable", "CHANGE_MILEAGE_SUCCESS", p1, p2, p3)
+  }
+  /// Your new price will be charged from your next payment.
+  public static var changeMileageSummaryFooter: String { L10n.tr("Localizable", "CHANGE_MILEAGE_SUMMARY_FOOTER") }
   /// Change payout account
   public static var changePayoutMethodButtonLabel: String { L10n.tr("Localizable", "CHANGE_PAYOUT_METHOD_BUTTON_LABEL") }
   /// Change coverage level

@@ -17,12 +17,10 @@ struct MileagePickerScreen: View {
         hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
-                    // TODO: Add "Choose mileage" / "Välj körsträcka" to Lokalise
-                    hText("Välj körsträcka", style: .heading1)
+                    hText(L10n.changeMileageLabel, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .accessibilityAddTraits(.isHeader)
-                    // TODO: Add "How far the car is driven per year, by everyone who drives it" / "Hur långt bilen körs per år, av alla som kör den" to Lokalise
-                    hText("Hur långt bilen körs per år, av alla som kör den", style: .heading1)
+                    hText(L10n.changeMileagePickerSubtitle, style: .heading1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -78,8 +76,7 @@ struct MileagePickerScreen: View {
                     .hFieldSize(.small)
             }
             if quote.isCurrent {
-                // TODO: Add "Current" / "Nuvarande" to Lokalise
-                hText("Nuvarande", style: .label)
+                hText(L10n.changeMileageCurrentLabel, style: .label)
                     .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
