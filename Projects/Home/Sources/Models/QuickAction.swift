@@ -71,7 +71,7 @@ extension QuickAction {
 }
 
 extension EditType {
-    var asQuickAction: QuickAction {
+    var asQuickAction: QuickAction? {
         switch self {
         case .changeAddress: .changeAddress
         case .coInsured: .editCoInsured
@@ -79,6 +79,7 @@ extension EditType {
         case .changeTier: .upgradeCoverage
         case .cancellation: .cancellation
         case .removeAddons: .removeAddons
+        case .changeMileage: nil
         }
     }
 }

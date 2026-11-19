@@ -7,7 +7,7 @@
 public extension OctopusGraphQL {
   nonisolated struct ContractFragment: OctopusGraphQL.SelectionSet, Fragment {
     public static var fragmentDefinition: StaticString {
-      #"fragment ContractFragment on Contract { __typename currentAgreement { __typename ...AgreementFragment } coInsured { __typename ...CoInsuredFragment } coOwners { __typename ...CoOwnerFragment } exposureDisplayName exposureDisplayNameShort id masterInceptionDate supportsMoving supportsCoInsured supportsCoOwners supportsTravelCertificate supportsChangeTier supportsTermination terminationDate upcomingChangedAgreement { __typename ...AgreementFragment } isMissingPetId }"#
+      #"fragment ContractFragment on Contract { __typename currentAgreement { __typename ...AgreementFragment } coInsured { __typename ...CoInsuredFragment } coOwners { __typename ...CoOwnerFragment } exposureDisplayName exposureDisplayNameShort id masterInceptionDate supportsMoving supportsCoInsured supportsCoOwners supportsTravelCertificate supportsChangeTier supportsChangeMileage supportsTermination terminationDate upcomingChangedAgreement { __typename ...AgreementFragment } isMissingPetId }"#
     }
 
     @_spi(Unsafe) public let __data: DataDict
@@ -28,6 +28,7 @@ public extension OctopusGraphQL {
       .field("supportsCoOwners", Bool.self),
       .field("supportsTravelCertificate", Bool.self),
       .field("supportsChangeTier", Bool.self),
+      .field("supportsChangeMileage", Bool.self),
       .field("supportsTermination", Bool.self),
       .field("terminationDate", OctopusGraphQL.Date?.self),
       .field("upcomingChangedAgreement", UpcomingChangedAgreement?.self),
@@ -71,6 +72,8 @@ public extension OctopusGraphQL {
     public var supportsTravelCertificate: Bool { __data["supportsTravelCertificate"] }
     /// Whether or not this contract can be changed through the 'ChangeTier' API.
     public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
+    /// Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+    public var supportsChangeMileage: Bool { __data["supportsChangeMileage"] }
     /// Whether or not this contract can be terminated by user
     public var supportsTermination: Bool { __data["supportsTermination"] }
     /// The last date this insurance will be active, if there is one.

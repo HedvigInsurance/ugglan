@@ -1,0 +1,27 @@
+mutation ChangeMileageCreateIntent($contractId: ID!) {
+  changeMileageCreateIntent(contractId: $contractId) {
+    __typename
+    ... on ChangeMileageIntent {
+      activationDate
+      currentTotalCost {
+        ...ItemCostFragment
+      }
+      quotes {
+        id
+        displayName
+        isCurrent
+        totalCost {
+          ...ItemCostFragment
+        }
+        displayItems {
+          displayTitle
+          displayValue
+          previousDisplayValue
+        }
+      }
+    }
+    ... on UserError {
+      message
+    }
+  }
+}

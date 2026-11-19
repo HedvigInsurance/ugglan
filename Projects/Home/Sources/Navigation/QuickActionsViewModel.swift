@@ -147,7 +147,9 @@ private struct QuickActions<RedirectContent: View>: ViewModifier {
                     EditContractScreen(
                         editTypes: actionsWrapper.quickActions.compactMap(\.asEditType),
                         onSelectedType: { selectedType in
-                            vm.perform(selectedType.asQuickAction)
+                            if let quickAction = selectedType.asQuickAction {
+                                vm.perform(quickAction)
+                            }
                         }
                     )
                     .navigationTitle(L10n.hcQuickActionsEditInsuranceTitle)
