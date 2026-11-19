@@ -126,7 +126,7 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             isCancelInsuranceHiddenFromHomeScreen: unleashClient.isEnabled(
                 name: "hide_cancel_insurance_from_home_screen"
             ),
-            isMessagesInboxEnabled: unleashClient.isEnabled(name: "enable_messages_inbox")
+            isMessagesInboxEnabled: true  // TEMP: forced on locally, revert before committing
         )
         featureDataPublisher.send(data)
     }
