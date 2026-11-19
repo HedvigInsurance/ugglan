@@ -34,8 +34,8 @@ public class AuthenticationService {
     }
 
     @Log(.error)
-    public func logout() async throws {
-        try await client.logout()
+    public func logout(keepingSavedSession: Bool = false) async throws {
+        try await client.logout(keepingSavedSession: keepingSavedSession)
     }
 
     @Log(.error, masked: ["code"])
@@ -50,6 +50,19 @@ public class AuthenticationService {
 
     public func getPowerOfAttorney() async -> ActingPowerOfAttorney? {
         await client.getPowerOfAttorney()
+    }
+
+    public func saveSessionForSwitchBack() async {
+        await client.saveSessionForSwitchBack()
+    }
+
+    public func hasSavedSession() async -> Bool {
+        await client.hasSavedSession()
+    }
+
+    @Log(.error)
+    public func restoreSavedSession() async -> Bool {
+        await client.restoreSavedSession()
     }
 
     public static var logAuthResourceStart: ((_ key: String, _ URL: URL) -> Void) = { _, _ in }

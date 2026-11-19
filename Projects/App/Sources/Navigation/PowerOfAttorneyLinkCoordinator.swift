@@ -54,12 +54,22 @@ final class PowerOfAttorneyLinkCoordinator {
         alert.addAction(UIAlertAction(title: L10n.logoutAlertActionCancel, style: .cancel))
         alert.addAction(
             UIAlertAction(title: L10n.logoutAlertActionConfirm, style: .destructive) { [weak self] _ in
-                // Registered before logging out, so it waits for the logged out screen to show
-                self?.openLoginWhenLoggedOut(id: id, after: 0.5)
-                ApplicationState.preserveState(.notLoggedIn)
-                ApplicationState.state = .notLoggedIn
+                Task { [weak self] in
+                    await self?.switchToPowerOfAttorney(id: id)
+                }
             }
         )
         presenter.present(alert, animated: true)
+    }
+
+    /// Logs out, keeping the member's own session so they can switch back to it from home after the login.
+    private func switchToPowerOfAttorney(id: String) async {
+        guard let mainVm else { return }
+        await mainVm.authenticationService.saveSessionForSwitchBack()
+        mainVm.keepSavedSessionOnLogout = true
+        // Registered before logging out, so it waits for the logged out screen to show
+        openLoginWhenLoggedOut(id: id, after: 0.5)
+        ApplicationState.preserveState(.notLoggedIn)
+        ApplicationState.state = .notLoggedIn
     }
 }

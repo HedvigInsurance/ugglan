@@ -112,7 +112,7 @@ class MockAuthenticationService: AuthenticationClient {
         try await startSeBankIdAuth(updateStatusTo)
     }
 
-    func logout() async throws {
+    func logout(keepingSavedSession _: Bool) async throws {
         events.append(.logout)
         try await logoutAuth()
     }
@@ -129,5 +129,15 @@ class MockAuthenticationService: AuthenticationClient {
 
     func getPowerOfAttorney() async -> ActingPowerOfAttorney? {
         nil
+    }
+
+    func saveSessionForSwitchBack() async {}
+
+    func hasSavedSession() async -> Bool {
+        false
+    }
+
+    func restoreSavedSession() async -> Bool {
+        false
     }
 }

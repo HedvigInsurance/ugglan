@@ -7,9 +7,14 @@ struct GreetingView: View {
     let firstName: String?
 
     var body: some View {
-        greeting
-            .padding(.horizontal, .padding16)
-            .padding(.vertical, 140)
+        VStack(spacing: .padding16) {
+            greeting
+            if actingPowerOfAttorney != nil {
+                SwitchBackToOwnAccountButton()
+            }
+        }
+        .padding(.horizontal, .padding16)
+        .padding(.vertical, 140)
     }
 
     private var greeting: some View {
@@ -43,6 +48,34 @@ struct GreetingView: View {
             return "You are acting with \(level) power of attorney"
         }
         return "You are acting with \(level) power of attorney for \(firstName)"
+    }
+}
+
+/// Lets a member who switched to a power of attorney from their own session return to it. A View of its own so its
+/// closures only capture this view (see `LogoutButton`).
+private struct SwitchBackToOwnAccountButton: View {
+    @Environment(\.switchBackToOwnAccount) private var switchBackToOwnAccount
+    @State private var showAlert = false
+
+    var body: some View {
+        if let switchBackToOwnAccount {
+            // TODO: Localize via Lokalise
+            hButton(.medium, .secondary, content: .init(title: "Switch back to your account")) {
+                showAlert = true
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            // TODO: Localize via Lokalise
+            .alert("Switch back to your account?", isPresented: $showAlert) {
+                Button(L10n.generalCancelButton, role: .cancel) {}
+                // TODO: Localize via Lokalise
+                Button("Switch back") {
+                    switchBackToOwnAccount()
+                }
+            } message: {
+                // TODO: Localize via Lokalise
+                Text("You will stop acting with the power of attorney.")
+            }
+        }
     }
 }
 

@@ -12,6 +12,8 @@ enum PowerOfAttorneyRequest {
     case received
     /// `POST /power-of-attorney`: starts a BankID sign order for a new power of attorney.
     case start(personalNumber: String, name: String, level: PowerOfAttorneyLevel)
+    /// `POST /power-of-attorney/{id}/revoke`: revokes a granted power of attorney and logs out its sessions.
+    case revoke(id: String)
     /// `POST {pollUrl}`: the sign order's status. Unlike the login status call (GET), this poll is a POST.
     case poll(url: URL)
     /// `POST /member-login`: starts a BankID login with the id from a power of attorney link. Sent logged out.
@@ -34,6 +36,9 @@ enum PowerOfAttorneyRequest {
             request.httpMethod = "POST"
             request.httpBody = try JSONEncoder()
                 .encode(StartBody(personalNumber: personalNumber, name: name, level: level.rawValue))
+        case let .revoke(id):
+            request = URLRequest(url: authUrl.appending(path: "power-of-attorney/\(id)/revoke"))
+            request.httpMethod = "POST"
         case let .poll(url):
             request = URLRequest(url: url)
             request.httpMethod = "POST"
@@ -62,7 +67,7 @@ enum PowerOfAttorneyRequest {
     private var requiresAuthorization: Bool {
         switch self {
         case .memberLogin: false
-        case .list, .received, .start, .poll, .current: true
+        case .list, .received, .start, .revoke, .poll, .current: true
         }
     }
 }
@@ -92,6 +97,8 @@ struct GrantedPowerOfAttorneyResponse: Decodable, Sendable {
     let name: String
     let ssn: String
     let level: String
+    /// Set once the member has revoked it, revoked powers of attorney stay in the list.
+    let revokedAt: String?
 }
 
 struct ReceivedPowerOfAttorneyResponse: Decodable, Sendable {

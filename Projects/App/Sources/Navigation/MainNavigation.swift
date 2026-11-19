@@ -61,6 +61,9 @@ struct MainNavigation: App {
         } else if featureFlags.isUpdateNecessary {
             UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
                 .trackViewName(name: .init(describing: UpdateAppScreen.self))
+        } else if vm.isSwitchingBackToOwnAccount {
+            SwitchingAccountScreen()
+                .transition(.opacity)
         } else if vm.hasLaunchFinished {
             loggedInContent
         }
@@ -73,6 +76,11 @@ struct MainNavigation: App {
             LoggedInNavigation(vm: vm.loggedInVm)
                 .environment(vm)
                 .environment(\.actingPowerOfAttorney, vm.powerOfAttorney)
+                .environment(
+                    \.switchBackToOwnAccount,
+                    vm.canSwitchBackToOwnAccount
+                        ? SwitchBackToOwnAccountAction { [weak vm] in vm?.switchBackToOwnAccount() } : nil
+                )
         case .impersonation:
             ImpersonationSettings()
                 .trackViewName(name: .init(describing: ImpersonationSettings.self))
@@ -116,7 +124,13 @@ class MainNavigationViewModel {
             loggedInVm.actingPowerOfAttorney = powerOfAttorney
         }
     }
-    @ObservationIgnored private let authenticationService = AuthenticationService()
+    /// Whether the member switched to a power of attorney from their own session and can return to it
+    private(set) var canSwitchBackToOwnAccount = false
+    /// Shows the switching screen instead of the tabs while going back to the member's own session
+    private(set) var isSwitchingBackToOwnAccount = false
+    /// Set before logging out to switch to a power of attorney, so the member's saved session survives the logout
+    @ObservationIgnored var keepSavedSessionOnLogout = false
+    @ObservationIgnored let authenticationService = AuthenticationService()
 
     @ObservationIgnored @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     var stateToShow = ApplicationState.currentState ?? .notLoggedIn
@@ -125,27 +139,13 @@ class MainNavigationViewModel {
             Task {
                 switch state {
                 case .loggedIn:
-                    UIApplication.shared.registerForRemoteNotifications()
-                    await ApplicationContext.shared.setValue(to: true)
-                    withAnimation {
-                        hasLaunchFinished = false
-                    }
-                    await loadPowerOfAttorney()
-                    let contractStore: ContractStore = globalAppStateContainer.get()
-                    await contractStore.fetchContracts()
-                    let profileStore: ProfileStore = globalAppStateContainer.get()
-                    await profileStore.fetchMemberDetails()
-                    await profileStore.updateLanguage()
-                    checkForFeatureFlags()
-                    Task {
-                        try? await analyticsService.fetchAndSetUserId()
-                    }
-                    withAnimation {
-                        hasLaunchFinished = true
-                    }
+                    await startLoggedInSession()
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
+                    let keepSavedSession = keepSavedSessionOnLogout
+                    keepSavedSessionOnLogout = false
                     powerOfAttorney = nil
+                    canSwitchBackToOwnAccount = false
                     notLoggedInVm = .init()
                     analyticsService.clearUserId()
                     analyticsService = AnalyticsService()
@@ -157,7 +157,7 @@ class MainNavigationViewModel {
                     // Run in a detached Task so the view switch happens immediately
                     // while the auth network logout completes in the background.
                     Task {
-                        await self.appDelegate.logout()
+                        await self.appDelegate.logout(keepingSavedSession: keepSavedSession)
                         self.loggedInVm = .init()
                         // logout reset the feature flags store, so the fresh one needs its own client; the profile
                         // store is empty now, so the flags and experiments are no longer the member's
@@ -170,6 +170,56 @@ class MainNavigationViewModel {
                 withAnimation {
                     self.stateToShow = state
                 }
+            }
+        }
+    }
+
+    private func startLoggedInSession() async {
+        UIApplication.shared.registerForRemoteNotifications()
+        await ApplicationContext.shared.setValue(to: true)
+        withAnimation {
+            hasLaunchFinished = false
+        }
+        await loadPowerOfAttorney()
+        let contractStore: ContractStore = globalAppStateContainer.get()
+        await contractStore.fetchContracts()
+        let profileStore: ProfileStore = globalAppStateContainer.get()
+        await profileStore.fetchMemberDetails()
+        await profileStore.updateLanguage()
+        checkForFeatureFlags()
+        Task {
+            try? await analyticsService.fetchAndSetUserId()
+        }
+        withAnimation {
+            hasLaunchFinished = true
+        }
+    }
+
+    /// Ends the power of attorney session and goes back to the member's own, without logging in again.
+    func switchBackToOwnAccount() {
+        guard !isSwitchingBackToOwnAccount else { return }
+        Task {
+            // Tear down the power of attorney session's views before its stores are dropped
+            withAnimation {
+                isSwitchingBackToOwnAccount = true
+                hasLaunchFinished = false
+            }
+            // The switching screen stays up at least this long, even when the switch finishes sooner
+            let minimumDisplay = Task { try? await Task.sleep(for: .seconds(3)) }
+            if await authenticationService.restoreSavedSession() {
+                analyticsService.clearUserId()
+                appDelegate.clearDataForSwitchedSession()
+                // Recreated only after the container reset, see the `.notLoggedIn` case
+                loggedInVm = .init()
+                featureFlags = Dependencies.featureFlags()
+                await startLoggedInSession()
+            } else {
+                canSwitchBackToOwnAccount = false
+                hasLaunchFinished = true
+            }
+            await minimumDisplay.value
+            withAnimation {
+                isSwitchingBackToOwnAccount = false
             }
         }
     }
@@ -275,9 +325,11 @@ class MainNavigationViewModel {
     private func loadPowerOfAttorney() async {
         guard state == .loggedIn else {
             powerOfAttorney = nil
+            canSwitchBackToOwnAccount = false
             return
         }
         powerOfAttorney = await authenticationService.getPowerOfAttorney()
+        canSwitchBackToOwnAccount = powerOfAttorney != nil ? await authenticationService.hasSavedSession() : false
     }
 
     // On a cold start the `state` didSet never fires, so the user id is restored from the cached member details.

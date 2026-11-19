@@ -47,17 +47,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Async so callers can await `clearData()` completion before recreating
     // logged-in view models. Recreating them before the container reset would
     // capture the about-to-be-discarded stores in nav VM property initializers.
-    func logout() async {
+    func logout(keepingSavedSession: Bool = false) async {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
         Task {
             let authenticationService = AuthenticationService()
             do {
-                try await authenticationService.logout()
+                try await authenticationService.logout(keepingSavedSession: keepingSavedSession)
             } catch _ {}
         }
         await ApolloClient.deleteToken()
 
+        clearData()
+    }
+
+    /// After the session was swapped for another one without logging out (switching back from a power of attorney):
+    /// drops everything the previous session left behind, like a logout does.
+    func clearDataForSwitchedSession() {
+        cancellables.removeAll()
         clearData()
     }
 

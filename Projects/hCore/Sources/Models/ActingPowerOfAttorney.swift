@@ -43,9 +43,27 @@ public struct ActingPowerOfAttorney: Codable, Equatable, Sendable {
     }
 }
 
+public struct SwitchBackToOwnAccountAction: Equatable {
+    private let action: @MainActor () -> Void
+
+    public init(_ action: @escaping @MainActor () -> Void) {
+        self.action = action
+    }
+
+    @MainActor
+    public func callAsFunction() {
+        action()
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool { true }
+}
+
 extension EnvironmentValues {
     /// Set when someone uses the app with a power of attorney, `nil` for the member themselves.
     @Entry public var actingPowerOfAttorney: ActingPowerOfAttorney? = nil
+
+    /// Ends the power of attorney session and returns to the member's own, `nil` when they didn't switch from one.
+    @Entry public var switchBackToOwnAccount: SwitchBackToOwnAccountAction? = nil
 
     /// Whether the app is limited to what a power of attorney without full access may see and do.
     public var hasLimitedAccess: Bool {

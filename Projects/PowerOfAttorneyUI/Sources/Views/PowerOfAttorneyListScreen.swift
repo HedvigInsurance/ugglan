@@ -118,23 +118,16 @@ private struct PowerOfAttorneyRow: View {
                     Button {
                         isRevokeAlertPresented = true
                     } label: {
-                        Group {
-                            if isRevoking {
-                                ProgressView()
-                                    .tint(hTextColor.Opaque.white)
-                            } else {
-                                hCoreUIAssets.trash.view
-                                    .resizable()
-                                    .frame(width: .padding16, height: .padding16)
-                                    .foregroundColor(hTextColor.Opaque.white)
-                            }
-                        }
-                        // Square as tall as the pill next to it
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .aspectRatio(1, contentMode: .fit)
-                        .padding(.padding4)
-                        .background(hSignalColor.Red.element)
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                        hCoreUIAssets.trash.view
+                            .resizable()
+                            .frame(width: .padding16, height: .padding16)
+                            .foregroundColor(hTextColor.Opaque.white)
+                            // Square as tall as the pill next to it
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .aspectRatio(1, contentMode: .fit)
+                            .padding(.padding4)
+                            .background(hSignalColor.Red.element)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
                     }
                     .disabled(isRevoking)
                     // TODO: Localize via Lokalise
@@ -206,7 +199,7 @@ final class PowerOfAttorneyListViewModel {
     var powerOfAttorneys: [PowerOfAttorney] = []
     var receivedPowerOfAttorneys: [ReceivedPowerOfAttorney] = []
     var viewState: ProcessingState = .loading
-    /// Ids of the powers of attorney being revoked, their revoke buttons show a loader
+    /// Ids of the powers of attorney being revoked, their revoke buttons are disabled
     var revokingIds = Set<String>()
     @ObservationIgnored private let service = PowerOfAttorneyService()
     @ObservationIgnored private var hasLoaded = false

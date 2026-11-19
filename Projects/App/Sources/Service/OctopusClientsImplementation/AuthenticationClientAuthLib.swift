@@ -201,7 +201,10 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             case _ as LoginStatusResultException:
                 throw AuthenticationError.loginFailure(message: nil)
             case let completed as LoginStatusResultCompleted:
-                try await exchange(code: completed.authorizationCode.code)
+                try await exchange(
+                    code: completed.authorizationCode.code,
+                    keepingSavedSession: isPowerOfAttorneyLogin
+                )
                 if isPowerOfAttorneyLogin {
                     try await storePowerOfAttorney()
                 }
@@ -258,27 +261,82 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    func logout() async throws {
+    func logout(keepingSavedSession: Bool) async throws {
         await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
+        let savedSession = await readSavedSession()
+        if !keepingSavedSession {
+            await dropSavedSession()
+        }
+        guard let token = try? await ApolloClient.retreiveToken(),
+            token.refreshToken != savedSession?.refreshToken
+        else {
+            return
+        }
+        try await revoke(refreshToken: token.refreshToken)
+    }
+
+    private func revoke(refreshToken: String) async throws {
         do {
-            if let token = try await ApolloClient.retreiveToken() {
-                let data = try await asyncFunction(
-                    for: networkAuthRepository.revoke(token: token.refreshToken)
-                )
-                switch data {
-                case _ as RevokeResultError:
-                    throw AuthenticationError.logoutFailure
-                case _ as RevokeResultSuccess:
-                    return
-                default:
-                    throw AuthenticationError.logoutFailure
-                }
-            } else {
+            let data = try await asyncFunction(
+                for: networkAuthRepository.revoke(token: refreshToken)
+            )
+            switch data {
+            case _ as RevokeResultSuccess:
                 return
+            default:
+                throw AuthenticationError.logoutFailure
             }
         } catch {
             throw AuthenticationError.logoutFailure
         }
+    }
+
+    // MARK: - Switching back from a power of attorney session
+
+    /// The member's own session, kept while they use the app with a power of attorney
+    private static let savedSessionKey = "savedMemberSession"
+
+    func saveSessionForSwitchBack() async {
+        guard await getPowerOfAttorney() == nil, let token = try? await ApolloClient.retreiveToken() else { return }
+        KeychainHelper.standard.save(token, key: Self.savedSessionKey)
+    }
+
+    func hasSavedSession() async -> Bool {
+        await readSavedSession() != nil
+    }
+
+    func restoreSavedSession() async -> Bool {
+        guard let savedSession = await readSavedSession() else { return false }
+        let powerOfAttorneyToken = try? await ApolloClient.retreiveToken()
+        await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
+        await KeychainHelper.standard.delete(key: Self.savedSessionKey)
+        // An expired access token is refreshed with the saved refresh token on the first request
+        ApolloClient.saveToken(token: savedSession)
+        if let powerOfAttorneyToken, powerOfAttorneyToken.refreshToken != savedSession.refreshToken {
+            try? await revoke(refreshToken: powerOfAttorneyToken.refreshToken)
+        }
+        return true
+    }
+
+    /// The saved session, `nil` when there's none or its refresh token has expired.
+    private func readSavedSession() async -> OAuthorizationToken? {
+        guard
+            let token = try? await KeychainHelper.standard.read(
+                key: Self.savedSessionKey,
+                type: OAuthorizationToken.self
+            ),
+            token.refreshTokenExpirationDate > Date()
+        else {
+            return nil
+        }
+        return token
+    }
+
+    /// Deletes the saved session and revokes it, so it can't be returned to.
+    private func dropSavedSession() async {
+        guard let savedSession = await readSavedSession() else { return }
+        await KeychainHelper.standard.delete(key: Self.savedSessionKey)
+        try? await revoke(refreshToken: savedSession.refreshToken)
     }
 
     private static let powerOfAttorneyKey = "powerOfAttorney"
@@ -297,7 +355,7 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             KeychainHelper.standard.save(powerOfAttorney, key: Self.powerOfAttorneyKey)
         } catch {
             log.error("Got Error when fetching the power of attorney after login", error: error, attributes: [:])
-            try? await logout()
+            try? await logout(keepingSavedSession: true)
             await ApolloClient.deleteToken()
             throw AuthenticationError.loginFailure(message: L10n.General.defaultError)
         }
@@ -319,9 +377,18 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
     }
 
     func exchange(code: String) async throws {
+        try await exchange(code: code, keepingSavedSession: false)
+    }
+
+    /// Only a power of attorney login keeps the member's saved session; logging in any other way means it's no
+    /// longer theirs to switch back to.
+    private func exchange(code: String, keepingSavedSession: Bool) async throws {
         // Every login exchanges a code. A power of attorney login stores its own afterwards, so whatever an earlier
         // one stored never leaks into this session (e.g. an email login after a logout that didn't finish).
         await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
+        if !keepingSavedSession {
+            await dropSavedSession()
+        }
         let data = try await asyncFunction(
             for: networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
         )

@@ -204,6 +204,11 @@ private struct HomeSheetContent: View {
                 fullContent
             }
         }
+        // Store updates reach this view outside their `withAnimation` transaction, so animate on the values instead.
+        // Scoped to these values only: the scroll offset changes every frame and must never animate.
+        .animation(.default, value: claimsStore.allActiveClaims)
+        .animation(.default, value: homeStore.importantMessages)
+        .animation(.default, value: bottomVm.items)
         // Keeps the first card clear of the fade band while the sheet sits at rest. Once
         // scrolled, the band travels down through the content and this no longer compensates.
         .padding(.top, contentFadeHeight)

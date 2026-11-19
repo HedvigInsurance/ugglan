@@ -4,7 +4,7 @@ import PowerOfAttorneyCore
 import hCore
 
 /// Flow: `GET /power-of-attorney` lists the granted powers of attorney, `GET /power-of-attorney/received` the ones
-/// granted to the member. `POST /power-of-attorney` starts a BankID sign
+/// granted to the member. `POST /power-of-attorney/{id}/revoke` revokes one. `POST /power-of-attorney` starts a BankID sign
 /// order, then `POST {pollUrl}` is polled until the status is `COMPLETED` (with the power of attorney id) or `FAILED`.
 extension NetworkClient: @retroactive PowerOfAttorneyClient {
     public func getPowerOfAttorneys() async throws -> [PowerOfAttorney] {
@@ -16,6 +16,8 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
             error: nil
         )
         return granted.compactMap { powerOfAttorney -> PowerOfAttorney? in
+            // Revoked powers of attorney are still returned, but there's no revoked state to show
+            guard powerOfAttorney.revokedAt == nil else { return nil }
             guard let level = PowerOfAttorneyLevel(rawValue: powerOfAttorney.level) else { return nil }
             return PowerOfAttorney(
                 id: powerOfAttorney.id,
@@ -47,9 +49,13 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
         }
     }
 
-    public func revokePowerOfAttorney(id _: String) async throws {
-        // TODO: Implement once the auth service has a revoke endpoint
-        throw PowerOfAttorneyError.error(message: L10n.General.errorBody)
+    public func revokePowerOfAttorney(id: String) async throws {
+        let request = try await PowerOfAttorneyRequest.revoke(id: id).asRequest()
+        let (_, response) = try await sessionClient.data(for: request)
+        // Success has an empty body, so only the status code is checked
+        guard let statusCode = (response as? HTTPURLResponse)?.statusCode, (200...299).contains(statusCode) else {
+            throw PowerOfAttorneyError.error(message: L10n.General.errorBody)
+        }
     }
 
     public func startSigning(
