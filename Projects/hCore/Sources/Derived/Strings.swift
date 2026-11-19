@@ -1775,6 +1775,71 @@ public enum L10n {
     public static var readMoreTitle: String { L10n.tr("Localizable", "INSURANCE_EVIDENCE.READ_MORE_TITLE") }
   }
 
+  public enum MessagesInbox {
+    /// %d unread
+    public static func accessibilityUnreadCount(_ p1: Int) -> String {
+      return L10n.tr("Localizable", "MESSAGES_INBOX.ACCESSIBILITY_UNREAD_COUNT", p1)
+    }
+    /// Clear dates
+    public static var dateClear: String { L10n.tr("Localizable", "MESSAGES_INBOX.DATE_CLEAR") }
+    /// Date
+    public static var dateFilter: String { L10n.tr("Localizable", "MESSAGES_INBOX.DATE_FILTER") }
+    /// Tap a start date, then an end date
+    public static var dateFilterSubtitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.DATE_FILTER_SUBTITLE") }
+    /// From %1$@
+    public static func dateFromLabel(_ p1: String) -> String {
+      return L10n.tr("Localizable", "MESSAGES_INBOX.DATE_FROM_LABEL", p1)
+    }
+    /// %1$@ – %2$@
+    public static func dateRangeLabel(_ p1: String, _ p2: String) -> String {
+      return L10n.tr("Localizable", "MESSAGES_INBOX.DATE_RANGE_LABEL", p1, p2)
+    }
+    /// Until %1$@
+    public static func dateToLabel(_ p1: String) -> String {
+      return L10n.tr("Localizable", "MESSAGES_INBOX.DATE_TO_LABEL", p1)
+    }
+    /// Email
+    public static var detailTitleEmail: String { L10n.tr("Localizable", "MESSAGES_INBOX.DETAIL_TITLE_EMAIL") }
+    /// Kivra
+    public static var detailTitleKivra: String { L10n.tr("Localizable", "MESSAGES_INBOX.DETAIL_TITLE_KIVRA") }
+    /// SMS
+    public static var detailTitleSms: String { L10n.tr("Localizable", "MESSAGES_INBOX.DETAIL_TITLE_SMS") }
+    /// No messages match this filter
+    public static var emptyFilterTitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.EMPTY_FILTER_TITLE") }
+    /// No messages yet
+    public static var emptyTitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.EMPTY_TITLE") }
+    /// All messages
+    public static var filterAll: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_ALL") }
+    /// Emails
+    public static var filterEmails: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_EMAILS") }
+    /// Kivra
+    public static var filterKivra: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_KIVRA") }
+    /// Show results
+    public static var filterShowResults: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_SHOW_RESULTS") }
+    /// SMS
+    public static var filterSms: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_SMS") }
+    /// Choose which messages to see
+    public static var filterSubtitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_SUBTITLE") }
+    /// Show
+    public static var filterTitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.FILTER_TITLE") }
+    /// To open a link, go to the email in your inbox or email app.
+    public static var linksDisabledBody: String { L10n.tr("Localizable", "MESSAGES_INBOX.LINKS_DISABLED_BODY") }
+    /// Links and buttons are disabled
+    public static var linksDisabledTitle: String { L10n.tr("Localizable", "MESSAGES_INBOX.LINKS_DISABLED_TITLE") }
+    /// New message
+    public static var newMessage: String { L10n.tr("Localizable", "MESSAGES_INBOX.NEW_MESSAGE") }
+    /// %1$@ at %2$@
+    public static func receivedAt(_ p1: String, _ p2: String) -> String {
+      return L10n.tr("Localizable", "MESSAGES_INBOX.RECEIVED_AT", p1, p2)
+    }
+    /// Earlier
+    public static var sectionEarlier: String { L10n.tr("Localizable", "MESSAGES_INBOX.SECTION_EARLIER") }
+    /// Unread
+    public static var sectionUnread: String { L10n.tr("Localizable", "MESSAGES_INBOX.SECTION_UNREAD") }
+    /// Messages
+    public static var title: String { L10n.tr("Localizable", "MESSAGES_INBOX.TITLE") }
+  }
+
   public enum SettingsScreen {
     /// Yes, unsubscribe
     public static var confirmUnsubscribe: String { L10n.tr("Localizable", "SETTINGS_SCREEN.CONFIRM_UNSUBSCRIBE") }

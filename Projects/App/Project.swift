@@ -111,6 +111,8 @@ let appDependencies: [TargetDependency] = [
         .project(target: "TerminateContractsUI", path: .relativeToRoot("Projects/TerminateContractsUI")),
         .project(target: "MoveFlowCore", path: .relativeToRoot("Projects/MoveFlowCore")),
         .project(target: "MoveFlowUI", path: .relativeToRoot("Projects/MoveFlowUI")),
+        .project(target: "MessagesCore", path: .relativeToRoot("Projects/MessagesCore")),
+        .project(target: "MessagesUI", path: .relativeToRoot("Projects/MessagesUI")),
         .project(target: "Profile", path: .relativeToRoot("Projects/Profile")),
         .project(target: "AuthenticationCore", path: .relativeToRoot("Projects/AuthenticationCore")),
         .project(target: "AuthenticationUI", path: .relativeToRoot("Projects/AuthenticationUI")),

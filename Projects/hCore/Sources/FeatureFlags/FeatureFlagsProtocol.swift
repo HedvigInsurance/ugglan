@@ -21,6 +21,7 @@ public struct FeatureData: Codable, Equatable, Sendable {
     public let isAnalyticsEnabled: Bool
     public let isResumingOngoingShopSessionsEnabled: Bool
     public let isCancelInsuranceHiddenFromHomeScreen: Bool
+    public let isMessagesInboxEnabled: Bool
 
     public init(
         isUpdateNecessary: Bool,
@@ -34,7 +35,8 @@ public struct FeatureData: Codable, Equatable, Sendable {
         isTerminationRedirectionEnabled: Bool,
         isAnalyticsEnabled: Bool,
         isResumingOngoingShopSessionsEnabled: Bool,
-        isCancelInsuranceHiddenFromHomeScreen: Bool
+        isCancelInsuranceHiddenFromHomeScreen: Bool,
+        isMessagesInboxEnabled: Bool
     ) {
         self.isUpdateNecessary = isUpdateNecessary
         self.osVersionTooLow = osVersionTooLow
@@ -48,6 +50,7 @@ public struct FeatureData: Codable, Equatable, Sendable {
         self.isAnalyticsEnabled = isAnalyticsEnabled
         self.isResumingOngoingShopSessionsEnabled = isResumingOngoingShopSessionsEnabled
         self.isCancelInsuranceHiddenFromHomeScreen = isCancelInsuranceHiddenFromHomeScreen
+        self.isMessagesInboxEnabled = isMessagesInboxEnabled
     }
 }
 

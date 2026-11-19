@@ -574,6 +574,48 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "819A02055F3BB9A8A580BFED"
+               BuildableName = "MessagesCore.framework"
+               BlueprintName = "MessagesCore"
+               ReferencedContainer = "container:Projects/MessagesCore/MessagesCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1D95189CEEA3A6BA7DD499DC"
+               BuildableName = "MessagesCoreTests.xctest"
+               BlueprintName = "MessagesCoreTests"
+               ReferencedContainer = "container:Projects/MessagesCore/MessagesCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F4E60F3E5364802A2A52114C"
+               BuildableName = "MessagesUI.framework"
+               BlueprintName = "MessagesUI"
+               ReferencedContainer = "container:Projects/MessagesUI/MessagesUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "A7EE93F0C9137542E0AB10C0"
                BuildableName = "MoveFlowCore.framework"
                BlueprintName = "MoveFlowCore"
@@ -1139,6 +1181,17 @@
                BuildableName = "InsuranceEvidenceTests.xctest"
                BlueprintName = "InsuranceEvidenceTests"
                ReferencedContainer = "container:Projects/InsuranceEvidence/InsuranceEvidence.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1D95189CEEA3A6BA7DD499DC"
+               BuildableName = "MessagesCoreTests.xctest"
+               BlueprintName = "MessagesCoreTests"
+               ReferencedContainer = "container:Projects/MessagesCore/MessagesCore.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

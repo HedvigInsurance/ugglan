@@ -8,6 +8,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     case chat(hasUnread: Bool)
     case travelCertificate
     case insuranceEvidence
+    case messages(unreadCount: Int)
 
     @MainActor
     private static var animateOffer = true
@@ -35,6 +36,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             }
         case .travelCertificate, .insuranceEvidence:
             return hCoreUIAssets.infoOutlined.view
+        case .messages:
+            return hCoreUIAssets.notification.view
         }
     }
     var priority: Int {
@@ -47,6 +50,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return 2
         case .travelCertificate, .insuranceEvidence:
             return 3
+        case .messages:
+            return 4
         }
     }
 
@@ -60,6 +65,9 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return L10n.chatConversationInbox
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
+        case let .messages(unreadCount):
+            guard unreadCount > 0 else { return L10n.MessagesInbox.title }
+            return "\(L10n.MessagesInbox.title), \(L10n.MessagesInbox.accessibilityUnreadCount(unreadCount))"
         }
     }
 
@@ -69,6 +77,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return hasNewOffser
         case let .chat(hasUnread):
             return hasUnread
+        case let .messages(unreadCount):
+            return unreadCount > 0
         default:
             return false
         }
@@ -86,6 +96,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return "travelCertHint"
         case .insuranceEvidence:
             return "insuranceEvidenceHint"
+        case .messages:
+            return "messagesHint"
         }
     }
 
@@ -101,6 +113,8 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return "travelCertificate"
         case .insuranceEvidence:
             return "insuranceEvidence"
+        case .messages:
+            return "messages"
         }
     }
 
@@ -112,7 +126,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         switch self {
         case .crossSell:
             return L10n.Toast.newOffer
-        case .firstVet:
+        case .firstVet, .messages:
             return nil
         case .chat:
             return L10n.Toast.newMessage
@@ -191,7 +205,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
     @MainActor
     var imageSize: CGFloat {
         switch self {
-        case .travelCertificate, .insuranceEvidence:
+        case .travelCertificate, .insuranceEvidence, .messages:
             return 24
         case .crossSell:
             if #available(iOS 26.0, *) {
@@ -236,7 +250,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             return hSignalColor.Green.fill.colorFor(.dark, .base).color.uiColor()
         case .firstVet:
             return hSignalColor.Blue.firstVet.colorFor(.dark, .base).color.uiColor()
-        case .chat:
+        case .chat, .messages:
             return hSignalColor.Grey.element.colorFor(.dark, .base).color.uiColor()
         }
     }

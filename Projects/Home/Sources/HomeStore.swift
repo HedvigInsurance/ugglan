@@ -2,6 +2,7 @@ import AppStateContainer
 import Combine
 import CrossSellCore
 import Foundation
+import MessagesCore
 import Payment
 import SwiftUI
 import hCore
@@ -97,6 +98,22 @@ public final class HomeStore: AppStore {
         crossSellStore.publisher(for: \.hasNewOffer)
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
+            .store(in: &cancellables)
+
+        let messagesStore: MessagesStore = globalAppStateContainer.get()
+        messagesStore.publisher(for: \.unreadCount)
+            .removeDuplicates()
+            .sink { [weak self] _ in self?.updateToolbarTypes() }
+            .store(in: &cancellables)
+
+        Dependencies.featureFlags().publisher(for: \.data)
+            .map(\.isMessagesInboxEnabled)
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.updateToolbarTypes()
+                Task { await self?.fetchMessagesIfEnabled() }
+            }
             .store(in: &cancellables)
 
         Dependencies.featureFlags().publisher(for: \.data)
@@ -289,9 +306,22 @@ public final class HomeStore: AppStore {
             }
     }
 
+    /// Feeds the unread badge on the Messages bell; does nothing while the inbox is behind its flag.
+    func fetchMessagesIfEnabled() async {
+        guard Dependencies.featureFlags().isMessagesInboxEnabled else { return }
+        let messagesStore: MessagesStore = globalAppStateContainer.get()
+        await messagesStore.fetchMessages()
+    }
+
     private func updateToolbarTypes() {
         var types: [ToolbarOptionType] = []
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
+
+        // The Messages bell sits furthest to the left of the row.
+        if Dependencies.featureFlags().isMessagesInboxEnabled {
+            let messagesStore: MessagesStore = globalAppStateContainer.get()
+            types.append(.messages(unreadCount: messagesStore.unreadCount))
+        }
 
         if crossSellStore.hasNewOffer {
             types.append(.crossSell(hasNewOffer: true))

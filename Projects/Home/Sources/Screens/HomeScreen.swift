@@ -41,6 +41,7 @@ class HomeVM {
         Task { await homeStore.fetchHomeData() }
         Task { await homeStore.fetchOngoingQuotes() }
         Task { await homeStore.fetchChatNotifications() }
+        Task { await homeStore.fetchMessagesIfEnabled() }
         Task { await crossSellStore.fetchHomeCrossSells() }
         Task { await crossSellStore.fetchAddonBanners() }
         Task { await contractStore.fetchContracts() }

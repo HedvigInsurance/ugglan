@@ -271,6 +271,26 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
+          "path": "<PRODUCTS>/MessagesCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/MessagesUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
           "path": "<PRODUCTS>/MoveFlowCore.framework",
           "type": "wrapper.framework",
           "index": false,

@@ -2,6 +2,7 @@ import AppStateContainer
 import Claims
 import ContractsCore
 import CrossSellCore
+import MessagesUI
 import Payment
 import SwiftUI
 import hCore
@@ -104,7 +105,7 @@ struct ActiveHomeView: View {
             }
             .coordinateSpace(name: scrollSpace)
             .ignoresSafeArea(edges: .bottom)
-            .overlay(alignment: .topTrailing) {
+            .overlay(alignment: .top) {
                 if !isSystemToolbarOnSide {
                     HomeNavigationBar(action: toolbarAction)
                         .padding(.vertical, .padding4)
@@ -151,6 +152,8 @@ struct ActiveHomeView: View {
                     .perform(.firstVet(partners: homeStore?.quickActions.firstVetPartners ?? []))
             case .chat:
                 navigationVm?.router.push(HomeRouterAction.inbox)
+            case .messages:
+                navigationVm?.router.push(MessagesRouterAction.inbox)
             case .travelCertificate, .insuranceEvidence:
                 break
             }
@@ -264,9 +267,17 @@ private struct HomeNavigationBar: View {
         }
     }
 
+    /// The Messages bell sits alone at the leading edge; the other options stay grouped on the trailing side.
     private func toolbar() -> some View {
-        HStack(spacing: .padding8) {
-            ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
+        let types = homeStore.toolbarOptionTypes
+        let leadingTypes = types.filter(\.isLeadingHomeOption)
+        let trailingTypes = types.filter { !$0.isLeadingHomeOption }
+        return HStack(spacing: .padding8) {
+            ForEach(leadingTypes, id: \.self) { type in
+                barButton(for: type)
+            }
+            Spacer(minLength: 0)
+            ForEach(trailingTypes, id: \.self) { type in
                 barButton(for: type)
             }
         }
@@ -286,6 +297,13 @@ private struct HomeNavigationBar: View {
         } else {
             button
         }
+    }
+}
+
+extension ToolbarOptionType {
+    fileprivate var isLeadingHomeOption: Bool {
+        if case .messages = self { return true }
+        return false
     }
 }
 

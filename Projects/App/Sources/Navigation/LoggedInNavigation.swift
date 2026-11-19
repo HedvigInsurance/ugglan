@@ -18,6 +18,7 @@ import Foundation
 import Home
 import InsuranceEvidence
 import Market
+import MessagesUI
 import MoveFlowCore
 import MoveFlowUI
 import Payment
@@ -739,6 +740,7 @@ struct HomeTab: View {
                     InboxView()
                         .environment(homeNavigationVm)
                 }
+                .messagesRouterDestinations()
         }
         .environment(homeNavigationVm)
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)

@@ -84,6 +84,12 @@
          location = "group:Market/Market.xcodeproj">
       </FileRef>
       <FileRef
+         location = "group:MessagesCore/MessagesCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:MessagesUI/MessagesUI.xcodeproj">
+      </FileRef>
+      <FileRef
          location = "group:MoveFlowCore/MoveFlowCore.xcodeproj">
       </FileRef>
       <FileRef

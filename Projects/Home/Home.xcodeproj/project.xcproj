@@ -132,6 +132,22 @@
         { "path": "<PRODUCTS>/Home.framework", "id": "9290645AFD421A6E8E0A3C77", "type": "wrapper.framework", "index": false, "target-membership": [ "HomeTests/frameworks" ] },
         { "path": "<PRODUCTS>/HomeTests.xctest", "id": "3E27707CF3AF39D07540B293", "type": "wrapper.cfbundle", "index": false },
         {
+          "path": "<PRODUCTS>/MessagesCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/MessagesUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Payment.framework",
           "type": "wrapper.framework",
           "index": false,
