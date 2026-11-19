@@ -1,5 +1,5 @@
 import AppStateContainer
-import Contracts
+import ContractsCore
 import Environment
 import SwiftUI
 import hCore

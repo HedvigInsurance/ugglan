@@ -6,8 +6,7 @@ import hCoreUI
 @Loggable
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
     let contractId: String
-    let displayName: String
-    let exposureDisplayName: String?
+    let exposureDisplayName: String
     let minStartDate: Date
     let maxStartDate: Date
     let maxDuration: Int
@@ -16,8 +15,7 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 
     public init(
         contractId: String,
-        displayName: String,
-        exposureDisplayName: String?,
+        exposureDisplayName: String,
         minStartDate: Date,
         maxStartDate: Date,
         maxDuration: Int,
@@ -25,7 +23,6 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
         fullName: String
     ) {
         self.contractId = contractId
-        self.displayName = displayName
         self.exposureDisplayName = exposureDisplayName
         self.minStartDate = minStartDate
         self.maxStartDate = maxStartDate

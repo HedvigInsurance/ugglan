@@ -1,5 +1,4 @@
 import AVKit
-import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import WebKit
@@ -9,7 +8,7 @@ import hCore
 @Observable
 public class DocumentPreviewModel: NSObject {
     let type: DocumentPreviewType
-    let webView = WKWebView()
+    let webView = CenteredContentWebView(frame: .zero, configuration: WKWebViewConfiguration())
     let player: AVPlayer?
     @ObservationIgnored weak var vc: UIViewController? {
         didSet {
@@ -19,11 +18,9 @@ public class DocumentPreviewModel: NSObject {
     }
     var isLoading = true
     var error: String?
-    var contentHeight: CGFloat = 0
     var offset: CGFloat = 0
     var opacity: Double = 0
 
-    @ObservationIgnored var contentSizeCancellable: AnyCancellable?
     @ObservationIgnored private var temporaryFileURL: URL?
 
     public init(type: DocumentPreviewType) {
@@ -41,6 +38,9 @@ public class DocumentPreviewModel: NSObject {
         }
         super.init()
         webView.navigationDelegate = self
+        if type.mimeType.isImage {
+            webView.centerImageDocument()
+        }
         if player == nil {
             loadURL()
         }
@@ -175,59 +175,56 @@ public struct DocumentPreview: View {
     }
 
     public var body: some View {
-        GeometryReader { _ in
-            ZStack {
-                BackgroundBlurView()
-                    .ignoresSafeArea()
-                if let player = vm.player {
-                    VideoPlayer(player: player)
-                } else {
-                    DocumentPreviewWebView(documentPreviewModel: vm)
-                        .frame(maxHeight: vm.contentHeight)
-                        .offset(x: vm.offset)
-                        .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
-                        .accessibilityAction(named: Text(L10n.generalCloseButton)) {
-                            vm.vc?.dismiss(animated: true)
-                        }
-                        .gesture(
-                            DragGesture()
-                                .onChanged { gesture in
-                                    vm.offset = gesture.translation.width
-                                }
-                                .onEnded { _ in
-                                    if abs(vm.offset) > 200 {
-                                        vm.vc?.dismiss(animated: true)
-                                    } else {
-                                        withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
-                                            vm.offset = .zero
-                                        }
+        ZStack {
+            BackgroundBlurView()
+                .ignoresSafeArea()
+            if let player = vm.player {
+                VideoPlayer(player: player)
+            } else {
+                DocumentPreviewWebView(documentPreviewModel: vm)
+                    .offset(x: vm.offset)
+                    .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
+                    .accessibilityAction(named: Text(L10n.generalCloseButton)) {
+                        vm.vc?.dismiss(animated: true)
+                    }
+                    .gesture(
+                        DragGesture()
+                            .onChanged { gesture in
+                                vm.offset = gesture.translation.width
+                            }
+                            .onEnded { _ in
+                                if abs(vm.offset) > 200 {
+                                    vm.vc?.dismiss(animated: true)
+                                } else {
+                                    withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
+                                        vm.offset = .zero
                                     }
                                 }
+                            }
+                    )
+                    .opacity(1 - Double(abs(vm.offset) / 1000))
+                    .opacity(vm.opacity)
+                if vm.isLoading {
+                    DotsActivityIndicator(.standard)
+                        .useDarkColor
+                }
+                if vm.error != nil {
+                    GenericErrorView(
+                        title: L10n.somethingWentWrong,
+                        description: L10n.General.errorBody,
+                        formPosition: .center
+                    )
+                    .hStateViewButtonConfig(
+                        .init(
+                            actionButton:
+                                .init(
+                                    buttonTitle: L10n.generalRetry,
+                                    buttonAction: {
+                                        vm.loadURL()
+                                    }
+                                )
                         )
-                        .opacity(1 - Double(abs(vm.offset) / 1000))
-                        .opacity(vm.opacity)
-                    if vm.isLoading {
-                        DotsActivityIndicator(.standard)
-                            .useDarkColor
-                    }
-                    if vm.error != nil {
-                        GenericErrorView(
-                            title: L10n.somethingWentWrong,
-                            description: L10n.General.errorBody,
-                            formPosition: .center
-                        )
-                        .hStateViewButtonConfig(
-                            .init(
-                                actionButton:
-                                    .init(
-                                        buttonTitle: L10n.generalRetry,
-                                        buttonAction: {
-                                            vm.loadURL()
-                                        }
-                                    )
-                            )
-                        )
-                    }
+                    )
                 }
             }
         }
@@ -251,9 +248,6 @@ extension DocumentPreviewModel: WKNavigationDelegate {
     public func webView(_: WKWebView, didFinish _: WKNavigation!) {
         withAnimation {
             isLoading = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.contentSizeCancellable = nil
         }
         withAnimation(.easeInOut(duration: 0.1)) {
             self.opacity = 1
@@ -287,16 +281,8 @@ struct DocumentPreviewWebView: UIViewRepresentable {
 
     func makeUIView(context _: Context) -> WKWebView {
         vm.webView.scrollView.backgroundColor = .clear
-        vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
-            .throttle(for: .milliseconds(100), scheduler: RunLoop.main, latest: true)
-            .sink(receiveValue: { @MainActor [weak vm] value in
-                withAnimation(.none) {
-                    vm?.contentHeight = value.height
-                }
-            })
         vm.webView.scrollView.minimumZoomScale = 1
         vm.webView.backgroundColor = .clear
-        vm.webView.scrollView.backgroundColor = .clear
         vm.webView.isOpaque = false
         vm.webView.viewController?.view.backgroundColor = .clear
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak vm] in
@@ -306,6 +292,56 @@ struct DocumentPreviewWebView: UIViewRepresentable {
     }
 
     func updateUIView(_: WKWebView, context _: Context) {}
+}
+
+/// Web view that vertically centers its content when the content is shorter than the visible area.
+/// Insets handle scrollable content such as PDFs; image documents need ``centerImageDocument()``.
+final class CenteredContentWebView: WKWebView {
+    private var contentSizeObservation: NSKeyValueObservation?
+
+    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frame, configuration: configuration)
+        contentSizeObservation = scrollView.observe(\.contentSize) { [weak self] _, _ in
+            MainActor.assumeIsolated {
+                self?.centerContentVertically()
+            }
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        centerContentVertically()
+    }
+
+    /// WebKit renders an image document with a body exactly as tall as the viewport and the image pinned to the top,
+    /// so there is no spare scroll content to center with insets. Center the image inside the page instead.
+    /// `margin: auto` (not `align-items: center`) keeps images taller than the viewport scrollable from the top.
+    func centerImageDocument() {
+        let css = "html, body { margin: 0; min-height: 100vh; } body { display: flex; } img { margin: auto; }"
+        let source = """
+            const style = document.createElement('style');
+            style.textContent = '\(css)';
+            document.head.appendChild(style);
+            """
+        let script = WKUserScript(source: source, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
+        configuration.userContentController.addUserScript(script)
+    }
+
+    private func centerContentVertically() {
+        // adjustedContentInset includes our own contentInset, so subtract it to get only the system (safe area) part
+        let systemInsetTop = scrollView.adjustedContentInset.top - scrollView.contentInset.top
+        let systemInsetBottom = scrollView.adjustedContentInset.bottom - scrollView.contentInset.bottom
+        let visibleHeight = scrollView.bounds.height - systemInsetTop - systemInsetBottom
+        let inset = max(0, (visibleHeight - scrollView.contentSize.height) / 2)
+        guard scrollView.contentInset.top != inset || scrollView.contentInset.bottom != inset else { return }
+        scrollView.contentInset.top = inset
+        scrollView.contentInset.bottom = inset
+    }
 }
 
 extension AVPlayerViewController {

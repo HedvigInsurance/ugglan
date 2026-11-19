@@ -41,7 +41,7 @@ The SubmitClaimChat module implements the current chat-based claims submission f
   `VoiceClaimViewModel.swift`, `VoiceClaimScreen.swift` (orb). Dashboard setup: `VoiceAgent.md`
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, Claims, Contracts (via Project.swift; Contracts so voice can say what each policy covers); ElevenLabs (via `Dependencies/VoiceDependencies`, linked only
+- **Imports**: hCore, hCoreUI, Claims, ContractsCore (via Project.swift; ContractsCore so voice can say what each policy covers); ElevenLabs (via `Dependencies/VoiceDependencies`, linked only
   here because it pulls in LiveKit/WebRTC)
 - **Depended on by**: Home (imports SubmitClaimChat for `StartClaimInput`, `handleClaimFlow`, and `SubmitClaimChatInput`), App
 

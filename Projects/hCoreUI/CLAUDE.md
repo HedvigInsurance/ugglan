@@ -17,7 +17,8 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **hSection** -- Card-like container with rounded corners and background; uses `RowViewBuilder` to auto-position children; supports headers with info buttons
 - **hRow** -- Row within an hSection; supports accessories (chevron, checkmark, custom), tap handlers, dividers, and padding modifiers
 - **hRowDivider** -- Thin horizontal divider line between rows, respects horizontal padding settings
-- **hSectionContainerStyle** -- Environment modifier controlling section background: `.transparent`, `.opaque`, `.black`, `.negative`
+- **hSectionContainerStyle** -- Environment modifier controlling section background: `.transparent`, `.opaque`, `.translucent`, `.black`, `.negative`, `.primary`
+- **hSectionContainerDecoration** -- `.sectionContainerDecorations([.border, .shadow])` adds a border and/or card shadow around the section container
 
 ### Buttons & Actions
 - **hButton** -- Primary button component; takes `hButtonSize` (large/medium/small), `hButtonConfigurationType` (primary/primaryAlt/secondary/secondaryAlt/ghost/alert), and `hButtonContent` (title + optional image)
@@ -79,7 +80,7 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **ColorAnimationView** -- Animated color transition view
 - **CardView / CardStack** -- Card-based layout components
 - **Accordion** -- Expandable/collapsible section used in peril displays
-- **AddonPillowView** -- 48pt `PillowType` pillow with a "plus" badge, used for addon rows (Home, Contracts, CrossSellUI)
+- **AddonPillowView** -- 48pt `PillowType` pillow with a "plus" badge, used for addon rows (Home, ContractsUI, CrossSellUI)
 
 ### Pager & Lists
 - **hPagerDots** -- Page indicator dots for paged content

@@ -46,8 +46,6 @@ class HomeClientOctopus: HomeClient {
             (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
                 .currentMember.legacyConversation?
                 .unreadMessageCount ?? 0) > 0
-        let hasSentOrRecievedAtLeastOneMessage: Bool =
-            !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
 
         if let legacyConversation = data.currentMember.legacyConversation {
             if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
@@ -58,7 +56,6 @@ class HomeClientOctopus: HomeClient {
 
         return .init(
             hasNewMessages: hasNewMessages,
-            hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
             lastMessageTimeStamp: maxDate
         )
     }

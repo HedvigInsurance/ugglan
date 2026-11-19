@@ -1,7 +1,7 @@
 import Apollo
 import Claims
 import Combine
-import Contracts
+import ContractsCore
 import Foundation
 import Observation
 

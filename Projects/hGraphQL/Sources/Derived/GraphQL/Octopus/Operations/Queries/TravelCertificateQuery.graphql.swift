@@ -9,7 +9,7 @@ public extension OctopusGraphQL {
     public static let operationName: String = "TravelCertificate"
     public static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query TravelCertificate { currentMember { __typename email firstName lastName activeContracts { __typename id exposureDisplayName currentAgreement { __typename productVariant { __typename displayName } } } travelCertificateSpecifications { __typename contractSpecifications { __typename contractId minStartDate maxStartDate maxDurationDays } } } }"#
+        #"query TravelCertificate { currentMember { __typename email firstName lastName activeContracts { __typename id exposureDisplayName exposureDisplayNameShort } travelCertificateSpecifications { __typename contractSpecifications { __typename contractId minStartDate maxStartDate maxDurationDays } } } }"#
       ))
 
     public init() {}
@@ -70,7 +70,7 @@ public extension OctopusGraphQL {
             .field("__typename", String.self),
             .field("id", OctopusGraphQL.UUID.self),
             .field("exposureDisplayName", String.self),
-            .field("currentAgreement", CurrentAgreement.self),
+            .field("exposureDisplayNameShort", String.self),
           ] }
           @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
             TravelCertificateQuery.Data.CurrentMember.ActiveContract.self
@@ -83,48 +83,12 @@ public extension OctopusGraphQL {
           /// or the dog being insured + breed
           /// or car registration number + model etc.
           public var exposureDisplayName: String { __data["exposureDisplayName"] }
-          /// The currently active/relevant agreement for this contract.
-          public var currentAgreement: CurrentAgreement { __data["currentAgreement"] }
-
-          /// CurrentMember.ActiveContract.CurrentAgreement
-          ///
-          /// Parent Type: `Agreement`
-          nonisolated public struct CurrentAgreement: OctopusGraphQL.SelectionSet {
-            @_spi(Unsafe) public let __data: DataDict
-            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
-
-            @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.Agreement }
-            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-              .field("__typename", String.self),
-              .field("productVariant", ProductVariant.self),
-            ] }
-            @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-              TravelCertificateQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.self
-            ] }
-
-            /// The ProductVariant of the agreement, which is the umbrella container for a lot of data related to the insurance,
-            /// such as names, legal documents, perils etc.
-            public var productVariant: ProductVariant { __data["productVariant"] }
-
-            /// CurrentMember.ActiveContract.CurrentAgreement.ProductVariant
-            ///
-            /// Parent Type: `ProductVariant`
-            nonisolated public struct ProductVariant: OctopusGraphQL.SelectionSet {
-              @_spi(Unsafe) public let __data: DataDict
-              @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
-
-              @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.ProductVariant }
-              @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-                .field("__typename", String.self),
-                .field("displayName", String.self),
-              ] }
-              @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-                TravelCertificateQuery.Data.CurrentMember.ActiveContract.CurrentAgreement.ProductVariant.self
-              ] }
-
-              public var displayName: String { __data["displayName"] }
-            }
-          }
+          /// The display name of the "exposure" of this insurance - i.e. the 'object' being insured. This could be
+          /// the address of an apartment
+          /// or the person having accident insurance,
+          /// or the dog being insured
+          /// or car registration number etc
+          public var exposureDisplayNameShort: String { __data["exposureDisplayNameShort"] }
         }
 
         /// CurrentMember.TravelCertificateSpecifications

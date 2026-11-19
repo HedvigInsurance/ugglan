@@ -1,13 +1,16 @@
 import AppStateContainer
-import ChangeTier
+import ChangeTierCore
+import ChangeTierUI
 import Chat
-import Contracts
-import EditStakeholders
+import ContractsCore
+import EditStakeholdersCore
+import EditStakeholdersUI
 import Payment
 import SafariServices
 import SubmitClaimChat
 import SwiftUI
-import TerminateContracts
+import TerminateContractsCore
+import TerminateContractsUI
 import hCore
 import hCoreUI
 
@@ -68,7 +71,7 @@ public final class QuickActionsViewModel {
         }
     }
 
-    func terminationConfigs(from contracts: [Contracts.Contract]) -> [TerminationConfirmConfig] {
+    func terminationConfigs(from contracts: [ContractsCore.Contract]) -> [TerminationConfirmConfig] {
         contracts
             .filter(\.supportsTermination)
             .map(\.asTerminationConfirmConfig)

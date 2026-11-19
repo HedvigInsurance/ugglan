@@ -1,5 +1,5 @@
 import AddonsCore
-import Contracts
+import ContractsCore
 import Foundation
 import hCore
 import hCoreUI

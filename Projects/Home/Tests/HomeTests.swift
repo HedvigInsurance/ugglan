@@ -422,7 +422,6 @@ extension HomeDependencySuite {
             await recordingErrors {
                 let lastMessagesState = MessageState(
                     hasNewMessages: true,
-                    hasSentOrRecievedAtLeastOneMessage: true,
                     lastMessageTimeStamp: nil
                 )
 
@@ -433,10 +432,6 @@ extension HomeDependencySuite {
 
                 let respondedLastMessages = try await mockService.getMessagesState()
                 #expect(respondedLastMessages.hasNewMessages == lastMessagesState.hasNewMessages)
-                #expect(
-                    respondedLastMessages.hasSentOrRecievedAtLeastOneMessage
-                        == lastMessagesState.hasSentOrRecievedAtLeastOneMessage
-                )
                 #expect(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
             }
 
@@ -444,25 +439,11 @@ extension HomeDependencySuite {
         }
 
         @Test
-        func toolbarShowsChatIconWhenNewConversationFromInboxFlagIsOn() async {
+        func toolbarAlwaysShowsChatIcon() async {
             await recordingErrors {
-                let mockClient = MockFeatureFlagsClient()
-                Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in mockClient })
-
-                try await Dependencies.featureFlags().setup(with: [:])
-                mockClient.send(.allOff(isNewConversationFromInboxEnabled: true))
-
-                await waitUntil(description: "Flag propagates to FeatureFlagsStore store") {
-                    Dependencies.featureFlags().isNewConversationFromInboxEnabled == true
-                }
-
                 let mockService = MockData.createMockHomeService(
                     fetchLatestMessageState: {
-                        MessageState(
-                            hasNewMessages: false,
-                            hasSentOrRecievedAtLeastOneMessage: false,
-                            lastMessageTimeStamp: nil
-                        )
+                        MessageState(hasNewMessages: false, lastMessageTimeStamp: nil)
                     }
                 )
                 sut = mockService
@@ -470,17 +451,11 @@ extension HomeDependencySuite {
                 let store = HomeStore()
                 await store.fetchChatNotifications()
 
-                await waitUntil(description: "Toolbar contains chat icon under flag-ON") {
+                await waitUntil(description: "Toolbar contains chat icon") {
                     store.toolbarOptionTypes.contains(.chat(hasUnread: false))
-                }
-
-                mockClient.send(.allOff(isNewConversationFromInboxEnabled: false))
-                await waitUntil(description: "Flag resets") {
-                    Dependencies.featureFlags().isNewConversationFromInboxEnabled == false
                 }
             }
 
-            Dependencies.shared.remove(for: FeatureFlagsClient.self)
             await expectServiceReleased()
         }
 
@@ -490,7 +465,6 @@ extension HomeDependencySuite {
             do {
                 let messageState = Home.MessageState(
                     hasNewMessages: Bool.random(),
-                    hasSentOrRecievedAtLeastOneMessage: Bool.random(),
                     lastMessageTimeStamp: Date()
                 )
                 let importantMessages: [ImportantMessage] = [
@@ -551,10 +525,9 @@ extension HomeDependencySuite {
                     store.memberContractState == memberState.contractState
                         && store.futureStatus == memberState.futureState && store.contracts == memberState.contracts
                         && store.importantMessages == importantMessages && store.quickActions.count == 2
-                        && store.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2)
+                        && store.toolbarOptionTypes.count == 3
                         && store.hidenImportantMessages.count == 0 && store.upcomingRenewalContracts == []
                         && store.showChatNotification == messageState.hasNewMessages
-                        && store.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage
                         && (store.latestConversationTimeStamp == messageState.lastMessageTimeStamp
                             || store.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp)
                 }
@@ -563,11 +536,10 @@ extension HomeDependencySuite {
                 #expect(store.contracts == memberState.contracts)
                 #expect(store.importantMessages == importantMessages)
                 #expect(store.quickActions.count == 2)
-                #expect(store.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2))
+                #expect(store.toolbarOptionTypes.count == 3)
                 #expect(store.hidenImportantMessages.count == 0)
                 #expect(store.upcomingRenewalContracts == [])
                 #expect(store.showChatNotification == messageState.hasNewMessages)
-                #expect(store.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage)
                 #expect(
                     store.latestConversationTimeStamp == messageState.lastMessageTimeStamp
                         || store.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp

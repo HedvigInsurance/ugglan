@@ -1,6 +1,5 @@
 import AppStateContainer
 import Combine
-import Contracts
 import CrossSellCore
 import Foundation
 import Payment
@@ -47,7 +46,6 @@ public final class HomeStore: AppStore {
     public private(set) var helpCenterFAQModel: HelpCenterFAQModel?
     public internal(set) var toolbarOptionTypes: [ToolbarOptionType] = []
     public private(set) var showChatNotification: Bool = false
-    public private(set) var hasSentOrRecievedAtLeastOneMessage: Bool = false
     public private(set) var latestConversationTimeStamp: Date = Date()
     public private(set) var latestChatTimeStamp: Date = Date()
 
@@ -97,13 +95,6 @@ public final class HomeStore: AppStore {
     public init() {
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
         crossSellStore.publisher(for: \.hasNewOffer)
-            .removeDuplicates()
-            .sink { [weak self] _ in self?.updateToolbarTypes() }
-            .store(in: &cancellables)
-
-        Dependencies.featureFlags().publisher(for: \.data)
-            .map(\.isNewConversationFromInboxEnabled)
-            .dropFirst()
             .removeDuplicates()
             .sink { [weak self] _ in self?.updateToolbarTypes() }
             .store(in: &cancellables)
@@ -258,7 +249,6 @@ public final class HomeStore: AppStore {
         do {
             let chatMessagesState = try await homeService.getMessagesState()
             showChatNotification = chatMessagesState.hasNewMessages
-            hasSentOrRecievedAtLeastOneMessage = chatMessagesState.hasSentOrRecievedAtLeastOneMessage
             if chatMessagesState.hasNewMessages,
                 let latestMessageTimestamp = chatMessagesState.lastMessageTimeStamp
             {
@@ -313,11 +303,7 @@ public final class HomeStore: AppStore {
             types.append(.firstVet)
         }
 
-        if hasSentOrRecievedAtLeastOneMessage
-            || Dependencies.featureFlags().isNewConversationFromInboxEnabled
-        {
-            types.append(.chat(hasUnread: showChatNotification))
-        }
+        types.append(.chat(hasUnread: showChatNotification))
 
         toolbarOptionTypes = types
     }

@@ -28,7 +28,7 @@ The Chat module provides the customer support messaging interface. It includes a
 - **Helpers**: `Helpers/Message+Timestamp.swift`, `Helpers/Message+UI.swift`, `Helpers/MessageType+Helpers.swift`, `Helpers/View+Flipped.swift`, `Helpers/WebMetaDataProvider.swift`
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, Contracts (via Project.swift). Also uses AppStateContainer at the file level.
+- **Imports**: hCore, hCoreUI, ContractsCore (via Project.swift). Also uses AppStateContainer at the file level.
 - **Depended on by**: Home (imports Chat for InboxView and ChatType), Claims (imports Chat), App
 
 ## Navigation

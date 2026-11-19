@@ -1,6 +1,6 @@
 import AppStateContainer
-import Contracts
-import EditStakeholders
+import ContractsCore
+import EditStakeholdersCore
 import Foundation
 import SwiftUI
 import hCore
@@ -73,7 +73,7 @@ class WhoIsTravelingViewModel {
     var hasMissingCoInsuredData = false
     @ObservationIgnored var isPolicyHolderIncluded = true
     var isLoading = false
-    let contract: Contracts.Contract?
+    let contract: ContractsCore.Contract?
     let router: NavigationRouter
     let contractStore: ContractStore = globalAppStateContainer.get()
     init(specification: TravelInsuranceContractSpecification, router: NavigationRouter) {
@@ -129,7 +129,6 @@ class WhoIsTravelingViewModel {
         vm: .init(
             specification: .init(
                 contractId: "",
-                displayName: "display name",
                 exposureDisplayName: "exposure display name",
                 minStartDate: Date(),
                 maxStartDate: Date(),

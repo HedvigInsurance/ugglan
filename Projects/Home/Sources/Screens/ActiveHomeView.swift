@@ -1,6 +1,6 @@
 import AppStateContainer
 import Claims
-import Contracts
+import ContractsCore
 import CrossSellCore
 import Payment
 import SwiftUI

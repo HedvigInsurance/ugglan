@@ -1,11 +1,11 @@
 import AppStateContainer
 import SubmitClaimChat
-import TerminateContracts
+import TerminateContractsCore
 import Testing
 import hCore
 
-@testable import ChangeTier
-@testable import Contracts
+@testable import ChangeTierCore
+@testable import ContractsCore
 @testable import Home
 
 extension HomeDependencySuite {

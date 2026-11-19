@@ -91,7 +91,17 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
-          "path": "<PRODUCTS>/ChangeTier.framework",
+          "path": "<PRODUCTS>/ChangeTierCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/ChangeTierUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -121,7 +131,17 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
-          "path": "<PRODUCTS>/Contracts.framework",
+          "path": "<PRODUCTS>/ContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/ContractsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -161,7 +181,17 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
-          "path": "<PRODUCTS>/EditStakeholders.framework",
+          "path": "<PRODUCTS>/EditStakeholdersCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/EditStakeholdersUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -241,7 +271,17 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
-          "path": "<PRODUCTS>/MoveFlow.framework",
+          "path": "<PRODUCTS>/MoveFlowCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/MoveFlowUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -294,7 +334,17 @@
             { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
           ],
         }, {
-          "path": "<PRODUCTS>/TerminateContracts.framework",
+          "path": "<PRODUCTS>/TerminateContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Hedvig/frameworks",
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            "Ugglan/frameworks",
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        }, {
+          "path": "<PRODUCTS>/TerminateContractsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

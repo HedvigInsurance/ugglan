@@ -1,5 +1,5 @@
 import AutomaticLog
-import Contracts
+import ContractsCore
 import CrossSellCore
 import Forever
 import Foundation
@@ -18,7 +18,7 @@ public struct ContactInfo: Equatable, Hashable, Sendable {
 /// `missingData` is always true on init — cleared via the ViewModel's mark helpers once
 /// the member adds the missing info during onboarding.
 public struct OnboardingContract: Hashable, Identifiable, Sendable {
-    public let contract: Contracts.Contract
+    public let contract: ContractsCore.Contract
     public var missingData: Bool
     public var addedInfo: String?
 
@@ -37,7 +37,7 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
 
     public var id: String { contract.id }
 
-    public init(contract: Contracts.Contract) {
+    public init(contract: ContractsCore.Contract) {
         self.contract = contract
         self.missingData = true
     }
@@ -46,7 +46,7 @@ public struct OnboardingContract: Hashable, Identifiable, Sendable {
 public enum OnboardingStepList {
     @MainActor
     public static func compute(
-        contracts: [Contracts.Contract],
+        contracts: [ContractsCore.Contract],
         isPaymentConnected: Bool,
         crossSells: [CrossSell],
         contactInfo: ContactInfo = .init(phone: ""),

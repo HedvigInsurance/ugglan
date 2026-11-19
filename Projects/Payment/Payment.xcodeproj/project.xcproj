@@ -33,14 +33,6 @@
             "PaymentTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/Contracts.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "Payment/frameworks",
-            "PaymentTests/frameworks",
-          ],
-        }, {
           "path": "<PRODUCTS>/CoreDependencies.framework",
           "type": "wrapper.framework",
           "index": false,

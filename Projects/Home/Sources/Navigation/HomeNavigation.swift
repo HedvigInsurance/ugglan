@@ -1,9 +1,9 @@
 import AddonsCore
 import AppStateContainer
 import Combine
-import Contracts
+import ContractsCore
 import CrossSellCore
-import EditStakeholders
+import EditStakeholdersUI
 import Foundation
 import Payment
 import SubmitClaimChat

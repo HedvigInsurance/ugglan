@@ -42,14 +42,17 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | AuthenticationUI | BankID + OTP login views and tracking conformance |
 | CampaignCore | Discounts/referrals models, service protocol, and root ViewModel (UI-free) |
 | CampaignUI | SwiftUI views and navigation for the discounts/referrals screen (built on CampaignCore) |
-| ChangeTier | Insurance plan tier upgrades/downgrades |
+| ChangeTierCore | Tier change models, client protocol, service wrapper and demo client (UI-free) |
+| ChangeTierUI | SwiftUI tier upgrade/downgrade flow, navigation and ViewModels (built on ChangeTierCore) |
 | Chat | Customer support messaging |
 | Claims | Claims list, status tracking, claim details |
 | Codegen | GraphQL code generation tooling |
-| Contracts | Insurance contract management and details |
+| ContractsCore | Contract models, `ContractStore`, client protocols, pet chip id service and demo clients (UI-free) |
+| ContractsUI | Insurance contract list, details and actions (built on ContractsCore) |
 | CrossSellCore | Cross-sell models, client protocol, service, store, tracking and demo data (UI-free) |
 | CrossSellUI | SwiftUI views for cross-sell offers and addon banners (built on CrossSellCore) |
-| EditStakeholders | Co-insured and co-owner management |
+| EditStakeholdersCore | Stakeholder (co-insured/co-owner) models, client protocol and service (UI-free) |
+| EditStakeholdersUI | Co-insured and co-owner management flow and ViewModels (built on EditStakeholdersCore) |
 | Forever | Referral program |
 | hCore | Core utilities, DI container, state management, extensions |
 | hCoreUI | Design system: components, colors, spacing, typography |
@@ -57,12 +60,14 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | Home | Home screen dashboard, important messages |
 | InsuranceEvidence | Insurance evidence/certificate display |
 | Market | Market/country selection |
-| MoveFlow | Address change flow |
+| MoveFlowCore | Address change models, client protocol and inputs, demo client (UI-free) |
+| MoveFlowUI | Address change flow, navigation and ViewModels (built on MoveFlowCore) |
 | NotificationService | Push notification handling |
 | Payment | Payment methods, payment history, direct debit |
 | Profile | User profile, settings, app info |
 | SubmitClaimChat | Claims submission flow (current, chat-based) |
-| TerminateContracts | Contract cancellation flow |
+| TerminateContractsCore | Termination models, client protocol, service wrapper and demo client (UI-free) |
+| TerminateContractsUI | SwiftUI contract cancellation flow, navigation and ViewModels (built on TerminateContractsCore) |
 | TravelCertificate | Travel insurance certificate generation |
 
 ## Project Structure

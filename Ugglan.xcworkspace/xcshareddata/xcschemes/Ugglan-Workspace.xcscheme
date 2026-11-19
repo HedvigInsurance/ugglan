@@ -196,10 +196,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "247DAA8BBB4EB06C8948B35A"
-               BuildableName = "ChangeTier.framework"
-               BlueprintName = "ChangeTier"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "BF8902098A7B49F5E90DD101"
+               BuildableName = "ChangeTierCore.framework"
+               BlueprintName = "ChangeTierCore"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -210,10 +210,38 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA07CA1A2F0064D5EA9EA1EA"
-               BuildableName = "ChangeTierTests.xctest"
-               BlueprintName = "ChangeTierTests"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "DC0F73F4090B8F2C264F77CF"
+               BuildableName = "ChangeTierCoreTests.xctest"
+               BlueprintName = "ChangeTierCoreTests"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "C5D0315B328AA6A0B32973DC"
+               BuildableName = "ChangeTierUI.framework"
+               BlueprintName = "ChangeTierUI"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "77B833A1A18B861B5B6A0ECF"
+               BuildableName = "ChangeTierUITests.xctest"
+               BlueprintName = "ChangeTierUITests"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -294,10 +322,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3E81F171D70DAF877E69FDFD"
-               BuildableName = "Contracts.framework"
-               BlueprintName = "Contracts"
-               ReferencedContainer = "container:Projects/Contracts/Contracts.xcodeproj">
+               BlueprintIdentifier = "81DFDEA1C8953FD9C9393848"
+               BuildableName = "ContractsCore.framework"
+               BlueprintName = "ContractsCore"
+               ReferencedContainer = "container:Projects/ContractsCore/ContractsCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -308,10 +336,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A00B240D748555188FBD7B39"
-               BuildableName = "ContractsTests.xctest"
-               BlueprintName = "ContractsTests"
-               ReferencedContainer = "container:Projects/Contracts/Contracts.xcodeproj">
+               BlueprintIdentifier = "22A77F5D5B4628194206C09B"
+               BuildableName = "ContractsCoreTests.xctest"
+               BlueprintName = "ContractsCoreTests"
+               ReferencedContainer = "container:Projects/ContractsCore/ContractsCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F9BF231AE691C26117A6AA58"
+               BuildableName = "ContractsUI.framework"
+               BlueprintName = "ContractsUI"
+               ReferencedContainer = "container:Projects/ContractsUI/ContractsUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -378,10 +420,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC6CD3BBC1B2D6E2D62FCA00"
-               BuildableName = "EditStakeholders.framework"
-               BlueprintName = "EditStakeholders"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "27A6D24437CFAA29B6A446FE"
+               BuildableName = "EditStakeholdersCore.framework"
+               BlueprintName = "EditStakeholdersCore"
+               ReferencedContainer = "container:Projects/EditStakeholdersCore/EditStakeholdersCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -392,10 +434,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9905DB3D2271B59C13FA2DE4"
-               BuildableName = "EditStakeholdersTests.xctest"
-               BlueprintName = "EditStakeholdersTests"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "05B5B18DC60DE0733E2814D8"
+               BuildableName = "EditStakeholdersUI.framework"
+               BlueprintName = "EditStakeholdersUI"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "70544C2F54654A5EC331F67F"
+               BuildableName = "EditStakeholdersUITests.xctest"
+               BlueprintName = "EditStakeholdersUITests"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -518,10 +574,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3234B81966731CBADB213C12"
-               BuildableName = "MoveFlow.framework"
-               BlueprintName = "MoveFlow"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "A7EE93F0C9137542E0AB10C0"
+               BuildableName = "MoveFlowCore.framework"
+               BlueprintName = "MoveFlowCore"
+               ReferencedContainer = "container:Projects/MoveFlowCore/MoveFlowCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -532,10 +588,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "16033B536D7AACD73A965389"
-               BuildableName = "MoveFlowTests.xctest"
-               BlueprintName = "MoveFlowTests"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "C6726B99265227EC0432507A"
+               BuildableName = "MoveFlowUI.framework"
+               BlueprintName = "MoveFlowUI"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4A94E989810E4CA2369E3F63"
+               BuildableName = "MoveFlowUITests.xctest"
+               BlueprintName = "MoveFlowUITests"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -700,10 +770,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C1AF85FBE08864A9EF175AF3"
-               BuildableName = "TerminateContracts.framework"
-               BlueprintName = "TerminateContracts"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "AAB921D1743078907E656F4B"
+               BuildableName = "TerminateContractsCore.framework"
+               BlueprintName = "TerminateContractsCore"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -714,10 +784,38 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C7138964FC51BA607DBF5296"
-               BuildableName = "TerminateContractsTests.xctest"
-               BlueprintName = "TerminateContractsTests"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "6098B8AF5C41FA48A0A80696"
+               BuildableName = "TerminateContractsCoreTests.xctest"
+               BlueprintName = "TerminateContractsCoreTests"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1889C4D13DBAD79FD079005A"
+               BuildableName = "TerminateContractsUI.framework"
+               BlueprintName = "TerminateContractsUI"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6756779AB35C8A93CC53DF21"
+               BuildableName = "TerminateContractsUITests.xctest"
+               BlueprintName = "TerminateContractsUITests"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -952,10 +1050,21 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EA07CA1A2F0064D5EA9EA1EA"
-               BuildableName = "ChangeTierTests.xctest"
-               BlueprintName = "ChangeTierTests"
-               ReferencedContainer = "container:Projects/ChangeTier/ChangeTier.xcodeproj">
+               BlueprintIdentifier = "DC0F73F4090B8F2C264F77CF"
+               BuildableName = "ChangeTierCoreTests.xctest"
+               BlueprintName = "ChangeTierCoreTests"
+               ReferencedContainer = "container:Projects/ChangeTierCore/ChangeTierCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "77B833A1A18B861B5B6A0ECF"
+               BuildableName = "ChangeTierUITests.xctest"
+               BlueprintName = "ChangeTierUITests"
+               ReferencedContainer = "container:Projects/ChangeTierUI/ChangeTierUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -985,10 +1094,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A00B240D748555188FBD7B39"
-               BuildableName = "ContractsTests.xctest"
-               BlueprintName = "ContractsTests"
-               ReferencedContainer = "container:Projects/Contracts/Contracts.xcodeproj">
+               BlueprintIdentifier = "22A77F5D5B4628194206C09B"
+               BuildableName = "ContractsCoreTests.xctest"
+               BlueprintName = "ContractsCoreTests"
+               ReferencedContainer = "container:Projects/ContractsCore/ContractsCore.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -1007,10 +1116,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9905DB3D2271B59C13FA2DE4"
-               BuildableName = "EditStakeholdersTests.xctest"
-               BlueprintName = "EditStakeholdersTests"
-               ReferencedContainer = "container:Projects/EditStakeholders/EditStakeholders.xcodeproj">
+               BlueprintIdentifier = "70544C2F54654A5EC331F67F"
+               BuildableName = "EditStakeholdersUITests.xctest"
+               BlueprintName = "EditStakeholdersUITests"
+               ReferencedContainer = "container:Projects/EditStakeholdersUI/EditStakeholdersUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -1051,10 +1160,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "16033B536D7AACD73A965389"
-               BuildableName = "MoveFlowTests.xctest"
-               BlueprintName = "MoveFlowTests"
-               ReferencedContainer = "container:Projects/MoveFlow/MoveFlow.xcodeproj">
+               BlueprintIdentifier = "4A94E989810E4CA2369E3F63"
+               BuildableName = "MoveFlowUITests.xctest"
+               BlueprintName = "MoveFlowUITests"
+               ReferencedContainer = "container:Projects/MoveFlowUI/MoveFlowUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -1106,10 +1215,21 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C7138964FC51BA607DBF5296"
-               BuildableName = "TerminateContractsTests.xctest"
-               BlueprintName = "TerminateContractsTests"
-               ReferencedContainer = "container:Projects/TerminateContracts/TerminateContracts.xcodeproj">
+               BlueprintIdentifier = "6098B8AF5C41FA48A0A80696"
+               BuildableName = "TerminateContractsCoreTests.xctest"
+               BlueprintName = "TerminateContractsCoreTests"
+               ReferencedContainer = "container:Projects/TerminateContractsCore/TerminateContractsCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6756779AB35C8A93CC53DF21"
+               BuildableName = "TerminateContractsUITests.xctest"
+               BlueprintName = "TerminateContractsUITests"
+               ReferencedContainer = "container:Projects/TerminateContractsUI/TerminateContractsUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

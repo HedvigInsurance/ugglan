@@ -17,7 +17,6 @@ final class TravelCertificateTests {
         let specifications: [TravelInsuranceContractSpecification] = [
             .init(
                 contractId: "contractId",
-                displayName: "",
                 exposureDisplayName: "",
                 minStartDate: Date(),
                 maxStartDate: Date(),

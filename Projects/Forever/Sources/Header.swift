@@ -53,6 +53,7 @@ struct HeaderView: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
                             .padding(.top, .padding8)
+                            .padding(.horizontal, .padding8)
                         }
                     }
                 }

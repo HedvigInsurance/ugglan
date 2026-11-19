@@ -25,6 +25,22 @@
             "HomeTests/frameworks",
           ],
         }, {
+          "path": "<PRODUCTS>/ChangeTierCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ChangeTierUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
           "path": "<PRODUCTS>/Chat.framework",
           "type": "wrapper.framework",
           "index": false,
@@ -34,6 +50,22 @@
           ],
         }, {
           "path": "<PRODUCTS>/Claims.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/ContractsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -58,6 +90,22 @@
           ],
         }, {
           "path": "<PRODUCTS>/CrossSellUI.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/EditStakeholdersCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/EditStakeholdersUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [
@@ -100,7 +148,15 @@
             "HomeTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/TerminateContracts.framework",
+          "path": "<PRODUCTS>/TerminateContractsCore.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            "Home/frameworks",
+            "HomeTests/frameworks",
+          ],
+        }, {
+          "path": "<PRODUCTS>/TerminateContractsUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

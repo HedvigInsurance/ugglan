@@ -1,6 +1,7 @@
 import AddonsCore
 import AppStateContainer
-import Contracts
+import ContractsCore
+import ContractsUI
 import CrossSellCore
 import CrossSellUI
 import SwiftUI

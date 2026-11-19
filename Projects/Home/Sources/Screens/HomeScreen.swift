@@ -2,7 +2,7 @@ import AppStateContainer
 import Chat
 import Claims
 import Combine
-import Contracts
+import ContractsCore
 import CrossSellCore
 import Foundation
 import Payment
