@@ -54,12 +54,12 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
         .hFormContentPosition(.bottom)
         .hFormTitle(
             // TODO: Localize via Lokalise
-            title: .init(.none, .body1, "Add power of attorney", alignment: .leading),
+            title: .init(.none, .body1, "Grant access", alignment: .leading),
             subTitle: .init(
                 .none,
                 .body1,
                 // TODO: Localize via Lokalise
-                "Select someone from your co-insured or add by SSN and choose permission level",
+                "Choose one of your co-insured or add someone by personal identity number, then select their level of access.",
                 alignment: .leading
             )
         )
@@ -69,7 +69,7 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
                     .large,
                     .primary,
                     // TODO: Localize "Share" via Lokalise
-                    content: .init(title: vm.needsPersonalNumberLookup ? L10n.contractSsnFetchInfo : "Add")
+                    content: .init(title: vm.needsPersonalNumberLookup ? L10n.contractSsnFetchInfo : "Grant")
                 ) { [vm] in
                     await vm.primaryAction()
                 }

@@ -5,7 +5,7 @@ extension PowerOfAttorneyLevel {
     var displayName: String {
         switch self {
         case .full: "Full"
-        case .partial: "Partial"
+        case .partial: "Limited"
         }
     }
 }

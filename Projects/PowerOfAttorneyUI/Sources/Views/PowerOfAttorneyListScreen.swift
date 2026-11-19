@@ -57,7 +57,7 @@ public struct PowerOfAttorneyListScreen: View {
                             }
                         }
                         // TODO: Localize via Lokalise
-                        .withHeader(title: "Shared with")
+                        .withHeader(title: "Access granted to")
                         .sectionContainerStyle(.opaque)
                     }
                     if !vm.receivedPowerOfAttorneys.isEmpty {
@@ -65,7 +65,7 @@ public struct PowerOfAttorneyListScreen: View {
                             ReceivedPowerOfAttorneyRow(powerOfAttorney: powerOfAttorney)
                         }
                         // TODO: Localize via Lokalise
-                        .withHeader(title: "Invited")
+                        .withHeader(title: "Switch to")
                         .sectionContainerStyle(.opaque)
                     }
                 }
@@ -77,7 +77,7 @@ public struct PowerOfAttorneyListScreen: View {
                     .large,
                     .primary,
                     // TODO: Localize via Lokalise
-                    content: .init(title: "Add power of attorney")
+                    content: .init(title: "Grant access")
                 ) {
                     isAddPowerOfAttorneyPresented = true
                 }
@@ -111,33 +111,36 @@ private struct PowerOfAttorneyRow: View {
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
-
                 Spacer()
-                Button {
-                    isRevokeAlertPresented = true
-                } label: {
-                    Group {
-                        if isRevoking {
-                            ProgressView()
-                                .tint(hTextColor.Opaque.white)
-                        } else {
-                            hCoreUIAssets.trash.view
-                                .resizable()
-                                .frame(width: .padding16, height: .padding16)
-                                .foregroundColor(hTextColor.Opaque.white)
+                HStack {
+                    hPill(text: powerOfAttorney.level.displayName, color: .blue)
+                        .hFieldSize(.small)
+                    Button {
+                        isRevokeAlertPresented = true
+                    } label: {
+                        Group {
+                            if isRevoking {
+                                ProgressView()
+                                    .tint(hTextColor.Opaque.white)
+                            } else {
+                                hCoreUIAssets.trash.view
+                                    .resizable()
+                                    .frame(width: .padding16, height: .padding16)
+                                    .foregroundColor(hTextColor.Opaque.white)
+                            }
                         }
+                        // Square as tall as the pill next to it
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .aspectRatio(1, contentMode: .fit)
+                        .padding(.padding4)
+                        .background(hSignalColor.Red.element)
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
                     }
-                    // Square as tall as the pill next to it
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .aspectRatio(1, contentMode: .fit)
-                    .padding(.padding4)
-                    .background(hSignalColor.Red.element)
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                    .disabled(isRevoking)
+                    // TODO: Localize via Lokalise
+                    .accessibilityLabel("Revoke")
+                    .fixedSize(horizontal: true, vertical: true)
                 }
-                .disabled(isRevoking)
-                // TODO: Localize via Lokalise
-                .accessibilityLabel("Revoke")
-                .fixedSize(horizontal: true, vertical: true)
             }
             .accessibilityElement(children: .combine)
             .accessibilityHidden(powerOfAttorney.shareUrl != nil)
@@ -182,6 +185,7 @@ private struct ReceivedPowerOfAttorneyRow: View {
                 Spacer()
                 hPill(text: powerOfAttorney.level.displayName, color: .blue)
                     .hFieldSize(.small)
+                hCoreUIAssets.arrowNorthEast.view
             }
             .accessibilityElement(children: .combine)
         }

@@ -35,11 +35,18 @@ final class PowerOfAttorneyLinkCoordinator {
     }
 
     /// Presented with UIKit so it shows above any sheet presented with `.detent`, which a SwiftUI alert can't.
-    private func confirmLogout(id: String) {
+    private func confirmLogout(id: String, name: String? = nil) {
         guard let presenter = UIApplication.shared.getTopViewController() else { return }
+        let title: String = {
+            if let name {
+                return "Do you want to switch to \(name)?"
+            } else {
+                return "Do you want to switch?"
+            }
+        }()
         let alert = UIAlertController(
             // TODO: Localize via Lokalise
-            title: "Log out to use the power of attorney?",
+            title: title,
             // TODO: Localize via Lokalise
             message: "You are logged in. To log in with this power of attorney link you need to log out first.",
             preferredStyle: .alert
