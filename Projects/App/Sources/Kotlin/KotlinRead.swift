@@ -14,8 +14,21 @@ struct KotlinReadFailure: Error, Equatable, Sendable {
         case sessionEnded
     }
 
+    /// What went wrong, for logs. The raw values are Kotlin's names, so both apps log the same reason.
+    enum Reason: String, Equatable, Sendable {
+        case graphqlErrors = "GRAPHQL_ERRORS"
+        case network = "NETWORK"
+        case http = "HTTP"
+        case timeout = "TIMEOUT"
+        case stuck = "STUCK"
+        case sessionEnded = "SESSION_ENDED"
+        case unexpected = "UNEXPECTED"
+        /// Swift only: Kotlin reads are switched off.
+        case disabled = "DISABLED"
+    }
+
     let kind: Kind
-    let reason: String
+    let reason: Reason
     let readName: String
     let operationName: String
 }
@@ -24,21 +37,40 @@ extension KotlinReadFailure {
     init(_ failure: ReadFailure) {
         self.init(
             kind: Kind(failure.kind),
-            reason: failure.reason.name,
+            reason: Reason(failure.reason),
             readName: failure.readName,
             operationName: failure.operationName
         )
     }
 
     /// Kotlin reads are switched off, so no holder exists to read from.
-    static let disabled = KotlinReadFailure(kind: .general, reason: "DISABLED", readName: "", operationName: "")
+    static let disabled = KotlinReadFailure(kind: .general, reason: .disabled, readName: "", operationName: "")
 }
 
+/// Kotlin exports its enums as open `NS_ENUM`s, which Swift 6 cannot switch over without `@unknown default`. These two
+/// mappings are the only such switches; a case Kotlin adds still warns here, and the rest of the app switches over
+/// the Swift enums with no default.
 extension KotlinReadFailure.Kind {
     init(_ kind: ReadFailureKind) {
         switch kind.nsEnum {
+        case .general: self = .general
         case .sessionEnded: self = .sessionEnded
-        default: self = .general
+        @unknown default: self = .general
+        }
+    }
+}
+
+extension KotlinReadFailure.Reason {
+    init(_ reason: ReadFailureReason) {
+        switch reason.nsEnum {
+        case .graphqlErrors: self = .graphqlErrors
+        case .network: self = .network
+        case .http: self = .http
+        case .timeout: self = .timeout
+        case .stuck: self = .stuck
+        case .sessionEnded: self = .sessionEnded
+        case .unexpected: self = .unexpected
+        @unknown default: self = .unexpected
         }
     }
 }
@@ -80,22 +112,23 @@ func awaitKotlinRead<Result>(
 /// error, and a session change, which is expected, at debug.
 @MainActor
 enum KotlinReadFailureLog {
-    static let networkReasons: Set<String> = ["NETWORK", "TIMEOUT"]
-
     static func report(_ failure: KotlinReadFailure) {
         let operation = failure.operationName
         let attributes: [AttributeKey: AttributeValue] = [
             "readName": failure.readName,
             "operationName": operation,
-            "reason": failure.reason,
+            "reason": failure.reason.rawValue,
         ]
         switch failure.kind {
         case .sessionEnded:
             graphQlLogger.debug("Kotlin read session ended \(operation)", error: nil, attributes: attributes)
-        case .general where networkReasons.contains(failure.reason):
-            graphQlLogger.warn("Kotlin read network issue \(operation)", error: nil, attributes: attributes)
         case .general:
-            graphQlLogger.error("Kotlin read error \(operation)", error: nil, attributes: attributes)
+            switch failure.reason {
+            case .network, .timeout:
+                graphQlLogger.warn("Kotlin read network issue \(operation)", error: nil, attributes: attributes)
+            case .graphqlErrors, .http, .stuck, .sessionEnded, .unexpected, .disabled:
+                graphQlLogger.error("Kotlin read error \(operation)", error: nil, attributes: attributes)
+            }
         }
     }
 }

@@ -94,7 +94,7 @@ struct KotlinReadsTests {
     func aGeneralFailureIsThrownAndReportedAsAnError() async {
         let failure = KotlinReadFailure(
             kind: .general,
-            reason: "GRAPHQL_ERRORS",
+            reason: .graphqlErrors,
             readName: "example.read",
             operationName: "ExampleQuery"
         )
@@ -113,7 +113,7 @@ struct KotlinReadsTests {
 
     @Test
     func aNetworkFailureIsReportedAsAWarning() async {
-        let failure = KotlinReadFailure(kind: .general, reason: "TIMEOUT", readName: "a", operationName: "A")
+        let failure = KotlinReadFailure(kind: .general, reason: .timeout, readName: "a", operationName: "A")
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
             _ = try? await awaitKotlinRead(
@@ -126,7 +126,7 @@ struct KotlinReadsTests {
 
     @Test
     func anEndedSessionIsThrownAndReportedAtDebug() async {
-        let failure = KotlinReadFailure(kind: .sessionEnded, reason: "SESSION_ENDED", readName: "a", operationName: "A")
+        let failure = KotlinReadFailure(kind: .sessionEnded, reason: .sessionEnded, readName: "a", operationName: "A")
         let logger = RecordingLogger()
         await withGraphQlLogger(logger) {
             await #expect(throws: failure) {
@@ -143,6 +143,51 @@ struct KotlinReadsTests {
     func kotlinsFailureKindsMapToSwiftKinds() {
         #expect(KotlinReadFailure.Kind(ReadFailureKind.general) == .general)
         #expect(KotlinReadFailure.Kind(ReadFailureKind.sessionEnded) == .sessionEnded)
+    }
+
+    @Test
+    func kotlinsFailureReasonsMapToSwiftReasonsWithKotlinsNames() {
+        let pairs: [(ReadFailureReason, KotlinReadFailure.Reason)] = [
+            (.graphqlErrors, .graphqlErrors), (.network, .network), (.http, .http), (.timeout, .timeout),
+            (.stuck, .stuck), (.sessionEnded, .sessionEnded), (.unexpected, .unexpected),
+        ]
+        #expect(pairs.count == ReadFailureReason.entries.count)
+        for (kotlin, swift) in pairs {
+            #expect(KotlinReadFailure.Reason(kotlin) == swift)
+            #expect(swift.rawValue == kotlin.name)
+        }
+    }
+
+    @Test
+    func kotlinLinesBeforeTheLoggerIsReadyAreHeldAndWrittenInOrderOnAttach() {
+        let destination = KotlinLogDestination(capacity: 10)
+        destination.write(.info, "first", attributes: ["source": "kotlin"])
+        destination.write(.warn, "second", attributes: ["source": "kotlin"])
+        #expect(destination.pending.count == 2)
+
+        let logger = RecordingLogger()
+        destination.attach(logger)
+        destination.write(.error, "third", attributes: ["source": "kotlin"])
+
+        #expect(destination.pending.isEmpty)
+        #expect(logger.lines.map(\.message) == ["first", "second", "third"])
+        #expect(logger.lines.map(\.level) == ["info", "warn", "error"])
+    }
+
+    @Test
+    func heldKotlinLinesAreBoundedAndTheDropIsReported() {
+        let destination = KotlinLogDestination(capacity: 2)
+        for message in ["a", "b", "c", "d"] {
+            destination.write(.info, message, attributes: [:])
+        }
+        #expect(destination.pending.map(\.message) == ["c", "d"])
+
+        let logger = RecordingLogger()
+        destination.attach(logger)
+
+        #expect(logger.lines.map(\.level) == ["warn", "info", "info"])
+        #expect(logger.lines.first?.attributes == ["source", "dropped"])
+        #expect(logger.lines.dropFirst().map(\.message) == ["c", "d"])
     }
 
     @Test
@@ -210,47 +255,48 @@ struct KotlinReadsTests {
 private final class RecordingLogger: Logging {
     struct Line {
         let level: String
+        let message: String
         let attributes: Set<String>
     }
 
     var lines: [Line] = []
 
-    private func record(_ level: String, _ keys: Set<String>) {
-        lines.append(Line(level: level, attributes: keys))
+    private func record(_ level: String, _ message: String, _ keys: Set<String>) {
+        lines.append(Line(level: level, message: message, attributes: keys))
     }
 
     private nonisolated static func keys(_ attributes: [AttributeKey: AttributeValue]?) -> Set<String> {
         Set(attributes?.keys.map { $0 } ?? [])
     }
 
-    nonisolated func debug(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func debug(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("debug", keys) }
+        MainActor.assumeIsolated { record("debug", message, keys) }
     }
 
-    nonisolated func info(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func info(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("info", keys) }
+        MainActor.assumeIsolated { record("info", message, keys) }
     }
 
-    nonisolated func notice(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func notice(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("notice", keys) }
+        MainActor.assumeIsolated { record("notice", message, keys) }
     }
 
-    nonisolated func warn(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func warn(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("warn", keys) }
+        MainActor.assumeIsolated { record("warn", message, keys) }
     }
 
-    nonisolated func error(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func error(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("error", keys) }
+        MainActor.assumeIsolated { record("error", message, keys) }
     }
 
-    nonisolated func critical(_: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    nonisolated func critical(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
         let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("critical", keys) }
+        MainActor.assumeIsolated { record("critical", message, keys) }
     }
 
     nonisolated func addUserAction(
