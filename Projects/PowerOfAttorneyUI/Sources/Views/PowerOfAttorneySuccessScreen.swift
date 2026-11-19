@@ -1,3 +1,4 @@
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -18,7 +19,8 @@ struct PowerOfAttorneySuccessScreen: View {
         .hStateViewBottomAttachedView {
             hSection {
                 VStack(spacing: .padding8) {
-                    PowerOfAttorneyShareLink(url: shareUrl, size: .large, type: .primary)
+                    // TODO: Localize "Share" via Lokalise
+                    PopoverShareButton(url: shareUrl, title: "Share", size: .large, type: .primary)
                     hButton(
                         .large,
                         .ghost,

@@ -1,5 +1,6 @@
 import AutomaticLog
 import Foundation
+import hCore
 
 /// A power of attorney the member has already granted.
 public struct PowerOfAttorney: Equatable, Hashable, Identifiable, Sendable {
@@ -7,8 +8,7 @@ public struct PowerOfAttorney: Equatable, Hashable, Identifiable, Sendable {
     /// Name of the person the power of attorney is granted to, as the member entered it when signing.
     public let name: String
     public let ssn: String
-    public let status: Status
-    public let level: Level
+    public let level: PowerOfAttorneyLevel
     /// Link the member shares with the person the power of attorney is granted to.
     public let shareUrl: URL?
 
@@ -16,43 +16,14 @@ public struct PowerOfAttorney: Equatable, Hashable, Identifiable, Sendable {
         id: String,
         name: String,
         ssn: String,
-        status: Status,
-        level: Level,
+        level: PowerOfAttorneyLevel,
         shareUrl: URL?
     ) {
         self.id = id
         self.name = name
         self.ssn = ssn
-        self.status = status
         self.level = level
         self.shareUrl = shareUrl
-    }
-
-    public enum Status: String, Codable, Hashable, Sendable {
-        case active
-        case revoked
-
-        // TODO: Localize via Lokalise
-        var displayName: String {
-            switch self {
-            case .active: "Active"
-            case .revoked: "Revoked"
-            }
-        }
-    }
-
-    /// Raw values are the API values (`level` in `POST /power-of-attorney`).
-    public enum Level: String, CaseIterable, Codable, Hashable, Sendable {
-        case full = "Full"
-        case partial = "CoInsured"
-
-        // TODO: Localize via Lokalise
-        var displayName: String {
-            switch self {
-            case .full: "Full"
-            case .partial: "Partial"
-            }
-        }
     }
 }
 

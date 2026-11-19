@@ -1,3 +1,6 @@
+import ContractsCore
+import EditStakeholdersCore
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -174,9 +177,9 @@ struct PowerOfAttorneySelectCoInsuredScreen: View {
     }
 
     private var levelPicker: some View {
-        ItemPickerScreen<PowerOfAttorney.Level>(
+        ItemPickerScreen<PowerOfAttorneyLevel>(
             config: .init(
-                items: PowerOfAttorney.Level.allCases.map { level in
+                items: PowerOfAttorneyLevel.allCases.map { level in
                     (object: level, displayName: .init(title: level.displayName))
                 },
                 preSelectedItems: { [vm] in
@@ -244,11 +247,11 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
     var personalNumberError: String?
     var isLookingUpPersonalNumber = false
 
-    var selectedLevel: PowerOfAttorney.Level?
+    var selectedLevel: PowerOfAttorneyLevel?
     var levelError: String?
     var isLevelPickerPresented = false
 
-    @ObservationIgnored var onShare: ((PowerOfAttorneyUser, PowerOfAttorney.Level) -> Void)?
+    @ObservationIgnored var onShare: ((PowerOfAttorneyUser, PowerOfAttorneyLevel) -> Void)?
     @ObservationIgnored private let service = PowerOfAttorneyService()
     @ObservationIgnored private let personalNumberMasking = Masking(type: .personalNumber(minAge: 0))
 
@@ -280,7 +283,7 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
         userError = nil
     }
 
-    func select(level: PowerOfAttorney.Level) {
+    func select(level: PowerOfAttorneyLevel) {
         selectedLevel = level
         levelError = nil
     }
@@ -328,6 +331,8 @@ final class PowerOfAttorneySelectCoInsuredViewModel {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in PowerOfAttorneyClientDemo() })
+    Dependencies.shared.add(module: Module { () -> FetchContractsClient in FetchContractsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> EditStakeholdersClient in EditStakeholdersClientDemo() })
     return PowerOfAttorneySelectCoInsuredScreen()
         .environment(NavigationRouter())
 }

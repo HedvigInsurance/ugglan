@@ -1,3 +1,4 @@
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -45,35 +46,13 @@ public struct PowerOfAttorneyListScreen: View {
                 )
                 .hStateViewButtonConfig(nil)
             } else {
-                hSection(vm.powerOfAttorneys) { powerOfAttorney in
-                    hRow {
-                        HStack(alignment: .top, spacing: .padding8) {
-                            VStack(alignment: .leading, spacing: 0) {
-                                hText(powerOfAttorney.name)
-                                hText(powerOfAttorney.ssn, style: .label)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                            }
-                            Spacer()
-                            VStack(alignment: .trailing, spacing: .padding4) {
-                                HStack(spacing: .padding4) {
-                                    hPill(text: powerOfAttorney.level.displayName, color: .blue)
-                                    hPill(
-                                        text: powerOfAttorney.status.displayName,
-                                        color: powerOfAttorney.status == .active ? .green : .grey
-                                    )
-                                }
-                                if let shareUrl = powerOfAttorney.shareUrl, powerOfAttorney.status == .active {
-                                    PowerOfAttorneyShareLink(url: shareUrl, size: .small, type: .secondary)
-                                }
-                            }
-                            .hFieldSize(.small)
-                        }
-                        .accessibilityElement(children: .combine)
-                        // A revoked power of attorney's link can't be used anymore, so it isn't offered
+                if !vm.powerOfAttorneys.isEmpty {
+                    hSection(vm.powerOfAttorneys) { powerOfAttorney in
+                        PowerOfAttorneyRow(powerOfAttorney: powerOfAttorney)
                     }
+                    .sectionContainerStyle(.transparent)
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
-                .sectionContainerStyle(.transparent)
-                .hWithoutHorizontalPadding([.row, .divider])
             }
         }
         .hFormAlwaysAttachToBottom {
@@ -95,6 +74,50 @@ public struct PowerOfAttorneyListScreen: View {
         .onPullToRefresh { [vm] in
             await vm.fetchPowerOfAttorneys()
         }
+    }
+}
+
+private struct PowerOfAttorneyRow: View {
+    let powerOfAttorney: PowerOfAttorney
+    // Shared with the share button, so tapping anywhere on the row opens the share popover anchored to the button
+    @State private var sharePresenter = ShareSheetPopoverPresenter()
+
+    var body: some View {
+        hRow {
+            VStack(spacing: .padding4) {
+                HStack(alignment: .top, spacing: .padding8) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(powerOfAttorney.name)
+                        hText(powerOfAttorney.ssn, style: .label)
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    }
+                    Spacer()
+                    hPill(text: powerOfAttorney.level.displayName, color: .blue)
+                        .hFieldSize(.small)
+                }
+                if let shareUrl = powerOfAttorney.shareUrl {
+                    // TODO: Localize "Share" via Lokalise
+                    PopoverShareButton(
+                        url: shareUrl,
+                        title: "Share",
+                        size: .small,
+                        type: .secondary,
+                        presenter: sharePresenter
+                    )
+                    .hButtonTakeFullWidth(true)
+                    // The whole row is the share button for VoiceOver, so the inner button isn't a separate element
+                    .accessibilityHidden(true)
+                }
+            }
+            .accessibilityElement(children: .combine)
+        }
+        .onTap(if: powerOfAttorney.shareUrl != nil) { [sharePresenter, shareUrl = powerOfAttorney.shareUrl] in
+            if let shareUrl {
+                sharePresenter.present(url: shareUrl)
+            }
+        }
+        // TODO: Localize via Lokalise
+        .accessibilityHint(powerOfAttorney.shareUrl != nil ? "Shares the power of attorney link" : "")
     }
 }
 

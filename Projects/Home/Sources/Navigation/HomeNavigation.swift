@@ -2,7 +2,6 @@ import AddonsCore
 import AppStateContainer
 import Combine
 import ContractsCore
-import ContractsUI
 import CrossSellCore
 import EditStakeholdersUI
 import Foundation
@@ -91,8 +90,6 @@ public class HomeNavigationViewModel {
 
     @ObservationIgnored public var router = NavigationRouter()
     public let quickActionsVm = QuickActionsViewModel()
-    /// Drives the contract details opened from the limited home's contracts list.
-    public let contractsNavigationVm = ContractsNavigationViewModel()
 
     public var claimsAutomationStartInput: StartClaimInput?
     public var isAddonPresented: ChangeAddonInput?

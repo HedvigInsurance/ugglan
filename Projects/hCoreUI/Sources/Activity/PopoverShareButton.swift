@@ -1,24 +1,43 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
-/// "Share" button for a power of attorney link. The system share sheet opens as a popover attached to the button
-/// itself (also on iPhone), not as a sheet from the bottom of the screen.
+/// Button that shares a URL. The system share sheet opens as a popover attached to the button itself (also on
+/// iPhone), not as a sheet from the bottom of the screen.
 ///
 /// SwiftUI's `ShareLink` can't do this: on iPhone it always presents the share sheet from the bottom. So the button
 /// is an `hButton` with an invisible UIKit anchor view behind it, which the share sheet popover points at.
-struct PowerOfAttorneyShareLink: View {
+///
+/// Pass your own `ShareSheetPopoverPresenter` to open the same popover from somewhere else too, e.g. when tapping the
+/// row the button sits in: `presenter.present(url:)` still anchors the popover to the button.
+public struct PopoverShareButton: View {
     let url: URL
+    let title: String
     let size: hButtonSize
     let type: hButtonConfigurationType
-    @State private var presenter = ShareSheetPopoverPresenter()
+    let externalPresenter: ShareSheetPopoverPresenter?
+    @State private var ownPresenter = ShareSheetPopoverPresenter()
 
-    var body: some View {
+    private var presenter: ShareSheetPopoverPresenter { externalPresenter ?? ownPresenter }
+
+    public init(
+        url: URL,
+        title: String,
+        size: hButtonSize,
+        type: hButtonConfigurationType,
+        presenter: ShareSheetPopoverPresenter? = nil
+    ) {
+        self.url = url
+        self.title = title
+        self.size = size
+        self.type = type
+        self.externalPresenter = presenter
+    }
+
+    public var body: some View {
         hButton(
             size,
             type,
-            // TODO: Localize via Lokalise
-            content: .init(title: "Share")
+            content: .init(title: title)
         ) { [url, presenter] in
             presenter.present(url: url)
         }
@@ -27,10 +46,14 @@ struct PowerOfAttorneyShareLink: View {
 }
 
 @MainActor
-private final class ShareSheetPopoverPresenter: NSObject, UIPopoverPresentationControllerDelegate {
+public final class ShareSheetPopoverPresenter: NSObject, UIPopoverPresentationControllerDelegate {
     weak var anchorView: UIView?
 
-    func present(url: URL) {
+    override public init() {
+        super.init()
+    }
+
+    public func present(url: URL) {
         guard let anchorView, anchorView.window != nil,
             let presentingViewController = UIApplication.shared.getTopViewController()
         else { return }
@@ -46,7 +69,7 @@ private final class ShareSheetPopoverPresenter: NSObject, UIPopoverPresentationC
     }
 
     // Keep the popover on iPhone instead of letting it adapt into a sheet from the bottom
-    nonisolated func adaptivePresentationStyle(
+    nonisolated public func adaptivePresentationStyle(
         for _: UIPresentationController,
         traitCollection _: UITraitCollection
     ) -> UIModalPresentationStyle {
@@ -72,8 +95,8 @@ private struct ShareSheetAnchorView: UIViewRepresentable {
 
 #Preview {
     VStack {
-        PowerOfAttorneyShareLink(url: URL(string: "https://www.hedvig.com")!, size: .large, type: .primary)
-        PowerOfAttorneyShareLink(url: URL(string: "https://www.hedvig.com")!, size: .small, type: .secondary)
+        PopoverShareButton(url: URL(string: "https://www.hedvig.com")!, title: "Share", size: .large, type: .primary)
+        PopoverShareButton(url: URL(string: "https://www.hedvig.com")!, title: "Share", size: .small, type: .secondary)
             .fixedSize()
     }
     .padding()

@@ -127,7 +127,7 @@ class MockAuthenticationService: AuthenticationClient {
         try await exchangeToken(refreshToken)
     }
 
-    func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
+    func getPowerOfAttorney() async -> ActingPowerOfAttorney? {
         nil
     }
 }

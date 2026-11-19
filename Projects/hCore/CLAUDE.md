@@ -39,6 +39,7 @@ Foundational module providing dependency injection, shared models, localization,
 - `Models/ItemCost.swift` -- `ItemCost` and `ItemDiscount` for line-item pricing
 - `Models/IntentCost.swift` -- `IntentCost` and `QuoteCost` for quote-level pricing
 - `Models/UploadFile.swift` -- Simple data/name/mimeType struct for file uploads
+- `Models/ActingPowerOfAttorney.swift` -- `PowerOfAttorneyLevel`, `ActingPowerOfAttorney` (the person using the app with a power of attorney, `allows(_ deepLink:)`), and the `\.actingPowerOfAttorney` / `\.hasLimitedAccess` environment values
 - `Models/ServerBasedDate.swift` -- Typealias `ServerBasedDate = String` with display formatting extensions
 
 

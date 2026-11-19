@@ -1,7 +1,7 @@
 import Claims
 import InsuranceEvidence
 import Market
-import PowerOfAttorney
+import PowerOfAttorneyUI
 import SwiftUI
 import TravelCertificate
 import hCore

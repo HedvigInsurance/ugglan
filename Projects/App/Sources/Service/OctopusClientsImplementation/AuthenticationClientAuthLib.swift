@@ -8,6 +8,7 @@ import hCore
 import hGraphQL
 
 final class AuthenticationClientAuthLib: AuthenticationClient {
+    private let networkClient = NetworkClient(sessionClient: .shared)
     private lazy var networkAuthRepository: NetworkAuthRepository = { [weak self] in
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
@@ -201,7 +202,9 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 throw AuthenticationError.loginFailure(message: nil)
             case let completed as LoginStatusResultCompleted:
                 try await exchange(code: completed.authorizationCode.code)
-                try await storePowerOfAttorney(isPowerOfAttorneyLogin: isPowerOfAttorneyLogin)
+                if isPowerOfAttorneyLogin {
+                    try await storePowerOfAttorney()
+                }
                 updateStatusTo(.completed)
                 return
             case let pending as LoginStatusResultPending:
@@ -220,25 +223,25 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void
     ) async throws {
         do {
-            var request = URLRequest(url: Environment.current.authUrl.appending(path: "member-login"))
-            request.httpMethod = "POST"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            for (key, value) in await ApolloClient.headers() {
-                request.setValue(value, forHTTPHeaderField: key)
+            let request = try await PowerOfAttorneyRequest.memberLogin(powerOfAttorneyId: id).asRequest()
+            let (data, response) = try await networkClient.sessionClient.data(for: request)
+            let isSuccessStatus = (response as? HTTPURLResponse).map { (200..<300).contains($0.statusCode) } ?? false
+            // An invalid link comes back as an error status with a `reason` explaining why
+            if !isSuccessStatus,
+                let reason = (try? JSONDecoder().decode(PowerOfAttorneyMemberLoginResponse.self, from: data))?.reason
+            {
+                throw AuthenticationError.loginFailure(message: reason)
             }
-            if BankIDSandboxState.isEnabled {
-                request.setValue("true", forHTTPHeaderField: "Hedvig-Bankid-Sandbox")
-            }
-            request.httpBody = try JSONEncoder()
-                .encode(PowerOfAttorneyLoginBody(method: "SE_BANKID", powerOfAttorneyId: id))
-            let (data, _) = try await URLSession.shared.data(for: request)
-            let response = try JSONDecoder().decode(PowerOfAttorneyLoginResponse.self, from: data)
-            guard response.result == "success",
-                let statusUrl = response.statusUrl,
-                let autoStartToken = response.seBankIdProperties?.autoStartToken
+            let loginResponse: PowerOfAttorneyMemberLoginResponse = try await networkClient.handleResponseForced(
+                data: data,
+                response: response,
+                error: nil
+            )
+            guard loginResponse.result == "success",
+                let statusUrl = loginResponse.statusUrl,
+                let autoStartToken = loginResponse.seBankIdProperties?.autoStartToken
             else {
-                // `reason` explains why the link isn't valid
-                throw AuthenticationError.loginFailure(message: response.reason ?? L10n.General.errorBody)
+                throw AuthenticationError.loginFailure(message: loginResponse.reason ?? L10n.General.errorBody)
             }
             updateStatusTo(.started(code: autoStartToken))
             try await observeLoginStatus(
@@ -280,18 +283,13 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
 
     private static let powerOfAttorneyKey = "powerOfAttorney"
 
-    func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
-        try? await KeychainHelper.standard.read(key: Self.powerOfAttorneyKey, type: PowerOfAttorneyClaim.self)
+    func getPowerOfAttorney() async -> ActingPowerOfAttorney? {
+        try? await KeychainHelper.standard.read(key: Self.powerOfAttorneyKey, type: ActingPowerOfAttorney.self)
     }
 
-    /// Right after a BankID login: a power of attorney login stores who logged in, a normal login clears what an
-    /// earlier one stored. If it can't be fetched the login fails (and its tokens are dropped), so the app never opens
-    /// without knowing what the person may see.
-    private func storePowerOfAttorney(isPowerOfAttorneyLogin: Bool) async throws {
-        guard isPowerOfAttorneyLogin else {
-            await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
-            return
-        }
+    /// Right after a power of attorney login: stores who logged in. If it can't be fetched the login fails (and its
+    /// tokens are dropped), so the app never opens without knowing what the person may see.
+    private func storePowerOfAttorney() async throws {
         do {
             guard let powerOfAttorney = try await fetchCurrentPowerOfAttorney() else {
                 throw URLError(.badServerResponse)
@@ -305,35 +303,25 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         }
     }
 
-    /// `GET /power-of-attorney/current`: the power of attorney the caller is logged in with (`name`, `ssn`, `level`).
-    /// A member logged in as themselves gets 404.
-    private func fetchCurrentPowerOfAttorney() async throws -> PowerOfAttorneyClaim? {
-        var request = URLRequest(url: Environment.current.authUrl.appending(path: "power-of-attorney/current"))
-        request.httpMethod = "GET"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        try await TokenRefresher.shared.refreshIfNeeded()
-        for (key, value) in await ApolloClient.headers() {
-            request.setValue(value, forHTTPHeaderField: key)
-        }
-        let (data, response) = try await URLSession.shared.data(for: request)
-        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-        if statusCode == 404 {
+    /// The power of attorney the caller is logged in with, `nil` for a member logged in as themselves (404).
+    private func fetchCurrentPowerOfAttorney() async throws -> ActingPowerOfAttorney? {
+        let request = try await PowerOfAttorneyRequest.current.asRequest()
+        let (data, response) = try await networkClient.sessionClient.data(for: request)
+        if (response as? HTTPURLResponse)?.statusCode == 404 {
             return nil
         }
-        guard (200..<300).contains(statusCode) else {
-            throw URLError(.badServerResponse)
-        }
-        let current = try JSONDecoder().decode(CurrentPowerOfAttorney.self, from: data)
-        return .init(ssn: current.ssn, name: current.name, level: current.level)
-    }
-
-    private struct CurrentPowerOfAttorney: Decodable {
-        let name: String
-        let ssn: String
-        let level: String
+        let current: ActingPowerOfAttorney = try await networkClient.handleResponseForced(
+            data: data,
+            response: response,
+            error: nil
+        )
+        return current
     }
 
     func exchange(code: String) async throws {
+        // Every login exchanges a code. A power of attorney login stores its own afterwards, so whatever an earlier
+        // one stored never leaks into this session (e.g. an email login after a logout that didn't finish).
+        await KeychainHelper.standard.delete(key: Self.powerOfAttorneyKey)
         let data = try await asyncFunction(
             for: networkAuthRepository.exchange(grant: AuthorizationCodeGrant(code: code))
         )
@@ -418,21 +406,5 @@ extension HedvigShared.AuthTokenResultError {
         case let unknownError as AuthTokenResultErrorUnknownError: return unknownError.message
         default: return "Unknown error"
         }
-    }
-}
-
-private struct PowerOfAttorneyLoginBody: Encodable {
-    let method: String
-    let powerOfAttorneyId: String
-}
-
-private struct PowerOfAttorneyLoginResponse: Decodable {
-    let result: String
-    let statusUrl: String?
-    let seBankIdProperties: BankIdProperties?
-    let reason: String?
-
-    struct BankIdProperties: Decodable {
-        let autoStartToken: String?
     }
 }

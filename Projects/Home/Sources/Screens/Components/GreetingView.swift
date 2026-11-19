@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct GreetingView: View {
-    @Environment(\.homeActingPowerOfAttorney) private var actingPowerOfAttorney
+    @Environment(\.actingPowerOfAttorney) private var actingPowerOfAttorney
     let firstName: String?
 
     var body: some View {
@@ -15,7 +15,7 @@ struct GreetingView: View {
     private var greeting: some View {
         VStack(spacing: 0) {
             if let actingPowerOfAttorney {
-                hText(L10n.homeGreetingTitle(actingPowerOfAttorney.name), style: .heading2)
+                hText(L10n.homeGreetingTitle(actingPowerOfAttorney.firstName), style: .heading2)
                     .foregroundColor(hTextColor.Opaque.primary)
                 hText(powerOfAttorneySubtitle(for: actingPowerOfAttorney), style: .heading2)
                     .foregroundColor(hTextColor.Translucent.secondary)
@@ -37,28 +37,13 @@ struct GreetingView: View {
     }
 
     // TODO: Localize via Lokalise
-    private func powerOfAttorneySubtitle(for powerOfAttorney: HomeActingPowerOfAttorney) -> String {
+    private func powerOfAttorneySubtitle(for powerOfAttorney: ActingPowerOfAttorney) -> String {
         let level = powerOfAttorney.hasFullAccess ? "full" : "partial"
         guard let firstName, !firstName.isEmpty else {
             return "You are acting with \(level) power of attorney"
         }
         return "You are acting with \(level) power of attorney for \(firstName)"
     }
-}
-
-/// The person using the app with a power of attorney, greeted on home instead of the member.
-public struct HomeActingPowerOfAttorney: Equatable, Sendable {
-    public let name: String
-    public let hasFullAccess: Bool
-
-    public init(name: String, hasFullAccess: Bool) {
-        self.name = name
-        self.hasFullAccess = hasFullAccess
-    }
-}
-
-extension EnvironmentValues {
-    @Entry public var homeActingPowerOfAttorney: HomeActingPowerOfAttorney? = nil
 }
 
 #Preview {

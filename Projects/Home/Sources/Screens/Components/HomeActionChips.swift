@@ -7,7 +7,7 @@ import hCoreUI
 
 struct HomeActionChips: View {
     @Environment(HomeNavigationViewModel.self) var navigationVm
-    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
+    @Environment(\.hasLimitedAccess) private var isLimitedAccess
     @AppObservedObject var store: ClaimsStore
     @AppObservedObject var featureFlags: FeatureFlagsStore
 

@@ -108,16 +108,10 @@ struct NotLoggedInView_Previews: PreviewProvider {
 class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
-    var showLogin = false {
-        didSet {
-            // A power of attorney login only applies to the login it was opened for
-            if !showLogin {
-                powerOfAttorneyId = nil
-            }
-        }
-    }
-    /// Set when the login was opened from a power of attorney link
-    var powerOfAttorneyId: String?
+    var showLogin = false
+    /// The login opened from a power of attorney link. A sheet of its own: a presented sheet keeps the content it was
+    /// presented with, so the normal login sheet couldn't switch to it.
+    var powerOfAttorneyLogin: PowerOfAttorneyLogin?
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()
@@ -137,11 +131,20 @@ class NotLoggedViewModel {
         )
     }
 
-    /// Opens the BankID login for the person named in a power of attorney link.
+    /// Opens the BankID login for the person named in a power of attorney link, closing any other login first.
     func startPowerOfAttorneyLogin(id: String) {
         showLogin = false
-        powerOfAttorneyId = id
-        showLogin = true
+        guard powerOfAttorneyLogin?.id != id else { return }
+        if powerOfAttorneyLogin == nil {
+            powerOfAttorneyLogin = .init(id: id)
+        } else {
+            // The open login is for another link: close it, and open this one once it's gone
+            powerOfAttorneyLogin = nil
+            Task { [weak self] in
+                await delay(0.8)
+                self?.powerOfAttorneyLogin = .init(id: id)
+            }
+        }
     }
 
     @objc func openDeeplingLink(_ notification: Notification) {
@@ -172,5 +175,10 @@ class NotLoggedViewModel {
     enum ViewState {
         case loading
         case language
+    }
+
+    struct PowerOfAttorneyLogin: Identifiable, Equatable {
+        /// The power of attorney id from the link
+        let id: String
     }
 }

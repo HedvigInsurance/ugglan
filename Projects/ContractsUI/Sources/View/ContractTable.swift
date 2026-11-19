@@ -23,6 +23,7 @@ struct ContractTable: View {
     @Environment(ContractsNavigationViewModel.self) var contractsNavigationVm
     @Environment(NavigationRouter.self) var router
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.hasLimitedAccess) private var hasLimitedAccess
 
     private var isExpanded: Bool {
         if voiceOverEnabled {
@@ -66,9 +67,12 @@ struct ContractTable: View {
                     )
                 if !showTerminated {
                     VStack(spacing: .padding8) {
-                        CrossSellingView()
-                            .padding(.top, .padding8)
-                        addonBannersView
+                        // Nothing to buy for a power of attorney without full access
+                        if !hasLimitedAccess {
+                            CrossSellingView()
+                                .padding(.top, .padding8)
+                            addonBannersView
+                        }
                         if !(store.terminatedContracts.isEmpty || onlyTerminatedInsurances) {
                             hSection {
                                 hButton(
@@ -135,6 +139,8 @@ struct ContractTable: View {
             }
         }
         .onAppear {
+            // Not shown to a power of attorney without full access
+            guard !hasLimitedAccess else { return }
             Task {
                 await vm.getAddonBanners()
             }

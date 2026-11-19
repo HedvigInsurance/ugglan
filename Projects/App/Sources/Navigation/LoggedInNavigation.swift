@@ -40,6 +40,9 @@ class PushNotificationHandler {
 
     func handle(_ notification: Notification) {
         guard let object = notification.object as? PushNotificationType else { return }
+        if viewModel?.actingPowerOfAttorney?.hasFullAccess == false, !object.isAllowedWithLimitedAccess {
+            return
+        }
 
         switch object {
         case .NEW_MESSAGE:
@@ -226,6 +229,9 @@ class DeepLinkHandler {
             }
             return
         }
+        if let actingPowerOfAttorney = viewModel?.actingPowerOfAttorney, !actingPowerOfAttorney.allows(deepLink) {
+            return
+        }
 
         switch deepLink {
         case .forever:
@@ -299,7 +305,7 @@ class DeepLinkHandler {
         case .manualCharge:
             handleManualCharge()
         case .powerOfAttorney:
-            // Handled by MainNavigationViewModel, it needs a logged out app
+            // Handled by PowerOfAttorneyLinkCoordinator, it needs a logged out app
             break
         case .connectPayment:
             viewModel?.homeNavigationVm.isPaymentMethodsPresented = true
@@ -504,9 +510,12 @@ struct LoggedInNavigation: View {
         TabView(selection: $vm.selectedTab) {
             homeTab
             contractsTab
-            foreverTab
-            paymentsTab
-            profileTab
+            // A power of attorney without full access only gets home and the (read-only) insurances
+            if vm.actingPowerOfAttorney?.hasFullAccess != false {
+                foreverTab
+                paymentsTab
+                profileTab
+            }
         }
         .onChange(of: vm.selectedTab) { _, newTab in
             vm.contractsNavigationVm.isActiveTab = (newTab == 1)
@@ -742,18 +751,8 @@ struct HomeTab: View {
                     InboxView()
                         .environment(homeNavigationVm)
                 }
-                // Only reached from the limited home's contracts list, so details are read-only.
-                .routerDestination(for: ContractsCore.Contract.self) { contract in
-                    ContractDetail(id: contract.id)
-                        .environment(homeNavigationVm.contractsNavigationVm)
-                        .environment(\.isContractEditingDisabled, true)
-                        .navigationTitle(contract.currentAgreement?.productVariant.displayName ?? "")
-                }
         }
         .environment(homeNavigationVm)
-        .handleContractInformationSheets(contractsNavigationVm: homeNavigationVm.contractsNavigationVm) { document in
-            PDFPreview(document: document)
-        }
         .handleAddPaymentMethod(presented: $homeNavigationVm.isAddPaymentMethodPresented)
         .handlePaymentMethods(presented: $homeNavigationVm.isPaymentMethodsPresented)
         .handlePayinSetupDeepLink(provider: $homeNavigationVm.payinSetupProvider)
@@ -935,6 +934,9 @@ enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
 @MainActor
 @Observable
 class LoggedInNavigationViewModel {
+    /// Set when someone uses the app with a power of attorney. Without full access only the home and insurances tabs
+    /// show, and deep links and push notifications only open what those offer.
+    var actingPowerOfAttorney: ActingPowerOfAttorney?
     var selectedTab = 0 {
         willSet {
             previousTab = selectedTab

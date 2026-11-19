@@ -26,6 +26,8 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **hContinueButton** -- Pre-configured large primary button with localized "Continue" text
 - **hCancelButton** -- Pre-configured cancel button
 - **hSaveButton** -- Pre-configured save button
+- **LogoutButton** -- Red ghost "Log out" button with the confirmation alert; logs out on confirm
+- **PopoverShareButton** -- `hButton` sharing a URL via the system share sheet as a popover anchored to the button (also on iPhone). Pass a `ShareSheetPopoverPresenter` to also open it from elsewhere (e.g. a row tap)
 - **ToolbarButtonView** -- Toolbar-positioned button for navigation bars, with tooltip support. Its tooltip direction comes from the `\.tooltipDirection` environment value, which `setToolbar`/`setToolbarLeading`/`setToolbarTrailing`/`setHomeNavigationBars` resolve via `.resolveTooltipDirection()`: next to a system toolbar column (iPhone Duo) tooltips open sideways away from the column, everywhere else below the button
 
 ### Text & Typography
@@ -111,6 +113,7 @@ Hedvig's design system framework for the iOS app. Provides all reusable UI compo
 - **ConfirmChangesScreen / EditContractScreen** -- Contract modification screens
 - **UpdateAppScreen / UpdateOSScreen** -- Force-update prompt screens
 - **StatusCard** -- Status display card
+- **BankIDQRCodeView / BankIDQRCode / BankIDApp** -- BankID QR code (dark-on-light card in dark mode, animates between codes), and opening the BankID app with an autostart token
 - **SVGImageProcessor** -- Processes SVG images for display
 
 ## Design Tokens

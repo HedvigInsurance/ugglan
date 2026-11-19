@@ -156,4 +156,14 @@ enum PushNotificationType: String {
     case INSURANCE_EVIDENCE
     case TRAVEL_CERTIFICATE
     case PAYOUT
+
+    /// What a power of attorney without full access may open: the inbox, claims and the insurances tab.
+    var isAllowedWithLimitedAccess: Bool {
+        switch self {
+        case .NEW_MESSAGE, .OPEN_CLAIM, .CLAIM_CLOSED, .OPEN_INSURANCE_TAB:
+            return true
+        default:
+            return false
+        }
+    }
 }

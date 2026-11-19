@@ -7,7 +7,6 @@ import hCoreUI
 public struct BankIDLoginQRView: View {
     @State var vm: BankIDViewModel
     @Environment(NavigationRouter.self) var router
-    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     private var onStartDemoMode: () async -> Void
 
@@ -37,10 +36,8 @@ public struct BankIDLoginQRView: View {
                 hForm {
                     VStack(spacing: .padding32) {
                         ZStack {
-                            if let image = vm.image {
-                                qrCode(image)
-                                    .transition(.opacity)
-                                    .id(image.pngData()?.count ?? 0)
+                            if let qrCode = vm.qrCode {
+                                BankIDQRCodeView(qrCode: qrCode)
                                     .accessibilityLabel(L10n.bankidLoginTitle)
                             }
                         }
@@ -131,21 +128,6 @@ public struct BankIDLoginQRView: View {
             vm.onAppear()
         }
     }
-
-    /// Always drawn dark-on-light, the way scanners expect a code. In dark mode it sits on a light card
-    /// matching the form's light background, which also gives the code its quiet zone.
-    private func qrCode(_ image: UIImage) -> some View {
-        StyledQRCodeView(image: image)
-            .frame(width: 180, height: 180)
-            .padding(colorScheme == .dark ? .padding16 : 0)
-            .background {
-                if colorScheme == .dark {
-                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                        .fill(hBackgroundColor.primary)
-                }
-            }
-            .colorScheme(.light)
-    }
 }
 
 @MainActor
@@ -153,8 +135,8 @@ public struct BankIDLoginQRView: View {
 class BankIDViewModel {
     var showAlert: Bool = false
     var token: String?
-    var image: UIImage?
-    var hasBankIdApp = false
+    var qrCode: BankIDQRCode?
+    let hasBankIdApp: Bool
     var isLoading = true
     var hasAlreadyOpenedBankId = false
     let powerOfAttorneyId: String?
@@ -164,7 +146,7 @@ class BankIDViewModel {
     @ObservationIgnored var router: NavigationRouter?
     init(powerOfAttorneyId: String? = nil) {
         self.powerOfAttorneyId = powerOfAttorneyId
-        checkIfCanOpenBankId()
+        hasBankIdApp = BankIDApp.isInstalled
     }
 
     func onAppear() {
@@ -199,28 +181,9 @@ class BankIDViewModel {
         observeLoginTask?.cancel()
     }
 
-    private func checkIfCanOpenBankId() {
-        let bankIdAppTestUrl = URL(
-            string:
-                "bankid:///"
-        )!
-
-        if UIApplication.shared.canOpenURL(bankIdAppTestUrl) {
-            hasBankIdApp = true
-        }
-    }
-
     func openBankId() {
-        guard let token else {
-            return
-        }
-        let urlScheme = Bundle.main.urlScheme ?? ""
-        if let url = URL(string: "bankid:///?autostarttoken=\(token)&redirect=\(urlScheme)://bankid") {
-            log.info("BANK ID APP started", error: nil, attributes: nil)
-            if UIApplication.shared.canOpenURL(url) {
-                Task { await Dependencies.urlOpener.open(url) }
-            }
-        }
+        guard let token else { return }
+        BankIDApp.open(autoStartToken: token)
     }
 
     private func set(token: String?) {
@@ -229,7 +192,7 @@ class BankIDViewModel {
             isLoading = token == nil
         }
         guard let token else {
-            image = nil
+            qrCode = nil
             return
         }
         if hasBankIdApp, !hasAlreadyOpenedBankId {
@@ -238,11 +201,7 @@ class BankIDViewModel {
         }
 
         withAnimation {
-            self.image = StyledQRCode.image(
-                for: "bankid:///?autostarttoken=\(token)",
-                logoFraction: 0,
-                correctionLevel: .low
-            )
+            qrCode = BankIDQRCode(autoStartToken: token)
         }
     }
 
@@ -255,11 +214,11 @@ class BankIDViewModel {
     @MainActor
     private func set(qrData: String?) {
         guard let qrData else {
-            image = nil
+            qrCode = nil
             return
         }
         withAnimation(.snappy(duration: 0.1)) {
-            self.image = StyledQRCode.image(for: qrData, logoFraction: 0, correctionLevel: .low)
+            qrCode = BankIDQRCode(data: qrData)
         }
     }
 }

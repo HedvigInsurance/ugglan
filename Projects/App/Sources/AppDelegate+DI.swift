@@ -17,7 +17,7 @@ import InsuranceEvidence
 import MoveFlowCore
 import Onboarding
 import Payment
-import PowerOfAttorney
+import PowerOfAttorneyCore
 import Profile
 import SubmitClaimChat
 import TerminateContractsCore
@@ -61,6 +61,7 @@ enum DI {
             let puppyGuideClient = PuppyGuideClientDemo()
             let terminateContractsClient = TerminateContractsClientDemo()
             let powerOfAttorneyClient = PowerOfAttorneyClientDemo()
+            let editStakeholdersClient = EditStakeholdersClientDemo()
 
             Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClient })
             Dependencies.shared.add(module: Module { () -> ExperimentProvider in featureFlagsClient })
@@ -87,6 +88,7 @@ enum DI {
             Dependencies.shared.add(module: Module { () -> PuppyGuideClient in puppyGuideClient })
             Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsClient })
             Dependencies.shared.add(module: Module { () -> PowerOfAttorneyClient in powerOfAttorneyClient })
+            Dependencies.shared.add(module: Module { () -> EditStakeholdersClient in editStakeholdersClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaignsClientOctopus()

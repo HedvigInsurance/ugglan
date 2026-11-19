@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 @MainActor
 public protocol AuthenticationClient {
@@ -16,25 +17,7 @@ public protocol AuthenticationClient {
     func exchange(refreshToken: String) async throws
     /// Who is using the app with a power of attorney, or `nil` for a normal member session. Fetched and stored when a
     /// power of attorney BankID login completes (that login fails if it can't be fetched), so this needs no network.
-    func getPowerOfAttorney() async -> PowerOfAttorneyClaim?
-}
-
-public struct PowerOfAttorneyClaim: Codable, Equatable, Sendable {
-    /// Personal number of the person using the power of attorney
-    public let ssn: String
-    /// Name of the person using the power of attorney
-    public let name: String
-    /// What the person is allowed to do, as sent by the backend (`Full`, `CoInsured`, ...)
-    public let level: String
-
-    /// Only `Full` grants the whole app, any other (or unknown) level is treated as the most limited one.
-    public var hasFullAccess: Bool { level == "Full" }
-
-    public init(ssn: String, name: String, level: String) {
-        self.ssn = ssn
-        self.name = name
-        self.level = level
-    }
+    func getPowerOfAttorney() async -> ActingPowerOfAttorney?
 }
 
 public enum ObserveStatusResponseType {

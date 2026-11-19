@@ -1,18 +1,17 @@
 import AppStateContainer
 import Claims
 import ContractsCore
-import ContractsUI
 import CrossSellCore
 import Payment
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ActiveHomeView: View {
+struct ActiveHomeView: View {
     @AppObservedObject private var homeStore: HomeStore
     @Environment(HomeNavigationViewModel.self) private var navigationVm
     @Environment(\.verticalSizeClass) private var verticalSizeClass
-    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
+    @Environment(\.hasLimitedAccess) private var isLimitedAccess
     @State private var bottomVm = HomeBottomScrollViewModel()
     @State private var greetingHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
@@ -37,9 +36,7 @@ public struct ActiveHomeView: View {
     /// How far the content dissolves before it slips under the pinned header.
     private let contentFadeHeight: CGFloat = 4
 
-    public init() {}
-
-    public var body: some View {
+    var body: some View {
         GeometryReader { proxy in
             let viewportHeight = proxy.size.height + proxy.safeAreaInsets.bottom
             ScrollView(.vertical, showsIndicators: false) {
@@ -187,7 +184,7 @@ private struct ConnectPaymentCardSection: View {
 }
 
 private struct HomeSheetContent: View {
-    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
+    @Environment(\.hasLimitedAccess) private var isLimitedAccess
     @AppObservedObject private var homeStore: HomeStore
     @AppObservedObject private var claimsStore: ClaimsStore
     @AppObservedObject private var crossSellStore: CrossSellStore
@@ -201,8 +198,8 @@ private struct HomeSheetContent: View {
         VStack(spacing: .padding40) {
             if isLimitedAccess {
                 ClaimsCard(allActiveClaims: claimsStore.allActiveClaims)
-                LimitedAccessContractsSection()
-                LimitedAccessLogoutSection()
+                // There's no profile tab to log out from
+                hSection { LogoutButton() }
             } else {
                 fullContent
             }
@@ -250,54 +247,6 @@ private struct HomeSheetContent: View {
     }
 }
 
-/// The member's insurances, opening read-only contract details, on the limited home.
-private struct LimitedAccessContractsSection: View {
-    @Environment(HomeNavigationViewModel.self) private var navigationVm
-    @AppObservedObject private var contractStore: ContractStore
-
-    var body: some View {
-        let contracts = contractStore.activeContracts + contractStore.pendingContracts
-        if !contracts.isEmpty {
-            hSection {
-                VStack(spacing: .padding8) {
-                    ForEach(contracts) { contract in
-                        ContractRow(contract: contract) { [weak navigationVm] in
-                            navigationVm?.router.push(contract)
-                        }
-                    }
-                }
-            }
-            .withHeader(title: L10n.InsurancesTab.title)
-            .sectionContainerStyle(.transparent)
-        }
-    }
-}
-
-/// Lets a member acting with a partial power of attorney, who has no profile tab, log out from home.
-private struct LimitedAccessLogoutSection: View {
-    @State private var showAlert = false
-
-    var body: some View {
-        hSection {
-            hButton(
-                .large,
-                .ghost,
-                content: .init(title: L10n.logoutButton),
-                { showAlert = true }
-            )
-            .hUseButtonTextColor(.red)
-            .foregroundColor(hSignalColor.Red.element)
-        }
-        .alert(L10n.logoutAlertTitle, isPresented: $showAlert) {
-            Button(L10n.logoutAlertActionCancel, role: .cancel) {}
-            Button(L10n.logoutAlertActionConfirm, role: .destructive) {
-                ApplicationState.preserveState(.notLoggedIn)
-                ApplicationState.state = .notLoggedIn
-            }
-        }
-    }
-}
-
 private struct TopFadeMask: View {
     let topInset: CGFloat
     let fadeHeight: CGFloat
@@ -316,7 +265,7 @@ private struct TopFadeMask: View {
 }
 
 private struct HomeNavigationBar: View {
-    @Environment(\.isHomeLimitedAccess) private var isLimitedAccess
+    @Environment(\.hasLimitedAccess) private var isLimitedAccess
     @AppObservedObject private var homeStore: HomeStore
     let action: (ToolbarOptionType) -> Void
 
@@ -359,12 +308,6 @@ private struct HomeNavigationBar: View {
             button
         }
     }
-}
-
-extension EnvironmentValues {
-    /// Limits home to First Vet, the inbox, making a claim, contacting us and the claims list,
-    /// for a member logged in with a power of attorney that doesn't grant full access.
-    @Entry public var isHomeLimitedAccess = false
 }
 
 extension [ToolbarOptionType] {

@@ -48,7 +48,7 @@ public class AuthenticationService {
         try await client.exchange(refreshToken: refreshToken)
     }
 
-    public func getPowerOfAttorney() async -> PowerOfAttorneyClaim? {
+    public func getPowerOfAttorney() async -> ActingPowerOfAttorney? {
         await client.getPowerOfAttorney()
     }
 

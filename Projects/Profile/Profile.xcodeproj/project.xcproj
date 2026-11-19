@@ -97,7 +97,7 @@
             "ProfileTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/PowerOfAttorney.framework",
+          "path": "<PRODUCTS>/PowerOfAttorneyUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

@@ -1,51 +1,21 @@
 import Foundation
+import hCore
 
 public class PowerOfAttorneyClientDemo: PowerOfAttorneyClient {
     private let demoUrl = URL(string: "https://www.hedvig.com")
-    private let demoUsers: [PowerOfAttorneyUser] = [
-        .init(id: "1", firstName: "Anna", lastName: "Andersson", ssn: "199001011234"),
-        .init(id: "2", firstName: "Erik", lastName: "Eriksson", ssn: "198505052345"),
-        .init(id: "3", firstName: "Maja", lastName: "Svensson", ssn: "201506151234"),
-        .init(id: "4", firstName: "Lars", lastName: "Nilsson", ssn: "197803034567"),
-        .init(id: "5", firstName: "Sofia", lastName: "Johansson", ssn: "199512125678"),
-        .init(id: "6", firstName: "Oskar", lastName: "Lindberg", ssn: "200208086789"),
-    ]
 
     public init() {}
 
     public func getPowerOfAttorneys() async throws -> [PowerOfAttorney] {
         [
-            .init(
-                id: "1",
-                name: demoUsers[0].fullName,
-                ssn: demoUsers[0].ssn ?? "",
-                status: .active,
-                level: .full,
-                shareUrl: demoUrl
-            ),
-            .init(
-                id: "2",
-                name: demoUsers[1].fullName,
-                ssn: demoUsers[1].ssn ?? "",
-                status: .revoked,
-                level: .partial,
-                shareUrl: demoUrl
-            ),
+            .init(id: "1", name: "Anna Andersson", ssn: "199001011234", level: .full, shareUrl: demoUrl),
+            .init(id: "2", name: "Erik Eriksson", ssn: "198505052345", level: .partial, shareUrl: demoUrl),
         ]
-    }
-
-    public func getCoInsured() async throws -> [PowerOfAttorneyUser] {
-        demoUsers
-    }
-
-    public func getUser(personalNumber: String) async throws -> PowerOfAttorneyUser {
-        try await Task.sleep(for: .seconds(1))
-        return .init(id: personalNumber, firstName: "Karin", lastName: "Berg", ssn: personalNumber)
     }
 
     public func startSigning(
         for _: PowerOfAttorneyUser,
-        level _: PowerOfAttorney.Level
+        level _: PowerOfAttorneyLevel
     ) async throws -> PowerOfAttorneySigningSession {
         guard let demoUrl else {
             throw PowerOfAttorneyError.error(message: "Invalid demo url")

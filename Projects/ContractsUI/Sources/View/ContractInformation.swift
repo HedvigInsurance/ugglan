@@ -13,7 +13,9 @@ import hCoreUI
 struct ContractInformationView: View {
     @AppObservedObject var store: ContractStore
     @Environment(ContractsNavigationViewModel.self) private var contractsNavigationVm
-    @Environment(\.isContractEditingDisabled) private var isEditingDisabled
+    /// A power of attorney without full access sees no action that changes the insurance (editing, moving,
+    /// stakeholders, addons, missing info).
+    @Environment(\.hasLimitedAccess) private var isEditingDisabled
     let id: String
 
     var body: some View {

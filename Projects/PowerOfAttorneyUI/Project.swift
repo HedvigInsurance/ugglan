@@ -2,8 +2,8 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "PowerOfAttorney",
+    name: "PowerOfAttorneyUI",
     targets: Set([.framework]),
-    projects: ["hCore", "hCoreUI"],
+    projects: ["hCore", "hCoreUI", "ContractsCore", "EditStakeholdersCore", "PowerOfAttorneyCore"],
     sdks: []
 )

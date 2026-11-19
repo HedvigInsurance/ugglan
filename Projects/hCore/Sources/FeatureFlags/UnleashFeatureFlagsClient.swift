@@ -125,7 +125,8 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             ),
             isCancelInsuranceHiddenFromHomeScreen: unleashClient.isEnabled(
                 name: "hide_cancel_insurance_from_home_screen"
-            )
+            ),
+            isPowerOfAttorneyEnabled: true  //unleashClient.isEnabled(name: "enable_power_of_attorney")
         )
         featureDataPublisher.send(data)
     }

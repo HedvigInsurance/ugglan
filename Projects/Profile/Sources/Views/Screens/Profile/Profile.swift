@@ -8,6 +8,8 @@ import hCoreUI
 
 public struct ProfileView: View {
     @AppObservedObject var store: ProfileStore
+    @AppObservedObject private var featureFlags: FeatureFlagsStore
+    @SwiftUI.Environment(\.actingPowerOfAttorney) private var actingPowerOfAttorney
 
     public var body: some View {
         hForm {
@@ -22,7 +24,10 @@ public struct ProfileView: View {
                     )
                 }
                 ProfileRow(row: .claimHistory)
-                ProfileRow(row: .powerOfAttorney)
+                // Someone acting with a power of attorney mustn't grant new ones on the member's behalf
+                if featureFlags.isPowerOfAttorneyEnabled, actingPowerOfAttorney == nil {
+                    ProfileRow(row: .powerOfAttorney)
+                }
                 ProfileRow(row: .information)
                 if Environment.current != .production {
                     ProfileRow(row: .settings)
@@ -65,33 +70,6 @@ public struct ProfileView: View {
             ProfileRow(row: .travelCertificate)
         } else if store.canCreateInsuranceEvidence {
             ProfileRow(row: .insuranceEvidence)
-        }
-    }
-}
-
-// Extracted to its own View so its hButton/alert closures don't capture the
-// enclosing ProfileView's `self`. ProfileView holds ProfileStore via
-// @AppObservedObject (which wraps @StateObject), so any closure capturing
-// ProfileView's `self` transitively pinned ProfileStore across logout —
-// even closures that only mutate a local @State.
-private struct LogoutButton: View {
-    @State private var showAlert = false
-
-    var body: some View {
-        hButton(
-            .large,
-            .ghost,
-            content: .init(title: L10n.logoutButton),
-            { showAlert = true }
-        )
-        .hUseButtonTextColor(.red)
-        .foregroundColor(hSignalColor.Red.element)
-        .alert(L10n.logoutAlertTitle, isPresented: $showAlert) {
-            Button(L10n.logoutAlertActionCancel, role: .cancel) {}
-            Button(L10n.logoutAlertActionConfirm, role: .destructive) {
-                ApplicationState.preserveState(.notLoggedIn)
-                ApplicationState.state = .notLoggedIn
-            }
         }
     }
 }

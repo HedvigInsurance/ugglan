@@ -96,7 +96,10 @@
          location = "group:Payment/Payment.xcodeproj">
       </FileRef>
       <FileRef
-         location = "group:PowerOfAttorney/PowerOfAttorney.xcodeproj">
+         location = "group:PowerOfAttorneyCore/PowerOfAttorneyCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:PowerOfAttorneyUI/PowerOfAttorneyUI.xcodeproj">
       </FileRef>
       <FileRef
          location = "group:Profile/Profile.xcodeproj">

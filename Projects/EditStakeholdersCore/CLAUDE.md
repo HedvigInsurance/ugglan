@@ -14,12 +14,14 @@ service wrapper. No SwiftUI or hCoreUI.
 - `Sources/Models/IntentData.swift`, `PersonalData.swift` — midterm change intent and SSN lookup results
 - `Sources/Service/Protocols/EditStakeholdersClient.swift` — client protocol, `StakeholderAction`, `EditStakeholdersError`
 - `Sources/Service/EditStakeholdersService.swift` — logging wrapper around `EditStakeholdersClient`
+- `Sources/Service/DemoImplementation/EditStakeholdersClientDemo.swift` — demo client; only the personal number
+  lookup works (used by PowerOfAttorneyCore), the edit calls throw
 
 ## Dependencies
 - hCore (+ AutomaticLog)
-- Depended on by: EditStakeholdersUI, ContractsCore, ContractsUI, Home, Onboarding, TravelCertificate, App
-  (`EditStakeholdersClientOctopus`, DI)
+- Depended on by: EditStakeholdersUI, ContractsCore, ContractsUI, Home, Onboarding, TravelCertificate,
+  PowerOfAttorneyCore, PowerOfAttorneyUI, App (`EditStakeholdersClientOctopus`, DI)
 
 ## Gotchas
-- No DemoImplementation exists; demo/mock clients must be registered externally.
+- `EditStakeholdersClientDemo` only supports the personal number lookup; the edit flow isn't usable in demo mode.
 - No test target: the stakeholder logic under test lives in EditStakeholdersUI's view models.

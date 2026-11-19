@@ -78,7 +78,8 @@ extension FeatureData {
         isTerminationRedirectionEnabled: false,
         isAnalyticsEnabled: false,
         isResumingOngoingShopSessionsEnabled: false,
-        isCancelInsuranceHiddenFromHomeScreen: false
+        isCancelInsuranceHiddenFromHomeScreen: false,
+        isPowerOfAttorneyEnabled: false
     )
 
     /// A saved `isUpdateNecessary` / `osVersionTooLow` may predate an app or OS update, and would block the app
@@ -96,7 +97,8 @@ extension FeatureData {
             isTerminationRedirectionEnabled: isTerminationRedirectionEnabled,
             isAnalyticsEnabled: isAnalyticsEnabled,
             isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
-            isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen
+            isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen,
+            isPowerOfAttorneyEnabled: isPowerOfAttorneyEnabled
         )
     }
 }

@@ -32,30 +32,37 @@ struct LoginNavigation: View {
             )
         }
         .detent(presented: $vm.showLogin, presentationStyle: .detent(style: [.large])) {
-            BankIDLoginQRView(powerOfAttorneyId: vm.powerOfAttorneyId) {
-                await handleDemoModeActivation()
-            }
-            .environment(otpState)
-            .withDismissButton()
-            .routerDestination(for: AuthenticationRouterType.self) { type in
-                switch type {
-                case .emailLogin:
-                    OTPEntryView()
-                        .environment(otpState)
-                        .withDismissButton()
-                case .otpCodeEntry:
-                    OTPCodeEntryView()
-                        .environment(otpState)
-                        .withDismissButton()
-                case let .error(message):
-                    LoginErrorView(message: message)
-                }
-            }
-            .embededInNavigation(
-                options: .extendedNavigationWidth,
-                tracking: String.init(describing: BankIDLoginQRView.self)
-            )
+            login(powerOfAttorneyId: nil)
         }
+        .detent(item: $vm.powerOfAttorneyLogin, presentationStyle: .detent(style: [.large])) { powerOfAttorneyLogin in
+            login(powerOfAttorneyId: powerOfAttorneyLogin.id)
+        }
+    }
+
+    private func login(powerOfAttorneyId: String?) -> some View {
+        BankIDLoginQRView(powerOfAttorneyId: powerOfAttorneyId) {
+            await handleDemoModeActivation()
+        }
+        .environment(otpState)
+        .withDismissButton()
+        .routerDestination(for: AuthenticationRouterType.self) { type in
+            switch type {
+            case .emailLogin:
+                OTPEntryView()
+                    .environment(otpState)
+                    .withDismissButton()
+            case .otpCodeEntry:
+                OTPCodeEntryView()
+                    .environment(otpState)
+                    .withDismissButton()
+            case let .error(message):
+                LoginErrorView(message: message)
+            }
+        }
+        .embededInNavigation(
+            options: .extendedNavigationWidth,
+            tracking: String.init(describing: BankIDLoginQRView.self)
+        )
     }
 
     private func handleDemoModeActivation() async {

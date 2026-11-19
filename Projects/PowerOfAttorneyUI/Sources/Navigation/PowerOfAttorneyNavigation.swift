@@ -1,3 +1,4 @@
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -35,7 +36,7 @@ extension PowerOfAttorneyNavigation: TrackingViewNameProtocol {
 }
 
 enum PowerOfAttorneyRouterType: Hashable {
-    case signing(user: PowerOfAttorneyUser, level: PowerOfAttorney.Level)
+    case signing(user: PowerOfAttorneyUser, level: PowerOfAttorneyLevel)
 }
 
 extension PowerOfAttorneyRouterType: TrackingViewNameProtocol {

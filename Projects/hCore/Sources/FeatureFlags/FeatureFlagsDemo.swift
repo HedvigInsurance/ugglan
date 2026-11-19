@@ -22,7 +22,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isTerminationRedirectionEnabled: false,
             isAnalyticsEnabled: false,
             isResumingOngoingShopSessionsEnabled: false,
-            isCancelInsuranceHiddenFromHomeScreen: false
+            isCancelInsuranceHiddenFromHomeScreen: false,
+            isPowerOfAttorneyEnabled: true
         )
         featureDataPublisher.send(data)
     }
@@ -40,7 +41,8 @@ public class FeatureFlagsDemo: @unchecked Sendable, FeatureFlagsClient {
             isTerminationRedirectionEnabled: false,
             isAnalyticsEnabled: false,
             isResumingOngoingShopSessionsEnabled: false,
-            isCancelInsuranceHiddenFromHomeScreen: false
+            isCancelInsuranceHiddenFromHomeScreen: false,
+            isPowerOfAttorneyEnabled: true
         )
         featureDataPublisher.send(data)
     }

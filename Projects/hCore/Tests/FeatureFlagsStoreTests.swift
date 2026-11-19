@@ -101,7 +101,8 @@ extension FeatureData {
         isTerminationRedirectionEnabled: false,
         isAnalyticsEnabled: false,
         isResumingOngoingShopSessionsEnabled: false,
-        isCancelInsuranceHiddenFromHomeScreen: false
+        isCancelInsuranceHiddenFromHomeScreen: false,
+        isPowerOfAttorneyEnabled: false
     )
 
     fileprivate static let withUpdateGatesAndPuppyGuide = FeatureData(
@@ -116,6 +117,7 @@ extension FeatureData {
         isTerminationRedirectionEnabled: false,
         isAnalyticsEnabled: false,
         isResumingOngoingShopSessionsEnabled: false,
-        isCancelInsuranceHiddenFromHomeScreen: false
+        isCancelInsuranceHiddenFromHomeScreen: false,
+        isPowerOfAttorneyEnabled: false
     )
 }

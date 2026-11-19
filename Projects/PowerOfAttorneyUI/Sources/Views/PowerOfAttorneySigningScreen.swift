@@ -1,3 +1,4 @@
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,9 +6,8 @@ import hCoreUI
 struct PowerOfAttorneySigningScreen: View {
     @State private var vm: PowerOfAttorneySigningViewModel
     @Environment(NavigationRouter.self) private var router
-    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
-    init(user: PowerOfAttorneyUser, level: PowerOfAttorney.Level) {
+    init(user: PowerOfAttorneyUser, level: PowerOfAttorneyLevel) {
         _vm = State(initialValue: PowerOfAttorneySigningViewModel(user: user, level: level))
     }
 
@@ -47,10 +47,8 @@ struct PowerOfAttorneySigningScreen: View {
         hForm {
             VStack(spacing: .padding32) {
                 ZStack {
-                    if let image = vm.qrImage {
-                        qrCode(image)
-                            .transition(.opacity)
-                            .id(image.pngData()?.count ?? 0)
+                    if let qrCode = vm.qrCode {
+                        BankIDQRCodeView(qrCode: qrCode)
                             // TODO: Localize via Lokalise
                             .accessibilityLabel("BankID QR code")
                     }
@@ -122,21 +120,6 @@ struct PowerOfAttorneySigningScreen: View {
             UIAccessibility.post(notification: .screenChanged, argument: nil)
         }
     }
-
-    /// Always drawn dark-on-light, the way scanners expect a code. In dark mode it sits on a light card
-    /// matching the form's light background, which also gives the code its quiet zone.
-    private func qrCode(_ image: UIImage) -> some View {
-        StyledQRCodeView(image: image)
-            .frame(width: 180, height: 180)
-            .padding(colorScheme == .dark ? .padding16 : 0)
-            .background {
-                if colorScheme == .dark {
-                    RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                        .fill(hBackgroundColor.primary)
-                }
-            }
-            .colorScheme(.light)
-    }
 }
 
 @MainActor
@@ -150,9 +133,9 @@ final class PowerOfAttorneySigningViewModel {
     }
 
     let user: PowerOfAttorneyUser
-    let level: PowerOfAttorney.Level
+    let level: PowerOfAttorneyLevel
     var state: SigningState = .loading
-    var qrImage: UIImage?
+    var qrCode: BankIDQRCode?
     /// Text from the backend describing the current signing status, shown instead of the default instruction.
     var statusText: String?
     let hasBankIdApp: Bool
@@ -161,14 +144,10 @@ final class PowerOfAttorneySigningViewModel {
     @ObservationIgnored private var signingTask: Task<Void, Never>?
     @ObservationIgnored private let service = PowerOfAttorneyService()
 
-    init(user: PowerOfAttorneyUser, level: PowerOfAttorney.Level) {
+    init(user: PowerOfAttorneyUser, level: PowerOfAttorneyLevel) {
         self.user = user
         self.level = level
-        if let bankIdAppTestUrl = URL(string: "bankid:///") {
-            hasBankIdApp = UIApplication.shared.canOpenURL(bankIdAppTestUrl)
-        } else {
-            hasBankIdApp = false
-        }
+        hasBankIdApp = BankIDApp.isInstalled
     }
 
     /// Starts (or restarts) the signing. Does nothing if a signing is already running or has succeeded,
@@ -184,7 +163,7 @@ final class PowerOfAttorneySigningViewModel {
         }
         autoStartToken = nil
         hasAlreadyOpenedBankId = false
-        qrImage = nil
+        qrCode = nil
         statusText = nil
         withAnimation { state = .loading }
         signingTask = Task { [weak self] in
@@ -199,12 +178,7 @@ final class PowerOfAttorneySigningViewModel {
 
     func openBankId() {
         guard let autoStartToken else { return }
-        let urlScheme = Bundle.main.urlScheme ?? ""
-        guard
-            let url = URL(string: "bankid:///?autostarttoken=\(autoStartToken)&redirect=\(urlScheme)://bankid"),
-            UIApplication.shared.canOpenURL(url)
-        else { return }
-        Task { await Dependencies.urlOpener.open(url) }
+        BankIDApp.open(autoStartToken: autoStartToken)
     }
 
     private func runSigning() async {
@@ -240,11 +214,7 @@ final class PowerOfAttorneySigningViewModel {
     private func set(autoStartToken: String, qrData: String?) {
         self.autoStartToken = autoStartToken
         withAnimation {
-            qrImage = StyledQRCode.image(
-                for: qrData ?? "bankid:///?autostarttoken=\(autoStartToken)",
-                logoFraction: 0,
-                correctionLevel: .low
-            )
+            qrCode = qrData.flatMap(BankIDQRCode.init(data:)) ?? BankIDQRCode(autoStartToken: autoStartToken)
             state = .waitingForSignature
         }
         if hasBankIdApp, !hasAlreadyOpenedBankId {
@@ -256,7 +226,7 @@ final class PowerOfAttorneySigningViewModel {
     private func set(qrData: String?) {
         guard let qrData else { return }
         withAnimation(.snappy(duration: 0.1)) {
-            qrImage = StyledQRCode.image(for: qrData, logoFraction: 0, correctionLevel: .low)
+            qrCode = BankIDQRCode(data: qrData)
         }
     }
 }
