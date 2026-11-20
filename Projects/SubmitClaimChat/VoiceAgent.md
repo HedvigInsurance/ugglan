@@ -59,6 +59,10 @@ take up to 30 s). Every parameter is a string unless noted. The names must match
 story already answers go by silently. That one line before the tool call is the only filler; the prompt forbids a
 second. Keep example phrases out of tool descriptions: the agent copies them, in their language.
 
+**Tool call sound:** *Typing*, played *Always*, on every tool that waits for the engine's next question (all but
+`request_photos`, `show_summary` and `hand_off_to_chat`, which open something on screen or end the call), so the wait
+sounds like someone jotting the answer down.
+
 Don't add the built-in *End call* system tool: the app ends the call itself after the summary or a handoff.
 
 ## 3. Point the app at it
