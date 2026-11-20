@@ -2,8 +2,8 @@ import SwiftUI
 
 /// The call's orb: a soft Hedvig pillow (the shape and mesh-gradient look of Hedvig's product pillows), shaded like
 /// one side of a rounded sphere, with an outline that flows like a blob. Its colours keep drifting through Hedvig's
-/// product palettes and its outline moves like a blob, each corner on its own. When the member speaks it swells,
-/// ripples, glows and shifts its colours, syllable by syllable; when Hedvig speaks it grows and brightens; while Hedvig
+/// product palettes and its outline moves like a blob, each corner on its own. When the member speaks it shrinks,
+/// ripples and shifts its colours, syllable by syllable; when Hedvig speaks it grows and brightens; while Hedvig
 /// is working something out its colours hurry through the palettes.
 struct VoiceOrbView: View {
     let status: VoiceCallStatus
@@ -51,9 +51,9 @@ struct VoiceOrbView: View {
 
     private func draw(in canvas: inout GraphicsContext, size: CGSize, frame: OrbMotion.Frame) {
         let side = min(size.width, size.height)
-        // At rest the pillow is 64% of the frame: up to 76% as Hedvig speaks, and it swells to 72% with the member's
-        // voice, beat by beat. The rest is room for the glow and the corners, which would otherwise be cut off.
-        let scale = side * (0.64 + 0.12 * frame.agent + 0.08 * frame.member) / Self.pillowSize
+        // At rest the pillow is 64% of the frame: up to 76% as Hedvig speaks, and down to 52% with the member's voice,
+        // beat by beat, like it's leaning in to listen. The rest is room for the glow and the corners.
+        let scale = side * (0.64 + 0.12 * frame.agent - 0.12 * frame.member) / Self.pillowSize
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
         let half = Self.pillowSize / 2
         // The outline changes shape like a blob (see `blobPath`); the light, shade and colours stay put. The
@@ -73,13 +73,11 @@ struct VoiceOrbView: View {
         )
         let cover = bounds.insetBy(dx: -bounds.width * 0.2, dy: -bounds.height * 0.2)
 
-        // A soft glow behind it that brightens with either voice, then a soft shadow to sit it on the background.
+        // A soft glow behind it that brightens with Hedvig's voice only, then a soft shadow to sit it on the
+        // background.
         var glow = canvas
-        glow.addFilter(.blur(radius: side * (0.07 + 0.04 * frame.member)))
-        glow.fill(
-            outline.applying(Self.scaled(by: 1 + 0.1 * frame.member, around: center)),
-            with: .color(frame.palette[3].color.opacity(0.1 + 0.55 * frame.agent + 0.6 * frame.member))
-        )
+        glow.addFilter(.blur(radius: side * 0.07))
+        glow.fill(outline, with: .color(frame.palette[2].color.opacity(0.1 + 0.55 * frame.agent)))
         var shadow = canvas
         shadow.addFilter(.blur(radius: side * 0.05))
         shadow.fill(
@@ -88,8 +86,8 @@ struct VoiceOrbView: View {
         )
 
         canvas.drawLayer { layer in
-            // Hedvig speaking lifts the whole pillow; the member speaking turns its colours and lights it up a bit.
-            layer.addFilter(.brightness(0.26 * frame.agent + 0.12 * frame.member))
+            // Hedvig speaking lifts the whole pillow; the member speaking turns its colours.
+            layer.addFilter(.brightness(0.26 * frame.agent))
             layer.addFilter(.saturation(1 + 0.3 * frame.agent + 0.25 * frame.member))
             layer.addFilter(.hueRotation(.degrees(-80 * frame.member)))
             layer.clip(to: outline)
@@ -128,12 +126,6 @@ struct VoiceOrbView: View {
             grain.opacity = 0.05
             grain.draw(Self.grain, in: cover)
         }
-    }
-
-    private static func scaled(by factor: Double, around point: CGPoint) -> CGAffineTransform {
-        CGAffineTransform(translationX: point.x, y: point.y)
-            .scaledBy(x: factor, y: factor)
-            .translatedBy(x: -point.x, y: -point.y)
     }
 
     /// Light and shade that make the flat pillow read as the front of a rounded sphere: the edges fall away into
