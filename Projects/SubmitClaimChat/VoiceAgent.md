@@ -15,12 +15,15 @@ ElevenLabs dashboard → Agents → New agent (blank).
 
 | Setting | Value |
 |---|---|
-| Voice | Swedish: `QLfvbukvQvrPOx9HXQ3x` (the voice used in hedvig-claims-poc). English: `cNYrMw9glwJZXR8RwbuR` (Belle, added to My Voices), set in the `en` language preset; the Swedish voice drifted into other accents in English. A Voice Library voice must be added to the workspace first, or calls fall back to the default male voice |
+| Voice | Swedish: `QLfvbukvQvrPOx9HXQ3x` (the voice used in hedvig-claims-poc). English: `cuTixVvCOWFxeH3oGE9m` (Clara, warm and calm, female), set in the `en` language preset; the Swedish voice drifted into other accents in English. (Belle, `cNYrMw9glwJZXR8RwbuR`, was the English voice in the old workspace; it isn't in Hedvig's, so English calls fell back to the default male voice.) A Voice Library voice must be added to the workspace first, or calls fall back to the default male voice |
 | TTS model | `eleven_v4_turbo` (Eleven v4 Turbo, the real-time v4 for agents; plain `eleven_v4` is for produced audio), stability 0.65, speed 0.95. Before: `eleven_v3_conversational`, expressive mode, same settings, which were tuned for v3 |
 | Languages | Swedish (default) + English |
 | LLM | `gpt-6-luna`, reasoning effort low, fast tier (trying; at none it started in 0.5–1.4 s but followed tone less closely); backup after 3 s (`cascade_timeout_seconds`). `gemini-4-hydrogen` at low averaged 1.5 s to its first token and ran past 3 s on about 1 in 5 turns. `claude-haiku-5-5` at none started replies in 0.5–1 s. `gemini-3.8-flash` at default effort answered 1–5 s late; at low effort on the fast tier it worked |
 | System prompt / first message | Anything; the app overrides both |
 | Turn eagerness | Patient |
+| Background voice detection | **On** (Advanced → VAD). Filters out voices that aren't the member's (TV, people nearby); the app's WebRTC noise suppression only removes steady noise, not other speech. Trying since 2026-11-20 |
+| Interruption ignore terms | Default terms for `sv` + `en` merged in, plus `mm`, `mhm`, `mmm`, `ja`, `jaa`, `jo`, `okej`, `ok`, `aha`, `precis`, `japp`, `yes`, `yeah`, `uh-huh`, `right`, so backchannels and short background sounds don't cut the agent off |
+| Noisy environment detection | **Off: not available on our ElevenLabs workspace** (turning it on returns 403 `noisy_environment_detection_not_available`). The messages are ready for when it is: Swedish (default) "Förlåt, jag hör en del ljud i bakgrunden. Kan du gå någonstans där det är lite tystare?", English in the `en` language preset (`overrides.turn.noisy_environment_message`). The `en` preset map is replaced as a whole on save, so keep the English voice in it too |
 | Soft timeout | **Off.** Its LLM filler stacked on the agent's own reactions, mixed in Swedish and spoke its reasoning aloud |
 | Max conversation duration | 15 min |
 | Data retention | POC: default. Zero retention needs the enterprise plan |
