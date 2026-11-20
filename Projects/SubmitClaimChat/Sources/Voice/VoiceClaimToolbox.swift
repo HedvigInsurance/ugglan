@@ -408,8 +408,23 @@ final class VoiceClaimToolbox {
         case let .answerSelect(stepId, optionId):
             let intent = try currentIntent(matching: stepId)
             guard case let .singleSelect(model) = intent.currentStep.content else { throw wrongKind(intent) }
-            guard model.options.contains(where: { $0.id == optionId }) else {
+            guard let chosen = model.options.first(where: { $0.id == optionId }) else {
                 throw VoiceTool.InvalidCall(message: "\(optionId) is not one of this step's option ids.")
+            }
+            // "No idea" is not a no. The prompt says so, but the model still did it, so it's held here too.
+            let yesOrNo: Set<String> = ["yes", "no", "ja", "nej"]
+            let since = Array(memberUtterances.dropFirst(answeredUtteranceCount))
+            if yesOrNo.contains(chosen.title.lowercased()), Self.saysDontKnow(since) {
+                let otherwise =
+                    intent.isSkippable
+                    ? "otherwise call skip_step."
+                    : "otherwise ask them gently which is closer, since this one can't be skipped."
+                throw VoiceTool.InvalidCall(
+                    message: """
+                        The member said they don't know, so don't answer yes or no for them. Pick an option that \
+                        says they don't know if there is one; \(otherwise)
+                        """
+                )
             }
             let leaves = VoiceStepAdapter.leavesPlaybooks(content: intent.currentStep.content, optionId: optionId)
             let result = try await service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
@@ -957,6 +972,16 @@ final class VoiceClaimToolbox {
         guard !words.isEmpty else { return false }
         let heard = Set(utterances.flatMap(spokenWords))
         return Double(words.filter(heard.contains).count) >= Double(words.count) * 0.75
+    }
+
+    /// Whether the member said they don't know, in English or Swedish.
+    static func saysDontKnow(_ utterances: [String]) -> Bool {
+        let phrases = [
+            "don't know", "dont know", "do not know", "no idea", "not sure", "unsure", "no clue", "haven't checked",
+            "vet inte", "ingen aning", "osäker", "inte säker",
+        ]
+        let text = utterances.joined(separator: " ").lowercased().replacingOccurrences(of: "’", with: "'")
+        return phrases.contains { text.contains($0) }
     }
 
     /// A bare yes, in English or Swedish, with nothing else in it.

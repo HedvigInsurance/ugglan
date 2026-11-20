@@ -50,7 +50,7 @@ struct VoiceClaimScreen: View {
     var body: some View {
         VStack(spacing: .padding24) {
             Spacer()
-            VoiceOrbView(status: viewModel.status, levels: viewModel.session.audioLevels)
+            VoiceOrbView(status: viewModel.status, isBusy: viewModel.isBusy, levels: viewModel.session.audioLevels)
                 // Bigger than the pillow itself (64% at rest), so its glow and turning corners have room.
                 .frame(maxWidth: 400)
                 .aspectRatio(1, contentMode: .fit)
@@ -131,18 +131,22 @@ struct VoiceClaimScreen: View {
         .padding(.bottom, .padding16)
     }
 
-    // hCoreUI's detent only reports a swipe-down through the binding (`onUserDismiss` is for centered modals).
+    // hCoreUI's detent only reports a swipe-down through the binding (`onUserDismiss` is for centered modals). It
+    // also reports it when an earlier sheet's controller goes away, which can be after the next sheet opened, so each
+    // binding carries the step it was made for and only that step's sheet can be dismissed through it.
     private var uploadPresented: Binding<Bool> {
-        Binding(
+        let shown = viewModel.uploadStep
+        return Binding(
             get: { viewModel.uploadStep != nil },
-            set: { if !$0 { viewModel.uploadSheetDismissed() } }
+            set: { if !$0 { viewModel.uploadSheetDismissed(shown) } }
         )
     }
 
     private var summaryPresented: Binding<Bool> {
-        Binding(
+        let shown = viewModel.summaryStep
+        return Binding(
             get: { viewModel.summaryStep != nil },
-            set: { if !$0 { viewModel.summarySheetDismissed() } }
+            set: { if !$0 { viewModel.summarySheetDismissed(shown) } }
         )
     }
 }

@@ -31,6 +31,10 @@ final class VoiceClaimViewModel {
     private(set) var phase: Phase = .starting
     private(set) var status: VoiceCallStatus = .idle
     private(set) var isMuted = false
+    /// Tool calls the agent is waiting on (the engine working on an answer or finding the next question).
+    private(set) var toolCallsRunning = 0
+    /// Hedvig is working something out: the agent is thinking, or waiting on the engine. The orb hurries its colours.
+    var isBusy: Bool { status == .thinking || toolCallsRunning > 0 }
     /// The engine's upload step, shown over the orb while non-nil.
     var uploadStep: SubmitClaimFileUploadStep? = nil
     /// The engine's summary step, shown over the orb while non-nil.
@@ -73,6 +77,8 @@ final class VoiceClaimViewModel {
             guard let self else {
                 return VoiceToolResult.error(message: "The call has ended.", currentStep: nil).json()
             }
+            self.toolCallsRunning += 1
+            defer { self.toolCallsRunning -= 1 }
             return await self.toolbox.handle(toolName: name, parameters: parameters)
         }
     }
@@ -222,8 +228,9 @@ final class VoiceClaimViewModel {
 
     /// The upload sheet went away. After a finished step `stepFinished` has already cleared it, so this only
     /// speaks up when the member swiped it away.
-    func uploadSheetDismissed() {
-        guard let step = uploadStep else { return }
+    func uploadSheetDismissed(_ shown: SubmitClaimFileUploadStep?) {
+        // A late report from an earlier sheet must not close the one showing now.
+        guard let step = uploadStep, step === shown else { return }
         uploadStep = nil
         guard !step.state.isStepExecuted else { return }
         Task {
@@ -237,8 +244,8 @@ final class VoiceClaimViewModel {
     }
 
     /// The summary sheet went away; see `uploadSheetDismissed`.
-    func summarySheetDismissed() {
-        guard let step = summaryStep else { return }
+    func summarySheetDismissed(_ shown: SubmitClaimSummaryStep?) {
+        guard let step = summaryStep, step === shown else { return }
         summaryStep = nil
         guard !step.state.isStepExecuted else { return }
         Task {

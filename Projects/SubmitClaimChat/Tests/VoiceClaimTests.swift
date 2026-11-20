@@ -694,6 +694,23 @@ extension SubmitClaimChatDependencySuite {
         }
 
         @Test
+        func noIdeaIsNotSavedAsNo() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.yesNo)
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("No, I have no idea.")
+
+            let refused = try json(
+                await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+            )
+            _ = await toolbox.handle(toolName: "skip_step", parameters: ["step_id": "yes-no"])
+
+            #expect(refused["status"] as? String == "error")
+            #expect(client.events == [.start, .other("skip")])
+        }
+
+        @Test
         func aSpaceCopiedIntoASearchMatchIdIsDropped() async throws {
             defer { cleanUp() }
             let client = MockVoiceClaimIntentClient(start: VoiceFixtures.itemSearch)

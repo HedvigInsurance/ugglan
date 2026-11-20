@@ -2,10 +2,13 @@ import SwiftUI
 
 /// The call's orb: a soft Hedvig pillow (the shape and mesh-gradient look of Hedvig's product pillows), shaded like
 /// one side of a rounded sphere, with an outline that flows like a blob. Its colours keep drifting through Hedvig's
-/// product palettes and its outline moves like a blob, each corner on its own. When the member speaks it shrinks and
-/// its colours shift; when Hedvig speaks it grows and brightens.
+/// product palettes and its outline moves like a blob, each corner on its own. When the member speaks it swells,
+/// ripples, glows and shifts its colours, syllable by syllable; when Hedvig speaks it grows and brightens; while Hedvig
+/// is working something out its colours hurry through the palettes.
 struct VoiceOrbView: View {
     let status: VoiceCallStatus
+    /// Hedvig is thinking or waiting on the engine.
+    var isBusy = false
     /// Hedvig's and the member's audio levels, read every frame.
     let levels: @Sendable () -> VoiceAudioLevels
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -22,12 +25,19 @@ struct VoiceOrbView: View {
                 let frame = motion.advance(
                     to: time,
                     agent: status == .speaking ? now.agent : 0,
-                    member: status == .listening ? now.member : 0
+                    member: status == .listening ? Self.speech(now.member) : 0,
+                    busy: isBusy && status != .speaking ? 1 : 0
                 )
                 draw(in: &canvas, size: size, frame: frame)
             }
         }
         .opacity(isOver ? 0.35 : 1)
+    }
+
+    /// The mic's level (-50 dB silent, 0 dB full) puts ordinary speech around 0.35–0.7, so the member barely moved
+    /// the orb. Room noise under 0.15 is ignored and normal speech reaches the top.
+    private static func speech(_ level: Double) -> Double {
+        min(max((level - 0.15) / 0.45, 0), 1)
     }
 
     private var isOver: Bool {
@@ -41,13 +51,14 @@ struct VoiceOrbView: View {
 
     private func draw(in canvas: inout GraphicsContext, size: CGSize, frame: OrbMotion.Frame) {
         let side = min(size.width, size.height)
-        // At rest the pillow is 64% of the frame: up to 76% as Hedvig speaks, down to 56% as the member does. The
-        // rest is room for the glow and the turning corners, which would otherwise be cut off in a square.
-        let scale = side * (0.64 + 0.12 * frame.agent - 0.08 * frame.member) / Self.pillowSize
+        // At rest the pillow is 64% of the frame: up to 76% as Hedvig speaks, and it swells to 72% with the member's
+        // voice, beat by beat. The rest is room for the glow and the corners, which would otherwise be cut off.
+        let scale = side * (0.64 + 0.12 * frame.agent + 0.08 * frame.member) / Self.pillowSize
         let center = CGPoint(x: size.width / 2, y: size.height / 2)
         let half = Self.pillowSize / 2
-        // The outline changes shape like a blob (see `blobPath`); the light, shade and colours stay put.
-        let outline = Self.blobPath(time: frame.time, energy: frame.agent + 0.6 * frame.member)
+        // The outline changes shape like a blob (see `blobPath`); the light, shade and colours stay put. The
+        // member's voice makes it ripple hardest, so they can see it's listening.
+        let outline = Self.blobPath(time: frame.wobble, energy: frame.agent + 1.8 * frame.member)
             .applying(
                 CGAffineTransform(translationX: center.x, y: center.y)
                     .scaledBy(x: scale, y: scale)
@@ -62,10 +73,13 @@ struct VoiceOrbView: View {
         )
         let cover = bounds.insetBy(dx: -bounds.width * 0.2, dy: -bounds.height * 0.2)
 
-        // A soft glow behind it that brightens with Hedvig's voice, then a soft shadow to sit it on the background.
+        // A soft glow behind it that brightens with either voice, then a soft shadow to sit it on the background.
         var glow = canvas
-        glow.addFilter(.blur(radius: side * 0.07))
-        glow.fill(outline, with: .color(frame.palette[2].color.opacity(0.1 + 0.55 * frame.agent)))
+        glow.addFilter(.blur(radius: side * (0.07 + 0.04 * frame.member)))
+        glow.fill(
+            outline.applying(Self.scaled(by: 1 + 0.1 * frame.member, around: center)),
+            with: .color(frame.palette[3].color.opacity(0.1 + 0.55 * frame.agent + 0.6 * frame.member))
+        )
         var shadow = canvas
         shadow.addFilter(.blur(radius: side * 0.05))
         shadow.fill(
@@ -74,10 +88,10 @@ struct VoiceOrbView: View {
         )
 
         canvas.drawLayer { layer in
-            // Hedvig speaking lifts the whole pillow; the member speaking turns its colours slightly.
-            layer.addFilter(.brightness(0.26 * frame.agent))
-            layer.addFilter(.saturation(1 + 0.3 * frame.agent))
-            layer.addFilter(.hueRotation(.degrees(-50 * frame.member)))
+            // Hedvig speaking lifts the whole pillow; the member speaking turns its colours and lights it up a bit.
+            layer.addFilter(.brightness(0.26 * frame.agent + 0.12 * frame.member))
+            layer.addFilter(.saturation(1 + 0.3 * frame.agent + 0.25 * frame.member))
+            layer.addFilter(.hueRotation(.degrees(-80 * frame.member)))
             layer.clip(to: outline)
             let palette = frame.palette
             layer.fill(Path(cover), with: .color(palette[0].color))
@@ -114,6 +128,12 @@ struct VoiceOrbView: View {
             grain.opacity = 0.05
             grain.draw(Self.grain, in: cover)
         }
+    }
+
+    private static func scaled(by factor: Double, around point: CGPoint) -> CGAffineTransform {
+        CGAffineTransform(translationX: point.x, y: point.y)
+            .scaledBy(x: factor, y: factor)
+            .translatedBy(x: -point.x, y: -point.y)
     }
 
     /// Light and shade that make the flat pillow read as the front of a rounded sphere: the edges fall away into
@@ -306,9 +326,9 @@ struct VoiceOrbView: View {
 /// Everything about the orb that carries from frame to frame. A class, so the Canvas can update it while drawing.
 private final class OrbMotion {
     struct Frame {
-        /// Seconds since the orb appeared, for the outline's waves.
-        let time: Double
-        /// Clock for the colour fields' drift.
+        /// Clock for the outline's waves; runs a little faster while Hedvig is busy.
+        let wobble: Double
+        /// Clock for the colour fields' drift; runs several times faster while Hedvig is busy.
         let drift: Double
         /// Hedvig's voice, eased, 0...1.
         let agent: Double
@@ -321,17 +341,32 @@ private final class OrbMotion {
     private var lastTime: Double?
     private var agent = 0.0
     private var member = 0.0
+    private var busy = 0.0
+    // The clocks are summed frame by frame, so speeding them up never makes the colours jump.
+    private var wobble = 0.0
+    private var drift = 0.0
+    private var colorClock = 0.0
 
-    /// Seconds from one palette to the next. The colours are always on their way somewhere.
+    /// Seconds from one palette to the next at rest. The colours are always on their way somewhere.
     private static let paletteSeconds = 8.0
 
-    func advance(to time: Double, agent agentTarget: Double, member memberTarget: Double) -> Frame {
+    func advance(
+        to time: Double,
+        agent agentTarget: Double,
+        member memberTarget: Double,
+        busy busyTarget: Double
+    ) -> Frame {
         let delta = min(max(time - (lastTime ?? time), 0), 0.1)
         lastTime = time
         agent = Self.ease(agent, toward: agentTarget, delta: delta)
-        member = Self.ease(member, toward: memberTarget, delta: delta)
+        // The member's voice is followed closely, so the orb moves with their syllables, not just their turn.
+        member = Self.ease(member, toward: memberTarget, delta: delta, rise: 14, fall: 4)
+        // Busy eases in and out over about a second, so the hurry starts and stops smoothly.
+        busy = Self.ease(busy, toward: busyTarget, delta: delta, rise: 1.5, fall: 1)
 
-        let colorClock = time / Self.paletteSeconds
+        wobble += delta * (1 + 0.8 * busy)
+        drift += delta * (0.4 + 1.6 * busy)
+        colorClock += delta / Self.paletteSeconds * (1 + 3 * busy)
         let palettes = HedvigPalette.all
         let index = Int(colorClock.rounded(.down))
         let blend = smoothstep(colorClock - Double(index))
@@ -339,18 +374,25 @@ private final class OrbMotion {
         let to = palettes[(index + 1) % palettes.count]
         let palette = zip(from, to).map { $0.mixed(with: $1, by: blend) }
         return Frame(
-            time: time,
-            drift: time * 0.4,
+            wobble: wobble,
+            drift: drift,
             agent: agent,
             member: member,
             palette: palette
         )
     }
 
-    /// Eased by time, not per frame: rises in about a fifth of a second, settles back over about half a second.
-    private static func ease(_ value: Double, toward target: Double, delta: Double) -> Double {
+    /// Eased by time, not per frame. By default it rises in about a fifth of a second and settles back over about
+    /// half a second.
+    private static func ease(
+        _ value: Double,
+        toward target: Double,
+        delta: Double,
+        rise: Double = 5,
+        fall: Double = 2
+    ) -> Double {
         let target = min(max(target, 0), 1)
-        let rate = target > value ? 5.0 : 2.0
+        let rate = target > value ? rise : fall
         return value + (target - value) * (1 - exp(-delta * rate))
     }
 
