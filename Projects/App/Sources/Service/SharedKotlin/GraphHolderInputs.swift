@@ -74,3 +74,11 @@ extension NetworkLogPolicy {
         self.init(logsHttpBodies: logsMemberData, logsGraphqlData: logsMemberData, logsGraphqlErrors: true)
     }
 }
+
+extension LogPriority {
+    /// The lowest Kotlin log priority that reaches `log`. Staging takes VERBOSE, where the HTTP bodies its
+    /// `NetworkLogPolicy` allows are logged; production stops at DEBUG.
+    @MainActor static func minimumForKotlin(flavor: Flavor = Environment.current.flavor) -> LogPriority {
+        flavor == .production ? .debug : .verbose
+    }
+}

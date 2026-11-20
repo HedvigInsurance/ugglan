@@ -172,6 +172,8 @@ struct SharedKotlinTests {
         #expect(!production.logsHttpBodies && !production.logsGraphqlData && production.logsGraphqlErrors)
         let staging = NetworkLogPolicy(flavor: .staging)
         #expect(staging.logsHttpBodies && staging.logsGraphqlData && staging.logsGraphqlErrors)
+        #expect(LogPriority.minimumForKotlin(flavor: .production) == .debug)
+        #expect(LogPriority.minimumForKotlin(flavor: .staging) == .verbose)
     }
 
     @Test
