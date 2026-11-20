@@ -42,6 +42,7 @@ struct MainNavigation: App {
                         .zIndex(2)
                 }
             }
+            .showsTouchesWhileCaptured()
             .onAppear {
                 ThemeOption.current.apply(animated: false)
             }

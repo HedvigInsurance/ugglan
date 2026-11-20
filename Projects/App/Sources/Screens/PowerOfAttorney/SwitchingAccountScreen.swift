@@ -14,9 +14,9 @@ struct SwitchingAccountScreen: View {
         var message: String {
             switch self {
             // TODO: Localize via Lokalise
-            case .powerOfAttorney: "Switching account"
+            case .powerOfAttorney: "Switching"
             // TODO: Localize via Lokalise
-            case .ownAccount: "Switching back to your account"
+            case .ownAccount: "Switching"
             }
         }
     }

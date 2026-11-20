@@ -20,7 +20,7 @@ struct PowerOfAttorneySuccessScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     // TODO: Localize "Share" via Lokalise
-                    PopoverShareButton(url: shareUrl, title: "Share", size: .large, type: .primary)
+                    PopoverShareButton(url: shareUrl, title: "Share link", size: .large, type: .primary)
                     hButton(
                         .large,
                         .ghost,

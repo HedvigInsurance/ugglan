@@ -43,8 +43,9 @@ struct GreetingView: View {
 
     // TODO: Localize via Lokalise
     private func powerOfAttorneySubtitle(for powerOfAttorney: ActingPowerOfAttorney) -> String {
+        let level = powerOfAttorney.level == .full ? "" : " with limited access"
         if let firstName {
-            return "You're acting on behalf of \(firstName)"
+            return "You're acting on behalf of \(firstName)\(level)"
         }
         return ""
     }
@@ -64,7 +65,7 @@ private struct SwitchBackToOwnAccountButton: View {
             }
             .fixedSize(horizontal: false, vertical: true)
             // TODO: Localize via Lokalise
-            .alert("Switch back to your account?", isPresented: $showAlert) {
+            .alert("Switch back to my account?", isPresented: $showAlert) {
                 Button(L10n.generalCancelButton, role: .cancel) {}
                 // TODO: Localize via Lokalise
                 Button("Switch back") {
