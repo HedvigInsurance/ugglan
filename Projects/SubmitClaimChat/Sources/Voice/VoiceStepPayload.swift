@@ -106,8 +106,11 @@ struct VoiceStepPayload: Encodable, Equatable {
             summary: nil,
             instruction: again
                 ? """
-                Hedvig is still working on it; it's taking a little longer. Say one short, calm line to the member \
-                that it'll just be a moment longer (no question, nothing about the app), then call get_current_step.
+                Hedvig is still working on it; it's taking a little longer. Say one short, calm line, the way a \
+                person noting things down would ("bear with me a second", "almost there", "just finishing this \
+                bit"), worded differently from anything you've said before in this call. Nothing about waiting for \
+                something, a next part or a next question, no question, nothing about the app. Then call \
+                get_current_step.
                 """
                 : """
                 Hedvig is still working on the answer. You've already reacted to it, so say nothing: call \

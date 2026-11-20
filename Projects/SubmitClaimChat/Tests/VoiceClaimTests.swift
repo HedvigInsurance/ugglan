@@ -448,7 +448,7 @@ extension SubmitClaimChatDependencySuite {
             #expect(answers.first?["answer"] as? String == "No")
             #expect(answers.first?["can_change"] as? Bool == true)
             #expect(reopened["step_id"] as? String == "yes-no")
-            #expect((reopened["instruction"] as? String)?.hasPrefix("You've gone back") == true)
+            #expect((reopened["instruction"] as? String)?.hasPrefix("This is the question whose answer") == true)
             #expect(client.events.last == .other("regret yes-no"))
             #expect(toolbox.answered.isEmpty)
             #expect(delegate.wentBack)
@@ -495,6 +495,61 @@ extension SubmitClaimChatDependencySuite {
 
             #expect(client.submittedFreeText == "It's the freezer that stopped, not the fridge.")
             #expect(toolbox.answered.map(\.answer) == ["It's the freezer that stopped, not the fridge."])
+        }
+
+        @Test
+        func afterAChangeTheLaterAnswersAreSentAgainWithoutAsking() async throws {
+            defer { cleanUp() }
+            let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
+            let client = MockVoiceClaimIntentClient(start: yesNo)
+            client.selectChain = [VoiceFixtures.description]
+            client.nextAfterAudio = VoiceFixtures.dateForm
+            client.nextAfterRegret = yesNo
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+            toolbox.recordMemberUtterance("The fridge stopped cooling.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+
+            toolbox.recordMemberUtterance("Actually, it is still leaking.")
+            _ = await toolbox.handle(toolName: "go_back", parameters: ["step_id": "yes-no"])
+            client.selectChain = [VoiceFixtures.description]
+            let next = try json(
+                await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "yes"])
+            )
+
+            #expect(Array(client.events.suffix(3)) == [.other("regret yes-no"), .submitSelect("yes"), .submitAudio])
+            #expect(client.submittedFreeText == "The fridge stopped cooling.")
+            #expect(next["step_id"] as? String == "date-form")
+            #expect(toolbox.answered.map(\.answer) == ["Yes", "The fridge stopped cooling."])
+        }
+
+        @Test
+        func aNoticeHeardBeforeAChangeIsNotReadAgain() async throws {
+            defer { cleanUp() }
+            let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
+            let client = MockVoiceClaimIntentClient(start: yesNo)
+            client.selectChain = [VoiceFixtures.notice]
+            client.nextAfterInformation = VoiceFixtures.dateForm
+            client.nextAfterRegret = yesNo
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+            _ = await toolbox.handle(toolName: "acknowledge_notice", parameters: ["step_id": "notice"])
+
+            _ = await toolbox.handle(toolName: "go_back", parameters: ["step_id": "yes-no"])
+            client.selectChain = [VoiceFixtures.notice]
+            let next = try json(
+                await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "yes"])
+            )
+            let list = try json(await toolbox.handle(toolName: "go_back", parameters: [:]))
+
+            #expect(Array(client.events.suffix(2)) == [.submitSelect("yes"), .other("information")])
+            #expect(next["step_id"] as? String == "date-form")
+            #expect((list["answers"] as? [[String: Any]])?.count == 1)  // the notice is never offered to change
         }
 
         @Test
@@ -771,6 +826,7 @@ final class MockVoiceClaimIntentClient: ClaimIntentClient {
     var searchOptions: [ClaimIntentStepContentForm.ClaimIntentStepContentFormFieldOption] = []
     var nextAfterTask: ClaimIntent?
     var nextAfterRegret: ClaimIntent?
+    var nextAfterInformation: ClaimIntent?
     var nextStepPolls: [ClaimIntent] = []
     /// While true, getNextStep waits: the engine is "still thinking".
     var holdNextStep = false
@@ -821,7 +877,7 @@ final class MockVoiceClaimIntentClient: ClaimIntentClient {
 
     func claimIntentSubmitInformation(stepId _: String) async throws -> ClaimIntentType? {
         events.append(.other("information"))
-        return VoiceFixtures.yesNo.asType
+        return (nextAfterInformation ?? VoiceFixtures.yesNo).asType
     }
 
     func claimIntentSkipStep(stepId _: String) async throws -> ClaimIntentType? {

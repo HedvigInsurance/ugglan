@@ -56,9 +56,10 @@ take up to 30 s). Every parameter is a string unless noted. The names must match
 | `hand_off_to_chat` | `reason` | End the call and continue the claim in the app's chat. |
 | `go_back` | `step_id` (optional) | Change an answer the member gave earlier, when they say it's wrong. Without step_id: returns their answers so far. With step_id: reopens that question so it can be answered again; the answers after it are asked again. |
 
-**Pre-tool speech:** *Force* on `answer_free_text` (the member has always just spoken), *Auto* on the rest, so steps the
-story already answers go by silently. That one line before the tool call is the only filler; the prompt forbids a
-second. Keep example phrases out of tool descriptions: the agent copies them, in their language.
+**Pre-tool speech:** *Force* on `answer_free_text` (the member has always just spoken), *Off* on `get_current_step`
+(on *Auto* its slow engine turns made the platform force filler like "waiting for the next part to come through";
+the typing sound covers the wait), *Auto* on the rest, so steps the story already answers go by silently. That one
+line before the tool call is the only filler; the prompt forbids a second. Keep example phrases out of tool descriptions: the agent copies them, in their language.
 
 **Tool call sound:** *Typing*, played *Always*, on every tool that waits for the engine's next question (all but
 `request_photos`, `show_summary` and `hand_off_to_chat`, which open something on screen or end the call), so the wait
@@ -86,5 +87,7 @@ members. With either missing, the honesty pledge shows the normal Continue butto
    with an `[APP] …` message. The member taps submit; the agent says goodbye; the success screen shows.
 6. When the member says an earlier answer is wrong (the agent misheard), the agent calls `go_back` for the list of
    answers, then `go_back` with the step to change. That's the chat's edit button (`claimIntentRegretStep`): the
-   engine reopens the step and clears the answers after it, which the agent then answers again from what the member
-   already said. Open sheets close. Steps the engine marks as not regrettable can't be changed.
+   engine reopens the step and clears the answers after it. The app then sends those cleared answers again by itself
+   (selects, forms, free text, skips, notices, uploaded files) whenever the engine asks the same question, so the
+   member isn't asked twice; a question it has no match for goes to the agent with the earlier answers to reuse.
+   Open sheets close. Steps the engine marks as not regrettable can't be changed.

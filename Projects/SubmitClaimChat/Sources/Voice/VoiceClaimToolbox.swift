@@ -128,11 +128,25 @@ struct StoryFacts: Equatable {
 
 /// One answer the member gave this call, as `go_back` lists it: the step, its question, and the answer in words.
 struct AnsweredStep: Encodable, Equatable {
+    /// What was sent to the engine, so the same answer can be sent again after going back to an earlier step.
+    enum Replay: Equatable {
+        case select(String)
+        case form([FieldValue])
+        case freeText(String)
+        case skip
+        case notice
+        case files([String])
+    }
+
     let stepId: String
     let question: String?
     let answer: String
     /// Whether the engine lets this step be answered again (`ClaimIntent.isRegrettable`).
     let canChange: Bool
+    var kind: VoiceStepPayload.Kind = .none
+    var replay: Replay = .skip
+    /// Notices are heard, not answered: they're replayed but never offered as something to change.
+    var isAnswer: Bool { replay != .notice }
 
     enum CodingKeys: String, CodingKey {
         case question, answer
@@ -273,6 +287,8 @@ final class VoiceClaimToolbox {
     private(set) var answered: [AnsweredStep] = []
     /// The names of the search matches the agent was given, by option id, so a chosen item reads as a name.
     private var searchLabels: [String: String] = [:]
+    /// The answers that came after the one the member went back to change, waiting to be sent again.
+    private var cleared: [AnsweredStep] = []
 
     /// The claim intent being created; tools wait for it, so the call can connect at the same time.
     private var starting: Task<VoiceStepPayload, Error>?
@@ -326,6 +342,13 @@ final class VoiceClaimToolbox {
     }
 
     func run(_ tool: VoiceTool) async throws -> VoiceToolResult {
+        let result = try await runTool(tool)
+        // After going back, the answers that were cleared are sent again by the app as the engine asks for them.
+        guard case let .step(payload) = result, !tool.isGoBack else { return result }
+        return .step(try await replayingCleared(payload))
+    }
+
+    private func runTool(_ tool: VoiceTool) async throws -> VoiceToolResult {
         // The agent can only reach the engine once the claim exists (it's created while the call connects).
         if currentIntent == nil, let starting { _ = try await starting.value }
         if let handoffReason, !tool.isHandoff {
@@ -384,7 +407,8 @@ final class VoiceClaimToolbox {
             }
             let leaves = VoiceStepAdapter.leavesPlaybooks(content: intent.currentStep.content, optionId: optionId)
             let result = try await service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
-            record(intent, answer: model.options.first { $0.id == optionId }?.title ?? optionId)
+            let label = model.options.first { $0.id == optionId }?.title ?? optionId
+            record(intent, answer: label, replay: .select(optionId))
             let next = try await adopt(result)
             guard leaves else { return .step(next) }
             let reason = "this kind of claim has its own questions in the chat"
@@ -395,13 +419,19 @@ final class VoiceClaimToolbox {
             let intent = try currentIntent(matching: stepId)
             guard case let .form(model) = intent.currentStep.content else { throw wrongKind(intent) }
             let result = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
-            record(intent, answer: describe(fields, in: model))
+            record(intent, answer: describe(fields, in: model), replay: .form(fields))
             return .step(try await adopt(result))
 
         case let .answerFreeText(stepId, agentWords):
             let intent = try currentIntent(matching: stepId)
             guard case let .audioRecording(model) = intent.currentStep.content else { throw wrongKind(intent) }
-            let words = String(memberWords(fallback: agentWords).prefix(model.freeTextMaxLength))
+            var words = String(memberWords(fallback: agentWords).prefix(model.freeTextMaxLength))
+            // An earlier answer that was cleared by going back is the member's own words too.
+            let agentText = agentWords.trimmingCharacters(in: .whitespacesAndNewlines)
+            if words.isEmpty, let earlier = cleared.firstIndex(where: { $0.replay == .freeText(agentText) }) {
+                words = agentText
+                cleared.remove(at: earlier)
+            }
             guard !words.isEmpty else {
                 throw VoiceTool.InvalidCall(
                     message: """
@@ -411,7 +441,7 @@ final class VoiceClaimToolbox {
                 )
             }
             let result = try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
-            record(intent, answer: words)
+            record(intent, answer: words, replay: .freeText(words))
             let next = try await adopt(result)
             hasAnsweredFreeText = true
             return .step(next)
@@ -424,7 +454,9 @@ final class VoiceClaimToolbox {
         case let .acknowledgeNotice(stepId):
             let intent = try currentIntent(matching: stepId)
             guard case .information = intent.currentStep.content else { throw wrongKind(intent) }
-            return .step(try await adopt(try await service.claimIntentSubmitInformation(stepId: stepId)))
+            let result = try await service.claimIntentSubmitInformation(stepId: stepId)
+            record(intent, answer: "(heard)", replay: .notice)
+            return .step(try await adopt(result))
 
         case let .skipStep(stepId):
             let intent = try currentIntent(matching: stepId)
@@ -432,7 +464,7 @@ final class VoiceClaimToolbox {
                 throw VoiceTool.InvalidCall(message: "This step can't be skipped; the member needs to answer it.")
             }
             let result = try await service.claimIntentSkipStep(stepId: stepId)
-            record(intent, answer: "(skipped: the member didn't know or didn't have it)")
+            record(intent, answer: "(skipped: the member didn't know or didn't have it)", replay: .skip)
             return .step(try await adopt(result))
 
         case let .requestPhotos(stepId):
@@ -465,7 +497,7 @@ final class VoiceClaimToolbox {
             return .waiting("Handing over to the chat. Don't say anything more.")
 
         case let .goBack(stepId):
-            guard let stepId else { return .answers(answered) }
+            guard let stepId else { return .answers(answered.filter(\.isAnswer)) }
             return .step(try await goBack(to: stepId))
         }
     }
@@ -475,7 +507,7 @@ final class VoiceClaimToolbox {
     /// Goes back to an answered step so the member can change it, the way the chat's edit button does: the engine
     /// (regret) makes that step current again and drops every answer after it, which it then asks again.
     private func goBack(to stepId: String) async throws -> VoiceStepPayload {
-        guard let index = answered.firstIndex(where: { $0.stepId == stepId }) else {
+        guard let index = answered.firstIndex(where: { $0.stepId == stepId && $0.isAnswer }) else {
             throw VoiceTool.InvalidCall(
                 message: "That isn't one of the member's answers. Call go_back without a step_id to get the list."
             )
@@ -491,6 +523,8 @@ final class VoiceClaimToolbox {
         guard case let .intent(model)? = try await service.claimIntentRegretStep(stepId: stepId) else {
             throw ClaimIntentError.invalidResponse
         }
+        // The answers after it are sent again as the engine asks for them; the one being changed is the member's.
+        cleared = Array(answered[(index + 1)...])
         answered.removeSubrange(index...)
         // Only what the member says from here on answers the step again, never the request to change it. That
         // holds for the description too, so its new answer is what they say next, not the whole call.
@@ -500,26 +534,97 @@ final class VoiceClaimToolbox {
         var payload = try currentPayload(after: try await advancingTasks(model))
         guard payload.status == .step else { return payload }
         payload.instruction = """
-            You've gone back to this question, and the answers after it were cleared. If the member already said what \
-            it should be, save that right away; otherwise ask for it. For a free-text question, ask them to say the \
-            whole answer again, since it replaces the old one. Then carry on: Hedvig asks the later questions again, \
-            and you answer each one straight away from what the member already told you, without asking or \
-            confirming it again, unless the change affects it. Never mention steps, going back or clearing anything.
+            This is the question whose answer the member wants to change. If they already said what it should be, \
+            save that right away; otherwise ask for it. For a free-text question, ask them to say the whole answer \
+            again, since it replaces the old one. Everything else they told you is kept: the app fills it in again \
+            by itself, so never ask for it again. Never mention steps, going back or clearing anything.
 
             """ + payload.instruction
         return payload
     }
 
-    /// Keeps the answer the member gave to this step, for `go_back`. Answering a step again replaces it.
-    private func record(_ intent: ClaimIntent, answer: String) {
+    /// Sends the cleared answers again, in order, for as long as the engine asks the same questions, so the member
+    /// never hears them twice. Stops at the first question it has no earlier answer for and hands that to the agent,
+    /// with whatever earlier answers are left for it to reuse.
+    func replayingCleared(_ payload: VoiceStepPayload) async throws -> VoiceStepPayload {
+        var payload = payload
+        while !cleared.isEmpty, payload.status == .step, let intent = currentIntent {
+            let question = VoiceStepAdapter.payload(for: intent, policies: policies)
+            let asked = { (earlier: AnsweredStep) in
+                earlier.kind == question.kind && earlier.question == question.question
+            }
+            guard let index = cleared.firstIndex(where: asked) else { break }
+            let earlier = cleared.remove(at: index)
+            guard let result = try? await send(earlier.replay, to: intent) else {
+                cleared.insert(earlier, at: index)
+                break
+            }
+            record(intent, answer: earlier.answer, replay: earlier.replay)
+            payload = try await adopt(result, waitFully: true)
+        }
+        guard payload.status == .step, !cleared.isEmpty else {
+            if payload.status != .step { cleared = [] }
+            return payload
+        }
+        let earlier = cleared.filter(\.isAnswer).map { "- \($0.question ?? "") → \($0.answer)" }
+        if earlier.isEmpty {
+            cleared = []
+            return payload
+        }
+        payload.instruction += """
+
+
+            The member already answered these before changing an earlier answer:
+            \(earlier.joined(separator: "\n"))
+            If this question is one of them, answer it from there straight away without asking (for free text, send \
+            that answer's words exactly as member_words). Only ask if it's something they haven't told you.
+            """
+        return payload
+    }
+
+    /// Sends one earlier answer to the step the engine is asking now.
+    private func send(_ replay: AnsweredStep.Replay, to intent: ClaimIntent) async throws -> ClaimIntentType? {
         let stepId = intent.currentStep.id
+        switch replay {
+        case let .select(optionId):
+            return try await service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
+        case let .form(fields):
+            return try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
+        case let .freeText(words):
+            return try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
+        case .skip:
+            guard intent.isSkippable else { return nil }
+            return try await service.claimIntentSkipStep(stepId: stepId)
+        case .notice:
+            return try await service.claimIntentSubmitInformation(stepId: stepId)
+        case let .files(fileIds):
+            return try await service.claimIntentSubmitFile(stepId: stepId, fileIds: fileIds)
+        }
+    }
+
+    /// The member added photos or documents in the picker the app opened for this step.
+    func recordUpload(for intent: ClaimIntent, fileIds: [String]) {
+        let count = fileIds.count
+        guard count > 0 else {
+            record(intent, answer: "(skipped: no files added)", replay: .skip)
+            return
+        }
+        record(intent, answer: count == 1 ? "1 file added" : "\(count) files added", replay: .files(fileIds))
+    }
+
+    /// Keeps the answer the member gave to this step, for `go_back`. Answering a step again replaces it.
+    private func record(_ intent: ClaimIntent, answer: String, replay: AnsweredStep.Replay) {
+        let stepId = intent.currentStep.id
+        let payload = VoiceStepAdapter.payload(for: intent, policies: policies)
         answered.removeAll { $0.stepId == stepId }
         answered.append(
             AnsweredStep(
                 stepId: stepId,
-                question: VoiceStepAdapter.payload(for: intent, policies: policies).question,
+                question: payload.question,
                 answer: answer,
-                canChange: intent.isRegrettable
+                canChange: intent.isRegrettable,
+                kind: payload.kind,
+                replay: replay
             )
         )
     }
@@ -621,7 +726,8 @@ final class VoiceClaimToolbox {
             return {
                 let leaves = VoiceStepAdapter.leavesPlaybooks(content: intent.currentStep.content, optionId: optionId)
                 let result = try await self.service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
-                self.record(intent, answer: model.options.first { $0.id == optionId }?.title ?? optionId)
+                let label = model.options.first { $0.id == optionId }?.title ?? optionId
+                self.record(intent, answer: label, replay: .select(optionId))
                 let next = try await self.adopt(result, waitFully: true)
                 guard leaves else { return next }
                 let reason = "this kind of claim has its own questions in the chat"
@@ -633,7 +739,7 @@ final class VoiceClaimToolbox {
             guard !hasAnsweredFreeText, !words.isEmpty else { return nil }
             return {
                 let result = try await self.service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
-                self.record(intent, answer: words)
+                self.record(intent, answer: words, replay: .freeText(words))
                 let next = try await self.adopt(result, waitFully: true)
                 self.hasAnsweredFreeText = true
                 return next
@@ -657,7 +763,7 @@ final class VoiceClaimToolbox {
             return {
                 let fields = values.compactMap { $0 }
                 let result = try await self.service.claimIntentSubmitForm(fields: fields, stepId: stepId)
-                self.record(intent, answer: self.describe(fields, in: model))
+                self.record(intent, answer: self.describe(fields, in: model), replay: .form(fields))
                 return try await self.adopt(result, waitFully: true)
             }
         default:
@@ -817,6 +923,11 @@ private struct WaitForMember: LocalizedError {
 extension VoiceTool {
     fileprivate var isHandoff: Bool {
         if case .handOffToChat = self { return true }
+        return false
+    }
+
+    fileprivate var isGoBack: Bool {
+        if case .goBack = self { return true }
         return false
     }
 

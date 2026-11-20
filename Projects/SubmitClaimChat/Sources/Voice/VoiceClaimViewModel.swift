@@ -213,8 +213,8 @@ final class VoiceClaimViewModel {
             await sendWhenQuiet(
                 """
                 [APP] The member just picked \(count) \(count == 1 ? "file" : "files") and it's uploading now. \
-                Acknowledge it warmly in a few words (thank them). Don't ask anything yet: the next step arrives in \
-                another [APP] message in a moment.
+                Thank them warmly in a few words, and nothing more: no question, and nothing about waiting or \
+                anything coming through. The next step arrives in another [APP] message in a moment.
                 """
             )
         }
@@ -258,11 +258,14 @@ final class VoiceClaimViewModel {
         case let .outcome(model): result = .outcome(model: model)
         case .regret, .removeStep: return
         }
+        if let upload = uploadStep, upload.state.isStepExecuted {
+            toolbox.recordUpload(for: upload.claimIntent, fileIds: upload.submittedFileIds)
+        }
         uploadStep = nil
         summaryStep = nil
         Task {
             do {
-                let next = try await toolbox.adopt(result)
+                let next = try await toolbox.replayingCleared(try await toolbox.adopt(result))
                 guard next.status != .done else { return }  // toolboxDidFinish handles the goodbye
                 toolbox.delivered(next)
                 await sendWhenQuiet(
