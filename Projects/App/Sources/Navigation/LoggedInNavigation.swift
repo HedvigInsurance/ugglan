@@ -60,7 +60,7 @@ class PushNotificationHandler {
             Task { await handleAddon(type: .travelPlus, contractId: nil) }
         case .ADDON_CAR_PLUS:
             Task { await handleAddon(type: .carPlus, contractId: nil) }
-        case .OPEN_CLAIM, .CLAIM_CLOSED:
+        case .OPEN_CLAIM, .CLAIM_CLOSED, .CLAIM_FOLLOWUP, .CLAIM_TASK_REMINDER:
             handleClaimNotification(notification)
         case .INSURANCE_EVIDENCE:
             handleInsuranceEvidence()

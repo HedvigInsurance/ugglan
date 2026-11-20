@@ -152,6 +152,8 @@ enum PushNotificationType: String {
     case ADDON_TRAVEL
     case ADDON_CAR_PLUS
     case CLAIM_CLOSED
+    case CLAIM_FOLLOWUP
+    case CLAIM_TASK_REMINDER
     case OPEN_CLAIM
     case INSURANCE_EVIDENCE
     case TRAVEL_CERTIFICATE
