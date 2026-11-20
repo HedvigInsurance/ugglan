@@ -94,8 +94,10 @@ members. With either missing, the honesty pledge shows the normal Continue butto
 5. Upload and summary steps open the existing views over the orb. When the member finishes, the app tells the agent
    with an `[APP] …` message. The member taps submit; the agent says goodbye; the success screen shows.
 6. Everything the member says is the agent's memory for the whole call: every question it already answers is
-   answered from there without asking (with at most a generic "just making sure everything's in place"), and only
-   the rest is asked. For free text the app accepts the agent's wording only when it's the member's own: every number
+   answered from there without asking, and only the rest is asked. The app paces the working lines: it counts the
+   answers saved since the member last spoke and ends each step's instruction with a "Working line" hint, silence
+   before the first one from memory and a generic line ("just making sure everything's in place") before every
+   other one, with the typing sound in between. For free text the app accepts the agent's wording only when it's the member's own: every number
    and most of the words were said by the member at some point in the call.
 7. When the member says an earlier answer is wrong (the agent misheard), the agent calls `go_back` for the list of
    answers, then `go_back` with the step to change. That's the chat's edit button (`claimIntentRegretStep`): the

@@ -783,6 +783,74 @@ extension SubmitClaimChatDependencySuite {
         }
 
         @Test
+        func anEngineFailureIsReportedOnceThenTheEngineIsAskedAgain() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.yesNo)
+            client.selectChain = [VoiceFixtures.task(completed: false)]
+            client.failingNextStepPolls = 1
+            client.nextStepPolls = [VoiceFixtures.task(completed: true)]
+            client.nextAfterTask = VoiceFixtures.notice
+            let toolbox = makeToolbox(client, answerWait: .seconds(1))
+            _ = try await toolbox.start()
+
+            let failed = try json(
+                await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+            )
+            let recovered = try json(await toolbox.handle(toolName: "get_current_step", parameters: [:]))
+
+            #expect(failed["status"] as? String == "error")
+            #expect(recovered["kind"] as? String == "notice")
+        }
+
+        @Test
+        func handingOverWorksWhileTheEngineIsFailing() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.yesNo)
+            client.selectChain = [VoiceFixtures.task(completed: false)]
+            client.holdNextStep = true
+            let toolbox = makeToolbox(client, answerWait: .milliseconds(20))
+            let delegate = ToolboxDelegateSpy()
+            toolbox.delegate = delegate
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+
+            // The engine never answers; handing over mustn't wait for it.
+            let result = try json(await toolbox.handle(toolName: "hand_off_to_chat", parameters: ["reason": "stuck"]))
+            client.holdNextStep = false
+
+            #expect(result["status"] as? String == "waiting")
+            #expect(delegate.handedOff)
+        }
+
+        @Test
+        func workingLinesComeEveryOtherAnswerFromMemory() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.description)
+            client.nextAfterAudio = VoiceFixtures.spoiledFood
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("My fridge stopped cooling and about 2,500 kronor of food spoiled.")
+
+            let afterTheirAnswer = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+                )
+            )
+            let afterOneFromMemory = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "spoiled-food", "member_words": "About 2,500 kronor of food spoiled."]
+                )
+            )
+
+            let silent = try #require(afterTheirAnswer["instruction"] as? String)
+            let speak = try #require(afterOneFromMemory["instruction"] as? String)
+            #expect(silent.contains("Working line: if you answer this one from memory, say nothing"))
+            #expect(speak.contains("Working line: if you answer this one from memory, first say one short"))
+        }
+
+        @Test
         func aSelectAnswerToTheInsuranceFormIsTakenAsTheForm() async throws {
             defer { cleanUp() }
             let client = MockVoiceClaimIntentClient(start: VoiceFixtures.insurancePicker)
@@ -1124,6 +1192,8 @@ final class MockVoiceClaimIntentClient: ClaimIntentClient {
     var nextStepPolls: [ClaimIntent] = []
     /// While true, getNextStep waits: the engine is "still thinking".
     var holdNextStep = false
+    /// How many of the next getNextStep calls fail, like the engine's "We were unable to load this information".
+    var failingNextStepPolls = 0
     private let start: ClaimIntent
 
     init(start: ClaimIntent) {
@@ -1187,6 +1257,10 @@ final class MockVoiceClaimIntentClient: ClaimIntentClient {
     func getNextStep(claimIntentId _: String) async throws -> ClaimIntentType? {
         while holdNextStep { try await Task.sleep(for: .milliseconds(10)) }
         events.append(.getNextStep)
+        if failingNextStepPolls > 0 {
+            failingNextStepPolls -= 1
+            throw ClaimIntentError.error(message: "We were unable to load this information.")
+        }
         return nextStepPolls.isEmpty ? nil : nextStepPolls.removeFirst().asType
     }
 
@@ -1209,10 +1283,11 @@ extension ClaimIntent {
 @MainActor
 final class ToolboxDelegateSpy: VoiceClaimToolboxDelegate {
     var wentBack = false
+    var handedOff = false
 
     func toolboxRequestsPhotos(for _: ClaimIntent) {}
     func toolboxRequestsSummary(for _: ClaimIntent) {}
-    func toolboxRequestsHandoff(reason _: String) {}
+    func toolboxRequestsHandoff(reason _: String) { handedOff = true }
     func toolboxDidFinish(outcome _: ClaimIntentStepOutcome) {}
     func toolboxWentBack() { wentBack = true }
 }

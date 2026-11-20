@@ -312,7 +312,12 @@ final class VoiceClaimToolbox {
         guard trimmed.contains(where: \.isLetter) || trimmed.contains(where: \.isNumber) else { return }
         memberUtterances.append(trimmed)
         hasOpenQuestion = false
+        answersSinceMemberSpoke = 0
     }
+
+    /// Answers saved since the member last spoke: the first is usually what they just said, the rest come from the
+    /// agent's memory of the call. Paces the agent's working lines (see `paced`).
+    private var answersSinceMemberSpoke = 0
 
     /// The agent said this (an agent response). A question means the next move is the member's.
     func recordAgentUtterance(_ text: String) {
@@ -324,8 +329,13 @@ final class VoiceClaimToolbox {
     func handle(toolName: String, parameters: [String: Any]) async -> String {
         do {
             let tool = try VoiceTool(name: toolName, parameters: parameters)
-            let result = try await run(tool)
-            if case let .step(payload) = result { delivered(payload) }
+            var result = try await run(tool)
+            if tool.answersAStep || tool.isNoteStory { answersSinceMemberSpoke += 1 }
+            if case let .step(payload) = result {
+                let next = paced(payload)
+                delivered(next)
+                result = .step(next)
+            }
             return result.json()
         } catch {
             // Waiting for the member carries no step: handed the step again, the agent repeats what it just said.
@@ -351,6 +361,8 @@ final class VoiceClaimToolbox {
     }
 
     private func runTool(_ tool: VoiceTool) async throws -> VoiceToolResult {
+        // Handing over is the way out when the engine fails, so nothing the engine does may stand in its way.
+        if case let .handOffToChat(reason) = tool { return handOff(reason: reason) }
         // The agent can only reach the engine once the claim exists (it's created while the call connects).
         if currentIntent == nil, let starting { _ = try await starting.value }
         if let handoffReason, !tool.isHandoff {
@@ -386,6 +398,16 @@ final class VoiceClaimToolbox {
                     to confirm it; then call note_story with what it settles (it answers the opening steps itself).
                     """
                 )
+            }
+            // Still on the engine's thinking step: its turn failed or was never finished, so ask the engine again
+            // instead of handing back what was last known.
+            if let intent = currentIntent, case .task = intent.currentStep.content {
+                let advance = Task { try await self.advancingTasks(intent) }
+                pendingAdvance = advance
+                guard let next = try await finished(advance, within: fillerGap) else {
+                    return .step(.processing(again: true))
+                }
+                return .step(try currentPayload(after: next))
             }
             if let intent = currentIntent, intent.currentStep.id == deliveredStepId,
                 memberUtterances.count == utterancesAtDelivery
@@ -533,13 +555,45 @@ final class VoiceClaimToolbox {
             )
 
         case let .handOffToChat(reason):
-            delegate?.toolboxRequestsHandoff(reason: handoffReason ?? reason)
-            return .waiting("Handing over to the chat. Don't say anything more.")
+            return handOff(reason: reason)
 
         case let .goBack(stepId):
             guard let stepId else { return .answers(answered.filter(\.isAnswer)) }
             return .step(try await goBack(to: stepId))
         }
+    }
+
+    /// When the agent works through questions from memory, each one's save plays the typing sound. Left to itself
+    /// the model either spoke before every one or not at all, so the app says which: nothing before the first one,
+    /// then a short generic line before every other one, typing in between.
+    func paced(_ payload: VoiceStepPayload) -> VoiceStepPayload {
+        let answerable: Set<VoiceStepPayload.Kind> = [.select, .form, .freeText]
+        guard payload.status == .step, answerable.contains(payload.kind), answersSinceMemberSpoke >= 1 else {
+            return payload
+        }
+        var paced = payload
+        let speak = answersSinceMemberSpoke % 2 == 0
+        paced.instruction +=
+            speak
+            ? """
+
+
+            Working line: if you answer this one from memory, first say one short, generic working line, worded \
+            differently from any before ("just making sure everything's in place", "going through what we've \
+            talked about", "bear with me while I put this together"), then answer it. If you have to ask, just ask.
+            """
+            : """
+
+
+            Working line: if you answer this one from memory, say nothing before it; the typing sound plays while \
+            it's saved. If you have to ask, just ask.
+            """
+        return paced
+    }
+
+    private func handOff(reason: String) -> VoiceToolResult {
+        delegate?.toolboxRequestsHandoff(reason: handoffReason ?? reason)
+        return .waiting("Handing over to the chat. Don't say anything more.")
     }
 
     // MARK: - Changing an answer
@@ -616,11 +670,10 @@ final class VoiceClaimToolbox {
             \(earlier.joined(separator: "\n"))
             Hedvig may word a question differently this time. If one of these (or anything else they said in this \
             call) answers what's being asked now, however it's worded, answer it from there straight away without \
-            asking (for free text, send that answer's words as member_words). You're working through your notes \
-            and the typing sound does the talking: mostly say nothing, and only now and then one short generic \
-            line ("just making sure everything's in place"), never two in a row, never what the question or answer \
-            is and never that you already have it. Only ask if nothing they've said answers it, or if the change \
-            they just made affects it.
+            asking (for free text, send that answer's words as member_words). You're working through your notes: \
+            follow the working-line hint below, never say what the question or answer is and never that you \
+            already have it. Only ask if nothing they've said answers it, or if the change they just made affects \
+            it.
             """
         return payload
     }
@@ -739,8 +792,10 @@ final class VoiceClaimToolbox {
             // The engine is thinking. Give it a moment; if it needs longer, hand the pause to the agent.
             let advance = Task { try await self.advancingTasks(model) }
             pendingAdvance = advance
+            // Until the engine is done, its thinking step is where the claim is, also if the engine fails: then
+            // get_current_step asks it again from there instead of handing back the step just answered.
+            currentIntent = model
             guard let intent = try await finished(advance, within: answerWait) else {
-                currentIntent = model
                 return .processing(again: false)
             }
             return try currentPayload(after: intent)
@@ -894,15 +949,23 @@ final class VoiceClaimToolbox {
     /// either happens: a task group would wait for the engine's child too, which is exactly what this avoids.
     private func finished(_ advance: Task<ClaimIntent, Error>, within timeout: Duration) async throws -> ClaimIntent? {
         let race = FirstResult<ClaimIntent?>()
-        let result = try await withCheckedThrowingContinuation { continuation in
-            race.continuation = continuation
-            Task { @MainActor in
-                do { race.finish(.success(try await advance.value)) } catch { race.finish(.failure(error)) }
+        let result: ClaimIntent?
+        do {
+            result = try await withCheckedThrowingContinuation { continuation in
+                race.continuation = continuation
+                Task { @MainActor in
+                    do { race.finish(.success(try await advance.value)) } catch { race.finish(.failure(error)) }
+                }
+                Task { @MainActor in
+                    try? await Task.sleep(for: timeout)
+                    race.finish(.success(nil))
+                }
             }
-            Task { @MainActor in
-                try? await Task.sleep(for: timeout)
-                race.finish(.success(nil))
-            }
+        } catch {
+            // A failed engine turn is reported once, then forgotten: kept, it failed every later tool call at once,
+            // hand-off included, and the call was stuck. The next get_current_step asks the engine again.
+            if pendingAdvance == advance { pendingAdvance = nil }
+            throw error
         }
         if result != nil, pendingAdvance == advance { pendingAdvance = nil }
         return result
