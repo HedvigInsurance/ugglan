@@ -140,6 +140,7 @@ final class PowerOfAttorneySigningViewModel {
     var statusText: String?
     let hasBankIdApp: Bool
     @ObservationIgnored private var autoStartToken: String?
+    /// BankID is opened automatically only for the first sign order, not for retries
     @ObservationIgnored private var hasAlreadyOpenedBankId = false
     @ObservationIgnored private var signingTask: Task<Void, Never>?
     @ObservationIgnored private let service = PowerOfAttorneyService()
@@ -161,8 +162,8 @@ final class PowerOfAttorneySigningViewModel {
         case .failed:
             break
         }
+        // `hasAlreadyOpenedBankId` is kept: a retry only shows the new QR code, BankID is opened from the button
         autoStartToken = nil
-        hasAlreadyOpenedBankId = false
         qrCode = nil
         statusText = nil
         withAnimation { state = .loading }

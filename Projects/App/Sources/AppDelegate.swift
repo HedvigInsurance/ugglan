@@ -61,10 +61,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         clearData()
     }
 
-    /// After the session was swapped for another one without logging out (switching back from a power of attorney):
-    /// drops everything the previous session left behind, like a logout does.
+    /// After the session was swapped for another one (switching to or back from a power of attorney): logs the previous
+    /// session out of the app, dropping everything it left behind like a logout does, but keeps the new session's
+    /// tokens. Push notifications are registered again for the new session when it starts.
     func clearDataForSwitchedSession() {
         cancellables.removeAll()
+        UIApplication.shared.unregisterForRemoteNotifications()
         clearData()
     }
 

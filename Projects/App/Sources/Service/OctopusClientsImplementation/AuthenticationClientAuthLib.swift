@@ -201,12 +201,10 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             case _ as LoginStatusResultException:
                 throw AuthenticationError.loginFailure(message: nil)
             case let completed as LoginStatusResultCompleted:
-                try await exchange(
-                    code: completed.authorizationCode.code,
-                    keepingSavedSession: isPowerOfAttorneyLogin
-                )
                 if isPowerOfAttorneyLogin {
-                    try await storePowerOfAttorney()
+                    try await completePowerOfAttorneyLogin(code: completed.authorizationCode.code)
+                } else {
+                    try await exchange(code: completed.authorizationCode.code, keepingSavedSession: false)
                 }
                 updateStatusTo(.completed)
                 return
@@ -258,6 +256,43 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 throw error
             }
             throw AuthenticationError.loginFailure(message: nil)
+        }
+    }
+
+    /// Swaps the current session for the power of attorney one. It can be started logged in, so the member's own
+    /// session is saved to switch back to first, and it's only replaced once the new one is known to work: if anything
+    /// fails, the session that was there before stays.
+    private func completePowerOfAttorneyLogin(code: String) async throws {
+        let previousToken = try? await ApolloClient.retreiveToken()
+        let previousPowerOfAttorney = await getPowerOfAttorney()
+        await saveSessionForSwitchBack()
+        do {
+            try await exchange(code: code, keepingSavedSession: true)
+        } catch {
+            if let previousPowerOfAttorney {
+                KeychainHelper.standard.save(previousPowerOfAttorney, key: Self.powerOfAttorneyKey)
+            }
+            throw error
+        }
+        do {
+            try await storePowerOfAttorney()
+        } catch {
+            if let newToken = try? await ApolloClient.retreiveToken() {
+                try? await revoke(refreshToken: newToken.refreshToken)
+            }
+            if let previousToken {
+                ApolloClient.saveToken(token: previousToken)
+                if let previousPowerOfAttorney {
+                    KeychainHelper.standard.save(previousPowerOfAttorney, key: Self.powerOfAttorneyKey)
+                }
+            } else {
+                await ApolloClient.deleteToken()
+            }
+            throw error
+        }
+        // Switching from one power of attorney session to another: the replaced one can't be returned to
+        if previousPowerOfAttorney != nil, let previousToken {
+            try? await revoke(refreshToken: previousToken.refreshToken)
         }
     }
 
@@ -345,8 +380,8 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
         try? await KeychainHelper.standard.read(key: Self.powerOfAttorneyKey, type: ActingPowerOfAttorney.self)
     }
 
-    /// Right after a power of attorney login: stores who logged in. If it can't be fetched the login fails (and its
-    /// tokens are dropped), so the app never opens without knowing what the person may see.
+    /// Right after a power of attorney login: stores who logged in. If it can't be fetched the login fails (and the
+    /// caller drops its tokens), so the app never opens without knowing what the person may see.
     private func storePowerOfAttorney() async throws {
         do {
             guard let powerOfAttorney = try await fetchCurrentPowerOfAttorney() else {
@@ -355,8 +390,6 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
             KeychainHelper.standard.save(powerOfAttorney, key: Self.powerOfAttorneyKey)
         } catch {
             log.error("Got Error when fetching the power of attorney after login", error: error, attributes: [:])
-            try? await logout(keepingSavedSession: true)
-            await ApolloClient.deleteToken()
             throw AuthenticationError.loginFailure(message: L10n.General.defaultError)
         }
     }

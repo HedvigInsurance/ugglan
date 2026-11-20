@@ -43,11 +43,10 @@ struct GreetingView: View {
 
     // TODO: Localize via Lokalise
     private func powerOfAttorneySubtitle(for powerOfAttorney: ActingPowerOfAttorney) -> String {
-        let level = powerOfAttorney.hasFullAccess ? "full" : "partial"
-        guard let firstName, !firstName.isEmpty else {
-            return "You are acting with \(level) power of attorney"
+        if let firstName {
+            return "You're acting on behalf of \(firstName)"
         }
-        return "You are acting with \(level) power of attorney for \(firstName)"
+        return ""
     }
 }
 
@@ -60,7 +59,7 @@ private struct SwitchBackToOwnAccountButton: View {
     var body: some View {
         if let switchBackToOwnAccount {
             // TODO: Localize via Lokalise
-            hButton(.medium, .secondary, content: .init(title: "Switch back to your account")) {
+            hButton(.medium, .secondary, content: .init(title: "Switch back to my account")) {
                 showAlert = true
             }
             .fixedSize(horizontal: false, vertical: true)

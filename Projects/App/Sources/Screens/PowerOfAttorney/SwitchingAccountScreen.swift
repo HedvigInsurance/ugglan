@@ -2,10 +2,24 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// Shown while the member goes back from a power of attorney session to their own.
+/// Shown while the session is swapped for another one: switching to a power of attorney, or back from one to the
+/// member's own account.
 struct SwitchingAccountScreen: View {
-    // TODO: Localize via Lokalise
-    private let message = "Switching back to your account"
+    let switchingTo: Destination
+
+    enum Destination {
+        case powerOfAttorney
+        case ownAccount
+
+        var message: String {
+            switch self {
+            // TODO: Localize via Lokalise
+            case .powerOfAttorney: "Switching account"
+            // TODO: Localize via Lokalise
+            case .ownAccount: "Switching back to your account"
+            }
+        }
+    }
 
     var body: some View {
         ZStack {
@@ -14,12 +28,17 @@ struct SwitchingAccountScreen: View {
                 .ignoresSafeArea()
                 .accessibilityHidden(true)
             hSection {
-                VStack {
+                VStack(spacing: .padding24) {
                     Spacer()
-                    hText(message)
+                    hCoreUIAssets.bigPillowBlack.view
+                        .resizable()
+                        .frame(width: 128, height: 128)
+                        .accessibilityHidden(true)
+                    hText(switchingTo.message)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
+                    Spacer()
                 }
                 .environment(\.colorScheme, .light)
             }
@@ -28,12 +47,12 @@ struct SwitchingAccountScreen: View {
         .onAppear {
             // Replaces the whole root in place behind an opacity transition, so the outgoing content is still in the
             // accessibility tree here. Passing the message makes VoiceOver read it instead of whatever it focuses first.
-            UIAccessibility.post(notification: .screenChanged, argument: message)
+            UIAccessibility.post(notification: .screenChanged, argument: switchingTo.message)
         }
         .trackViewName(name: .init(describing: SwitchingAccountScreen.self))
     }
 }
 
 #Preview {
-    SwitchingAccountScreen()
+    SwitchingAccountScreen(switchingTo: .powerOfAttorney)
 }

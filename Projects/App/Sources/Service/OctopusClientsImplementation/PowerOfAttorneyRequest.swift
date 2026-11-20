@@ -16,7 +16,8 @@ enum PowerOfAttorneyRequest {
     case revoke(id: String)
     /// `POST {pollUrl}`: the sign order's status. Unlike the login status call (GET), this poll is a POST.
     case poll(url: URL)
-    /// `POST /member-login`: starts a BankID login with the id from a power of attorney link. Sent logged out.
+    /// `POST /member-login`: starts a BankID login with the id from a power of attorney link. Public, so it can be sent
+    /// logged in too (switching to the power of attorney without logging out first).
     case memberLogin(powerOfAttorneyId: String)
     /// `GET /power-of-attorney/current`: the power of attorney the caller is logged in with. 404 for the member.
     case current

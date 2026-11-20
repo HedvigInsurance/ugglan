@@ -1,9 +1,11 @@
+import PowerOfAttorneyCore
 import SwiftUI
 import hCore
 import hCoreUI
 
-/// Handles a shared power of attorney link (`/poa?id=`). The link logs in the person it was granted to, so it only
-/// works logged out: when logged in, the member is asked to log out first and the login opens once they have.
+/// Handles a shared power of attorney link (`/poa?id=`). The link logs in the person it was granted to. Logged out, the
+/// login opens right away. Logged in, the member confirms the switch first; they stay logged in during the login, and
+/// only once it succeeds is their session swapped for the power of attorney one.
 @MainActor
 final class PowerOfAttorneyLinkCoordinator {
     private weak var mainVm: MainNavigationViewModel?
@@ -21,7 +23,10 @@ final class PowerOfAttorneyLinkCoordinator {
         } else {
             mainVm.whenShowing(mainVm.stateToShow, after: delay, storingIn: \.powerOfAttorneyLinkCancellable) {
                 [weak self] in
-                self?.confirmLogout(id: id)
+                Task { [weak self] in
+                    let name = await self?.granterName(forPowerOfAttorneyId: id)
+                    self?.confirmSwitch(id: id, name: name)
+                }
             }
         }
     }
@@ -34,8 +39,26 @@ final class PowerOfAttorneyLinkCoordinator {
         }
     }
 
+    /// The name of the member who granted the power of attorney. Whoever opens the link is the person it was granted
+    /// to, so it's among their received ones. `nil` when it can't be found in time (e.g. in a power of attorney session,
+    /// which can't list them), then the alert just doesn't name the account.
+    private func granterName(forPowerOfAttorneyId id: String) async -> String? {
+        let lookup = Task {
+            let received = try? await PowerOfAttorneyService().getReceivedPowerOfAttorneys()
+            return received?.first { $0.id == id }?.name
+        }
+        // The alert doesn't wait longer than this for the name: cancelling fails the request, so the lookup gives nil
+        let timeout = Task {
+            try? await Task.sleep(for: .seconds(2))
+            lookup.cancel()
+        }
+        let name = await lookup.value
+        timeout.cancel()
+        return name
+    }
+
     /// Presented with UIKit so it shows above any sheet presented with `.detent`, which a SwiftUI alert can't.
-    private func confirmLogout(id: String, name: String? = nil) {
+    private func confirmSwitch(id: String, name: String? = nil) {
         guard let presenter = UIApplication.shared.getTopViewController() else { return }
         let title: String = {
             if let name {
@@ -48,28 +71,16 @@ final class PowerOfAttorneyLinkCoordinator {
             // TODO: Localize via Lokalise
             title: title,
             // TODO: Localize via Lokalise
-            message: "You are logged in. To log in with this power of attorney link you need to log out first.",
+            message: name.map { "Log in with BankID to switch. You will be switched to \($0)'s account." }
+                ?? "Log in with BankID to switch account.",
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: L10n.logoutAlertActionCancel, style: .cancel))
         alert.addAction(
-            UIAlertAction(title: L10n.logoutAlertActionConfirm, style: .destructive) { [weak self] _ in
-                Task { [weak self] in
-                    await self?.switchToPowerOfAttorney(id: id)
-                }
+            UIAlertAction(title: L10n.generalContinueButton, style: .default) { [weak mainVm] _ in
+                mainVm?.startPowerOfAttorneySwitch(id: id)
             }
         )
         presenter.present(alert, animated: true)
-    }
-
-    /// Logs out, keeping the member's own session so they can switch back to it from home after the login.
-    private func switchToPowerOfAttorney(id: String) async {
-        guard let mainVm else { return }
-        await mainVm.authenticationService.saveSessionForSwitchBack()
-        mainVm.keepSavedSessionOnLogout = true
-        // Registered before logging out, so it waits for the logged out screen to show
-        openLoginWhenLoggedOut(id: id, after: 0.5)
-        ApplicationState.preserveState(.notLoggedIn)
-        ApplicationState.state = .notLoggedIn
     }
 }

@@ -1,5 +1,6 @@
 import AppStateContainer
 import AuthenticationCore
+import AuthenticationUI
 import Combine
 import ContractsCore
 import Forever
@@ -50,7 +51,30 @@ struct MainNavigation: App {
             .onChange(of: state) {
                 vm.state = state
             }
+            // On the root, so it stays presented while the logged in content is swapped for the switching screen
+            .detent(item: $vm.powerOfAttorneySwitchLogin, presentationStyle: .detent(style: [.large])) { login in
+                powerOfAttorneySwitchLogin(id: login.id)
+            }
         }
+    }
+
+    /// The power of attorney BankID login, started from a logged in session. The member stays logged in until it
+    /// completes, then the sessions are swapped.
+    private func powerOfAttorneySwitchLogin(id: String) -> some View {
+        BankIDLoginQRView(powerOfAttorneyId: id) { [weak vm] in
+            vm?.switchToPowerOfAttorney()
+        } onStartDemoMode: {
+        }
+        .withDismissButton()
+        .routerDestination(for: AuthenticationRouterType.self) { type in
+            if case let .error(message) = type {
+                LoginErrorView(message: message)
+            }
+        }
+        .embededInNavigation(
+            options: .extendedNavigationWidth,
+            tracking: String.init(describing: BankIDLoginQRView.self)
+        )
     }
 
     @ViewBuilder
@@ -61,8 +85,8 @@ struct MainNavigation: App {
         } else if featureFlags.isUpdateNecessary {
             UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
                 .trackViewName(name: .init(describing: UpdateAppScreen.self))
-        } else if vm.isSwitchingBackToOwnAccount {
-            SwitchingAccountScreen()
+        } else if let switchingAccount = vm.switchingAccount {
+            SwitchingAccountScreen(switchingTo: switchingAccount)
                 .transition(.opacity)
         } else if vm.hasLaunchFinished {
             loggedInContent
@@ -126,10 +150,10 @@ class MainNavigationViewModel {
     }
     /// Whether the member switched to a power of attorney from their own session and can return to it
     private(set) var canSwitchBackToOwnAccount = false
-    /// Shows the switching screen instead of the tabs while going back to the member's own session
-    private(set) var isSwitchingBackToOwnAccount = false
-    /// Set before logging out to switch to a power of attorney, so the member's saved session survives the logout
-    @ObservationIgnored var keepSavedSessionOnLogout = false
+    /// Shows the switching screen instead of the tabs while the session is swapped for another one
+    private(set) var switchingAccount: SwitchingAccountScreen.Destination?
+    /// The power of attorney login opened from a link while logged in
+    var powerOfAttorneySwitchLogin: NotLoggedViewModel.PowerOfAttorneyLogin?
     @ObservationIgnored let authenticationService = AuthenticationService()
 
     @ObservationIgnored @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -142,8 +166,7 @@ class MainNavigationViewModel {
                     await startLoggedInSession()
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
-                    let keepSavedSession = keepSavedSessionOnLogout
-                    keepSavedSessionOnLogout = false
+                    powerOfAttorneySwitchLogin = nil
                     powerOfAttorney = nil
                     canSwitchBackToOwnAccount = false
                     notLoggedInVm = .init()
@@ -157,7 +180,7 @@ class MainNavigationViewModel {
                     // Run in a detached Task so the view switch happens immediately
                     // while the auth network logout completes in the background.
                     Task {
-                        await self.appDelegate.logout(keepingSavedSession: keepSavedSession)
+                        await self.appDelegate.logout()
                         self.loggedInVm = .init()
                         // logout reset the feature flags store, so the fresh one needs its own client; the profile
                         // store is empty now, so the flags and experiments are no longer the member's
@@ -195,19 +218,48 @@ class MainNavigationViewModel {
         }
     }
 
+    /// Opens the power of attorney login from a link while logged in. The member stays logged in until it completes.
+    func startPowerOfAttorneySwitch(id: String) {
+        powerOfAttorneySwitchLogin = .init(id: id)
+    }
+
+    /// The power of attorney login completed and its session replaced the previous one: drops what that session left
+    /// behind and starts the new one.
+    func switchToPowerOfAttorney() {
+        powerOfAttorneySwitchLogin = nil
+        switchSession(to: .powerOfAttorney) { true }
+    }
+
     /// Ends the power of attorney session and goes back to the member's own, without logging in again.
     func switchBackToOwnAccount() {
-        guard !isSwitchingBackToOwnAccount else { return }
+        switchSession(to: .ownAccount) { [authenticationService] in
+            await authenticationService.restoreSavedSession()
+        }
+    }
+
+    /// Shows the switching screen while `swapSession` replaces the current session, then starts the new one.
+    /// `swapSession` returns `false` when the session stayed as it was.
+    private func switchSession(
+        to destination: SwitchingAccountScreen.Destination,
+        swapSession: @escaping () async -> Bool
+    ) {
+        guard switchingAccount == nil else { return }
         Task {
-            // Tear down the power of attorney session's views before its stores are dropped
+            // Tear down the previous session's views before its stores are dropped
             withAnimation {
-                isSwitchingBackToOwnAccount = true
+                switchingAccount = destination
                 hasLaunchFinished = false
             }
             // The switching screen stays up at least this long, even when the switch finishes sooner
             let minimumDisplay = Task { try? await Task.sleep(for: .seconds(3)) }
-            if await authenticationService.restoreSavedSession() {
+            if await swapSession() {
+                // Logged out of the previous session while the switching screen is up, so none of its data survives
+                await ApplicationContext.shared.setValue(to: false)
+                powerOfAttorney = nil
+                canSwitchBackToOwnAccount = false
+                notLoggedInVm = .init()
                 analyticsService.clearUserId()
+                analyticsService = AnalyticsService()
                 appDelegate.clearDataForSwitchedSession()
                 // Recreated only after the container reset, see the `.notLoggedIn` case
                 loggedInVm = .init()
@@ -219,7 +271,7 @@ class MainNavigationViewModel {
             }
             await minimumDisplay.value
             withAnimation {
-                isSwitchingBackToOwnAccount = false
+                switchingAccount = nil
             }
         }
     }

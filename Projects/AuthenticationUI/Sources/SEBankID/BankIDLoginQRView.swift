@@ -12,8 +12,14 @@ public struct BankIDLoginQRView: View {
 
     /// - Parameter powerOfAttorneyId: Id from a power of attorney link. When set, the person named in that power of
     ///   attorney logs in to the member's account (no email login or demo mode).
-    public init(powerOfAttorneyId: String? = nil, onStartDemoMode: @escaping () async -> Void) {
-        _vm = State(initialValue: BankIDViewModel(powerOfAttorneyId: powerOfAttorneyId))
+    /// - Parameter onCompleted: Called once the login completed, instead of moving the app to the logged in state. For
+    ///   a login started while already logged in (switching to a power of attorney), where the caller swaps sessions.
+    public init(
+        powerOfAttorneyId: String? = nil,
+        onCompleted: (() -> Void)? = nil,
+        onStartDemoMode: @escaping () async -> Void
+    ) {
+        _vm = State(initialValue: BankIDViewModel(powerOfAttorneyId: powerOfAttorneyId, onCompleted: onCompleted))
         self.onStartDemoMode = onStartDemoMode
     }
 
@@ -140,12 +146,14 @@ class BankIDViewModel {
     var isLoading = true
     var hasAlreadyOpenedBankId = false
     let powerOfAttorneyId: String?
+    @ObservationIgnored private let onCompleted: (() -> Void)?
     @ObservationIgnored private var seBankIdState: SEBankIDState = .init()
     @ObservationIgnored var authenticationService = AuthenticationService()
     @ObservationIgnored private var observeLoginTask: AnyCancellable?
     @ObservationIgnored var router: NavigationRouter?
-    init(powerOfAttorneyId: String? = nil) {
+    init(powerOfAttorneyId: String? = nil, onCompleted: (() -> Void)? = nil) {
         self.powerOfAttorneyId = powerOfAttorneyId
+        self.onCompleted = onCompleted
         hasBankIdApp = BankIDApp.isInstalled
     }
 
@@ -162,8 +170,12 @@ class BankIDViewModel {
                                 case let .pending(qrCode):
                                     self?.set(qrData: qrCode)
                                 case .completed:
-                                    ApplicationState.preserveState(.loggedIn)
-                                    ApplicationState.state = .loggedIn
+                                    if let onCompleted = self?.onCompleted {
+                                        onCompleted()
+                                    } else {
+                                        ApplicationState.preserveState(.loggedIn)
+                                        ApplicationState.state = .loggedIn
+                                    }
                                     self?.router?.dismiss()
                                 }
                             }
