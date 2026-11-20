@@ -8,6 +8,13 @@ function copyFramework() {
     cp -rf "${CONFIGURATION_BUILD_DIR}/"$1.framework "${APP_BUNDLE}/Frameworks/"$1.framework
 }
 copyFramework RiveRuntime
+# The voice claim POC's ElevenLabs SDK runs on LiveKit, whose WebRTC and Rust FFI ship as binary frameworks Tuist
+# doesn't embed.
+for framework in LiveKitWebRTC RustLiveKitFFI; do
+    if [ -d "${CONFIGURATION_BUILD_DIR}/${framework}.framework" ]; then
+        copyFramework "$framework"
+    fi
+done
 
 # Remove HedvigShared.framework. `:umbrella` is isStatic=true; its Kotlin symbols
 # are already statically linked into AppDependencies.framework, and nothing has

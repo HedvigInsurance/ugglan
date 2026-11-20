@@ -373,6 +373,15 @@
           ],
         },
         { "path": "<PRODUCTS>/Ugglan.app", "id": "44BBDDB33CB1A432E5E18006", "type": "wrapper.application", "index": false },
+        {
+          "path": "<PRODUCTS>/VoiceDependencies.framework",
+          "type": "wrapper.framework",
+          "index": false,
+          "target-membership": [
+            { "build-phase": "Hedvig/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+            { "build-phase": "Ugglan/copy/Embed Frameworks", "code-sign-on-copy": true, "header-preservation": "remove-on-copy" },
+          ],
+        },
       ],
     }, {
       "kind": "group",

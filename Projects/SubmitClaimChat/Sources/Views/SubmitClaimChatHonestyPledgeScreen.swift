@@ -6,6 +6,8 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
     @Environment(NavigationRouter.self) var router
     @State private var hasAgreedToHonestyPledge = false
     let onConfirm: () -> Void
+    /// Set when the voice claim POC is available: the pledge then ends in "Talk it through" or "Type it out".
+    var onConfirmVoice: (() -> Void)? = nil
 
     private let pledgeNotes = [
         L10n.honestyPledgeNote1,
@@ -28,7 +30,11 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
                 .sectionContainerStyle(.transparent)
                 hSection {
                     VStack(spacing: .padding8) {
-                        continueButton
+                        if let onConfirmVoice {
+                            voiceButtons(onConfirmVoice: onConfirmVoice)
+                        } else {
+                            continueButton
+                        }
                         cancelButton
                     }
                 }
@@ -66,6 +72,14 @@ struct SubmitClaimChatHonestyPledgeScreen: View {
             onConfirm()
         }
         .disabled(!hasAgreedToHonestyPledge)
+    }
+
+    @ViewBuilder
+    private func voiceButtons(onConfirmVoice: @escaping () -> Void) -> some View {
+        hButton(.large, .primary, content: .init(title: VoiceClaimStrings.talkItThrough)) { onConfirmVoice() }
+            .disabled(!hasAgreedToHonestyPledge)
+        hButton(.large, .secondary, content: .init(title: VoiceClaimStrings.typeItOut)) { onConfirm() }
+            .disabled(!hasAgreedToHonestyPledge)
     }
 
     private var cancelButton: some View {
