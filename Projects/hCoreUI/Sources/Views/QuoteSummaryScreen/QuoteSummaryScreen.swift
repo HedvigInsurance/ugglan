@@ -389,7 +389,7 @@ private struct AuthenticatedConfirmChangesScreen: View {
                 ),
                 presenting: authenticationErrorMessage
             ) { _ in
-                Button(L10n.discountRedeemSuccessButton, role: .cancel) {}
+                Button(L10n.generalOkButton, role: .cancel) {}
             } message: { message in
                 Text(message)
             }
@@ -404,10 +404,10 @@ private struct AuthenticatedConfirmChangesScreen: View {
                     Task {
                         // Keep the confirmation sheet open if the user fails or cancels local authentication.
                         do {
-                            try await Dependencies.localAuthenticator.authenticate(reason: title)
+                            try await Dependencies.localAuthenticator.authenticate(reason: L10n.localAuthReason)
                             onConfirm()
-                        } catch LocalAuthenticationError.cancelledBySystem {
-                            // The prompt was interrupted, not refused by the user, so there's nothing to tell them.
+                        } catch LocalAuthenticationError.cancelledByUser, LocalAuthenticationError.cancelledBySystem {
+                            // Cancelling isn't an error; the sheet stays open so the user can try again.
                         } catch {
                             authenticationErrorMessage = error.localizedDescription
                         }

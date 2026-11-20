@@ -319,6 +319,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "GENERAL_GO_TO" = "Gå till %1$@";
 "GENERAL_NOT_SELECTED" = "Ej valt";
 "GENERAL_NO_THANKS" = "Nej tack";
+"GENERAL_OK_BUTTON" = "OK";
 "GENERAL_RETRY" = "Försök igen";
 "GENERAL_TODAY" = "Idag";
 "GENERAL_TRY_AGAIN" = "Försök igen";
@@ -408,6 +409,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_PRIVACY_POLICY" = "Personuppgifter";
 "LEGAL_PRIVACY_POLICY_APP" = "Integritetsnotis för Hedvig-appen";
 "LEGAL_PRIVACY_POLICY_APP_SHORT" = "Integritetsnotis";
+"LOCAL_AUTH_FAILED" = "Vi kunde inte bekräfta att det är du. Försök igen.";
+"LOCAL_AUTH_REASON" = "Bekräfta att det är du för att göra ändringar i din försäkring";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";

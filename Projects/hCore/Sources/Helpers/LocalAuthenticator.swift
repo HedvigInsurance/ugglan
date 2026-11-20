@@ -57,18 +57,14 @@ public enum LocalAuthenticationError: Error, Equatable {
     }
 }
 
-// TODO: Replace with L10n keys once the strings are added to Lokalise.
 extension LocalAuthenticationError: LocalizedError {
+    /// `nil` for cancellations: the user either chose to cancel or wasn't refused, so there's nothing to report.
     public var errorDescription: String? {
         switch self {
-        case .cancelledByUser:
-            return "You need to confirm it's you to make this change."
-        case .cancelledBySystem:
+        case .cancelledByUser, .cancelledBySystem:
             return nil
-        case .failed:
-            return "We couldn't verify that it's you. Please try again."
-        case .unknown:
-            return "We couldn't verify your identity right now. Please try again."
+        case .failed, .unknown:
+            return L10n.localAuthFailed
         }
     }
 }
