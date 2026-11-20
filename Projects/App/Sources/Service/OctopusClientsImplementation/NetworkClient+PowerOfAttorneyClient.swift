@@ -94,12 +94,28 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
         )
     }
 
+    // A dropped connection recovers on the next poll, so only give up once it stops recovering: about ten
+    // seconds, well inside the BankID order's ~3 minute lifetime.
+    private static let maxConsecutiveNetworkFailures = 10
+
     public func observeSigningStatus(pollUrl: URL) -> AsyncThrowingStream<PowerOfAttorneySigningStatus, Error> {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
+                    var consecutiveNetworkFailures = 0
                     while !Task.isCancelled {
-                        let status = try await pollSigningStatus(pollUrl: pollUrl)
+                        let status: PowerOfAttorneySigningStatus
+                        do {
+                            status = try await pollSigningStatus(pollUrl: pollUrl)
+                            consecutiveNetworkFailures = 0
+                        } catch let error as URLError where error.isTransient {
+                            // connection a few seconds later (-1005). The BankID order is alive for ~3 minutes and
+                            // the member may be signing it right now, so keep polling instead of failing the signing.
+                            consecutiveNetworkFailures += 1
+                            guard consecutiveNetworkFailures <= Self.maxConsecutiveNetworkFailures else { throw error }
+                            try await Task.sleep(for: .seconds(1))
+                            continue
+                        }
                         continuation.yield(status)
                         if case .pending = status {
                             // liveQrCodeData changes on every poll, so poll often enough to keep the QR code fresh
@@ -159,5 +175,19 @@ extension NetworkClient: @retroactive PowerOfAttorneyClient {
         )
         components?.queryItems = [URLQueryItem(name: "id", value: id)]
         return components?.url
+    }
+}
+
+extension URLError {
+    // Polling is a read, so these are safe to repeat. `.cancelled` is deliberately missing: it means the screen
+    // was left, and retrying it would keep the loop alive after the task was cancelled.
+    fileprivate var isTransient: Bool {
+        switch code {
+        case .networkConnectionLost, .notConnectedToInternet, .timedOut, .cannotConnectToHost, .cannotFindHost,
+            .dnsLookupFailed:
+            return true
+        default:
+            return false
+        }
     }
 }
