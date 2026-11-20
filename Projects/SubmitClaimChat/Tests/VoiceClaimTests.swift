@@ -528,7 +528,7 @@ extension SubmitClaimChatDependencySuite {
         }
 
         @Test
-        func aRewordedQuestionStillGetsItsEarlierAnswerAfterAPause() async throws {
+        func aRewordedFreeTextQuestionIsLeftToTheAgentWithTheEarlierAnswersAfterAPause() async throws {
             defer { cleanUp() }
             let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
             let client = MockVoiceClaimIntentClient(start: yesNo)
@@ -558,9 +558,18 @@ extension SubmitClaimChatDependencySuite {
                 await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "yes"])
             )
             client.holdNextStep = false
-            let next = try json(await toolbox.handle(toolName: "get_current_step", parameters: [:]))
+            let reworded = try json(await toolbox.handle(toolName: "get_current_step", parameters: [:]))
+            // The agent judges that the earlier description answers it, and sends those words.
+            let next = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "description-2", "member_words": "The fridge stopped cooling."]
+                )
+            )
 
             #expect(paused["status"] as? String == "processing")
+            #expect(reworded["step_id"] as? String == "description-2")
+            #expect((reworded["instruction"] as? String)?.contains("→ The fridge stopped cooling.") == true)
             #expect(next["step_id"] as? String == "date-form")
             #expect(client.submittedFreeText == "The fridge stopped cooling.")
         }

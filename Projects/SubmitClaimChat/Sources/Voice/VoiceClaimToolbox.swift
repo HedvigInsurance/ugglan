@@ -574,15 +574,17 @@ final class VoiceClaimToolbox {
 
             The member already answered these before changing an earlier answer:
             \(earlier.joined(separator: "\n"))
-            If this question is one of them, answer it from there straight away without asking (for free text, send \
-            that answer's words exactly as member_words). Only ask if it's something they haven't told you.
+            Hedvig may word a question differently this time. If one of these answers what's being asked now, \
+            however it's worded, answer it from there straight away without asking, and say at most a few words \
+            (for free text, send that answer's words exactly as member_words). Only ask if none of them answers it, \
+            or if the change they just made affects it.
             """
         return payload
     }
 
-    /// The earlier answer that fits the step the engine is asking now. The engine words some questions afresh each
-    /// time, so beyond the exact question: a select or form with the same options or fields, and for free text,
-    /// notices and photos the next earlier answer of that kind, in the order they were given.
+    /// The earlier answer that certainly fits the step the engine is asking now: the exact question, a select or
+    /// form with the same options or fields, a notice, or photos. A reworded free-text question is left to the
+    /// agent, which gets the earlier answers and judges whether one of them answers it.
     private func clearedAnswer(for intent: ClaimIntent) -> Int? {
         let question = VoiceStepAdapter.payload(for: intent, policies: policies)
         let shape = Self.shape(of: intent)
@@ -592,9 +594,9 @@ final class VoiceClaimToolbox {
         switch question.kind {
         case .select, .form:
             return cleared.firstIndex { $0.kind == question.kind && !shape.isEmpty && $0.shape == shape }
-        case .freeText, .notice, .photos:
+        case .notice, .photos:
             return cleared.firstIndex { $0.kind == question.kind }
-        case .summary, .none:
+        case .freeText, .summary, .none:
             return nil
         }
     }

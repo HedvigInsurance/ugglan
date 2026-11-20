@@ -87,7 +87,8 @@ members. With either missing, the honesty pledge shows the normal Continue butto
    with an `[APP] …` message. The member taps submit; the agent says goodbye; the success screen shows.
 6. When the member says an earlier answer is wrong (the agent misheard), the agent calls `go_back` for the list of
    answers, then `go_back` with the step to change. That's the chat's edit button (`claimIntentRegretStep`): the
-   engine reopens the step and clears the answers after it. The app then sends those cleared answers again by itself
-   (selects, forms, free text, skips, notices, uploaded files) whenever the engine asks the same question, so the
-   member isn't asked twice; a question it has no match for goes to the agent with the earlier answers to reuse.
+   engine reopens the step and clears the answers after it. The app sends a cleared answer again by itself only when
+   it certainly fits: the same question word for word, a select or form with the same options or fields, a notice,
+   or uploaded files. Anything else, typically a free-text question the engine reworded, goes to the agent with the
+   earlier answers, and the agent judges whether one of them answers it, so the member isn't asked twice.
    Open sheets close. Steps the engine marks as not regrettable can't be changed.
