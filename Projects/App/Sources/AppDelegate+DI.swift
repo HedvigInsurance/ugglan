@@ -12,6 +12,7 @@ import EditStakeholdersCore
 import Environment
 import Forever
 import Foundation
+@preconcurrency import HedvigShared
 import Home
 import InsuranceEvidence
 import MoveFlowCore
@@ -189,5 +190,19 @@ enum DI {
     static func initNetworkClients() async {
         let hApollo = await ApolloClient.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
+        Dependencies.shared.add(module: Module { graphHolder })
     }
+
+    /// The shared Kotlin graph, one per process. Creating the holder builds nothing: Kotlin builds the graph on the
+    /// first read.
+    private static let graphHolder: IosGraphHolder = {
+        let flavor = Environment.current.flavor
+        return IosGraphHolderKt.createIosGraphHolder(
+            appFlavor: flavor,
+            accessTokenFetcher: KeychainAccessTokenFetcher(),
+            deviceIdFetcher: UserDefaultsDeviceIdFetcher(),
+            languageSource: CurrentLocaleLanguageSource(),
+            networkLogPolicy: NetworkLogPolicy(flavor: flavor)
+        )
+    }()
 }

@@ -224,7 +224,6 @@ final class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshTokenExpiryIn: Int(successResult.refreshToken.expiryInSeconds)
             )
             ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
-            Umbrella.sessionStarted()
             return
         }
         let error = NSError(domain: "", code: 1000)

@@ -1,231 +1,124 @@
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
+import KMPNativeCoroutinesAsync
 import KMPNativeCoroutinesCore
 import Logger
 import Testing
+import hCore
 import hGraphQL
 
 @testable import Ugglan
 
 /// The app's UI tests are the XCUITest suites in Tests/UITests, which build into the AppUITests target. These run
-/// hosted by the app, against the real Kotlin framework, without a network request.
+/// hosted by the app, against the real Kotlin framework, without a network request. Serialized because they swap the
+/// global `log` and use `Dependencies.shared`.
 @MainActor
 @Suite(.serialized)
-struct UmbrellaTests {
-    @Test
-    func theSwitchIsOffWithoutTheLaunchArgument() {
-        #expect(!ProcessInfo.processInfo.arguments.contains(UmbrellaSwitch.launchArgument))
-        #expect(!UmbrellaSwitch.current.isOn)
-        #expect(!Umbrella.isEnabled)
-        #expect(Umbrella.holder == nil)
+struct SharedKotlinTests {
+    /// What a client backed by a Kotlin read looks like. No read ships in the framework yet, so the test passes the
+    /// call a feature would make, `holder.fooReads().bar()`, as a closure.
+    @MainActor
+    private struct ExampleClient {
+        let memberIdRead: () -> NativeSuspend<String, Error, KotlinUnit>
+
+        func memberId() async throws -> String {
+            do {
+                return try await asyncFunction(for: memberIdRead())
+            } catch {
+                throw GraphQLError(readError: error)
+            }
+        }
     }
 
-    /// Creates the process's one holder, which builds nothing and calls no input, so no request is sent.
     @Test
-    func theHolderIsCreatedOncePerProcess() {
-        let first = Umbrella.existingOrNewHolder()
-        let second = Umbrella.existingOrNewHolder()
+    func theGraphHolderIsRegisteredOncePerProcess() async {
+        await DI.initNetworkClients()
+        let first: IosGraphHolder = Dependencies.shared.resolve()
+        await DI.initNetworkClients()
+        let second: IosGraphHolder = Dependencies.shared.resolve()
         #expect(first === second)
-        Umbrella.sessionStarted()
-        Umbrella.sessionEnded()
     }
 
     @Test
-    func theRemoteFlagIsOffUntilItExists() {
-        #expect(!UmbrellaRemoteFlag.isOn)
+    func aReadReturnsItsValue() async throws {
+        let client = ExampleClient(memberIdRead: { Self.succeeding("member") })
+        let memberId = try await client.memberId()
+        #expect(memberId == "member")
     }
 
     @Test
-    func theLaunchArgumentTurnsTheSwitchOnAloneOrWithAYesValue() {
-        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads"]))
-        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "YES"]))
-        #expect(UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "-other"]))
-        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "NO"]))
-        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-kotlinReads", "0"]))
-        #expect(!UmbrellaSwitch.isOn(arguments: ["app", "-other"]))
+    func aFailedReadThrowsWhatAnOctopusClientWould() async {
+        #expect(await isGraphQLError(afterFailureOf: .network) == false)
+        #expect(await isGraphQLError(afterFailureOf: .unauthenticated) == true)
+        #expect(await isGraphQLError(afterFailureOf: .other) == true)
     }
 
-    @Test
-    func aReadWhileTheSwitchIsOffFailsWithoutCreatingAHolder() async {
-        let logger = RecordingLogger()
-        await withGraphQlLogger(logger) {
-            await #expect(throws: UmbrellaReadFailure.disabled) {
-                _ = try await Umbrella.read { _ in Self.succeeding("unused") }
-            }
-        }
-        #expect(logger.lines.map(\.level) == ["error"])
-    }
-
-    @Test
-    func aSuccessfulReadReturnsItsValueAndLogsNothing() async throws {
-        let logger = RecordingLogger()
-        let value = try await withGraphQlLogger(logger) {
-            try await Umbrella.awaitRead(Self.succeeding("value"))
-        }
-        #expect(value == "value")
-        #expect(logger.lines.isEmpty)
-    }
-
-    @Test
-    func anErrorKotlinDoesNotRecogniseAsAFailureIsACancel() async {
-        let logger = RecordingLogger()
-        await withGraphQlLogger(logger) {
-            await #expect(throws: CancellationError.self) {
-                let call: NativeSuspend<String, Error, KotlinUnit> = Self.failing(NSError(domain: "test", code: 1))
-                _ = try await Umbrella.awaitRead(call)
-            }
-        }
-        #expect(logger.lines.isEmpty)
-    }
-
-    @Test
-    func kotlinsCancelArrivesAsACancel() async {
-        let call: NativeSuspend<String, Error, KotlinUnit> = { _, _, onCancelled in
-            _ = onCancelled(CancellationError(), KotlinUnit())
-            return { KotlinUnit() }
-        }
-        await #expect(throws: CancellationError.self) {
-            _ = try await Umbrella.awaitRead(call)
-        }
-    }
-
-    @Test
-    func aGeneralFailureIsThrownAndReportedAsAnError() async {
-        let failure = UmbrellaReadFailure(
-            kind: .general,
-            reason: .graphqlErrors,
-            readName: "example.read",
-            operationName: "ExampleQuery"
+    private func isGraphQLError(afterFailureOf kind: ReadFailureKind) async -> Bool? {
+        let kotlinError = NSError(
+            domain: "KotlinException",
+            code: 0,
+            userInfo: ["KotlinException": ReadFailure(kind: kind, cause: nil)]
         )
+        let client = ExampleClient(memberIdRead: { Self.failing(kotlinError) })
+        do {
+            _ = try await client.memberId()
+            return nil
+        } catch let error as GraphQLError {
+            if case .graphQLError = error { return true }
+            return false
+        } catch {
+            return nil
+        }
+    }
+
+    @Test
+    func anErrorThatIsNotAReadFailureIsAnOtherError() {
+        let cancel = CancellationError()
+        guard case let .otherError(error) = GraphQLError(readError: cancel) else {
+            Issue.record("expected .otherError")
+            return
+        }
+        #expect(error is CancellationError)
+    }
+
+    @Test
+    func kotlinLinesAreHeldUntilTheLoggerIsReadyThenWrittenInOrder() async {
+        let sink = AppLogSink()
         let logger = RecordingLogger()
-        await withGraphQlLogger(logger) {
-            await #expect(throws: failure) {
-                _ = try await Umbrella.awaitRead(
-                    Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
-                    failureOf: { _ in failure }
-                )
-            }
-        }
-        #expect(logger.lines.map(\.level) == ["error"])
-        #expect(logger.lines.first?.attributes == ["readName", "operationName", "reason"])
+        let previous = hCore.log
+        hCore.log = logger
+        defer { hCore.log = previous }
+
+        sink.log(priority: .info, tag: "T", message: "first")
+        sink.log(priority: .warn, tag: nil, message: "second")
+        await Self.drainMainQueue()
+        #expect(logger.lines.isEmpty)
+
+        sink.logIsReady()
+        sink.log(priority: .verbose, tag: nil, message: "third")
+        sink.log(priority: .error, tag: nil, message: "fourth")
+        sink.log(priority: .assert, tag: nil, message: "fifth")
+        await Self.drainMainQueue()
+
+        #expect(logger.lines.map(\.message) == ["first", "second", "third", "fourth", "fifth"])
+        #expect(logger.lines.map(\.level) == ["info", "warn", "debug", "error", "critical"])
     }
 
     @Test
-    func aNetworkFailureIsReportedAsAWarning() async {
-        let failure = UmbrellaReadFailure(kind: .general, reason: .timeout, readName: "a", operationName: "A")
-        let logger = RecordingLogger()
-        await withGraphQlLogger(logger) {
-            _ = try? await Umbrella.awaitRead(
-                Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
-                failureOf: { _ in failure }
-            )
-        }
-        #expect(logger.lines.map(\.level) == ["warn"])
+    func productionNeverLogsMemberData() {
+        #expect(Environment.production.flavor == .production)
+        #expect(Environment.staging.flavor == .staging)
+        let production = NetworkLogPolicy(flavor: .production)
+        #expect(!production.logsHttpBodies && !production.logsGraphqlData && production.logsGraphqlErrors)
+        let staging = NetworkLogPolicy(flavor: .staging)
+        #expect(staging.logsHttpBodies && staging.logsGraphqlData && staging.logsGraphqlErrors)
     }
 
     @Test
-    func anEndedSessionIsThrownAndReportedAtDebug() async {
-        let failure = UmbrellaReadFailure(kind: .sessionEnded, reason: .sessionEnded, readName: "a", operationName: "A")
-        let logger = RecordingLogger()
-        await withGraphQlLogger(logger) {
-            await #expect(throws: failure) {
-                _ = try await Umbrella.awaitRead(
-                    Self.failing(NSError(domain: "test", code: 1)) as NativeSuspend<String, Error, KotlinUnit>,
-                    failureOf: { _ in failure }
-                )
-            }
-        }
-        #expect(logger.lines.map(\.level) == ["debug"])
-    }
-
-    @Test
-    func kotlinsFailureKindsMapToSwiftKinds() {
-        #expect(UmbrellaReadFailure.Kind(ReadFailureKind.general) == .general)
-        #expect(UmbrellaReadFailure.Kind(ReadFailureKind.sessionEnded) == .sessionEnded)
-    }
-
-    @Test
-    func kotlinsFailureReasonsMapToSwiftReasonsWithKotlinsNames() {
-        let pairs: [(ReadFailureReason, UmbrellaReadFailure.Reason)] = [
-            (.graphqlErrors, .graphqlErrors), (.network, .network), (.http, .http), (.timeout, .timeout),
-            (.stuck, .stuck), (.sessionEnded, .sessionEnded), (.unexpected, .unexpected),
-        ]
-        #expect(pairs.count == ReadFailureReason.entries.count)
-        for (kotlin, swift) in pairs {
-            #expect(UmbrellaReadFailure.Reason(kotlin) == swift)
-            #expect(swift.rawValue == kotlin.name)
-        }
-    }
-
-    @Test
-    func kotlinLinesBeforeTheLoggerIsReadyAreHeldAndWrittenInOrderOnAttach() {
-        let destination = UmbrellaLogDestination(capacity: 10)
-        destination.write(.info, "first", attributes: ["source": "kotlin"])
-        destination.write(.warn, "second", attributes: ["source": "kotlin"])
-        #expect(destination.pending.count == 2)
-
-        let logger = RecordingLogger()
-        destination.attach(logger)
-        destination.write(.error, "third", attributes: ["source": "kotlin"])
-
-        #expect(destination.pending.isEmpty)
-        #expect(logger.lines.map(\.message) == ["first", "second", "third"])
-        #expect(logger.lines.map(\.level) == ["info", "warn", "error"])
-    }
-
-    @Test
-    func heldKotlinLinesAreBoundedAndTheDropIsReported() {
-        let destination = UmbrellaLogDestination(capacity: 2)
-        for message in ["a", "b", "c", "d"] {
-            destination.write(.info, message, attributes: [:])
-        }
-        #expect(destination.pending.map(\.message) == ["c", "d"])
-
-        let logger = RecordingLogger()
-        destination.attach(logger)
-
-        #expect(logger.lines.map(\.level) == ["warn", "info", "info"])
-        #expect(logger.lines.first?.attributes == ["source", "dropped"])
-        #expect(logger.lines.dropFirst().map(\.message) == ["c", "d"])
-    }
-
-    @Test
-    func theFlavorFollowsTheEnvironmentAndBuild() {
-        #expect(UmbrellaAppFlavor.flavor(for: .production, isDebugBuild: true) == .production)
-        #expect(UmbrellaAppFlavor.flavor(for: .production, isDebugBuild: false) == .production)
-        #expect(UmbrellaAppFlavor.flavor(for: .staging, isDebugBuild: true) == .develop)
-        #expect(UmbrellaAppFlavor.flavor(for: .staging, isDebugBuild: false) == .staging)
-    }
-
-    @Test
-    func productionLogsOnlyGraphqlErrorText() {
-        let production = UmbrellaNetworkLogPolicy.policy(for: .production)
-        #expect(!production.logsHttpBodies)
-        #expect(!production.logsGraphqlData)
-        #expect(production.logsGraphqlErrors)
-        for flavor in [Flavor.staging, Flavor.develop] {
-            let policy = UmbrellaNetworkLogPolicy.policy(for: flavor)
-            #expect(policy.logsHttpBodies && policy.logsGraphqlData && policy.logsGraphqlErrors)
-        }
-    }
-
-    @Test
-    func kotlinLogPrioritiesMapToLoggerLevels() {
-        #expect(UmbrellaLogLevel(LogPriority.verbose) == .debug)
-        #expect(UmbrellaLogLevel(LogPriority.debug) == .debug)
-        #expect(UmbrellaLogLevel(LogPriority.info) == .info)
-        #expect(UmbrellaLogLevel(LogPriority.warn) == .warn)
-        #expect(UmbrellaLogLevel(LogPriority.error) == .error)
-        #expect(UmbrellaLogLevel(LogPriority.assert) == .critical)
-    }
-
-    @Test
-    func theLanguageSourceFollowsTheAppLocale() {
-        let source = UmbrellaLanguageSource()
-        #expect(
-            [Language.svSe, Language.enSe].contains(source.currentLanguage())
-        )
+    func theLanguageFollowsTheAppLocale() {
+        let expected: Language = Localization.Locale.currentLocale.value == .sv_SE ? .svSe : .enSe
+        #expect(CurrentLocaleLanguageSource().currentLanguage() == expected)
     }
 
     private static func succeeding<T>(_ value: T) -> NativeSuspend<T, Error, KotlinUnit> {
@@ -242,12 +135,10 @@ struct UmbrellaTests {
         }
     }
 
-    @discardableResult
-    private func withGraphQlLogger<T>(_ logger: RecordingLogger, _ body: () async throws -> T) async rethrows -> T {
-        let previous = graphQlLogger
-        graphQlLogger = logger
-        defer { graphQlLogger = previous }
-        return try await body()
+    private static func drainMainQueue() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { continuation.resume() }
+        }
     }
 }
 
@@ -256,47 +147,36 @@ private final class RecordingLogger: Logging {
     struct Line {
         let level: String
         let message: String
-        let attributes: Set<String>
     }
 
     var lines: [Line] = []
 
-    private func record(_ level: String, _ message: String, _ keys: Set<String>) {
-        lines.append(Line(level: level, message: message, attributes: keys))
+    private nonisolated func record(_ level: String, _ message: String) {
+        MainActor.assumeIsolated { lines.append(Line(level: level, message: message)) }
     }
 
-    private nonisolated static func keys(_ attributes: [AttributeKey: AttributeValue]?) -> Set<String> {
-        Set(attributes?.keys.map { $0 } ?? [])
+    nonisolated func debug(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("debug", message)
     }
 
-    nonisolated func debug(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("debug", message, keys) }
+    nonisolated func info(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("info", message)
     }
 
-    nonisolated func info(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("info", message, keys) }
+    nonisolated func notice(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("notice", message)
     }
 
-    nonisolated func notice(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("notice", message, keys) }
+    nonisolated func warn(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("warn", message)
     }
 
-    nonisolated func warn(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("warn", message, keys) }
+    nonisolated func error(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("error", message)
     }
 
-    nonisolated func error(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("error", message, keys) }
-    }
-
-    nonisolated func critical(_ message: String, error _: Error?, attributes: [AttributeKey: AttributeValue]?) {
-        let keys = Self.keys(attributes)
-        MainActor.assumeIsolated { record("critical", message, keys) }
+    nonisolated func critical(_ message: String, error _: Error?, attributes _: [AttributeKey: AttributeValue]?) {
+        record("critical", message)
     }
 
     nonisolated func addUserAction(
