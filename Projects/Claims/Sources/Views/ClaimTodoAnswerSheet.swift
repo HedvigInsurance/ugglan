@@ -157,19 +157,14 @@ struct ClaimTodoAnswerSheet: View {
         VStack(spacing: .padding16) {
             if let files = vm.checkingFilesByQuestionId[question.id] {
                 HStack(spacing: .padding8) {
-                    ClaimTodoFileLine(file: files.first, text: L10n.claimTodoCheckingFile)
+                    ClaimTodoFileLines(files: files, text: L10n.claimTodoCheckingFile)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ProgressView()
                         .frame(width: 20, height: 20)
                 }
             } else if let pendingUpload = vm.pendingUploadByQuestionId[question.id] {
-                ClaimTodoFileLine(
-                    file: pendingUpload.files.first,
-                    text: pendingUpload.files
-                        .map(\.name)
-                        .joined(separator: ", ")
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
+                ClaimTodoFileLines(files: pendingUpload.files)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 InfoCard(text: L10n.claimTodoNudge, type: .attention)
                     .buttons([
                         .init(buttonTitle: L10n.claimTodoChooseAnother) {

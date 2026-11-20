@@ -74,7 +74,7 @@ private struct ClaimTodoRow: View {
             hText(question.text, style: .body1)
                 .fixedSize(horizontal: false, vertical: true)
             if let checkingFiles = vm.checkingFilesByQuestionId[question.id] {
-                ClaimTodoFileLine(file: checkingFiles.first, text: L10n.claimTodoCheckingFile)
+                ClaimTodoFileLines(files: checkingFiles, text: L10n.claimTodoCheckingFile)
                     .padding(.top, .padding6)
             } else if isOpen {
                 hText(L10n.homeTodoRequiresActionSubtitle, style: .label)
@@ -107,12 +107,10 @@ private struct ClaimTodoRow: View {
         switch (question.state, question.content) {
         case let (.answered, .fileUpload(currentFiles)):
             if !currentFiles.isEmpty {
-                ClaimTodoFileLine(
-                    file: currentFiles.first?.asFile,
-                    text:
+                ClaimTodoFileLines(
+                    files:
                         currentFiles
-                        .map(\.fileName)
-                        .joined(separator: ", ")
+                        .map(\.asFile)
                 )
                 .padding(.top, .padding6)
             }
@@ -173,16 +171,19 @@ struct ClaimTodoSecondaryLine: View {
     }
 }
 
-struct ClaimTodoFileLine: View {
-    let file: File?
-    let text: String
+struct ClaimTodoFileLines: View {
+    let files: [File]
+    /// Shown beside every thumbnail in place of the file's own name, while the files are being checked.
+    var text: String?
 
     var body: some View {
-        HStack(spacing: .padding10) {
-            if let file {
-                thumbnail(file)
+        VStack(alignment: .leading, spacing: .padding8) {
+            ForEach(files) { file in
+                HStack(spacing: .padding10) {
+                    thumbnail(file)
+                    ClaimTodoSecondaryLine(text: text ?? file.name)
+                }
             }
-            ClaimTodoSecondaryLine(text: text)
         }
     }
 
