@@ -180,7 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self?.isForcingLogout = false
             }
         }
-        IosLogcatLogger.companion.install(sink: AppLogSink.shared, minimumPriority: .debug)
+        IosLogcatLogger.companion.install(sink: AppLogSink.shared, minimumPriority: .minimumForKotlin())
         ApolloClient.bundle = Bundle.main
 
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
