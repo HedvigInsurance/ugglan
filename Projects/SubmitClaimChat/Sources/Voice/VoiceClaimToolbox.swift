@@ -291,8 +291,6 @@ final class VoiceClaimToolbox {
     private var searchLabels: [String: String] = [:]
     /// The answers that came after the one the member went back to change, waiting to be sent again.
     private var cleared: [AnsweredStep] = []
-    /// What the member said before going back that no answer used yet, so a free-text answer can still come from it.
-    private var heldUtterances: [String] = []
 
     /// The claim intent being created; tools wait for it, so the call can connect at the same time.
     private var starting: Task<VoiceStepPayload, Error>?
@@ -455,28 +453,27 @@ final class VoiceClaimToolbox {
             let agentText = String(
                 agentWords.trimmingCharacters(in: .whitespacesAndNewlines).prefix(model.freeTextMaxLength)
             )
-            if words.isEmpty, let earlier = cleared.firstIndex(where: { $0.replay == .freeText(agentText) }) {
-                // An earlier answer that was cleared by going back is the member's own words too.
-                words = agentText
-                cleared.remove(at: earlier)
-            } else if words.isEmpty, Self.isGrounded(agentText, in: heldUtterances) {
-                // Said before going back, often in the same breath as the correction.
-                words = agentText
-            } else if Self.isConfirmation(words), Self.isGrounded(agentText, in: memberUtterances) {
-                // "Yes" to the agent putting their earlier words back to them: what they confirmed is the answer.
-                words = agentText
+            // Everything the member says is the agent's memory for the whole call. When they've said nothing new
+            // (or only "yes", "okay"), the answer comes from what they said earlier, in the agent's wording of it,
+            // as long as it's the member's own: their words and every number in it (see `isGrounded`).
+            if words.isEmpty || Self.isAcknowledgement(words) {
+                if let earlier = cleared.firstIndex(where: { $0.replay == .freeText(agentText) }) {
+                    words = agentText
+                    cleared.remove(at: earlier)
+                } else if Self.isGrounded(agentText, in: memberUtterances) {
+                    words = agentText
+                }
             }
             guard !words.isEmpty else {
                 throw VoiceTool.InvalidCall(
                     message: """
-                        The member hasn't answered this yet. Ask the question, then stop and wait for their answer \
-                        before calling answer_free_text. Never answer it for them.
+                        Nothing the member has said in this call answers this. Ask the question, then stop and wait \
+                        for their answer before calling answer_free_text. Never answer it for them.
                         """
                 )
             }
             let result = try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
             record(intent, answer: words, replay: .freeText(words))
-            heldUtterances = []
             let next = try await adopt(result)
             hasAnsweredFreeText = true
             return .step(next)
@@ -561,20 +558,20 @@ final class VoiceClaimToolbox {
         // The answers after it are sent again as the engine asks for them; the one being changed is the member's.
         cleared = Array(answered[(index + 1)...])
         answered.removeSubrange(index...)
-        // Only what the member says from here on answers the step again, never the request to change it. That
-        // holds for the description too, so its new answer is what they say next, not the whole call. What they
-        // said before it is held, though: an answer often comes in the same breath as the correction.
-        heldUtterances += memberUtterances.dropFirst(answeredUtteranceCount)
+        // The request to change it is never sent as an answer by itself; what the member said stays the agent's
+        // memory, so the new answer can come from it (see `answerFreeText`).
         markAnswered()
         hasAnsweredFreeText = true
         delegate?.toolboxWentBack()
         var payload = try currentPayload(after: try await advancingTasks(model))
         guard payload.status == .step else { return payload }
         payload.instruction = """
-            This is the question whose answer the member wants to change. If they already said what it should be, \
-            save that right away; otherwise ask for it. For a free-text question, ask them to say the whole answer \
-            again, since it replaces the old one. Everything else they told you is kept: the app fills it in again \
-            by itself, so never ask for it again. Never mention steps, going back or clearing anything.
+            This is the question whose answer the member wants to change. Work out the new answer from what they \
+            just said together with what they told you before, and save it right away without asking (for free \
+            text, in their own words, putting the correction together with the rest of what they said for this, \
+            like "about 1,500 kronor of groceries ruined"). Ask only if it's unclear what it should be now. \
+            Everything else they told you is kept and filled in again by itself. Never mention steps, going back \
+            or clearing anything.
 
             """ + payload.instruction
         return payload
@@ -608,10 +605,12 @@ final class VoiceClaimToolbox {
 
             The member already answered these before changing an earlier answer:
             \(earlier.joined(separator: "\n"))
-            Hedvig may word a question differently this time. If one of these answers what's being asked now, \
-            however it's worded, answer it from there straight away without asking, and say at most a few words \
-            (for free text, send that answer's words exactly as member_words). Only ask if none of them answers it, \
-            or if the change they just made affects it.
+            Hedvig may word a question differently this time. If one of these (or anything else they said in this \
+            call) answers what's being asked now, however it's worded, answer it from there straight away without \
+            asking (for free text, send that answer's words as member_words). You're working through your notes: \
+            say nothing, or one short generic line ("just making sure everything's in place"), never what the \
+            question or answer is and never that you already have it. Only ask if nothing they've said answers \
+            it, or if the change they just made affects it.
             """
         return payload
     }
@@ -965,13 +964,82 @@ final class VoiceClaimToolbox {
         answeredUtteranceCount = memberUtterances.count
     }
 
-    /// Whether the agent's version of an answer is the member's own: at least three quarters of its words were
-    /// said by the member (numbers compared without separators, so "2 500" and "2,500" match).
+    /// Whether the agent's version of an answer is the member's own, said at some point in the call: every number
+    /// in it was said by the member ("2,500", "2 500" and "twenty-five hundred" are the same), and at least three
+    /// quarters of its other words too. Small words like "the" or "about" and currency names don't count either
+    /// way, and a word counts as said when the member said a form of it ("leak" for "leaked").
     static func isGrounded(_ text: String, in utterances: [String]) -> Bool {
         let words = spokenWords(text)
         guard !words.isEmpty else { return false }
-        let heard = Set(utterances.flatMap(spokenWords))
-        return Double(words.filter(heard.contains).count) >= Double(words.count) * 0.75
+        let heardWords = utterances.flatMap(spokenWords)
+        let heardNumbers = utterances.reduce(into: Set<Int>()) { $0.formUnion(numbers(in: spokenWords($1))) }
+        let numbersSaid = numbers(in: words)
+        guard numbersSaid.isSubset(of: heardNumbers) else { return false }
+        let content = words.filter { word in
+            Int(word) == nil && numberWords[word] == nil && !["hundred", "thousand"].contains(word)
+                && !smallWords.contains(word)
+        }
+        guard !content.isEmpty else { return !numbersSaid.isEmpty }
+        let heard = Set(heardWords)
+        let found = content.filter { word in heard.contains(word) || heardWords.contains { sameStem(word, $0) } }
+        return Double(found.count) >= Double(content.count) * 0.75
+    }
+
+    /// Words that say nothing about the answer itself, so the agent adding or dropping them doesn't matter.
+    private static let smallWords: Set<String> = [
+        "the", "a", "an", "and", "or", "of", "to", "in", "on", "at", "it", "its", "it's", "is", "was", "were", "be",
+        "been", "i", "i'm", "me", "my", "we", "our", "you", "your", "that", "this", "for", "with", "about", "around",
+        "roughly", "approximately", "some", "uh", "um", "so", "but", "just", "really", "actually", "then", "there",
+        "kronor", "kroner", "krona", "crowns", "kr", "sek", "och", "det", "den", "en", "ett", "jag", "min", "mitt",
+        "mina", "att", "på", "som", "var", "är", "har", "med", "för", "om", "av", "till", "ungefär", "typ", "cirka",
+    ]
+
+    /// "leak" and "leaked", "grocery" and "groceries": the same word for grounding.
+    private static func sameStem(_ word: String, _ other: String) -> Bool {
+        guard word.count >= 4, other.count >= 4 else { return false }
+        let common = zip(word, other).prefix { $0 == $1 }.count
+        return common >= min(word.count, other.count, 5)
+    }
+
+    private static let numberWords: [String: Int] = [
+        "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
+        "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
+        "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30, "forty": 40,
+        "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
+    ]
+
+    /// The numbers in some words, written ("2500") or spoken ("twenty five hundred", "two thousand five hundred").
+    static func numbers(in words: [String]) -> Set<Int> {
+        var found = Set<Int>()
+        var total = 0
+        var current = 0
+        var inNumber = false
+        func finish() {
+            if inNumber { found.insert(total + current) }
+            total = 0
+            current = 0
+            inNumber = false
+        }
+        for word in words {
+            if let value = Int(word) {
+                finish()
+                found.insert(value)
+            } else if let value = numberWords[word] {
+                current += value
+                inNumber = true
+            } else if word == "hundred" {
+                current = max(current, 1) * 100
+                inNumber = true
+            } else if word == "thousand" {
+                total += max(current, 1) * 1000
+                current = 0
+                inNumber = true
+            } else if !(word == "and" && inNumber) {
+                finish()
+            }
+        }
+        finish()
+        return found
     }
 
     /// Whether the member said they don't know, in English or Swedish.
@@ -984,24 +1052,25 @@ final class VoiceClaimToolbox {
         return phrases.contains { text.contains($0) }
     }
 
-    /// A bare yes, in English or Swedish, with nothing else in it.
-    static func isConfirmation(_ text: String) -> Bool {
-        let yes: Set<String> = [
-            "yes", "yeah", "yep", "correct", "right", "exactly", "that's", "it", "is", "ja", "japp", "precis",
-            "exakt", "stämmer", "det", "rätt",
+    /// A bare yes, okay or thanks, in English or Swedish, with nothing else in it: not an answer to an open
+    /// question, so what it confirms or what they said before is.
+    static func isAcknowledgement(_ text: String) -> Bool {
+        let acknowledging: Set<String> = [
+            "yes", "yeah", "yep", "yup", "correct", "right", "exactly", "that's", "it", "is", "okay", "ok", "sure",
+            "mm", "mhm", "hmm", "alright", "fine", "good", "great", "perfect", "sounds", "absolutely", "definitely",
+            "thanks", "thank", "you", "cheers", "ja", "japp", "jo", "precis", "exakt", "stämmer", "det", "rätt",
+            "okej", "visst", "absolut", "bra", "tack",
         ]
         let words = spokenWords(text)
-        return !words.isEmpty && words.count <= 4 && words.allSatisfy(yes.contains)
+        return !words.isEmpty && words.count <= 5 && words.allSatisfy(acknowledging.contains)
     }
 
     private static func spokenWords(_ text: String) -> [String] {
         // Thousands separators out first, so numbers survive the split as one word.
-        let joined = text.lowercased().replacingOccurrences(
-            of: #"(?<=\d)[,  ](?=\d{3})"#,
-            with: "",
-            options: .regularExpression
-        )
-        return joined.split { !$0.isLetter && !$0.isNumber && $0 != "'" && $0 != "’" }.map(String.init)
+        let joined = text.lowercased()
+            .replacingOccurrences(of: "’", with: "'")
+            .replacingOccurrences(of: #"(?<=\d)[,  ](?=\d{3})"#, with: "", options: .regularExpression)
+        return joined.split { !$0.isLetter && !$0.isNumber && $0 != "'" }.map(String.init)
     }
 
     /// The agent now has this step (as a tool result or an [APP] message).

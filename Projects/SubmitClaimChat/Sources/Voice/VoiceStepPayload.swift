@@ -206,11 +206,11 @@ enum VoiceStepAdapter {
                 question: question,
                 options: model.options.map { .init(id: $0.id, label: $0.title, covers: policies[$0.id]) },
                 instruction: """
-                    If what the member already told you (or confirmed in your recap) answers this, call \
-                    answer_select right away with that option id; don't ask or confirm it again. Otherwise ask it in \
-                    your own words, without reading the options as a menu unless they're unsure, and end your turn \
-                    with the question: say nothing after it and call nothing. Once the member has answered, call \
-                    answer_select with exactly one option id. \(Self.inferTheInsurance)
+                    \(Self.fromMemory) If it does, call answer_select right away with that option id (or skip_step \
+                    if what they said is that they don't know). Otherwise ask it in your own words, without reading \
+                    the options as a menu unless they're unsure, and end your turn with the question: say nothing \
+                    after it and call nothing. Once the member has answered, call answer_select with exactly one \
+                    option id. \(Self.inferTheInsurance)
                     """
             )
         case let .form(model):
@@ -219,9 +219,9 @@ enum VoiceStepAdapter {
                 question: question,
                 fields: model.fields.map { field(from: $0, policies: policies) },
                 instruction: """
-                    Fill in every field the member already answered (or confirmed in your recap) without asking \
-                    again; ask naturally only for what's missing, ending your turn with the question (nothing after \
-                    it, no tool call) and waiting for the answer. If you inferred a value, remember it for your one \
+                    \(Self.fromMemory) Fill in every field it answers without asking; ask naturally only for what's \
+                    missing, ending your turn with the question (nothing after it, no tool call) and waiting for \
+                    the answer. If you inferred a value, remember it for your one \
                     combined double-check later; don't confirm it now. Dates are YYYY-MM-DD; resolve "yesterday" from \
                     today's date in your instructions. An approximate date is still an answer: turn "about a year and \
                     a half ago" or "last spring" into an estimate (the first of that month) and include it in your \
@@ -241,14 +241,13 @@ enum VoiceStepAdapter {
                 question: question,
                 maxLength: model.freeTextMaxLength,
                 instruction: """
-                    If this asks what happened and the member has already told you their story, don't ask them to \
-                    repeat it: call answer_free_text right away, and the app sends their story in their own words. \
-                    Otherwise ask it openly and end your turn with the question: say nothing after it and call \
-                    nothing. Once the member has answered, call answer_free_text. The app sends the member's own \
-                    transcribed words, so don't summarise; pass what they said. If they already answered it earlier \
-                    (even in the same breath as something else), don't ask again: pass that part of what they said. \
-                    If they answer by confirming something you put back to them ("yes"), pass what they confirmed, \
-                    in their earlier words, never just "yes".
+                    \(Self.fromMemory) If it does, call answer_free_text right away with the member's own words for \
+                    it as member_words: only the part that answers this, put together from more than one thing they \
+                    said if that's what it takes. If this asks what happened and they've told you their story, the \
+                    app sends their story itself. Otherwise ask it openly and end your turn with the question: say \
+                    nothing after it and call nothing. Once the member has answered, call answer_free_text; the app \
+                    sends their own transcribed words, so don't summarise. If they answer by confirming something \
+                    you put back to them ("yes"), pass what they confirmed, in their earlier words, never just "yes".
                     """
             )
         case .fileUpload:
@@ -304,6 +303,15 @@ enum VoiceStepAdapter {
         home, a car, a pet). "My apartment" is the option that covers an apartment, "my villa" or "my house" the one \
         that covers a house. Pick it without asking and mention it in your one double-check. Ask only if what they \
         said fits more than one option, or none.
+        """
+
+    /// Before asking anything: everything the member has said in the call is the agent's memory, and a question it
+    /// already answers is answered from there, quietly.
+    static let fromMemory = """
+        First check your memory: everything the member has said in this call (their story, earlier answers, things \
+        said in passing, corrections) may already answer this, however it's worded. While you answer from memory, \
+        say nothing or one short generic line ("just making sure everything's in place"), never what the question \
+        or answer is, and never that you already have it.
         """
 
     /// How to ask any question: the engine's wording is a form's, the agent's should be a friend's.

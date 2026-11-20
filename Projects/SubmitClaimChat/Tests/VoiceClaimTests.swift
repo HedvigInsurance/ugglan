@@ -100,8 +100,19 @@ final class VoiceStepAdapterTests {
 
         #expect(VoiceClaimToolbox.isGrounded("The food was actually worth 1,500 kroner.", in: said))
         #expect(!VoiceClaimToolbox.isGrounded("Meat and fish worth 9,000 kronor.", in: said))
-        #expect(VoiceClaimToolbox.isConfirmation("Yes, that's right."))
-        #expect(!VoiceClaimToolbox.isConfirmation("Yes, about 1,500."))
+        #expect(VoiceClaimToolbox.isAcknowledgement("Yes, that's right."))
+        #expect(VoiceClaimToolbox.isAcknowledgement("Okay, thanks."))
+        #expect(!VoiceClaimToolbox.isAcknowledgement("Yes, about 1,500."))
+        #expect(!VoiceClaimToolbox.isAcknowledgement("No."))
+    }
+
+    @Test
+    func numbersHaveToBeTheMembersWhicheverWayTheyWereSaid() {
+        #expect(VoiceClaimToolbox.isGrounded("1,500 worth of groceries", in: ["Fifteen hundred worth of groceries."]))
+        #expect(VoiceClaimToolbox.isGrounded("Twenty-five hundred kroner", in: ["About 2 500, I think."]))
+        #expect(VoiceClaimToolbox.isGrounded("Um, no, I'm not sure actually.", in: ["Um, no, I'm not sure actually."]))
+        #expect(!VoiceClaimToolbox.isGrounded("About 3,000 kronor of food spoiled", in: ["2,500 of food spoiled."]))
+        #expect(VoiceClaimToolbox.numbers(in: ["two", "thousand", "five", "hundred"]) == [2500])
     }
 
     @Test
@@ -631,6 +642,67 @@ extension SubmitClaimChatDependencySuite {
             #expect(Array(client.events.suffix(2)) == [.submitSelect("yes"), .other("information")])
             #expect(next["step_id"] as? String == "date-form")
             #expect((list["answers"] as? [[String: Any]])?.count == 1)  // the notice is never offered to change
+        }
+
+        @Test
+        func aQuestionTheStoryAlreadyAnsweredIsAnsweredFromItWithoutAsking() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.description)
+            client.nextAfterAudio = VoiceFixtures.spoiledFood
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("My fridge stopped cooling yesterday and about 2,500 kronor of food spoiled.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+
+            // Nothing new from the member: the agent answers the food question from the story.
+            let invented = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "spoiled-food", "member_words": "About 3,000 kronor of food spoiled."]
+                )
+            )
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "spoiled-food", "member_words": "About 2,500 kronor of food spoiled."]
+            )
+
+            #expect(invented["status"] as? String == "error")
+            #expect(client.submittedFreeText == "About 2,500 kronor of food spoiled.")
+        }
+
+        @Test
+        func aDontKnowFromEarlierAnswersTheQuestionWhenItComesBackWorded() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.description)
+            client.nextAfterAudio = VoiceFixtures.yesNo
+            client.nextAfterInformation = VoiceFixtures.intent(
+                "repair",
+                VoiceFixtures.description.currentStep.content,
+                text: "Do you know if it can be repaired?"
+            )
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("My fridge stopped cooling.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+            toolbox.recordMemberUtterance("Um, no, I'm not sure actually.")
+            _ = await toolbox.handle(toolName: "skip_step", parameters: ["step_id": "yes-no"])
+            toolbox.recordMemberUtterance("Sure.")
+            _ = await toolbox.handle(toolName: "acknowledge_notice", parameters: ["step_id": "notice"])
+            toolbox.recordMemberUtterance("Okay, thanks.")
+
+            // Only "okay, thanks" since: the agent answers from what they said before.
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "repair", "member_words": "Um, no, I'm not sure actually."]
+            )
+
+            #expect(client.submittedFreeText == "Um, no, I'm not sure actually.")
         }
 
         @Test
