@@ -22,11 +22,13 @@ struct VoiceOrbView: View {
             Canvas { canvas, size in
                 let now = reduceMotion ? VoiceAudioLevels(agent: 0, member: 0) : levels()
                 // Each side only counts while it has the turn, so the mic picking up Hedvig doesn't shrink the orb.
+                // While Hedvig is busy, what plays is the typing sound, not her voice: it hurries the colours
+                // instead of growing the orb.
                 let frame = motion.advance(
                     to: time,
-                    agent: status == .speaking ? now.agent : 0,
+                    agent: status == .speaking && !isBusy ? now.agent : 0,
                     member: status == .listening ? Self.speech(now.member) : 0,
-                    busy: isBusy && status != .speaking ? 1 : 0
+                    busy: isBusy ? 1 : 0
                 )
                 draw(in: &canvas, size: size, frame: frame)
             }
@@ -353,12 +355,13 @@ private final class OrbMotion {
         agent = Self.ease(agent, toward: agentTarget, delta: delta)
         // The member's voice is followed closely, so the orb moves with their syllables, not just their turn.
         member = Self.ease(member, toward: memberTarget, delta: delta, rise: 14, fall: 4)
-        // Busy eases in and out over about a second, so the hurry starts and stops smoothly.
-        busy = Self.ease(busy, toward: busyTarget, delta: delta, rise: 1.5, fall: 1)
+        // Busy kicks in within about a quarter of a second (the waits are short) and settles back over a second.
+        busy = Self.ease(busy, toward: busyTarget, delta: delta, rise: 4, fall: 1.2)
 
-        wobble += delta * (1 + 0.8 * busy)
-        drift += delta * (0.4 + 1.6 * busy)
-        colorClock += delta / Self.paletteSeconds * (1 + 3 * busy)
+        // Busy: the colour fields swirl about eight times faster and the palettes change every second and a half.
+        wobble += delta * (1 + 1.2 * busy)
+        drift += delta * (0.4 + 2.8 * busy)
+        colorClock += delta / Self.paletteSeconds * (1 + 4.5 * busy)
         let palettes = HedvigPalette.all
         let index = Int(colorClock.rounded(.down))
         let blend = smoothstep(colorClock - Double(index))
