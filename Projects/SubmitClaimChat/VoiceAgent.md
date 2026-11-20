@@ -4,9 +4,10 @@ The voice claim POC (`Sources/Voice/`) talks to one **public** ElevenLabs agent.
 first message and language on every call (`VoiceAgentPrompt.swift`), so the dashboard only holds what the app can't
 send: the tools, the voice and the security settings.
 
-**The POC agent exists:** "Hedvig voice claim (POC)", `agent_5601m7spgj24ez8v0kv4y82074rh`, wired into staging in
-`Environment.elevenLabsClaimAgentId`. It is set up exactly as the sections below describe (LLM, voices, TTS model,
-English language preset, 15-minute call cap), plus a 50-calls-a-day / 3-concurrent limit. Recreate it from them.
+**The POC agent exists:** "Hedvig voice claim (POC)", `agent_0501m7w3ataqefxb1x22vvbaxe8k`, in Hedvig's ElevenLabs
+workspace, wired into staging in `Environment.elevenLabsClaimAgentId`. It is set up exactly as the sections below
+describe (LLM, voices, TTS model, English language preset, 15-minute call cap), plus a 50-calls-a-day /
+3-concurrent limit. Recreate it from them.
 
 ## 1. Create the agent
 
@@ -15,7 +16,7 @@ ElevenLabs dashboard → Agents → New agent (blank).
 | Setting | Value |
 |---|---|
 | Voice | Swedish: `QLfvbukvQvrPOx9HXQ3x` (the voice used in hedvig-claims-poc). English: `cNYrMw9glwJZXR8RwbuR` (Belle, added to My Voices), set in the `en` language preset; the Swedish voice drifted into other accents in English. A Voice Library voice must be added to the workspace first, or calls fall back to the default male voice |
-| TTS model | `eleven_v3_conversational`, expressive mode, stability 0.65, speed 0.95 |
+| TTS model | `eleven_v4_turbo` (Eleven v4 Turbo, the real-time v4 for agents; plain `eleven_v4` is for produced audio), stability 0.65, speed 0.95. Before: `eleven_v3_conversational`, expressive mode, same settings, which were tuned for v3 |
 | Languages | Swedish (default) + English |
 | LLM | `gpt-6-luna`, reasoning effort low, fast tier (trying; at none it started in 0.5–1.4 s but followed tone less closely); backup after 3 s (`cascade_timeout_seconds`). `gemini-4-hydrogen` at low averaged 1.5 s to its first token and ran past 3 s on about 1 in 5 turns. `claude-haiku-5-5` at none started replies in 0.5–1 s. `gemini-3.8-flash` at default effort answered 1–5 s late; at low effort on the fast tier it worked |
 | System prompt / first message | Anything; the app overrides both |

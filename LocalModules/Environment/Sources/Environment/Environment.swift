@@ -112,7 +112,7 @@ public enum Environment: Hashable {
     public var elevenLabsClaimAgentId: String? {
         switch self {
         // "Hedvig voice claim (POC)": public, Swedish + English, 50 calls a day. Setup: SubmitClaimChat/VoiceAgent.md
-        case .staging, .custom: return "agent_5601m7spgj24ez8v0kv4y82074rh"
+        case .staging, .custom: return "agent_0501m7w3ataqefxb1x22vvbaxe8k"
         case .production: return nil
         }
     }
