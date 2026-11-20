@@ -123,3 +123,19 @@ private struct MessagesAnimation<Value: Equatable>: ViewModifier {
         content.animation(reduceMotion ? nil : .easeInOut(duration: 0.25), value: value)
     }
 }
+
+/// Loading animation for an opened message, shown while its body is fetched and, for emails, until the web view
+/// has drawn it. A fixed height keeps the card from jumping between the two phases.
+struct MessageBodyLoader: View {
+    static let height: CGFloat = .padding96 + .padding64
+
+    var body: some View {
+        DotsActivityIndicator(.standard)
+            // Primary text colour; the default inverted one is for dark buttons and vanishes on the card.
+            .useDarkColor
+            .frame(maxWidth: .infinity)
+            .frame(height: Self.height)
+            .accessibilityElement()
+            .accessibilityLabel(L10n.embarkLoading)
+    }
+}

@@ -20,6 +20,7 @@ struct MessageDetailScreen: View {
         } else {
             // Opened before the inbox has loaded, e.g. from a preview or a future deep link.
             DotsActivityIndicator(.standard)
+                .useDarkColor
                 .task {
                     if store.state.needsLoading { await store.fetchMessages() }
                 }
@@ -74,8 +75,6 @@ private struct MessageDetailContent: View {
                 }
                 MessagesCard {
                     messageBody
-                        .padding(.horizontal, .padding24)
-                        .padding(.vertical, .padding24 + .padding8)
                         .messagesAnimation(value: BodyPhase(message: message, failed: bodyLoadFailed))
                 }
             }
@@ -103,6 +102,8 @@ private struct MessageDetailContent: View {
         .accessibilityLabel([message.sender, message.receivedAtLabel].compactMap { $0 }.joined(separator: ", "))
     }
 
+    /// Emails fill the card edge to edge, since their HTML brings its own background and margins; plain text,
+    /// errors and the loader get the card's inner padding.
     @ViewBuilder
     private var messageBody: some View {
         if let body = message.body {
@@ -113,18 +114,19 @@ private struct MessageDetailContent: View {
                     hText(body, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, .padding24)
+                        .padding(.vertical, .padding24 + .padding8)
                 }
             }
             .transition(.opacity)
         } else if bodyLoadFailed {
             GenericErrorView(formPosition: nil)
                 .hStateViewButtonConfig(.init(actionButton: .init(buttonAction: onRetry)))
+                .padding(.horizontal, .padding24)
+                .padding(.vertical, .padding24 + .padding8)
                 .transition(.opacity)
         } else {
-            DotsActivityIndicator(.standard)
-                .frame(maxWidth: .infinity)
-                .accessibilityElement()
-                .accessibilityLabel(L10n.embarkLoading)
+            MessageBodyLoader()
                 .transition(.opacity)
         }
     }

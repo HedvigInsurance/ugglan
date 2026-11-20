@@ -14,8 +14,23 @@ struct EmailWebView: View {
     /// Read so the document is rebuilt, at the new scaled size, when the text size changes.
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var contentHeight: CGFloat = .padding40
+    /// False until WebKit has finished the first load, so the loader stays up instead of a blank card.
+    @State private var isRendered = false
 
     var body: some View {
+        ZStack {
+            webView
+                .frame(height: isRendered ? contentHeight : MessageBodyLoader.height, alignment: .top)
+                .opacity(isRendered ? 1 : 0)
+            if !isRendered {
+                MessageBodyLoader()
+                    .transition(.opacity)
+            }
+        }
+        .messagesAnimation(value: isRendered)
+    }
+
+    private var webView: some View {
         EmailWebViewRepresentable(
             document: EmailDocument.make(
                 body: html,
@@ -28,18 +43,19 @@ struct EmailWebView: View {
                         )
                     )
             ),
-            contentHeight: $contentHeight
+            contentHeight: $contentHeight,
+            isRendered: $isRendered
         )
-        .frame(height: contentHeight)
     }
 }
 
 private struct EmailWebViewRepresentable: UIViewRepresentable {
     let document: String
     @Binding var contentHeight: CGFloat
+    @Binding var isRendered: Bool
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(contentHeight: $contentHeight)
+        Coordinator(contentHeight: $contentHeight, isRendered: $isRendered)
     }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -63,6 +79,7 @@ private struct EmailWebViewRepresentable: UIViewRepresentable {
 
     func updateUIView(_ webView: WKWebView, context: Context) {
         context.coordinator.contentHeight = $contentHeight
+        context.coordinator.isRendered = $isRendered
         guard context.coordinator.loadedDocument != document else { return }
         context.coordinator.loadedDocument = document
         context.coordinator.isInitialLoadPending = true
@@ -77,12 +94,27 @@ private struct EmailWebViewRepresentable: UIViewRepresentable {
     @MainActor
     final class Coordinator: NSObject, WKNavigationDelegate {
         var contentHeight: Binding<CGFloat>
+        var isRendered: Binding<Bool>
         var loadedDocument: String?
         var isInitialLoadPending = false
         var contentSizeObservation: NSKeyValueObservation?
 
-        init(contentHeight: Binding<CGFloat>) {
+        init(contentHeight: Binding<CGFloat>, isRendered: Binding<Bool>) {
             self.contentHeight = contentHeight
+            self.isRendered = isRendered
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            // Measure once more after layout so the card opens at the email's full height.
+            let height = webView.scrollView.contentSize.height
+            if height.isFinite, height > 0 {
+                contentHeight.wrappedValue = height
+            }
+            isRendered.wrappedValue = true
+        }
+
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            isRendered.wrappedValue = true
         }
 
         func observeContentSize(of webView: WKWebView) {
