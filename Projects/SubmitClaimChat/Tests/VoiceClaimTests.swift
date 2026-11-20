@@ -367,6 +367,7 @@ extension SubmitClaimChatDependencySuite {
             let afterYes = try json(await toolbox.handle(toolName: "note_story", parameters: [:]))
 
             #expect(tooEarly["status"] as? String == "error")
+            #expect(tooEarly["current_step"] == nil)  // handed the step again, the agent repeats it
             #expect(client.events == [.start])
             #expect(afterYes["step_id"] as? String == "triage-category")
         }

@@ -265,7 +265,10 @@ final class VoiceClaimToolbox {
             if case let .step(payload) = result { delivered(payload) }
             return result.json()
         } catch {
-            let current = currentIntent.map { VoiceStepAdapter.payload(for: $0, policies: policies) }
+            // Waiting for the member carries no step: handed the step again, the agent repeats what it just said.
+            let current =
+                error is WaitForMember
+                ? nil : currentIntent.map { VoiceStepAdapter.payload(for: $0, policies: policies) }
             if let current { delivered(current) }
             let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
             return
@@ -296,12 +299,7 @@ final class VoiceClaimToolbox {
         }
 
         if hasOpenQuestion, tool.answersAStep || tool.isNoteStory {
-            throw VoiceTool.InvalidCall(
-                message: """
-                    You just asked the member a question and they haven't answered yet. End your turn and wait for \
-                    their reply before saving anything.
-                    """
-            )
+            throw WaitForMember()
         }
         if tool.answersAStep { isPastOpening = true }
         switch tool {
@@ -680,6 +678,16 @@ final class VoiceClaimToolbox {
         guard payload.status == .step, let stepId = payload.stepId else { return }
         deliveredStepId = stepId
         utterancesAtDelivery = memberUtterances.count
+    }
+}
+
+/// The agent tried to save something while its question to the member is still unanswered.
+private struct WaitForMember: LocalizedError {
+    var errorDescription: String? {
+        """
+        You just asked the member something and they heard you; they haven't answered yet. Don't repeat or rephrase \
+        it and don't say anything else: end your turn now, and save their answer once they reply.
+        """
     }
 }
 
