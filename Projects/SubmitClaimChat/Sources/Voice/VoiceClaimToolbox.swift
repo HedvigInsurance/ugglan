@@ -12,6 +12,8 @@ protocol VoiceClaimToolboxDelegate: AnyObject {
     func toolboxRequestsHandoff(reason: String)
     /// The claim was submitted.
     func toolboxDidFinish(outcome: ClaimIntentStepOutcome)
+    /// The claim went back to an earlier step: whatever sheet was open belongs to a step that no longer exists.
+    func toolboxWentBack()
 }
 
 /// The client tools the ElevenLabs agent calls, by name. Each one maps onto the same `ClaimIntentService` calls
@@ -30,6 +32,9 @@ enum VoiceTool: Equatable {
     case requestPhotos(stepId: String)
     case showSummary(stepId: String)
     case handOffToChat(reason: String)
+    /// Without a step id: list the answers so far. With one: go back to that step to change its answer, like the
+    /// chat's edit button (the engine's regret), which also clears every answer after it.
+    case goBack(stepId: String?)
 
     struct InvalidCall: LocalizedError {
         let message: String
@@ -77,6 +82,9 @@ enum VoiceTool: Equatable {
         case "request_photos": self = .requestPhotos(stepId: try string("step_id"))
         case "show_summary": self = .showSummary(stepId: try string("step_id"))
         case "hand_off_to_chat": self = .handOffToChat(reason: (parameters["reason"] as? String) ?? "")
+        case "go_back":
+            let stepId = (parameters["step_id"] as? String)?.trimmingCharacters(in: .whitespaces) ?? ""
+            self = .goBack(stepId: stepId.isEmpty ? nil : stepId)
         default: throw InvalidCall(message: "There is no tool called \(name).")
         }
     }
@@ -118,6 +126,21 @@ struct StoryFacts: Equatable {
     var item: String?
 }
 
+/// One answer the member gave this call, as `go_back` lists it: the step, its question, and the answer in words.
+struct AnsweredStep: Encodable, Equatable {
+    let stepId: String
+    let question: String?
+    let answer: String
+    /// Whether the engine lets this step be answered again (`ClaimIntent.isRegrettable`).
+    let canChange: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case question, answer
+        case stepId = "step_id"
+        case canChange = "can_change"
+    }
+}
+
 extension FieldValue: Equatable {
     public static func == (lhs: FieldValue, rhs: FieldValue) -> Bool {
         lhs.id == rhs.id && lhs.values == rhs.values
@@ -131,9 +154,11 @@ enum VoiceToolResult: Encodable {
     /// The app is showing something (picker, summary); the agent waits for an `[APP]` message.
     case waiting(String)
     case error(message: String, currentStep: VoiceStepPayload?)
+    /// The member's answers so far, for `go_back`.
+    case answers([AnsweredStep])
 
     private enum CodingKeys: String, CodingKey {
-        case status, fieldId = "field_id", options, instruction, error, currentStep = "current_step"
+        case status, fieldId = "field_id", options, instruction, error, answers, currentStep = "current_step"
     }
 
     func encode(to encoder: Encoder) throws {
@@ -164,6 +189,21 @@ enum VoiceToolResult: Encodable {
             try container.encode("error", forKey: .status)
             try container.encode(message, forKey: .error)
             try container.encodeIfPresent(currentStep, forKey: .currentStep)
+        case let .answers(answers):
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("answers", forKey: .status)
+            try container.encode(answers, forKey: .answers)
+            try container.encode(
+                answers.isEmpty
+                    ? "Nothing has been saved yet, so there's nothing to change. Carry on with the current question."
+                    : """
+                    The member's answers so far, oldest first. Find the one they want to change and call go_back \
+                    with its step_id. If can_change is false, tell them that answer can't be changed here and \
+                    that they can let the claims handler know once the claim is in. If it's unclear which one they \
+                    mean, ask them in a few words. Never read this list out.
+                    """,
+                forKey: .instruction
+            )
         }
     }
 
@@ -228,6 +268,11 @@ final class VoiceClaimToolbox {
 
     /// The story the agent noted (`note_story`), once it has.
     private var note: StoryFacts?
+
+    /// What the member has answered this call, oldest first, so `go_back` can find the step they want to change.
+    private(set) var answered: [AnsweredStep] = []
+    /// The names of the search matches the agent was given, by option id, so a chosen item reads as a name.
+    private var searchLabels: [String: String] = [:]
 
     /// The claim intent being created; tools wait for it, so the call can connect at the same time.
     private var starting: Task<VoiceStepPayload, Error>?
@@ -338,9 +383,9 @@ final class VoiceClaimToolbox {
                 throw VoiceTool.InvalidCall(message: "\(optionId) is not one of this step's option ids.")
             }
             let leaves = VoiceStepAdapter.leavesPlaybooks(content: intent.currentStep.content, optionId: optionId)
-            let next = try await adopt(
-                try await service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
-            )
+            let result = try await service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
+            record(intent, answer: model.options.first { $0.id == optionId }?.title ?? optionId)
+            let next = try await adopt(result)
             guard leaves else { return .step(next) }
             let reason = "this kind of claim has its own questions in the chat"
             handoffReason = reason
@@ -348,10 +393,10 @@ final class VoiceClaimToolbox {
 
         case let .answerForm(stepId, fields):
             let intent = try currentIntent(matching: stepId)
-            guard case .form = intent.currentStep.content else { throw wrongKind(intent) }
-            return .step(
-                try await adopt(try await service.claimIntentSubmitForm(fields: fields, stepId: stepId))
-            )
+            guard case let .form(model) = intent.currentStep.content else { throw wrongKind(intent) }
+            let result = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
+            record(intent, answer: describe(fields, in: model))
+            return .step(try await adopt(result))
 
         case let .answerFreeText(stepId, agentWords):
             let intent = try currentIntent(matching: stepId)
@@ -365,16 +410,16 @@ final class VoiceClaimToolbox {
                         """
                 )
             }
-            let next = try await adopt(
-                try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
-            )
+            let result = try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
+            record(intent, answer: words)
+            let next = try await adopt(result)
             hasAnsweredFreeText = true
             return .step(next)
 
         case let .searchField(stepId, fieldId, query):
             _ = try currentIntent(matching: stepId)
             let result = try await service.claimIntentFormFieldSearch(stepId: stepId, fieldId: fieldId, query: query)
-            return .searchResults(fieldId: fieldId, options: Self.spokenOptions(result))
+            return .searchResults(fieldId: fieldId, options: rememberLabels(Self.spokenOptions(result)))
 
         case let .acknowledgeNotice(stepId):
             let intent = try currentIntent(matching: stepId)
@@ -386,7 +431,9 @@ final class VoiceClaimToolbox {
             guard intent.isSkippable else {
                 throw VoiceTool.InvalidCall(message: "This step can't be skipped; the member needs to answer it.")
             }
-            return .step(try await adopt(try await service.claimIntentSkipStep(stepId: stepId)))
+            let result = try await service.claimIntentSkipStep(stepId: stepId)
+            record(intent, answer: "(skipped: the member didn't know or didn't have it)")
+            return .step(try await adopt(result))
 
         case let .requestPhotos(stepId):
             let intent = try currentIntent(matching: stepId)
@@ -416,7 +463,85 @@ final class VoiceClaimToolbox {
         case let .handOffToChat(reason):
             delegate?.toolboxRequestsHandoff(reason: handoffReason ?? reason)
             return .waiting("Handing over to the chat. Don't say anything more.")
+
+        case let .goBack(stepId):
+            guard let stepId else { return .answers(answered) }
+            return .step(try await goBack(to: stepId))
         }
+    }
+
+    // MARK: - Changing an answer
+
+    /// Goes back to an answered step so the member can change it, the way the chat's edit button does: the engine
+    /// (regret) makes that step current again and drops every answer after it, which it then asks again.
+    private func goBack(to stepId: String) async throws -> VoiceStepPayload {
+        guard let index = answered.firstIndex(where: { $0.stepId == stepId }) else {
+            throw VoiceTool.InvalidCall(
+                message: "That isn't one of the member's answers. Call go_back without a step_id to get the list."
+            )
+        }
+        guard answered[index].canChange else {
+            throw VoiceTool.InvalidCall(
+                message: """
+                    That answer can't be changed here. Tell the member, kindly, that they can let the claims handler \
+                    know once the claim is in, then carry on with the current question.
+                    """
+            )
+        }
+        guard case let .intent(model)? = try await service.claimIntentRegretStep(stepId: stepId) else {
+            throw ClaimIntentError.invalidResponse
+        }
+        answered.removeSubrange(index...)
+        // Only what the member says from here on answers the step again, never the request to change it. That
+        // holds for the description too, so its new answer is what they say next, not the whole call.
+        markAnswered()
+        hasAnsweredFreeText = true
+        delegate?.toolboxWentBack()
+        var payload = try currentPayload(after: try await advancingTasks(model))
+        guard payload.status == .step else { return payload }
+        payload.instruction = """
+            You've gone back to this question, and the answers after it were cleared. If the member already said what \
+            it should be, save that right away; otherwise ask for it. For a free-text question, ask them to say the \
+            whole answer again, since it replaces the old one. Then carry on: Hedvig asks the later questions again, \
+            and you answer each one straight away from what the member already told you, without asking or \
+            confirming it again, unless the change affects it. Never mention steps, going back or clearing anything.
+
+            """ + payload.instruction
+        return payload
+    }
+
+    /// Keeps the answer the member gave to this step, for `go_back`. Answering a step again replaces it.
+    private func record(_ intent: ClaimIntent, answer: String) {
+        let stepId = intent.currentStep.id
+        answered.removeAll { $0.stepId == stepId }
+        answered.append(
+            AnsweredStep(
+                stepId: stepId,
+                question: VoiceStepAdapter.payload(for: intent, policies: policies).question,
+                answer: answer,
+                canChange: intent.isRegrettable
+            )
+        )
+    }
+
+    /// A form answer in words: each field's title and its values, with options and search matches by name.
+    private func describe(_ fields: [FieldValue], in model: ClaimIntentStepContentForm) -> String {
+        fields.map { value in
+            let field = model.fields.first { $0.id == value.id }
+            let shown = value.values.map { raw in
+                field?.options.first { $0.value == raw }?.displayTitle ?? searchLabels[raw] ?? raw
+            }
+            var text = shown.joined(separator: ", ")
+            if !shown.isEmpty, let suffix = field?.suffix, !suffix.isEmpty { text += " \(suffix)" }
+            guard let title = field?.title else { return text }
+            return "\(title): \(text.isEmpty ? "(left empty)" : text)"
+        }
+        .joined(separator: "; ")
+    }
+
+    private func rememberLabels(_ options: [VoiceStepPayload.Option]) -> [VoiceStepPayload.Option] {
+        for option in options { searchLabels[option.id] = option.label }
+        return options
     }
 
     /// The result of a step the app ran itself (the picker or summary sheet), as the agent's next step. With
@@ -467,7 +592,7 @@ final class VoiceClaimToolbox {
                 fieldId: field.id,
                 query: item
             )
-            payload.searchResults = Self.spokenOptions(result)
+            payload.searchResults = rememberLabels(Self.spokenOptions(result))
             payload.instruction = """
                 The app already searched for "\(item)"; the best matches are in search_results. Talk about them the \
                 way a person would: brand and model names are fine, but never read out model numbers or codes like \
@@ -495,10 +620,9 @@ final class VoiceClaimToolbox {
             else { return nil }
             return {
                 let leaves = VoiceStepAdapter.leavesPlaybooks(content: intent.currentStep.content, optionId: optionId)
-                let next = try await self.adopt(
-                    try await self.service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId),
-                    waitFully: true
-                )
+                let result = try await self.service.claimIntentSubmitSelect(stepId: stepId, selectedValue: optionId)
+                self.record(intent, answer: model.options.first { $0.id == optionId }?.title ?? optionId)
+                let next = try await self.adopt(result, waitFully: true)
                 guard leaves else { return next }
                 let reason = "this kind of claim has its own questions in the chat"
                 self.handoffReason = reason
@@ -508,10 +632,9 @@ final class VoiceClaimToolbox {
             let words = String(memberWords(fallback: "").prefix(model.freeTextMaxLength))
             guard !hasAnsweredFreeText, !words.isEmpty else { return nil }
             return {
-                let next = try await self.adopt(
-                    try await self.service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId),
-                    waitFully: true
-                )
+                let result = try await self.service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
+                self.record(intent, answer: words)
+                let next = try await self.adopt(result, waitFully: true)
                 self.hasAnsweredFreeText = true
                 return next
             }
@@ -532,10 +655,10 @@ final class VoiceClaimToolbox {
             }
             guard !values.isEmpty, !values.contains(where: { $0 == nil }) else { return nil }
             return {
-                try await self.adopt(
-                    try await self.service.claimIntentSubmitForm(fields: values.compactMap { $0 }, stepId: stepId),
-                    waitFully: true
-                )
+                let fields = values.compactMap { $0 }
+                let result = try await self.service.claimIntentSubmitForm(fields: fields, stepId: stepId)
+                self.record(intent, answer: self.describe(fields, in: model))
+                return try await self.adopt(result, waitFully: true)
             }
         default:
             return nil

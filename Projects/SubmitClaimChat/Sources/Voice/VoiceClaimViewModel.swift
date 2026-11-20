@@ -245,8 +245,7 @@ final class VoiceClaimViewModel {
             await sendWhenQuiet(
                 """
                 [APP] The member closed the summary without submitting. Ask whether something is wrong. To change \
-                an earlier answer they need the chat: offer to continue there (hand_off_to_chat). Or show the \
-                summary again (show_summary).
+                an earlier answer, use go_back. Or show the summary again (show_summary).
                 """
             )
         }
@@ -312,6 +311,12 @@ extension VoiceClaimViewModel: VoiceClaimToolboxDelegate {
         summaryStep = SubmitClaimSummaryStep(claimIntent: intent, service: service) { [weak self] event in
             self?.stepFinished(event)
         }
+    }
+
+    func toolboxWentBack() {
+        // Cleared first, so the sheets' own dismissal doesn't tell the agent the member closed them.
+        uploadStep = nil
+        summaryStep = nil
     }
 
     func toolboxRequestsHandoff(reason _: String) {

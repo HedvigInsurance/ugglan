@@ -54,6 +54,7 @@ take up to 30 s). Every parameter is a string unless noted. The names must match
 | `request_photos` | `step_id` | Open the photo/document picker on the phone for an upload step. |
 | `show_summary` | `step_id` | Show the claim summary on screen so the member can tap submit. |
 | `hand_off_to_chat` | `reason` | End the call and continue the claim in the app's chat. |
+| `go_back` | `step_id` (optional) | Change an answer the member gave earlier, when they say it's wrong. Without step_id: returns their answers so far. With step_id: reopens that question so it can be answered again; the answers after it are asked again. |
 
 **Pre-tool speech:** *Force* on `answer_free_text` (the member has always just spoken), *Auto* on the rest, so steps the
 story already answers go by silently. That one line before the tool call is the only filler; the prompt forbids a
@@ -83,3 +84,7 @@ members. With either missing, the honesty pledge shows the normal Continue butto
    `status: handoff`. The agent says so and calls `hand_off_to_chat`, and the chat resumes the same draft.
 5. Upload and summary steps open the existing views over the orb. When the member finishes, the app tells the agent
    with an `[APP] …` message. The member taps submit; the agent says goodbye; the success screen shows.
+6. When the member says an earlier answer is wrong (the agent misheard), the agent calls `go_back` for the list of
+   answers, then `go_back` with the step to change. That's the chat's edit button (`claimIntentRegretStep`): the
+   engine reopens the step and clears the answers after it, which the agent then answers again from what the member
+   already said. Open sheets close. Steps the engine marks as not regrettable can't be changed.
