@@ -5,9 +5,8 @@ first message and language on every call (`VoiceAgentPrompt.swift`), so the dash
 send: the tools, the voice and the security settings.
 
 **The POC agent exists:** "Hedvig voice claim (POC)", `agent_5601m7spgj24ez8v0kv4y82074rh`, wired into staging in
-`Environment.elevenLabsClaimAgentId`. It is set up as below with Gemini 3.8 Flash (parallel tool calls off),
-the Louise voice on Flash v2.5, an English language preset, a 50-calls-a-day / 3-concurrent limit, and a 10-minute
-call cap. The sections below describe how to recreate it.
+`Environment.elevenLabsClaimAgentId`. It is set up exactly as the sections below describe (LLM, voices, TTS model,
+English language preset, 15-minute call cap), plus a 50-calls-a-day / 3-concurrent limit. Recreate it from them.
 
 ## 1. Create the agent
 
