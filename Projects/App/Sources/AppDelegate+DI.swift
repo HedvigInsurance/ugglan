@@ -34,6 +34,8 @@ enum DI {
     static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
+        let publicImportantMessagesClient = PublicImportantMessagesClientShared()
+        Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in publicImportantMessagesClient })
         let ugglanStore: UgglanStore = globalAppStateContainer.get()
         let dateService = DateService(locale: Localization.Locale.currentLocale.value)
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
