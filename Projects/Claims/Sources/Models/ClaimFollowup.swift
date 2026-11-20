@@ -28,6 +28,8 @@ public struct ClaimFollowupQuestion: Codable, Equatable, Hashable, Identifiable,
     public let text: String
     /// A short line shown under the question, set by the handler.
     public let hint: String?
+    /// The question's own wording for passing on it; the app falls back to a generic one when nil.
+    public let cantAnswerLabel: String?
     public let state: State
     public let cantAnswerComment: String?
     public let content: Content
@@ -36,6 +38,7 @@ public struct ClaimFollowupQuestion: Codable, Equatable, Hashable, Identifiable,
         id: String,
         text: String,
         hint: String? = nil,
+        cantAnswerLabel: String? = nil,
         state: State,
         cantAnswerComment: String?,
         content: Content
@@ -43,6 +46,7 @@ public struct ClaimFollowupQuestion: Codable, Equatable, Hashable, Identifiable,
         self.id = id
         self.text = text
         self.hint = hint
+        self.cantAnswerLabel = cantAnswerLabel
         self.state = state
         self.cantAnswerComment = cantAnswerComment
         self.content = content

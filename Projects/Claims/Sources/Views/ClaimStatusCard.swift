@@ -14,10 +14,12 @@ struct ClaimStatusCard: View {
     var body: some View {
         switch claimType {
         case let .claim(claim):
-            let openFollowup = claim.status == .closed ? nil : claimsStore.openFollowup(claimId: claim.id)
+            let hidesTodos = claim.status == .closed || claim.isPartnerClaim
+            let todoCount = hidesTodos ? 0 : claimsStore.openFollowup(claimId: claim.id)?.questionsLeft ?? 0
+            let hasTodos = todoCount > 0
             StatusCard(
                 onSelected: nil,
-                mainContent: ClaimPills(claim: claim),
+                mainContent: ClaimPills(claim: claim, todoCount: todoCount),
                 title: claim.claimType,
                 subTitle: claim.getSubTitle,
                 bottomComponent: {
@@ -25,27 +27,16 @@ struct ClaimStatusCard: View {
                         ClaimStatusBar(
                             status: claim.status,
                             outcome: claim.outcome,
-                            isWaitingForYou: openFollowup != nil
+                            isWaitingForYou: hasTodos
                         )
-                        if let openFollowup {
-                            let hasStarted = openFollowup.questions.contains { $0.state != .todo }
-                            hButton(
-                                .medium,
-                                .primary,
-                                content: .init(
-                                    title: hasStarted ? L10n.claimFollowupContinueButton : L10n.claimFollowupAnswerButton
-                                ),
-                                {
-                                    NotificationCenter.default.post(name: .openClaimFollowup, object: openFollowup)
-                                }
-                            )
-                            .hButtonTakeFullWidth(true)
-                        }
                         if enableTap {
                             hButton(
                                 .medium,
-                                .secondary,
-                                content: .init(title: L10n.ClaimStatus.ClaimDetails.button),
+                                hasTodos ? .primary : .secondary,
+                                content: .init(
+                                    title: hasTodos
+                                        ? L10n.claimFollowupAnswerButton : L10n.ClaimStatus.ClaimDetails.button
+                                ),
                                 {
                                     homeRouter.push(claim)
                                 }
@@ -148,11 +139,15 @@ extension Date {
 
 struct ClaimPills: View {
     var claim: ClaimModel
+    var todoCount = 0
 
     var body: some View {
         HStack {
             if let statusPill = statusPill {
                 statusPill
+            }
+            if todoCount > 0 {
+                hPill(text: L10n.claimTodoPill(todoCount), color: .amber, colorLevel: .one)
             }
             if let outcomePill = outcomePill {
                 outcomePill

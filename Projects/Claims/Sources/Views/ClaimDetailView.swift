@@ -34,6 +34,7 @@ public struct ClaimDetailView: View {
 
 private struct ClaimDetailContentView: View {
     @Bindable var vm: ClaimDetailViewModel
+    @State private var todoVm = ClaimTodoViewModel()
     @Environment(NavigationRouter.self) var router
 
     private var statusParagraph: String? {
@@ -44,8 +45,14 @@ private struct ClaimDetailContentView: View {
         hForm {
             VStack(spacing: .padding8) {
                 if let claim = vm.claim {
+                    todoInfoCardSection(followup: todoVm.followup(for: claim))
                     infoCardSection(text: claim.infoText)
                     claimCardSection(claim: claim)
+                    if let followup = todoVm.followup(for: claim) {
+                        ClaimTodoSection(vm: todoVm, followup: followup)
+                            .padding(.top, .padding16)
+                            .padding(.bottom, .padding8)
+                    }
                     if !claim.isPartnerClaim {
                         infoAndContactSection
                         memberFreeTextSection
@@ -102,6 +109,32 @@ private struct ClaimDetailContentView: View {
         .trackVisibility(as: ClaimDetailView.self)
         .task {
             vm.start()
+        }
+        .task(id: vm.claim?.id) {
+            if let claim = vm.claim {
+                await todoVm.start(claim: claim)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func todoInfoCardSection(followup: ClaimFollowup?) -> some View {
+        if let followup {
+            hSection {
+                if !followup.isOpen {
+                    InfoCard(text: L10n.claimTodoInfoDone, type: .campaign)
+                } else if followup.canSend && !todoVm.isSending {
+                    // A send that failed, or an old modal flow closed without confirming, leaves nothing to answer.
+                    InfoCard(text: L10n.claimTodoInfoOpen, type: .attention)
+                        .buttons([
+                            .init(buttonTitle: L10n.claimFollowupSendButton) { [todoVm] in
+                                Task { await todoVm.sendIfComplete(followup) }
+                            }
+                        ])
+                } else {
+                    InfoCard(text: L10n.claimTodoInfoOpen, type: .attention)
+                }
+            }
         }
     }
 
@@ -385,6 +418,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> hClaimFollowupClient in ClaimFollowupClientDemo() })
 
     let claim = ClaimModel(
         id: "claimId",
@@ -426,6 +460,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
     Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in FeatureFlagsDemo() })
+    Dependencies.shared.add(module: Module { () -> hClaimFollowupClient in ClaimFollowupClientDemo() })
 
     let claim = ClaimModel(
         id: "partnerClaimId",

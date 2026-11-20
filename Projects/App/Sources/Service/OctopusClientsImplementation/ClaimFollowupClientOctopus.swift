@@ -201,6 +201,7 @@ final class ClaimFollowupClientOctopus: hClaimFollowupClient {
             id: question.id,
             text: question.text,
             hint: question.hint,
+            cantAnswerLabel: question.cantAnswerLabel,
             state: state,
             cantAnswerComment: question.cantAnswerComment,
             content: content(from: question.content, questionId: question.id)
@@ -221,7 +222,13 @@ final class ClaimFollowupClientOctopus: hClaimFollowupClient {
                 maxLength: freeText.maxLength,
                 currentValue: freeText.currentValue,
                 currentAudio: freeText.currentAudio.flatMap {
-                    file(id: $0.id, url: $0.url, contentType: $0.contentType, fileName: $0.fileName, relevance: $0.relevance)
+                    file(
+                        id: $0.id,
+                        url: $0.url,
+                        contentType: $0.contentType,
+                        fileName: $0.fileName,
+                        relevance: $0.relevance
+                    )
                 }
             )
         }
@@ -235,7 +242,13 @@ final class ClaimFollowupClientOctopus: hClaimFollowupClient {
             uploadUriByQuestionId[questionId] = fileUpload.uploadUri
             return .fileUpload(
                 currentFiles: fileUpload.currentFiles.compactMap {
-                    file(id: $0.id, url: $0.url, contentType: $0.contentType, fileName: $0.fileName, relevance: $0.relevance)
+                    file(
+                        id: $0.id,
+                        url: $0.url,
+                        contentType: $0.contentType,
+                        fileName: $0.fileName,
+                        relevance: $0.relevance
+                    )
                 }
             )
         }

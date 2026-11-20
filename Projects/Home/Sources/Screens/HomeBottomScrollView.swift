@@ -248,7 +248,7 @@ class HomeBottomScrollViewModel {
     private func handleClaimFollowups() {
         let claimsStore: ClaimsStore = globalAppStateContainer.get()
         claimsStore.publisher(for: \.followups)
-            .map { $0.contains(where: \.isOpen) }
+            .map { $0.contains(where: { $0.isOpen && $0.questionsLeft > 0 }) }
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in

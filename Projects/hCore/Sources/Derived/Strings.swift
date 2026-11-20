@@ -431,6 +431,34 @@ public enum L10n {
   public static var claimOutcomeUnresponsiveSupportText: String { L10n.tr("Localizable", "claim_outcome_unresponsive_support_text") }
   /// Appeal Instruction (SWE)
   public static var claimStatusAppealInstructionLinkText: String { L10n.tr("Localizable", "claim_status_appeal_instruction_link_text") }
+  /// Answer
+  public static var claimTodoAnswer: String { L10n.tr("Localizable", "CLAIM_TODO_ANSWER") }
+  /// Checking the file…
+  public static var claimTodoCheckingFile: String { L10n.tr("Localizable", "CLAIM_TODO_CHECKING_FILE") }
+  /// Choose another
+  public static var claimTodoChooseAnother: String { L10n.tr("Localizable", "CLAIM_TODO_CHOOSE_ANOTHER") }
+  /// I don't have this
+  public static var claimTodoDontHave: String { L10n.tr("Localizable", "CLAIM_TODO_DONT_HAVE") }
+  /// No file. We'll go by what you've told us.
+  public static var claimTodoDontHaveDone: String { L10n.tr("Localizable", "CLAIM_TODO_DONT_HAVE_DONE") }
+  /// I don't know
+  public static var claimTodoDontKnow: String { L10n.tr("Localizable", "CLAIM_TODO_DONT_KNOW") }
+  /// Thanks! We now have everything we need to move forward.
+  public static var claimTodoInfoDone: String { L10n.tr("Localizable", "CLAIM_TODO_INFO_DONE") }
+  /// We need a bit more from you to move your claim forward.
+  public static var claimTodoInfoOpen: String { L10n.tr("Localizable", "CLAIM_TODO_INFO_OPEN") }
+  /// %d left
+  public static func claimTodoLeft(_ p1: Int) -> String {
+    return L10n.tr("Localizable", "CLAIM_TODO_LEFT", p1)
+  }
+  /// We can't find what we asked for in this file. Choose another file, or send it anyway if it's the right one.
+  public static var claimTodoNudge: String { L10n.tr("Localizable", "CLAIM_TODO_NUDGE") }
+  /// %d to do
+  public static func claimTodoPill(_ p1: Int) -> String {
+    return L10n.tr("Localizable", "CLAIM_TODO_PILL", p1)
+  }
+  /// Send anyway
+  public static var claimTodoSendAnyway: String { L10n.tr("Localizable", "CLAIM_TODO_SEND_ANYWAY") }
   /// Don’t miss out on important information for your claim
   public static var claimsActivateNotificationsBody: String { L10n.tr("Localizable", "CLAIMS_ACTIVATE_NOTIFICATIONS_BODY") }
   /// Enable notifications
@@ -847,6 +875,12 @@ public enum L10n {
   public static var homeTodoAddCoinsuredTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COINSURED_TITLE") }
   /// Add co-owner
   public static var homeTodoAddCoownerTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COOWNER_TITLE") }
+  /// Complete your claim
+  public static var homeTodoClaimFollowupCompleteGenericTitle: String { L10n.tr("Localizable", "HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_GENERIC_TITLE") }
+  /// Complete your %@ claim
+  public static func homeTodoClaimFollowupCompleteTitle(_ p1: String) -> String {
+    return L10n.tr("Localizable", "HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_TITLE", p1)
+  }
   /// Continue answering questions about your claim
   public static var homeTodoClaimFollowupContinueTitle: String { L10n.tr("Localizable", "HOME_TODO_CLAIM_FOLLOWUP_CONTINUE_TITLE") }
   /// Answer questions about your claim

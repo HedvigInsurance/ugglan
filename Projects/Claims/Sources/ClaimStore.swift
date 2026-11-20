@@ -67,11 +67,7 @@ public final class ClaimsStore: AppStore {
     }
 
     public func openFollowup(claimId: String) -> ClaimFollowup? {
-        followups.first { $0.claimId == claimId && $0.isOpen }
-    }
-
-    public var firstOpenFollowup: ClaimFollowup? {
-        followups.first(where: \.isOpen)
+        followups.last { $0.claimId == claimId && $0.isOpen }
     }
 
     public func fetchHistoryClaims() async {

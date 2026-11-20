@@ -14,14 +14,7 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
     public func getFollowups() async throws -> [ClaimFollowup] {
         try await delay()
         if followup == nil, let claimId = try? await claimsClient.getActiveClaims().first?.id {
-            let created = Self.makeFollowup(claimId: claimId)
-            // The seeded answer counts as an earlier upload, as on the server, so re-answering with its id works.
-            for question in created.questions {
-                if case let .fileUpload(files) = question.content {
-                    files.forEach { stagedFiles[$0.id] = $0 }
-                }
-            }
-            followup = created
+            followup = Self.makeFollowup(claimId: claimId)
         }
         return followup.map { [$0] } ?? []
     }
@@ -196,6 +189,7 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
                         id: $0.id,
                         text: $0.text,
                         hint: $0.hint,
+                        cantAnswerLabel: $0.cantAnswerLabel,
                         state: state,
                         cantAnswerComment: comment,
                         content: content
@@ -229,23 +223,18 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
             questions: [
                 ClaimFollowupQuestion(
                     id: "fake-question-police",
-                    text: "Skicka din polisanmälan",
-                    state: .answered,
+                    text: "Police report",
+                    hint: "The confirmation from the police is enough, as a PDF or a photo.",
+                    cantAnswerLabel: "I don't have a police report",
+                    state: .todo,
                     cantAnswerComment: nil,
-                    content: .fileUpload(currentFiles: [
-                        ClaimFollowupFile(
-                            id: "fake-file-police",
-                            url: URL(string: "https://example.com/polisanmalan.pdf")!,
-                            contentType: "application/pdf",
-                            fileName: "polisanmalan.pdf",
-                            relevance: .unknown
-                        )
-                    ])
+                    content: .fileUpload(currentFiles: [])
                 ),
                 ClaimFollowupQuestion(
                     id: "fake-question-receipt",
-                    text: "Skicka kvittot för cykeln",
-                    hint: "Kvittot ska visa pris, datum och butik.",
+                    text: "Receipt for the bike",
+                    hint: "A receipt, order confirmation or bank statement works.",
+                    cantAnswerLabel: "I don't have a receipt",
                     state: .todo,
                     cantAnswerComment: nil,
                     content: .fileUpload(currentFiles: [])

@@ -216,6 +216,18 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_FOLLOWUP_SUCCESS_TITLE" = "Answers sent";
 "CLAIM_FOLLOWUP_TEXT_TOO_LONG" = "At most %d characters";
 "CLAIM_FOLLOWUP_TITLE" = "Follow-up questions";
+"CLAIM_TODO_ANSWER" = "Answer";
+"CLAIM_TODO_CHECKING_FILE" = "Checking the file…";
+"CLAIM_TODO_CHOOSE_ANOTHER" = "Choose another";
+"CLAIM_TODO_DONT_HAVE" = "I don't have this";
+"CLAIM_TODO_DONT_HAVE_DONE" = "No file. We'll go by what you've told us.";
+"CLAIM_TODO_DONT_KNOW" = "I don't know";
+"CLAIM_TODO_INFO_DONE" = "Thanks! We now have everything we need to move forward.";
+"CLAIM_TODO_INFO_OPEN" = "We need a bit more from you to move your claim forward.";
+"CLAIM_TODO_LEFT" = "%d left";
+"CLAIM_TODO_NUDGE" = "We can't find what we asked for in this file. Choose another file, or send it anyway if it's the right one.";
+"CLAIM_TODO_PILL" = "%d to do";
+"CLAIM_TODO_SEND_ANYWAY" = "Send anyway";
 "COINSURED_EDIT_TITLE" = "Insured people";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Enter manually";
 "COINSURED_SSN_NOT_FOUND" = "SSN not found";
@@ -397,6 +409,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_QUOTES_SECTION_TITLE" = "Your quotes";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Add co-insured";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Add co-owner";
+"HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_GENERIC_TITLE" = "Complete your claim";
+"HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_TITLE" = "Complete your %@ claim";
 "HOME_TODO_CLAIM_FOLLOWUP_CONTINUE_TITLE" = "Continue answering questions about your claim";
 "HOME_TODO_CLAIM_FOLLOWUP_TITLE" = "Answer questions about your claim";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Missing pet chip-ID";

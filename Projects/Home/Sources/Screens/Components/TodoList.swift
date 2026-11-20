@@ -39,19 +39,35 @@ struct TodoList: View {
         }
     }
 
+    private var followupWithQuestionsLeft: ClaimFollowup? {
+        claimsStore.followups.last(where: { $0.isOpen && $0.questionsLeft > 0 })
+    }
+
+    private var followupClaim: ClaimModel? {
+        let claimId = followupWithQuestionsLeft?.claimId
+        return claimsStore.allActiveClaims
+            .compactMap { activeClaim -> ClaimModel? in
+                if case .claim(let model) = activeClaim { return model }
+                return nil
+            }
+            .first(where: { $0.id == claimId })
+    }
+
     private func title(for todo: Todo) -> String {
-        let hasStartedFollowup = claimsStore.firstOpenFollowup?.questions.contains { $0.state != .todo } ?? false
-        if todo == .claimFollowupOpen && hasStartedFollowup {
-            return L10n.homeTodoClaimFollowupContinueTitle
+        guard todo == .claimFollowupOpen, let claimType = followupClaim?.claimType, !claimType.isEmpty else {
+            return todo.title
         }
-        return todo.title
+        return L10n.homeTodoClaimFollowupCompleteTitle(claimType.lowercased())
     }
 
     private func open(_ todo: Todo) {
         switch todo {
         case .claimFollowupOpen:
-            let claimsStore: ClaimsStore = globalAppStateContainer.get()
-            navigationVm.claimFollowup = claimsStore.firstOpenFollowup
+            if let followupClaim, followupClaim.status != .closed, !followupClaim.isPartnerClaim {
+                navigationVm.router.push(followupClaim)
+            } else {
+                navigationVm.claimFollowup = followupWithQuestionsLeft
+            }
         case .payoutMethodMissing: navigationVm.isPayoutMethodPresented = true
         case .petChipIdMissing: NotificationCenter.default.post(name: .openMissingPetChipId, object: nil)
         case .contactDetailsMissing: NotificationCenter.default.post(name: .openReviewContactInfo, object: nil)
@@ -94,7 +110,7 @@ enum Todo: Identifiable, Comparable, Hashable {
 
     var title: String {
         switch self {
-        case .claimFollowupOpen: L10n.homeTodoClaimFollowupTitle
+        case .claimFollowupOpen: L10n.homeTodoClaimFollowupCompleteGenericTitle
         case .payoutMethodMissing: L10n.homeTodoMissingPayoutMethodTitle
         case .petChipIdMissing: L10n.homeTodoMissingChipIdTitle
         case .contactDetailsMissing: L10n.homeTodoUpdateContactDetailsTitle
@@ -108,7 +124,7 @@ enum Todo: Identifiable, Comparable, Hashable {
     @ViewBuilder
     var image: some View {
         switch self {
-        case .claimFollowupOpen: hCoreUIAssets.penEdit.view
+        case .claimFollowupOpen: hCoreUIAssets.documentPlus.view
         case .payoutMethodMissing: hCoreUIAssets.payments.view
         case .petChipIdMissing: hCoreUIAssets.id.view
         case .contactDetailsMissing: hCoreUIAssets.infoOutlined.view

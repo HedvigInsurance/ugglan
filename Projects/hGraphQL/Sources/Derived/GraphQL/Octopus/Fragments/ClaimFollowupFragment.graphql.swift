@@ -7,7 +7,7 @@
 public extension OctopusGraphQL {
   nonisolated struct ClaimFollowupFragment: OctopusGraphQL.SelectionSet, Fragment {
     public static var fragmentDefinition: StaticString {
-      #"fragment ClaimFollowupFragment on ClaimFollowup { __typename id claimId status questions { __typename id text hint state cantAnswerComment content { __typename ... on ClaimFollowupBinary { currentValue } ... on ClaimFollowupFreeText { uploadUri minLength maxLength currentValue currentAudio { __typename id url contentType fileName relevance } } ... on ClaimFollowupDate { currentValue minDate: min maxDate: max } ... on ClaimFollowupNumber { currentValue min max } ... on ClaimFollowupPhoneNumber { currentValue } ... on ClaimFollowupFileUpload { uploadUri currentFiles { __typename id url contentType fileName relevance } } } } }"#
+      #"fragment ClaimFollowupFragment on ClaimFollowup { __typename id claimId status questions { __typename id text hint cantAnswerLabel state cantAnswerComment content { __typename ... on ClaimFollowupBinary { currentValue } ... on ClaimFollowupFreeText { uploadUri minLength maxLength currentValue currentAudio { __typename id url contentType fileName relevance } } ... on ClaimFollowupDate { currentValue minDate: min maxDate: max } ... on ClaimFollowupNumber { currentValue min max } ... on ClaimFollowupPhoneNumber { currentValue } ... on ClaimFollowupFileUpload { uploadUri currentFiles { __typename id url contentType fileName relevance } } } } }"#
     }
 
     @_spi(Unsafe) public let __data: DataDict
@@ -43,6 +43,7 @@ public extension OctopusGraphQL {
         .field("id", OctopusGraphQL.ID.self),
         .field("text", String.self),
         .field("hint", String?.self),
+        .field("cantAnswerLabel", String?.self),
         .field("state", GraphQLEnum<OctopusGraphQL.ClaimFollowupQuestionState>.self),
         .field("cantAnswerComment", String?.self),
         .field("content", Content.self),
@@ -55,6 +56,8 @@ public extension OctopusGraphQL {
       public var text: String { __data["text"] }
       /// An optional line shown under the question, such as which forms of a document are fine.
       public var hint: String? { __data["hint"] }
+      /// A short label for this question's own pass button, such as "I don't have a receipt". Null means the app shows its generic one.
+      public var cantAnswerLabel: String? { __data["cantAnswerLabel"] }
       public var state: GraphQLEnum<OctopusGraphQL.ClaimFollowupQuestionState> { __data["state"] }
       /// What the member wrote when passing on the question; null unless state is CANT_ANSWER, and optional even then.
       public var cantAnswerComment: String? { __data["cantAnswerComment"] }

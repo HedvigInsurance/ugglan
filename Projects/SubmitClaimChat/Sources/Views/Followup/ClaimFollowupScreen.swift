@@ -89,7 +89,7 @@ final class ClaimFollowupViewModel {
 
     var followup: ClaimFollowup {
         didSet {
-            // Home says "continue" once something is answered, and it reads the store, not this view model.
+            // Home, the claim card pill and the claim's To do section read the store, not this view model.
             guard oldValue != followup else { return }
             Task {
                 let store: ClaimsStore = globalAppStateContainer.get()

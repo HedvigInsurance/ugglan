@@ -216,6 +216,18 @@ A message is then appended under the image next to the timestamp to indicate tha
 "CLAIM_FOLLOWUP_SUCCESS_TITLE" = "Svaren är skickade";
 "CLAIM_FOLLOWUP_TEXT_TOO_LONG" = "Max %d tecken";
 "CLAIM_FOLLOWUP_TITLE" = "Följdfrågor";
+"CLAIM_TODO_ANSWER" = "Svara";
+"CLAIM_TODO_CHECKING_FILE" = "Kontrollerar filen…";
+"CLAIM_TODO_CHOOSE_ANOTHER" = "Välj en annan";
+"CLAIM_TODO_DONT_HAVE" = "Jag har inte det här";
+"CLAIM_TODO_DONT_HAVE_DONE" = "Ingen fil. Vi utgår från det du har berättat.";
+"CLAIM_TODO_DONT_KNOW" = "Jag vet inte";
+"CLAIM_TODO_INFO_DONE" = "Tack! Nu har vi allt vi behöver för att gå vidare.";
+"CLAIM_TODO_INFO_OPEN" = "Vi behöver lite mer från dig för att komma vidare med ditt ärende.";
+"CLAIM_TODO_LEFT" = "%d kvar";
+"CLAIM_TODO_NUDGE" = "Vi hittar inte det vi bad om i den här filen. Välj en annan fil, eller skicka den ändå om det är rätt fil.";
+"CLAIM_TODO_PILL" = "%d att göra";
+"CLAIM_TODO_SEND_ANYWAY" = "Skicka ändå";
 "COINSURED_EDIT_TITLE" = "Försäkrade personer";
 "COINSURED_ENTER_MANUALLY_BUTTON" = "Ange manuellt";
 "COINSURED_SSN_NOT_FOUND" = "Personnumret hittades inte";
@@ -397,6 +409,8 @@ A message is then appended under the image next to the timestamp to indicate tha
 "HOME_QUOTES_SECTION_TITLE" = "Dina prisförslag";
 "HOME_TODO_ADD_COINSURED_TITLE" = "Lägg till medförsäkrad";
 "HOME_TODO_ADD_COOWNER_TITLE" = "Lägg till medägare";
+"HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_GENERIC_TITLE" = "Komplettera ditt ärende";
+"HOME_TODO_CLAIM_FOLLOWUP_COMPLETE_TITLE" = "Komplettera ditt ärende om %@";
 "HOME_TODO_CLAIM_FOLLOWUP_CONTINUE_TITLE" = "Fortsätt svara på följdfrågorna om din skadeanmälan";
 "HOME_TODO_CLAIM_FOLLOWUP_TITLE" = "Svara på följdfrågor om din skadeanmälan";
 "HOME_TODO_MISSING_CHIP_ID_TITLE" = "Chip-ID för husdjur saknas";
