@@ -28,10 +28,13 @@ struct ClaimStatusCard: View {
                             isWaitingForYou: openFollowup != nil
                         )
                         if let openFollowup {
+                            let hasStarted = openFollowup.questions.contains { $0.state != .todo }
                             hButton(
                                 .medium,
                                 .primary,
-                                content: .init(title: L10n.claimFollowupAnswerButton),
+                                content: .init(
+                                    title: hasStarted ? L10n.claimFollowupContinueButton : L10n.claimFollowupAnswerButton
+                                ),
                                 {
                                     NotificationCenter.default.post(name: .openClaimFollowup, object: openFollowup)
                                 }

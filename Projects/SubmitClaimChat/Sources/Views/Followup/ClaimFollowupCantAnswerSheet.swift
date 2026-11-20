@@ -6,12 +6,21 @@ import hCoreUI
 struct ClaimFollowupCantAnswerSheet: View {
     let vm: ClaimFollowupViewModel
     let question: ClaimFollowupQuestion
+    let onSkipped: () -> Void
+    let onCancel: () -> Void
     @State private var comment: String
     @State private var isLoading = false
 
-    init(vm: ClaimFollowupViewModel, question: ClaimFollowupQuestion) {
+    init(
+        vm: ClaimFollowupViewModel,
+        question: ClaimFollowupQuestion,
+        onSkipped: @escaping () -> Void,
+        onCancel: @escaping () -> Void
+    ) {
         self.vm = vm
         self.question = question
+        self.onSkipped = onSkipped
+        self.onCancel = onCancel
         _comment = State(initialValue: question.cantAnswerComment ?? "")
     }
 
@@ -32,14 +41,25 @@ struct ClaimFollowupCantAnswerSheet: View {
                     )
                     .hFieldMultiline(true)
                     VStack(spacing: .padding8) {
-                        hButton(.large, .primary, content: .init(title: L10n.claimFollowupCantAnswerButton)) {
+                        hCancelButton(.primary) { onCancel() }
+                        // Skipping is the destructive choice, so it is the quiet red one and staying is the default.
+                        hButton(.large, .ghost, content: .init(title: L10n.claimFollowupCantAnswerButton)) {
                             isLoading = true
                             let trimmedComment = comment.trimmingCharacters(in: .whitespacesAndNewlines)
-                            await vm.cantAnswer(question, comment: trimmedComment.isEmpty ? nil : trimmedComment)
+                            let skipped = await vm.cantAnswer(
+                                question,
+                                comment: trimmedComment.isEmpty ? nil : trimmedComment
+                            )
                             isLoading = false
+                            if skipped {
+                                onSkipped()
+                            }
+                        }
+                        .hCustomButtonView {
+                            hText(L10n.claimFollowupCantAnswerButton)
+                                .foregroundColor(hSignalColor.Red.text)
                         }
                         .hButtonIsLoading(isLoading)
-                        hCancelButton { vm.cantAnswerQuestion = nil }
                     }
                 }
             }
@@ -58,6 +78,8 @@ struct ClaimFollowupCantAnswerSheet: View {
     let followup = ClaimFollowup.previewFollowup
     return ClaimFollowupCantAnswerSheet(
         vm: ClaimFollowupViewModel(followup: followup),
-        question: followup.questions[0]
+        question: followup.questions[0],
+        onSkipped: {},
+        onCancel: {}
     )
 }

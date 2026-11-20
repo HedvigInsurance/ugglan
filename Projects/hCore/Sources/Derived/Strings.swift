@@ -395,41 +395,37 @@ public enum L10n {
   public static var claimFollowupCantAnswerState: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_CANT_ANSWER_STATE") }
   /// Skip this question?
   public static var claimFollowupCantAnswerTitle: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_CANT_ANSWER_TITLE") }
+  /// Continue answering
+  public static var claimFollowupContinueButton: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_CONTINUE_BUTTON") }
   /// Choose date
   public static var claimFollowupDatePlaceholder: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_DATE_PLACEHOLDER") }
   /// Added
   public static var claimFollowupFileAdded: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_FILE_ADDED") }
   /// This doesn't look like what we asked for. You can use it anyway or choose another file.
   public static var claimFollowupFileMismatchHint: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_FILE_MISMATCH_HINT") }
+  /// Is this the right file?
+  public static var claimFollowupFileMismatchTitle: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_FILE_MISMATCH_TITLE") }
   /// Choose another file
   public static var claimFollowupFileReplace: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_FILE_REPLACE") }
   /// Use anyway
   public static var claimFollowupFileUseAnyway: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_FILE_USE_ANYWAY") }
-  /// We need a few more things to move your claim forward.
-  public static var claimFollowupIntro: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_INTRO") }
   /// This value looks unusual. Check it's right; you can keep it anyway.
   public static var claimFollowupNumberOutOfRange: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_NUMBER_OUT_OF_RANGE") }
+  /// Your answers
+  public static var claimFollowupOverviewTitle: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_OVERVIEW_TITLE") }
   /// Enter a valid phone number
   public static var claimFollowupPhoneInvalid: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_PHONE_INVALID") }
-  /// %d left
-  public static func claimFollowupQuestionsLeft(_ p1: Int) -> String {
-    return L10n.tr("Localizable", "CLAIM_FOLLOWUP_QUESTIONS_LEFT", p1)
-  }
   /// Confirm
   public static var claimFollowupSendButton: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_SEND_BUTTON") }
-  /// Answered
-  public static var claimFollowupStateAnswered: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_STATE_ANSWERED") }
   /// Waiting for your answer
   public static var claimFollowupStateTodo: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_STATE_TODO") }
   /// Answers sent
   public static var claimFollowupSuccessTitle: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_SUCCESS_TITLE") }
-  /// Write an answer
-  public static var claimFollowupTextEmpty: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_TEXT_EMPTY") }
   /// At most %d characters
   public static func claimFollowupTextTooLong(_ p1: Int) -> String {
     return L10n.tr("Localizable", "CLAIM_FOLLOWUP_TEXT_TOO_LONG", p1)
   }
-  /// Additional questions
+  /// Follow-up questions
   public static var claimFollowupTitle: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_TITLE") }
   /// Your claim was closed as we didn’t hear back from you. Please see conversation for more details.
   public static var claimOutcomeUnresponsiveSupportText: String { L10n.tr("Localizable", "claim_outcome_unresponsive_support_text") }
@@ -851,6 +847,8 @@ public enum L10n {
   public static var homeTodoAddCoinsuredTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COINSURED_TITLE") }
   /// Add co-owner
   public static var homeTodoAddCoownerTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COOWNER_TITLE") }
+  /// Continue answering questions about your claim
+  public static var homeTodoClaimFollowupContinueTitle: String { L10n.tr("Localizable", "HOME_TODO_CLAIM_FOLLOWUP_CONTINUE_TITLE") }
   /// Answer questions about your claim
   public static var homeTodoClaimFollowupTitle: String { L10n.tr("Localizable", "HOME_TODO_CLAIM_FOLLOWUP_TITLE") }
   /// Missing pet chip-ID

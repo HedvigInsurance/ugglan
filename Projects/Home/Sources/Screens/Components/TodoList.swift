@@ -8,6 +8,7 @@ import hCoreUI
 
 struct TodoList: View {
     @Environment(HomeNavigationViewModel.self) var navigationVm
+    @AppObservedObject private var claimsStore: ClaimsStore
     let todos: [Todo]
 
     var body: some View {
@@ -18,7 +19,7 @@ struct TodoList: View {
                         todo.image.accessibilityHidden(true)
 
                         VStack(alignment: .leading) {
-                            hText(todo.title)
+                            hText(title(for: todo))
                             hText(L10n.homeTodoRequiresActionSubtitle).foregroundColor(hSignalColor.Red.text)
                         }
                         .hTextStyle(.label)
@@ -36,6 +37,14 @@ struct TodoList: View {
             .sectionContainerStyle(.negative)
             .sectionContainerDecorations([.border, .shadow])
         }
+    }
+
+    private func title(for todo: Todo) -> String {
+        let hasStartedFollowup = claimsStore.firstOpenFollowup?.questions.contains { $0.state != .todo } ?? false
+        if todo == .claimFollowupOpen && hasStartedFollowup {
+            return L10n.homeTodoClaimFollowupContinueTitle
+        }
+        return todo.title
     }
 
     private func open(_ todo: Todo) {

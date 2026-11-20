@@ -7,6 +7,9 @@ import hCoreUI
 
 public struct ClaimFollowupScreen: View {
     @State private var vm: ClaimFollowupViewModel
+    @State private var didPositionStart = false
+    /// Loading until the member actually lands on question 1, so it never flashes by on the way to a later one.
+    @State private var rootState: ProcessingState = .loading
     @Environment(NavigationRouter.self) private var router
 
     public init(followup: ClaimFollowup) {
@@ -14,85 +17,64 @@ public struct ClaimFollowupScreen: View {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
-            headerSection
-            hForm {
-                VStack(spacing: .padding16) {
-                    ForEach(vm.followup.questions) { question in
-                        ClaimFollowupQuestionCard(vm: vm, question: question)
-                    }
-                }
-                .padding(.vertical, .padding16)
-            }
-            .hFormAlwaysAttachToBottom {
-                if vm.editingQuestionId == nil && vm.voiceQuestionId == nil {
-                    hSection {
-                        hButton(.large, .primary, content: .init(title: L10n.claimFollowupSendButton)) {
-                            if await vm.send() {
-                                router.dismiss()
-                            }
-                        }
-                        .disabled(!vm.followup.canSend)
-                        .hButtonIsLoading(vm.isSending)
-                    }
-                    .sectionContainerStyle(.transparent)
-                }
+        Group {
+            if let firstQuestion = vm.followup.questions.first {
+                ClaimFollowupQuestionPage(vm: vm, questionId: firstQuestion.id, returnsToOverview: false)
+            } else {
+                ClaimFollowupOverview(vm: vm)
             }
         }
-        .background {
-            hBackgroundColor.primary
-                .ignoresSafeArea()
+        .loading($rootState)
+        .routerDestination(for: ClaimFollowupStep.self) { step in
+            destination(for: step)
+                .withDismissButton()
         }
-        .navigationTitle(L10n.claimFollowupTitle)
-        .detent(item: $vm.cantAnswerQuestion, presentationStyle: .detent(style: [.height])) { question in
-            ClaimFollowupCantAnswerSheet(vm: vm, question: question)
+        .addStepProgressBar(with: $vm.progress)
+        .onAppear {
+            if didPositionStart {
+                rootState = .success
+            }
         }
         .task {
+            // .task re-runs whenever the root page re-appears after a pop.
+            guard !didPositionStart else { return }
             await vm.reload()
+            // Pushes made while the modal is still presenting are dropped by the NavigationStack.
+            if vm.startStepCount > 0 {
+                await delay(0.5)
+            }
+            withTransaction(\.disablesAnimations, true) {
+                positionStart()
+            }
+            vm.isStartPositioned = true
+            didPositionStart = true
+            if vm.startStepCount == 0 {
+                rootState = .success
+            }
         }
     }
 
-    private var headerSection: some View {
-        hSection {
-            VStack(alignment: .leading, spacing: .padding8) {
-                HStack(alignment: .firstTextBaseline, spacing: .padding8) {
-                    hText(L10n.homeTodoSectionTitle)
-                        .accessibilityAddTraits(.isHeader)
-                    Spacer()
-                    hText(L10n.claimFollowupQuestionsLeft(vm.followup.questionsLeft), style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-                progressBar
-                hText(L10n.claimFollowupIntro, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+    @ViewBuilder
+    private func destination(for step: ClaimFollowupStep) -> some View {
+        switch step {
+        case let .question(id, returnsToOverview):
+            ClaimFollowupQuestionPage(vm: vm, questionId: id, returnsToOverview: returnsToOverview)
+        case .overview:
+            ClaimFollowupOverview(vm: vm)
         }
-        .sectionContainerStyle(.transparent)
-        .padding(.top, .padding8)
-        .padding(.bottom, .padding8)
-        // hForm does not clip its scroll content, so the header needs its own surface above the list.
-        .background { hBackgroundColor.primary.ignoresSafeArea(edges: .top) }
-        .zIndex(1)
     }
 
-    private var progressBar: some View {
-        let questionsCount = vm.followup.questions.count
-        let questionsDone = questionsCount - vm.followup.questionsLeft
-        let progress = questionsCount == 0 ? 0 : CGFloat(questionsDone) / CGFloat(questionsCount)
-        return Capsule()
-            .fill(hSurfaceColor.Opaque.secondary)
-            .frame(height: .padding4)
-            .overlay(alignment: .leading) {
-                GeometryReader { geometry in
-                    Capsule()
-                        .fill(hFillColor.Opaque.primary)
-                        .frame(width: geometry.size.width * progress)
-                }
-            }
-            .animation(.defaultSpring, value: progress)
-            .accessibilityHidden(true)
+    /// Lands on the first unanswered question with the earlier ones behind it, or on the overview.
+    private func positionStart() {
+        let questions = vm.followup.questions
+        guard !questions.isEmpty else { return }
+        let firstTodoIndex = questions.firstIndex { $0.state == .todo }
+        for question in questions.prefix((firstTodoIndex ?? questions.count) + 1).dropFirst() {
+            router.push(ClaimFollowupStep.question(id: question.id, returnsToOverview: false))
+        }
+        if firstTodoIndex == nil {
+            router.push(ClaimFollowupStep.overview)
+        }
     }
 }
 
@@ -105,18 +87,61 @@ final class ClaimFollowupViewModel {
         var id: String { uploaded.fileId }
     }
 
-    var followup: ClaimFollowup
-    var cantAnswerQuestion: ClaimFollowupQuestion?
+    var followup: ClaimFollowup {
+        didSet {
+            // Home says "continue" once something is answered, and it reads the store, not this view model.
+            guard oldValue != followup else { return }
+            Task {
+                let store: ClaimsStore = globalAppStateContainer.get()
+                await store.fetchFollowups()
+            }
+        }
+    }
     var savingQuestionId: String?
     var isSending = false
     var pendingFilesByQuestionId: [String: [PendingFile]] = [:]
+    var progress: StepProgressModel
     private(set) var voiceQuestionId: String?
-    private(set) var editingQuestionId: String?
     let voiceRecorder = VoiceRecorder()
     @ObservationIgnored @Inject private var client: hClaimFollowupClient
 
     init(followup: ClaimFollowup) {
         self.followup = followup
+        let firstTodoIndex = followup.questions.firstIndex { $0.state == .todo }
+        progress = .init(
+            currentStep: (firstTodoIndex ?? followup.questions.count - 1) + 1,
+            totalSteps: followup.questions.count
+        )
+    }
+
+    /// The hidden root page appears before the start pushes, so it must not move the bar back to step 1.
+    var isStartPositioned = false
+
+    /// How many pages `positionStart` pushes: one per answered question before the first to-do, or all plus the overview.
+    var startStepCount: Int {
+        followup.questions.firstIndex { $0.state == .todo } ?? followup.questions.count
+    }
+
+    func step(after questionId: String) -> ClaimFollowupStep {
+        let questions = followup.questions
+        guard let index = questions.firstIndex(where: { $0.id == questionId }), index + 1 < questions.count else {
+            return .overview
+        }
+        return .question(id: questions[index + 1].id, returnsToOverview: false)
+    }
+
+    func showStep(questionId: String) {
+        guard isStartPositioned else { return }
+        let index = followup.questions.firstIndex { $0.id == questionId } ?? 0
+        withAnimation { progress = .init(currentStep: index + 1, totalSteps: followup.questions.count) }
+    }
+
+    /// The overview has no segment of its own, so it keeps the last one lit.
+    func showOverviewStep() {
+        guard isStartPositioned else { return }
+        withAnimation {
+            progress = .init(currentStep: followup.questions.count, totalSteps: followup.questions.count)
+        }
     }
 
     func reload() async {
@@ -139,7 +164,7 @@ final class ClaimFollowupViewModel {
         }
     }
 
-    func cantAnswer(_ question: ClaimFollowupQuestion, comment: String?) async {
+    func cantAnswer(_ question: ClaimFollowupQuestion, comment: String?) async -> Bool {
         do {
             followup = try await client.cantAnswer(
                 followupId: followup.id,
@@ -147,15 +172,13 @@ final class ClaimFollowupViewModel {
                 comment: comment
             )
             pendingFilesByQuestionId[question.id] = nil
-            if editingQuestionId == question.id {
-                editingQuestionId = nil
-            }
             if voiceQuestionId == question.id {
                 closeVoice()
             }
-            cantAnswerQuestion = nil
+            return true
         } catch {
             showError(error)
+            return false
         }
     }
 
@@ -214,20 +237,8 @@ final class ClaimFollowupViewModel {
     }
 
     func startVoice(_ question: ClaimFollowupQuestion) {
-        editingQuestionId = nil
         voiceRecorder.startOver()
         voiceQuestionId = question.id
-    }
-
-    func startEditing(_ question: ClaimFollowupQuestion) {
-        if voiceQuestionId != nil {
-            closeVoice()
-        }
-        editingQuestionId = question.id
-    }
-
-    func stopEditing() {
-        editingQuestionId = nil
     }
 
     func closeVoice() {
