@@ -95,6 +95,16 @@ final class VoiceStepAdapterTests {
     }
 
     @Test
+    func theAgentsWordingCountsAsTheMembersWhenTheySaidIt() {
+        let said = ["Um, I just remember that the food was actually worth 1,500."]
+
+        #expect(VoiceClaimToolbox.isGrounded("The food was actually worth 1,500 kroner.", in: said))
+        #expect(!VoiceClaimToolbox.isGrounded("Meat and fish worth 9,000 kronor.", in: said))
+        #expect(VoiceClaimToolbox.isConfirmation("Yes, that's right."))
+        #expect(!VoiceClaimToolbox.isConfirmation("Yes, about 1,500."))
+    }
+
+    @Test
     func missingParameterIsAnInvalidCall() {
         #expect(throws: VoiceTool.InvalidCall.self) {
             try VoiceTool(name: "answer_select", parameters: ["step_id": "s"])
@@ -621,6 +631,81 @@ extension SubmitClaimChatDependencySuite {
             #expect(Array(client.events.suffix(2)) == [.submitSelect("yes"), .other("information")])
             #expect(next["step_id"] as? String == "date-form")
             #expect((list["answers"] as? [[String: Any]])?.count == 1)  // the notice is never offered to change
+        }
+
+        @Test
+        func anAnswerGivenInTheSameBreathAsACorrectionIsKept() async throws {
+            defer { cleanUp() }
+            let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
+            let client = MockVoiceClaimIntentClient(start: yesNo)
+            client.selectChain = [VoiceFixtures.spoiledFood]
+            client.nextAfterRegret = yesNo
+            client.nextAfterAudio = VoiceFixtures.dateForm
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+
+            toolbox.recordMemberUtterance("About 2,500 kroner of food spoiled. Oh, and it's actually still leaking.")
+            _ = await toolbox.handle(toolName: "go_back", parameters: ["step_id": "yes-no"])
+            client.selectChain = [VoiceFixtures.spoiledFood]
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "yes"])
+            let invented = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "spoiled-food", "member_words": "Meat and fish worth 9,000 kronor."]
+                )
+            )
+            let kept = try json(
+                await toolbox.handle(
+                    toolName: "answer_free_text",
+                    parameters: ["step_id": "spoiled-food", "member_words": "About 2 500 kroner of food spoiled."]
+                )
+            )
+
+            #expect(invented["status"] as? String == "error")
+            #expect(kept["step_id"] as? String == "date-form")
+            #expect(client.submittedFreeText == "About 2 500 kroner of food spoiled.")
+        }
+
+        @Test
+        func aYesToTheAgentsRestatementSavesWhatWasConfirmed() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.description)
+            client.nextAfterAudio = VoiceFixtures.yesNo
+            client.selectChain = [VoiceFixtures.spoiledFood]
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("The fridge stopped cooling.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+            toolbox.recordMemberUtterance("No, but I lost about 2,500 kroner worth of food.")
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+
+            toolbox.recordAgentUtterance("You lost about 2,500 kroner worth of food, is that the total?")
+            toolbox.recordMemberUtterance("Yes.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "spoiled-food", "member_words": "about 2,500 kroner worth of food"]
+            )
+
+            #expect(client.submittedFreeText == "about 2,500 kroner worth of food")
+        }
+
+        @Test
+        func aSpaceCopiedIntoASearchMatchIdIsDropped() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.itemSearch)
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+
+            _ = await toolbox.handle(
+                toolName: "answer_form",
+                parameters: ["step_id": "item-search", "fields": [["field_id": "item", "values": ["eyJ0 eXBl"]]]]
+            )
+
+            #expect(client.submittedFormValues == ["eyJ0eXBl"])
         }
 
         @Test

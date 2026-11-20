@@ -291,6 +291,8 @@ final class VoiceClaimToolbox {
     private var searchLabels: [String: String] = [:]
     /// The answers that came after the one the member went back to change, waiting to be sent again.
     private var cleared: [AnsweredStep] = []
+    /// What the member said before going back that no answer used yet, so a free-text answer can still come from it.
+    private var heldUtterances: [String] = []
 
     /// The claim intent being created; tools wait for it, so the call can connect at the same time.
     private var starting: Task<VoiceStepPayload, Error>?
@@ -419,9 +421,14 @@ final class VoiceClaimToolbox {
             handoffReason = reason
             return .step(.handoff(reason: reason))
 
-        case let .answerForm(stepId, fields):
+        case let .answerForm(stepId, given):
             let intent = try currentIntent(matching: stepId)
             guard case let .form(model) = intent.currentStep.content else { throw wrongKind(intent) }
+            // A search match's id is an opaque code the model sometimes copies with a space in it.
+            let fields = given.map { value in
+                guard model.fields.first(where: { $0.id == value.id })?.type == .search else { return value }
+                return FieldValue(id: value.id, values: value.values.map { $0.filter { !$0.isWhitespace } })
+            }
             let result = try await service.claimIntentSubmitForm(fields: fields, stepId: stepId)
             record(intent, answer: describe(fields, in: model), replay: .form(fields))
             return .step(try await adopt(result))
@@ -430,11 +437,19 @@ final class VoiceClaimToolbox {
             let intent = try currentIntent(matching: stepId)
             guard case let .audioRecording(model) = intent.currentStep.content else { throw wrongKind(intent) }
             var words = String(memberWords(fallback: agentWords).prefix(model.freeTextMaxLength))
-            // An earlier answer that was cleared by going back is the member's own words too.
-            let agentText = agentWords.trimmingCharacters(in: .whitespacesAndNewlines)
+            let agentText = String(
+                agentWords.trimmingCharacters(in: .whitespacesAndNewlines).prefix(model.freeTextMaxLength)
+            )
             if words.isEmpty, let earlier = cleared.firstIndex(where: { $0.replay == .freeText(agentText) }) {
+                // An earlier answer that was cleared by going back is the member's own words too.
                 words = agentText
                 cleared.remove(at: earlier)
+            } else if words.isEmpty, Self.isGrounded(agentText, in: heldUtterances) {
+                // Said before going back, often in the same breath as the correction.
+                words = agentText
+            } else if Self.isConfirmation(words), Self.isGrounded(agentText, in: memberUtterances) {
+                // "Yes" to the agent putting their earlier words back to them: what they confirmed is the answer.
+                words = agentText
             }
             guard !words.isEmpty else {
                 throw VoiceTool.InvalidCall(
@@ -446,6 +461,7 @@ final class VoiceClaimToolbox {
             }
             let result = try await service.claimIntentSubmitAudio(fileId: nil, freeText: words, stepId: stepId)
             record(intent, answer: words, replay: .freeText(words))
+            heldUtterances = []
             let next = try await adopt(result)
             hasAnsweredFreeText = true
             return .step(next)
@@ -531,7 +547,9 @@ final class VoiceClaimToolbox {
         cleared = Array(answered[(index + 1)...])
         answered.removeSubrange(index...)
         // Only what the member says from here on answers the step again, never the request to change it. That
-        // holds for the description too, so its new answer is what they say next, not the whole call.
+        // holds for the description too, so its new answer is what they say next, not the whole call. What they
+        // said before it is held, though: an answer often comes in the same breath as the correction.
+        heldUtterances += memberUtterances.dropFirst(answeredUtteranceCount)
         markAnswered()
         hasAnsweredFreeText = true
         delegate?.toolboxWentBack()
@@ -562,7 +580,8 @@ final class VoiceClaimToolbox {
             payload = try await adopt(result, waitFully: true)
         }
         // A pause (the engine still thinking) keeps the rest for the step that follows it.
-        if payload.status == .done || payload.status == .handoff { cleared = [] }
+        // At the summary nothing is left to ask; whatever the engine didn't ask again is no longer part of the claim.
+        if payload.status == .done || payload.status == .handoff || payload.kind == .summary { cleared = [] }
         guard payload.status == .step, !cleared.isEmpty else { return payload }
         let earlier = cleared.filter(\.isAnswer).map { "- \($0.question ?? "") → \($0.answer)" }
         if earlier.isEmpty {
@@ -929,6 +948,35 @@ final class VoiceClaimToolbox {
 
     private func markAnswered() {
         answeredUtteranceCount = memberUtterances.count
+    }
+
+    /// Whether the agent's version of an answer is the member's own: at least three quarters of its words were
+    /// said by the member (numbers compared without separators, so "2 500" and "2,500" match).
+    static func isGrounded(_ text: String, in utterances: [String]) -> Bool {
+        let words = spokenWords(text)
+        guard !words.isEmpty else { return false }
+        let heard = Set(utterances.flatMap(spokenWords))
+        return Double(words.filter(heard.contains).count) >= Double(words.count) * 0.75
+    }
+
+    /// A bare yes, in English or Swedish, with nothing else in it.
+    static func isConfirmation(_ text: String) -> Bool {
+        let yes: Set<String> = [
+            "yes", "yeah", "yep", "correct", "right", "exactly", "that's", "it", "is", "ja", "japp", "precis",
+            "exakt", "stämmer", "det", "rätt",
+        ]
+        let words = spokenWords(text)
+        return !words.isEmpty && words.count <= 4 && words.allSatisfy(yes.contains)
+    }
+
+    private static func spokenWords(_ text: String) -> [String] {
+        // Thousands separators out first, so numbers survive the split as one word.
+        let joined = text.lowercased().replacingOccurrences(
+            of: #"(?<=\d)[,  ](?=\d{3})"#,
+            with: "",
+            options: .regularExpression
+        )
+        return joined.split { !$0.isLetter && !$0.isNumber && $0 != "'" && $0 != "’" }.map(String.init)
     }
 
     /// The agent now has this step (as a tool result or an [APP] message).

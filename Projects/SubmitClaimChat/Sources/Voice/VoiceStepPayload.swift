@@ -245,7 +245,10 @@ enum VoiceStepAdapter {
                     repeat it: call answer_free_text right away, and the app sends their story in their own words. \
                     Otherwise ask it openly and end your turn with the question: say nothing after it and call \
                     nothing. Once the member has answered, call answer_free_text. The app sends the member's own \
-                    transcribed words, so don't summarise; pass what they said.
+                    transcribed words, so don't summarise; pass what they said. If they already answered it earlier \
+                    (even in the same breath as something else), don't ask again: pass that part of what they said. \
+                    If they answer by confirming something you put back to them ("yes"), pass what they confirmed, \
+                    in their earlier words, never just "yes".
                     """
             )
         case .fileUpload:
