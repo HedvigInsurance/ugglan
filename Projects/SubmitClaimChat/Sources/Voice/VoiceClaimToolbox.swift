@@ -144,6 +144,8 @@ struct AnsweredStep: Encodable, Equatable {
     /// Whether the engine lets this step be answered again (`ClaimIntent.isRegrettable`).
     let canChange: Bool
     var kind: VoiceStepPayload.Kind = .none
+    /// The step's option or field ids, to recognise it when the engine words it differently.
+    var shape: [String] = []
     var replay: Replay = .skip
     /// Notices are heard, not answered: they're replayed but never offered as something to change.
     var isAnswer: Bool { replay != .notice }
@@ -357,7 +359,9 @@ final class VoiceClaimToolbox {
         if outcome != nil { return .step(.done) }
         // The engine is still on the previous answer: wait a bit, then let the agent fill the pause again.
         if let pendingAdvance {
-            guard let intent = try await finished(pendingAdvance, within: fillerGap) else {
+            // Going back can't be put off: a correction handed a pause gets forgotten. Wait the engine out.
+            let wait: Duration = tool.isGoBack ? taskTimeout : fillerGap
+            guard let intent = try await finished(pendingAdvance, within: wait) else {
                 return .step(.processing(again: true))
             }
             if case .getCurrentStep = tool {
@@ -549,23 +553,17 @@ final class VoiceClaimToolbox {
     func replayingCleared(_ payload: VoiceStepPayload) async throws -> VoiceStepPayload {
         var payload = payload
         while !cleared.isEmpty, payload.status == .step, let intent = currentIntent {
-            let question = VoiceStepAdapter.payload(for: intent, policies: policies)
-            let asked = { (earlier: AnsweredStep) in
-                earlier.kind == question.kind && earlier.question == question.question
-            }
-            guard let index = cleared.firstIndex(where: asked) else { break }
-            let earlier = cleared.remove(at: index)
-            guard let result = try? await send(earlier.replay, to: intent) else {
-                cleared.insert(earlier, at: index)
-                break
-            }
+            guard let index = clearedAnswer(for: intent) else { break }
+            let earlier = cleared[index]
+            guard let result = try? await send(earlier.replay, to: intent) else { break }
+            // Earlier answers it went past belong to questions the engine no longer asks.
+            cleared.removeSubrange(...index)
             record(intent, answer: earlier.answer, replay: earlier.replay)
             payload = try await adopt(result, waitFully: true)
         }
-        guard payload.status == .step, !cleared.isEmpty else {
-            if payload.status != .step { cleared = [] }
-            return payload
-        }
+        // A pause (the engine still thinking) keeps the rest for the step that follows it.
+        if payload.status == .done || payload.status == .handoff { cleared = [] }
+        guard payload.status == .step, !cleared.isEmpty else { return payload }
         let earlier = cleared.filter(\.isAnswer).map { "- \($0.question ?? "") → \($0.answer)" }
         if earlier.isEmpty {
             cleared = []
@@ -580,6 +578,34 @@ final class VoiceClaimToolbox {
             that answer's words exactly as member_words). Only ask if it's something they haven't told you.
             """
         return payload
+    }
+
+    /// The earlier answer that fits the step the engine is asking now. The engine words some questions afresh each
+    /// time, so beyond the exact question: a select or form with the same options or fields, and for free text,
+    /// notices and photos the next earlier answer of that kind, in the order they were given.
+    private func clearedAnswer(for intent: ClaimIntent) -> Int? {
+        let question = VoiceStepAdapter.payload(for: intent, policies: policies)
+        let shape = Self.shape(of: intent)
+        if let exact = cleared.firstIndex(where: { $0.kind == question.kind && $0.question == question.question }) {
+            return exact
+        }
+        switch question.kind {
+        case .select, .form:
+            return cleared.firstIndex { $0.kind == question.kind && !shape.isEmpty && $0.shape == shape }
+        case .freeText, .notice, .photos:
+            return cleared.firstIndex { $0.kind == question.kind }
+        case .summary, .none:
+            return nil
+        }
+    }
+
+    /// A step's option or field ids, which stay the same when the engine rewords the question.
+    private static func shape(of intent: ClaimIntent) -> [String] {
+        switch intent.currentStep.content {
+        case let .singleSelect(model): return model.options.map(\.id).sorted()
+        case let .form(model): return model.fields.map(\.id).sorted()
+        default: return []
+        }
     }
 
     /// Sends one earlier answer to the step the engine is asking now.
@@ -624,6 +650,7 @@ final class VoiceClaimToolbox {
                 answer: answer,
                 canChange: intent.isRegrettable,
                 kind: payload.kind,
+                shape: Self.shape(of: intent),
                 replay: replay
             )
         )

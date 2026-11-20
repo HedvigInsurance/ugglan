@@ -528,6 +528,68 @@ extension SubmitClaimChatDependencySuite {
         }
 
         @Test
+        func aRewordedQuestionStillGetsItsEarlierAnswerAfterAPause() async throws {
+            defer { cleanUp() }
+            let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
+            let client = MockVoiceClaimIntentClient(start: yesNo)
+            client.selectChain = [VoiceFixtures.description]
+            client.nextAfterAudio = VoiceFixtures.dateForm
+            client.nextAfterRegret = yesNo
+            let toolbox = makeToolbox(client, answerWait: .milliseconds(50))
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+            toolbox.recordMemberUtterance("The fridge stopped cooling.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+
+            _ = await toolbox.handle(toolName: "go_back", parameters: ["step_id": "yes-no"])
+            // This time the engine thinks first, and asks for the description in other words.
+            client.selectChain = [VoiceFixtures.task(completed: false)]
+            client.nextStepPolls = [VoiceFixtures.task(completed: true)]
+            client.nextAfterTask = VoiceFixtures.intent(
+                "description-2",
+                VoiceFixtures.description.currentStep.content,
+                text: "What went wrong with it?"
+            )
+            client.holdNextStep = true
+            let paused = try json(
+                await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "yes"])
+            )
+            client.holdNextStep = false
+            let next = try json(await toolbox.handle(toolName: "get_current_step", parameters: [:]))
+
+            #expect(paused["status"] as? String == "processing")
+            #expect(next["step_id"] as? String == "date-form")
+            #expect(client.submittedFreeText == "The fridge stopped cooling.")
+        }
+
+        @Test
+        func goingBackWaitsForABusyEngineInsteadOfPausing() async throws {
+            defer { cleanUp() }
+            let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
+            let client = MockVoiceClaimIntentClient(start: yesNo)
+            client.selectChain = [VoiceFixtures.task(completed: false)]
+            client.nextStepPolls = [VoiceFixtures.task(completed: true)]
+            client.nextAfterTask = VoiceFixtures.notice
+            client.nextAfterRegret = yesNo
+            client.holdNextStep = true
+            let toolbox = makeToolbox(client, answerWait: .milliseconds(50))
+            _ = try await toolbox.start()
+            _ = await toolbox.handle(toolName: "answer_select", parameters: ["step_id": "yes-no", "option_id": "no"])
+
+            Task { @MainActor in
+                try await Task.sleep(for: .milliseconds(100))
+                client.holdNextStep = false
+            }
+            let reopened = try json(await toolbox.handle(toolName: "go_back", parameters: ["step_id": "yes-no"]))
+
+            #expect(reopened["step_id"] as? String == "yes-no")
+            #expect(client.events.last == .other("regret yes-no"))
+        }
+
+        @Test
         func aNoticeHeardBeforeAChangeIsNotReadAgain() async throws {
             defer { cleanUp() }
             let yesNo = VoiceFixtures.regrettable(VoiceFixtures.yesNo)
