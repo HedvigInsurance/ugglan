@@ -121,6 +121,31 @@ struct SharedKotlinTests {
         #expect(CurrentLocaleLanguageSource().currentLanguage() == expected)
     }
 
+    @Test
+    func theAccessTokenFetcherNeverThrows() async throws {
+        let token = OAuthorizationToken(
+            accessToken: "access",
+            accessTokenExpirationDate: .distantFuture,
+            refreshToken: "refresh",
+            refreshTokenExpirationDate: .distantFuture
+        )
+        let refreshed = KeychainAccessTokenFetcher(retrieveToken: { token }, refreshIfNeeded: {})
+        let loggedOut = KeychainAccessTokenFetcher(
+            retrieveToken: { nil },
+            refreshIfNeeded: { Issue.record("a logged-out fetch must not refresh") }
+        )
+        let refreshFailed = KeychainAccessTokenFetcher(
+            retrieveToken: { token },
+            refreshIfNeeded: { throw AuthError.refreshFailed }
+        )
+        let keychainFailed = KeychainAccessTokenFetcher(retrieveToken: { throw AuthError.networkIssue })
+
+        #expect(try await refreshed.fetch() == "access")
+        #expect(try await loggedOut.fetch() == nil)
+        #expect(try await refreshFailed.fetch() == nil)
+        #expect(try await keychainFailed.fetch() == nil)
+    }
+
     private static func succeeding<T>(_ value: T) -> NativeSuspend<T, Error, KotlinUnit> {
         { onResult, _, _ in
             _ = onResult(value, KotlinUnit())
