@@ -213,8 +213,8 @@ final class VoiceClaimViewModel {
             await sendWhenQuiet(
                 """
                 [APP] The member just picked \(count) \(count == 1 ? "file" : "files") and it's uploading now. \
-                Thank them warmly in a few words, and nothing more: no question, and nothing about waiting or \
-                anything coming through. The next step arrives in another [APP] message in a moment.
+                Acknowledge it warmly in a few words (thank them). Don't ask anything yet: the next step arrives in \
+                another [APP] message in a moment.
                 """
             )
         }
