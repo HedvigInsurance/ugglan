@@ -310,8 +310,9 @@ enum VoiceStepAdapter {
     static let fromMemory = """
         First check your memory: everything the member has said in this call (their story, earlier answers, things \
         said in passing, corrections) may already answer this, however it's worded. While you answer from memory, \
-        say nothing or one short generic line ("just making sure everything's in place"), never what the question \
-        or answer is, and never that you already have it.
+        the typing sound does the talking: mostly say nothing, and only now and then one short generic line ("just \
+        making sure everything's in place"), never two in a row, never what the question or answer is, and never \
+        that you already have it.
         """
 
     /// How to ask any question: the engine's wording is a form's, the agent's should be a friend's.

@@ -56,10 +56,14 @@ take up to 30 s). Every parameter is a string unless noted. The names must match
 | `hand_off_to_chat` | `reason` | End the call and continue the claim in the app's chat. |
 | `go_back` | `step_id` (optional) | Change an answer the member gave earlier, when they say it's wrong. Without step_id: returns their answers so far. With step_id: reopens that question so it can be answered again; the answers after it are asked again. |
 
-**Pre-tool speech:** *Force* on `answer_free_text` (the member has always just spoken), *Off* on `get_current_step`
-(on *Auto* its slow engine turns made the platform force filler like "waiting for the next part to come through";
-the typing sound covers the wait), *Auto* on the rest, so steps the story already answers go by silently. That one
-line before the tool call is the only filler; the prompt forbids a second. Keep example phrases out of tool descriptions: the agent copies them, in their language.
+**Pre-tool speech:** *Force* on `note_story` (the line after the recap), *Auto* on `search_field`, `request_photos`,
+`show_summary` and `hand_off_to_chat`, and *Off* on everything that answers a step or waits on the engine
+(`get_current_step`, `answer_select`, `answer_form`, `answer_free_text`, `skip_step`, `acknowledge_notice`,
+`go_back`). Forced or automatic speech there made the agent say a line before every answer: filler like "waiting for
+the next part to come through", a second "I'll update that amount" right after "let me fix that", and a working line
+before every question it refilled from memory. With it off, the prompt alone decides: a reaction after a fresh
+answer, and while working from memory mostly the typing sound, with a generic line only every few questions. Keep
+example phrases out of tool descriptions: the agent copies them, in their language.
 
 **Tool call sound:** *Typing*, played *Always*, on every tool that waits for the engine's next question (all but
 `request_photos`, `show_summary` and `hand_off_to_chat`, which open something on screen or end the call), so the wait

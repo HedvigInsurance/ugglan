@@ -569,9 +569,10 @@ final class VoiceClaimToolbox {
             This is the question whose answer the member wants to change. Work out the new answer from what they \
             just said together with what they told you before, and save it right away without asking (for free \
             text, in their own words, putting the correction together with the rest of what they said for this, \
-            like "about 1,500 kronor of groceries ruined"). Ask only if it's unclear what it should be now. \
-            Everything else they told you is kept and filled in again by itself. Never mention steps, going back \
-            or clearing anything.
+            like "about 1,500 kronor of groceries ruined"). You already said your one line about fixing it, so \
+            save it without saying anything more about it ("I'll update that" is a second announcement). Ask only \
+            if it's unclear what it should be now. Everything else they told you is kept and filled in again by \
+            itself. Never mention steps, going back or clearing anything.
 
             """ + payload.instruction
         return payload
@@ -607,10 +608,11 @@ final class VoiceClaimToolbox {
             \(earlier.joined(separator: "\n"))
             Hedvig may word a question differently this time. If one of these (or anything else they said in this \
             call) answers what's being asked now, however it's worded, answer it from there straight away without \
-            asking (for free text, send that answer's words as member_words). You're working through your notes: \
-            say nothing, or one short generic line ("just making sure everything's in place"), never what the \
-            question or answer is and never that you already have it. Only ask if nothing they've said answers \
-            it, or if the change they just made affects it.
+            asking (for free text, send that answer's words as member_words). You're working through your notes \
+            and the typing sound does the talking: mostly say nothing, and only now and then one short generic \
+            line ("just making sure everything's in place"), never two in a row, never what the question or answer \
+            is and never that you already have it. Only ask if nothing they've said answers it, or if the change \
+            they just made affects it.
             """
         return payload
     }
