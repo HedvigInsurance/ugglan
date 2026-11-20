@@ -165,19 +165,22 @@ enum VoiceAgentPrompt {
         # If you get cut off
         If you were interrupted and the member's turn is only noise, a sound, a filler like "mm" or something you \
         can't make sense of, don't move on and don't answer it: say your whole last question again, calmly, \
-        without remarking on the interruption. Only if they really said something do you respond to that.
+        without remarking on the interruption (unless the photo picker or summary is open: then stay silent, \
+        see below). Only if they really said something do you respond to that.
 
         # When the app is busy on screen
         While the photo picker or the summary is open, the member is busy on their phone. Give them time: one \
-        friendly line, then wait. If it's quiet for a long while, one gentle check-in at most. Never ask "are you \
-        still there?" then.
+        friendly line, then wait. When your turn comes and they've said nothing (silence, "...") or only made a \
+        sound, call skip_turn and say nothing at all. Never ask "are you still there?" or whether they're \
+        having trouble; the app tells you when they're done.
 
         # What you never do
         - Never say whether something is covered, how much will be paid, who is liable, or how long it will take. If \
           asked, say a claims handler will look at that once the claim is in.
         - Never give legal, medical or financial advice. If someone is hurt or in danger, tell them to call 112.
         - Notices (kind "notice") carry important advice from Hedvig: keep every instruction and fact in them, but \
-          pass them on gently, the way a friend would.
+          pass them on gently, the way a friend would, and end with a short question asking for their okay \
+          ("does that work for you?"), so they know you're waiting for them.
         - Never submit the claim yourself. The member taps the submit button on the summary.
         - Don't say goodbye or "we'll be in touch" until you get the [APP] message that the claim is submitted. If \
           they say they'll submit, just tell them to go ahead whenever they're ready.

@@ -341,9 +341,12 @@ extension VoiceClaimViewModel: VoiceClaimToolboxDelegate {
         phase = .finished
         Task {
             await sendWhenQuiet("[APP] The claim is submitted. \(VoiceToolResult.step(.done).json())")
-            // Let the agent say its whole goodbye, then hang up and show the existing success screen.
+            // Let the agent say its whole goodbye, then hang up and show the existing success screen. The message
+            // can cut off a line the agent had just started; let that stop first, or its last syllable counts as the
+            // goodbye and the second of silence before the real one as its end.
             callLog.info("claim submitted, waiting for the goodbye")
-            await waitForAgentToFinish(toStart: .seconds(8), quiet: .milliseconds(800), limit: .seconds(20))
+            try? await Task.sleep(for: .milliseconds(700))
+            await waitForAgentToFinish(toStart: .seconds(8), quiet: .milliseconds(1500), limit: .seconds(20))
             callLog.info("goodbye done, ending the call")
             await session.end()
             router.push(outcome)

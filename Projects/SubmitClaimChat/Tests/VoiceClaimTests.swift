@@ -783,6 +783,55 @@ extension SubmitClaimChatDependencySuite {
         }
 
         @Test
+        func aSelectAnswerToTheInsuranceFormIsTakenAsTheForm() async throws {
+            defer { cleanUp() }
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.insurancePicker)
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+
+            let result = try json(
+                await toolbox.handle(
+                    toolName: "answer_select",
+                    parameters: ["step_id": "insurance", "option_id": "home-policy"]
+                )
+            )
+
+            #expect(result["status"] as? String != "error")
+            #expect(client.submittedFormValues == ["home-policy"])
+        }
+
+        @Test
+        func anAgentWordOfItsOwnDoesNotRefuseTheMembersAnswer() async throws {
+            defer { cleanUp() }
+            let spoiledFood = VoiceFixtures.regrettable(VoiceFixtures.spoiledFood)
+            let client = MockVoiceClaimIntentClient(start: VoiceFixtures.description)
+            client.nextAfterAudio = spoiledFood
+            client.nextAfterRegret = spoiledFood
+            let toolbox = makeToolbox(client)
+            _ = try await toolbox.start()
+            toolbox.recordMemberUtterance("My fridge stopped cooling.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "description", "member_words": "Fridge stopped."]
+            )
+            toolbox.recordMemberUtterance("Uh, yes. Uh, about, uh, 2,500 worth of groceries.")
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "spoiled-food", "member_words": "About 2,500 of groceries."]
+            )
+            toolbox.recordMemberUtterance("Actually, the food was worth about 1,500.")
+            _ = await toolbox.handle(toolName: "go_back", parameters: ["step_id": "spoiled-food"])
+
+            // "spoiled" is the agent's word, not the member's; the number and the rest are theirs.
+            _ = await toolbox.handle(
+                toolName: "answer_free_text",
+                parameters: ["step_id": "spoiled-food", "member_words": "About 1,500 worth of groceries were spoiled."]
+            )
+
+            #expect(client.submittedFreeText == "About 1,500 worth of groceries were spoiled.")
+        }
+
+        @Test
         func aSpaceCopiedIntoASearchMatchIdIsDropped() async throws {
             defer { cleanUp() }
             let client = MockVoiceClaimIntentClient(start: VoiceFixtures.itemSearch)

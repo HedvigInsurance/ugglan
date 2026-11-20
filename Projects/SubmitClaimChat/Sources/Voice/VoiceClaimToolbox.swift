@@ -405,6 +405,14 @@ final class VoiceClaimToolbox {
 
         case let .answerSelect(stepId, optionId):
             let intent = try currentIntent(matching: stepId)
+            // A form with one choice (which insurance it's about) reads like a select, and the model answers it
+            // as one; take it as the form answer instead of a round trip through an error.
+            if case let .form(form) = intent.currentStep.content, form.fields.count == 1, let field = form.fields.first,
+                field.type == .singleSelect, field.options.contains(where: { $0.value == optionId })
+            {
+                let answer = FieldValue(id: field.id, values: [optionId])
+                return try await runTool(.answerForm(stepId: stepId, fields: [answer]))
+            }
             guard case let .singleSelect(model) = intent.currentStep.content else { throw wrongKind(intent) }
             guard let chosen = model.options.first(where: { $0.id == optionId }) else {
                 throw VoiceTool.InvalidCall(message: "\(optionId) is not one of this step's option ids.")
@@ -967,9 +975,10 @@ final class VoiceClaimToolbox {
     }
 
     /// Whether the agent's version of an answer is the member's own, said at some point in the call: every number
-    /// in it was said by the member ("2,500", "2 500" and "twenty-five hundred" are the same), and at least three
-    /// quarters of its other words too. Small words like "the" or "about" and currency names don't count either
-    /// way, and a word counts as said when the member said a form of it ("leak" for "leaked").
+    /// in it was said by the member ("2,500", "2 500" and "twenty-five hundred" are the same), and at least half of
+    /// its other words too (the agent tends to add a word of its own, like "spoiled"). Small words like "the" or
+    /// "about" and currency names don't count either way, and a word counts as said when the member said a form of
+    /// it ("leak" for "leaked").
     static func isGrounded(_ text: String, in utterances: [String]) -> Bool {
         let words = spokenWords(text)
         guard !words.isEmpty else { return false }
@@ -984,7 +993,7 @@ final class VoiceClaimToolbox {
         guard !content.isEmpty else { return !numbersSaid.isEmpty }
         let heard = Set(heardWords)
         let found = content.filter { word in heard.contains(word) || heardWords.contains { sameStem(word, $0) } }
-        return Double(found.count) >= Double(content.count) * 0.75
+        return found.count * 2 >= content.count
     }
 
     /// Words that say nothing about the answer itself, so the agent adding or dropping them doesn't matter.

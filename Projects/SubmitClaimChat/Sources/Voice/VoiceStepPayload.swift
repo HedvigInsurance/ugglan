@@ -219,9 +219,11 @@ enum VoiceStepAdapter {
                 question: question,
                 fields: model.fields.map { field(from: $0, policies: policies) },
                 instruction: """
-                    \(Self.fromMemory) Fill in every field it answers without asking; ask naturally only for what's \
-                    missing, ending your turn with the question (nothing after it, no tool call) and waiting for \
-                    the answer. If you inferred a value, remember it for your one \
+                    \(Self.fromMemory) Fill in every field it answers without asking; ask naturally for every \
+                    field it doesn't answer, optional ones too, in one question (like "when did you buy it, and \
+                    roughly what did it cost?"), ending your turn with the question (nothing after it, no tool \
+                    call) and waiting for the answer. Leave a field empty only when they say they don't know or \
+                    don't have it. If you inferred a value, remember it for your one \
                     combined double-check later; don't confirm it now. Dates are YYYY-MM-DD; resolve "yesterday" from \
                     today's date in your instructions. An approximate date is still an answer: turn "about a year and \
                     a half ago" or "last spring" into an estimate (the first of that month) and include it in your \
@@ -268,8 +270,10 @@ enum VoiceStepAdapter {
                 question: model.notice,
                 instruction: """
                     This is important advice from Hedvig. Keep every instruction and fact in it, but say it gently, \
-                    like a friend passing on a tip. Then wait for the member to respond, and only then call \
-                    acknowledge_notice.
+                    like a friend passing on a tip. End it with a short question asking for their okay, so it's \
+                    clear you're waiting for them ("does that work for you?", "is that alright?", "can you do \
+                    that?"), worded differently each time. That question ends your turn: wait for the member's \
+                    answer, and only then call acknowledge_notice.
                     """
             )
         case let .summary(model):

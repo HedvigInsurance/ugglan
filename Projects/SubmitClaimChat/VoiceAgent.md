@@ -71,6 +71,10 @@ sounds like someone jotting the answer down.
 
 Don't add the built-in *End call* system tool: the app ends the call itself after the summary or a handoff.
 
+Turn on the built-in *Skip turn* system tool (wait timeout −1, pre-tool speech *Off*), described as staying silent
+while the member is busy on their phone. While the photo picker or summary is open, the platform's silence timeout
+gives the agent a turn; without a way to stay silent it filled it with "are you still there?".
+
 ## 3. Point the app at it
 
 Put the agent ID in `LocalModules/Environment/Sources/Environment/Environment.swift` →
