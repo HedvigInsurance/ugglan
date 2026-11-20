@@ -8,9 +8,9 @@ import hGraphQL
 /// The member's access token from the Keychain, refreshed first through `TokenRefresher`, the app's one refresh path.
 /// Kotlin calls it before each member request, from any thread.
 ///
-/// Nil when there is no usable token: logged out, the Keychain read failed, or the refresh failed. It never throws:
-/// Kotlin reports a throwing fetcher as a network failure, while a request sent without a token is answered
-/// unauthenticated and handled like any other unauthenticated answer.
+/// Behaves like `HeadersInterceptor`: nil only when the Keychain holds no token (logged out). When a token is stored but
+/// cannot be produced now (the Keychain read or the refresh failed), it throws, so Kotlin does not send the request and
+/// reports a network failure, which surfaces like an Octopus request that could not be sent.
 final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked Sendable {
     private let retrieveToken: @Sendable () async throws -> OAuthorizationToken?
     private let refreshIfNeeded: @Sendable () async throws -> Void
@@ -28,14 +28,9 @@ final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked
     }
 
     func fetch() async throws -> String? {
-        do {
-            guard try await retrieveToken() != nil else { return nil }
-            try await refreshIfNeeded()
-            return try await retrieveToken()?.accessToken
-        } catch {
-            // TokenRefresher logs its failures and forces the logout when the refresh token is spent.
-            return nil
-        }
+        guard try await retrieveToken() != nil else { return nil }
+        try await refreshIfNeeded()
+        return try await retrieveToken()?.accessToken
     }
 }
 
@@ -77,8 +72,8 @@ extension NetworkLogPolicy {
 
 extension LogPriority {
     /// The lowest Kotlin log priority that reaches `log`. Staging takes VERBOSE, where the HTTP bodies its
-    /// `NetworkLogPolicy` allows are logged; production stops at DEBUG.
+    /// `NetworkLogPolicy` allows are logged; production stops at INFO, the lowest level `DatadogLogger` keeps there.
     @MainActor static func minimumForKotlin(flavor: Flavor = Environment.current.flavor) -> LogPriority {
-        flavor == .production ? .debug : .verbose
+        flavor == .production ? .info : .verbose
     }
 }
