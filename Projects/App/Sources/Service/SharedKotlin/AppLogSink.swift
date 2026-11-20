@@ -3,12 +3,18 @@ import Foundation
 import Logger
 import hCore
 
-/// Writes Kotlin's log lines to `log`. Lines that arrive before `initialSetup` makes `log` the Datadog logger are held,
-/// and `logIsReady()` writes them in order.
+/// Writes Kotlin's log lines to `log` (or to the logger it is given). Lines that arrive before `initialSetup` makes
+/// `log` the Datadog logger are held, and `logIsReady()` writes them in order.
 final class AppLogSink: NSObject, IosLogSink, @unchecked Sendable {
     static let shared = AppLogSink()
 
+    private let logger: @MainActor @Sendable () -> any Logging
     @MainActor private var held: [(priority: LogPriority, message: String, tag: String)]? = []
+
+    init(logger: @escaping @MainActor @Sendable () -> any Logging = { hCore.log }) {
+        self.logger = logger
+        super.init()
+    }
 
     /// Called by Kotlin on whichever thread logged the line.
     func log(priority: LogPriority, tag: String?, message: String) {
@@ -17,7 +23,7 @@ final class AppLogSink: NSObject, IosLogSink, @unchecked Sendable {
                 if self.held != nil {
                     self.held?.append((priority, message, tag ?? ""))
                 } else {
-                    Self.write(priority, message, tag: tag ?? "")
+                    self.write(priority, message, tag: tag ?? "")
                 }
             }
         }
@@ -27,19 +33,20 @@ final class AppLogSink: NSObject, IosLogSink, @unchecked Sendable {
         let lines = held ?? []
         held = nil
         for line in lines {
-            Self.write(line.priority, line.message, tag: line.tag)
+            write(line.priority, line.message, tag: line.tag)
         }
     }
 
-    @MainActor private static func write(_ priority: LogPriority, _ message: String, tag: String) {
+    @MainActor private func write(_ priority: LogPriority, _ message: String, tag: String) {
         let attributes: [AttributeKey: AttributeValue] = ["source": "kotlin", "tag": tag]
+        let log = logger()
         switch priority.nsEnum {
-        case .verbose, .debug: hCore.log.debug(message, error: nil, attributes: attributes)
-        case .info: hCore.log.info(message, error: nil, attributes: attributes)
-        case .warn: hCore.log.warn(message, error: nil, attributes: attributes)
-        case .error: hCore.log.error(message, error: nil, attributes: attributes)
-        case .assert: hCore.log.critical(message, error: nil, attributes: attributes)
-        @unknown default: hCore.log.error(message, error: nil, attributes: attributes)
+        case .verbose, .debug: log.debug(message, error: nil, attributes: attributes)
+        case .info: log.info(message, error: nil, attributes: attributes)
+        case .warn: log.warn(message, error: nil, attributes: attributes)
+        case .error: log.error(message, error: nil, attributes: attributes)
+        case .assert: log.critical(message, error: nil, attributes: attributes)
+        @unknown default: log.error(message, error: nil, attributes: attributes)
         }
     }
 }

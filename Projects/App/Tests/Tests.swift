@@ -11,8 +11,8 @@ import hGraphQL
 @testable import Ugglan
 
 /// The app's UI tests are the XCUITest suites in Tests/UITests, which build into the AppUITests target. These run
-/// hosted by the app, against the real Kotlin framework, without a network request. Serialized because they swap the
-/// global `log` and use `Dependencies.shared`.
+/// hosted by the app, against the real Kotlin framework, without a network request. Serialized because one test
+/// registers the network clients in `Dependencies.shared` again; no test swaps the global `log`.
 @MainActor
 @Suite(.serialized)
 struct SharedKotlinTests {
@@ -84,11 +84,8 @@ struct SharedKotlinTests {
 
     @Test
     func kotlinLinesAreHeldUntilTheLoggerIsReadyThenWrittenInOrder() async {
-        let sink = AppLogSink()
         let logger = RecordingLogger()
-        let previous = hCore.log
-        hCore.log = logger
-        defer { hCore.log = previous }
+        let sink = AppLogSink(logger: { logger })
 
         sink.log(priority: .info, tag: "T", message: "first")
         sink.log(priority: .warn, tag: nil, message: "second")
