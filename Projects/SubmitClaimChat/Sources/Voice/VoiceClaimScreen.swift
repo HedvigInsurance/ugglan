@@ -101,9 +101,7 @@ struct VoiceClaimScreen: View {
         hSection {
             VStack(spacing: .padding8) {
                 if viewModel.phase == .failed {
-                    hButton(.large, .primary, content: .init(title: VoiceClaimStrings.switchToTyping)) {
-                        viewModel.switchToTyping()
-                    }
+                    switchToTypingButton(.primary)
                     hButton(.large, .ghost, content: .init(title: L10n.generalCloseButton)) {
                         viewModel.endCall()
                     }
@@ -112,23 +110,50 @@ struct VoiceClaimScreen: View {
                         hButton(
                             .large,
                             .secondary,
-                            content: .init(title: viewModel.isMuted ? VoiceClaimStrings.unmute : VoiceClaimStrings.mute)
+                            content: .init(
+                                title: viewModel.isMuted ? VoiceClaimStrings.unmute : VoiceClaimStrings.mute,
+                                // The icon shows the microphone as it is now, the title what a tap does.
+                                buttonImage: .init(
+                                    image: viewModel.isMuted ? VoiceCallIcon.microphoneOff : VoiceCallIcon.microphone,
+                                    alignment: .leading,
+                                    size: .large
+                                )
+                            )
                         ) {
                             viewModel.toggleMute()
                         }
-                        hButton(.large, .alert, content: .init(title: VoiceClaimStrings.endCall)) {
+                        hButton(
+                            .large,
+                            .alert,
+                            content: .init(
+                                title: VoiceClaimStrings.endCall,
+                                buttonImage: .init(image: VoiceCallIcon.hangUp, alignment: .leading, size: .large)
+                            )
+                        ) {
                             viewModel.endCall()
                         }
                     }
-                    hButton(.large, .ghost, content: .init(title: VoiceClaimStrings.switchToTyping)) {
-                        viewModel.switchToTyping()
-                    }
+                    switchToTypingButton(.ghost)
                 }
             }
         }
         .sectionContainerStyle(.transparent)
         .disabled(viewModel.phase == .finished)
         .padding(.bottom, .padding16)
+    }
+
+    /// The pen, like the chat's own "Write" button.
+    private func switchToTypingButton(_ type: hButtonConfigurationType) -> some View {
+        hButton(
+            .large,
+            type,
+            content: .init(
+                title: VoiceClaimStrings.switchToTyping,
+                buttonImage: .init(image: VoiceCallIcon.typing, alignment: .leading, size: .large)
+            )
+        ) {
+            viewModel.switchToTyping()
+        }
     }
 
     // hCoreUI's detent only reports a swipe-down through the binding (`onUserDismiss` is for centered modals). It
@@ -148,6 +173,47 @@ struct VoiceClaimScreen: View {
             get: { viewModel.summaryStep != nil },
             set: { if !$0 { viewModel.summarySheetDismissed(shown) } }
         )
+    }
+}
+
+/// The call buttons' icons, on the design system's 24 pt grid. hCoreUI has a mic and a pen, but no muted mic or
+/// handset, so those two are drawn here.
+@MainActor
+private enum VoiceCallIcon {
+    static let microphone = hCoreUIAssets.mic.view
+    static let typing = hCoreUIAssets.penEdit.view
+
+    /// hCoreUI's mic, struck through like the system's muted mic.
+    static let microphoneOff = icon { _ in
+        hCoreUIAssets.mic.image.withTintColor(.black, renderingMode: .alwaysOriginal).draw(in: grid)
+        let slash = UIBezierPath()
+        slash.move(to: CGPoint(x: 4, y: 4))
+        slash.addLine(to: CGPoint(x: 20, y: 20))
+        slash.lineCapStyle = .round
+        // A gap either side of the slash, then the slash itself in the icon set's 1.5 pt line.
+        slash.lineWidth = 4.5
+        slash.stroke(with: .clear, alpha: 1)
+        slash.lineWidth = 1.5
+        UIColor.black.setStroke()
+        slash.stroke()
+    }
+
+    /// The system's hang-up handset, centred on the square grid: hButton draws its icon resizable in a square frame,
+    /// which would stretch the wide handset. Bold and nearly the grid's width, or it looks lighter than the mic.
+    static let hangUp = icon { _ in
+        let bold = UIImage.SymbolConfiguration(weight: .bold)
+        guard let handset = UIImage(systemName: "phone.down.fill", withConfiguration: bold) else { return }
+        let width: CGFloat = 22
+        let height = width * handset.size.height / handset.size.width
+        handset.withTintColor(.black, renderingMode: .alwaysOriginal)
+            .draw(in: CGRect(x: (grid.width - width) / 2, y: (grid.height - height) / 2, width: width, height: height))
+    }
+
+    private static let grid = CGRect(x: 0, y: 0, width: 24, height: 24)
+
+    /// Only the shape counts: the button tints it like its title.
+    private static func icon(_ draw: (UIGraphicsImageRendererContext) -> Void) -> Image {
+        Image(uiImage: UIGraphicsImageRenderer(bounds: grid).image(actions: draw).withRenderingMode(.alwaysTemplate))
     }
 }
 
