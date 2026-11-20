@@ -316,7 +316,7 @@ extension ClaimFollowup {
                 text: "When did it happen?",
                 state: .todo,
                 cantAnswerComment: nil,
-                content: .date(currentValue: nil)
+                content: .date(currentValue: nil, min: nil, max: nil)
             ),
             .init(
                 id: "files",

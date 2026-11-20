@@ -26,13 +26,23 @@ public struct ClaimFollowup: Codable, Equatable, Hashable, Identifiable, Sendabl
 public struct ClaimFollowupQuestion: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
     public let text: String
+    /// A short line shown under the question, set by the handler.
+    public let hint: String?
     public let state: State
     public let cantAnswerComment: String?
     public let content: Content
 
-    public init(id: String, text: String, state: State, cantAnswerComment: String?, content: Content) {
+    public init(
+        id: String,
+        text: String,
+        hint: String? = nil,
+        state: State,
+        cantAnswerComment: String?,
+        content: Content
+    ) {
         self.id = id
         self.text = text
+        self.hint = hint
         self.state = state
         self.cantAnswerComment = cantAnswerComment
         self.content = content
@@ -47,7 +57,8 @@ public struct ClaimFollowupQuestion: Codable, Equatable, Hashable, Identifiable,
     public enum Content: Codable, Equatable, Hashable, Sendable {
         case binary(currentValue: Bool?)
         case freeText(minLength: Int, maxLength: Int, currentValue: String?, currentAudio: ClaimFollowupFile?)
-        case date(currentValue: String?)
+        /// `min` and `max` are advisory `yyyy-MM-dd` dates: the app warns outside them and never blocks.
+        case date(currentValue: String?, min: String?, max: String?)
         case number(currentValue: String?, min: Int?, max: Int?)
         case phoneNumber(currentValue: String?)
         case fileUpload(currentFiles: [ClaimFollowupFile])

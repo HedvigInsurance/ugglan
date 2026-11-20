@@ -47,10 +47,16 @@ struct ClaimFollowupQuestionPage: View {
                 VStack(spacing: .padding8) {
                     // The question sits right above its answer; the recorder card shows it itself.
                     if !isRecording(question) {
-                        hText(question.text)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.bottom, .padding8)
-                            .accessibilityAddTraits(.isHeader)
+                        VStack(alignment: .leading, spacing: .padding2) {
+                            hText(question.text)
+                                .accessibilityAddTraits(.isHeader)
+                            if let hint = question.hint, !hint.isEmpty {
+                                hText(hint, style: .label)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, .padding8)
                     }
                     middleContent(question)
                     if !isRecording(question) {
@@ -199,14 +205,21 @@ struct ClaimFollowupQuestionPage: View {
                 placeholder: L10n.phoneNumberRowTitle,
                 error: $fieldError
             )
-        case .date:
-            hDatePickerField(
-                config: .init(placeholder: L10n.claimFollowupDatePlaceholder, title: question.text),
-                selectedDate: dateDraft,
-                onContinue: { date in
-                    dateDraft = date
+        case let .date(_, min, max):
+            let isOutOfRange = Self.isOutOfRange(dateDraft, min: min, max: max)
+            VStack(spacing: .padding8) {
+                if isOutOfRange {
+                    InfoCard(text: L10n.claimFollowupNumberOutOfRange, type: .attention)
                 }
-            )
+                hDatePickerField(
+                    config: .init(placeholder: L10n.claimFollowupDatePlaceholder, title: question.text),
+                    selectedDate: dateDraft,
+                    onContinue: { date in
+                        dateDraft = date
+                    }
+                )
+            }
+            .animation(.defaultSpring, value: isOutOfRange)
         case .binary, .fileUpload:
             EmptyView()
         }
@@ -444,7 +457,7 @@ struct ClaimFollowupQuestionPage: View {
             return Masking(type: .phoneNumber).unmaskedValue(text: draft) == currentValue
         case let .binary(currentValue):
             return binaryDraft == currentValue
-        case let .date(currentValue):
+        case let .date(currentValue, _, _):
             return dateDraft?.localDateString == currentValue
         case .fileUpload:
             return removedFileIds.isEmpty
@@ -476,11 +489,19 @@ struct ClaimFollowupQuestionPage: View {
             draft = currentValue ?? ""
         case let .binary(currentValue):
             binaryDraft = currentValue
-        case let .date(currentValue):
+        case let .date(currentValue, _, _):
             dateDraft = currentValue?.localDateToDate
         case .fileUpload:
             removedFileIds = []
         }
+    }
+
+    /// Date limits are advisory `yyyy-MM-dd` strings, so they warn like the number range and never block.
+    private static func isOutOfRange(_ date: Date?, min: String?, max: String?) -> Bool {
+        guard let value = date?.localDateString else { return false }
+        let isBeforeMin = min.map { value < $0 } ?? false
+        let isAfterMax = max.map { value > $0 } ?? false
+        return isBeforeMin || isAfterMax
     }
 
     private static func isOutOfRange(_ value: String, min: Int?, max: Int?) -> Bool {
@@ -668,7 +689,7 @@ extension ClaimFollowupQuestion.Content {
             return currentValue ? L10n.General.yes : L10n.General.no
         case let .freeText(_, _, currentValue, currentAudio):
             return currentAudio != nil ? L10n.claimFollowupAudioAdded : currentValue ?? ""
-        case let .date(currentValue):
+        case let .date(currentValue, _, _):
             return currentValue?.localDateToDate?.displayDateDDMMMYYYYFormat ?? currentValue ?? ""
         case let .number(currentValue, _, _), let .phoneNumber(currentValue):
             return currentValue ?? ""

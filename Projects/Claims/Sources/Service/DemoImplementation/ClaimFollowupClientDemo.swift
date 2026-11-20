@@ -58,14 +58,14 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
                 relevance: .unknown
             )
             content = .freeText(minLength: minLength, maxLength: maxLength, currentValue: nil, currentAudio: audio)
-        case let (.date(value), .date):
+        case let (.date(value), .date(_, min, max)):
             let formatter = DateFormatter()
             formatter.locale = Locale(identifier: "en_US_POSIX")
             formatter.dateFormat = "yyyy-MM-dd"
             guard formatter.date(from: value) != nil else {
                 throw ClaimFollowupError.userError(message: "The answer must be a date (yyyy-MM-dd)")
             }
-            content = .date(currentValue: value)
+            content = .date(currentValue: value, min: min, max: max)
         case let (.number(value), .number(_, min, max)):
             guard let number = Int(value) else {
                 throw ClaimFollowupError.userError(message: "The answer must be a whole number")
@@ -195,6 +195,7 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
                     ? ClaimFollowupQuestion(
                         id: $0.id,
                         text: $0.text,
+                        hint: $0.hint,
                         state: state,
                         cantAnswerComment: comment,
                         content: content
@@ -244,6 +245,7 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
                 ClaimFollowupQuestion(
                     id: "fake-question-receipt",
                     text: "Skicka kvittot för cykeln",
+                    hint: "Kvittot ska visa pris, datum och butik.",
                     state: .todo,
                     cantAnswerComment: nil,
                     content: .fileUpload(currentFiles: [])
@@ -267,7 +269,7 @@ public final class ClaimFollowupClientDemo: hClaimFollowupClient {
                     text: "När köpte du cykeln?",
                     state: .todo,
                     cantAnswerComment: nil,
-                    content: .date(currentValue: nil)
+                    content: .date(currentValue: nil, min: "2020-01-01", max: Date().localDateString)
                 ),
                 ClaimFollowupQuestion(
                     id: "fake-question-phone",
@@ -295,8 +297,8 @@ extension ClaimFollowupQuestion.Content {
             return .binary(currentValue: nil)
         case let .freeText(minLength, maxLength, _, _):
             return .freeText(minLength: minLength, maxLength: maxLength, currentValue: nil, currentAudio: nil)
-        case .date:
-            return .date(currentValue: nil)
+        case let .date(_, min, max):
+            return .date(currentValue: nil, min: min, max: max)
         case let .number(_, min, max):
             return .number(currentValue: nil, min: min, max: max)
         case .phoneNumber:
