@@ -17,7 +17,10 @@ struct PublicImportantMessagesView: View {
                 cards
             }
             .scrollBounceBehavior(.basedOnSize)
+            .scrollIndicators(.visible)
+            .scrollIndicatorsFlash(onAppear: true)
         }
+        .animation(.easeInOut, value: messages)
         .sheet(isPresented: $showSafariView) {
             SafariView(url: $urlLink)
         }
@@ -27,6 +30,7 @@ struct PublicImportantMessagesView: View {
         VStack(spacing: .padding8) {
             ForEach(messages) { message in
                 card(message)
+                    .transition(.opacity)
             }
         }
         .padding(.vertical, messages.isEmpty ? 0 : .padding8)
@@ -34,22 +38,25 @@ struct PublicImportantMessagesView: View {
 
     @ViewBuilder
     private func card(_ message: PublicImportantMessage) -> some View {
+        let label = message.severity.accessibilityPrefix + "\n" + message.message
         if let link = message.link {
             InfoCard(text: message.message, type: message.severity.notificationType)
-                .buttons(
-                    [
-                        .init(
-                            buttonTitle: link.text,
-                            buttonAction: {
-                                urlLink = link.url
-                                showSafariView = true
-                            }
-                        )
-                    ]
-                )
+                .buttons([.init(buttonTitle: link.text, buttonAction: { open(link) })])
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(label)
+                .accessibilityHint(link.text)
+                .accessibilityAddTraits(.isLink)
+                .accessibilityAction { open(link) }
         } else {
             InfoCard(text: message.message, type: message.severity.notificationType)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(label)
         }
+    }
+
+    private func open(_ link: PublicImportantMessage.Link) {
+        urlLink = link.url
+        showSafariView = true
     }
 }
 
@@ -59,6 +66,14 @@ extension PublicImportantMessage.Severity {
         case .info: .info
         case .warning: .attention
         case .error: .error
+        }
+    }
+
+    /// Read before the message, like a toast's, because VoiceOver does not see the card's colour or icon.
+    fileprivate var accessibilityPrefix: String {
+        switch self {
+        case .error: L10n.generalError
+        case .warning, .info: L10n.voiceoverNotificationAlert
         }
     }
 }
