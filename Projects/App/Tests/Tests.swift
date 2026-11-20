@@ -124,7 +124,7 @@ struct SharedKotlinTests {
     }
 
     @Test
-    func theAccessTokenFetcherNeverThrows() async throws {
+    func theAccessTokenFetcherIsNilOnlyWhenLoggedOutAndOtherwiseRethrows() async throws {
         let token = OAuthorizationToken(
             accessToken: "access",
             accessTokenExpirationDate: .distantFuture,
@@ -144,8 +144,8 @@ struct SharedKotlinTests {
 
         #expect(try await refreshed.fetch() == "access")
         #expect(try await loggedOut.fetch() == nil)
-        #expect(try await refreshFailed.fetch() == nil)
-        #expect(try await keychainFailed.fetch() == nil)
+        await #expect(throws: AuthError.refreshFailed) { try await refreshFailed.fetch() }
+        await #expect(throws: AuthError.networkIssue) { try await keychainFailed.fetch() }
     }
 
     private static func succeeding<T>(_ value: T) -> NativeSuspend<T, Error, KotlinUnit> {
