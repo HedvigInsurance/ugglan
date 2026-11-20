@@ -72,8 +72,8 @@ extension NetworkLogPolicy {
 
 extension LogPriority {
     /// The lowest Kotlin log priority that reaches `log`. Staging takes VERBOSE, where the HTTP bodies its
-    /// `NetworkLogPolicy` allows are logged; production stops at DEBUG.
+    /// `NetworkLogPolicy` allows are logged; production stops at INFO, the lowest level `DatadogLogger` keeps there.
     @MainActor static func minimumForKotlin(flavor: Flavor = Environment.current.flavor) -> LogPriority {
-        flavor == .production ? .debug : .verbose
+        flavor == .production ? .info : .verbose
     }
 }
