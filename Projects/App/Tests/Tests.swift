@@ -1,10 +1,12 @@
 import AuthenticationCore
+import Combine
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
 import KMPNativeCoroutinesAsync
 import KMPNativeCoroutinesCore
 import Logger
+import TestDependencies
 import Testing
 import hCore
 import hGraphQL
@@ -244,4 +246,180 @@ private final class RecordingLogger: Logging {
     ) {}
 
     nonisolated func addError(error _: Error, type _: ErrorSource, attributes _: [AttributeKey: AttributeValue]?) {}
+}
+
+/// Serialized because each test swaps the `PublicImportantMessagesClient` in `Dependencies.shared`. The view model
+/// gets its activation and language publishers passed in, so no test posts a notification or changes the app locale.
+@MainActor
+@Suite(.serialized)
+final class NotLoggedViewModelTests {
+    private weak var vm: NotLoggedViewModel?
+    private let appBecameActive = PassthroughSubject<Void, Never>()
+    private let locale = CurrentValueSubject<Localization.Locale, Never>(.sv_SE)
+
+    private let error = PublicImportantMessage(id: "error", message: "a", severity: .error, link: nil)
+    private let warning = PublicImportantMessage(
+        id: "warning",
+        message: "b",
+        severity: .warning,
+        link: .init(url: URL(string: "https://example.test")!, text: "Read more")
+    )
+    private let info = PublicImportantMessage(id: "info", message: "c", severity: .info, link: nil)
+
+    @Test
+    func theFirstAppearanceLoadsTheMessagesInTheOrderGiven() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [{ [self.error, self.warning, self.info] }])
+            let sut = makeViewModel(client)
+
+            sut.startLoadingImportantMessages()
+
+            await waitUntil(description: "messages loaded") { !sut.importantMessages.isEmpty }
+            #expect(sut.importantMessages == [error, warning, info])
+            #expect(client.calls == 1)
+        }
+
+        await expectViewModelReleased()
+    }
+
+    @Test
+    func aFailedFirstLoadShowsNothing() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [{ throw URLError(.notConnectedToInternet) }])
+            let sut = makeViewModel(client)
+
+            sut.startLoadingImportantMessages()
+
+            await waitUntil(description: "load attempted") { client.calls == 1 }
+            await drainMainQueue()
+            #expect(sut.importantMessages.isEmpty)
+        }
+
+        await expectViewModelReleased()
+    }
+
+    @Test
+    func aFailedReloadKeepsTheLastList() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [
+                { [self.warning] },
+                { throw URLError(.notConnectedToInternet) },
+            ])
+            let sut = makeViewModel(client)
+            sut.startLoadingImportantMessages()
+            await waitUntil(description: "messages loaded") { !sut.importantMessages.isEmpty }
+            await waitUntil(description: "first load finished") { !sut.isLoadingImportantMessages }
+
+            appBecameActive.send()
+
+            await waitUntil(description: "reload attempted") { client.calls == 2 }
+            await waitUntil(description: "reload finished") { !sut.isLoadingImportantMessages }
+            #expect(sut.importantMessages == [warning])
+        }
+
+        await expectViewModelReleased()
+    }
+
+    @Test
+    func becomingActiveReloads() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [
+                { [self.warning] }, { [self.error, self.info] },
+            ])
+            let sut = makeViewModel(client)
+            sut.startLoadingImportantMessages()
+            await waitUntil(description: "first load finished") {
+                !sut.importantMessages.isEmpty && !sut.isLoadingImportantMessages
+            }
+
+            appBecameActive.send()
+
+            await waitUntil(description: "reloaded") { sut.importantMessages == [self.error, self.info] }
+            #expect(client.calls == 2)
+        }
+
+        await expectViewModelReleased()
+    }
+
+    @Test
+    func aLanguageChangeReloadsButTheSameLanguageDoesNot() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [{ [self.warning] }, { [self.info] }])
+            let sut = makeViewModel(client)
+            sut.startLoadingImportantMessages()
+            await waitUntil(description: "first load finished") {
+                !sut.importantMessages.isEmpty && !sut.isLoadingImportantMessages
+            }
+
+            locale.send(.sv_SE)
+            locale.send(.en_SE)
+
+            await waitUntil(description: "reloaded") { sut.importantMessages == [self.info] }
+            #expect(client.calls == 2)
+        }
+
+        await expectViewModelReleased()
+    }
+
+    @Test
+    func appearingAgainDoesNotReload() async {
+        do {
+            let client = MockPublicImportantMessagesClient(responses: [{ [self.warning] }])
+            let sut = makeViewModel(client)
+            sut.startLoadingImportantMessages()
+            await waitUntil(description: "first load finished") {
+                !sut.importantMessages.isEmpty && !sut.isLoadingImportantMessages
+            }
+
+            sut.startLoadingImportantMessages()
+            await drainMainQueue()
+
+            #expect(client.calls == 1)
+        }
+
+        await expectViewModelReleased()
+    }
+
+    private func makeViewModel(_ client: MockPublicImportantMessagesClient) -> NotLoggedViewModel {
+        Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in client })
+        let sut = NotLoggedViewModel(
+            appBecameActive: appBecameActive.eraseToAnyPublisher(),
+            localeChanges: locale.eraseToAnyPublisher()
+        )
+        vm = sut
+        return sut
+    }
+
+    /// Puts back the client the hosting app registered, so its own login screen keeps working.
+    private func expectViewModelReleased() async {
+        Dependencies.shared.add(
+            module: Module { () -> PublicImportantMessagesClient in
+                PublicImportantMessagesClientShared()
+            }
+        )
+        await waitUntil(description: "the view model is released") { self.vm == nil }
+    }
+
+    private func drainMainQueue() async {
+        for _ in 0..<3 {
+            await withCheckedContinuation { continuation in
+                DispatchQueue.main.async { continuation.resume() }
+            }
+        }
+    }
+}
+
+@MainActor
+private final class MockPublicImportantMessagesClient: PublicImportantMessagesClient {
+    private var responses: [() throws -> [PublicImportantMessage]]
+    private(set) var calls = 0
+
+    init(responses: [() throws -> [PublicImportantMessage]]) {
+        self.responses = responses
+    }
+
+    func getMessages() async throws -> [PublicImportantMessage] {
+        calls += 1
+        return try responses.removeFirst()()
+    }
 }

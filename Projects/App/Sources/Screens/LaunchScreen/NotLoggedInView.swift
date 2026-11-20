@@ -1,3 +1,4 @@
+import AuthenticationCore
 import AuthenticationUI
 import Combine
 import Environment
@@ -42,7 +43,7 @@ struct NotLoggedInView: View {
 
     @ViewBuilder
     var languageView: some View {
-        ZStack {
+        GeometryReader { proxy in
             VStack {
                 HStack {
                     Spacer()
@@ -54,21 +55,29 @@ struct NotLoggedInView: View {
                             .accessibilityLabel(L10n.voiceoverSelectLanguage)
                     }
                 }
-                Spacer()
+                Spacer(minLength: 0)
                 VStack {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: L10n.bankidLoginTitle)
-                    ) { vm.showLogin = true }
-                    hButton(
-                        .large,
-                        .ghost,
-                        content: .init(title: L10n.marketingGetHedvig)
-                    ) { vm.onOnBoardPressed() }
-                    .accessibilityAddTraits(.isLink)
+                    PublicImportantMessagesView(messages: vm.importantMessages)
+                    VStack {
+                        hButton(
+                            .large,
+                            .primary,
+                            content: .init(title: L10n.bankidLoginTitle)
+                        ) { vm.showLogin = true }
+                        hButton(
+                            .large,
+                            .ghost,
+                            content: .init(title: L10n.marketingGetHedvig)
+                        ) { vm.onOnBoardPressed() }
+                        .accessibilityAddTraits(.isLink)
+                    }
                 }
+                // The Hedvig logo is drawn over the middle of this screen, so the cards stay below it.
+                .frame(maxHeight: max(proxy.size.height / 2 - .padding16, 0), alignment: .bottom)
             }
+        }
+        .onAppear {
+            vm.startLoadingImportantMessages()
         }
     }
 }
@@ -99,7 +108,12 @@ private struct BankIDSandboxToggle: ViewModifier {
 
 struct NotLoggedInView_Previews: PreviewProvider {
     static var previews: some View {
-        NotLoggedInView(vm: .init())
+        Dependencies.shared.add(
+            module: Module { () -> PublicImportantMessagesClient in
+                PublicImportantMessagesClientDemo()
+            }
+        )
+        return NotLoggedInView(vm: .init())
     }
 }
 
@@ -109,11 +123,28 @@ class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
     var showLogin = false
+    /// Most severe first. Empty while loading and after a failed first load: there is no error state before login.
+    var importantMessages: [PublicImportantMessage] = []
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored @Inject private var publicImportantMessagesClient: PublicImportantMessagesClient
+    @ObservationIgnored private let appBecameActive: AnyPublisher<Void, Never>
+    @ObservationIgnored private let localeChanges: AnyPublisher<Localization.Locale, Never>
+    @ObservationIgnored private var importantMessagesTask: Task<Void, Never>?
+    @ObservationIgnored private var importantMessagesCancellables = Set<AnyCancellable>()
+    var isLoadingImportantMessages: Bool { importantMessagesTask != nil }
 
-    init() {
+    init(
+        appBecameActive: AnyPublisher<Void, Never> = NotificationCenter.default
+            .publisher(for: UIApplication.didBecomeActiveNotification)
+            .map { _ in () }
+            .eraseToAnyPublisher(),
+        localeChanges: AnyPublisher<Localization.Locale, Never> = Localization.Locale.currentLocale
+            .eraseToAnyPublisher()
+    ) {
+        self.appBecameActive = appBecameActive
+        self.localeChanges = localeChanges
         // Deferred one main-actor turn so the owner can set `onLoad` after init.
         Task { @MainActor [weak self] in
             self?.viewState = .language
@@ -138,6 +169,46 @@ class NotLoggedViewModel {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    /// Loads the important messages the first time the screen appears, then again whenever the app becomes active
+    /// or the language changes. Later calls do nothing.
+    func startLoadingImportantMessages() {
+        guard importantMessagesCancellables.isEmpty else { return }
+        loadImportantMessages()
+        appBecameActive
+            .receive(on: RunLoop.main)
+            .sink { [weak self] in
+                // A load already running answers for this activation too, such as the one at launch.
+                guard let self, importantMessagesTask == nil else { return }
+                loadImportantMessages()
+            }
+            .store(in: &importantMessagesCancellables)
+        localeChanges
+            .removeDuplicates()
+            .dropFirst()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.loadImportantMessages()
+            }
+            .store(in: &importantMessagesCancellables)
+    }
+
+    /// Replaces a load still running, whose answer may be in the previous language. A failure keeps the list shown.
+    private func loadImportantMessages() {
+        importantMessagesTask?.cancel()
+        let client = publicImportantMessagesClient
+        importantMessagesTask = Task { [weak self] in
+            do {
+                let messages = try await client.getMessages()
+                guard !Task.isCancelled else { return }
+                self?.importantMessages = messages
+            } catch {
+                guard !Task.isCancelled else { return }
+                log.warn("Failed to load the logged-out important messages", error: error, attributes: nil)
+            }
+            self?.importantMessagesTask = nil
+        }
     }
 
     @MainActor
