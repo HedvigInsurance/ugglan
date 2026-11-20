@@ -6,12 +6,36 @@ import hCore
 import hGraphQL
 
 /// The member's access token from the Keychain, refreshed first through `TokenRefresher`, the app's one refresh path.
-/// Nil when logged out. Kotlin calls it before each member request, from any thread.
+/// Kotlin calls it before each member request, from any thread.
+///
+/// Nil when there is no usable token: logged out, the Keychain read failed, or the refresh failed. It never throws:
+/// Kotlin reports a throwing fetcher as a network failure, while a request sent without a token is answered
+/// unauthenticated and handled like any other unauthenticated answer.
 final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked Sendable {
+    private let retrieveToken: @Sendable () async throws -> OAuthorizationToken?
+    private let refreshIfNeeded: @Sendable () async throws -> Void
+
+    init(
+        retrieveToken: @escaping @Sendable () async throws -> OAuthorizationToken? = {
+            try await ApolloClient.retreiveToken()
+        },
+        refreshIfNeeded: @escaping @Sendable () async throws -> Void = {
+            try await TokenRefresher.shared.refreshIfNeeded()
+        }
+    ) {
+        self.retrieveToken = retrieveToken
+        self.refreshIfNeeded = refreshIfNeeded
+    }
+
     func fetch() async throws -> String? {
-        guard try await ApolloClient.retreiveToken() != nil else { return nil }
-        try await TokenRefresher.shared.refreshIfNeeded()
-        return try await ApolloClient.retreiveToken()?.accessToken
+        do {
+            guard try await retrieveToken() != nil else { return nil }
+            try await refreshIfNeeded()
+            return try await retrieveToken()?.accessToken
+        } catch {
+            // TokenRefresher logs its failures and forces the logout when the refresh token is spent.
+            return nil
+        }
     }
 }
 
