@@ -1,24 +1,30 @@
 # TerminateContractsUI
 
-SwiftUI flow built on `TerminateContractsCore`. Multi-step contract cancellation flow. Guides users through insurance selection, date picking, surveys, deflection screens (auto-decom, auto-cancel), confirmation, and success/failure outcomes.
+SwiftUI contract cancellation flow built on `TerminateContractsCore`: insurance selection, cancellation survey,
+deflection screens (auto-decom, auto-cancel), date picking, confirmation and success/failure outcomes.
 
-## Key Files
-- `Sources/Navigation/TerminationFlowNavigationViewModel.swift` — Central navigation ViewModel; owns the `Router`, manages step routing, context, and all step models. Also contains `TerminationFlowNavigation` view, all router action enums and the `TrackingViewNameProtocol` conformance of `DeflectScreenContent`
-- `Sources/Models/TerminateInsuranceViewModel.swift` — Entry point ViewModel; decides single-contract vs multi-select flow
-- `Sources/Views/SetTerminationDateLandingScreen.swift` — Date selection landing screen
-- `Sources/Views/TerminationSurveyScreen.swift` — Cancellation reason survey
-- `Sources/Views/TerminationSummaryScreen.swift` — Termination summary before confirmation
-- `Sources/Views/ConfirmTerminationScreen.swift` — Final confirmation step
-- `Sources/Helpers/View+hide.swift` — View extension helper
-- Service, client protocol, demo client and models (`TerminationConfirmConfig`, `TerminationSurveyData`, `DeflectScreenContent`, …): see TerminateContractsCore
+## Architecture
+- `TerminateInsuranceViewModel` is the public entry ViewModel. `start(with:)` with a single config fetches the survey
+  up front and opens the flow at the survey; with several configs it opens at insurance selection.
+- `TerminationFlowNavigationViewModel` owns the router and all flow state (selected option, comment, date, survey
+  data). Whether the flow terminates with a date or deletes the insurance comes from the survey's `action`
+  (`.terminateWithDate` / `.deleteInsurance`).
+- Survey options can carry a `TerminationSuggestion`: deflect suggestions push a `DeflectScreenContent` screen;
+  other suggestions go through `TerminationRedirectHandler` (change tier, update address, external redirect).
+
+## Entry points
+- `.handleTerminateInsurance(vm:onDismiss:)`, used by App (`LoggedInNavigation+Presentations`), ContractsUI and Home
+  quick actions. It also presents `ChangeTierNavigation` when a change-tier suggestion is accepted.
 
 ## Dependencies
 - hCore, hCoreUI, TerminateContractsCore, ChangeTierCore, ChangeTierUI
 - Depended on by: App, ContractsUI, Home
 
 ## Gotchas
-- `TerminationFlowNavigationViewModel.swift` is a large file (~740 lines) containing the main ViewModel, helper classes (`TerminationRedirectHandler`, `TerminationStepHandler`), the navigation view, and all routing enums
-- The flow is **context-driven**: each API response returns a `terminationContext` string and the next step, which the ViewModel uses to navigate forward
-- Supports deflection: the backend can redirect users to change-tier or move-contract flows instead of terminating
-- `TerminateInsuranceViewModel` branches on `configs.count > 1` to show insurance selection or skip directly to the termination flow
-- Tests keep their own `MockTerminateContractsClient` / `MockTerminationData` copy in `Tests/MockData.swift`
+- `TerminationFlowNavigationViewModel.swift` (~680 lines) also holds `TerminationRedirectHandler`, the
+  `TerminationFlowNavigation` view and all route enums.
+- Redirects to the move flow or an external URL dismiss the flow, then post `.openDeepLink` after 0.5 s.
+  The move flow is opened via the `moveContract` deep link, not by importing MoveFlowUI.
+- Tests keep their own `MockTerminateContractsClient` copy in `Tests/MockData.swift`, separate from the Core tests.
+  `TerminationFlowNavigationViewModelRetainTests` checks the VM is released while its router lives. Progress is
+  re-armed with `withObservationTracking` on `router.routeTypes`, so keep `[weak self]` there.

@@ -1,36 +1,28 @@
 # MoveFlowUI
 
-SwiftUI flow built on `MoveFlowCore`. Handles the address change (moving) flow for insurance contracts. Guides users through selecting a contract, housing type, entering address details, house-specific information, choosing a tier/deductible for the new address, and confirming the move.
+SwiftUI address change (moving) flow built on `MoveFlowCore`: select contract, housing type, new address, house
+details (incl. extra buildings), choose tier/deductible for the new address, confirm and process.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor @Observable class`). `MovingFlowNavigationViewModel` uses `@Inject private var service: MoveFlowClient`.
-- Key services: `MoveFlowClient` (protocol)
-- Data flow: `MovingFlowNavigationViewModel` is the central VM that fetches move intent configuration, manages address/house input models, handles quote selection, and implements `ChangeTierQuoteDataProvider` to integrate with the ChangeTierUI module for tier selection. `MovingFlowQuoteManager` is a helper that builds summary view models and updates quote costs.
+- `MovingFlowNavigationViewModel` is the central VM: it fetches the move intent configuration, holds the address and
+  house form models, tracks quote selection and talks to `MoveFlowClient` via `@Inject` (no service wrapper).
+- `AddressInputModel` / `HouseInformationInputModel` are the form ViewModels; `asMoveAddressInput` /
+  `asMoveHouseInformationInput` turn them into MoveFlowCore's request inputs.
+- `MovingFlowQuoteManager` builds the quote summary and updates quote costs.
+- Tier selection reuses ChangeTierUI: `MovingFlowNavigationViewModel` conforms to `ChangeTierQuoteDataProvider`, and
+  `ChangeTierNavigation` is pushed inside the move flow's own router (embedded, not a separate stack).
 
-## Key Files
-- Entry point: `MovingFlowNavigation` in `Sources/Navigation/MovingFlowNavigation.swift`
-- ViewModel: `MovingFlowNavigationViewModel` in `Sources/Navigation/MovingFlowNavigation.swift` (same file as navigation)
-- Helper: `MovingFlowQuoteManager` in `Sources/Navigation/MovingFlowNavigation.swift`
-- Screens: `MovingFlowSelectContractScreen`, `MovingFlowHousingTypeScreen`, `MovingFlowAddressScreen`, `MovingFlowHouseScreen`, `MovingFlowAddExtraBuildingScreen`, `MovingFlowConfirmScreen`, `MovingFlowProcessingScreen`, `TypeOfBuildingPickerScreen` in `Sources/View/`
-- Form view models: `AddressInputModel` (`MovingFlowAddressScreen.swift`) and `HouseInformationInputModel` (`MovingFlowHouseScreen.swift`); `asMoveAddressInput` / `asMoveHouseInformationInput` turn them into MoveFlowCore's request inputs
-- Client, demo and models (`MoveFlowClient`, `MoveConfigurationModel`, `MoveQuotesModel`, `HousingType`, …): see MoveFlowCore
+## Entry points
+- `MovingFlowNavigation(onMoved:)`, presented by App (`LoggedInNavigation`). `onMoved` fires from `.onDeinit` when the
+  flow is dismissed.
+- The first screen is contract selection when the member has more than one current home address, otherwise
+  housing type selection.
 
 ## Dependencies
-- Imports: hCore, hCoreUI, MoveFlowCore, CrossSellCore, ChangeTierCore (`ChangeTierIntentModel`), ChangeTierUI
-  (`ChangeTierNavigation`, `ChangeTierQuoteDataProvider`)
-- Additional build dependencies: CoreDependencies
+- hCore, hCoreUI, MoveFlowCore, CrossSellCore, ChangeTierCore, ChangeTierUI (+ CoreDependencies)
 - Depended on by: App
 
-## Navigation
-- `MovingFlowNavigation`: Uses `RouterHost` with `routerDestination` for multi-step flow.
-- Routes: `MovingFlowRouterActions` (housing, confirm, houseFill, selectTier) and `MovingFlowRouterWithHiddenBackButtonActions` (processing).
-- Initial screen depends on whether the user has multiple home addresses (shows contract selection) or one (shows housing type selection directly).
-- Integrates ChangeTierUI inline by pushing `ChangeTierNavigation` with the move flow's own router and data provider.
-- Detent presentations for extra building input, PDF preview, and building type picker.
-- Calls `onMoved()` callback via `.onDeinit` when the flow is dismissed.
-
 ## Gotchas
-- `MovingFlowNavigationViewModel` implements `ChangeTierQuoteDataProvider`, meaning it acts as a data bridge between the move flow and the change tier module for real-time cost calculations.
-- The navigation VM, quote manager, and route enums are all defined in `MovingFlowNavigation.swift`, making it a large file.
-- No separate service wrapper class exists; the VM calls `MoveFlowClient` directly via `@Inject`.
-- `movingFlowConfirmViewModel` and `quoteSummaryViewModel` are force-unwrapped in the navigation views.
+- `MovingFlowNavigation.swift` holds the navigation VM, `MovingFlowQuoteManager`, the view and all route enums.
+- `movingFlowConfirmViewModel` and `totalPremium` are force-unwrapped in the navigation; they're set before the
+  routes that use them are pushed.

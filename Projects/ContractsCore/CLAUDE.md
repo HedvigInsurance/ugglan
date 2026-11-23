@@ -3,27 +3,20 @@
 UI-free data layer for insurance contracts: the contract models, `ContractStore`, the fetch and pet chip id client
 protocols with their demo implementations, and `PetChipIdService`. No SwiftUI or hCoreUI.
 
-## Key Files
-- `Sources/Models/ContractModels.swift` — `Contract`, `Agreement`, `AgreementDisplayItem`, `ContractRenewal`,
-  `AddonsInfo`, `ExistingAddon`, `AvailableAddon`, plus the stakeholder helpers (`nbOfMissingCoInsured`, …),
-  `terminationMessage`, `StakeholdersConfig.init(contract:stakeholderType:fromInfoCard:)`,
-  `asTerminationConfirmConfig` and `asAddonContractInfo`
-- `Sources/Models/EditType+Contract.swift` — `EditType.getTypes(for:)` factory + `Contract.supportsAddonRemoval`
-- `Sources/Stores/ContractsStore.swift` — `ContractStore` (`@PersistableStore` `AppStore`) with active/terminated/
-  pending contracts, `contractForId`, `allStakeholders`, `getAddonContractInfosFor`; conforms to
-  `ExistingStakeholders`
-- `Sources/Service/Protocols/ContractsClient.swift` — `FetchContractsClient`, `ContractsStack`
-- `Sources/Service/Protocols/PetChipIdClient.swift`, `Sources/Service/PetService.swift` — missing pet chip id
-- `Sources/Service/DemoImplementation/` — `FetchContractsClientDemo`, `PetChipIdClientDemo`
+## Architecture
+- `ContractStore` is a `@PersistableStore` `AppStore` holding active, pending and terminated contracts. It conforms
+  to `ExistingStakeholders`, so EditStakeholders and Onboarding can use it as the source of existing co-insured and
+  co-owners.
+- `Contract` exposes the derived state that other modules rely on: missing stakeholder counts, the termination
+  message, and conversions to termination and addon inputs.
+- `EditType.getTypes(for:)` decides which edit actions a contract offers, based only on the contract's `supports…`
+  flags.
 
 ## Dependencies
-- hCore, AppStateContainer, AddonsCore, EditStakeholdersCore, TerminateContractsCore
-- Depended on by: ContractsUI, Chat (`ContractStore`), Profile (`ContractStore`), TravelCertificate, Home, Onboarding,
-  App (`ContractsClientOctopus`, `PetClientOctopus`, DI)
-
-## Tests
-- `ContractTests` (client via `MockContractService`) and `StoreTests/ContractStoreTests`
+- hCore, AddonsCore, EditStakeholdersCore, TerminateContractsCore
+- Depended on by: ContractsUI, Chat, Profile, TravelCertificate, Home, Onboarding, App (`FetchContractsClientOctopus`,
+  `PetChipIdClientOctopus`, DI)
 
 ## Gotchas
-- `Contract.pillowType` and `Contract`'s `TrackingViewNameProtocol` conformance live in ContractsUI (they need
-  hCoreUI / `ContractDetail`), so modules that use them must import ContractsUI.
+- `Contract.pillowType` and `Contract`'s `TrackingViewNameProtocol` conformance live in ContractsUI because they need
+  hCoreUI. Modules that use them must import ContractsUI.

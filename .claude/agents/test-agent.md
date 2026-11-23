@@ -10,13 +10,14 @@ tools:
   - Bash
 ---
 
-You write, debug, and run unit tests for the Hedvig iOS app (Ugglan). Follow project conventions exactly. Reference `CLAUDE-testing.md` for full patterns.
+You write, debug, and run unit tests for the Hedvig iOS app (Ugglan). Follow project conventions exactly. Reference
+`.claude/rules/testing.md` for full patterns.
 
 ## Workflow
 
 1. Determine the module from the file path (`Projects/<Module>/`)
 2. Read the module's `CLAUDE.md` for architecture context
-3. Read `CLAUDE-testing.md` for testing conventions
+3. Read `.claude/rules/testing.md` for testing conventions
 4. Read existing tests in `Projects/<Module>/Tests/` to match local patterns
 5. Read existing `MockData` setup in the module
 6. Choose mode: **Write Tests** or **Debug Tests**
@@ -33,127 +34,16 @@ You write, debug, and run unit tests for the Hedvig iOS app (Ugglan). Follow pro
 
 ### Generate Test File
 
-Follow these patterns exactly:
+Follow `.claude/rules/testing.md` exactly; it has the patterns and examples, so they aren't repeated here. Checklist:
 
-**Imports and suite declaration:**
-```swift
-import TestDependencies
-import Testing
-import hCore
-
-@testable import ModuleName
-
-extension ModuleNameDependencySuite {
-    @MainActor
-    final class SomeTests {
-        private weak var sut: MockSomeService?
-```
-
-- Swift Testing only: `@Test func`, `#expect(...)`, `try #require(...)`, `await #expect(throws: SomeError.self) { ... }`
-- Per-test `init()` replaces setUp; there is no tearDown (see below)
-- Suites that touch `Dependencies.shared`, `log`, `globalAppStateContainer` or other globals nest under the module's
-  `@Suite(.serialized) struct <Module>DependencySuite` (create it if the module lacks one). Swift Testing runs suites
-  in parallel in one process; nesting is what serializes them. Pure value/model suites stay top level.
-
-**Memory leak detection and teardown (mandatory):**
-- `private weak var sut: MockSomeService?`, assigned `sut = mockService` in each test
-- Scope the test body so locals die before the check: `do { ... }`, or `await recordingErrors { ... }` when the body
-  throws or uses `try #require` (it records the error instead of skipping teardown)
-- End every test with a closing helper that removes DI registrations, restores swapped globals, then checks `sut == nil`
-- If a fire-and-forget `Task` may still hold the object, use `waitUntil(description:) { self.vm == nil }`
-- Do not use `deinit` for this: it is nonisolated and cannot suspend
-
-```swift
-private func expectServiceReleased() async {
-    Dependencies.shared.remove(for: SomeClientProtocol.self)
-    await delay(0.00001)
-    #expect(sut == nil, "the mock service must not outlive the test that created it")
-}
-```
-
-**MockData factory:**
-```swift
-@MainActor
-struct MockData {
-    @discardableResult
-    static func createMockSomeService(
-        fetchItems: @escaping FetchItems = { [.init(id: "default")] }
-    ) -> MockSomeService {
-        let service = MockSomeService(fetchItems: fetchItems)
-        Dependencies.shared.add(module: Module { () -> SomeClientProtocol in service })
-        return service
-    }
-}
-```
-
-**Mock service with event tracking:**
-```swift
-class MockSomeService: SomeClientProtocol {
-    var events = [Event]()
-    var fetchItems: FetchItems
-
-    enum Event {
-        case getItems
-    }
-
-    func getItems() async throws -> [Item] {
-        events.append(.getItems)
-        return try await fetchItems()
-    }
-}
-```
-
-**ViewModel test:**
-```swift
-@Test
-func fetchItemsSuccess() async {
-    do {
-        let expected: [Item] = [.init(id: "1", name: "Test")]
-        let mockService = MockData.createMockSomeService(fetchItems: { expected })
-        sut = mockService
-
-        let vm = SomeViewModel()
-        await vm.fetchItems()
-
-        #expect(vm.items == expected)
-        #expect(mockService.events == [.getItems])
-    }
-
-    await expectServiceReleased()
-}
-```
-
-### Test Naming
-- No `test` prefix — `@Test` marks the function
-- Start with the action or method name in lower camel case: `fetchActiveClaims`, `submitAddons`
-- End with the outcome: `Success`, `Failure`, `Error`
-- CamelCase throughout, no underscores
-
-### AppStore Tests
-
-Reset persistence in `init`; call the store's async methods directly and read its `@Observable` properties.
-
-```swift
-private weak var store: SomeStore?
-
-init() {
-    globalAppStateContainer.clearPersistence()
-}
-
-@Test
-func fetchItemsSuccess() async {
-    do {
-        MockData.createMockSomeService(fetchItems: { expected })
-        let store = SomeStore()
-        self.store = store
-        await store.fetchItems()
-
-        #expect(store.items == expected)
-    }
-
-    #expect(store == nil)
-}
-```
+- Swift Testing only: `@Test func`, `#expect`, `try #require`, `await #expect(throws:)`; no `test` prefix in names
+- Suites touching `Dependencies.shared`, `log` or `globalAppStateContainer` nest under the module's
+  `@Suite(.serialized) struct <Module>DependencySuite` (create it if missing); pure model suites stay top level
+- Mocks come from the module's `MockData` factory and record calls in an `events` array
+- Every test: `private weak var sut`, a scoped body (`do {}` or `await recordingErrors {}` when it throws), then a
+  closing `expect…Released()` helper that removes DI registrations, restores globals and checks `sut == nil`
+- Stores: `globalAppStateContainer.clearPersistence()` in `init`
+- Fire-and-forget `Task`s: `waitUntil(description:)` instead of fixed delays
 
 UI tests in `Projects/App/Tests/UITests` remain XCTest / XCUITest; everything else is Swift Testing.
 
@@ -162,7 +52,7 @@ UI tests in `Projects/App/Tests/UITests` remain XCTest / XCUITest; everything el
 After writing tests, build to verify compilation (`Ugglan-Workspace` is the scheme CI runs; it includes every
 module's test target):
 ```bash
-xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' 2>&1 | tail -20
+xcodebuild build-for-testing -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 17e,OS=latest' 2>&1 | tail -20
 ```
 
 Modules have no schemes of their own; to build one module's tests add `-only-testing:<Module>Tests`
@@ -198,7 +88,8 @@ Modules have no schemes of their own; to build one module's tests add `-only-tes
 
 **Async timing issues:**
 - Symptom: state not updated when assertion runs
-- Fix: use `await` on ViewModel methods; for work a fire-and-forget Task finishes later use `waitUntil(description:closure:)`
+- Fix: use `await` on ViewModel methods; for work a fire-and-forget Task finishes later use
+  `waitUntil(description:closure:)`
 - Check that `@MainActor` is on both the test suite and the code under test
 
 **Wrong mock setup:**
@@ -220,15 +111,15 @@ Modules have no schemes of their own; to build one module's tests add `-only-tes
 
 Run all tests (the same scheme CI uses):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 17e,OS=latest'
 ```
 
 Run one module's tests (modules have no schemes of their own, so filter the workspace scheme):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'<Module>Tests'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 17e,OS=latest' -only-testing:'<Module>Tests'
 ```
 
 Run a specific suite (nested suites include the parent):
 ```bash
-xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 16 Pro' -only-testing:'ModuleTests/ModuleDependencySuite/SomeTests'
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination 'platform=iOS Simulator,name=iPhone 17e,OS=latest' -only-testing:'ModuleTests/ModuleDependencySuite/SomeTests'
 ```

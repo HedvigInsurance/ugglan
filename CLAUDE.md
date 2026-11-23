@@ -21,15 +21,41 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes �
   builds can pick up newer versions within those rules.
 - CI builds the committed files as is; the `Verify generated files` job fails if Tuist/SwiftGen output is stale
   (GraphQL isn't checked — it depends on the live dev schema).
+- The same job runs `scripts/check-claude-docs.py`, which fails if a CLAUDE.md, agent or rule references a file that
+  no longer exists. When you rename or delete a file, update the docs that mention it.
 
 - **"Ugglan"** scheme for dev builds, **"Hedvig"** for production.
+- Merge conflict in a generated `project.xcproj`, workspace or scheme: don't hand-merge it. Resolve the manifests
+  (`Project.swift`, `Tuist/`), rerun `scripts/generate.sh` and commit its output.
+
+## Verifying Changes
+
+Inside Xcode, use the Xcode tools (`BuildProject`, `RunSomeTests`). From a terminal, use a concrete simulator; generic
+simulator destinations fail to link:
+
+```bash
+DEST='platform=iOS Simulator,name=iPhone 17e,OS=latest'
+xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination "$DEST"
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination "$DEST" -only-testing:<Module>Tests
+```
+
+A task isn't done until the `Ugglan` scheme builds and the tests of every module you touched pass. If you couldn't
+run them, say so. Before finishing, review `git diff` for missing `@MainActor`, tests that touch shared globals
+outside their `<Module>DependencySuite`, and edits to generated files (`project.xcproj`, `Sources/Derived/`).
 
 ## Documentation
 
-- **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, AppStateContainer stores, navigation, service layer, DI, GraphQL
-- **[CLAUDE-testing.md](CLAUDE-testing.md)** — Swift Testing patterns, MockData, memory leak detection, test naming
-- **[CLAUDE-accessibility.md](CLAUDE-accessibility.md)** — VoiceOver, dynamic type, contrast, CI rules, auto-fix
-- Per-module docs at `Projects/<Module>/CLAUDE.md` — architecture, key files, dependencies, gotchas
+- **[CLAUDE-architecture.md](CLAUDE-architecture.md)** — ViewModel pattern, AppStateContainer stores, navigation,
+  service layer, DI, GraphQL
+- Per-module docs at `Projects/<Module>/CLAUDE.md` — architecture, entry points, dependencies, gotchas. They load
+  automatically when Claude works on files in that module.
+- Path-scoped rules in `.claude/rules/` load automatically for matching files:
+  - `testing.md` (test files) — Swift Testing patterns, MockData, memory leak detection, naming
+  - `design-system.md` and `accessibility.md` (view code) — hCoreUI components and tokens, accessibility CI rules
+- Skills in `.claude/skills/` for multi-step jobs (Claude picks them up, or run `/<name>`):
+  - `add-service` — GraphQL query → client protocol, service, demo, Octopus client, DI in all three blocks, mocks
+  - `new-flow` — `.handleX(input:)` coordinator, navigation ViewModel and routes, hNavigationStack, App wiring
+  - `new-module` — new module or Core/UI split: manifests, App wiring, `scripts/generate.sh`, docs
 
 ## Module Index
 
@@ -63,6 +89,7 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes �
 | MoveFlowCore | Address change models, client protocol and inputs, demo client (UI-free) |
 | MoveFlowUI | Address change flow, navigation and ViewModels (built on MoveFlowCore) |
 | NotificationService | Push notification handling |
+| Onboarding | One-time post-login onboarding flow (phone, missing co-insured/pet chip ids, payment, cross-sell) |
 | Payment | Payment methods, payment history, direct debit |
 | Profile | User profile, settings, app info |
 | SubmitClaimChat | Claims submission flow (current, chat-based) |
@@ -72,7 +99,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes �
 
 ## Project Structure
 
-Typical feature module layout (varies by module — some use `Screens/` instead of `Views/`, not all directories are present):
+Typical feature module layout (varies by module — some use `Screens/` instead of `Views/`, not all directories are
+present):
 ```
 Projects/<Module>/Sources/
   Models/
@@ -83,7 +111,9 @@ Projects/<Module>/Sources/
   Navigation/                 # Route definitions
 ```
 
-OctopusImplementation (GraphQL API client implementations) lives in `Projects/App/Sources/Service/OctopusClientsImplementation/`. GraphQL `.graphql` query/mutation files live in `Projects/hGraphQL/GraphQL/Octopus/<Feature>/`.
+OctopusImplementation (GraphQL API client implementations) lives in
+`Projects/App/Sources/Service/OctopusClientsImplementation/`. GraphQL `.graphql` query/mutation files live in
+`Projects/hGraphQL/GraphQL/Octopus/<Feature>/`.
 
 Core modules: hCore (shared utilities), hCoreUI (design system), hGraphQL (API layer).
 
@@ -105,7 +135,7 @@ Always use the design system instead of raw SwiftUI equivalents:
 - **Spacing**: `.padding6`, `.padding8`, `.padding16`
 - **Corner radius**: `.cornerRadiusXS`
 
-See `Projects/hCoreUI/CLAUDE.md` for the full component reference.
+The full component catalog and tokens are in `.claude/rules/design-system.md`, which loads with view files.
 
 ## Localization
 
@@ -115,30 +145,46 @@ L10n.ClaimStatus.title
 L10n.General.errorBody
 ```
 
+Keys come from Lokalise: `scripts/translations.sh` (run by the weekday `UpdateLocalization` workflow) overwrites
+`Localizable.strings`, so a key added there by hand disappears on the next pull. Add new keys in Lokalise; on
+prototype branches use `"literal"  //L10n.key` until the key exists.
+
 ## Code Style
 
 - **Line length**: 120 characters
 - **Indentation**: 4 spaces
-- **Sorted imports** (enforced by SwiftLint)
-- SwiftLint scans `Projects/`, excludes `Projects/*/Sources/Derived`
-- swift-format configured in `.swift-format`
+- **Sorted imports**
+- swift-format (`.swift-format`) enforces these. The pre-commit hook (installed by `scripts/githooks.sh`) formats
+  staged Swift files, skipping `Derived/`, and the `SwiftFormat` workflow opens a fix-up PR for anything missed.
+- `.swiftlint.yml` exists, but no hook or CI job runs SwiftLint, so nothing enforces its rules.
 
-## Agent Convention
+## Working Style
 
-After writing/modifying SwiftUI view files, invoke `@accessibility-agent` for accessibility review.
-After writing/modifying feature code, invoke `@test-agent` for test generation and validation.
+- When a step doesn't need input, keep going, and put status notes in the same message as the next action. Stop and
+  ask only when you can't continue without an answer (unclear requirements included — don't guess), or before anything
+  destructive or outside this repo: deleting data, force-pushing, changing shared config.
+- A PostToolUse hook (`.claude/hooks/accessibility-check.sh`) runs the accessibility CI checker on every edited file in
+  `Projects/*/Sources/` and reports findings back. Fix them, or explain why one doesn't apply.
+- After building or substantially changing a screen, invoke `@accessibility-agent` for the review the checker can't do
+  (labels, reading order, focus).
+- After writing or modifying feature code, invoke `@test-agent` for test generation and validation.
 
 ## Don'ts
 
-1. **Prefer ViewModels over stores for new features** — reach for an `AppStore` (in `AppStateContainer`) only when state genuinely needs to be shared across views and survive view lifecycles
-2. **Do NOT use `ObservableObject` / `@Published`** — nothing in the repo does. Use `@MainActor @Observable class`. To watch one from outside a view use `object.publisher(for: \.property)` (hCore) and hold the `AnyCancellable`
-3. **Do NOT use raw SwiftUI `NavigationStack` / `NavigationLink`** — use `hNavigationStack` with `NavigationRouter` (new) or `RouterHost` with `Router` (legacy)
+1. **Prefer ViewModels over stores for new features** — reach for an `AppStore` (in `AppStateContainer`) only when state
+   genuinely needs to be shared across views and survive view lifecycles
+2. **Do NOT use `ObservableObject` / `@Published`** — nothing in the repo does. Use `@MainActor @Observable class`. To
+   watch one from outside a view use `object.publisher(for: \.property)` (hCore) and hold the `AnyCancellable`
+3. **Do NOT use raw SwiftUI `NavigationStack` / `NavigationLink`** — use `hNavigationStack` with
+   `NavigationRouter` (the old `RouterHost` / `Router` no longer exists)
 4. **Do NOT use raw SwiftUI `Form`/`Section`/`Text`/`Button`** — use `hForm`/`hSection`/`hText`/`hButton`
 5. **Do NOT use TCA / ComposableArchitecture**
 6. **Do NOT omit `@MainActor`** on ViewModels, `AppStore` types, and service protocols
 7. **Do NOT hardcode user-facing strings** — use `L10n.X.Y.z`
-8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple** (OctopusImplementation goes in `Projects/App/Sources/Service/OctopusClientsImplementation/`)
+8. **Do NOT create services without the Protocol + DemoImplementation + OctopusImplementation triple**
+   (OctopusImplementation goes in `Projects/App/Sources/Service/OctopusClientsImplementation/`)
 9. **Do NOT skip `TrackingViewNameProtocol`** on navigation enums
-10. **When requirements are unclear, ask** — do not assume
-11. **Do NOT apply `.withDismissButton()` after `.embededInNavigation(...)`** — it must always come before it in the
+10. **Do NOT apply `.withDismissButton()` after `.embededInNavigation(...)`** — it must always come before it in the
     modifier chain, so the dismiss button is part of the content inside the navigation stack
+11. **Do NOT silence Swift 6 concurrency errors** with `@unchecked Sendable`, `nonisolated(unsafe)` or
+    `@preconcurrency` — fix the isolation instead. The repo has fewer than 20 of these; keep it that way

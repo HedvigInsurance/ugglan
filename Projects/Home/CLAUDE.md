@@ -1,49 +1,77 @@
 # Home
 
-The Home module is the main dashboard of the Hedvig app. It displays the member's contract state (active, future, terminated), important messages, quick actions (e.g. FirstVet, travel insurance), a Help Center with FAQ, and provides the primary entry point for starting a new claim.
+The main dashboard. It shows the member's contract state (active, future, terminated), important messages, quick
+action tiles, ongoing web-shop quotes, cross-sells and addons, active claims, and the Help Center (FAQ, quick actions,
+Puppy Guide). It's also the main entry point for starting a claim.
 
 ## Architecture
-- **Pattern**: `HomeStore` is an `@PersistableStore`-backed `AppStore` (`AppStateContainer`) with observable properties for member contract state, contracts, important messages, quick actions, FAQ, and chat-notification state. `HomeScreen` reads it via `@AppObservedObject` and renders `ActiveHomeView` for every member state; a thin `HomeVM` drives the cross-store fetches. `HomeBottomScrollView` has its own `HomeBottomScrollViewModel` for composing the bottom-card list, which includes the one contract-status card (terminated, or one of the three `FutureStatus` messages).
-- **Key services**: `HomeClient` protocol (in `Service/Protocols/HomeClient.swift`) defines all data-fetching methods. `HomeClientDemo` provides the demo implementation. The Octopus (real) implementation lives in `Projects/App/Sources/Service/OctopusClientsImplementation/HomeClientOctopus.swift`.
-- **Data flow**: `HomeScreen.onAppear` calls `vm.fetchHomeState()` which kicks off async fetches on `HomeStore`, `CrossSellStore`, `ContractStore`, and `PaymentStore` in parallel. Each store's async method updates its observable properties; views observing those properties re-render automatically. `HomeStore.init()` also subscribes to `CrossSellStore.$hasNewOffer`, `FeatureFlagsStore`, and `.didChargeOutstandingPayment` to keep `toolbarOptionTypes` current, and derives `homeQuickActions` from `$quickActions` + `PaymentStore.$paymentData`. Initializers subscribe only; every fetch, `paymentStore.load()` included, runs from `HomeVM.fetchHomeState()`.
-- **Navigation**: `HomeNavigationViewModel` is the central navigation coordinator, managing chat presentation, claim submission flow, cross-sell modals, and Help Center. `HelpCenterNavigationViewModel` manages the Help Center sub-navigation with its own `Router`.
+- `HomeStore` is a `@PersistableStore` `AppStore` holding member state, contracts, important messages, quick actions,
+  FAQ, ongoing quotes, chat-notification state and `toolbarOptionTypes`. `HomeScreen` renders `ActiveHomeView` for
+  every member state.
+- `HomeVM` has no state of its own. `fetchHomeState()` starts every fetch (Home, CrossSell, Contract, Payment and
+  Claims stores) and owns two polling timers: chat notifications every 10 seconds and claims every 120 seconds. Both
+  only run while `VisibleScreenTracker` reports `HomeScreen` as visible. Store initializers only subscribe and never
+  fetch.
+- `HomeStore.init()` refreshes the toolbar when `CrossSellStore.hasNewOffer` changes, and refetches ongoing quotes when
+  their feature flag changes. `homeQuickActions` (the Home tiles, their eligibility and their order) is a computed
+  property built from `quickActions` and `PaymentStore.paymentData`.
+- `HomeNavigationViewModel` coordinates chat, claim start (`claimsAutomationStartInput`), cross-sell, Forever and
+  upcoming-payment presentation. It listens for `.openChat` and `.openCrossSell` notifications posted from anywhere in
+  the app. `HelpCenterNavigation` has its own router.
+- Client protocols: `HomeClient` and `PuppyGuideClient`. Octopus implementations are in App, demo clients are here.
 
-## Key Files
-- **Entry point**: `Screens/HomeScreen.swift` -- `HomeScreen` view and `HomeVM` ViewModel
-- **Store**: `HomeStore.swift` -- `HomeStore` (`AppStore`), `MemberInfo`, `FutureStatus`
-- **Navigation**: `Navigation/HomeNavigation.swift` -- `HomeNavigationViewModel`, chat/claim/cross-sell orchestration
-- **Help Center navigation**: `Navigation/HelpCenterNavigation.swift` -- `HelpCenterNavigationViewModel` plus a thin `hNavigationStack` wrapper; it owns a `QuickActionsViewModel` but no routing logic of its own
-- **Quick action routing**: `Navigation/QuickActionsViewModel.swift` -- `QuickActionsViewModel` (`perform(_:)` + six flat presentation flags), the `handleQuickActions(with:redirect:)` modifier holding the detent/modal chain, and `HelpCenterRedirectType`. Mounted twice: by `HelpCenterNavigation` and by `HomeTab` in App
-- **Service protocol**: `Service/Protocols/HomeClient.swift` -- `HomeClient`, `MemberState`, `MessageState`
-- **Demo service**: `Service/DemoImplementation/HomeClientDemo.swift`
-- **Redesigned layout**: `Screens/ActiveHomeView.swift` -- the hero + greeting + sheet layout every member state renders
-- **Components**: `Screens/Components/GreetingView.swift`, `HomeSheetContainer.swift`, `HomeActionChips.swift`, `TodoList.swift`, `ImportantMessagesView.swift`, `RenewalCard.swift`, `HomeQuickActionsSection.swift`, `HomeOngoingQuotesSection.swift`, `HomeCrossSellsSection.swift`, `HomeAddonsSection.swift`
-- **Help Center views**: `Screens/HelpCenter/HelpCenterStartView.swift`, `HelpCenterTopicView.swift`, `HelpCenterQuestionView.swift`
-- **Help Center reusable components**: `Screens/HelpCenter/ReusableComponents/HelpCenterPill.swift`, `HelpCenterQuestion.swift`, `HelpCenterQuickActionView.swift`, `HelpCenterSupportView.swift`, `HelpViewSource.swift`
-- **Models**: `Models/Contract.swift`, `ImportantMessage.swift`, `QuickAction.swift`, `HomeQuickAction.swift` (Home tile vocabulary; eligibility and order live in `HomeStore.init()`), `HelpCenterFAQModel.swift`, `MemberContractState.swift`, `UpcomingRenewal.swift`
-- **Derived views**: `Screens/HomeBottomScrollView.swift`, `Screens/CommonClaims/FirstVetView.swift`
+## Entry points
+- App's `HomeTab` (`LoggedInNavigation.swift`) hosts the Home stack and maps `HomeRouterAction.inbox` to Chat's
+  `InboxView`. It also hosts the Forever and upcoming-payment detents and the `handleClaimFlow` modifier from
+  SubmitClaimChat.
+- `HelpCenterRedirectType` (`.travelInsurance`, `.moveFlow`, `.deflect`) covers flows Home can't present itself.
+  Whoever mounts `handleQuickActions` supplies them (App resolves all three in `quickActionRedirect(for:)`).
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, TravelCertificate, TerminateContractsCore, TerminateContractsUI, Payment, Chat, Claims, SubmitClaimChat, CrossSellCore, CrossSellUI, EditStakeholdersCore, EditStakeholdersUI, ChangeTierCore, ChangeTierUI, ContractsCore, ContractsUI (via Project.swift).
-- **Depended on by**: Profile (imports Home), App (direct dependency)
-
-## Navigation
-- **Routes defined here**:
-  - `HomeRouterAction.inbox` -- pushes the Chat `InboxView` within the Home tab
-  - `HelpCenterNavigationRouterType.inbox` -- pushes `InboxView` inside the Help Center
-  - `HelpCenterRedirectType` -- `.travelInsurance`, `.moveFlow`, `.deflect` for flows Home cannot present itself; defined in `Navigation/QuickActionsViewModel.swift` and supplied by whichever host mounts `handleQuickActions` (App resolves all three in one shared `quickActionRedirect(for:)`)
-- **Entry from other modules**: Home is a root tab in the main tab bar (configured in App). `HomeNavigationViewModel` listens for `.openChat` and `.openCrossSell` notifications from anywhere in the app.
-- **Navigation style**: Help Center sub-navigation uses `hNavigationStack` with a `NavigationRouter` (`HelpCenterNavigation.swift`); the Home toolbar inbox route uses the legacy `RouterHost + Router`. Claim flow is launched via `handleClaimFlow` modifier (from SubmitClaimChat) bound to `claimsAutomationStartInput`.
+- hCore, hCoreUI, AddonsCore, TravelCertificate (declared but not imported),
+  TerminateContractsCore/UI, Payment, Chat, Claims, SubmitClaimChat,
+  CrossSellCore/UI, EditStakeholdersCore/UI, ChangeTierCore/UI, ContractsCore/UI
+- Depended on by: App, Profile
 
 ## Gotchas
-- Member state, important messages and quick actions all come from one `Home` query (`GraphQL/Octopus/Home/HomeQuery.graphql`). `HomeStore.fetchHomeData()` loads all three in one request; `getMemberState()`, `getQuickActions()` and `getImportantMessages()` send the same query and keep only their part. Chat state (`ConversationsTimeStamp`, polled every 10 s) and ongoing quotes (`OngoingShopSessions`) stay separate queries that `HomeVM` fetches as their own calls. A failed `fetchHomeData()` sets both `fetchMemberStateError` and `fetchQuickActionsError`.
-- `HomeVM` holds no state of its own; it triggers the cross-store fetches in `fetchHomeState()` for Home/CrossSell/Contract/Payment stores and owns the two polling timers.
-- The Home toolbar buttons are a floating overlay (`HomeNavigationBar` in `ActiveHomeView`) that fades out once the greeting scrolls under it, with the real navigation bar hidden. The one exception is a system toolbar down the side of the screen (iPhone Duo): `isSystemToolbarOnSide` -- derived from hCoreUI's `.onSystemToolbarEdgeChange`, which reports a leading/trailing safe area inset in a regular vertical size class -- swaps the overlay for real navigation bar items via `setHomeNavigationBars` and shows the bar. Tooltip direction is not Home's business: `setHomeNavigationBars` resolves it from the same edge and publishes it through `\.tooltipDirection`. Folded (side column plus a compact vertical size class) the column has room for one item, so `collapsesIntoMenu` puts every option behind a single hand-built `Menu`; the system's own overflow menu cannot show `ToolbarButtonView`'s custom content and lists the buttons as empty, inert entries. Do not turn the button content into a `Label` to fix that: the bar then draws its own button, dropping the tooltip and repainting the icon. `ActiveHomeView` is the only place allowed to set the Home bar's visibility: `HomeTab` uses `.ignoreNavigationBarVisibility`, and any `.toolbar(_, for: .navigationBar)` applied outside (even `.automatic`) swallows the switch on iOS 27.
-- Chat notification polling uses a 10-second `Timer.publish` that checks the top-visible ViewController description string to decide whether to poll -- a fragile heuristic.
-- Quick-action routing is shared, not Help Center's: `QuickActionsViewModel.perform(_:)` can launch termination, change-tier, travel certificate, address change, edit stakeholders, FirstVet, connect payments and the sick-abroad deflection. Six flat presentation properties (`editContractActions`, `isTravelCertificatePresented`, `isChangeAddressPresented`, `firstVetPartners`, `sickAbroadData`, `isChangeTierPresented`) drive six separate detent/modal hosts inside the `handleQuickActions` modifier -- one host per property, no grouped presentation enum, matching how `ContractsNavigationViewModel` and `LoggedInNavigation` do it. The ones with a payload (`editContractActions`, `firstVetPartners`, `sickAbroadData`, `isChangeTierPresented`) are optionals that carry it, captured from the `QuickAction` associated value in `perform(_:)` and passed to `detent(item:)`, so no presented screen reads a store for its own data (the terminate-dismiss handler still resolves `HomeStore`/`ContractStore` to refetch): `firstVetPartners` in particular uses the `FirstVetPartnersWrapper` box (`Models/QuickAction.swift`, sibling of `EditInsuranceActionsWrapper`) only because `detent(item:)` requires `Identifiable & Equatable` and an array is not Identifiable. Help Center and the Home tab each own a separate `QuickActionsViewModel` instance, so a Home tile never opens the Help Center modal -- and a change to the switch changes both surfaces at once.
-- `HomeStore` snapshot decode is all-or-nothing: removing a persisted property or adding an `Optional` one is safe; a new non-Optional property or a changed type wipes every member's restored `HomeStore`. `homeQuickActions` is therefore `@Transient`; `quickActions` stays persisted because `toolbarOptionTypes` reads `quickActions.hasFirstVet`.
-- `.upgradeCoverage` only ever arrives nested inside `.editInsurance(actions:)`, never top-level -- the pipeline unwraps it from `EditInsuranceActionsWrapper`.
-- Cancellation in the Home Edit insurance tile is gated by `isCancelInsuranceHiddenFromHomeScreen` (Unleash `hide_cancel_insurance_from_home_screen`, not inverted). The filter lives in `HomeStore.homeQuickActions`, not in `quickActions` or `QuickActionsViewModel`, because Help Center reads the same `quickActions` and must keep offering cancellation. When cancellation was the only edit action the tile is dropped rather than opening an empty `EditContractScreen`.
-- Invite a friend and Upcoming payment are Home detents (`HomeNavigationViewModel.isForeverPresented` / `isUpcomingPaymentPresented`, hosted in `HomeTab`), not `QuickActionsViewModel` actions. Upcoming payment force-refetches via `presentUpcomingPayment()` and toasts on error or when nothing is due; the section's `@State actionInFlight` shows the loader on the tapped tile and disables the row meanwhile.
-- Ongoing quotes (unfinished web shop sessions) are gated in the data layer, not the view: `HomeStore.fetchOngoingQuotes()` checks `isResumingOngoingShopSessionsEnabled` and leaves `ongoingQuotes` empty when the flag is off, so `HomeOngoingQuotesSection` self-hides. The flag is the inverted Unleash kill switch `disable_resuming_ongoing_shop_sessions`, matching Android. `ongoingQuotes` is `@Transient` because a quote can be signed or expire on the web while the app is closed; the backend already excludes signed and expired sessions, so there is no client-side expiry filtering. Each card resumes by handing `resumeUrl` (auth-free) to the device browser via `Dependencies.urlOpener`.
-- The one piece of client-side quote state is dismissal: the card's ✕ calls `HomeStore.dismissOngoingQuote(id:)`, and `fetchOngoingQuotes()` filters the result against `DismissedOngoingQuotesTracker` (`Models/DismissedOngoingQuotesTracker.swift`, a plain struct over `UserDefaults`, not an `AppStore`). It deliberately lives in `UserDefaults` keyed by member id rather than in the `HomeStore` snapshot, because logout wipes the `AppStateContainer` directory and a dismissal is meant to outlive it. Dismissed ids are never pruned -- the list grows only by the number of quotes a member abandons, and pruning against the fetched list would be unsafe since `fetchOngoingQuotes()` collapses network errors to `[]`.
+- Member state, important messages and quick actions all come from one `Home` query. `HomeStore.fetchHomeData()` loads
+  all three in one request, while `fetchMemberState()`, `fetchQuickActions()` and `fetchImportantMessages()` send the
+  same query and keep only their part. Chat state and ongoing quotes are separate queries. A failed `fetchHomeData()`
+  sets both `fetchMemberStateError` and `fetchQuickActionsError`.
+- The `HomeStore` snapshot decodes all-or-nothing. Removing a persisted property or adding an `Optional` one is safe,
+  but a new non-Optional property or a changed type wipes every member's restored `HomeStore`. Mark derived or
+  short-lived state `@Transient`. `quickActions` stays persisted because `toolbarOptionTypes` reads
+  `quickActions.hasFirstVet`.
+- Toolbar: the Home toolbar buttons are a floating overlay in `ActiveHomeView`, and the real navigation bar is hidden.
+  The exception is a system toolbar down the side of the screen (iPhone Duo). There, `isSystemToolbarOnSide` (from
+  hCoreUI's `.onSystemToolbarEdgeChange`) swaps the overlay for real bar items through `setHomeNavigationBars`, which
+  also publishes `\.tooltipDirection`.
+  - When folded (compact vertical size class), `collapsesIntoMenu` puts every option behind one hand-built `Menu`. The
+    system overflow menu can't show `ToolbarButtonView`'s custom content. Don't turn the button content into a `Label`
+    to work around that: the bar would draw its own button, which drops the tooltip and repaints the icon.
+  - Only `ActiveHomeView` may set the Home bar's visibility. `HomeTab` uses `.ignoreNavigationBarVisibility`, and any
+    `.toolbar(_, for: .navigationBar)` applied outside, even `.automatic`, swallows the switch on iOS 27.
+- Quick actions: `QuickActionsViewModel.perform(_:)` is shared. Help Center and the Home tab each own an instance, so
+  changing the switch changes both screens.
+  - Each of its six presentation properties drives its own detent or modal host inside `handleQuickActions`. There's
+    no grouped presentation enum.
+  - Payload-carrying properties pass their data through `detent(item:)`, so presented screens don't read stores for it.
+    `FirstVetPartnersWrapper` and `EditInsuranceActionsWrapper` exist only because `detent(item:)` needs
+    `Identifiable & Equatable`.
+- `.upgradeCoverage` only ever arrives inside `.editInsurance(actions:)`, never at the top level.
+- The Home "Edit insurance" tile hides cancellation when `isCancelInsuranceHiddenFromHomeScreen` is on (Unleash
+  `hide_cancel_insurance_from_home_screen`, not inverted). The filter lives in `homeQuickActions` because Help Center
+  reads the same `quickActions` and must keep offering cancellation. If cancellation was the only action, the tile is
+  dropped.
+- Invite a friend and Upcoming payment are Home detents (`isForeverPresented` / `isUpcomingPaymentPresented`), not
+  quick actions. `presentUpcomingPayment()` force-refetches and shows a toast on error or when nothing is due.
+- Ongoing quotes (unfinished web-shop sessions):
+  - `fetchOngoingQuotes()` checks `isResumingOngoingShopSessionsEnabled` (inverted Unleash kill switch
+    `disable_resuming_ongoing_shop_sessions`, matching Android). The flag check is in the store, so the section hides
+    itself when the flag is off.
+  - `ongoingQuotes` is `@Transient`, and the backend already excludes signed and expired sessions. A card resumes by
+    opening `resumeUrl`, which needs no auth, through `Dependencies.urlOpener`.
+- Dismissing an ongoing quote: `DismissedOngoingQuotesTracker` stores the dismissed IDs in `UserDefaults`, keyed by
+  member ID, so they survive logout wiping `AppStateContainer`.
+  - The IDs are deliberately never pruned. `fetchOngoingQuotes()` turns network errors into `[]`, so pruning against
+    the fetched list would be unsafe.

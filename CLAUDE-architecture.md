@@ -2,9 +2,13 @@
 
 ## ViewModel Pattern (Primary)
 
-`@MainActor @Observable` classes. Services injected with `@Inject`; state is plain stored properties. A view owns its view model with `@State`, takes an injected one with `@Bindable` (or a plain `let` when it needs no bindings), and reads a shared one with `@Environment(T.self)`.
+`@MainActor @Observable` classes. Services injected with `@Inject`; state is plain stored properties. A view owns its
+view model with `@State`, takes an injected one with `@Bindable` (or a plain `let` when it needs no bindings), and reads
+a shared one with `@Environment(T.self)`.
 
-Mark a stored property `@ObservationIgnored` when a view should not re-render for it — services, cancellables, delegates and child view models. `@Observable` tracks every stored property, so anything that is not view state needs saying so explicitly.
+Mark a stored property `@ObservationIgnored` when a view should not re-render for it — services, cancellables, delegates
+and child view models. `@Observable` tracks every stored property, so anything that is not view state needs saying so
+explicitly.
 
 ```swift
 @MainActor
@@ -26,11 +30,14 @@ public class SomeViewModel {
 }
 ```
 
-Navigation ViewModels hold both a router and navigation state, passed down with `@Bindable` or through `@Environment`. Because `@Environment` has no projected value, a view that needs `$model.someProperty` off an injected model opens its `body` with a local `@Bindable var model = model`.
+Navigation ViewModels hold both a router and navigation state, passed down with `@Bindable` or through `@Environment`.
+Because `@Environment` has no projected value, a view that needs `$model.someProperty` off an injected model opens its
+`body` with a local `@Bindable var model = model`.
 
 Nothing in the repo uses `ObservableObject`, `@Published` or `objectWillChange`.
 
-Observation has no `combineLatest`, `removeDuplicates` or `debounce`, so when a chain needs them, bridge the property instead of reimplementing the chain:
+Observation has no `combineLatest`, `removeDuplicates` or `debounce`, so when a chain needs them, bridge the property
+instead of reimplementing the chain:
 
 ```swift
 store.publisher(for: \.activeContracts)
@@ -39,11 +46,13 @@ store.publisher(for: \.activeContracts)
     .sink { ... }
 ```
 
-`publisher(for:)` replays the current value on subscribe, as `@Published` did, so an existing `dropFirst()` still means what it meant.
+`publisher(for:)` replays the current value on subscribe, as `@Published` did, so an existing `dropFirst()` still means
+what it meant.
 
 ### Watching an observable from outside a view
 
-SwiftUI tracks property reads inside `body` on its own. Anywhere else — a view model reacting to another view model — use `publisher(for:)` from hCore and hold the `AnyCancellable`:
+SwiftUI tracks property reads inside `body` on its own. Anywhere else — a view model reacting to another view model —
+use `publisher(for:)` from hCore and hold the `AnyCancellable`:
 
 ```swift
 tabCancellable = publisher(for: \.selectedTab)
@@ -53,11 +62,17 @@ tabCancellable = publisher(for: \.selectedTab)
     }
 ```
 
-`withObservationTracking` fires once and then stops, so the publisher re-arms it after every change. New values arrive on the next main-actor turn, because observation reports a change *before* it is applied and the new value is not readable yet. That also means it cannot catch a value that is set and cleared within one turn; something that transient needs a hook in the setter itself.
+`withObservationTracking` fires once and then stops, so the publisher re-arms it after every change. New values arrive
+on the next main-actor turn, because observation reports a change *before* it is applied and the new value is not
+readable yet. That also means it cannot catch a value that is set and cleared within one turn; something that transient
+needs a hook in the setter itself.
 
 ### Observation in a class hierarchy
 
-`@Observable` only transforms the properties of the class it is attached to, so a subclass's own stored properties stop updating the UI, and nothing fails to compile. `ClaimIntentStepHandler` therefore conforms to `Observable` by hand: the base holds an `ObservationRegistrar` its subclasses share, and each observable property is computed over a private backing store.
+`@Observable` only transforms the properties of the class it is attached to, so a subclass's own stored properties stop
+updating the UI, and nothing fails to compile. `ClaimIntentStepHandler` therefore conforms to `Observable` by hand: the
+base holds an `ObservationRegistrar` its subclasses share, and each observable property is computed over a private
+backing store.
 
 ```swift
 @ObservationIgnored private var _selectedOption: String?
@@ -74,15 +89,19 @@ var selectedOption: String? {
 }
 ```
 
-A property that had `willSet` or `didSet` keeps that logic inline in the setter, capturing `oldValue` before the mutation. Prefer composition over a new observable base class; this pattern exists because the hierarchy was already there.
+A property that had `willSet` or `didSet` keeps that logic inline in the setter, capturing `oldValue` before the
+mutation. Prefer composition over a new observable base class; this pattern exists because the hierarchy was already
+there.
 
 ## AppStore (Shared App-Wide State)
 
-For state that needs to be shared across views and survive view lifecycles — typically modelling a feature domain (claims, contracts, payments) rather than a single screen's state. Backed by the `AppStateContainer` module.
+For state that needs to be shared across views and survive view lifecycles — typically modelling a feature domain
+(claims, contracts, payments) rather than a single screen's state. Backed by the `AppStateContainer` module.
 
 - Conform to `AppStore` (which inherits from `Observable`)
 - Mark the class `@MainActor` and apply the `@PersistableStore` macro to opt into on-disk persistence
-- State as plain stored properties; mark anything that should NOT be persisted with `@Transient` (errors, loading flags, etc.)
+- State as plain stored properties; mark anything that should NOT be persisted with `@Transient` (errors, loading flags,
+  etc.)
 
 ```swift
 @MainActor
@@ -110,36 +129,28 @@ public final class SomeStore: AppStore {
 }
 ```
 
-Reading a store from a SwiftUI view: `@AppObservedObject var store: SomeStore` (holds it in `@State`, resolved from `globalAppStateContainer`; `$store.property` gives a binding).
+Reading a store from a SwiftUI view: `@AppObservedObject var store: SomeStore` (holds it in `@State`, resolved from
+`globalAppStateContainer`; `$store.property` gives a binding).
 
-Reading a store from a ViewModel or non-View context: `@AppState private var store: SomeStore` (non-observing accessor) or `let store: SomeStore = globalAppStateContainer.get()`.
+Reading a store from a ViewModel or non-View context: `@AppState private var store: SomeStore` (non-observing accessor)
+or `let store: SomeStore = globalAppStateContainer.get()`.
 
-Persistence is opt-in via `@PersistableStore`: the macro synthesises a `Snapshot` type from non-`@Transient` stored properties and writes a debounced JSON blob to Application Support. Call `globalAppStateContainer.clearPersistence()` to wipe (e.g. on logout) and `globalAppStateContainer.reset()` to drop in-memory store instances.
+Persistence is opt-in via `@PersistableStore`: the macro synthesises a `Snapshot` type from non-`@Transient` stored
+properties and writes a debounced JSON blob to Application Support. Call `globalAppStateContainer.clearPersistence()` to
+wipe (e.g. on logout) and `globalAppStateContainer.reset()` to drop in-memory store instances.
 
 ## Navigation
 
-Two navigation systems exist. Code is migrating from Router to hNavigationStack.
+All navigation goes through `hNavigationStack` + `NavigationRouter` (`hCoreUI/Sources/Router/`). The old
+`RouterHost` / `Router` pair was removed — don't reintroduce it.
 
-### hNavigationStack + NavigationRouter (New)
-
-Wraps SwiftUI `NavigationStack` with `NavigationRouter` for programmatic navigation:
-
-```swift
-@State private var router = NavigationRouter()
-
-hNavigationStack(router: router, tracking: self) {
-    RootView()
-}
-```
-
-### RouterHost + Router (Legacy)
-
-Custom `Router` from `hCoreUI`. Navigation enums conform to `TrackingViewNameProtocol`.
+The router is usually owned by the flow's navigation ViewModel (or held in `@State` for simple flows) and passed to
+`hNavigationStack`. Routes are `Hashable` enums conforming to `TrackingViewNameProtocol`:
 
 ```swift
-RouterHost(router: router, tracking: SomeDetentType.root) {
+hNavigationStack(router: vm.router, options: [.navigationType(type: .large)], tracking: SomeViewName.root) {
     RootView()
-        .routerDestination(for: SomeRouterType.self) { route in
+        .routerDestination(for: SomeRoute.self) { route in
             switch route { ... }
         }
 }
@@ -147,12 +158,13 @@ RouterHost(router: router, tracking: SomeDetentType.root) {
 
 Pushing and presenting:
 ```swift
-router.push(SomeRoute.detail(id: "123"))           // Push onto stack
+router.push(SomeRoute.detail(id: "123"))           // Push onto stack (pop(), popToRoot(), dismiss() also exist)
 .modally(item: $vm.showDetail) { item in ... }     // Full-screen modal
-.detent(item: $vm.showSheet, ...) { ... }          // Bottom sheet
+.detent(item: $vm.showSheet, ...) { ... }          // Bottom sheet — use this, not SwiftUI .sheet
 ```
 
-Navigation enums must conform to `TrackingViewNameProtocol`.
+Flows that can be embedded in another flow take an optional router and only create their own `hNavigationStack` when
+presented standalone. `NavigationRouter` is also available to child views via `@Environment(NavigationRouter.self)`.
 
 ## Service Layer
 
@@ -184,7 +196,8 @@ public class SomeClientDemo: SomeClientProtocol {
 }
 ```
 
-> **Note:** Some modules (Claims, Profile) have local `OctopusImplementation/` directories containing service wrappers/logging facades — these are not the actual GraphQL client implementations (those live in the App module).
+> **Note:** Some modules (Claims, Profile) have local `OctopusImplementation/` directories containing service
+wrappers/logging facades — these are not the actual GraphQL client implementations (those live in the App module).
 
 ## Dependency Injection
 
@@ -198,7 +211,8 @@ Dependencies.shared.remove(for: SomeClientProtocol.self)                        
 
 ## GraphQL
 
-Apollo iOS client. `.graphql` files live in `Projects/hGraphQL/GraphQL/Octopus/<Feature>/`. Generated types in `Projects/hGraphQL/Sources/Derived/`.
+Apollo iOS client. `.graphql` files live in `Projects/hGraphQL/GraphQL/Octopus/<Feature>/`. Generated types in
+`Projects/hGraphQL/Sources/Derived/`.
 
 **To add a new query or mutation:**
 
@@ -206,4 +220,5 @@ Apollo iOS client. `.graphql` files live in `Projects/hGraphQL/GraphQL/Octopus/<
 2. Run Codegen project (`scripts/post-checkout.sh` or Codegen scheme in Xcode)
 3. Use the generated type in your OctopusImplementation
 
-Never edit files in `Sources/Derived/` — they are generated and will be overwritten. They are committed: regenerate and commit them together with the `.graphql` / asset / strings change.
+Never edit files in `Sources/Derived/` — they are generated and will be overwritten. They are committed: regenerate and
+commit them together with the `.graphql` / asset / strings change.

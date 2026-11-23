@@ -1,12 +1,12 @@
 # Market
 
-Provides locale/language selection for the app. Contains a language picker UI.
-
-## Key Files
-- `Sources/LanguagePickerView.swift` — SwiftUI radio-field list of all available locales with save/cancel
+Language selection for the app: `LanguagePickerView`, a radio-field list of the available `Localization.Locale`
+values with save/cancel callbacks.
 
 ## Dependencies
 - hCore, hCoreUI
+- Depended on by: App (login screen), Profile
 
 ## Gotchas
-- Has `frameworkResources` target but no `example` or `tests` targets defined
+- Targets are `framework` + `frameworkResources` only; there are no tests.
+- The view only updates the locale; callers persist the change (e.g. `ProfileStore.updateLanguage()`).

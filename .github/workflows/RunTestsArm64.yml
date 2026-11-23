@@ -112,6 +112,10 @@ jobs:
       - name: Checkout ugglan
         uses: actions/checkout@v5
 
+      # CLAUDE.md files, .claude/agents and .claude/rules must not reference files that no longer exist.
+      - name: Check Claude instruction files
+        run: scripts/check-claude-docs.py
+
       # The committed project.xcproj (JSON) format needs Xcode 27.2+. The xcode-27 image ships 27.2 as a
       # Release Candidate, which setup-xcode's SemVer matching isn't documented to pick, so select it by path.
       - name: Select Xcode

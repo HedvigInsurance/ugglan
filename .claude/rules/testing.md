@@ -1,12 +1,20 @@
+---
+paths:
+  - "Projects/*/Tests/**/*.swift"
+  - "Dependencies/**/Tests/**/*.swift"
+---
+
 # Testing Guidelines
 
 ## Framework
 
 - **Swift Testing** (`import Testing`) for all unit tests
-- Import pattern: `import Testing`, `import TestDependencies` (for `waitUntil` / `recordingErrors`), `@testable import ModuleName`
+- Import pattern: `import Testing`, `import TestDependencies` (for `waitUntil` / `recordingErrors`), `@testable import
+  ModuleName`
 - Suites are `@MainActor final class`es; a per-test `init()` replaces `setUp`
 - Tests are `@Test func`s, assertions are `#expect(...)`, unwrapping/preconditions are `try #require(...)`
-- Expected errors: `#expect(throws: SomeError.self) { ... }`, or `await #expect(throws: SomeError.self) { try await ... }`
+- Expected errors: `#expect(throws: SomeError.self) { ... }`, or `await #expect(throws: SomeError.self) { try await ...
+  }`
 - Tests live in `Projects/<Module>/Tests/`, a module gets a test target by declaring `.tests` in its `Project.swift`
 - UI tests (`Projects/App/Tests/UITests`, the `AppUITests` target) stay on XCTest / XCUITest
 
@@ -42,7 +50,8 @@ values (pure model tests) share nothing and stay top level, where they keep runn
 
 ## Mock Pattern
 
-Use a `MockData` factory struct per module with `@discardableResult` static methods. Each method creates a mock service, registers it in DI, and returns it.
+Use a `MockData` factory struct per module with `@discardableResult` static methods. Each method creates a mock service,
+registers it in DI, and returns it.
 
 ```swift
 @MainActor
@@ -78,12 +87,6 @@ class MockSomeService: SomeClientProtocol {
 }
 ```
 
-## DI in Tests
-
-- **Register**: `Dependencies.shared.add(module: Module { () -> ProtocolType in service })` (via `MockData`)
-- **Clean up** at the end of every test, in the closing `expect…Released()` helper: `Dependencies.shared.remove(for: ProtocolType.self)`
-- Restore any global you swap (e.g. `log`): save it in `init`, put it back in the closing helper
-
 ## Teardown and Memory Leak Detection
 
 There is no `tearDown`. `deinit` cannot replace it for this work: it is synchronous and nonisolated, while teardown
@@ -93,7 +96,8 @@ private closing helper:
 1. Keep the object under test in a `private weak var sut` (or `store`, `vm`)
 2. Scope the test body so its locals are gone before the check — a `do {}` block, or `await recordingErrors {}` when
    the body throws (see below)
-3. After the scope, `await expect…Released()`: remove DI registrations, restore globals, give pending tasks a moment,
+3. After the scope, `await expect…Released()`: `Dependencies.shared.remove(for:)` every protocol the test
+   registered, put back any global you swapped in `init` (e.g. `log`), give pending tasks a moment,
    then `#expect(sut == nil, ...)`
 4. When a fire-and-forget `Task` (e.g. a fetch started from a ViewModel's `init`) may still hold the object, poll with
    `waitUntil(description:) { self.vm == nil }` instead of a fixed delay
@@ -130,9 +134,17 @@ func hideCrossSalesForwardsTheConversationId() async {
 
 ## ViewModel Testing
 
-ViewModels use `@Inject` to resolve services from DI. In tests, register mock services before creating the ViewModel, then verify state and event tracking.
+ViewModels use `@Inject` to resolve services from DI. In tests, register mock services before creating the ViewModel,
+then verify state and event tracking.
 
 ```swift
+import TestDependencies
+import Testing
+import hCore
+
+@testable import MyModule
+
+// inside `extension MyModuleDependencySuite { @MainActor final class MyViewModelTests { ... } }`
 @Test
 func fetchItemsSuccess() async {
     do {
@@ -156,112 +168,30 @@ removing the client — removing it first makes `@Inject` fatalError.
 
 ## Store Testing
 
-`AppStore` instances are plain `@MainActor` `@Observable` classes — test them by constructing the store, awaiting the async methods, and reading the properties directly.
-
-Reset persistence in `init` so cross-test state doesn't leak via on-disk snapshots, and nest the suite under the
-module's `DependencySuite` (the container is process-wide):
+`AppStore`s are plain `@MainActor @Observable` classes: construct the store, await its async methods, read its
+properties. The container is process-wide, so nest the suite under the module's `DependencySuite` and reset persistence
+in `init`, or on-disk snapshots leak between tests. Otherwise the shape matches the ViewModel test above
+(`Projects/Payment/Tests` has a full example):
 
 ```swift
-extension PaymentDependencySuite {
-    @MainActor
-    final class StoreHistoryTests {
-        private weak var store: PaymentStore?
+private weak var store: PaymentStore?
 
-        init() {
-            globalAppStateContainer.clearPersistence()
-        }
-
-        private func expectStoreReleased() {
-            #expect(store == nil, "the payment store must not outlive the test that created it")
-        }
-
-        @Test
-        func getHistorySuccess() async {
-            do {
-                let mockService = MockPaymentData.createMockPaymentService(fetchPaymentHistoryData: { historyData })
-                let store = PaymentStore()
-                self.store = store
-                await store.getHistory()
-
-                #expect(store.loadHistoryError == nil)
-                #expect(store.paymentHistory == historyData)
-                #expect(mockService.events == [.getPaymentHistoryData])
-            }
-
-            expectStoreReleased()
-        }
-    }
+init() {
+    globalAppStateContainer.clearPersistence()
 }
-```
 
-## Full Example
-
-```swift
-import TestDependencies
-import Testing
-import hCore
-
-@testable import MyModule
-
-extension MyModuleDependencySuite {
-    @MainActor
-    final class MyViewModelTests {
-        private weak var sut: MockMyService?
-
-        private func expectServiceReleased() async {
-            Dependencies.shared.remove(for: MyClientProtocol.self)
-            await delay(0.00001)
-            #expect(sut == nil, "the mock service must not outlive the test that created it")
-        }
-
-        @Test
-        func fetchSuccess() async {
-            do {
-                let expected: [Item] = [.init(id: "1", name: "Test")]
-                let mockService = MockData.createMockMyService(fetchItems: { expected })
-                sut = mockService
-
-                let vm = MyViewModel()
-                await vm.fetchItems()
-
-                #expect(vm.items == expected)
-                #expect(mockService.events == [.getItems])
-            }
-
-            await expectServiceReleased()
-        }
-
-        @Test
-        func fetchFailure() async {
-            do {
-                let mockService = MockData.createMockMyService(fetchItems: { throw MyError.failed })
-                sut = mockService
-
-                await #expect(throws: MyError.self) {
-                    try await mockService.getItems()
-                }
-                #expect(mockService.events == [.getItems])
-            }
-
-            await expectServiceReleased()
-        }
-    }
+private func expectStoreReleased() {
+    #expect(store == nil, "the payment store must not outlive the test that created it")
 }
 ```
 
 ## What to Test
 
-- **ViewModels**: Inject mock services via DI, call methods, verify state changes and event tracking
-- **Services**: Mock the client protocol, verify returned data and event tracking
-- **Stores**: Call the store's async methods directly and assert on its properties; `globalAppStateContainer.clearPersistence()` in `init`
-- **Not views directly**: UI is not unit tested
-
-## When to Write Tests
-
-- New ViewModels: every public method that changes state
-- New service implementations: verify data flow and error handling
-- Bug fixes: write a test that reproduces the bug before fixing
-- Modified behavior: update existing tests to match new expectations
+- ViewModels: every public method that changes state — state changes plus mock `events`
+- Services: returned data, error handling, and the client calls made
+- Stores: async methods and resulting properties
+- Bug fixes: a test that reproduces the bug before the fix
+- Not views: UI isn't unit tested
 
 ## Test Naming Conventions
 
@@ -275,13 +205,3 @@ marks them, so there is no `test` prefix.
 - No underscores — use camel case throughout
 - Suites keep a `…Tests` class name; one file per suite, grouped in `ViewModelTests/`, `StoreTests/`, `ServiceTests/`,
   `ModelTests/` folders where the module has several kinds
-
-## ViewModel Tests vs Store Tests
-
-| | ViewModel | AppStore |
-|---|---|---|
-| Setup | Register mock via DI, create VM | Register mock via DI, `globalAppStateContainer.clearPersistence()` in `init`, instantiate store |
-| Trigger | `await vm.method()` | `await store.method()` |
-| Assert | `#expect(vm.property == expected)` | `#expect(store.property == expected)` |
-| Teardown | `await expectServiceReleased()` (or `waitUntil` for `vm == nil`) | `expectStoreReleased()` |
-| Use for | Screen-local state | Shared/persisted state used across screens |

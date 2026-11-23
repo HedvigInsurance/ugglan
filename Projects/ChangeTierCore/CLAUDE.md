@@ -1,24 +1,14 @@
 # ChangeTierCore
 
-UI-free data layer for insurance tier changes: tier/quote models, flow input models, the client protocol, the demo
-client and the service wrapper. No SwiftUI or hCoreUI.
-
-## Key Files
-- `Sources/Models/ChangeTierIntentModel.swift` — `ChangeTierIntentModel`, `ChangeTierIntentModelState`, `Tier`,
-  `Quote` (+ `DisplayItem`, `Addon`), `AddonQuote`, `Deflection`, `ProductVariantComparison`
-- `Sources/Models/ChangeTierInputData.swift` — `ChangeTierInputData` (single-contract flow input), `ChangeTierSource`,
-  `ChangeTierContract` and `ChangeTierContractsInput` (multi-contract selection input, built by Home and App)
-- `Sources/Service/Protocols/ChangeTierClient.swift` — client protocol and `ChangeTierError`
-- `Sources/Service/ChangeTierService.swift` — logging wrapper (`@Log`) around `ChangeTierClient` (`@Inject`)
-- `Sources/Service/DemoImplementation/` — `ChangeTierClientDemo` and its demo data
+UI-free data layer for insurance tier changes: tier/quote models (`ChangeTierIntentModel`, `Tier`, `Quote`,
+`Deflection`, …), flow inputs (`ChangeTierInputData`, `ChangeTierContractsInput`), the `ChangeTierClient` protocol,
+the `ChangeTierService` logging wrapper and the demo client.
 
 ## Dependencies
-- hCore (+ AutomaticLog)
-- Depended on by: ChangeTierUI, TerminateContractsUI, MoveFlowCore, MoveFlowUI, Home, App (`ChangeTierClientOctopus`,
-  `MoveFlowClientOctopus`, DI)
+- hCore. Octopus impl: `ChangeTierClientOctopus` in App.
+- Depended on by: ChangeTierUI, TerminateContractsUI, MoveFlowCore, MoveFlowUI, Home, App
 
 ## Gotchas
-- `Deflection` here is ChangeTier's; SubmitClaimChat also has a `Deflection`, so files importing both must qualify it.
-
-## Tests
-- `ChangeTierServiceTests` (with `MockChangeTierService` in `Tests/MockData.swift` and `TierFixtures`)
+- SubmitClaimChat also defines a `Deflection`, so files that import both modules must qualify the name.
+- `Tests/MockData.swift` and `Tests/TierFixtures.swift` are also compiled into ChangeTierUI's tests
+  (`sharedTestSources` in ChangeTierUI's `Project.swift`).

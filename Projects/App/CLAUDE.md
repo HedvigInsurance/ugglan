@@ -1,41 +1,41 @@
 # App
 
-Main application entry point for the Hedvig iOS app. Manages root navigation (logged-in vs logged-out), dependency injection for all feature modules, deep link routing, push notification handling, and Datadog analytics/tracking setup.
+Main application target. Owns root navigation (logged-in vs logged-out), dependency injection for every feature
+module, deep link and push notification routing, the Octopus (GraphQL) client implementations, and Datadog setup.
+Two app targets: `Ugglan` (staging) and `Hedvig` (production), each with its own NotificationService extension.
 
 ## Architecture
-- Pattern: Mixed. The root `MainNavigation` uses a SwiftUI `App` with `MainNavigationViewModel` (`@Observable`). Sub-components use `@Inject` for services and `@AppObservedObject` / `@AppState` for accessing shared `AppStore` instances. The app-level `UgglanStore` is a minimal `AppStore` holding the `isDemoMode` flag.
-- Key services: `AnalyticsClient` (analytics/user tracking), `NotificationClient` (push token registration). Both have protocol, OctopusImplementation, and DemoImplementation within this module.
-- Data flow: `AppDelegate` performs initial setup (session, Apollo client, Datadog, feature flags). `MainNavigationViewModel` observes `ApplicationState` to switch between logged-in, logged-out, and impersonation states. `LoggedInNavigationViewModel` manages tab selection and all modal presentation state. `DI.initAndRegisterClient()` registers all service implementations (demo or Octopus) into the global `Dependencies` container.
+- `AppDelegate` does initial setup (session, Apollo client, Datadog, Unleash feature flags).
+  `DI.initAndRegisterClient()` (`AppDelegate+DI.swift`) registers every client implementation into `Dependencies` —
+  demo clients when `UgglanStore.isDemoMode` is set, otherwise Octopus clients per environment (staging vs
+  production/custom).
+- `MainNavigation` (`@main`) + `MainNavigationViewModel` switch between `LoginNavigation`, `LoggedInNavigation` and
+  `ImpersonationSettings` based on `ApplicationState` (`@AppStorage`). Logging in triggers initial fetches (contracts,
+  member details, …) from the `state` `didSet`.
+- `LoggedInNavigation` is a SwiftUI `TabView` (0 Home, 1 Insurances, 2 Forever, 3 Payments, 4 Profile; Forever and
+  Payments are hidden depending on contracts and feature flags). `LoggedInNavigationViewModel` holds tab selection and
+  presentation state; the cross-feature modals (travel certificate, move, change tier, addons, termination,
+  co-insured, pet chip ids, onboarding, …) are attached in `LoggedInNavigation+Presentations.swift`.
+- `UgglanStore` is a minimal persisted `AppStore` holding only `isDemoMode`.
 
-## Key Files
-- `Sources/Navigation/MainNavigation.swift` — `@main` App struct and root `MainNavigationViewModel`. Controls launch screen, OS/update checks, and routes to `LoggedInNavigation` or `LoginNavigation`.
-- `Sources/Navigation/LoggedInNavigation.swift` — TabView with 5 tabs (Home, Contracts, Forever, Payments, Profile). Contains `LoggedInNavigationViewModel`, `PushNotificationHandler`, and `DeepLinkHandler`.
-- `Sources/Navigation/LoggedInNavigation+Presentations.swift` — ViewModifier managing modals for travel insurance, moving flow, change tier, addons, termination, EuroBonus, FAQ, and insurance evidence.
-- `Sources/Navigation/LoginNavigation.swift` — Pre-auth flow using `RouterHost` (legacy navigation).
-- `Sources/AppDelegate.swift` — UIApplicationDelegate handling lifecycle, logout, URL handling, session setup, Datadog logger init.
-- `Sources/AppDelegate+DI.swift` — `DI` enum with `initServices()`, `initAndRegisterClient()` (registers all service implementations for every module), and `initNetworkClients()`.
-- `Sources/AppDelegate+Notifications.swift` — Push notification registration, `UNUserNotificationCenterDelegate`, `PushNotificationType` enum.
-- `Sources/AppDelegate+Tracking.swift` — Datadog RUM, Trace, Logs, and CrashReporting setup.
-- `Sources/UgglanStore.swift` — Minimal `AppStore` holding `isDemoMode` flag.
-- `Sources/Service/OctopusClientsImplementation/` — Octopus GraphQL implementations for most feature module service protocols.
-- `Sources/Service/AnalyticsCoordinator/` — AnalyticsClient protocol + Octopus/Demo implementations.
-- `Sources/Service/Notifications/` — NotificationClient protocol + Octopus/Demo implementations.
+## Octopus implementations
+- `Sources/Service/OctopusClientsImplementation/` is the canonical home for the GraphQL-backed implementations of
+  feature-module client protocols (`<Feature>ClientOctopus`). Protocols and demo clients live in the feature modules.
+- App-local services (`AnalyticsCoordinator/`, `Notifications/`, `EventTracking/`) keep protocol + Octopus/Demo
+  implementations side by side inside App.
+
+## Entry points
+- `DeepLinkHandler` (in `LoggedInNavigation.swift`) routes the `DeepLink` cases defined in hCore
+  (`hCore/Sources/DeepLink.swift`) — add new deep links there first.
+- `PushNotificationHandler` (same file) routes `PushNotificationType` (`AppDelegate+Notifications.swift`), e.g.
+  `NEW_MESSAGE`, `PAYMENT_FAILED`, `CHANGE_TIER`, `ADDON_TRAVEL`, `OPEN_CLAIM`, `INSURANCE_EVIDENCE`, `PAYOUT`.
 
 ## Dependencies
-- Imports: hCore, hCoreUI, hGraphQL, ContractsCore, ContractsUI, Claims, Home, Payment, Forever, Chat, SubmitClaimChat, Profile, Authentication, Market, MoveFlowCore, MoveFlowUI, TerminateContractsCore, TerminateContractsUI, TravelCertificate, EditStakeholdersCore, EditStakeholdersUI, ChangeTierCore, ChangeTierUI, AddonsCore, AddonsUI, CrossSellCore, CrossSellUI, Campaign, CoreDependencies, AppDependencies.
-- No other module depends on App; it is the top-level target. Two app targets exist: `Ugglan` (staging) and `Hedvig` (production).
-
-## Navigation
-- `MainNavigation` (root): Switches between `LoginNavigation`, `LoggedInNavigation`, and `ImpersonationSettings`.
-- `LoggedInNavigation`: SwiftUI `TabView` with tabs at indices 0 (Home), 1 (Contracts), 2 (Forever), 3 (Payments), 4 (Profile). Tabs 2 and 3 are conditionally hidden based on contract type and feature flags.
-- Deep links handled by `DeepLinkHandler` — supports routes like `/forever`, `/direct-debit`, `/profile`, `/insurances`, `/home`, `/payments`, `/contract?id=`, `/terminate-contract?id=`, `/change-tier?id=`, `/help-center`, `/submit-claim`, `/claim-details?id=`, and more.
-- Push notifications handled by `PushNotificationHandler` — routes `NEW_MESSAGE`, `REFERRAL_SUCCESS`, `CONNECT_DIRECT_DEBIT`, `PAYMENT_FAILED`, `CROSS_SELL`, `CHANGE_TIER`, `ADDON_TRAVEL`, `ADDON_CAR_PLUS`, `OPEN_CLAIM`, `CLAIM_CLOSED`, `INSURANCE_EVIDENCE`, `TRAVEL_CERTIFICATE`, etc.
-- Login flow uses legacy `RouterHost + Router` pattern.
-- Logged-in tab contents use their respective module navigation components.
+- Every feature module (Core and UI targets), hCore, hCoreUI, hGraphQL, CoreDependencies, AppDependencies.
+- Nothing depends on App. It is the only module that links hGraphQL.
 
 ## Gotchas
-- **Octopus implementations are centralized here by convention**: `Sources/Service/OctopusClientsImplementation/` is the canonical home for OctopusGraphQL-backed service implementations for every feature module (contracts, claims, payments, profile, forever, chat, etc.). Protocols live in their feature modules; the real implementations live here. The `AnalyticsCoordinator/` and `Notifications/` services also follow this pattern with local OctopusImplementation/DemoImplementation directories.
-- `DI.initAndRegisterClient()` has duplicated registration blocks for staging vs production that are nearly identical, making maintenance error-prone.
-- `LoggedInNavigation.swift` is very large (900+ lines) and handles push notifications, deep links, tab management, and modal presentation all in one file.
-- The `LoginNavigation` uses legacy `RouterHost + Router` while `LoggedInNavigation` uses SwiftUI `TabView`. Both navigation patterns coexist.
-- `ApplicationState` uses `@AppStorage` with a string key, and state transitions happen through a property observer (`didSet`) rather than a dedicated state machine.
+- `DI.initAndRegisterClient()` has near-identical staging and production registration blocks — when registering a
+  new client, add it to the demo block and both environment blocks.
+- `LoggedInNavigation.swift` is very large (1300+ lines): tabs, push handling and deep link handling all live there.
+- `ApplicationState` transitions happen through a property observer (`didSet`), not a dedicated state machine.
