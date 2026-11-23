@@ -143,6 +143,7 @@ extension Contract {
             supportsCoOwners: contract.supportsCoOwners,
             supportsTravelCertificate: contract.supportsTravelCertificate,
             supportsChangeTier: contract.supportsChangeTier,
+            supportsChangeMileage: contract.supportsChangeMileage,
             supportsTermination: contract.supportsTermination,
             upcomingChangedAgreement: upcomoingAgreement,
             upcomingRenewal: .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment),

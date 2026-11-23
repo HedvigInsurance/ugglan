@@ -3,6 +3,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     case coInsured
     case coOwners
     case changeTier
+    case changeMileage
     case cancellation
     case removeAddons
 
@@ -14,6 +15,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         case .changeTier:
             return isPaymentProtection ? L10n.InsuranceDetails.changeAmount : L10n.InsuranceDetails.changeCoverage
+        case .changeMileage: return L10n.changeMileageOptionTitle
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
         case .removeAddons: return L10n.removeAddonButtonTitle
         }
@@ -27,6 +29,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeTier:
             return isPaymentProtection
                 ? L10n.InsuranceDetails.changeAmountSubtitle : L10n.hcQuickActionsUpgradeCoverageSubtitle
+        case .changeMileage: return L10n.changeMileageOptionSubtitle
         case .cancellation: return L10n.hcQuickActionsTerminationSubtitle
         case .removeAddons: return L10n.hcQuickActionsRemoveAddonSubtitle
         }

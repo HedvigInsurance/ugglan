@@ -196,6 +196,62 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "322BB6457F0E3ED831D7DDB3"
+               BuildableName = "ChangeMileageCore.framework"
+               BlueprintName = "ChangeMileageCore"
+               ReferencedContainer = "container:Projects/ChangeMileageCore/ChangeMileageCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A9961BC4FDB7C8BB7905FF79"
+               BuildableName = "ChangeMileageCoreTests.xctest"
+               BlueprintName = "ChangeMileageCoreTests"
+               ReferencedContainer = "container:Projects/ChangeMileageCore/ChangeMileageCore.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A41EEC2E1B8A80E2CD6F06D3"
+               BuildableName = "ChangeMileageUI.framework"
+               BlueprintName = "ChangeMileageUI"
+               ReferencedContainer = "container:Projects/ChangeMileageUI/ChangeMileageUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7B7EA506A830DF5240460A27"
+               BuildableName = "ChangeMileageUITests.xctest"
+               BlueprintName = "ChangeMileageUITests"
+               ReferencedContainer = "container:Projects/ChangeMileageUI/ChangeMileageUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "BF8902098A7B49F5E90DD101"
                BuildableName = "ChangeTierCore.framework"
                BlueprintName = "ChangeTierCore"
@@ -1043,6 +1099,28 @@
                BuildableName = "CampaignCoreTests.xctest"
                BlueprintName = "CampaignCoreTests"
                ReferencedContainer = "container:Projects/CampaignCore/CampaignCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "A9961BC4FDB7C8BB7905FF79"
+               BuildableName = "ChangeMileageCoreTests.xctest"
+               BlueprintName = "ChangeMileageCoreTests"
+               ReferencedContainer = "container:Projects/ChangeMileageCore/ChangeMileageCore.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7B7EA506A830DF5240460A27"
+               BuildableName = "ChangeMileageUITests.xctest"
+               BlueprintName = "ChangeMileageUITests"
+               ReferencedContainer = "container:Projects/ChangeMileageUI/ChangeMileageUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

@@ -1,0 +1,5 @@
+mutation ChangeMileageCommitIntent($quoteId: ID!) {
+  changeMileageCommitIntent(quoteId: $quoteId) {
+    message
+  }
+}

@@ -39,6 +39,12 @@
          location = "group:CampaignUI/CampaignUI.xcodeproj">
       </FileRef>
       <FileRef
+         location = "group:ChangeMileageCore/ChangeMileageCore.xcodeproj">
+      </FileRef>
+      <FileRef
+         location = "group:ChangeMileageUI/ChangeMileageUI.xcodeproj">
+      </FileRef>
+      <FileRef
          location = "group:ChangeTierCore/ChangeTierCore.xcodeproj">
       </FileRef>
       <FileRef

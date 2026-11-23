@@ -131,6 +131,8 @@ public extension OctopusGraphQL {
           public var supportsTravelCertificate: Bool { __data["supportsTravelCertificate"] }
           /// Whether or not this contract can be changed through the 'ChangeTier' API.
           public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
+          /// Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+          public var supportsChangeMileage: Bool { __data["supportsChangeMileage"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
           /// The last date this insurance will be active, if there is one.
@@ -909,6 +911,8 @@ public extension OctopusGraphQL {
           public var supportsTravelCertificate: Bool { __data["supportsTravelCertificate"] }
           /// Whether or not this contract can be changed through the 'ChangeTier' API.
           public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
+          /// Whether the yearly mileage on this contract can be changed through the 'ChangeMileage' API.
+          public var supportsChangeMileage: Bool { __data["supportsChangeMileage"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
           /// The last date this insurance will be active, if there is one.

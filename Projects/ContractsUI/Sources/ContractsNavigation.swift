@@ -1,6 +1,8 @@
 import AddonsCore
 import AddonsUI
 import AppStateContainer
+import ChangeMileageCore
+import ChangeMileageUI
 import ChangeTierUI
 import ContractsCore
 import EditStakeholdersCore
@@ -97,6 +99,8 @@ public struct ContractsNavigation<Content: View>: View {
                                 typeOfContract: contract.typeOfContract
                             )
                         )
+                    case .changeMileage:
+                        contractsNavigationVm.changeMileageInput = .init(contracts: [contract.asChangeMileageContract])
                     case .cancellation:
                         let config = TerminationConfirmConfig(contract: contract)
                         Task {
@@ -126,6 +130,9 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
+        }
+        .modally(item: $contractsNavigationVm.changeMileageInput) { input in
+            ChangeMileageNavigation(input: input)
         }
         .handleAddons(input: $contractsNavigationVm.isAddonPresented, options: .constant([]))
         .detent(
@@ -180,6 +187,7 @@ public class ContractsNavigationViewModel {
     public var insuranceUpdate: ContractsCore.Agreement?
     public var isChangeAddressPresented = false
     public var changeTierInput: ChangeTierInput?
+    public var changeMileageInput: ChangeMileageInput?
     public var isAddonPresented: ChangeAddonInput?
     public var isRemoveAddonPresented: RemoveAddonInput?
     public var addonActionPresented: AddonAction?

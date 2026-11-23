@@ -119,6 +119,8 @@ let appDependencies: [TargetDependency] = [
         .project(target: "EditStakeholdersUI", path: .relativeToRoot("Projects/EditStakeholdersUI")),
         .project(target: "ChangeTierCore", path: .relativeToRoot("Projects/ChangeTierCore")),
         .project(target: "ChangeTierUI", path: .relativeToRoot("Projects/ChangeTierUI")),
+        .project(target: "ChangeMileageCore", path: .relativeToRoot("Projects/ChangeMileageCore")),
+        .project(target: "ChangeMileageUI", path: .relativeToRoot("Projects/ChangeMileageUI")),
         .project(target: "AddonsCore", path: .relativeToRoot("Projects/AddonsCore")),
         .project(target: "AddonsUI", path: .relativeToRoot("Projects/AddonsUI")),
         .project(target: "CrossSellCore", path: .relativeToRoot("Projects/CrossSellCore")),

@@ -18,6 +18,8 @@
       "children": [
         { "path": "<PRODUCTS>/AddonsCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
         { "path": "<PRODUCTS>/AddonsUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
+        { "path": "<PRODUCTS>/ChangeMileageCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
+        { "path": "<PRODUCTS>/ChangeMileageUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
         { "path": "<PRODUCTS>/ChangeTierUI.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
         { "path": "<PRODUCTS>/ContractsCore.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "ContractsUI/frameworks" ] },
         { "path": "<PRODUCTS>/ContractsUI.framework", "id": "81E44960CAE368062084AA1F", "type": "wrapper.framework", "index": false },

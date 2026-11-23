@@ -1,6 +1,8 @@
 import AddonsCore
 import AddonsUI
 import AppStateContainer
+import ChangeMileageCore
+import ChangeMileageUI
 import ChangeTierCore
 import ChangeTierUI
 import Chat
@@ -270,6 +272,8 @@ class DeepLinkHandler {
             handleDeeplinkContactInfo()
         case .changeTier:
             viewModel?.handleChangeTier(contractId: url.getParameter(property: .contractId))
+        case .changeMileage:
+            viewModel?.handleChangeMileage(contractId: url.getParameter(property: .contractId))
         case .travelAddon:
             Task { [weak viewModel] in
                 await viewModel?.handleAddon(type: .travelPlus, contractId: url.getParameter(property: .contractId))
@@ -951,6 +955,7 @@ class LoggedInNavigationViewModel {
     var isTravelInsurancePresented = false
     var isMoveContractPresented: MovingFlowSource?
     var isChangeTierPresented: ChangeTierContractsInput?
+    var isChangeMileagePresented: ChangeMileageInput?
     var isAddonPresented: ChangeAddonInput?
     var missingPetChipIdInput: MissingPetChipIdInput?
     var isInsuranceEvidencePresented = false
@@ -1064,6 +1069,13 @@ class LoggedInNavigationViewModel {
             self,
             selector: #selector(tierChanged),
             name: .tierChanged,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(tierChanged),
+            name: .mileageChanged,
             object: nil
         )
 
@@ -1269,6 +1281,17 @@ class LoggedInNavigationViewModel {
 
     func handleChangeTier(contractId: String?) {
         pushNotificationHandler.handleChangeTier(contractId: contractId)
+    }
+
+    /// Opens the flow for the given contract, or lets the member choose among the contracts that support it.
+    func handleChangeMileage(contractId: String?) {
+        guard Dependencies.featureFlags().isChangeMileageEnabled else { return }
+        let eligibleContracts = contractStore.activeContracts.filter(\.supportsChangeMileage)
+        if let contract = eligibleContracts.first(where: { $0.id == contractId }) {
+            isChangeMileagePresented = .init(contracts: [contract.asChangeMileageContract])
+        } else {
+            isChangeMileagePresented = .init(contracts: eligibleContracts.map(\.asChangeMileageContract))
+        }
     }
 
     func handleAddon(type: AddonBanner.AddonType, contractId: String?) async {

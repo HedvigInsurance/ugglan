@@ -1,6 +1,8 @@
 import AddonsCore
 import AddonsUI
 import AppStateContainer
+import ChangeMileageCore
+import ChangeMileageUI
 import ChangeTierUI
 import ContractsCore
 import ContractsUI
@@ -63,6 +65,13 @@ struct LoggedInPresentations: ViewModifier {
                 tracking: nil
             ) { changeTierInput in
                 ChangeTierNavigation(input: changeTierInput)
+            }
+            .modally(
+                item: $vm.isChangeMileagePresented,
+                options: .constant(.alwaysOpenOnTop),
+                tracking: nil
+            ) { changeMileageInput in
+                ChangeMileageNavigation(input: changeMileageInput)
             }
             .handleAddons(input: $vm.isAddonPresented)
             .handleMissingChipIds(input: $vm.missingPetChipIdInput)

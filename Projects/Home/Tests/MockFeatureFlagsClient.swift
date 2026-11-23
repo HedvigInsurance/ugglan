@@ -37,6 +37,7 @@ extension FeatureData {
             isAnalyticsEnabled: false,
             isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
             isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen,
+            isChangeMileageEnabled: false,
         )
     }
 }
