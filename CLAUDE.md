@@ -35,6 +35,10 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes �
 - Path-scoped rules in `.claude/rules/` load automatically for matching files:
   - `testing.md` (test files) — Swift Testing patterns, MockData, memory leak detection, naming
   - `design-system.md` and `accessibility.md` (view code) — hCoreUI components and tokens, accessibility CI rules
+- Skills in `.claude/skills/` for multi-step jobs (Claude picks them up, or run `/<name>`):
+  - `add-service` — GraphQL query → client protocol, service, demo, Octopus client, DI in all three blocks, mocks
+  - `new-flow` — `.handleX(input:)` coordinator, navigation ViewModel and routes, hNavigationStack, App wiring
+  - `new-module` — new module or Core/UI split: manifests, App wiring, `scripts/generate.sh`, docs
 
 ## Module Index
 

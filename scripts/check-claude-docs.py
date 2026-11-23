@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fail if a Claude instruction file references a file that doesn't exist.
 
-Checks every tracked CLAUDE*.md plus .claude/agents and .claude/rules. A reference is a backticked token outside code
+Checks every tracked CLAUDE*.md plus .claude/agents, .claude/rules and .claude/skills. A reference is a backticked token outside code
 blocks that is either a file name (Foo.swift, bar.sh, …) or a repo path (scripts/…, Projects/…). It resolves if it
 exists relative to the repo root or to the doc's own directory (or its Sources/), or if a tracked file ends with it —
 so `Foo.swift` and `Sources/Bar/Foo.swift` both resolve. Bare extensions (`.graphql`) and tokens with placeholders
@@ -38,7 +38,7 @@ def main():
     basenames = {os.path.basename(p) for p in tracked}
     docs = [
         p for p in tracked
-        if re.search(r"(^|/)CLAUDE[^/]*\.md$", p) or re.match(r"\.claude/(agents|rules)/.*\.md$", p)
+        if re.search(r"(^|/)CLAUDE[^/]*\.md$", p) or re.match(r"\.claude/(agents|rules|skills)/.*\.md$", p)
     ]
 
     def exists(path):
