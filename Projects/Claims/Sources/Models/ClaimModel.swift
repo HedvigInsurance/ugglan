@@ -1,5 +1,5 @@
 import AutomaticLog
-import Chat
+import ChatCore
 import CrossSellCore
 import Foundation
 import hCore

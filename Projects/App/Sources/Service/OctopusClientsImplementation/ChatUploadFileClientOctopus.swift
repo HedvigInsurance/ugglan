@@ -1,6 +1,6 @@
 import Apollo
 import AutomaticLog
-import Chat
+import ChatCore
 import Environment
 import Foundation
 import Kingfisher

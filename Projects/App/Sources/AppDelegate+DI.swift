@@ -4,7 +4,7 @@ import AppStateContainer
 import AuthenticationCore
 import CampaignCore
 import ChangeTierCore
-import Chat
+import ChatCore
 import Claims
 import ContractsCore
 import CrossSellCore

@@ -18,7 +18,7 @@ protocols with their demo implementations, and `PetChipIdService`. No SwiftUI or
 
 ## Dependencies
 - hCore, AppStateContainer, AddonsCore, EditStakeholdersCore, TerminateContractsCore
-- Depended on by: ContractsUI, Chat (`ContractStore`), Profile (`ContractStore`), TravelCertificateUI, Home, Onboarding,
+- Depended on by: ContractsUI, ChatUI (`ContractStore`), Profile (`ContractStore`), TravelCertificateUI, Home, Onboarding,
   App (`ContractsClientOctopus`, `PetClientOctopus`, DI)
 
 ## Tests

@@ -1,6 +1,6 @@
 import Apollo
 import AppStateContainer
-import Chat
+import ChatUI
 import Claims
 import CoreDependencies
 import Environment

@@ -3,7 +3,8 @@ import AddonsUI
 import AppStateContainer
 import ChangeTierCore
 import ChangeTierUI
-import Chat
+import ChatCore
+import ChatUI
 import Claims
 import Combine
 import ContractsCore

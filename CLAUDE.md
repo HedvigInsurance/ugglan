@@ -44,7 +44,8 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes â€
 | CampaignUI | SwiftUI views and navigation for the discounts/referrals screen (built on CampaignCore) |
 | ChangeTierCore | Tier change models, client protocol, service wrapper and demo client (UI-free) |
 | ChangeTierUI | SwiftUI tier upgrade/downgrade flow, navigation and ViewModels (built on ChangeTierCore) |
-| Chat | Customer support messaging |
+| ChatCore | Chat message/conversation models, `ChatStore`, services, client protocols and demo client (UI-free) |
+| ChatUI | Customer support messaging screens, inbox and ViewModels (built on ChatCore) |
 | Claims | Claims list, status tracking, claim details |
 | Codegen | GraphQL code generation tooling |
 | ContractsCore | Contract models, `ContractStore`, client protocols, pet chip id service and demo clients (UI-free) |

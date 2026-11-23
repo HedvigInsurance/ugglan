@@ -41,7 +41,7 @@
             "HomeTests/frameworks",
           ],
         }, {
-          "path": "<PRODUCTS>/Chat.framework",
+          "path": "<PRODUCTS>/ChatUI.framework",
           "type": "wrapper.framework",
           "index": false,
           "target-membership": [

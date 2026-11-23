@@ -1,4 +1,4 @@
-import Chat
+import ChatCore
 import Foundation
 import hCore
 import hGraphQL
