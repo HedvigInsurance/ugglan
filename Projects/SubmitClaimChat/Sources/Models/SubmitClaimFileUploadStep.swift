@@ -12,6 +12,8 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
 
     let model: ClaimIntentStepContentFileUpload
     let fileUploadVm: FilesUploadViewModel
+    /// The file ids this step was submitted with, so voice can submit them again after going back to an earlier step.
+    private(set) var submittedFileIds: [String] = []
 
     required init(
         claimIntent: ClaimIntent,
@@ -39,6 +41,7 @@ final class SubmitClaimFileUploadStep: ClaimIntentStepHandler {
             let url = Environment.current.claimsApiURL.appendingPathComponent(model.uploadURI)
             let uploadedFiles = await fileUploadVm.uploadFiles(url: url)
             let result = try await service.claimIntentSubmitFile(stepId: id, fileIds: uploadedFiles)
+            submittedFileIds = uploadedFiles
 
             guard let result else {
                 throw ClaimIntentError.invalidResponse

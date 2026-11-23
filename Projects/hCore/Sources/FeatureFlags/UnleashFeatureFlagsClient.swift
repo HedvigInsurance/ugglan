@@ -125,7 +125,8 @@ public class UnleashFeatureFlagsClient: FeatureFlagsClient {
             ),
             isCancelInsuranceHiddenFromHomeScreen: unleashClient.isEnabled(
                 name: "hide_cancel_insurance_from_home_screen"
-            )
+            ),
+            isVoiceClaimEnabled: unleashClient.isEnabled(name: "enable_voice_claim_submission")
         )
         featureDataPublisher.send(data)
     }

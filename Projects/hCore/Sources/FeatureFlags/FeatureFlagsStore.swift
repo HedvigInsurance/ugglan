@@ -96,7 +96,8 @@ extension FeatureData {
             isTerminationRedirectionEnabled: isTerminationRedirectionEnabled,
             isAnalyticsEnabled: isAnalyticsEnabled,
             isResumingOngoingShopSessionsEnabled: isResumingOngoingShopSessionsEnabled,
-            isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen
+            isCancelInsuranceHiddenFromHomeScreen: isCancelInsuranceHiddenFromHomeScreen,
+            isVoiceClaimEnabled: isVoiceClaimEnabled
         )
     }
 }

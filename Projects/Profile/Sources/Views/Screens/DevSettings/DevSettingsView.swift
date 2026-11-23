@@ -25,6 +25,17 @@ struct DevSettingsView: View {
                 .accessibilityValue(devSettingsStore.isSubmitClaimAnimationsEnabled ? "On" : "Off")
 
                 hRow {
+                    hText("Voice claim submission (ElevenLabs POC)")
+                }
+                .withSelectedAccessory(devSettingsStore.isVoiceClaimForced)
+                .onTap {
+                    devSettingsStore.setVoiceClaimForced(!devSettingsStore.isVoiceClaimForced)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Voice claim submission")
+                .accessibilityValue(devSettingsStore.isVoiceClaimForced ? "On" : "Off")
+
+                hRow {
                     hText("Show onboarding on next launch")
                 }
                 .withSelectedAccessory(showOnboardingOnNextLaunch)

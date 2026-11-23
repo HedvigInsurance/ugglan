@@ -193,8 +193,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                         }
                     )
             }
-        } else {
-            presentationViewModel.presentingVC?.dismiss(animated: true)
+        } else if let sheet = presentationViewModel.presentingVC {
+            // Called on the sheet itself, `dismiss` only closes what the sheet has presented on top of it (a nested
+            // sheet), leaving the sheet open. Asked of the sheet's presenter, it closes the sheet and everything above.
+            (sheet.presentingViewController ?? sheet).dismiss(animated: true)
         }
     }
 
