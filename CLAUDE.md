@@ -136,9 +136,10 @@ prototype branches use `"literal"  //L10n.key` until the key exists.
 
 - **Line length**: 120 characters
 - **Indentation**: 4 spaces
-- **Sorted imports** (enforced by SwiftLint)
-- SwiftLint scans `Projects/`, excludes `Projects/*/Sources/Derived`
-- swift-format configured in `.swift-format`
+- **Sorted imports**
+- swift-format (`.swift-format`) enforces these. The pre-commit hook (installed by `scripts/githooks.sh`) formats
+  staged Swift files, skipping `Derived/`, and the `SwiftFormat` workflow opens a fix-up PR for anything missed.
+- `.swiftlint.yml` exists, but no hook or CI job runs SwiftLint, so nothing enforces its rules.
 
 ## Working Style
 
