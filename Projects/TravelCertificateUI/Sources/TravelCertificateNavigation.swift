@@ -5,6 +5,7 @@ import ContractsCore
 import EditStakeholdersUI
 import Foundation
 import SwiftUI
+import TravelCertificateCore
 import hCore
 import hCoreUI
 

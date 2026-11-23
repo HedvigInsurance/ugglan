@@ -2,9 +2,10 @@ import AddonsCore
 import Foundation
 import TestDependencies
 import Testing
+import TravelCertificateCore
 import hCore
 
-@testable import TravelCertificate
+@testable import TravelCertificateUI
 
 @Suite(.serialized)
 @MainActor

@@ -165,15 +165,6 @@
           ],
         },
         { "path": "<PRODUCTS>/TestDependencies.framework", "type": "wrapper.framework", "index": false, "target-membership": [ "HomeTests/frameworks" ] },
-        {
-          "path": "<PRODUCTS>/TravelCertificate.framework",
-          "type": "wrapper.framework",
-          "index": false,
-          "target-membership": [
-            "Home/frameworks",
-            "HomeTests/frameworks",
-          ],
-        },
       ],
     }, {
       "kind": "group",

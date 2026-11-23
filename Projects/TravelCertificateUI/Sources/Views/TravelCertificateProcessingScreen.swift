@@ -1,4 +1,5 @@
 import SwiftUI
+import TravelCertificateCore
 import hCore
 import hCoreUI
 

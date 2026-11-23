@@ -21,6 +21,20 @@ public struct TravelInsuranceFormDTO: Encodable {
     public let isMemberIncluded: Bool
     public let coInsured: [CoInsuredDto]
     @Masked public let email: String
+
+    public init(
+        contractId: String,
+        startDate: String,
+        isMemberIncluded: Bool,
+        coInsured: [CoInsuredDto],
+        email: String
+    ) {
+        self.contractId = contractId
+        self.startDate = startDate
+        self.isMemberIncluded = isMemberIncluded
+        self.coInsured = coInsured
+        self.email = email
+    }
 }
 
 @Loggable
@@ -28,6 +42,12 @@ public struct CoInsuredDto: Encodable {
     public let fullName: String
     @Masked public let personalNumber: String?
     @Masked public let birthDate: String?
+
+    public init(fullName: String, personalNumber: String?, birthDate: String?) {
+        self.fullName = fullName
+        self.personalNumber = personalNumber
+        self.birthDate = birthDate
+    }
 }
 
 public enum TravelInsuranceError {

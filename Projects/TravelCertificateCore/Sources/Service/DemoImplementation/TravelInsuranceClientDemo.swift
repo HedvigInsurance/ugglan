@@ -1,16 +1,18 @@
 import AddonsCore
 import Foundation
 
-class TravelInsuranceClientDemo: TravelInsuranceClient {
-    func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
+public class TravelInsuranceClientDemo: TravelInsuranceClient {
+    public init() {}
+
+    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         []
     }
 
-    func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
+    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         URL(string: "")!
     }
 
-    func getList(
+    public func getList(
         source: AddonSource
     ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBanner?

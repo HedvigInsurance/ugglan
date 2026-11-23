@@ -1,8 +1,9 @@
 import AddonsCore
 import Foundation
+import TravelCertificateCore
 import hCore
 
-@testable import TravelCertificate
+@testable import TravelCertificateUI
 
 @MainActor
 struct MockData {

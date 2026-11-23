@@ -1,17 +1,16 @@
 import AutomaticLog
 import Foundation
 import hCore
-import hCoreUI
 
 @Loggable
 public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
-    let contractId: String
-    let exposureDisplayName: String
-    let minStartDate: Date
-    let maxStartDate: Date
-    let maxDuration: Int
-    @Masked let email: String?
-    let fullName: String
+    public let contractId: String
+    public let exposureDisplayName: String
+    public let minStartDate: Date
+    public let maxStartDate: Date
+    public let maxDuration: Int
+    @Masked public let email: String?
+    public let fullName: String
 
     public init(
         contractId: String,
@@ -34,18 +33,24 @@ public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable
 
 @Loggable
 public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
-    var fullName: String
-    @Masked var personalNumber: String? = nil
-    @Masked var birthDate: String? = nil
+    public var fullName: String
+    @Masked public var personalNumber: String? = nil
+    @Masked public var birthDate: String? = nil
+
+    public init(fullName: String, personalNumber: String? = nil, birthDate: String? = nil) {
+        self.fullName = fullName
+        self.personalNumber = personalNumber
+        self.birthDate = birthDate
+    }
 }
 
 @Loggable
 @MainActor
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
     public let id: String
-    let date: Date
-    let valid: Bool
-    @Masked let url: URL
+    public let date: Date
+    public let valid: Bool
+    @Masked public let url: URL
 
     public init?(id: String, date: Date, valid: Bool, url: URL?) {
         guard let url = url else { return nil }
@@ -55,18 +60,7 @@ public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable
         self.url = url
     }
 
-    var title: String {
+    public var title: String {
         "\(L10n.TravelCertificate.cardTitle) \(date.displayDateDDMMMFormat)"
-    }
-}
-
-extension TravelCertificateModel {
-    @hColorBuilder
-    var textColor: some hColor {
-        if valid {
-            hTextColor.Opaque.primary
-        } else {
-            hSignalColor.Red.element
-        }
     }
 }

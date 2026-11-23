@@ -7,6 +7,8 @@ import hCore
 public class TravelInsuranceService {
     @Inject var service: TravelInsuranceClient
 
+    public init() {}
+
     @Log
     public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
         try await service.getSpecifications()
