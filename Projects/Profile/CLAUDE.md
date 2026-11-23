@@ -1,51 +1,34 @@
 # Profile
 
-The Profile module provides the user profile screen with access to personal info editing, app settings (language, notifications, email preferences), EuroBonus/SAS integration, travel certificates, insurance evidence, claim history, app info, and account deletion.
+The Profile tab: personal info editing, settings (language, theme, notifications, email preferences, analytics
+consent), EuroBonus/SAS, certificates (travel certificates, insurance evidence), claim history, the information
+(app info / legal) screen, dev settings and account deletion.
 
 ## Architecture
-- **Pattern**: `ProfileStore` is an `@PersistableStore`-backed `AppStore` exposing `partnerData`, `memberDetails`, `pushNotificationStatus`, `hasTravelCertificates`, `canCreateInsuranceEvidence`, etc. as observable properties. Views observe via `@AppObservedObject`. Async API methods (`fetchProfileState`, `fetchMemberDetails`, `updateLanguage`) live on the store directly.
-- **ViewModels** layered on top: `DeleteAccountViewModel`, `MyInfoViewModel`, `MemberSubscriptionPreferenceViewModel` (all `@MainActor @Observable class`). They access the store via `@AppState` and use `ProfileService` directly for writes that don't belong in the store.
-- **Key services**:
-  - `ProfileClient` -- protocol defining all profile operations (get state, get member details, update language, delete request, update email/phone, update eurobonus, update subscription preference, device identifier).
-  - `ProfileService` -- thin service wrapper that uses `@Inject var client: ProfileClient` and adds logging.
-  - `ProfileClientDemo` -- demo implementation.
-- **Data flow**: `ProfileView.task` calls `await store.fetchProfileState()`. The store calls `profileService.getProfileState()` and assigns the results onto its observable properties; the view re-renders automatically. `MyInfoViewModel.save()` calls `ProfileService` directly and then triggers `HomeStore.fetchMemberState()` to keep both stores in sync.
+- `ProfileStore` (`@PersistableStore` `AppStore`) holds `memberDetails`, `partnerData`, `pushNotificationStatus`,
+  `hasTravelCertificates`, `canCreateInsuranceEvidence`, … Views observe it with `@AppObservedObject`. Reads
+  (`fetchProfileState`, `fetchMemberDetails`, `updateLanguage`) live on the store and use `ProfileClient` directly.
+- Writes go through ViewModels (`MyInfoViewModel`, `MemberSubscriptionPreferenceViewModel`, the EuroBonus and
+  delete-request screens) using `ProfileService`, a `@Log` wrapper around `ProfileClient`, and then update the store
+  via its `set…` methods.
 
-## Key Files
-- **Entry point**: `Views/Screens/Profile/Profile.swift` -- `ProfileView`
-- **Store**: `Store/ProfileStore.swift` -- `ProfileStore` (`AppStore`), `PartnerData`, `PartnerDataSas`
-- **Navigation**: `Navigation/ProfileNavigation.swift` -- `ProfileNavigationViewModel`, `ProfileNavigation` view, `ProfileRouterType`, `ProfileRouterTypeWithHiddenBottomBar`, `ProfileRedirectType`, `ProfileDetentType`
-- **Service protocol**: `Service/Protocols/ProfileClient.swift` -- `ProfileClient`, `ProfileError`, `ChangeEuroBonusError`
-- **Service implementation (local)**: `Service/OctopusImplementation/ProfileService.swift` -- `ProfileService`
-- **Demo implementation**: `Service/DemoImplementation/ProfileClientDemo.swift`
-- **Models**: `Models/MemberDetails.swift`
-- **My Info**: `Views/Screens/MyInfo/MyInfoView.swift` -- `MyInfoView`, `MyInfoViewModel`
-- **My Info errors**: `Views/Screens/MyInfo/MyInfoSaveError.swift`
-- **Settings**: `Views/Screens/SettingsScreen/SettingsView.swift`, `MemberSubscriptionPreferenceView.swift`
-- **Delete account**: `Views/Screens/DeleteAccount/DeleteAccountView.swift`, `DeleteAccountViewModel.swift`, `DeleteRequestLoadingView.swift`
-- **EuroBonus**: `Views/Screens/EuroBonus/EuroBonusView.swift`, `ChangeEuroBonusView.swift`, `EuroBonusNavigation.swift`
-- **Certificates**: `Views/Screens/Certificates/CertificatesScreen.swift`
-- **Email preferences**: `Views/Screens/EmailPreferences/EmailPreferencesConfirmView.swift`
-- **App info**: `Views/Screens/AppInfo/AppInfoView.swift`
-- **Components**: `Views/Components/NotificationsCardView.swift`, `ProfileRow.swift`, `ProfileRowType.swift`
+## Entry points
+- `ProfileNavigation(profileNavigationViewModel:redirect:)` is the Profile tab root, created by App. Delete account,
+  delete-request loading and the language picker are built by App through the
+  `redirect: (ProfileRedirectType) -> Content` builder; the rest is presented from `ProfileNavigationViewModel`.
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, Home, Claims, ContractsCore, TravelCertificate, Market, Authentication, InsuranceEvidence (via Project.swift). Also uses Apollo and AppStateContainer at the file level.
-- **Depended on by**: App (direct dependency). No other feature modules import Profile.
-
-## Navigation
-- **Routes defined here**:
-  - `ProfileRouterType`: `.myInfo`, `.appInfo`, `.settings`, `.euroBonus`, `.certificates`, `.claimHistory`, `.travelCertificates`
-  - `ProfileRouterTypeWithHiddenBottomBar`: `.claimsCard(claim:)` -- pushes claim detail with bottom bar hidden
-  - `ProfileRedirectType`: `.deleteAccount`, `.deleteRequestLoading`, `.pickLanguage`, `.travelCertificate` -- for modals/detents managed by the parent
-  - `ProfileDetentType`: `.profile`, `.languagePicker`, `.emailPreferences` -- for tracking
-- **Entry from other modules**: Profile is a root tab in the main tab bar (configured in App). `ProfileNavigation` is the top-level navigation container.
-- **Navigation style**: Uses legacy `RouterHost + Router` pattern. `ProfileNavigationViewModel` owns `profileRouter` and manages modal/detent presentations for delete account, language picker, insurance evidence, and delete request flows.
+- hCore, hCoreUI, Home, Claims, ContractsCore, TravelCertificate, Market, AuthenticationCore, AuthenticationUI,
+  InsuranceEvidence
+- Depended on by: App, Onboarding
 
 ## Gotchas
-- **Wrongly-placed OctopusImplementation**: The `Service/OctopusImplementation/ProfileService.swift` file contains a local `ProfileService` class that wraps `ProfileClient` with logging. Per project conventions, Octopus implementations should live in `Projects/App/Sources/Service/OctopusClientsImplementation/`, not inside the feature module. This `ProfileService` is actually a service-layer wrapper (not a true Octopus implementation), making the directory name misleading.
-- `MyInfoViewModel` uses `ProfileService` directly (not through the store) for the update operation, then updates `ProfileStore` and triggers `HomeStore.fetchMemberState()` to sync state. This creates a split write path.
-- `ProfileStore.init()` launches a `Task` to check push notification settings and assigns the result to a observable property -- a side effect in the store initializer that views subscribing to `pushNotificationStatus` will pick up automatically.
-- `DeleteAccountViewModel` reads from `ClaimsStore` and `ContractStore` (from other modules) to determine if the user has active claims/contracts before allowing deletion.
-- `SettingsView` and `DeleteRequestLoadingView` use hCore's `DeleteAccountStatus` directly for persisting delete request state, bypassing the store pattern.
-- Profile does not link hGraphQL. Anything it needs from the network layer goes through `ProfileClient` (e.g. `getDeviceIdentifier()` for the app info screen), implemented in App's `ProfileClientOctopus`.
+- `ProfileService` sits in `Service/OctopusImplementation/` but is only a logging wrapper; the real GraphQL client is
+  App's `ProfileClientOctopus`. Profile doesn't link hGraphQL, so network needs go through `ProfileClient` (e.g.
+  `getDeviceIdentifier()` for `InformationScreen`).
+- `MyInfoViewModel.save()` refreshes `HomeStore.fetchMemberState()` after saving, to keep Home's member data in sync.
+- `ProfileStore.init()` reads the push notification authorization in a `Task`, skipped outside an `.app` bundle
+  (hostless unit tests).
+- `DeleteAccountViewModel` takes `ClaimsStore` and `ContractStore` to check for active claims/contracts before
+  allowing deletion. Delete-request state is persisted with hCore's `DeleteAccountStatus`, not the store.
+- Dev Settings can reset `OnboardingPresentationState.hasSeenOnboarding`.

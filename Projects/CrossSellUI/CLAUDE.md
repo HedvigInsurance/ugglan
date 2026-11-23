@@ -1,17 +1,18 @@
 # CrossSellUI
 
-SwiftUI views for cross-sell offers and addon banners, built on `CrossSellCore`. Presents offers in several formats (modal, centered, detent, banner, rows).
+SwiftUI views for cross-sell offers and addon banners, built on CrossSellCore. Offers can be shown as a modal,
+centered, a detent, a banner or rows.
 
-## Key Files
-- `Sources/View/CrossSellingView.swift` — Main view; observes `CrossSellStore` via `@AppObservedObject`
-- `Sources/View/CrossSellingModal.swift`, `CrossSellingCentered.swift`, `CrossSellingDetent.swift` — Presentation formats
-- `Sources/View/CrossSellingItem.swift` — Single offer row
-- `Sources/View/Components/` — banner, button, pillow, stack, discount progress, addons section, and `CrossSellRow` (shared pillow-row shell, also used by Home's addon section)
-- `Sources/Tracking/CrossSellShownModifier.swift` — `View.onCrossSellShown(perform:)`, fires once half the view has been visible for 0.5s; dedupe with `CrossSellShownTracker` from CrossSellCore
+## Architecture
+- `CrossSellingView` observes `CrossSellStore` through `@AppObservedObject`. The presentation formats
+  (`CrossSellingModal`, `CrossSellingCentered`, `CrossSellingDetent`) wrap it.
+- `CrossSellRow` is the shared pillow-row shell. Home's addon section uses it too.
+- `View.onCrossSellShown(perform:)` fires once at least half the view has been visible for 0.5 seconds. Dedupe with
+  `CrossSellShownTracker` from CrossSellCore.
 
 ## Dependencies
 - hCore, hCoreUI, AddonsCore, CrossSellCore
 - Depended on by: App, Chat, ContractsUI, Home, Onboarding
 
 ## Gotchas
-- No test target: all cross-sell logic is in CrossSellCore and tested there.
+- There's no test target. All cross-sell logic lives in CrossSellCore and is tested there.

@@ -1,48 +1,37 @@
 # Chat
 
-The Chat module provides the customer support messaging interface. It includes an inbox view listing all conversations, individual chat screens with real-time message polling, file/image upload and sharing, message retry on failure, and push notification prompting.
+Customer support messaging: the inbox (list of conversations), chat screens with polling for new messages,
+file/image upload, retry of failed messages, a push-notification permission prompt, and a cross-sell banner.
 
 ## Architecture
-- **Mixed pattern**: The primary chat UI uses the ViewModel pattern (`ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel` -- all `@MainActor @Observable class`). There is also a small `ChatStore: AppStore` (`AppStateContainer`) used specifically for persisting failed messages per conversation and tracking the push-notification-permission flag.
-- **Key services**:
-  - `ChatServiceProtocol` -- abstraction for fetching/sending messages within a conversation. Has two concrete implementations: `ConversationService` (existing conversation by ID) and `NewConversationService` (creates a conversation on first message send).
-  - `ConversationClient` -- protocol for the raw API operations (get messages with pagination tokens, send message).
-  - `ConversationsClient` -- protocol for listing and creating conversations.
-  - `ChatFileUploaderClient` -- protocol for file upload.
-  - `ConversationsDemoClient` -- demo implementation that satisfies both `ConversationsClient` and `ConversationClient`.
-- **Data flow**: `ChatScreenViewModel` owns a `ChatMessageViewModel` (which owns a `ChatConversationViewModel`) and a `ChatInputViewModel`. On appear, a 5-second polling timer fetches new messages via `ChatServiceProtocol.getNewMessages()`. Messages are stored in `ChatMessageViewModel.messages` as observable state. Pagination for older messages uses token-based cursors (`olderToken`/`newerToken`).
+- ViewModels (`@MainActor @Observable`): `ChatScreenViewModel` owns a `ChatInputViewModel` and a
+  `ChatMessageViewModel`, which in turn owns a `ChatConversationViewModel` and a `ChatCrossSellViewModel`.
+  `InboxViewModel` drives the inbox.
+- `ChatStore` (`@PersistableStore` `AppStore`) is used only for failed messages per conversation (persisted) and
+  `askedForPushNotificationsPermission` (`@Transient`). Everything else uses ViewModels.
+- `ChatServiceProtocol` has two implementations: `ConversationService` (existing conversation by ID) and
+  `NewConversationService`. They sit on the `ConversationClient` (messages), `ConversationsClient` (list/create
+  conversations) and `ChatFileUploaderClient` protocols. `ConversationsDemoClient` implements both conversation
+  protocols.
+- `ConversationService` pages messages with token cursors (`olderToken` / `newerToken`).
 
-## Key Files
-- **Entry point / navigation**: `Navigation/ChatNavigation.swift` -- `ChatNavigation` view (wraps `RouterHost`), `ChatNavigationViewModel`, `ChatType` routing
-- **Chat screen**: `Views/ChatScreen.swift` -- `ChatScreen` view with flipped scroll, `ChatScreenModifier`, `ChatScrollViewDelegate`
-- **ViewModels**: `Views/ChatScreenViewModel.swift` -- `ChatScreenViewModel`, `ChatMessageViewModel`, `ChatConversationViewModel`
-- **Inbox**: `Views/InboxView.swift` -- `InboxView`, `InboxViewModel` (uses `@Inject var service: ConversationsClient`)
-- **Legacy store**: `ChatStore.swift` -- `ChatStore`, `ChatState`, `ChatAction` (failed message persistence, push notification flag)
-- **Service layer**: `Service/ChatService.swift` -- `ChatServiceProtocol`, `ConversationService`, `NewConversationService`
-- **Service protocols**: `Service/Protocols/ConversationClient.swift` -- `ConversationClient`, `ConversationsClient`, `ConversationMessagesData`
-- **File upload protocol**: `Service/Protocols/ChatUploadFileClient.swift` -- `ChatFileUploaderClient`
-- **Demo implementation**: `Service/DemoImplementation/ConversationsClientDemo.swift`
-- **Message views**: `Views/MessageView.swift`, `Views/MessageViews/ActionView.swift`, `Views/MessageViews/LinkView.swift`
-- **Input**: `Views/ChatInputView.swift`, `Views/ChatFileView.swift`, `Views/ImagesView.swift`
-- **Models**: `Models/Chat.swift` (ChatData), `Models/Message.swift`, `Models/Conversation.swift`
-- **Helpers**: `Helpers/Message+Timestamp.swift`, `Helpers/Message+UI.swift`, `Helpers/MessageType+Helpers.swift`, `Helpers/View+Flipped.swift`, `Helpers/WebMetaDataProvider.swift`
+## Entry points
+- Open chat from anywhere by posting `NotificationCenter.default.post(name: .openChat, object: ChatType)`.
+  `ChatType` is `.conversationId(id:)`, `.conversationFromClaimWithId(id:)`, `.newConversation` or `.inbox`.
+  Home's `HomeNavigationViewModel` observes this and App's `LoggedInNavigation` presents `ChatNavigation`.
+- `InboxView` is also pushed inside Home's Help Center stack.
+- `ChatRedirectViewType` (`.notification`, `.claimDetailFor(claimId:)`) handles redirects out of a conversation.
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, ContractsCore (via Project.swift). Also uses AppStateContainer at the file level.
-- **Depended on by**: Home (imports Chat for InboxView and ChatType), Claims (imports Chat), App
-
-## Navigation
-- **Routes defined here**:
-  - `ChatNavigationViewModel` manages the chat entry by `ChatType`: `.conversationId(id:)`, `.conversationFromClaimWithId(id:)`, `.newConversation`, `.inbox`
-  - `ChatRedirectViewType.notification` -- push notification permission prompt
-  - `ChatRedirectViewType.claimDetailFor(claimId:)` -- navigates to claim detail from within a chat conversation
-- **Entry from other modules**: Chat is opened via `NotificationCenter.default.post(name: .openChat, object: ChatType)` from anywhere in the app. `HomeNavigationViewModel` listens for this notification and presents `ChatNavigation` as a detent/modal. The inbox is also pushed within Home and Help Center navigation stacks.
-- **Navigation style**: Uses legacy `RouterHost + Router` pattern. `ChatNavigationViewModel` owns a `Router` and presents file previews, push notification prompts, and automation info views via `.detent()` modifiers.
+- hCore, hCoreUI, AddonsCore, ContractsCore, CrossSellCore, CrossSellUI
+- Depended on by: App, Claims, Home
 
 ## Gotchas
-- The chat scroll is "flipped upside down" (`.flippedUpsideDown()`) so new messages appear at the bottom -- this is a common iOS chat pattern but can be confusing when reading the layout code.
-- Message polling runs on a 5-second timer. There is no WebSocket or push-based real-time messaging.
-- `NewConversationService` lazily creates a conversation on the server when the user sends the first message, then delegates to a `ConversationService` for subsequent operations.
-- `ChatScrollViewDelegate` accesses private UIKit APIs (via `_sheetInteraction` KVC) to disable sheet dismissal while scrolling -- this is fragile and could break on iOS updates.
-- The `ChatStore` is only used for two concerns: tracking failed messages per conversation (persisted) and whether push notification permission has been requested (transient). Everything else uses the ViewModel pattern.
+- The message list is flipped (`.flippedUpsideDown()`) so new messages appear at the bottom. Keep this in mind when
+  reading layout code.
+- New messages come from a 5-second polling timer. There is no WebSocket or push-based delivery.
+- `NewConversationService` creates the conversation on the server when the first message is sent, then hands off
+  to a `ConversationService`.
+- `ChatScrollViewDelegate` reads a private `UISheetPresentationController` property through KVC (`_sheetInteraction`)
+  to block sheet dismissal while scrolling. This is fragile across iOS updates.
 - `AskForRating` is triggered 2 seconds after the chat screen opens.

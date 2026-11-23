@@ -1,23 +1,14 @@
 # CampaignCore
 
-Data and domain layer for discounts/referrals: models, service protocol, and the discounts root ViewModel. UI-free; depends only on `hCore`.
-
-## Key Files
-- `Sources/Models/PaymentDiscountsData.swift` — `PaymentDiscountsData`, `DiscountsDataForInsurance`, `Discount`, `Referral`, `ReferralsData`, `DiscountType`, `DiscountStatus`.
-- `Sources/Service/CampaignClient.swift` — `hCampaignClient` protocol + `CampaignError`.
-- `Sources/Service/hCampaignService.swift` — Thin `hCampaignService` wrapper with `@Inject` of `hCampaignClient`.
-- `Sources/Service/DemoImplementation/CampaignClientDemo.swift` — `hCampaignClientDemo` static demo data.
-- `Sources/ViewModels/PaymentsDiscountsRootViewModel.swift` — `@MainActor @Observable` class driving the discounts root screen (loads via `hCampaignService`, exposes `ProcessingState` from `hCore`).
+UI-free layer for discounts and referrals: models (`PaymentDiscountsData`, `Discount`, `Referral`, …), the
+`hCampaignClient` protocol, the `hCampaignService` wrapper, the demo client, and `PaymentsDiscountsRootViewModel`,
+which drives the discounts screen.
 
 ## Dependencies
-- `hCore`
-- Octopus impl lives in `Projects/App/Sources/Service/OctopusClientsImplementation/CampaignsClientOctopus.swift`.
-
-## Consumers
-- `CampaignUI` (views + navigation built on top)
-- `App` (DI registration, Octopus impl)
-- `Payment` (uses `Discount` in `PaymentData`)
+- hCore. Octopus impl: `hCampaignsClientOctopus` in App.
+- Depended on by: CampaignUI, App, Payment (`Discount` in `PaymentData`)
 
 ## Gotchas
-- `Discount.id` is `UUID()` at init time, so two instances with the same `code` are not equal by `id`.
+- `Discount.id` is a fresh `UUID().uuidString` on every init and `==` compares only `id`, so two discounts with the
+  same code are never equal.
 - `Discount.init(referral:)` is `@MainActor` because it formats a monetary amount.

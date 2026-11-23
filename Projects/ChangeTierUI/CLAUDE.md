@@ -1,33 +1,28 @@
 # ChangeTierUI
 
-SwiftUI flow built on `ChangeTierCore`. Handles insurance plan tier upgrades and downgrades. Users can compare coverage tiers, select deductible levels, preview price changes, and commit tier changes.
+SwiftUI flow for upgrading or downgrading an insurance tier, built on ChangeTierCore: compare tiers, pick a
+deductible, preview the new price and commit the change.
 
 ## Architecture
-- Pattern: ViewModel (`@MainActor @Observable class`). `ChangeTierService` uses `@Inject var client: ChangeTierClient`.
-- Key services: `ChangeTierClient` (protocol), `ChangeTierService` (thin wrapper with `@Log` macro), `ChangeTierQuoteDataProvider` (protocol for external cost calculation, e.g. from MoveFlowUI)
-- Data flow: `ChangeTierViewModel` fetches tier data via `ChangeTierService`, maintains selected tier/quote/addon state, and calculates totals. `ChangeTierNavigationViewModel` manages navigation state and detent presentations.
+- `ChangeTierNavigationViewModel` owns the router and detent state; `ChangeTierViewModel` fetches tiers through
+  `ChangeTierService`, tracks the selected tier/quote/addons, and calculates totals.
+- `ChangeTierInput` (UI-only, defined here) is either `.contractWithSource` (fetch an intent for a contract) or
+  `.existingIntent` (an intent that already exists, plus an `onSelect` callback). MoveFlowUI and
+  TerminateContractsUI use `.existingIntent`.
+- `ChangeTierQuoteDataProvider`: when one is passed in (MoveFlowUI does this), the ViewModel gets the total price and
+  display items from the provider instead of from the quote.
 
-## Key Files
-- Entry point: `ChangeTierNavigation` in `Sources/Navigation/ChangeTierNavigation.swift`
-- ViewModel: `ChangeTierViewModel` in `Sources/Views/ChangeTierViewModel.swift`
-- Navigation VM: `ChangeTierNavigationViewModel` in `Sources/Navigation/ChangeTierNavigation.swift`
-- Data provider protocol: `ChangeTierQuoteDataProvider` in `Sources/Service/Protocols/ChangeTierQuoteDataProvider.swift`
-- Screens: `ChangeTierLandingScreen`, `ChangeTierSummaryScreen`, `ChangeTierProcessingScreen`, `CompareTierScreen`, `EditScreen`, `SelectInsuranceScreen` in `Sources/Views/`
-- UI-only input: `ChangeTierInput` (holds an `onSelect` closure) in `Sources/Navigation/ChangeTierNavigation.swift`
-- Service, client protocol, demo client and models (`ChangeTierIntentModel`, `Tier`, `Quote`, `ChangeTierInputData`,
-  `ChangeTierContractsInput`, …): see ChangeTierCore
+## Entry points
+- `ChangeTierNavigation(input: ChangeTierInput, dataProvider:router:)`: with a `router`, the flow is embedded in the
+  caller's stack; without one, it creates its own `hNavigationStack`.
+- `ChangeTierNavigation(input: ChangeTierContractsInput)`: for several contracts, shows `SelectInsuranceScreen`
+  first. With a single contract it skips straight to the landing screen.
+- Presented from App (`LoggedInNavigation`), Home quick actions, ContractsUI, MoveFlowUI and TerminateContractsUI.
 
 ## Dependencies
-- Imports: hCore, hCoreUI, ChangeTierCore, CrossSellCore
-- Depended on by: ContractsUI, TerminateContractsUI, MoveFlowUI, Home, App
-
-## Navigation
-- `ChangeTierNavigation`: Entry point SwiftUI view. Accepts `ChangeTierInput` (single contract) or `ChangeTierContractsInput` (multiple contracts with selection screen). Uses `RouterHost` with `routerDestination` for summary and processing screens.
-- Routes: `ChangeTierRouterActions.summary`, `ChangeTierRouterActionsWithoutBackButton.commitTier`
-- Detent presentations for tier/deductible editing (`EditScreen`), insurable limits info, compare tiers, and PDF preview.
-- Can optionally accept an external `Router` and `ChangeTierQuoteDataProvider` (used by MoveFlowUI to embed tier selection inline).
+- hCore, hCoreUI, ChangeTierCore, CrossSellCore
+- Depended on by: App, ContractsUI, Home, MoveFlowUI, TerminateContractsUI
 
 ## Gotchas
-- `ChangeTierQuoteDataProvider` is an external protocol that MoveFlowUI implements to provide cost calculations. When provided, the VM delegates total cost calculation to the provider instead of using the quote's built-in cost.
-- `ChangeTierNavigation` has two init paths: one for direct use (creates its own `RouterHost`) and one for embedding in another flow (uses the provided router).
-- The `ChangeTierNavigationViewModel.vm` property is force-unwrapped in several places; it is set during init but the multi-contract path defers it.
+- `ChangeTierNavigationViewModel.vm` is an implicitly unwrapped optional. In the multi-contract path it is only set
+  once a contract is selected, so it must be assigned before `ChangeTierLandingScreen` is shown.

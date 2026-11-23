@@ -1,17 +1,15 @@
 # NotificationService
 
-App extension that intercepts and modifies push notifications before display. Manages a badge count via shared `UserDefaults` (app group suite).
-
-## Key Files
-- `NotificationService.swift` — `UNNotificationServiceExtension` subclass; modifies notification content and tracks badge count
-- `Config/Dev/NotificationService.entitlements` — Development entitlements
-- `Config/Prod/NotificationService.entitlements` — Production entitlements
-- `Info.plist` — Extension configuration
+`UNNotificationServiceExtension` that sets the badge number on incoming push notifications before display. The badge
+count is kept in shared `UserDefaults` (app group suite, key `count`).
 
 ## Dependencies
-- UserNotifications (system framework only; no internal module dependencies)
+- UserNotifications only; no internal module dependencies.
 
 ## Gotchas
-- This is an **app extension**, not a standard framework module; it has no `Sources/` directory or `Project.swift`
-- Uses `UserDefaults(suiteName:)` with a computed app group name derived from the bundle identifier
-- Badge count is persisted and incremented per notification; there is no mechanism here to reset it
+- This is an **app extension** without its own `Project.swift`: the `NotificationService` (dev) and
+  `NotificationServiceProd` targets are declared in `Projects/App/Project.swift`, with entitlements in
+  `Config/Dev` and `Config/Prod`.
+- The app group name is derived from the bundle identifier (`group.` + bundle id without the last component). The app
+  resets the count in `MainNavigation` (`resetBadge`, using `group.<app bundle id>`), so both sides must keep
+  resolving to the same suite.

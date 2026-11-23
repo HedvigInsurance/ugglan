@@ -1,26 +1,16 @@
 # TerminateContractsCore
 
-UI-free data layer for the contract cancellation flow: termination models, the client protocol, the demo client and
-the service wrapper. No SwiftUI or hCoreUI.
-
-## Key Files
-- `Sources/Models/TerminationConfig.swift` — `TerminationConfirmConfig` (per-contract flow input, built by ContractsCore's
-  `asTerminationConfirmConfig`)
-- `Sources/Models/TerminationFlowSurveyStepModel.swift` — `TerminationSurveyData`, `TerminationSurveyOption`,
-  `TerminationSuggestion(Type)`, `TerminationRedirection`, `TerminationAction`, `TerminationContractResult`,
-  `SurveyScreenSubtitleType`
-- `Sources/Models/TerminationFlowDateNextStepModel.swift` — `ExtraCoverageItem`, `TerminationNotification`
-- `Sources/Models/DeflectScreenContent.swift` — `DeflectScreenContent` and `DeflectScreenContent.from(suggestion:)`,
-  which maps auto-cancel/auto-decom suggestions to deflect screen content
-- `Sources/Service/Protocols/TerminateContractsClient.swift` — client protocol
-- `Sources/Service/TerminateContractsService.swift` — logging wrapper around `TerminateContractsClient` (`@Inject`);
-  terminate/delete calls enforce a 3 s minimum duration
-- `Sources/Service/DemoImplementation/TerminateContractsClientDemo.swift` — demo client and `TerminationRedirection.mock`
+UI-free data layer for the contract cancellation flow: termination models (`TerminationConfirmConfig`, survey,
+suggestion and redirection models, `DeflectScreenContent`), the `TerminateContractsClient` protocol, the demo client and
+the `TerminateContractsService` logging wrapper. No SwiftUI or hCoreUI.
 
 ## Dependencies
-- hCore (+ AutomaticLog)
+- hCore
 - Depended on by: TerminateContractsUI, ContractsCore, ContractsUI, Home, App (`TerminateContractsClientOctopus`, DI)
 
-## Tests
-- `DeflectScreenContentTests`, `TerminationSuggestionTests`, `TerminateContractsTests` (service, with
-  `MockTerminateContractsClient` in `Tests/MockData.swift`)
+## Gotchas
+- `TerminationConfirmConfig` is built from a contract by ContractsCore's `Contract.asTerminationConfirmConfig`.
+- `DeflectScreenContent.from(suggestion:)` maps auto-cancel / auto-decom suggestions to deflect screen content; it's
+  covered by `DeflectScreenContentTests`.
+- `TerminateContractsService.terminateContract` / `deleteContract` enforce a 3 s minimum duration
+  (`Task.withMinimumDuration`) so the processing screen doesn't flash.

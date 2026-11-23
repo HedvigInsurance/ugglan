@@ -1,20 +1,16 @@
 # InsuranceEvidence
 
-Allows users to request insurance evidence/certificates by entering their email. Handles the input form, submission, and processing states.
+Lets members request an insurance evidence (certificate) by email: an email input form, then a processing screen
+that submits the request.
 
-## Key Files
-- `Sources/Service/Client/InsuranceEvidenceClient.swift` — `InsuranceEvidenceClient` protocol with `getInitialData`, `canCreateInsuranceEvidence`, `createInsuranceEvidence`
-- `Sources/Service/InsuranceEvidenceService.swift` — Service wrapper using `@Inject` to resolve the client
-- `Sources/Views/InsuranceEvidenceNavigation.swift` — Navigation root; `InsuranceEvidenceNavigationViewModel` owns the router and service
-- `Sources/Views/InsuranceEvidenceInputScreen.swift` — Email input form with `InsuranceEvidenceInputScreenViewModel`
-- `Sources/Views/InsuranceEvidenceProcessingScreen.swift` — Processing/loading screen shown after submission
-- `Sources/Models/InsuranceEvidenceInput.swift` — Input model (email)
-- `Sources/Models/InsuranceEvidenceInitialData.swift` — Data model for pre-populated form data
+## Architecture
+- `InsuranceEvidenceNavigation` (public) is the only entry point. Its `InsuranceEvidenceNavigationViewModel` owns the
+  router, the `InsuranceEvidenceService` and the input screen's ViewModel.
+- `InsuranceEvidenceService` wraps the `InsuranceEvidenceClient` (`getInitialData`, `canCreateInsuranceEvidence`,
+  `createInsuranceEvidence`). The client protocol and demo live in `Service/Client/`, not the usual
+  `Service/Protocols/` / `Service/DemoImplementation/`.
+- No `AppStore`. Whether the entry point is shown comes from Profile (`ProfileStore.canCreateInsuranceEvidence`).
 
 ## Dependencies
 - hCore, hCoreUI
-
-## Gotchas
-- Uses the ViewModel pattern (`@MainActor @Observable class`) with `@Inject` services; no `AppStore` involvement
-- Navigation is managed by `InsuranceEvidenceNavigationViewModel` which owns a `Router` and coordinates between screens
-- Demo client at `Sources/Service/Client/InsuranceEvidenceClientDemo.swift`
+- Depended on by: Profile, App (`InsuranceEvidenceClientOctopus`, deep-link presentation)
