@@ -25,6 +25,23 @@ scripts/generate.sh         # Regenerate Xcode workspace after module changes �
   no longer exists. When you rename or delete a file, update the docs that mention it.
 
 - **"Ugglan"** scheme for dev builds, **"Hedvig"** for production.
+- Merge conflict in a generated `project.xcproj`, workspace or scheme: don't hand-merge it. Resolve the manifests
+  (`Project.swift`, `Tuist/`), rerun `scripts/generate.sh` and commit its output.
+
+## Verifying Changes
+
+Inside Xcode, use the Xcode tools (`BuildProject`, `RunSomeTests`). From a terminal, use a concrete simulator; generic
+simulator destinations fail to link:
+
+```bash
+DEST='platform=iOS Simulator,name=iPhone 17e,OS=latest'
+xcodebuild build -workspace Ugglan.xcworkspace -scheme Ugglan -destination "$DEST"
+xcodebuild test -workspace Ugglan.xcworkspace -scheme Ugglan-Workspace -destination "$DEST" -only-testing:<Module>Tests
+```
+
+A task isn't done until the `Ugglan` scheme builds and the tests of every module you touched pass. If you couldn't
+run them, say so. Before finishing, review `git diff` for missing `@MainActor`, tests that touch shared globals
+outside their `<Module>DependencySuite`, and edits to generated files (`project.xcproj`, `Sources/Derived/`).
 
 ## Documentation
 
@@ -169,3 +186,5 @@ prototype branches use `"literal"  //L10n.key` until the key exists.
 9. **Do NOT skip `TrackingViewNameProtocol`** on navigation enums
 10. **Do NOT apply `.withDismissButton()` after `.embededInNavigation(...)`** — it must always come before it in the
     modifier chain, so the dismiss button is part of the content inside the navigation stack
+11. **Do NOT silence Swift 6 concurrency errors** with `@unchecked Sendable`, `nonisolated(unsafe)` or
+    `@preconcurrency` — fix the isolation instead. The repo has fewer than 20 of these; keep it that way
