@@ -229,13 +229,18 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
-        if let image = info[.originalImage] as? UIImage {
+        if let image = info[.originalImage] as? UIImage,
+            let data = image.jpegData(
+                compressionQuality: 0.9,
+                metadata: info[.mediaMetadata] as? [String: Any]
+            )
+        {
             let file = File(
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
                 name: "Camera shoot \(Date().displayDateWithTimeStamp).jpeg",
-                source: .data(data: image.jpegData(compressionQuality: 0.9)!)
+                source: .data(data: data)
             )
             sendMessage(.init(type: .file(file: file)))
         }
