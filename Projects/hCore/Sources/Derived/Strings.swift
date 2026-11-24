@@ -233,6 +233,34 @@ public enum L10n {
   }
   /// Fetching insurance amount...
   public static var changeInsuranceAmountProcessing: String { L10n.tr("Localizable", "CHANGE_INSURANCE_AMOUNT_PROCESSING") }
+  /// Current
+  public static var changeMileageCurrentLabel: String { L10n.tr("Localizable", "CHANGE_MILEAGE_CURRENT_LABEL") }
+  /// You have no car insurance where the mileage can be changed
+  public static var changeMileageEmptyState: String { L10n.tr("Localizable", "CHANGE_MILEAGE_EMPTY_STATE") }
+  /// How far do I drive?
+  public static var changeMileageInfoButton: String { L10n.tr("Localizable", "CHANGE_MILEAGE_INFO_BUTTON") }
+  /// Include all driving over a year, by everyone who drives the car. It may help to compare the odometer reading with the one from last year's inspection.
+  public static var changeMileageInfoText: String { L10n.tr("Localizable", "CHANGE_MILEAGE_INFO_TEXT") }
+  /// Mileage per year
+  public static var changeMileageLabel: String { L10n.tr("Localizable", "CHANGE_MILEAGE_LABEL") }
+  /// Fetching mileage options...
+  public static var changeMileageLoadingState: String { L10n.tr("Localizable", "CHANGE_MILEAGE_LOADING_STATE") }
+  /// If the car is driven further than you have chosen, the compensation can be lower in case of damage. You can change the mileage whenever you want.
+  public static var changeMileageNotice: String { L10n.tr("Localizable", "CHANGE_MILEAGE_NOTICE") }
+  /// How far the car is driven per year
+  public static var changeMileageOptionSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_OPTION_SUBTITLE") }
+  /// Change mileage
+  public static var changeMileageOptionTitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_OPTION_TITLE") }
+  /// How far the car is driven per year, by everyone who drives it
+  public static var changeMileagePickerSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_PICKER_SUBTITLE") }
+  /// Choose how far the car is driven per year
+  public static var changeMileageScreenSubtitle: String { L10n.tr("Localizable", "CHANGE_MILEAGE_SCREEN_SUBTITLE") }
+  /// Your mileage will be %@ from %@, and your new price is %@.
+  public static func changeMileageSuccess(_ p1: String, _ p2: String, _ p3: String) -> String {
+    return L10n.tr("Localizable", "CHANGE_MILEAGE_SUCCESS", p1, p2, p3)
+  }
+  /// Your new price will be charged from your next payment.
+  public static var changeMileageSummaryFooter: String { L10n.tr("Localizable", "CHANGE_MILEAGE_SUMMARY_FOOTER") }
   /// Change payout account
   public static var changePayoutMethodButtonLabel: String { L10n.tr("Localizable", "CHANGE_PAYOUT_METHOD_BUTTON_LABEL") }
   /// Change coverage level
@@ -377,8 +405,46 @@ public enum L10n {
   public static var claimChatUseTextInput: String { L10n.tr("Localizable", "CLAIM_CHAT_USE_TEXT_INPUT") }
   /// Write
   public static var claimChatUseTextInputShort: String { L10n.tr("Localizable", "CLAIM_CHAT_USE_TEXT_INPUT_SHORT") }
+  /// We have a few questions about your claim
+  public static var claimFollowupPushBody: String { L10n.tr("Localizable", "CLAIM_FOLLOWUP_PUSH_BODY") }
   /// Your claim was closed as we didn’t hear back from you. Please see conversation for more details.
   public static var claimOutcomeUnresponsiveSupportText: String { L10n.tr("Localizable", "claim_outcome_unresponsive_support_text") }
+  /// Rate your claim
+  public static var claimRatingButton: String { L10n.tr("Localizable", "CLAIM_RATING_BUTTON") }
+  /// Want to tell us more? (optional)
+  public static var claimRatingCommentLabel: String { L10n.tr("Localizable", "CLAIM_RATING_COMMENT_LABEL") }
+  /// What did we do best?
+  public static var claimRatingCommentPlaceholderHappy: String { L10n.tr("Localizable", "CLAIM_RATING_COMMENT_PLACEHOLDER_HAPPY") }
+  /// What could we have done better?
+  public static var claimRatingCommentPlaceholderUnhappy: String { L10n.tr("Localizable", "CLAIM_RATING_COMMENT_PLACEHOLDER_UNHAPPY") }
+  /// How happy are you with how we handled your claim?
+  public static var claimRatingQuestion: String { L10n.tr("Localizable", "CLAIM_RATING_QUESTION") }
+  /// Very happy
+  public static var claimRatingScaleHigh: String { L10n.tr("Localizable", "CLAIM_RATING_SCALE_HIGH") }
+  /// Not happy at all
+  public static var claimRatingScaleLow: String { L10n.tr("Localizable", "CLAIM_RATING_SCALE_LOW") }
+  /// Claims rating
+  public static var claimRatingSectionTitle: String { L10n.tr("Localizable", "CLAIM_RATING_SECTION_TITLE") }
+  /// Send
+  public static var claimRatingSend: String { L10n.tr("Localizable", "CLAIM_RATING_SEND") }
+  /// Skip
+  public static var claimRatingSkip: String { L10n.tr("Localizable", "CLAIM_RATING_SKIP") }
+  /// %1$d of 5
+  public static func claimRatingStarDescription(_ p1: Int) -> String {
+    return L10n.tr("Localizable", "CLAIM_RATING_STAR_DESCRIPTION", p1)
+  }
+  /// Rating submitted
+  public static var claimRatingSubmitted: String { L10n.tr("Localizable", "CLAIM_RATING_SUBMITTED") }
+  /// Would you like to share your experience on Trustpilot too? It helps others choose insurance.
+  public static var claimRatingThanksHappyBody: String { L10n.tr("Localizable", "CLAIM_RATING_THANKS_HAPPY_BODY") }
+  /// Thanks for your rating
+  public static var claimRatingThanksHappyTitle: String { L10n.tr("Localizable", "CLAIM_RATING_THANKS_HAPPY_TITLE") }
+  /// We read every answer and use it to get better. If you have questions about your claim, you can write to us.
+  public static var claimRatingThanksUnhappyBody: String { L10n.tr("Localizable", "CLAIM_RATING_THANKS_UNHAPPY_BODY") }
+  /// Thanks for telling us
+  public static var claimRatingThanksUnhappyTitle: String { L10n.tr("Localizable", "CLAIM_RATING_THANKS_UNHAPPY_TITLE") }
+  /// Write a review on Trustpilot
+  public static var claimRatingTrustpilotButton: String { L10n.tr("Localizable", "CLAIM_RATING_TRUSTPILOT_BUTTON") }
   /// Appeal Instruction (SWE)
   public static var claimStatusAppealInstructionLinkText: String { L10n.tr("Localizable", "claim_status_appeal_instruction_link_text") }
   /// Don’t miss out on important information for your claim
@@ -797,6 +863,8 @@ public enum L10n {
   public static var homeTodoAddCoinsuredTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COINSURED_TITLE") }
   /// Add co-owner
   public static var homeTodoAddCoownerTitle: String { L10n.tr("Localizable", "HOME_TODO_ADD_COOWNER_TITLE") }
+  /// Rate how we handled your claim
+  public static var homeTodoClaimRatingTitle: String { L10n.tr("Localizable", "HOME_TODO_CLAIM_RATING_TITLE") }
   /// Missing pet chip-ID
   public static var homeTodoMissingChipIdTitle: String { L10n.tr("Localizable", "HOME_TODO_MISSING_CHIP_ID_TITLE") }
   /// Missing payment method
