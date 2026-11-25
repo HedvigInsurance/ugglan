@@ -683,6 +683,8 @@ public enum L10n {
   public static var generalNoThanks: String { L10n.tr("Localizable", "GENERAL_NO_THANKS") }
   /// Not selected
   public static var generalNotSelected: String { L10n.tr("Localizable", "GENERAL_NOT_SELECTED") }
+  /// OK
+  public static var generalOkButton: String { L10n.tr("Localizable", "GENERAL_OK_BUTTON") }
   /// Try again
   public static var generalRetry: String { L10n.tr("Localizable", "GENERAL_RETRY") }
   /// Save
@@ -865,6 +867,10 @@ public enum L10n {
   public static var legalPrivacyPolicyApp: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP") }
   /// Privacy notice
   public static var legalPrivacyPolicyAppShort: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP_SHORT") }
+  /// We couldn't verify that it's you. Please try again.
+  public static var localAuthFailed: String { L10n.tr("Localizable", "LOCAL_AUTH_FAILED") }
+  /// Confirm it's you to make changes to your insurance
+  public static var localAuthReason: String { L10n.tr("Localizable", "LOCAL_AUTH_REASON") }
   /// Choose your preferred language
   public static var loginLanguagePreferences: String { L10n.tr("Localizable", "LOGIN_LANGUAGE_PREFERENCES") }
   /// Cancel

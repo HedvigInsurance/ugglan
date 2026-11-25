@@ -71,6 +71,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Hedvig använder kameran för att göra det lätt för dig att skicka in bilder och filmer till oss.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Hedvig använder Face ID för att bekräfta att det är du innan du gör ändringar i din försäkring.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Hedvig använder mikrofonen för att kunna spela in ljud.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
