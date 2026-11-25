@@ -68,6 +68,26 @@ class TerminateContractsClientOctopus: TerminateContractsClient {
         return .success
     }
 
+    func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData {
+        let query = OctopusGraphQL.ContractWithdrawalQuery(contractId: contractId)
+        let data = try await octopus.client.fetch(query: query)
+        let withdrawal = data.currentMember.contractWithdrawal
+        return .init(
+            statusText: withdrawal.statusText,
+            action: try mapAction(withdrawal.action.fragments.terminationFlowActionFragment),
+            email: data.currentMember.email
+        )
+    }
+
+    func withdrawContract(contractId: String) async throws -> TerminationContractResult {
+        let mutation = OctopusGraphQL.WithdrawContractMutation(contractId: contractId)
+        let data = try await octopus.client.mutation(mutation: mutation)!
+        if let errorMessage = data.withdrawContract.userError?.message {
+            return .userError(message: errorMessage)
+        }
+        return .success
+    }
+
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         let input = OctopusGraphQL.TerminationFlowNotificationInput(
             contractId: contractId,
@@ -91,7 +111,7 @@ extension TerminateContractsClientOctopus {
     ) throws -> TerminationSurveyData {
         .init(
             options: survey.options.map { mapOption($0) },
-            action: try mapAction(survey.action)
+            action: try mapAction(survey.action.fragments.terminationFlowActionFragment)
         )
     }
 
@@ -114,7 +134,7 @@ extension TerminateContractsClientOctopus {
     }
 
     private func mapAction(
-        _ action: OctopusGraphQL.TerminationSurveyQuery.Data.TerminationSurvey.Action
+        _ action: OctopusGraphQL.TerminationFlowActionFragment
     ) throws -> TerminationAction {
         if let terminateWithDate = action.asTerminationFlowActionTerminateWithDate {
             return .terminateWithDate(

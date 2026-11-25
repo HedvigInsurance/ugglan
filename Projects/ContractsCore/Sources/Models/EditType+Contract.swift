@@ -23,6 +23,11 @@ extension EditType {
             editTypes.append(.removeAddons)
         }
 
+        // The move button on the contract details is replaced by the withdrawal button, so moving is offered here
+        if contract.supportsWithdrawal, contract.supportsAddressChange, !contract.isTerminated {
+            editTypes.append(.changeAddress)
+        }
+
         if contract.supportsTermination {
             editTypes.append(.cancellation)
         }

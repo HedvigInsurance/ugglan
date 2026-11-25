@@ -54,7 +54,11 @@ struct ContractInformationView: View {
                                 }
                             }
                         }
-                        moveAddressButton(contract: contract)
+                        if contract.supportsWithdrawal {
+                            withdrawalButton(contract: contract)
+                        } else {
+                            moveAddressButton(contract: contract)
+                        }
                     }
                 }
                 .padding(.horizontal, .padding16)
@@ -249,6 +253,17 @@ struct ContractInformationView: View {
                 .frame(height: 0)
                 .id(UUID().uuidString)
         }
+    }
+
+    /// Contracts within the right of withdrawal period get a direct entry to the termination flow, which then asks
+    /// whether the member wants to withdraw or cancel. It takes the place of the move button, which then moves into
+    /// the edit sheet (see `EditType.getTypes(for:)`).
+    private func withdrawalButton(contract: ContractsCore.Contract) -> some View {
+        hButton(
+            .large,
+            .ghost,
+            content: .init(title: L10n.terminationFlowWithdrawalButton)
+        ) { contractsNavigationVm.startTermination(for: contract) }
     }
 
     @ViewBuilder

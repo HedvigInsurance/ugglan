@@ -67,17 +67,7 @@ struct SetTerminationDateLandingScreen: View {
     private var displayDeletionDateField: some View {
         hSection {
             VStack(spacing: 4) {
-                hFloatingField(
-                    value: L10n.terminationFlowToday,
-                    placeholder: L10n.terminationFlowDateFieldText,
-                    onTap: {}
-                )
-                .hFieldTrailingView {
-                    hCoreUIAssets.lock.view
-                        .frame(width: 24, height: 24)
-                }
-                .hBackgroundOption(option: [.locked, .withoutDisabled])
-                .disabled(true)
+                LockedTerminationField(value: L10n.terminationFlowToday)
 
                 InfoCard(
                     text: L10n.terminationFlowDeletionInfoCard,
@@ -112,6 +102,27 @@ struct SetTerminationDateLandingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+    }
+}
+
+/// Termination date the member can't change, e.g. a deletion (today) or a withdrawal (date set by the backend).
+struct LockedTerminationField: View {
+    let value: String
+    var placeholder: String = L10n.terminationFlowDateFieldText
+
+    var body: some View {
+        hFloatingField(
+            value: value,
+            placeholder: placeholder,
+            onTap: {}
+        )
+        .hFieldTrailingView {
+            hCoreUIAssets.lock.view
+                .foregroundColor(hTextColor.Opaque.tertiary)
+                .frame(width: 24, height: 24)
+        }
+        .hBackgroundOption(option: [.locked, .withoutDisabled])
+        .disabled(true)
     }
 }
 

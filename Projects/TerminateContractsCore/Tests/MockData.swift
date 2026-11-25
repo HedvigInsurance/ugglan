@@ -34,6 +34,14 @@ class MockTerminateContractsClient: TerminateContractsClient {
         return deleteResultToReturn
     }
 
+    func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData {
+        .init(statusText: "", action: .terminateWithDate(minDate: "", maxDate: "", extraCoverage: []), email: "")
+    }
+
+    func withdrawContract(contractId: String) async throws -> TerminationContractResult {
+        .success
+    }
+
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         if let error = errorToThrow { throw error }
         return notificationToReturn
