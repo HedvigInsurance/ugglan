@@ -303,7 +303,15 @@ class DeepLinkHandler {
             viewModel?.homeNavigationVm.isPaymentMethodsPresented = true
         case .connectSwish:
             viewModel?.homeNavigationVm.payinSetupProvider = .swish
+        case .yearInReview:
+            handleYearInReview()
         }
+    }
+
+    private func handleYearInReview() {
+        guard Dependencies.featureFlags().showYearInReview else { return }
+        dismissAndSelectTab(0)
+        viewModel?.homeNavigationVm.showYearReview = true
     }
 
     private func handleManualCharge() {
