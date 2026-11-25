@@ -110,6 +110,9 @@ public extension OctopusGraphQL {
           public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
+          /// Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+          /// within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
+          public var supportsWithdrawal: Bool { __data["supportsWithdrawal"] }
           /// The last date this insurance will be active, if there is one.
           public var terminationDate: OctopusGraphQL.Date? { __data["terminationDate"] }
           /// A possible upcoming change of agreement. If there are multiple upcoming changes, this one will return

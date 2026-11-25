@@ -42,6 +42,7 @@ query ContractBundle($options: DisplayItemOptions) {
         exposureDisplayNameShort
 		id
 		supportsTermination
+		supportsWithdrawal
 		basePremium {
 			...MoneyFragment
 		}

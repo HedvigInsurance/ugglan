@@ -768,6 +768,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Du har ångrat försäkringen";
 "TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Ångra försäkringen";
 "TERMINATION_KEEP_INSURANCE_BUTTON" = "Behåll försäkring";
+"TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "Bekräftelsen skickas till";
 "TERMINATION_NOT_SUCCESSFUL_TITLE" = "Uppsägningen misslyckades";
 /* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "Du har redan det bästa skyddet och priset för den här försäkringen";

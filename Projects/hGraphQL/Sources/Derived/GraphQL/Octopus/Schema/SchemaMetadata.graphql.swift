@@ -99,6 +99,7 @@ public extension OctopusGraphQL {
       "ContractCoOwner": OctopusGraphQL.Objects.ContractCoOwner,
       "ContractDiscountDetails": OctopusGraphQL.Objects.ContractDiscountDetails,
       "ContractDiscountItem": OctopusGraphQL.Objects.ContractDiscountItem,
+      "ContractWithdrawal": OctopusGraphQL.Objects.ContractWithdrawal,
       "Conversation": OctopusGraphQL.Objects.Conversation,
       "CrossSell": OctopusGraphQL.Objects.CrossSell,
       "CrossSellV2": OctopusGraphQL.Objects.CrossSellV2,

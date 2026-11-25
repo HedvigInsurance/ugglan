@@ -9,8 +9,8 @@ public extension OctopusGraphQL {
     public static let operationName: String = "TerminationSurvey"
     public static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query TerminationSurvey($contractId: UUID!, $redirectionEnabled: Boolean!) { terminationSurvey( contractId: $contractId redirectionEnabled: $redirectionEnabled ) { __typename options { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment } } } } action { __typename ... on TerminationFlowActionTerminateWithDate { minDate maxDate extraCoverage { __typename ...TerminationExtraCoverageItemFragment } } ... on TerminationFlowActionDeleteInsurance { extraCoverage { __typename ...TerminationExtraCoverageItemFragment } } } } }"#,
-        fragments: [TerminationExtraCoverageItemFragment.self, TerminationSurveyOptionFragment.self, TerminationSurveyOptionRedirectionFragment.self, TerminationSurveyOptionSuggestionFragment.self]
+        #"query TerminationSurvey($contractId: UUID!, $redirectionEnabled: Boolean!) { terminationSurvey( contractId: $contractId redirectionEnabled: $redirectionEnabled ) { __typename options { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment subOptions { __typename ...TerminationSurveyOptionFragment } } } } action { __typename ...TerminationFlowActionFragment } } }"#,
+        fragments: [TerminationExtraCoverageItemFragment.self, TerminationFlowActionFragment.self, TerminationSurveyOptionFragment.self, TerminationSurveyOptionRedirectionFragment.self, TerminationSurveyOptionSuggestionFragment.self]
       ))
 
     public var contractId: UUID
@@ -226,8 +226,7 @@ public extension OctopusGraphQL {
           @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Unions.TerminationFlowAction }
           @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
             .field("__typename", String.self),
-            .inlineFragment(AsTerminationFlowActionTerminateWithDate.self),
-            .inlineFragment(AsTerminationFlowActionDeleteInsurance.self),
+            .fragment(TerminationFlowActionFragment.self),
           ] }
           @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
             TerminationSurveyQuery.Data.TerminationSurvey.Action.self
@@ -236,104 +235,77 @@ public extension OctopusGraphQL {
           public var asTerminationFlowActionTerminateWithDate: AsTerminationFlowActionTerminateWithDate? { _asInlineFragment() }
           public var asTerminationFlowActionDeleteInsurance: AsTerminationFlowActionDeleteInsurance? { _asInlineFragment() }
 
+          public struct Fragments: FragmentContainer {
+            @_spi(Unsafe) public let __data: DataDict
+            @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
+
+            public var terminationFlowActionFragment: TerminationFlowActionFragment { _toFragment() }
+          }
+
           /// TerminationSurvey.Action.AsTerminationFlowActionTerminateWithDate
           ///
           /// Parent Type: `TerminationFlowActionTerminateWithDate`
-          nonisolated public struct AsTerminationFlowActionTerminateWithDate: OctopusGraphQL.InlineFragment {
+          nonisolated public struct AsTerminationFlowActionTerminateWithDate: OctopusGraphQL.InlineFragment, ApolloAPI.CompositeInlineFragment {
             @_spi(Unsafe) public let __data: DataDict
             @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
             public typealias RootEntityType = TerminationSurveyQuery.Data.TerminationSurvey.Action
             @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.TerminationFlowActionTerminateWithDate }
-            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-              .field("minDate", OctopusGraphQL.Date.self),
-              .field("maxDate", OctopusGraphQL.Date.self),
-              .field("extraCoverage", [ExtraCoverage].self),
+            @_spi(Execution) public static var __mergedSources: [any ApolloAPI.SelectionSet.Type] { [
+              TerminationSurveyQuery.Data.TerminationSurvey.Action.self,
+              TerminationFlowActionFragment.AsTerminationFlowActionTerminateWithDate.self
             ] }
             @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
               TerminationSurveyQuery.Data.TerminationSurvey.Action.self,
-              TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionTerminateWithDate.self
+              TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionTerminateWithDate.self,
+              TerminationFlowActionFragment.self,
+              TerminationFlowActionFragment.AsTerminationFlowActionTerminateWithDate.self
             ] }
 
             public var minDate: OctopusGraphQL.Date { __data["minDate"] }
             public var maxDate: OctopusGraphQL.Date { __data["maxDate"] }
             public var extraCoverage: [ExtraCoverage] { __data["extraCoverage"] }
 
-            /// TerminationSurvey.Action.AsTerminationFlowActionTerminateWithDate.ExtraCoverage
-            ///
-            /// Parent Type: `TerminationFlowExtraCoverageItem`
-            nonisolated public struct ExtraCoverage: OctopusGraphQL.SelectionSet {
+            public struct Fragments: FragmentContainer {
               @_spi(Unsafe) public let __data: DataDict
               @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
-              @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.TerminationFlowExtraCoverageItem }
-              @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-                .field("__typename", String.self),
-                .fragment(TerminationExtraCoverageItemFragment.self),
-              ] }
-              @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-                TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionTerminateWithDate.ExtraCoverage.self,
-                TerminationExtraCoverageItemFragment.self
-              ] }
-
-              public var displayName: String { __data["displayName"] }
-              public var displayValue: String? { __data["displayValue"] }
-
-              public struct Fragments: FragmentContainer {
-                @_spi(Unsafe) public let __data: DataDict
-                @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
-
-                public var terminationExtraCoverageItemFragment: TerminationExtraCoverageItemFragment { _toFragment() }
-              }
+              public var terminationFlowActionFragment: TerminationFlowActionFragment { _toFragment() }
             }
+
+            public typealias ExtraCoverage = TerminationFlowActionFragment.AsTerminationFlowActionTerminateWithDate.ExtraCoverage
           }
 
           /// TerminationSurvey.Action.AsTerminationFlowActionDeleteInsurance
           ///
           /// Parent Type: `TerminationFlowActionDeleteInsurance`
-          nonisolated public struct AsTerminationFlowActionDeleteInsurance: OctopusGraphQL.InlineFragment {
+          nonisolated public struct AsTerminationFlowActionDeleteInsurance: OctopusGraphQL.InlineFragment, ApolloAPI.CompositeInlineFragment {
             @_spi(Unsafe) public let __data: DataDict
             @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
             public typealias RootEntityType = TerminationSurveyQuery.Data.TerminationSurvey.Action
             @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.TerminationFlowActionDeleteInsurance }
-            @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-              .field("extraCoverage", [ExtraCoverage].self),
+            @_spi(Execution) public static var __mergedSources: [any ApolloAPI.SelectionSet.Type] { [
+              TerminationSurveyQuery.Data.TerminationSurvey.Action.self,
+              TerminationFlowActionFragment.AsTerminationFlowActionDeleteInsurance.self
             ] }
             @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
               TerminationSurveyQuery.Data.TerminationSurvey.Action.self,
-              TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionDeleteInsurance.self
+              TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionDeleteInsurance.self,
+              TerminationFlowActionFragment.self,
+              TerminationFlowActionFragment.AsTerminationFlowActionDeleteInsurance.self
             ] }
 
             public var extraCoverage: [ExtraCoverage] { __data["extraCoverage"] }
 
-            /// TerminationSurvey.Action.AsTerminationFlowActionDeleteInsurance.ExtraCoverage
-            ///
-            /// Parent Type: `TerminationFlowExtraCoverageItem`
-            nonisolated public struct ExtraCoverage: OctopusGraphQL.SelectionSet {
+            public struct Fragments: FragmentContainer {
               @_spi(Unsafe) public let __data: DataDict
               @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
 
-              @_spi(Execution) public static var __parentType: any ApolloAPI.ParentType { OctopusGraphQL.Objects.TerminationFlowExtraCoverageItem }
-              @_spi(Execution) public static var __selections: [ApolloAPI.Selection] { [
-                .field("__typename", String.self),
-                .fragment(TerminationExtraCoverageItemFragment.self),
-              ] }
-              @_spi(Execution) public static var __fulfilledFragments: [any ApolloAPI.SelectionSet.Type] { [
-                TerminationSurveyQuery.Data.TerminationSurvey.Action.AsTerminationFlowActionDeleteInsurance.ExtraCoverage.self,
-                TerminationExtraCoverageItemFragment.self
-              ] }
-
-              public var displayName: String { __data["displayName"] }
-              public var displayValue: String? { __data["displayValue"] }
-
-              public struct Fragments: FragmentContainer {
-                @_spi(Unsafe) public let __data: DataDict
-                @_spi(Unsafe) public init(_dataDict: DataDict) { __data = _dataDict }
-
-                public var terminationExtraCoverageItemFragment: TerminationExtraCoverageItemFragment { _toFragment() }
-              }
+              public var terminationFlowActionFragment: TerminationFlowActionFragment { _toFragment() }
             }
+
+            public typealias ExtraCoverage = TerminationFlowActionFragment.AsTerminationFlowActionDeleteInsurance.ExtraCoverage
           }
         }
       }

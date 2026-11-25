@@ -768,6 +768,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Your insurance is cancelled";
 "TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Withdraw insurance";
 "TERMINATION_KEEP_INSURANCE_BUTTON" = "Keep insurance";
+"TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "The confirmation is sent to";
 "TERMINATION_NOT_SUCCESSFUL_TITLE" = "Cancellation unsuccessful";
 /* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "You already have the best coverage and price for this insurance";
