@@ -1,4 +1,4 @@
-import Chat
+import ChatUI
 import SwiftUI
 import hCore
 import hCoreUI

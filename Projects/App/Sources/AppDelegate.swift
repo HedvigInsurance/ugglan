@@ -2,7 +2,6 @@ import Apollo
 import AppStateContainer
 import AuthenticationCore
 import AutomaticLog
-import Chat
 import Claims
 import Combine
 import CoreDependencies
@@ -13,7 +12,6 @@ import Foundation
 import Payment
 import Profile
 import SwiftUI
-import TravelCertificate
 import UserNotifications
 import hCore
 import hCoreUI

@@ -1,8 +1,0 @@
-import Presentation
-
-
-extension ChatJourney {
-    @JourneyBuilder
-    static func freeTextChat(style: PresentationStyle = .detented(.large)) -> some JourneyPresentation {
-      
-    }

@@ -30,7 +30,7 @@ The Profile module provides the user profile screen with access to personal info
 - **Components**: `Views/Components/NotificationsCardView.swift`, `ProfileRow.swift`, `ProfileRowType.swift`
 
 ## Dependencies
-- **Imports**: hCore, hCoreUI, Home, Claims, ContractsCore, TravelCertificate, Market, Authentication, InsuranceEvidence (via Project.swift). Also uses Apollo and AppStateContainer at the file level.
+- **Imports**: hCore, hCoreUI, Home, Claims, ContractsCore, TravelCertificateUI, Market, Authentication, InsuranceEvidence (via Project.swift). Also uses Apollo and AppStateContainer at the file level.
 - **Depended on by**: App (direct dependency). No other feature modules import Profile.
 
 ## Navigation

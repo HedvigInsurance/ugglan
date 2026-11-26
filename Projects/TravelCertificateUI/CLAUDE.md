@@ -1,0 +1,34 @@
+# TravelCertificateUI
+
+SwiftUI flow built on `TravelCertificateCore`. Generates travel insurance certificates. Users select a contract, set travel dates, specify travelers (including co-insured), and receive a downloadable PDF certificate.
+
+## Architecture
+- Pattern: ViewModel (`@MainActor @Observable class`). `TravelInsuranceService` uses `@Inject var client: TravelInsuranceClient`.
+- Observation: views own a view model with `@State`, take an injected one with `@Bindable` (or plain `let` when no bindings are needed), and read a shared one with `@Environment(T.self)`.
+- Properties that should not trigger a re-render are marked `@ObservationIgnored`.
+- Key services: `TravelInsuranceClient` (protocol), `TravelInsuranceService` (wrapper)
+- Data flow: `TravelCertificateNavigationViewModel` manages overall navigation state and holds child VMs (`StartDateViewModel`, `WhoIsTravelingViewModel`). The list screen fetches existing certificates and addon banners. The creation flow goes through start date -> who is traveling -> processing.
+
+## Key Files
+- Entry point / Navigation: `TravelCertificateNavigation` in `Sources/TravelCertificateNavigation.swift`
+- Navigation VM: `TravelCertificateNavigationViewModel` in `Sources/TravelCertificateNavigation.swift`
+- Screens: `TravelCertificatesListScreen`, `TravelCertificateSelectInsuranceScreen`, `StartDateScreen`, `WhoIsTravelingScreen`, `TravelCertificateProcessingScreen` in `Sources/Views/`
+- `Sources/Models/TravelCertificateModel+UI.swift` — `TravelCertificateModel.textColor`
+- Client, service, demo and models (`TravelInsuranceClient`, `TravelInsuranceService`, `TravelCertificateModel`, …): see TravelCertificateCore
+
+## Dependencies
+- Imports: hCore, hCoreUI, TravelCertificateCore, ContractsCore, EditStakeholdersCore, EditStakeholdersUI, AddonsCore (for `AddonSource`, `ChangeAddonInput`), AddonsUI (for `handleAddons`, `AddonCardView`), AppStateContainer
+- Depended on by: Profile, App
+
+## Navigation
+- `TravelCertificateNavigation`: Can operate with its own `RouterHost` or be embedded in an existing navigation stack (`useOwnNavigation` flag).
+- The list screen is always the root. Creating a new certificate is presented modally via `.modally(item:)`.
+- Routes: `TravelCertificateRouterActions` (whoIsTravelling, startDate, list) and `TravelCertificateRouterActionsWithoutBackButton` (processingScreen, startScreen).
+- Integrates with AddonsUI via `.handleAddons(input:)` modifier for travel addon upsell banners.
+- PDF preview of existing certificates shown via `.detent`.
+- Entered from Home and Profile modules.
+
+## Gotchas
+- This module reaches into `globalAppStateContainer` to resolve `ContractStore` and provide existing stakeholders to `EditStakeholdersViewModel`. This cross-module store dependency could be replaced with an explicit injection.
+- `whoIsTravelingViewModel` and `startDateViewModel` on the navigation VM are force-unwrapped when used in navigation destinations.
+- The `TravelInsuranceClient.getList` method returns a tuple including addon banner data, coupling travel certificate listing with addon upsell logic.

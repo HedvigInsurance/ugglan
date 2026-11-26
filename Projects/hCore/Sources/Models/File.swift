@@ -1,5 +1,6 @@
 import AutomaticLog
 import Foundation
+import ImageIO
 import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
@@ -125,9 +126,7 @@ extension File {
         guard let data = FileManager.default.contents(atPath: url.relativePath) else { return nil }
         let mimeType = MimeType.findBy(mimeType: url.mimeType)
         if mimeType == .HEIC {
-            if let image = UIImage(data: data),
-                let data = image.jpegData(compressionQuality: 0.9)
-            {
+            if let data = data.jpegPreservingMetadata() {
                 id = UUID().uuidString
                 size = Double(data.count)
                 self.mimeType = .JPEG
@@ -155,8 +154,7 @@ extension NSItemProvider {
                 if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                     self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
                         if let url, let data = FileManager.default.contents(atPath: url.relativePath),
-                            let image = UIImage(data: data),
-                            let data = image.jpegData(compressionQuality: 0.9)
+                            let data = data.jpegPreservingMetadata()
                         {
                             inCont.resume(returning: (data, MimeType.JPEG))
                         } else if let error {
@@ -209,8 +207,7 @@ extension NSItemProvider {
             if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
                 self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, _ in
                     if let url, let data = FileManager.default.contents(atPath: url.relativePath),
-                        let image = UIImage(data: data),
-                        let data = image.jpegData(compressionQuality: 0.9)
+                        let data = data.jpegPreservingMetadata()
                     {
                         let file = File(
                             id: UUID().uuidString,
@@ -278,3 +275,80 @@ extension NSItemProvider {
 }
 
 extension PHPickerResult: @unchecked @retroactive Sendable {}
+
+extension Data {
+    /// Returns the image as JPEG while keeping its metadata (EXIF, GPS, TIFF, orientation).
+    /// JPEG input is returned untouched; other formats (e.g. HEIC) are transcoded with ImageIO.
+    /// Don't round-trip through `UIImage.jpegData` for uploads — it drops all metadata except orientation.
+    public func jpegPreservingMetadata(compressionQuality: CGFloat = 0.9) -> Data? {
+        guard let source = CGImageSourceCreateWithData(self as CFData, nil),
+            let sourceType = CGImageSourceGetType(source),
+            CGImageSourceGetCount(source) > 0
+        else { return nil }
+        if UTType(sourceType as String)?.conforms(to: .jpeg) == true {
+            return self
+        }
+        let output = NSMutableData()
+        guard
+            let destination = CGImageDestinationCreateWithData(
+                output,
+                UTType.jpeg.identifier as CFString,
+                1,
+                nil
+            )
+        else { return nil }
+        let options = [kCGImageDestinationLossyCompressionQuality: compressionQuality] as CFDictionary
+        CGImageDestinationAddImageFromSource(destination, source, 0, options)
+        guard CGImageDestinationFinalize(destination) else { return nil }
+        return output as Data
+    }
+}
+
+extension UIImage {
+    /// Encodes the image as JPEG and embeds `metadata` (e.g. `UIImagePickerController.InfoKey.mediaMetadata`),
+    /// which `jpegData(compressionQuality:)` would otherwise drop.
+    public func jpegData(compressionQuality: CGFloat, metadata: [String: Any]?) -> Data? {
+        guard let cgImage, let metadata else {
+            return jpegData(compressionQuality: compressionQuality)
+        }
+        var properties = metadata
+        let orientation = CGImagePropertyOrientation(imageOrientation).rawValue
+        properties[kCGImagePropertyOrientation as String] = orientation
+        if var tiff = properties[kCGImagePropertyTIFFDictionary as String] as? [String: Any] {
+            tiff[kCGImagePropertyTIFFOrientation as String] = orientation
+            properties[kCGImagePropertyTIFFDictionary as String] = tiff
+        }
+        properties[kCGImageDestinationLossyCompressionQuality as String] = compressionQuality
+
+        let output = NSMutableData()
+        guard
+            let destination = CGImageDestinationCreateWithData(
+                output,
+                UTType.jpeg.identifier as CFString,
+                1,
+                nil
+            )
+        else { return jpegData(compressionQuality: compressionQuality) }
+        CGImageDestinationAddImage(destination, cgImage, properties as CFDictionary)
+        guard CGImageDestinationFinalize(destination) else {
+            return jpegData(compressionQuality: compressionQuality)
+        }
+        return output as Data
+    }
+}
+
+extension CGImagePropertyOrientation {
+    fileprivate init(_ orientation: UIImage.Orientation) {
+        switch orientation {
+        case .up: self = .up
+        case .upMirrored: self = .upMirrored
+        case .down: self = .down
+        case .downMirrored: self = .downMirrored
+        case .left: self = .left
+        case .leftMirrored: self = .leftMirrored
+        case .right: self = .right
+        case .rightMirrored: self = .rightMirrored
+        @unknown default: self = .up
+        }
+    }
+}

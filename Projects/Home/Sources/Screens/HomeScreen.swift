@@ -1,5 +1,5 @@
 import AppStateContainer
-import Chat
+import ChatUI
 import Claims
 import Combine
 import ContractsCore

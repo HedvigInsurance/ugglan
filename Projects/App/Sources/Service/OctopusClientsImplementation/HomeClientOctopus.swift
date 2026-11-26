@@ -1,4 +1,3 @@
-import Chat
 import Foundation
 import Home
 import SubmitClaimChat

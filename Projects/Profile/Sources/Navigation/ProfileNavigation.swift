@@ -2,7 +2,7 @@ import Claims
 import InsuranceEvidence
 import Market
 import SwiftUI
-import TravelCertificate
+import TravelCertificateUI
 import hCore
 import hCoreUI
 

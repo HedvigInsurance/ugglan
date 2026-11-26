@@ -1,6 +1,6 @@
 import AddonsCore
 import Foundation
-import TravelCertificate
+import TravelCertificateCore
 import hCore
 import hGraphQL
 
