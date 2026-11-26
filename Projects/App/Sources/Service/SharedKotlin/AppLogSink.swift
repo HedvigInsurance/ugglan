@@ -5,7 +5,7 @@ import hCore
 
 /// Writes Kotlin's log lines to `log` (or to the logger it is given). Lines that arrive before `initialSetup` makes
 /// `log` the Datadog logger are held, and `logIsReady()` writes them in order.
-final class AppLogSink: NSObject, IosLogSink, @unchecked Sendable {
+final class AppLogSink: NSObject, IosLogSink, Sendable {
     static let shared = AppLogSink()
 
     private let logger: @MainActor @Sendable () -> any Logging

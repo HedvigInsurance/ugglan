@@ -11,7 +11,7 @@ import hGraphQL
 /// Behaves like `HeadersInterceptor`: nil only when the Keychain holds no token (logged out). When a token is stored but
 /// cannot be produced now (the Keychain read or the refresh failed), it throws, so Kotlin does not send the request and
 /// reports a network failure, which surfaces like an Octopus request that could not be sent.
-final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked Sendable {
+final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, Sendable {
     private let retrieveToken: @Sendable () async throws -> OAuthorizationToken?
     private let refreshIfNeeded: @Sendable () async throws -> Void
 
@@ -35,14 +35,14 @@ final class KeychainAccessTokenFetcher: NSObject, AccessTokenFetcher, @unchecked
 }
 
 /// The device id Octopus requests send, kept in `UserDefaults`.
-final class UserDefaultsDeviceIdFetcher: NSObject, DeviceIdFetcher, @unchecked Sendable {
+final class UserDefaultsDeviceIdFetcher: NSObject, DeviceIdFetcher, Sendable {
     func fetch() async throws -> String? {
         await ApolloClient.getDeviceIdentifier()
     }
 }
 
 /// The app's current locale. Kotlin calls it from any thread; the subject's value is safe to read off the main thread.
-final class CurrentLocaleLanguageSource: NSObject, IosLanguageSource, @unchecked Sendable {
+final class CurrentLocaleLanguageSource: NSObject, IosLanguageSource, Sendable {
     func currentLanguage() -> Language {
         switch Localization.Locale.currentLocale.value {
         case .sv_SE: .svSe
