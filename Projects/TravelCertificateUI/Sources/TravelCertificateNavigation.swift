@@ -1,0 +1,242 @@
+import AddonsCore
+import AddonsUI
+import AppStateContainer
+import ContractsCore
+import EditStakeholdersUI
+import Foundation
+import SwiftUI
+import TravelCertificateCore
+import hCore
+import hCoreUI
+
+@MainActor
+@Observable
+public class TravelCertificateNavigationViewModel {
+    public init() {}
+    var isDocumentPresented: TravelCertificateModel?
+    var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel? {
+        willSet {
+            createNewRouter.popToRoot()
+        }
+    }
+    var isAddonPresented: ChangeAddonInput?
+    var isInfoViewPresented = false
+    let createNewRouter = NavigationRouter()
+
+    @ObservationIgnored var startDateViewModel: StartDateViewModel?
+    @ObservationIgnored var whoIsTravelingViewModel: WhoIsTravelingViewModel?
+
+    public let editStakeholdersVm = EditStakeholdersViewModel(
+        existingStakeholders: globalAppStateContainer.get(ContractStore.self)
+    )
+}
+
+struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
+    var id: String?
+    let specification: [TravelInsuranceContractSpecification]
+
+    init(specification: [TravelInsuranceContractSpecification]) {
+        self.id = UUID().uuidString
+        self.specification = specification
+    }
+}
+
+enum TravelCertificateRouterActions: Hashable {
+    case whoIsTravelling(specifiction: TravelInsuranceContractSpecification)
+    case startDate(specification: TravelInsuranceContractSpecification)
+    case list(specifications: [TravelInsuranceContractSpecification])
+}
+
+extension TravelCertificateRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .whoIsTravelling:
+            return .init(describing: WhoIsTravelingScreen.self)
+        case .startDate:
+            return .init(describing: StartDateScreen.self)
+        case .list:
+            return .init(describing: TravelCertificatesListScreen.self)
+        }
+    }
+}
+
+enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
+    case processingScreen
+    case startScreen
+}
+
+extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .processingScreen:
+            return .init(describing: TravelCertificateProcessingScreen.self)
+        case .startScreen:
+            return ""
+        }
+    }
+}
+
+public struct TravelCertificateNavigation: View {
+    @Bindable var vm: TravelCertificateNavigationViewModel
+    @State var router = NavigationRouter()
+
+    private var infoButtonPlacement: ListToolBarPlacement
+    private let useOwnNavigation: Bool
+
+    public init(
+        vm: TravelCertificateNavigationViewModel,
+        infoButtonPlacement: ListToolBarPlacement,
+        useOwnNavigation: Bool
+    ) {
+        self.vm = vm
+        self.infoButtonPlacement = infoButtonPlacement
+        self.useOwnNavigation = useOwnNavigation
+    }
+
+    @ViewBuilder
+    private var getListScreen: some View {
+        if infoButtonPlacement == .trailing {
+            showListScreen(
+                infoButtonPlacement: infoButtonPlacement
+            )
+        } else {
+            showListScreen(
+                infoButtonPlacement: infoButtonPlacement
+            )
+            .withDismissButton()
+        }
+    }
+
+    public var body: some View {
+        Group {
+            if useOwnNavigation {
+                hNavigationStack(
+                    router: router,
+                    options: .extendedNavigationWidth,
+                    tracking: TravelCertificateRouterActions.list(specifications: [])
+                ) {
+                    getListScreen
+                }
+            } else {
+                getListScreen
+            }
+        }
+        .environment(vm)
+        .detent(
+            item: $vm.isDocumentPresented,
+            presentationStyle: .detent(style: [.large]),
+            options: .constant(.withoutGrabber)
+        ) { model in
+            PDFPreview(
+                document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
+            )
+        }
+        .detent(
+            presented: $vm.isInfoViewPresented,
+            options: .constant(.withoutGrabber)
+        ) {
+            InfoView(
+                infoViewModel: .init(
+                    title: L10n.TravelCertificate.Info.title,
+                    description: L10n.TravelCertificate.Info.subtitle
+                )
+            )
+        }
+        .handleAddons(input: $vm.isAddonPresented)
+        .modally(
+            item: $vm.isStartDateScreenPresented,
+            tracking: TravelCertificateRouterActionsWithoutBackButton.startScreen
+        ) { specificationModel in
+            start(with: specificationModel.specification)
+                .routerDestination(for: TravelCertificateRouterActions.self) { action in
+                    switch action {
+                    case let .whoIsTravelling(specification):
+                        showWhoIsTravelingScreen(specification: specification)
+                    case let .startDate(specification):
+                        showStartDateScreen(specification: specification)
+                    case let .list(specifications):
+                        showContractsList(for: specifications)
+                    }
+                }
+                .routerDestination(
+                    for: TravelCertificateRouterActionsWithoutBackButton.self,
+                    options: .hidesBackButton
+                ) { action in
+                    switch action {
+                    case .processingScreen:
+                        openProcessingScreen()
+                    case .startScreen:
+                        EmptyView()
+                    }
+                }
+                .embededInNavigation(
+                    router: vm.createNewRouter,
+                    options: .extendedNavigationWidth,
+                    tracking: specificationModel.specification.count > 1
+                        ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
+                        : TravelCertificateRouterActions.startDate(
+                            specification: specificationModel.specification.first!
+                        )
+                )
+        }
+    }
+
+    private func showListScreen(
+        infoButtonPlacement: ListToolBarPlacement
+    ) -> some View {
+        TravelCertificatesListScreen(
+            infoButtonPlacement: infoButtonPlacement
+        )
+        .navigationTitle(L10n.TravelCertificate.cardTitle)
+    }
+
+    @ViewBuilder
+    private func start(with specifications: [TravelInsuranceContractSpecification]) -> some View {
+        if specifications.count > 1 {
+            showContractsList(for: specifications)
+        } else if let specification = specifications.first {
+            showStartDateScreen(specification: specification)
+        }
+    }
+
+    private func showContractsList(
+        for specifications: [TravelInsuranceContractSpecification]
+    ) -> some View {
+        TravelCertificateSelectInsuranceScreen(
+            router: vm.createNewRouter,
+            specifications: specifications
+        )
+    }
+
+    private func showStartDateScreen(
+        specification: TravelInsuranceContractSpecification
+    ) -> some View {
+        vm.startDateViewModel = StartDateViewModel(specification: specification)
+        return StartDateScreen(vm: vm.startDateViewModel!)
+            .addDismissFlow()
+    }
+
+    private func showWhoIsTravelingScreen(
+        specification: TravelInsuranceContractSpecification
+    ) -> some View {
+        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification, router: vm.createNewRouter)
+        return WhoIsTravelingScreen(
+            vm: vm.whoIsTravelingViewModel!,
+            travelCertificateNavigationVm: vm
+        )
+        .environment(vm)
+        .addDismissFlow()
+    }
+
+    private func openProcessingScreen() -> some View {
+        TravelCertificateProcessingScreen()
+            .environment(vm.whoIsTravelingViewModel!)
+            .environment(vm.startDateViewModel!)
+    }
+}
+
+extension View {
+    func addDismissFlow() -> some View {
+        withAlertDismiss()
+    }
+}

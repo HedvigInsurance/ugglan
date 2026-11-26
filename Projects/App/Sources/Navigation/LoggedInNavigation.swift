@@ -3,7 +3,8 @@ import AddonsUI
 import AppStateContainer
 import ChangeTierCore
 import ChangeTierUI
-import Chat
+import ChatCore
+import ChatUI
 import Claims
 import Combine
 import ContractsCore
@@ -27,7 +28,7 @@ import SubmitClaimChat
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContractsUI
-import TravelCertificate
+import TravelCertificateUI
 import hCore
 import hCoreUI
 

@@ -17,7 +17,7 @@ service wrapper. No SwiftUI or hCoreUI.
 
 ## Dependencies
 - hCore (+ AutomaticLog)
-- Depended on by: EditStakeholdersUI, ContractsCore, ContractsUI, Home, Onboarding, TravelCertificate, App
+- Depended on by: EditStakeholdersUI, ContractsCore, ContractsUI, Home, Onboarding, TravelCertificateUI, App
   (`EditStakeholdersClientOctopus`, DI)
 
 ## Gotchas
