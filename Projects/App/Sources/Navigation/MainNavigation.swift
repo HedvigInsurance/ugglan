@@ -109,8 +109,7 @@ class MainNavigationViewModel {
     // Observed, so swapping in the fresh store after logout re-renders MainNavigation against it
     var featureFlags = Dependencies.featureFlags()
     @ObservationIgnored lazy var notLoggedInVm = makeNotLoggedInVm()
-    /// Reported by the logged-out screen. Kept here rather than read from `notLoggedInVm`, so drawing the logo, which
-    /// starts with the launch, never creates the logged-out view model.
+    /// Kept here, not on `notLoggedInVm`, so drawing the logo never creates the logged-out view model.
     var loggedOutContentFitsTheBottomHalf = true
     @ObservationIgnored var loggedInVm = LoggedInNavigationViewModel()
     @ObservationIgnored private var pushNotificationCancellable: AnyCancellable?
