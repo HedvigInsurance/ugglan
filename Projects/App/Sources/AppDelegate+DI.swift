@@ -198,8 +198,7 @@ enum DI {
         Dependencies.shared.add(module: Module { graphHolder })
     }
 
-    /// The shared Kotlin graph, one per process. Creating the holder builds nothing: Kotlin builds the graph on the
-    /// first read.
+    /// Creating the holder builds nothing: Kotlin builds the graph on the first read.
     private static let graphHolder: IosGraphHolder = {
         let flavor = Environment.current.flavor
         return IosGraphHolderKt.createIosGraphHolder(
