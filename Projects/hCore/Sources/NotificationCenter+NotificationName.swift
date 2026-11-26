@@ -11,6 +11,10 @@ extension Notification.Name {
     public static let openCrossSell = Notification.Name("openCrossSell")
     public static let openChangeTier = Notification.Name("openChangeTier")
     public static let openReviewContactInfo = Notification.Name("openReviewContactInfo")
+    /// Opens contact info editing with only the email field.
+    public static let openEditEmail = Notification.Name("openEditEmail")
+    /// Posted after the member's email was changed; `object` is the new email as a `String`.
+    public static let memberEmailUpdated = Notification.Name("memberEmailUpdated")
     public static let claimCreated = Notification.Name("claimCreated")
     public static let tierChanged = Notification.Name("tierChanged")
     public static let petChipIdAdded = Notification.Name("petChipIdAdded")

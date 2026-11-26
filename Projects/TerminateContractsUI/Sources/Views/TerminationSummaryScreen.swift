@@ -52,6 +52,11 @@ struct TerminationSummaryScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .onReceive(NotificationCenter.default.publisher(for: .memberEmailUpdated)) { notification in
+                if let email = notification.object as? String {
+                    terminationNavigationVm.updateWithdrawalEmail(email)
+                }
+            }
     }
 
     private var titleText: String {
@@ -106,7 +111,12 @@ struct TerminationSummaryScreen: View {
     private var withdrawalEmailView: some View {
         if let email = terminationNavigationVm.withdrawal?.email, !email.isEmpty {
             hSection {
-                LockedTerminationField(value: email, placeholder: L10n.terminationFlowWithdrawalConfirmationSentTo)
+                LockedTerminationField(
+                    value: email,
+                    placeholder: L10n.terminationFlowWithdrawalConfirmationSentTo
+                ) {
+                    terminationNavigationVm.isChangeEmailInfoPresented = true
+                }
             }
         }
     }

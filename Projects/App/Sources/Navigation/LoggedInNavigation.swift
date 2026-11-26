@@ -540,6 +540,17 @@ struct LoggedInNavigation: View {
                 )
         }
         .detent(
+            presented: $vm.isEditEmailPresented,
+            options: .constant(.alwaysOpenOnTop),
+        ) {
+            MyInfoView(presentationMode: .sheet, fields: .emailOnly)
+                .navigationTitle(L10n.emailRowTitle)
+                .embededInNavigation(
+                    options: [.largeNavigationBar],
+                    tracking: ProfileRouterType.myInfo
+                )
+        }
+        .detent(
             presented: $vm.isAnalyticsConsentPresented,
             options: .constant(.alwaysOpenOnTop),
         ) { [weak vm] in
@@ -960,6 +971,7 @@ class LoggedInNavigationViewModel {
     var isFaqPresented: FAQModel?
     var askForPushNotification = false
     var isReviewContactInfoPresented = false
+    var isEditEmailPresented = false
     var isAnalyticsConsentPresented = false
     var missedPaymentData: MissedPaymentData?
     var hasMissedPayment = false
@@ -1091,6 +1103,13 @@ class LoggedInNavigationViewModel {
 
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(openEditEmail),
+            name: .openEditEmail,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(petChipIdAdded),
             name: .petChipIdAdded,
             object: nil
@@ -1156,6 +1175,10 @@ class LoggedInNavigationViewModel {
 
     @objc func openReviewContactInfo() {
         isReviewContactInfoPresented = true
+    }
+
+    @objc func openEditEmail() {
+        isEditEmailPresented = true
     }
 
     @objc func openAnalyticsConsent() {

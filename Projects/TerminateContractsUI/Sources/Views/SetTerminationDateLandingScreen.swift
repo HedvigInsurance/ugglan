@@ -105,16 +105,18 @@ struct SetTerminationDateLandingScreen: View {
     }
 }
 
-/// Termination date the member can't change, e.g. a deletion (today) or a withdrawal (date set by the backend).
+/// Termination value the member can't change here, e.g. a deletion date (today), a withdrawal date (set by the
+/// backend) or the email a withdrawal confirmation is sent to. Pass `onTap` to explain how to change it elsewhere.
 struct LockedTerminationField: View {
     let value: String
     var placeholder: String = L10n.terminationFlowDateFieldText
+    var onTap: (@MainActor () -> Void)?
 
     var body: some View {
         hFloatingField(
             value: value,
             placeholder: placeholder,
-            onTap: {}
+            onTap: { onTap?() }
         )
         .hFieldTrailingView {
             hCoreUIAssets.lock.view
@@ -122,7 +124,13 @@ struct LockedTerminationField: View {
                 .frame(width: 24, height: 24)
         }
         .hBackgroundOption(option: [.locked, .withoutDisabled])
-        .disabled(true)
+        .disabled(onTap == nil)
+        // Replaces hFloatingField's "press to change value": the value can't be changed here.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(value.isEmpty ? placeholder : "\(placeholder). \(value)")
+        .accessibilityHint(onTap == nil ? "" : L10n.voiceoverMoreInfo)
+        .accessibilityAddTraits(onTap == nil ? [] : .isButton)
+        .accessibilityAction { onTap?() }
     }
 }
 

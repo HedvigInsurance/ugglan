@@ -13,4 +13,8 @@ public struct ContractWithdrawalData: Codable, Equatable, Hashable, Sendable {
         self.action = action
         self.email = email
     }
+
+    public func with(email: String) -> ContractWithdrawalData {
+        .init(statusText: statusText, action: action, email: email)
+    }
 }

@@ -104,6 +104,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     // MARK: - UI State
     var isDatePickerPresented = false
     var isConfirmTerminationPresented = false
+    var isChangeEmailInfoPresented = false
     var isProcessingPresented = false
     var infoText: String?
     var redirectActionLoadingState: ProcessingState = .success
@@ -287,6 +288,11 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
             // never fetches the notification for its date: it has to be fetched here.
             fetchNotification(for: selectedDate)
         }
+    }
+
+    /// Shows the member's new email as where the withdrawal confirmation is sent, after they changed it.
+    func updateWithdrawalEmail(_ email: String) {
+        withdrawal = withdrawal?.with(email: email)
     }
 
     /// Clears everything chosen on the withdrawal or cancellation path, so switching between them (by going back to
@@ -576,6 +582,13 @@ struct TerminationFlowNavigation: View {
         ) {
             openConfirmTerminationScreen()
                 .environment(vm)
+        }
+        .detent(
+            presented: $vm.isChangeEmailInfoPresented,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            WithdrawalChangeEmailInfoScreen()
+                .embededInNavigation(tracking: String(describing: WithdrawalChangeEmailInfoScreen.self))
         }
         .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()

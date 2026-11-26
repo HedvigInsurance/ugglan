@@ -7,11 +7,12 @@ import hCoreUI
 
 public struct MyInfoView: View {
     @Environment(NavigationRouter.self) var router
-    @State var vm = MyInfoViewModel()
+    @State var vm: MyInfoViewModel
     let presentationMode: PresentationMode
 
-    public init(presentationMode: PresentationMode = .navigation) {
+    public init(presentationMode: PresentationMode = .navigation, fields: Fields = .all) {
         self.presentationMode = presentationMode
+        _vm = State(initialValue: MyInfoViewModel(fields: fields))
     }
 
     public var body: some View {
@@ -20,9 +21,13 @@ public struct MyInfoView: View {
                 hSection {
                     VStack(spacing: .padding16) {
                         VStack(spacing: .padding4) {
-                            InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
+                            if vm.fields == .all {
+                                InfoCard(text: L10n.profileMyInfoReviewInfoCard, type: .info)
+                            }
                             emailField
-                            phoneNumberField
+                            if vm.fields == .all {
+                                phoneNumberField
+                            }
 
                             if let error = vm.error {
                                 InfoCard(text: error, type: .error)
@@ -78,6 +83,13 @@ extension MyInfoView {
         case navigation
         case sheet
     }
+
+    public enum Fields {
+        /// Email and phone number.
+        case all
+        /// Only the email; the phone number is sent unchanged.
+        case emailOnly
+    }
 }
 
 @MainActor
@@ -86,6 +98,7 @@ public class MyInfoViewModel {
     private let profileService = ProfileService()
     @ObservationIgnored @AppState var profileStore: ProfileStore
     @ObservationIgnored @AppState var homeStore: HomeStore
+    let fields: MyInfoView.Fields
     var currentPhoneInput: String = "" {
         didSet { scheduleValidation() }
     }
@@ -100,7 +113,8 @@ public class MyInfoViewModel {
 
     @ObservationIgnored private var cancellables = Set<AnyCancellable>()
 
-    init() {
+    init(fields: MyInfoView.Fields = .all) {
+        self.fields = fields
         let store: ProfileStore = globalAppStateContainer.get()
         currentPhoneInput = store.memberDetails?.phone ?? ""
         currentEmailInput = store.memberDetails?.email ?? ""
@@ -122,7 +136,9 @@ public class MyInfoViewModel {
     }
 
     private var hasValidPhoneNumber: Bool {
-        currentPhoneInput.isValidPhone && phoneError == nil
+        // Not editable when only editing the email, so it's sent as it is.
+        if fields == .emailOnly { return true }
+        return currentPhoneInput.isValidPhone && phoneError == nil
     }
 
     private var hasValidEmail: Bool {
@@ -173,6 +189,11 @@ public class MyInfoViewModel {
     }
 
     private func validateAndUpdateContactInfo() async throws {
+        if fields == .emailOnly, currentPhoneInput.isEmpty {
+            // The update needs the phone number too: fetch it if the profile hasn't been loaded yet.
+            await profileStore.fetchMemberDetails()
+            currentPhoneInput = profileStore.memberDetails?.phone ?? ""
+        }
         if currentPhoneInput.isEmpty {
             throw MyInfoSaveError.phoneNumberEmpty
         }
@@ -192,6 +213,7 @@ public class MyInfoViewModel {
 
         profileStore.setMemberPhone(newPhone)
         profileStore.setMemberEmail(newEmail)
+        NotificationCenter.default.post(name: .memberEmailUpdated, object: newEmail)
     }
 }
 
