@@ -157,9 +157,14 @@ class CustomTextView: UITextView, UITextViewDelegate {
             font: Fonts.fontFor(style: config.fontStyle),
             color: config.color.colorFor(colorScheme, .base).color.uiColor()
         )
-        markdownParser.bold.font = UIFont.boldSystemFont(
-            ofSize: config.fontStyle.fontSize * config.fontStyle.multiplier
-        )
+        markdownParser.bold.font =
+            config.boldFont
+            ?? UIFont.boldSystemFont(
+                ofSize: config.fontStyle.fontSize * config.fontStyle.multiplier
+            )
+        if let boldColor = config.boldColor {
+            markdownParser.bold.color = boldColor.colorFor(colorScheme, .base).color.uiColor()
+        }
         markdownParser.header.font = Fonts.fontFor(style: config.fontStyle)
         markdownParser.italic.font = UIFont.italicSystemFont(
             ofSize: config.fontStyle.fontSize * config.fontStyle.multiplier
@@ -246,6 +251,8 @@ public struct CustomTextViewRepresentableConfig {
     let isSelectable: Bool
     let maxLines: Int?
     let disableLinks: Bool
+    let boldFont: UIFont?
+    let boldColor: (any hColor)?
 
     public init(
         text: Markdown,
@@ -258,6 +265,8 @@ public struct CustomTextViewRepresentableConfig {
         isSelectable: Bool,
         maxLines: Int? = nil,
         disableLinks: Bool = false,
+        boldFont: UIFont? = nil,
+        boldColor: (any hColor)? = nil,
         onUrlClicked: @escaping (_: URL) -> Void
     ) {
         self.text = text
@@ -271,5 +280,7 @@ public struct CustomTextViewRepresentableConfig {
         self.maxWidth = maxWidth
         self.maxLines = maxLines
         self.disableLinks = disableLinks
+        self.boldFont = boldFont
+        self.boldColor = boldColor
     }
 }
