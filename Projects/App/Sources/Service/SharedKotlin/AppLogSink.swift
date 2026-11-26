@@ -3,8 +3,7 @@ import Foundation
 import Logger
 import hCore
 
-/// Writes Kotlin's log lines to `log` (or to the logger it is given). Lines that arrive before `initialSetup` makes
-/// `log` the Datadog logger are held, and `logIsReady()` writes them in order.
+/// Holds Kotlin's log lines until `initialSetup` makes `log` the Datadog logger, so early lines are not lost.
 final class AppLogSink: NSObject, IosLogSink, Sendable {
     static let shared = AppLogSink()
 
@@ -16,7 +15,6 @@ final class AppLogSink: NSObject, IosLogSink, Sendable {
         super.init()
     }
 
-    /// Called by Kotlin on whichever thread logged the line.
     func log(priority: LogPriority, tag: String?, message: String) {
         DispatchQueue.main.async {
             MainActor.assumeIsolated {
