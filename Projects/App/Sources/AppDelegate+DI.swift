@@ -27,9 +27,8 @@ import hGraphQL
 
 @MainActor
 enum DI {
-    /// Runs in `MainNavigation.init`, before any view is built. The important messages client is registered here
-    /// because the logged-out screen's view model resolves it as it is created, which can be on any path to that
-    /// screen; the client reaches the Kotlin graph only when it loads.
+    /// Runs before any view is built. The logged-out view model resolves the important messages client when it is
+    /// created, so registering the client any later crashes at launch.
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
         let publicImportantMessagesClient = PublicImportantMessagesClientShared()
@@ -198,8 +197,7 @@ enum DI {
         Dependencies.shared.add(module: Module { graphHolder })
     }
 
-    /// The shared Kotlin graph, one per process. Creating the holder builds nothing: Kotlin builds the graph on the
-    /// first read.
+    /// Creating the holder builds nothing: Kotlin builds the graph on the first read.
     private static let graphHolder: IosGraphHolder = {
         let flavor = Environment.current.flavor
         return IosGraphHolderKt.createIosGraphHolder(

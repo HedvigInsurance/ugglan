@@ -12,6 +12,8 @@ struct NotLoggedInView: View {
     let vm: NotLoggedViewModel
     @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
     @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @SwiftUI.Environment(\.scenePhase) private var scenePhase
+    @State private var locale = Localization.Locale.currentLocale.value
     @State private var contentHeight: CGFloat = 0
     @State private var hiddenMessagesHeight: CGFloat = 0
 
@@ -34,11 +36,11 @@ struct NotLoggedInView: View {
             .sectionContainerStyle(.transparent)
         }
         .modifier(BankIDSandboxToggle())
-        .onAppear {
-            vm.startObservingImportantMessages()
-        }
-        .onDisappear {
-            vm.stopObservingImportantMessages()
+        .onReceive(Localization.Locale.currentLocale) { locale = $0 }
+        // Nil while the app is not active, so the app becoming active reloads once, at launch too.
+        .task(id: scenePhase == .active ? locale : nil) {
+            guard scenePhase == .active else { return }
+            await vm.loadImportantMessages()
         }
     }
 
@@ -52,8 +54,6 @@ struct NotLoggedInView: View {
         }
     }
 
-    /// True when the cards and buttons need the whole height, so the logo drawn over the middle of the screen is hidden
-    /// once the launch has finished (`HiddenLogoWhenLoggedOutNeedsTheHeight`).
     static func needsTheWholeHeight(
         verticalSizeClass: UserInterfaceSizeClass?,
         dynamicTypeSize: DynamicTypeSize,
@@ -125,7 +125,6 @@ struct NotLoggedInView: View {
         }
     }
 
-    /// Below the logo drawn over the middle of the screen, unless the logo is hidden to make room.
     private func maxContentHeight(in height: CGFloat) -> CGFloat {
         if Self.needsTheWholeHeight(
             verticalSizeClass: verticalSizeClass,
@@ -158,9 +157,7 @@ struct NotLoggedInView: View {
     }
 }
 
-/// Hides the logo `MainNavigation` draws over the middle of the logged-out screen when that screen needs the whole
-/// height (landscape, accessibility text sizes, cards and buttons too tall for the bottom half), once the launch
-/// animation has finished. The logo is decorative.
+/// Hides the logo `MainNavigation` draws over the logged-out screen when the screen needs the whole height.
 struct HiddenLogoWhenLoggedOutNeedsTheHeight: ViewModifier {
     let isLaunching: Bool
     let contentFitsTheBottomHalf: Bool
@@ -217,7 +214,7 @@ class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
     var showLogin = false
-    /// Most severe first. Empty while loading and after a failed first load: there is no error state before login.
+    /// There is no error state before login: a failed first load shows nothing.
     var importantMessages: [PublicImportantMessage] = []
     /// Whether the cards and buttons fit below the logo in portrait, as last measured by the screen. When they do not,
     /// the screen takes the whole height and `MainNavigation` hides the logo.
@@ -232,32 +229,10 @@ class NotLoggedViewModel {
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()
-    /// True between `startObservingImportantMessages()` and `stopObservingImportantMessages()`, which the screen calls
-    /// as it appears and disappears, logging in included.
-    @ObservationIgnored private(set) var isObservingImportantMessages = false
     @ObservationIgnored private let publicImportantMessagesClient: PublicImportantMessagesClient
-    @ObservationIgnored private let appBecameActive: AnyPublisher<Void, Never>
-    @ObservationIgnored private let localeChanges: AnyPublisher<Localization.Locale, Never>
-    @ObservationIgnored private var importantMessagesObservation = Set<AnyCancellable>()
-    @ObservationIgnored private var importantMessagesTask: Task<Void, Never>?
-    /// Counts the loads started, so an answer to a replaced load is dropped even when it arrives late.
-    @ObservationIgnored private var importantMessagesLoads = 0
-    /// The language of the latest load that is running or succeeded. Nil when there is none.
-    @ObservationIgnored private var importantMessagesLocale: Localization.Locale?
-    @ObservationIgnored private var currentLocale: Localization.Locale?
 
-    init(
-        publicImportantMessagesClient: PublicImportantMessagesClient = Dependencies.shared.resolve(),
-        appBecameActive: AnyPublisher<Void, Never> = NotificationCenter.default
-            .publisher(for: UIApplication.didBecomeActiveNotification)
-            .map { _ in () }
-            .eraseToAnyPublisher(),
-        localeChanges: AnyPublisher<Localization.Locale, Never> = Localization.Locale.currentLocale
-            .eraseToAnyPublisher()
-    ) {
+    init(publicImportantMessagesClient: PublicImportantMessagesClient = Dependencies.shared.resolve()) {
         self.publicImportantMessagesClient = publicImportantMessagesClient
-        self.appBecameActive = appBecameActive
-        self.localeChanges = localeChanges
         // Deferred one main-actor turn so the owner can set `onLoad` after init.
         Task { @MainActor [weak self] in
             self?.viewState = .language
@@ -284,61 +259,11 @@ class NotLoggedViewModel {
         NotificationCenter.default.removeObserver(self)
     }
 
-    /// Loads the important messages unless they are already loaded or loading in the current language, then reloads
-    /// whenever the app becomes active or the language changes.
-    func startObservingImportantMessages() {
-        guard !isObservingImportantMessages else { return }
-        isObservingImportantMessages = true
-        localeChanges
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] locale in
-                guard let self else { return }
-                currentLocale = locale
-                guard locale != importantMessagesLocale else { return }
-                loadImportantMessages(in: locale)
-            }
-            .store(in: &importantMessagesObservation)
-        appBecameActive
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] in
-                // A load already running answers for this activation too, such as the one at launch.
-                guard let self, importantMessagesTask == nil, let currentLocale else { return }
-                loadImportantMessages(in: currentLocale)
-            }
-            .store(in: &importantMessagesObservation)
-    }
-
-    /// Stops reloading and drops the answer of a load still running.
-    func stopObservingImportantMessages() {
-        guard isObservingImportantMessages else { return }
-        isObservingImportantMessages = false
-        importantMessagesObservation.removeAll()
-        if let importantMessagesTask {
-            importantMessagesTask.cancel()
-            self.importantMessagesTask = nil
-            importantMessagesLoads += 1
-            importantMessagesLocale = nil
-        }
-    }
-
-    /// Replaces a load still running, whose answer may be in the previous language. A failure keeps the list shown;
-    /// the Kotlin read logs it.
-    private func loadImportantMessages(in locale: Localization.Locale) {
-        importantMessagesTask?.cancel()
-        importantMessagesLoads += 1
-        let load = importantMessagesLoads
-        importantMessagesLocale = locale
-        let client = publicImportantMessagesClient
-        importantMessagesTask = Task { [weak self] in
-            let messages = try? await client.getMessages()
-            guard let self, load == importantMessagesLoads else { return }
-            importantMessagesTask = nil
-            if let messages {
-                importantMessages = messages
-            } else {
-                importantMessagesLocale = nil
-            }
-        }
+    /// A failure keeps the list shown; the Kotlin read logs it. The answer to a cancelled load is dropped, as it may be
+    /// in the previous language.
+    func loadImportantMessages() async {
+        guard let messages = try? await publicImportantMessagesClient.getMessages(), !Task.isCancelled else { return }
+        importantMessages = messages
     }
 
     @MainActor
