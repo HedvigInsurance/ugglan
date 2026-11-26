@@ -4,7 +4,7 @@ import AppStateContainer
 import AuthenticationCore
 import CampaignCore
 import ChangeTierCore
-import Chat
+import ChatCore
 import Claims
 import ContractsCore
 import CrossSellCore
@@ -21,7 +21,7 @@ import Payment
 import Profile
 import SubmitClaimChat
 import TerminateContractsCore
-import TravelCertificate
+import TravelCertificateCore
 import hCore
 import hGraphQL
 

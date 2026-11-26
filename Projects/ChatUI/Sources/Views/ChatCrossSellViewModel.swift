@@ -1,0 +1,113 @@
+import ChatCore
+import CrossSellCore
+import Foundation
+import SwiftUI
+import hCore
+
+@MainActor
+@Observable
+public class ChatCrossSellViewModel {
+    private(set) var recommended: RecommendedCrossSell?
+
+    @ObservationIgnored @Inject private var crossSellClient: CrossSellClient
+    private let chatService: ChatServiceProtocol
+
+    // The gate repeats on every five-second poll and an empty response is final, so the
+    // fetch is latched: an ineligible member costs no cross-sell requests at all, and an
+    // eligible one costs exactly one.
+    @ObservationIgnored private var hasFetched = false
+
+    // Set by either answer. Keeps a late poll from reviving a prompt the member has already
+    // dealt with, even if the mutation that records it never reaches the server.
+    @ObservationIgnored private var hasRetired = false
+
+    // The chat screen is the visit: a card hidden behind the keyboard and shown again counts once.
+    private let shownTracker = CrossSellShownTracker()
+
+    init(chatService: ChatServiceProtocol) {
+        self.chatService = chatService
+    }
+
+    @ObservationIgnored var title: String { recommended?.title ?? L10n.crossSellBannerText }
+    @ObservationIgnored var subtitle: String? { recommended?.description }
+    @ObservationIgnored var openTitle: String { recommended?.buttonTitle ?? L10n.crossSellButton }
+    @ObservationIgnored var dismissTitle: String { L10n.generalNoThanks }
+
+    // Spoken when the prompt arrives. Both buttons carry short titles that only make sense
+    // under the offer, so the announcement leads with the copy that frames them.
+    var voiceOverAnnouncement: String {
+        [title, subtitle].compactMap { $0 }.joined(separator: ". ")
+    }
+
+    func handle(showCrossSales: Bool, conversationId: String) async {
+        guard showCrossSales, !hasFetched, !hasRetired, !conversationId.isEmpty else { return }
+        hasFetched = true
+
+        guard let crossSells = try? await crossSellClient.getCrossSell(source: .inChat),
+            let recommended = crossSells.recommended
+        else { return }
+
+        withAnimation {
+            self.recommended = recommended
+        }
+        track(.prompted)
+    }
+
+    func offerWasShown() {
+        if let recommended {
+            shownTracker.offerWasShown(recommended)
+        }
+    }
+
+    func dismiss() async {
+        guard let recommended else { return }
+        retire(event: .dismissed)
+        recommended.track(.dismissed)
+        try? await chatService.hideCrossSales()
+    }
+
+    func open() async {
+        guard let recommended else { return }
+        // Retiring hides the card at once, so a second tap opens nothing.
+        retire(event: .clicked)
+        switch recommended {
+        case let .insurance(crossSell):
+            await crossSell.openStore()
+        case .addon:
+            if case let .deepLink(link) = recommended.destination, let url = URL(string: link) {
+                NotificationCenter.default.post(name: .openDeepLink, object: url)
+            }
+        }
+        try? await chatService.hideCrossSales()
+    }
+
+    // Hides the prompt before the mutation runs: the member should not wait on the network,
+    // and a failed call must not make the prompt reappear on the next poll. The server call
+    // is idempotent, so the only cost of losing it is that the prompt returns next session.
+    private func retire(event: InChatCrossSellTrackingEvent) {
+        hasRetired = true
+        track(event)
+        withAnimation {
+            recommended = nil
+        }
+    }
+
+    // Mirrors Android's `logInChatCrossSell`: one action name with the variant in an "event"
+    // attribute, so both platforms answer a single query. A second name or a renamed key here
+    // halves the funnel rather than failing.
+    private func track(_ event: InChatCrossSellTrackingEvent) {
+        let name = "inChatCrossSell"
+        let attributes: [String: any Encodable] = [
+            "event": event.rawValue
+        ]
+        log.addUserAction(type: .custom, name: name, error: nil, attributes: attributes)
+    }
+}
+
+// Raw values are the attribute values the funnel groups on; they mirror Android's
+// `InChatCrossSellTrackingEvent`.
+enum InChatCrossSellTrackingEvent: String {
+    case prompted
+    case dismissed
+    case clicked
+}

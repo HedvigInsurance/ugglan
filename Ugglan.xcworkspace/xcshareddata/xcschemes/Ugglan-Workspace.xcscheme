@@ -252,10 +252,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7D146E7308A5F61A6A04A7CD"
-               BuildableName = "Chat.framework"
-               BlueprintName = "Chat"
-               ReferencedContainer = "container:Projects/Chat/Chat.xcodeproj">
+               BlueprintIdentifier = "FBFA8321CEC078F3EFCE8472"
+               BuildableName = "ChatCore.framework"
+               BlueprintName = "ChatCore"
+               ReferencedContainer = "container:Projects/ChatCore/ChatCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -266,10 +266,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "29A5754732A963CB16195C61"
-               BuildableName = "ChatTests.xctest"
-               BlueprintName = "ChatTests"
-               ReferencedContainer = "container:Projects/Chat/Chat.xcodeproj">
+               BlueprintIdentifier = "D5402F203899D9285746E0D5"
+               BuildableName = "ChatUI.framework"
+               BlueprintName = "ChatUI"
+               ReferencedContainer = "container:Projects/ChatUI/ChatUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0742A9BCA9E0277738F903E4"
+               BuildableName = "ChatUITests.xctest"
+               BlueprintName = "ChatUITests"
+               ReferencedContainer = "container:Projects/ChatUI/ChatUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -840,10 +854,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BB7A398120E8FDE6727E8474"
-               BuildableName = "TravelCertificate.framework"
-               BlueprintName = "TravelCertificate"
-               ReferencedContainer = "container:Projects/TravelCertificate/TravelCertificate.xcodeproj">
+               BlueprintIdentifier = "BFA0CD3ED6FB1EE243B651DF"
+               BuildableName = "TravelCertificateCore.framework"
+               BlueprintName = "TravelCertificateCore"
+               ReferencedContainer = "container:Projects/TravelCertificateCore/TravelCertificateCore.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -854,10 +868,24 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B9797DE4B058AA14ECAD39C7"
-               BuildableName = "TravelCertificateTests.xctest"
-               BlueprintName = "TravelCertificateTests"
-               ReferencedContainer = "container:Projects/TravelCertificate/TravelCertificate.xcodeproj">
+               BlueprintIdentifier = "139CF7CF1E9A454372C1E989"
+               BuildableName = "TravelCertificateUI.framework"
+               BlueprintName = "TravelCertificateUI"
+               ReferencedContainer = "container:Projects/TravelCertificateUI/TravelCertificateUI.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "34484C30B14E4D63BA4C66BD"
+               BuildableName = "TravelCertificateUITests.xctest"
+               BlueprintName = "TravelCertificateUITests"
+               ReferencedContainer = "container:Projects/TravelCertificateUI/TravelCertificateUI.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -1058,10 +1086,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "29A5754732A963CB16195C61"
-               BuildableName = "ChatTests.xctest"
-               BlueprintName = "ChatTests"
-               ReferencedContainer = "container:Projects/Chat/Chat.xcodeproj">
+               BlueprintIdentifier = "0742A9BCA9E0277738F903E4"
+               BuildableName = "ChatUITests.xctest"
+               BlueprintName = "ChatUITests"
+               ReferencedContainer = "container:Projects/ChatUI/ChatUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -1223,10 +1251,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B9797DE4B058AA14ECAD39C7"
-               BuildableName = "TravelCertificateTests.xctest"
-               BlueprintName = "TravelCertificateTests"
-               ReferencedContainer = "container:Projects/TravelCertificate/TravelCertificate.xcodeproj">
+               BlueprintIdentifier = "34484C30B14E4D63BA4C66BD"
+               BuildableName = "TravelCertificateUITests.xctest"
+               BlueprintName = "TravelCertificateUITests"
+               ReferencedContainer = "container:Projects/TravelCertificateUI/TravelCertificateUI.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference

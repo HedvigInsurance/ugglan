@@ -14,7 +14,7 @@ import Onboarding
 import Profile
 import SwiftUI
 import TerminateContractsUI
-import TravelCertificate
+import TravelCertificateUI
 import hCore
 import hCoreUI
 

@@ -8,6 +8,7 @@
 @_spi(Internal) @_spi(Execution) import ApolloAPI
 
 public extension OctopusGraphQL {
+  /// An ISO-8601 calendar date, such as `2026-01-15`.
   typealias Date = String
 
 }

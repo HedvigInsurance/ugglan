@@ -1,5 +1,5 @@
 import AppStateContainer
-import Chat
+import ChatCore
 import Combine
 import Kingfisher
 import Photos

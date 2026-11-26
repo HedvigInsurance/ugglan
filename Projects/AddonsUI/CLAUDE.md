@@ -16,7 +16,7 @@ SwiftUI views, navigation and ViewModels for insurance addon purchase and remova
 
 ## Dependencies
 - Imports: hCore, hCoreUI, AddonsCore
-- Depended on by: ContractsUI (`handleAddons`, `handleRemoveAddons`), TravelCertificate (`handleAddons`, `AddonCardView`), App (`handleAddons`)
+- Depended on by: ContractsUI (`handleAddons`, `handleRemoveAddons`), TravelCertificateUI (`handleAddons`, `AddonCardView`), App (`handleAddons`)
 
 ## Navigation
 - Public entry via `View.handleAddons(input:)` modifier -- attach to any view, bind a `ChangeAddonInput?`, and the coordinator handles fetching offers and presenting the flow modally.

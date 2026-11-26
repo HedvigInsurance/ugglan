@@ -62,9 +62,7 @@ private struct FileSourcePickerView: ViewModifier {
                 .ignoresSafeArea()
             }
             .sheet(isPresented: $showCamera) {
-                CameraPickerView { image in
-                    guard let data = image.jpegData(compressionQuality: 0.9)
-                    else { return }
+                CameraPickerView { data in
                     let file = File(
                         id: UUID().uuidString,
                         size: Double(data.count),
@@ -208,11 +206,11 @@ private struct FileImporterView: UIViewControllerRepresentable {
 
 private struct CameraPickerView: UIViewControllerRepresentable {
     private var sourceType: UIImagePickerController.SourceType = .camera
-    private let onImagePicked: (UIImage) -> Void
+    private let onImagePicked: (Data) -> Void
 
     @Environment(\.presentationMode) private var presentationMode
 
-    public init(onImagePicked: @escaping (UIImage) -> Void) {
+    public init(onImagePicked: @escaping (Data) -> Void) {
         self.onImagePicked = onImagePicked
     }
 
@@ -234,9 +232,9 @@ private struct CameraPickerView: UIViewControllerRepresentable {
 
     public final class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         private let onDismiss: () -> Void
-        private let onImagePicked: (UIImage) -> Void
+        private let onImagePicked: (Data) -> Void
 
-        init(onDismiss: @escaping () -> Void, onImagePicked: @escaping (UIImage) -> Void) {
+        init(onDismiss: @escaping () -> Void, onImagePicked: @escaping (Data) -> Void) {
             self.onDismiss = onDismiss
             self.onImagePicked = onImagePicked
         }
@@ -245,8 +243,13 @@ private struct CameraPickerView: UIViewControllerRepresentable {
             _: UIImagePickerController,
             didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
         ) {
-            if let image = info[.originalImage] as? UIImage {
-                onImagePicked(image)
+            if let image = info[.originalImage] as? UIImage,
+                let data = image.jpegData(
+                    compressionQuality: 0.9,
+                    metadata: info[.mediaMetadata] as? [String: Any]
+                )
+            {
+                onImagePicked(data)
             }
             onDismiss()
         }

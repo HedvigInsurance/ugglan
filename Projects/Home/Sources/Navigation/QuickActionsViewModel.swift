@@ -1,7 +1,6 @@
 import AppStateContainer
 import ChangeTierCore
 import ChangeTierUI
-import Chat
 import ContractsCore
 import EditStakeholdersCore
 import EditStakeholdersUI

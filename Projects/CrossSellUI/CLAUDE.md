@@ -11,7 +11,7 @@ SwiftUI views for cross-sell offers and addon banners, built on `CrossSellCore`.
 
 ## Dependencies
 - hCore, hCoreUI, AddonsCore, CrossSellCore
-- Depended on by: App, Chat, ContractsUI, Home, Onboarding
+- Depended on by: App, ChatUI, ContractsUI, Home, Onboarding
 
 ## Gotchas
 - No test target: all cross-sell logic is in CrossSellCore and tested there.
