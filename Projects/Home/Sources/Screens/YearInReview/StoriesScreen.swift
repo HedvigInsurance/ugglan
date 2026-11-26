@@ -42,8 +42,8 @@ enum StoryConstants {
         static let regularMaxWidth: CGFloat = 500
         static let regularMaxHeight: CGFloat = 500
         /// Landscape: the media sits next to the text, so it shares the width with it
-        static let compactHeightMaxWidth: CGFloat = 300
-        static let compactHeightMaxHeight: CGFloat = 300
+        static let compactHeightMaxWidth: CGFloat = 250
+        static let compactHeightMaxHeight: CGFloat = 250
         /// Videos have no intrinsic size to fit, so they get a fixed height
         static let videoHeight: CGFloat = 300
     }
@@ -81,6 +81,7 @@ public struct StoriesScreen: View {
 // MARK: - Player
 private struct StoryPlayer: View {
     @State private var vm: StoriesScreenViewModel
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     init(stories: [Story]) {
         self._vm = State(wrappedValue: StoriesScreenViewModel(stories: stories))
@@ -97,9 +98,11 @@ private struct StoryPlayer: View {
                 }
             }
             .hFormAttachToBottom {
-                hSection {
-                    StoryButtonsView(vm: vm)
-                        .id(vm.currentIndex)
+                if verticalSizeClass != .compact {
+                    hSection {
+                        StoryButtonsView(vm: vm)
+                            .id(vm.currentIndex)
+                    }
                 }
             }
             .hFormBottomBackground {
@@ -163,12 +166,17 @@ private struct StoryContentView: View {
     var body: some View {
         Group {
             if verticalSizeClass == .compact {
-                HStack(alignment: .top, spacing: .padding16) {
-                    VStack(spacing: .padding8) {
-                        title
-                        description
+                VStack(alignment: .leading, spacing: .padding8) {
+                    title
+                    HStack(alignment: .top, spacing: .padding16) {
+                        StoryMediaView(vm: vm)
+                        VStack(alignment: .leading, spacing: .padding8) {
+                            description
+                            Spacer()
+                            StoryButtonsView(vm: vm)
+                                .id(vm.currentIndex)
+                        }
                     }
-                    StoryMediaView(vm: vm)
                 }
             } else {
                 VStack(alignment: .leading, spacing: .padding8) {
