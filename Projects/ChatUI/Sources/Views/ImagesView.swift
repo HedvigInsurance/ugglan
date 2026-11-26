@@ -213,38 +213,43 @@ extension PHAsset {
             requestContentEditingInput(with: options) { contentInput, _ in
                 switch self.mediaType {
                 case .video:
-                    PHImageManager.default()
-                        .requestExportSession(
-                            forVideo: self,
-                            options: nil,
-                            exportPreset: AVAssetExportPresetHighestQuality
-                        ) { exportSession, _ in
-                            exportSession?.outputFileType = AVFileType.mp4
-                            exportSession?.outputURL = FileUploadManager().getPathForData(for: id)
-                            let url = exportSession?.outputURL
-                            exportSession?
-                                .exportAsynchronously(completionHandler: {
-                                    guard let url = url else {
-                                        inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoURL)
-                                        return
-                                    }
-
-                                    let fileName = url.lastPathComponent
-
-                                    guard let data = (try? Data(contentsOf: url))
-                                    else {
-                                        inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoData)
-                                        return
-                                    }
-                                    let file = File(
-                                        id: id,
-                                        size: 0,
-                                        mimeType: MimeType.MP4,
-                                        name: fileName,
-                                        source: .data(data: data)
-                                    )
-                                    inCont.resume(returning: file)
-                                })
+                    // Copy the original video resource as is. Re-exporting with AVAssetExportSession re-encodes
+                    // the video and drops its metadata (creation date, location, device).
+                    let resources = PHAssetResource.assetResources(for: self)
+                    guard
+                        let resource = resources.first(where: { $0.type == .fullSizeVideo })
+                            ?? resources.first(where: { $0.type == .video })
+                    else {
+                        inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoURL)
+                        return
+                    }
+                    let fileName = resource.originalFilename
+                    let url = FileUploadManager().getPathForData(for: id)
+                        .appendingPathExtension((fileName as NSString).pathExtension)
+                    try? FileManager.default.createDirectory(
+                        at: url.deletingLastPathComponent(),
+                        withIntermediateDirectories: true
+                    )
+                    try? FileManager.default.removeItem(at: url)
+                    let resourceOptions = PHAssetResourceRequestOptions()
+                    resourceOptions.isNetworkAccessAllowed = true
+                    PHAssetResourceManager.default()
+                        .writeData(for: resource, toFile: url, options: resourceOptions) { error in
+                            guard error == nil, let data = try? Data(contentsOf: url) else {
+                                inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoData)
+                                return
+                            }
+                            let mimeType =
+                                UTType(resource.uniformTypeIdentifier)?.preferredMIMEType
+                                .map { MimeType.findBy(mimeType: $0) } ?? .MOV
+                            let file = File(
+                                id: id,
+                                size: 0,
+                                mimeType: mimeType,
+                                name: fileName,
+                                source: .data(data: data)
+                            )
+                            inCont.resume(returning: file)
                         }
                 case .image:
                     guard let ext = contentInput?.fullSizeImageURL?.pathExtension else {
@@ -264,11 +269,7 @@ extension PHAsset {
                             }
 
                             if mimeType.lowercased().contains("heic") {
-                                guard let image = UIImage(data: data),
-                                    let jpegData = image.jpegData(
-                                        compressionQuality: 0.9
-                                    )
-                                else {
+                                guard let jpegData = data.jpegPreservingMetadata() else {
                                     inCont.resume(throwing: GenerateFileUploadError.failedToConvertHEIC)
                                     return
                                 }
