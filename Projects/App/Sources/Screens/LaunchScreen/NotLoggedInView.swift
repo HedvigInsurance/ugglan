@@ -12,6 +12,8 @@ struct NotLoggedInView: View {
     let vm: NotLoggedViewModel
     @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
     @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @State private var contentHeight: CGFloat = 0
+    @State private var hiddenMessagesHeight: CGFloat = 0
 
     init(
         vm: NotLoggedViewModel
@@ -54,9 +56,21 @@ struct NotLoggedInView: View {
     /// once the launch has finished (`HiddenLogoWhenLoggedOutNeedsTheHeight`).
     static func needsTheWholeHeight(
         verticalSizeClass: UserInterfaceSizeClass?,
-        dynamicTypeSize: DynamicTypeSize
+        dynamicTypeSize: DynamicTypeSize,
+        contentFitsTheBottomHalf: Bool
     ) -> Bool {
-        verticalSizeClass == .compact || dynamicTypeSize.isAccessibilitySize
+        verticalSizeClass == .compact || dynamicTypeSize.isAccessibilitySize || !contentFitsTheBottomHalf
+    }
+
+    /// The height below the logo drawn over the middle of a screen of the given height.
+    static func bottomHalfHeight(of height: CGFloat) -> CGFloat {
+        max(height / 2 - .padding16, 0)
+    }
+
+    /// Whether the cards and buttons at their natural height, scrolling none of the cards, fit below the logo. A
+    /// point of slack absorbs rounding, so content exactly as tall as the bottom half counts as fitting.
+    static func fitsTheBottomHalf(contentHeight: CGFloat, screenHeight: CGFloat) -> Bool {
+        contentHeight <= bottomHalfHeight(of: screenHeight) + 1
     }
 
     @ViewBuilder
@@ -92,8 +106,20 @@ struct NotLoggedInView: View {
                         messages
                         buttons
                     }
+                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { contentHeight = $0 }
                     .frame(maxHeight: maxContentHeight(in: proxy.size.height), alignment: .bottom)
                     .frame(maxHeight: .infinity, alignment: .bottom)
+                    // The shown height plus the scrolled-away part is the natural height, the same whichever height
+                    // the content is given, so the decision cannot feed back into itself.
+                    .onChange(
+                        of: Self.fitsTheBottomHalf(
+                            contentHeight: contentHeight + hiddenMessagesHeight,
+                            screenHeight: proxy.size.height
+                        ),
+                        initial: true
+                    ) { _, fits in
+                        vm.contentFitsTheBottomHalf = fits
+                    }
                 }
             }
         }
@@ -101,14 +127,18 @@ struct NotLoggedInView: View {
 
     /// Below the logo drawn over the middle of the screen, unless the logo is hidden to make room.
     private func maxContentHeight(in height: CGFloat) -> CGFloat {
-        if Self.needsTheWholeHeight(verticalSizeClass: verticalSizeClass, dynamicTypeSize: dynamicTypeSize) {
+        if Self.needsTheWholeHeight(
+            verticalSizeClass: verticalSizeClass,
+            dynamicTypeSize: dynamicTypeSize,
+            contentFitsTheBottomHalf: vm.contentFitsTheBottomHalf
+        ) {
             return .infinity
         }
-        return max(height / 2 - .padding16, 0)
+        return Self.bottomHalfHeight(of: height)
     }
 
     private var messages: some View {
-        PublicImportantMessagesView(messages: vm.importantMessages)
+        PublicImportantMessagesView(messages: vm.importantMessages) { hiddenMessagesHeight = $0 }
     }
 
     private var buttons: some View {
@@ -129,9 +159,11 @@ struct NotLoggedInView: View {
 }
 
 /// Hides the logo `MainNavigation` draws over the middle of the logged-out screen when that screen needs the whole
-/// height (landscape, accessibility text sizes), once the launch animation has finished. The logo is decorative.
+/// height (landscape, accessibility text sizes, cards and buttons too tall for the bottom half), once the launch
+/// animation has finished. The logo is decorative.
 struct HiddenLogoWhenLoggedOutNeedsTheHeight: ViewModifier {
     let isLaunching: Bool
+    let contentFitsTheBottomHalf: Bool
     @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
     @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -140,7 +172,8 @@ struct HiddenLogoWhenLoggedOutNeedsTheHeight: ViewModifier {
             !isLaunching
             && NotLoggedInView.needsTheWholeHeight(
                 verticalSizeClass: verticalSizeClass,
-                dynamicTypeSize: dynamicTypeSize
+                dynamicTypeSize: dynamicTypeSize,
+                contentFitsTheBottomHalf: contentFitsTheBottomHalf
             )
         content
             .opacity(isHidden ? 0 : 1)
@@ -186,6 +219,16 @@ class NotLoggedViewModel {
     var showLogin = false
     /// Most severe first. Empty while loading and after a failed first load: there is no error state before login.
     var importantMessages: [PublicImportantMessage] = []
+    /// Whether the cards and buttons fit below the logo in portrait, as last measured by the screen. When they do not,
+    /// the screen takes the whole height and `MainNavigation` hides the logo.
+    var contentFitsTheBottomHalf = true {
+        didSet {
+            guard contentFitsTheBottomHalf != oldValue else { return }
+            onContentFitsTheBottomHalf(contentFitsTheBottomHalf)
+        }
+    }
+    /// Tells the owner, which hides the logo, each time `contentFitsTheBottomHalf` changes.
+    @ObservationIgnored var onContentFitsTheBottomHalf: (Bool) -> Void = { _ in }
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()

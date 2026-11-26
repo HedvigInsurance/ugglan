@@ -7,8 +7,12 @@ import hCoreUI
 /// offered, they scroll inside it.
 struct PublicImportantMessagesView: View {
     let messages: [PublicImportantMessage]
+    /// Called with how much of the cards' height is out of view, zero when they all fit.
+    var onHiddenHeightChange: (CGFloat) -> Void = { _ in }
     @State private var showSafariView = false
     @State private var urlLink: URL?
+    @State private var height: CGFloat = 0
+    @State private var cardsHeight: CGFloat = 0
 
     var body: some View {
         ViewThatFits(in: .vertical) {
@@ -19,6 +23,10 @@ struct PublicImportantMessagesView: View {
             .scrollBounceBehavior(.basedOnSize)
             .scrollIndicators(.visible)
             .scrollIndicatorsFlash(onAppear: true)
+        }
+        .onGeometryChange(for: CGFloat.self, of: \.size.height) { height = $0 }
+        .onChange(of: max(cardsHeight - height, 0), initial: true) { _, hiddenHeight in
+            onHiddenHeightChange(hiddenHeight)
         }
         .animation(.easeInOut, value: messages)
         .sheet(isPresented: $showSafariView) {
@@ -34,6 +42,8 @@ struct PublicImportantMessagesView: View {
             }
         }
         .padding(.vertical, messages.isEmpty ? 0 : .padding8)
+        // The cards always get their natural height, inside the scroll view too.
+        .onGeometryChange(for: CGFloat.self, of: \.size.height) { cardsHeight = $0 }
     }
 
     @ViewBuilder

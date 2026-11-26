@@ -37,7 +37,12 @@ struct MainNavigation: App {
                 {
                     LaunchScreen()
                         .foregroundColor(logoColor)
-                        .modifier(HiddenLogoWhenLoggedOutNeedsTheHeight(isLaunching: vm.showLaunchScreen))
+                        .modifier(
+                            HiddenLogoWhenLoggedOutNeedsTheHeight(
+                                isLaunching: vm.showLaunchScreen,
+                                contentFitsTheBottomHalf: vm.loggedOutContentFitsTheBottomHalf
+                            )
+                        )
                         .zIndex(2)
                 }
             }
@@ -103,7 +108,10 @@ class MainNavigationViewModel {
     var showLaunchScreen = true
     // Observed, so swapping in the fresh store after logout re-renders MainNavigation against it
     var featureFlags = Dependencies.featureFlags()
-    @ObservationIgnored lazy var notLoggedInVm = NotLoggedViewModel()
+    @ObservationIgnored lazy var notLoggedInVm = makeNotLoggedInVm()
+    /// Reported by the logged-out screen. Kept here rather than read from `notLoggedInVm`, so drawing the logo, which
+    /// starts with the launch, never creates the logged-out view model.
+    var loggedOutContentFitsTheBottomHalf = true
     @ObservationIgnored var loggedInVm = LoggedInNavigationViewModel()
     @ObservationIgnored private var pushNotificationCancellable: AnyCancellable?
     @ObservationIgnored private var deepLinkCancellable: AnyCancellable?
@@ -134,7 +142,8 @@ class MainNavigationViewModel {
                     }
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
-                    notLoggedInVm = .init()
+                    loggedOutContentFitsTheBottomHalf = true
+                    notLoggedInVm = makeNotLoggedInVm()
                     analyticsService.clearUserId()
                     analyticsService = AnalyticsService()
                     // Recreate loggedInVm only AFTER clearData() has reset the
@@ -160,6 +169,15 @@ class MainNavigationViewModel {
                 }
             }
         }
+    }
+
+    private func makeNotLoggedInVm() -> NotLoggedViewModel {
+        let notLoggedInVm = NotLoggedViewModel()
+        notLoggedInVm.onContentFitsTheBottomHalf = { [weak self] fits in
+            guard let self, loggedOutContentFitsTheBottomHalf != fits else { return }
+            loggedOutContentFitsTheBottomHalf = fits
+        }
+        return notLoggedInVm
     }
 
     @MainActor
