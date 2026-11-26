@@ -144,6 +144,7 @@ public enum hCoreUIAssets {
   public static let campaignQuickNav = ImageAsset(name: "CampaignQuickNav")
   public static let chatQuickNav = ImageAsset(name: "ChatQuickNav")
   public static let firstVetQuickNav = ImageAsset(name: "FirstVetQuickNav")
+  public static let yearInReview = ImageAsset(name: "YearInReview")
   public static let attention = ImageAsset(name: "Attention")
   public static let bankID = ImageAsset(name: "BankID")
   public static let check = ImageAsset(name: "Check")

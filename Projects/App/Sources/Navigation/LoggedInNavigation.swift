@@ -303,7 +303,15 @@ class DeepLinkHandler {
             viewModel?.homeNavigationVm.isPaymentMethodsPresented = true
         case .connectSwish:
             viewModel?.homeNavigationVm.payinSetupProvider = .swish
+        case .yearInReview:
+            handleYearInReview()
         }
+    }
+
+    private func handleYearInReview() {
+        guard Dependencies.featureFlags().showYearInReview else { return }
+        dismissAndSelectTab(0)
+        viewModel?.homeNavigationVm.showYearReview = true
     }
 
     private func handleManualCharge() {
@@ -851,6 +859,11 @@ struct HomeTab: View {
                 .navigationTitle(L10n.paymentsUpcomingPayment)
                 .withDismissButton()
                 .embededInNavigation(tracking: String(describing: PaymentDetailsView.self))
+        }
+        .modally(presented: $homeNavigationVm.showYearReview) {
+            StoriesScreen()
+                .withDismissButton()
+                .embededInNavigation(tracking: String(describing: StoriesScreen.self))
         }
         .environment(\.toolbarTransitionNamespace, toolbarTransitionNamespace)
     }

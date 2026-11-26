@@ -100,6 +100,13 @@ public final class HomeStore: AppStore {
             .store(in: &cancellables)
 
         Dependencies.featureFlags().publisher(for: \.data)
+            .map(\.showYearInReview)
+            .dropFirst()
+            .removeDuplicates()
+            .sink { [weak self] _ in self?.updateToolbarTypes() }
+            .store(in: &cancellables)
+
+        Dependencies.featureFlags().publisher(for: \.data)
             .map(\.isResumingOngoingShopSessionsEnabled)
             .dropFirst()
             .removeDuplicates()
@@ -291,6 +298,9 @@ public final class HomeStore: AppStore {
 
     private func updateToolbarTypes() {
         var types: [ToolbarOptionType] = []
+        if Dependencies.featureFlags().showYearInReview {
+            types.append(.yearInReview)
+        }
         let crossSellStore: CrossSellStore = globalAppStateContainer.get()
 
         if crossSellStore.hasNewOffer {

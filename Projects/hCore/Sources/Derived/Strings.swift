@@ -933,6 +933,10 @@ public enum L10n {
   public static var legalPrivacyPolicyApp: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP") }
   /// Privacy notice
   public static var legalPrivacyPolicyAppShort: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP_SHORT") }
+  /// We couldn't verify that it's you. Please try again.
+  public static var localAuthFailed: String { L10n.tr("Localizable", "LOCAL_AUTH_FAILED") }
+  /// Confirm it's you to make changes to your insurance
+  public static var localAuthReason: String { L10n.tr("Localizable", "LOCAL_AUTH_REASON") }
   /// Choose your preferred language
   public static var loginLanguagePreferences: String { L10n.tr("Localizable", "LOGIN_LANGUAGE_PREFERENCES") }
   /// Cancel
@@ -1591,6 +1595,8 @@ public enum L10n {
   public static var terminationFlowWithdrawalButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_BUTTON") }
   /// Yes, withdraw insurance
   public static var terminationFlowWithdrawalConfirmButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON") }
+  /// The confirmation is sent to
+  public static var terminationFlowWithdrawalConfirmationSentTo: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO") }
   /// Your insurance is cancelled
   public static var terminationFlowWithdrawalSuccessTitle: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE") }
   /// Withdraw insurance
@@ -1785,6 +1791,8 @@ public enum L10n {
   public static func voiceoverTierComparisionClick(_ p1: String) -> String {
     return L10n.tr("Localizable", "VOICEOVER_TIER_COMPARISION_CLICK", p1)
   }
+  /// Year in review
+  public static var yearInReviewTitle: String { L10n.tr("Localizable", "YEAR_IN_REVIEW_TITLE") }
 
   public enum Certificates {
     /// Create certificate
