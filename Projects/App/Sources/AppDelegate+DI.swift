@@ -27,15 +27,18 @@ import hGraphQL
 
 @MainActor
 enum DI {
+    /// Runs in `MainNavigation.init`, before any view is built. The important messages client is registered here
+    /// because the logged-out screen's view model resolves it as it is created, which can be on any path to that
+    /// screen; the client reaches the Kotlin graph only when it loads.
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
+        let publicImportantMessagesClient = PublicImportantMessagesClientShared()
+        Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in publicImportantMessagesClient })
     }
 
     static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
-        let publicImportantMessagesClient = PublicImportantMessagesClientShared()
-        Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in publicImportantMessagesClient })
         let ugglanStore: UgglanStore = globalAppStateContainer.get()
         let dateService = DateService(locale: Localization.Locale.currentLocale.value)
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
