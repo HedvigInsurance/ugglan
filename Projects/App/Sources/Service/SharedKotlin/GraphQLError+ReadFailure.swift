@@ -1,6 +1,20 @@
 import Foundation
 @preconcurrency import HedvigShared
+import KMPNativeCoroutinesAsync
+import KMPNativeCoroutinesCore
 import hGraphQL
+
+/// Awaits a shared Kotlin read, such as `graph.fooReads().bar()`. A failure is thrown as the `GraphQLError` an Octopus
+/// client would throw. Runs on the caller's actor, so the read and its value never cross an isolation boundary.
+nonisolated(nonsending) func kotlinRead<Output>(
+    _ read: () -> NativeSuspend<Output, Error, KotlinUnit>
+) async throws -> Output {
+    do {
+        return try await asyncFunction(for: read())
+    } catch {
+        throw GraphQLError(readError: error)
+    }
+}
 
 extension hGraphQL.GraphQLError {
     /// What an Octopus client throws for the same failure, so a feature handles a failed Kotlin read like any other

@@ -19,21 +19,6 @@ import hGraphQL
 @MainActor
 @Suite(.serialized)
 struct SharedKotlinTests {
-    /// What a client backed by a Kotlin read looks like. No read ships in the framework yet, so the test passes the
-    /// call a feature would make, `holder.fooReads().bar()`, as a closure.
-    @MainActor
-    private struct ExampleClient {
-        let memberIdRead: () -> NativeSuspend<String, Error, KotlinUnit>
-
-        func memberId() async throws -> String {
-            do {
-                return try await asyncFunction(for: memberIdRead())
-            } catch {
-                throw GraphQLError(readError: error)
-            }
-        }
-    }
-
     @Test
     func theGraphHolderIsRegisteredOncePerProcess() async {
         await DI.initNetworkClients()
@@ -45,8 +30,7 @@ struct SharedKotlinTests {
 
     @Test
     func aReadReturnsItsValue() async throws {
-        let client = ExampleClient(memberIdRead: { Self.succeeding("member") })
-        let memberId = try await client.memberId()
+        let memberId = try await kotlinRead { Self.succeeding("member") }
         #expect(memberId == "member")
     }
 
@@ -63,9 +47,8 @@ struct SharedKotlinTests {
             code: 0,
             userInfo: ["KotlinException": ReadFailure(kind: kind, cause: nil)]
         )
-        let client = ExampleClient(memberIdRead: { Self.failing(kotlinError) })
         do {
-            _ = try await client.memberId()
+            let _: String = try await kotlinRead { Self.failing(kotlinError) }
             return nil
         } catch let error as GraphQLError {
             if case .graphQLError = error { return true }
