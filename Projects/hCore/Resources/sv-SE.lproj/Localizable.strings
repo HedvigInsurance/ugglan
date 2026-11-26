@@ -440,6 +440,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_PRIVACY_POLICY" = "Personuppgifter";
 "LEGAL_PRIVACY_POLICY_APP" = "Integritetsnotis för Hedvig-appen";
 "LEGAL_PRIVACY_POLICY_APP_SHORT" = "Integritetsnotis";
+/* Error shown when Face ID / passcode verification fails */
+"LOCAL_AUTH_FAILED" = "Vi kunde inte bekräfta att det är du. Försök igen.";
+/* Face ID / passcode prompt reason shown before confirming changes on the quote summary */
+"LOCAL_AUTH_REASON" = "Bekräfta att det är du för att göra ändringar i din försäkring";
 "LOGIN_LANGUAGE_PREFERENCES" = "Välj språk";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Avbryt";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Ja";
@@ -756,6 +760,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_TITLE" = "Säg upp försäkring";
 "TERMINATION_FLOW_TODAY" = "Idag";
 "TERMINATION_FLOW_WITHDRAWAL_BUTTON" = "Ångra försäkringen";
+"TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "Bekräftelsen skickas till";
 "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON" = "Ja, ångra försäkringen";
 "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Du har ångrat försäkringen";
 "TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Ångra försäkringen";
@@ -858,6 +863,8 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "VOICEOVER_TIER_COMPARISION_CLICK" = "Tryck för att se vad som ingår i %@";
 "VOICE_OVER_COPY_CODE" = "Tryck för att kopiera koden";
 "VOICE_OVER_INFO_HELPCENTER" = "Tryck för att gå till hjälpcentret";
+/* Name of the Year in review feature: Home toolbar button label and accessibility name, its tooltip, and the link text for the year-in-review deep link in chat */
+"YEAR_IN_REVIEW_TITLE" = "Året som gått";
 "app_info.device_id_label" = "Enhets-ID";
 /* Text on the button which allows member to send us a bug report directly.
 We want members to submit a bug report to us directly instead of writing bad reviews. For this we are adding a new button in the app. */

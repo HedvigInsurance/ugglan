@@ -440,6 +440,10 @@ A message is then appended under the image next to the timestamp to indicate tha
 "LEGAL_PRIVACY_POLICY" = "Privacy policy";
 "LEGAL_PRIVACY_POLICY_APP" = "Privacy notice (Hedvig app)";
 "LEGAL_PRIVACY_POLICY_APP_SHORT" = "Privacy notice";
+/* Error shown when Face ID / passcode verification fails */
+"LOCAL_AUTH_FAILED" = "We couldn't verify that it's you. Please try again.";
+/* Face ID / passcode prompt reason shown before confirming changes on the quote summary */
+"LOCAL_AUTH_REASON" = "Confirm it's you to make changes to your insurance";
 "LOGIN_LANGUAGE_PREFERENCES" = "Choose your preferred language";
 "LOGOUT_ALERT_ACTION_CANCEL" = "Cancel";
 "LOGOUT_ALERT_ACTION_CONFIRM" = "Yes";
@@ -756,6 +760,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_TITLE" = "Cancel insurance";
 "TERMINATION_FLOW_TODAY" = "Today";
 "TERMINATION_FLOW_WITHDRAWAL_BUTTON" = "Withdraw insurance";
+"TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "The confirmation is sent to";
 "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON" = "Yes, withdraw insurance";
 "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Your insurance is cancelled";
 "TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Withdraw insurance";
@@ -858,6 +863,8 @@ figma: https://www.figma.com/design/SNVLvLq7ztclXiDqqMNXgY?node-id=419-7269#9590
 "VOICEOVER_TIER_COMPARISION_CLICK" = "Click to see what is covered in %@";
 "VOICE_OVER_COPY_CODE" = "Click to copy code";
 "VOICE_OVER_INFO_HELPCENTER" = "Press to proceed to help center";
+/* Name of the Year in review feature: Home toolbar button label and accessibility name, its tooltip, and the link text for the year-in-review deep link in chat */
+"YEAR_IN_REVIEW_TITLE" = "Year in review";
 "app_info.device_id_label" = "Device ID";
 /* Text on the button which allows member to send us a bug report directly.
 We want members to submit a bug report to us directly instead of writing bad reviews. For this we are adding a new button in the app. */

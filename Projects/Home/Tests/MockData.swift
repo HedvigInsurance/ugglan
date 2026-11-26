@@ -6,6 +6,13 @@ import hCore
 @MainActor
 struct MockData {
     @discardableResult
+    static func createMockURLOpener() -> MockURLOpener {
+        let opener = MockURLOpener()
+        Dependencies.shared.add(module: Module { () -> URLOpener in opener })
+        return opener
+    }
+
+    @discardableResult
     static func createMockHomeService(
         fetchImportantMessages: @escaping FetchImportantMessages = {
             []
@@ -121,5 +128,25 @@ class MockHomeService: HomeClient {
         events.append(.getOngoingQuotes)
         let data = try await fetchOngoingQuotes()
         return data
+    }
+}
+
+/// Records opened URLs; with `suspendsOpening` it keeps `open` suspended until `finishOpening()` is called
+class MockURLOpener: URLOpener {
+    var openedURLs = [URL]()
+    var suspendsOpening = false
+    private var pendingOpening: CheckedContinuation<Void, Never>?
+
+    func open(_ url: URL) async -> Bool {
+        openedURLs.append(url)
+        if suspendsOpening {
+            await withCheckedContinuation { pendingOpening = $0 }
+        }
+        return true
+    }
+
+    func finishOpening() {
+        pendingOpening?.resume()
+        pendingOpening = nil
     }
 }

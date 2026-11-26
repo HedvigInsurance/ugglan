@@ -85,7 +85,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .manualCharge: L10n.paymentsPaymentOverdueTitle
         case .connectPayment: L10n.paymentConnectTitle
         case .connectSwish: "Swish"
-        case .yearInReview: "Year in review"
+        case .yearInReview: L10n.yearInReviewTitle
         }
     }
 

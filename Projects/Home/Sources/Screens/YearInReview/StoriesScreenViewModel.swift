@@ -43,8 +43,16 @@ class StoriesScreenViewModel {
     private(set) var reveal = StoryReveal()
     /// How full each story's progress bar is, from 0 to 1
     private(set) var barProgress: [Double]
-    /// True while a finger is held on the story; freezes progress, content reveal and GIFs
-    private(set) var isPaused = false
+    /// True while a finger is held on the story
+    private var isHeld = false
+    /// True while the story's action URL is being opened
+    private var isPausedForAction = false
+    /// Freezes progress, content reveal, GIFs and videos
+    var isPaused: Bool {
+        isHeld || isPausedForAction
+    }
+    /// Where the current story's action button is, in global coordinates; `.zero` when there is none
+    @ObservationIgnored var actionButtonFrame: CGRect = .zero
 
     @ObservationIgnored private var touchStartDate: Date?
     /// Holds playback like a pause while the bars animate towards the next story
@@ -58,7 +66,8 @@ class StoriesScreenViewModel {
     init(stories: [Story]) {
         self.stories = stories
         self.barProgress = Array(repeating: 0, count: stories.count)
-        ImagePrefetcher(urls: stories.map(\.imageUrl), options: [.targetCache(ImageCache.default)]).start()
+        ImagePrefetcher(urls: stories.compactMap(\.media?.prefetchableUrl), options: [.targetCache(ImageCache.default)])
+            .start()
     }
 
     var currentStory: Story {
@@ -140,6 +149,7 @@ class StoriesScreenViewModel {
 
         // Reset before switching so the new story's views start hidden
         reveal = StoryReveal()
+        actionButtonFrame = .zero
         withAnimation {
             currentIndex = index
         }
@@ -153,21 +163,36 @@ class StoriesScreenViewModel {
         try? await Task.sleep(for: .seconds(StoryConstants.barTransitionDuration))
     }
 
+    // MARK: Action
+
+    /// Pauses the story while the action's URL is opened; `URLOpener` adds an authorization code when the URL
+    /// requires one
+    func open(_ action: StoryAction) async {
+        isPausedForAction = true
+        await Dependencies.urlOpener.open(action.url)
+        isPausedForAction = false
+    }
+
     // MARK: Touch handling
 
     func touchBegan() {
         guard touchStartDate == nil else { return }
         touchStartDate = Date()
-        isPaused = true
+        isHeld = true
     }
 
-    /// A quick tap switches story, a hold only pauses until the finger lifts
+    /// A quick tap switches story, a hold only pauses until the finger lifts.
+    /// While an action is being opened a touch only resumes the story.
     func touchEnded(isOnLeadingHalf: Bool) {
+        let wasPausedForAction = isPausedForAction
         defer {
             touchStartDate = nil
-            isPaused = false
+            isHeld = false
+            isPausedForAction = false
         }
-        guard let touchStartDate, Date().timeIntervalSince(touchStartDate) < StoryConstants.tapThreshold else {
+        guard !wasPausedForAction, let touchStartDate,
+            Date().timeIntervalSince(touchStartDate) < StoryConstants.tapThreshold
+        else {
             return
         }
         let index = isOnLeadingHalf ? currentIndex - 1 : currentIndex + 1

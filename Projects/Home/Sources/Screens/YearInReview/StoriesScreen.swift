@@ -1,3 +1,4 @@
+import AVKit
 import Kingfisher
 import SwiftUI
 import hCore
@@ -84,7 +85,7 @@ private struct StoryPlayer: View {
             .sectionContainerStyle(.transparent)
             // Simultaneous so the touch is not held back until the hForm scroll view's pan gesture fails,
             // which would only deliver it on finger up and make pausing on hold impossible
-            .simultaneousGesture(touchGesture(width: proxy.size.width))
+            .simultaneousGesture(touchGesture(midX: proxy.frame(in: .global).midX))
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     StoryProgressBar(vm: vm)
@@ -99,10 +100,18 @@ private struct StoryPlayer: View {
         }
     }
 
-    private func touchGesture(width: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
-            .onChanged { _ in vm.touchBegan() }
-            .onEnded { gesture in vm.touchEnded(isOnLeadingHalf: gesture.location.x < width / 2) }
+    /// In the global coordinate space so touches can be compared with the action button's frame
+    private func touchGesture(midX: CGFloat) -> some Gesture {
+        DragGesture(minimumDistance: 0, coordinateSpace: .global)
+            .onChanged { gesture in
+                // The gesture is simultaneous, so a tap on the action button would otherwise also switch story
+                guard !vm.actionButtonFrame.contains(gesture.startLocation) else { return }
+                vm.touchBegan()
+            }
+            .onEnded { gesture in
+                guard !vm.actionButtonFrame.contains(gesture.startLocation) else { return }
+                vm.touchEnded(isOnLeadingHalf: gesture.location.x < midX)
+            }
     }
 }
 
@@ -123,23 +132,25 @@ private struct StoryProgressBar: View {
 // MARK: - Text
 private struct StoryTextView: View {
     let vm: StoriesScreenViewModel
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     var body: some View {
         HStack {
             VStack(spacing: .padding16) {
-                if let title = vm.currentStory.title {
-                    hPill(text: title, color: .grey)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .opacity(vm.reveal.title ? 1 : 0)
-                        .padding(.bottom)
-                }
-                Text(vm.currentStory.getAttributedText(schema: colorScheme))
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                hPill(text: vm.currentStory.title, color: .grey)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .opacity(vm.reveal.title ? 1 : 0)
+                    .padding(.bottom)
+                hText(vm.currentStory.description, style: .body2)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .opacity(vm.reveal.text ? 1 : 0)
+                // Added with the text rather than faded, so it cannot be tapped before it is visible
+                if let action = vm.currentStory.action, vm.reveal.text {
+                    StoryActionButton(vm: vm, action: action)
+                        .transition(.opacity)
+                }
             }
             // In landscape the image sits next to the text instead of being attached to the bottom
             if verticalSizeClass == .compact {
@@ -152,15 +163,40 @@ private struct StoryTextView: View {
     }
 }
 
-// MARK: - Image
+// MARK: - Action
+private struct StoryActionButton: View {
+    @State private var isLoading = false
+    let vm: StoriesScreenViewModel
+    let action: StoryAction
+
+    var body: some View {
+        hButton(.medium, .secondary, content: .init(title: action.title)) {
+            isLoading = true
+            await vm.open(action)
+            isLoading = false
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .onGeometryChange(for: CGRect.self) { proxy in
+            proxy.frame(in: .global)
+        } action: { frame in
+            vm.actionButtonFrame = frame
+        }
+        .hButtonIsLoading(isLoading)
+        .disabled(isLoading)
+    }
+}
+
+// MARK: - Media
 private struct StoryImageView: View {
     let vm: StoriesScreenViewModel
     @Environment(NavigationRouter.self) private var router
 
     var body: some View {
         VStack(spacing: .padding8) {
-            StoryImage(story: vm.currentStory, isPaused: vm.isPaused)
-                .opacity(vm.reveal.image ? 1 : 0)
+            if let media = vm.currentStory.media {
+                StoryMediaContent(media: media, isPaused: vm.isPaused)
+                    .opacity(vm.reveal.image ? 1 : 0)
+            }
 
             if vm.reveal.thankYouButton {
                 hButton(.large, .secondary, content: .init(title: L10n.generalDoneButton)) {
@@ -173,22 +209,24 @@ private struct StoryImageView: View {
     }
 }
 
-private struct StoryImage: View {
-    let story: Story
+private struct StoryMediaContent: View {
+    let media: StoryMedia
     let isPaused: Bool
     @State private var gifPlayback = GIFPlaybackController()
 
     var body: some View {
         Group {
-            if story.mimeType == .GIF {
-                KFAnimatedImage(story.imageUrl)
+            switch media {
+            case let .gif(url):
+                KFAnimatedImage(url)
                     .configure { [gifPlayback] imageView in
                         gifPlayback.imageView = imageView
                     }
                     .targetCache(ImageCache.default)
                     .aspectRatio(contentMode: .fit)
-            } else {
-                KFImage(story.imageUrl)
+                    .accessibilityHidden(true)
+            case let .image(url):
+                KFImage(url)
                     .placeholder { _ in
                         ProgressView()
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -198,6 +236,12 @@ private struct StoryImage: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(.padding16)
+                    .accessibilityHidden(true)
+            case let .video(url):
+                StoryVideoPlayer(url: url, isPaused: isPaused)
+                    .frame(height: StoryConstants.imageSize)
+                    .cornerRadius(.padding16)
+                    .accessibilityHidden(true)
             }
         }
         .frame(maxWidth: .infinity)
@@ -219,6 +263,51 @@ private final class GIFPlaybackController {
             imageView?.stopAnimating()
         } else {
             imageView?.startAnimating()
+        }
+    }
+}
+
+/// Plays a story's video muted and on repeat, without controls, and pauses it while the story is held
+private struct StoryVideoPlayer: UIViewRepresentable {
+    let url: URL
+    let isPaused: Bool
+
+    func makeUIView(context _: Context) -> StoryVideoPlayerView {
+        StoryVideoPlayerView(url: url)
+    }
+
+    func updateUIView(_ view: StoryVideoPlayerView, context _: Context) {
+        view.setPaused(isPaused)
+    }
+}
+
+private final class StoryVideoPlayerView: UIView {
+    private let player = AVQueuePlayer()
+    /// Keeps the video looping for as long as the view exists
+    private let looper: AVPlayerLooper
+
+    override static var layerClass: AnyClass { AVPlayerLayer.self }
+
+    init(url: URL) {
+        looper = AVPlayerLooper(player: player, templateItem: AVPlayerItem(url: url))
+        super.init(frame: .zero)
+        player.isMuted = true
+        let playerLayer = layer as? AVPlayerLayer
+        playerLayer?.player = player
+        playerLayer?.videoGravity = .resizeAspect
+        player.play()
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func setPaused(_ isPaused: Bool) {
+        if isPaused {
+            player.pause()
+        } else {
+            player.play()
         }
     }
 }

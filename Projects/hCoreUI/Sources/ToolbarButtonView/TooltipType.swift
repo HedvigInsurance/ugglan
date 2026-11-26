@@ -70,7 +70,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return L10n.InsuranceEvidence.documentTitle
         case .yearInReview:
-            return "Year in review"
+            return L10n.yearInReviewTitle
         }
     }
 
@@ -134,7 +134,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         case .travelCertificate, .insuranceEvidence:
             return L10n.Toast.readMore
         case .yearInReview:
-            return "Year in review"
+            return L10n.yearInReviewTitle
         }
     }
 
@@ -331,7 +331,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         case .travelCertificate, .insuranceEvidence:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
-        case .crossSell:
+        case .crossSell, .yearInReview:
             UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
         default:
             break

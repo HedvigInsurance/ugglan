@@ -119,8 +119,7 @@ enum DI {
             let petChipIdClient = PetChipIdClientOctopus()
             let onboardingClient = OnboardingClientOctopus()
             let puppyGuideClient = PuppyGuideClientOctopus()
-            // TODO: Use YearInReviewClientOctopus once the backend serves the stories
-            let yearInReviewClient = YearInReviewClientDemo()
+            let yearInReviewClient = YearInReviewClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlagsClient in featureFlagsClientUnleash })
