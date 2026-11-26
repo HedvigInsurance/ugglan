@@ -153,6 +153,8 @@ struct ActiveHomeView: View {
                 navigationVm?.router.push(HomeRouterAction.inbox)
             case .travelCertificate, .insuranceEvidence:
                 break
+            case .yearInReview:
+                navigationVm?.showYearReview = true
             }
         }
     }
