@@ -14,8 +14,6 @@ struct NotLoggedInView: View {
     @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @SwiftUI.Environment(\.scenePhase) private var scenePhase
     @State private var locale = Localization.Locale.currentLocale.value
-    @State private var contentHeight: CGFloat = 0
-    @State private var hiddenMessagesHeight: CGFloat = 0
 
     init(
         vm: NotLoggedViewModel
@@ -62,32 +60,11 @@ struct NotLoggedInView: View {
         verticalSizeClass == .compact || dynamicTypeSize.isAccessibilitySize || !contentFitsTheBottomHalf
     }
 
-    /// The height below the logo drawn over the middle of a screen of the given height.
-    static func bottomHalfHeight(of height: CGFloat) -> CGFloat {
-        max(height / 2 - .padding16, 0)
-    }
-
-    /// Whether the cards and buttons at their natural height, scrolling none of the cards, fit below the logo. A
-    /// point of slack absorbs rounding, so content exactly as tall as the bottom half counts as fitting.
-    static func fitsTheBottomHalf(contentHeight: CGFloat, screenHeight: CGFloat) -> Bool {
-        contentHeight <= bottomHalfHeight(of: screenHeight) + 1
-    }
-
-    @ViewBuilder
     var languageView: some View {
         GeometryReader { proxy in
-            VStack(spacing: 0) {
-                HStack {
-                    Spacer()
-                    Button {
-                        vm.showLanguagePicker = true
-                    } label: {
-                        Localization.Locale.currentLocale.value.icon
-                            .padding(.padding8)
-                            .accessibilityLabel(L10n.voiceoverSelectLanguage)
-                    }
-                }
-                if verticalSizeClass == .compact {
+            if verticalSizeClass == .compact {
+                VStack(spacing: 0) {
+                    languageButton
                     HStack(alignment: .bottom, spacing: .padding16) {
                         messages
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -101,43 +78,60 @@ struct NotLoggedInView: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                     }
-                } else {
-                    VStack {
-                        messages
-                        buttons
+                }
+            } else {
+                ViewThatFits(in: .vertical) {
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        // Leaves the top half to the logo `MainNavigation` draws over the middle of the screen.
+                        cardsAndButtons
+                            .padding(.top, proxy.size.height / 2 + .padding16)
+                            .overlay(alignment: .top) { languageButton }
+                            .onAppear { vm.onContentFitsTheBottomHalf(true) }
                     }
-                    .onGeometryChange(for: CGFloat.self, of: \.size.height) { contentHeight = $0 }
-                    .frame(maxHeight: maxContentHeight(in: proxy.size.height), alignment: .bottom)
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-                    // The shown height plus the scrolled-away part is the natural height, the same whichever height
-                    // the content is given, so the decision cannot feed back into itself.
-                    .onChange(
-                        of: Self.fitsTheBottomHalf(
-                            contentHeight: contentHeight + hiddenMessagesHeight,
-                            screenHeight: proxy.size.height
-                        ),
-                        initial: true
-                    ) { _, fits in
-                        vm.contentFitsTheBottomHalf = fits
+                    VStack(spacing: 0) {
+                        languageButton
+                        cardsAndButtons
                     }
+                    .onAppear { vm.onContentFitsTheBottomHalf(false) }
+                    VStack(spacing: 0) {
+                        languageButton
+                        VStack {
+                            messages
+                            buttons
+                        }
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                    }
+                    .onAppear { vm.onContentFitsTheBottomHalf(false) }
                 }
             }
         }
     }
 
-    private func maxContentHeight(in height: CGFloat) -> CGFloat {
-        if Self.needsTheWholeHeight(
-            verticalSizeClass: verticalSizeClass,
-            dynamicTypeSize: dynamicTypeSize,
-            contentFitsTheBottomHalf: vm.contentFitsTheBottomHalf
-        ) {
-            return .infinity
+    private var languageButton: some View {
+        HStack {
+            Spacer()
+            Button {
+                vm.showLanguagePicker = true
+            } label: {
+                Localization.Locale.currentLocale.value.icon
+                    .padding(.padding8)
+                    .accessibilityLabel(L10n.voiceoverSelectLanguage)
+            }
         }
-        return Self.bottomHalfHeight(of: height)
+    }
+
+    /// At their natural height, so `ViewThatFits` picks the scrolling layout rather than scroll the cards here.
+    private var cardsAndButtons: some View {
+        VStack {
+            messages
+            buttons
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxHeight: .infinity, alignment: .bottom)
     }
 
     private var messages: some View {
-        PublicImportantMessagesView(messages: vm.importantMessages) { hiddenMessagesHeight = $0 }
+        PublicImportantMessagesView(messages: vm.importantMessages)
     }
 
     private var buttons: some View {
@@ -216,15 +210,7 @@ class NotLoggedViewModel {
     var showLogin = false
     /// There is no error state before login: a failed first load shows nothing.
     var importantMessages: [PublicImportantMessage] = []
-    /// Whether the cards and buttons fit below the logo in portrait, as last measured by the screen. When they do not,
-    /// the screen takes the whole height and `MainNavigation` hides the logo.
-    var contentFitsTheBottomHalf = true {
-        didSet {
-            guard contentFitsTheBottomHalf != oldValue else { return }
-            onContentFitsTheBottomHalf(contentFitsTheBottomHalf)
-        }
-    }
-    /// Tells the owner, which hides the logo, each time `contentFitsTheBottomHalf` changes.
+    /// Tells the owner, which draws the logo, whether the cards and buttons fit below it.
     @ObservationIgnored var onContentFitsTheBottomHalf: (Bool) -> Void = { _ in }
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
