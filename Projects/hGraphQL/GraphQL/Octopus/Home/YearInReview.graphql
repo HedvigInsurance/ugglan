@@ -1,0 +1,14 @@
+query YearInReview {
+  currentMember {
+    id
+    yearInReview {
+      title
+      description
+      fileUrl
+      action {
+        title
+        url
+      }
+    }
+  }
+}
