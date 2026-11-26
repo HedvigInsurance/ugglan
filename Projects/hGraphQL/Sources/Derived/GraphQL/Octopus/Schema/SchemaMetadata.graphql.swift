@@ -187,7 +187,9 @@ public extension OctopusGraphQL {
       "TravelCertificate": OctopusGraphQL.Objects.TravelCertificate,
       "TravelCertificateContractSpecification": OctopusGraphQL.Objects.TravelCertificateContractSpecification,
       "TravelCertificateSpecification": OctopusGraphQL.Objects.TravelCertificateSpecification,
-      "UserError": OctopusGraphQL.Objects.UserError
+      "UserError": OctopusGraphQL.Objects.UserError,
+      "YearInReviewAction": OctopusGraphQL.Objects.YearInReviewAction,
+      "YearInReviewArticle": OctopusGraphQL.Objects.YearInReviewArticle
     ]
 
     @_spi(Execution) public static func objectType(forTypename typename: String) -> ApolloAPI.Object? {
