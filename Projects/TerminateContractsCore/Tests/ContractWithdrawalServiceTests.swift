@@ -109,3 +109,26 @@ extension TerminateContractsDependencySuite {
         }
     }
 }
+
+final class ContractWithdrawalDataTests {
+    @Test
+    func withEmailReplacesOnlyEmailSuccess() {
+        let action: TerminationAction = .terminateWithDate(
+            minDate: "2026-11-20",
+            maxDate: "2026-11-20",
+            extraCoverage: []
+        )
+        let original = ContractWithdrawalData(
+            statusText: "Active since 2026-11-20",
+            action: action,
+            email: "member@hedvig.com"
+        )
+
+        let updated = original.with(email: "new@hedvig.com")
+
+        #expect(updated.email == "new@hedvig.com")
+        #expect(updated.statusText == original.statusText)
+        #expect(updated.action == action)
+        #expect(original.email == "member@hedvig.com", "the original value must be left unchanged")
+    }
+}

@@ -1,4 +1,6 @@
 import AppStateContainer
+import Combine
+import Foundation
 import Home
 import TestDependencies
 import Testing
@@ -30,12 +32,32 @@ extension ProfileDependencySuite {
         }
 
         // MARK: - Helpers
+        @discardableResult
         private func setUpMockService(
+            fetchMemberDetails: FetchMemberDetails? = nil,
             memberUpdate: @escaping MemberUpdate = { email, phone in (email, phone) }
         ) -> MockProfileService {
-            let service = MockData.createMockProfileService(memberUpdate: memberUpdate)
+            let service =
+                if let fetchMemberDetails {
+                    MockData.createMockProfileService(
+                        fetchMemberDetails: fetchMemberDetails,
+                        memberUpdate: memberUpdate
+                    )
+                } else {
+                    MockData.createMockProfileService(memberUpdate: memberUpdate)
+                }
             sut = service
             return service
+        }
+
+        /// Records the `object` of every `.memberEmailUpdated` notification until cancelled.
+        private func observeEmailUpdates() -> (recorder: NotificationRecorder, cancellable: AnyCancellable) {
+            let recorder = NotificationRecorder()
+            let cancellable = NotificationCenter.default.publisher(for: .memberEmailUpdated)
+                .sink { [weak recorder] notification in
+                    recorder?.objects.append(notification.object as? String)
+                }
+            return (recorder, cancellable)
         }
 
         private func setUpStore(
@@ -209,5 +231,223 @@ extension ProfileDependencySuite {
 
             await expectServiceReleased()
         }
+
+        @Test
+        func saveWhenAPIThrowsDoesNotPostEmailUpdated() async {
+            do {
+                setUpMockService(
+                    memberUpdate: { _, _ in
+                        throw MyInfoSaveError.error(message: "Network error")
+                    }
+                )
+                _ = await setUpStore()
+                let (recorder, cancellable) = observeEmailUpdates()
+
+                let model = MyInfoViewModel()
+                model.currentEmailInput = "valid@email.com"
+                let success = await model.save()
+                cancellable.cancel()
+
+                #expect(success == false)
+                #expect(recorder.objects.isEmpty)
+            }
+
+            await expectServiceReleased()
+        }
+
+        // MARK: - Email Updated Notification
+
+        @Test
+        func saveInAllModePostsEmailUpdatedSuccess() async {
+            do {
+                setUpMockService()
+                _ = await setUpStore(email: "old@email.com")
+                let homeStore = HomeStore()
+                globalAppStateContainer.register(homeStore)
+                let (recorder, cancellable) = observeEmailUpdates()
+
+                let model = MyInfoViewModel(fields: .all)
+                let newEmail = "newemail@email.com"
+                model.currentEmailInput = newEmail
+                let success = await model.save()
+                cancellable.cancel()
+                await waitUntil(description: "the member state refresh started by save() finished") {
+                    homeStore.memberInfo != nil
+                }
+
+                #expect(success)
+                #expect(recorder.objects == [newEmail])
+            }
+
+            await expectServiceReleased()
+        }
+
+        // MARK: - Email Only Mode
+
+        @Test
+        func initInEmailOnlyModeWithEmptyPhoneEnablesSaveButton() async {
+            do {
+                setUpMockService()
+                _ = await setUpStore(phone: "")
+
+                let emailOnlyModel = MyInfoViewModel(fields: .emailOnly)
+                let allModel = MyInfoViewModel(fields: .all)
+
+                #expect(emailOnlyModel.fields == .emailOnly)
+                #expect(emailOnlyModel.disabledSaveButton == false)
+                #expect(allModel.disabledSaveButton, "precondition: an empty phone disables saving in .all mode")
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func isValidInEmailOnlyModeIgnoresInvalidPhone() async {
+            do {
+                setUpMockService()
+                _ = await setUpStore()
+
+                let model = MyInfoViewModel(fields: .emailOnly)
+                model.currentPhoneInput = "not a phone"
+                model.phoneError = "phone error"
+                model.isValid()
+
+                #expect(model.disabledSaveButton == false)
+
+                model.currentEmailInput = ""
+                model.isValid()
+
+                #expect(model.disabledSaveButton, "an empty email must still disable saving")
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func saveInEmailOnlyModeSendsStoredPhoneWithNewEmailSuccess() async {
+            do {
+                let sentValues = SentValues()
+                let mockService = setUpMockService(
+                    memberUpdate: { email, phone in
+                        sentValues.values.append((email, phone))
+                        return (email, phone)
+                    }
+                )
+                let store = await setUpStore(email: "old@email.com")
+                let homeStore = HomeStore()
+                globalAppStateContainer.register(homeStore)
+                let (recorder, cancellable) = observeEmailUpdates()
+
+                let model = MyInfoViewModel(fields: .emailOnly)
+                let newEmail = "newemail@email.com"
+                model.currentEmailInput = newEmail
+                let success = await model.save()
+                cancellable.cancel()
+                await waitUntil(description: "the member state refresh started by save() finished") {
+                    homeStore.memberInfo != nil
+                }
+
+                #expect(success)
+                #expect(sentValues.values.count == 1)
+                #expect(sentValues.values.first?.email == newEmail)
+                #expect(sentValues.values.first?.phone == phone)
+                #expect(mockService.events == [.memberUpdate], "the stored phone is used, so nothing is fetched")
+                #expect(store.memberDetails?.email == newEmail)
+                #expect(store.memberDetails?.phone == phone)
+                #expect(recorder.objects == [newEmail])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func saveInEmailOnlyModeWithEmptyStoredPhoneFetchesMemberDetailsSuccess() async {
+            do {
+                let fetchedPhone = "0701234567"
+                let sentValues = SentValues()
+                let mockService = setUpMockService(
+                    fetchMemberDetails: {
+                        .init(
+                            id: "memberId",
+                            firstName: "first name",
+                            lastName: "last name",
+                            phone: fetchedPhone,
+                            email: "old@email.com",
+                            hasTravelCertificate: true,
+                            isContactInfoUpdateNeeded: false
+                        )
+                    },
+                    memberUpdate: { email, phone in
+                        sentValues.values.append((email, phone))
+                        return (email, phone)
+                    }
+                )
+                let store = await setUpStore(phone: "", email: "old@email.com")
+                let homeStore = HomeStore()
+                globalAppStateContainer.register(homeStore)
+                let (recorder, cancellable) = observeEmailUpdates()
+
+                let model = MyInfoViewModel(fields: .emailOnly)
+                let newEmail = "newemail@email.com"
+                model.currentEmailInput = newEmail
+                let success = await model.save()
+                cancellable.cancel()
+                await waitUntil(description: "the member state refresh started by save() finished") {
+                    homeStore.memberInfo != nil
+                }
+
+                #expect(success)
+                #expect(mockService.events == [.getMemberDetails, .memberUpdate])
+                #expect(sentValues.values.count == 1)
+                #expect(sentValues.values.first?.email == newEmail)
+                #expect(sentValues.values.first?.phone == fetchedPhone)
+                #expect(store.memberDetails?.email == newEmail)
+                #expect(store.memberDetails?.phone == fetchedPhone)
+                #expect(recorder.objects == [newEmail])
+            }
+
+            await expectServiceReleased()
+        }
+
+        @Test
+        func saveInEmailOnlyModeWhenFetchedPhoneIsEmptyFailsWithPhoneEmptyError() async {
+            do {
+                let mockService = setUpMockService(
+                    fetchMemberDetails: {
+                        .init(
+                            id: "memberId",
+                            firstName: "first name",
+                            lastName: "last name",
+                            phone: "",
+                            email: "old@email.com",
+                            hasTravelCertificate: true,
+                            isContactInfoUpdateNeeded: false
+                        )
+                    }
+                )
+                _ = await setUpStore(phone: "", email: "old@email.com")
+                let (recorder, cancellable) = observeEmailUpdates()
+
+                let model = MyInfoViewModel(fields: .emailOnly)
+                model.currentEmailInput = "newemail@email.com"
+                let success = await model.save()
+                cancellable.cancel()
+
+                #expect(success == false)
+                #expect(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
+                #expect(mockService.events == [.getMemberDetails])
+                #expect(recorder.objects.isEmpty)
+            }
+
+            await expectServiceReleased()
+        }
     }
+}
+
+private final class NotificationRecorder {
+    var objects: [String?] = []
+}
+
+private final class SentValues {
+    var values: [(email: String, phone: String)] = []
 }

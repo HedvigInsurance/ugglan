@@ -419,6 +419,43 @@ extension TerminateContractsDependencySuite {
             await expectReleased()
         }
 
+        // MARK: - updateWithdrawalEmail
+
+        @Test
+        func updateWithdrawalEmailReplacesOnlyEmailSuccess() async {
+            do {
+                registerMockClient()
+                let navVm = makeWithdrawalChoiceViewModel()
+                navVm.applyWithdrawal(MockTerminationData.fixedDateWithdrawal)
+                await navVm.fetchNotificationTask?.value
+
+                navVm.updateWithdrawalEmail("new@hedvig.com")
+
+                #expect(navVm.withdrawal?.email == "new@hedvig.com")
+                #expect(navVm.withdrawal?.statusText == MockTerminationData.fixedDateWithdrawal.statusText)
+                #expect(navVm.withdrawal?.action == MockTerminationData.fixedDateWithdrawal.action)
+                #expect(navVm.isWithdrawal)
+            }
+
+            await expectReleased()
+        }
+
+        @Test
+        func updateWithdrawalEmailWithoutWithdrawalDoesNothing() async {
+            do {
+                let mockClient = registerMockClient()
+                let navVm = makeWithdrawalChoiceViewModel()
+
+                navVm.updateWithdrawalEmail("new@hedvig.com")
+
+                #expect(navVm.withdrawal == nil)
+                #expect(!navVm.isWithdrawal)
+                #expect(mockClient.events.isEmpty)
+            }
+
+            await expectReleased()
+        }
+
         // MARK: - Helpers
 
         @discardableResult
