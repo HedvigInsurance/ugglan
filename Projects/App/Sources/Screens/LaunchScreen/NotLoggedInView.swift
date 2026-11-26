@@ -52,8 +52,6 @@ struct NotLoggedInView: View {
         }
     }
 
-    /// True when the cards and buttons need the whole height, so the logo drawn over the middle of the screen is hidden
-    /// once the launch has finished (`HiddenLogoWhenLoggedOutNeedsTheHeight`).
     static func needsTheWholeHeight(
         verticalSizeClass: UserInterfaceSizeClass?,
         dynamicTypeSize: DynamicTypeSize
@@ -101,7 +99,6 @@ struct NotLoggedInView: View {
         }
     }
 
-    /// Below the logo drawn over the middle of the screen, unless the logo is hidden to make room.
     private func maxContentHeight(in height: CGFloat) -> CGFloat {
         if Self.needsTheWholeHeight(verticalSizeClass: verticalSizeClass, dynamicTypeSize: dynamicTypeSize) {
             return .infinity
@@ -130,8 +127,7 @@ struct NotLoggedInView: View {
     }
 }
 
-/// Hides the logo `MainNavigation` draws over the middle of the logged-out screen when that screen needs the whole
-/// height (landscape, accessibility text sizes), once the launch animation has finished. The logo is decorative.
+/// Hides the logo `MainNavigation` draws over the logged-out screen when the screen needs the whole height.
 struct HiddenLogoWhenLoggedOutNeedsTheHeight: ViewModifier {
     let isLaunching: Bool
     @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
@@ -186,7 +182,7 @@ class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
     var showLogin = false
-    /// Most severe first. Empty while loading and after a failed first load: there is no error state before login.
+    /// There is no error state before login: a failed first load shows nothing.
     var importantMessages: [PublicImportantMessage] = []
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}

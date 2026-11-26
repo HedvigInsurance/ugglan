@@ -3,8 +3,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-/// The important messages on the logged-out first screen, one card per message. When they do not fit the height
-/// offered, they scroll inside it.
 struct PublicImportantMessagesView: View {
     let messages: [PublicImportantMessage]
     @State private var showSafariView = false
@@ -69,7 +67,7 @@ extension PublicImportantMessage.Severity {
         }
     }
 
-    /// Read before the message, like a toast's, because VoiceOver does not see the card's colour or icon.
+    /// VoiceOver does not see the card's colour or icon.
     fileprivate var accessibilityPrefix: String {
         switch self {
         case .error: L10n.generalError
