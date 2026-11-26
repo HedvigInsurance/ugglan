@@ -1,8 +1,6 @@
 import AuthenticationCore
 import Foundation
 @preconcurrency import HedvigShared
-import KMPNativeCoroutinesAsync
-import KMPNativeCoroutinesCore
 import hCore
 import hGraphQL
 
@@ -11,17 +9,8 @@ final class PublicImportantMessagesClientShared: PublicImportantMessagesClient {
     @Inject private var graph: IosGraphHolder
 
     func getMessages() async throws -> [PublicImportantMessage] {
-        try await Self.messages(from: { graph.publicImportantMessagesReads().messages() })
-    }
-
-    static func messages(
-        from read: () -> NativeSuspend<[PublicImportantMessageItem], Error, KotlinUnit>
-    ) async throws -> [PublicImportantMessage] {
-        do {
-            return try await asyncFunction(for: read()).map(PublicImportantMessage.init(item:))
-        } catch {
-            throw GraphQLError(readError: error)
-        }
+        try await kotlinRead { graph.publicImportantMessagesReads().messages() }
+            .map(PublicImportantMessage.init(item:))
     }
 }
 

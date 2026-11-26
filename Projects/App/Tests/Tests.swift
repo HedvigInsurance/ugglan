@@ -78,7 +78,7 @@ struct SharedKotlinTests {
             ),
         ]
 
-        let messages = try await PublicImportantMessagesClientShared.messages(from: { Self.succeeding(items) })
+        let messages = try await kotlinRead { Self.succeeding(items) }.map(PublicImportantMessage.init(item:))
 
         #expect(
             messages == [
@@ -102,7 +102,7 @@ struct SharedKotlinTests {
             userInfo: ["KotlinException": ReadFailure(kind: .network, cause: nil)]
         )
         do {
-            _ = try await PublicImportantMessagesClientShared.messages(from: { Self.failing(networkFailure) })
+            let _: [PublicImportantMessageItem] = try await kotlinRead { Self.failing(networkFailure) }
             Issue.record("expected the read to throw")
         } catch let error as GraphQLError {
             guard case .otherError = error else {
