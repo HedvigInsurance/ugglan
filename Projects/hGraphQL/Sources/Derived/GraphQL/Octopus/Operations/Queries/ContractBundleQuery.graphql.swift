@@ -9,7 +9,7 @@ public extension OctopusGraphQL {
     public static let operationName: String = "ContractBundle"
     public static let operationDocument: ApolloAPI.OperationDocument = .init(
       definition: .init(
-        #"query ContractBundle($options: DisplayItemOptions) { currentMember { __typename firstName lastName ssn activeContracts { __typename ...ContractFragment currentAgreement { __typename itemCost { __typename ...ItemCostFragment } addons { __typename ...AddonPriceFragment } displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } upcomingChangedAgreement { __typename itemCost { __typename ...ItemCostFragment } addons { __typename ...AddonPriceFragment } displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } existingAddons { __typename ...ContractAddonFragment } availableAddons { __typename ...AvailableAddonFragment } } pendingContracts { __typename displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } exposureDisplayName exposureDisplayNameShort id supportsTermination basePremium { __typename ...MoneyFragment } productVariant { __typename ...ProductVariantFragment } addons { __typename addonVariant { __typename ...AddonVariantFragment } ...AddonPriceFragment } itemCost { __typename ...ItemCostFragment } existingAddons { __typename ...ContractAddonFragment } availableAddons { __typename ...AvailableAddonFragment } } terminatedContracts { __typename ...ContractFragment currentAgreement { __typename displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } } } }"#,
+        #"query ContractBundle($options: DisplayItemOptions) { currentMember { __typename firstName lastName ssn activeContracts { __typename ...ContractFragment currentAgreement { __typename itemCost { __typename ...ItemCostFragment } addons { __typename ...AddonPriceFragment } displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } upcomingChangedAgreement { __typename itemCost { __typename ...ItemCostFragment } addons { __typename ...AddonPriceFragment } displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } existingAddons { __typename ...ContractAddonFragment } availableAddons { __typename ...AvailableAddonFragment } } pendingContracts { __typename displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } exposureDisplayName exposureDisplayNameShort id supportsTermination supportsWithdrawal basePremium { __typename ...MoneyFragment } productVariant { __typename ...ProductVariantFragment } addons { __typename addonVariant { __typename ...AddonVariantFragment } ...AddonPriceFragment } itemCost { __typename ...ItemCostFragment } existingAddons { __typename ...ContractAddonFragment } availableAddons { __typename ...AvailableAddonFragment } } terminatedContracts { __typename ...ContractFragment currentAgreement { __typename displayItems(options: $options) { __typename ...AgreementDisplayItemFragment } } } } }"#,
         fragments: [AddonPriceFragment.self, AddonVariantFragment.self, AgreementDisplayItemFragment.self, AgreementFragment.self, AvailableAddonFragment.self, CoInsuredFragment.self, CoOwnerFragment.self, ContractAddonFragment.self, ContractFragment.self, InsuranceDocumentFragment.self, ItemCostFragment.self, ItemDiscountFragment.self, MoneyFragment.self, PerilFragment.self, ProductVariantFragment.self]
       ))
 
@@ -133,6 +133,9 @@ public extension OctopusGraphQL {
           public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
+          /// Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+          /// within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
+          public var supportsWithdrawal: Bool { __data["supportsWithdrawal"] }
           /// The last date this insurance will be active, if there is one.
           public var terminationDate: OctopusGraphQL.Date? { __data["terminationDate"] }
           /// Checks if petId is missing on the current or upcoming agreement.
@@ -544,6 +547,7 @@ public extension OctopusGraphQL {
             .field("exposureDisplayNameShort", String.self),
             .field("id", OctopusGraphQL.UUID.self),
             .field("supportsTermination", Bool.self),
+            .field("supportsWithdrawal", Bool.self),
             .field("basePremium", BasePremium.self),
             .field("productVariant", ProductVariant.self),
             .field("addons", [Addon].self),
@@ -564,6 +568,9 @@ public extension OctopusGraphQL {
           public var id: OctopusGraphQL.UUID { __data["id"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
+          /// Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+          /// within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
+          public var supportsWithdrawal: Bool { __data["supportsWithdrawal"] }
           /// Same as `Contract.currentAgreement.basePremium`.
           public var basePremium: BasePremium { __data["basePremium"] }
           /// Same as `Contract.currentAgreement.productVariant`.
@@ -911,6 +918,9 @@ public extension OctopusGraphQL {
           public var supportsChangeTier: Bool { __data["supportsChangeTier"] }
           /// Whether or not this contract can be terminated by user
           public var supportsTermination: Bool { __data["supportsTermination"] }
+          /// Whether or not this contract can still be withdrawn from (cancelled with right of withdrawal): it was created
+          /// within the last 14 days, the member can terminate it, it hasn't ended yet and it wasn't already withdrawn.
+          public var supportsWithdrawal: Bool { __data["supportsWithdrawal"] }
           /// The last date this insurance will be active, if there is one.
           public var terminationDate: OctopusGraphQL.Date? { __data["terminationDate"] }
           /// A possible upcoming change of agreement. If there are multiple upcoming changes, this one will return

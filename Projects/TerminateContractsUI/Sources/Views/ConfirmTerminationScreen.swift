@@ -19,7 +19,7 @@ struct ConfirmTerminationScreen: View {
             .init(
                 actionButtonAttachedToBottom:
                     .init(
-                        buttonTitle: L10n.terminationFlowConfirmButton,
+                        buttonTitle: confirmButtonTitle,
                         buttonAction: {
                             terminationNavigationVm.submitTermination()
                             router.dismiss()
@@ -33,13 +33,28 @@ struct ConfirmTerminationScreen: View {
                 )
             )
         )
+        .hStateViewContentBottomAttachedView {
+            if terminationNavigationVm.isWithdrawal, let notification = terminationNavigationVm.notification {
+                TerminationNotificationCard(notification: notification)
+            }
+        }
         .hExtraTopPadding
+    }
+
+    var confirmButtonTitle: String {
+        terminationNavigationVm.isWithdrawal
+            ? L10n.terminationFlowWithdrawalConfirmButton : L10n.terminationFlowConfirmButton
     }
 
     var terminationText: String {
         if terminationNavigationVm.isDeletion {
             return L10n.terminationFlowConfirmation
         }
+
+        if let selectedDate = terminationNavigationVm.selectedDate, Calendar.current.isDateInToday(selectedDate) {
+            return L10n.terminationFlowConfirmationSubtitleToday(selectedDate.displayDateDDMMMYYYYFormat)
+        }
+
         return L10n.terminationFlowConfirmationSubtitleTermination(
             terminationNavigationVm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
         )

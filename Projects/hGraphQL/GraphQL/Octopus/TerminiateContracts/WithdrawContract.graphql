@@ -1,0 +1,7 @@
+mutation WithdrawContract($contractId: UUID!) {
+  withdrawContract(contractId: $contractId) {
+    userError {
+      message
+    }
+  }
+}

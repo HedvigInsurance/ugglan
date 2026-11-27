@@ -94,6 +94,24 @@ public class TerminateContractsClientDemo: TerminateContractsClient {
         return .success
     }
 
+    public func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData {
+        await delay(0.5)
+        return ContractWithdrawalData(
+            statusText: "Your insurance is active since today.",
+            action: .terminateWithDate(
+                minDate: Date().localDateString,
+                maxDate: Date().localDateString,
+                extraCoverage: []
+            ),
+            email: "member@hedvig.com"
+        )
+    }
+
+    public func withdrawContract(contractId: String) async throws -> TerminationContractResult {
+        await delay(2)
+        return .success
+    }
+
     public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         await delay(0.3)
         return .init(message: "Your insurance will be terminated on this date.", type: .info)

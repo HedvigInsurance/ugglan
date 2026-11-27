@@ -45,6 +45,18 @@ public final class TerminateContractsService {
         }
     }
 
+    @Log()
+    public func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData {
+        try await client.getContractWithdrawal(contractId: contractId)
+    }
+
+    @Log()
+    public func withdrawContract(contractId: String) async throws -> TerminationContractResult {
+        try await Task.withMinimumDuration(.seconds(3)) {
+            try await client.withdrawContract(contractId: contractId)
+        }
+    }
+
     public func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
         try await client.getNotification(contractId: contractId, date: date)
     }

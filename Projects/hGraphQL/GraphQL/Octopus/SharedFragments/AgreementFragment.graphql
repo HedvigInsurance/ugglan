@@ -37,6 +37,7 @@ fragment ContractFragment on Contract {
       supportsTravelCertificate
       supportsChangeTier
       supportsTermination
+      supportsWithdrawal
       terminationDate
       upcomingChangedAgreement {
          ...AgreementFragment

@@ -98,18 +98,9 @@ public struct ContractsNavigation<Content: View>: View {
                             )
                         )
                     case .cancellation:
-                        let config = TerminationConfirmConfig(contract: contract)
-                        Task {
-                            do {
-                                try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
-                            } catch let exception {
-                                Toasts.shared.displayToastBar(
-                                    toast: .init(type: .error, text: exception.localizedDescription)
-                                )
-                            }
-                        }
+                        contractsNavigationVm.startTermination(for: contract)
                     case .changeAddress:
-                        break
+                        contractsNavigationVm.isChangeAddressPresented = true
                     case .removeAddons:
                         contractsNavigationVm.isRemoveAddonPresented = .init(
                             contractInfo: contract.asAddonContractInfo,
@@ -190,6 +181,19 @@ public class ContractsNavigationViewModel {
     )
 
     public init() {}
+
+    func startTermination(for contract: ContractsCore.Contract) {
+        let config = TerminationConfirmConfig(contract: contract)
+        Task {
+            do {
+                try await terminateInsuranceVm.start(with: [config])
+            } catch let exception {
+                Toasts.shared.displayToastBar(
+                    toast: .init(type: .error, text: exception.localizedDescription)
+                )
+            }
+        }
+    }
 }
 
 public enum RedirectType {
@@ -231,7 +235,9 @@ extension TerminationConfirmConfig {
             activeFrom: contract.currentAgreement?.agreementDate.activeFrom,
             typeOfContract: TypeOfContract.resolve(
                 for: contract.currentAgreement?.productVariant.typeOfContract ?? ""
-            )
+            ),
+            supportsWithdrawal: contract.supportsWithdrawal,
+            supportsTermination: contract.supportsTermination
         )
     }
 }

@@ -1559,7 +1559,7 @@ public enum L10n {
   public static func terminationFlowConfirmationSubtitleTermination(_ p1: String) -> String {
     return L10n.tr("Localizable", "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION", p1)
   }
-  /// Your insurance ends today, %@.
+  /// Your insurance ends today, \n%@.
   public static func terminationFlowConfirmationSubtitleToday(_ p1: String) -> String {
     return L10n.tr("Localizable", "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY", p1)
   }
@@ -1605,6 +1605,8 @@ public enum L10n {
   public static var terminationFlowWithdrawalConfirmButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON") }
   /// The confirmation is sent to
   public static var terminationFlowWithdrawalConfirmationSentTo: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO") }
+  /// Confirmation will be sent to
+  public static var terminationFlowWithdrawalEmailLabel: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL") }
   /// Your insurance is cancelled
   public static var terminationFlowWithdrawalSuccessTitle: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE") }
   /// Withdraw insurance

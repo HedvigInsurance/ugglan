@@ -104,6 +104,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     // MARK: - UI State
     var isDatePickerPresented = false
     var isConfirmTerminationPresented = false
+    var isChangeEmailInfoPresented = false
     var isProcessingPresented = false
     var infoText: String?
     var redirectActionLoadingState: ProcessingState = .success
@@ -114,6 +115,15 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     // MARK: - Navigation
     let router = NavigationRouter()
     let initialStep: TerminationFlowActions
+
+    /// The cancellation info button is only shown when the flow starts directly on cancelling, not when it starts
+    /// on the withdraw-or-cancel choice (or straight on a withdrawal).
+    var showsCancelInfoButton: Bool {
+        switch initialStep {
+        case .router(action: .survey), .router(action: .selectInsurance): return true
+        default: return false
+        }
+    }
 
     // MARK: - Configuration
     var config: TerminationConfirmConfig?
@@ -127,8 +137,21 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     var selectedDate: Date?
     var progress: Float? = 0
 
+    // MARK: - Withdrawal State
+    /// Set when the member chose to withdraw instead of cancelling: the flow then skips the survey.
+    var withdrawal: ContractWithdrawalData?
+
+    var isWithdrawal: Bool {
+        withdrawal != nil
+    }
+
+    /// The action for the path the member is on: the withdrawal's when withdrawing, otherwise the survey's.
+    var action: TerminationAction? {
+        withdrawal?.action ?? surveyData?.action
+    }
+
     var extraCoverage: [ExtraCoverageItem] {
-        guard let action = surveyData?.action else { return [] }
+        guard let action else { return [] }
         switch action {
         case let .terminateWithDate(_, _, extraCoverage):
             return extraCoverage
@@ -138,13 +161,13 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     }
 
     var isDeletion: Bool {
-        guard let action = surveyData?.action else { return false }
+        guard let action else { return false }
         if case .deleteInsurance = action { return true }
         return false
     }
 
     var terminationDateLimits: (min: Date?, max: Date?)? {
-        guard case let .terminateWithDate(minDate, maxDate, _) = surveyData?.action else { return nil }
+        guard case let .terminateWithDate(minDate, maxDate, _) = action else { return nil }
         return (minDate.localDateToDate, maxDate.localDateToDate)
     }
 
@@ -176,15 +199,58 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         observeRouteCount()
     }
 
+    /// Starts by asking the member whether to withdraw or cancel the contract.
+    init(
+        withdrawalChoiceFor config: TerminationConfirmConfig,
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        self.config = config
+        self.hasSelectInsuranceStep = false
+        self.initialStep = .router(action: .withdrawalChoice)
+        self.redirectHandler.viewModel = self
+        observeRouteCount()
+    }
+
+    /// Starts straight on review and confirm of a withdrawal, for contracts that can't be cancelled.
+    init(
+        config: TerminationConfirmConfig,
+        withdrawal: ContractWithdrawalData,
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        self.config = config
+        self.hasSelectInsuranceStep = false
+        self.initialStep = .router(action: .confirmation)
+        self.redirectHandler.viewModel = self
+        applyWithdrawal(withdrawal)
+        observeRouteCount()
+    }
+
     // MARK: - Survey
 
     func fetchSurvey(for config: TerminationConfirmConfig) async {
         self.config = config
+        if config.isWithdrawalOnly {
+            await startWithdrawal()
+            return
+        }
+        if config.supportsWithdrawal {
+            router.push(TerminationFlowRouterActions.withdrawalChoice)
+            return
+        }
+        await startTermination()
+    }
+
+    /// Continues with the regular cancellation flow, starting with the survey.
+    func startTermination() async {
+        guard let config else { return }
         withAnimation {
             fetchingSurvey = true
         }
         do {
             let data = try await terminateContractsService.getTerminationSurvey(contractId: config.contractId)
+            resetPathState()
             self.surveyData = data
             router.push(TerminationFlowRouterActions.survey)
         } catch {
@@ -195,11 +261,67 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         }
     }
 
+    // MARK: - Withdrawal
+
+    /// Continues with a withdrawal: there is no survey and no date selection, so the flow goes straight to
+    /// review and confirm.
+    func startWithdrawal() async {
+        guard let config else { return }
+        withAnimation {
+            fetchingSurvey = true
+        }
+        do {
+            let data = try await terminateContractsService.getContractWithdrawal(contractId: config.contractId)
+            applyWithdrawal(data)
+            router.push(TerminationFlowRouterActions.confirmation)
+        } catch {
+            router.push(TerminationFlowFinalRouterActions.failure(message: error.localizedDescription))
+        }
+        withAnimation {
+            fetchingSurvey = false
+        }
+    }
+
+    func applyWithdrawal(_ data: ContractWithdrawalData) {
+        resetPathState()
+        withdrawal = data
+        if case let .terminateWithDate(minDate, maxDate, _) = data.action, minDate == maxDate {
+            selectedDate = minDate.localDateToDate
+        } else {
+            selectedDate = nil
+        }
+        if isDeletion {
+            fetchNotification(for: Date())
+        } else if let selectedDate {
+            // A withdrawal skips date selection and goes straight to review and confirm, so the date picker
+            // never fetches the notification for its date: it has to be fetched here.
+            fetchNotification(for: selectedDate)
+        }
+        updateProgress()
+    }
+
+    /// Shows the member's new email as where the withdrawal confirmation is sent, after they changed it.
+    func updateWithdrawalEmail(_ email: String) {
+        withdrawal = withdrawal?.with(email: email)
+    }
+
+    /// Clears everything chosen on the withdrawal or cancellation path, so switching between them (by going back to
+    /// the choice screen) can't carry over a date, survey answer or notification from the other path.
+    private func resetPathState() {
+        withdrawal = nil
+        selectedOptionId = nil
+        selectedComment = nil
+        selectedDate = nil
+        fetchNotificationTask?.cancel()
+        fetchNotificationTask = nil
+        notification = nil
+    }
+
     // MARK: - Survey Completion
     func proceedAfterSurvey(optionId: String, comment: String?) {
         selectedOptionId = optionId
         selectedComment = comment
-        guard surveyData?.action != nil else { return }
+        guard action != nil else { return }
         if isDeletion {
             fetchNotification(for: Date())
         }
@@ -244,9 +366,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     // MARK: - Termination Submission
 
     func submitTermination() {
-        guard let contractId = config?.contractId,
-            let optionId = selectedOptionId
-        else { return }
+        guard let contractId = config?.contractId, let submission = pendingSubmission else { return }
 
         Task { [weak self] in
             guard let self else { return }
@@ -257,13 +377,16 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
 
             do {
                 let result: TerminationContractResult
-                if isDeletion {
+                switch submission {
+                case .withdrawal:
+                    result = try await terminateContractsService.withdrawContract(contractId: contractId)
+                case let .deletion(optionId):
                     result = try await terminateContractsService.deleteContract(
                         contractId: contractId,
                         surveyOptionId: optionId,
                         comment: selectedComment
                     )
-                } else {
+                case let .termination(optionId):
                     result = try await terminateContractsService.terminateContract(
                         contractId: contractId,
                         terminationDate: selectedDate?.localDateString ?? "",
@@ -292,6 +415,36 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
         }
     }
 
+    /// Title of the success screen. A withdrawal says the insurance was withdrawn rather than cancelled.
+    var successTitle: String {
+        isWithdrawal ? L10n.terminationFlowWithdrawalSuccessTitle : L10n.terminationFlowSuccessTitle
+    }
+
+    /// Body of the success screen. A withdrawal ending today says so, and one without a date set by the backend
+    /// doesn't show an empty date.
+    var successBody: String {
+        if isDeletion {
+            return L10n.terminateContractTerminationComplete
+        }
+        guard let selectedDate else {
+            return isWithdrawal
+                ? L10n.terminationFlowConfirmation
+                : L10n.terminationFlowSuccessSubtitleWithDate("")
+        }
+        let date = selectedDate.displayDateDDMMMYYYYFormat
+        if isWithdrawal, Calendar.current.isDateInToday(selectedDate) {
+            return L10n.terminationFlowConfirmationSubtitleToday(date)
+        }
+        return L10n.terminationFlowSuccessSubtitleWithDate(date)
+    }
+
+    /// What `submitTermination()` sends. A withdrawal has no survey, so only the other two need a selected option.
+    private var pendingSubmission: TerminationSubmission? {
+        if isWithdrawal { return .withdrawal }
+        guard let selectedOptionId else { return nil }
+        return isDeletion ? .deletion(optionId: selectedOptionId) : .termination(optionId: selectedOptionId)
+    }
+
     // MARK: - Notification
     @ObservationIgnored var fetchNotificationTask: Task<Void, Never>?
 
@@ -306,7 +459,9 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
                     date: date
                 )
                 try Task.checkCancellation()
-                notification = data
+                withAnimation {
+                    notification = data
+                }
             } catch {
                 do {
                     try await Task.sleep(for: .seconds(1))
@@ -324,7 +479,9 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
 
     private func updateProgress() {
         let pushedTypes = router.routeTypes
-        if pushedTypes.last == TerminationFlowFinalRouterActions.self
+        // A withdrawal goes straight to review and confirm, so there are no steps to show progress for.
+        if isWithdrawal
+            || pushedTypes.last == TerminationFlowFinalRouterActions.self
             || pushedTypes.last == DeflectScreenContent.self
         {
             progress = nil
@@ -371,11 +528,7 @@ struct TerminationFlowNavigation: View {
             ],
             tracking: vm.initialStep
         ) {
-            getView(for: vm.initialStep)
-                .addNavigationInfoButton(
-                    title: L10n.terminationFlowCancelInfoTitle,
-                    description: L10n.terminationFlowCancelInfoText
-                )
+            initialView
                 .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                         .withDismissButton()
@@ -395,6 +548,8 @@ struct TerminationFlowNavigation: View {
                             openSelectInsuranceScreen(configs: configs)
                         case .confirmation:
                             openTerminationSummaryScreen()
+                        case .withdrawalChoice:
+                            openWithdrawalChoiceScreen()
                         }
                     }
                 }
@@ -412,8 +567,8 @@ struct TerminationFlowNavigation: View {
                         switch action {
                         case .success:
                             openTerminationSuccessScreen(
-                                isDeletion: vm.isDeletion,
-                                terminationDate: vm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
+                                title: vm.successTitle,
+                                body: vm.successBody
                             )
                         case let .failure(message):
                             openTerminationFailScreen(message: message)
@@ -436,10 +591,30 @@ struct TerminationFlowNavigation: View {
             openConfirmTerminationScreen()
                 .environment(vm)
         }
+        .detent(
+            presented: $vm.isChangeEmailInfoPresented,
+            presentationStyle: .detent(style: [.height])
+        ) {
+            WithdrawalChangeEmailInfoScreen()
+                .embededInNavigation(tracking: String(describing: WithdrawalChangeEmailInfoScreen.self))
+        }
         .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()
         }
         .showInfoScreen(text: $vm.infoText, dismissButtonTitle: L10n.embarkGoBackButton)
+    }
+
+    @ViewBuilder
+    private var initialView: some View {
+        if vm.showsCancelInfoButton {
+            getView(for: vm.initialStep)
+                .addNavigationInfoButton(
+                    title: L10n.terminationFlowCancelInfoTitle,
+                    description: L10n.terminationFlowCancelInfoText
+                )
+        } else {
+            getView(for: vm.initialStep)
+        }
     }
 
     @ViewBuilder
@@ -455,13 +630,15 @@ struct TerminationFlowNavigation: View {
                 openSelectInsuranceScreen(configs: configs)
             case .confirmation:
                 openTerminationSummaryScreen()
+            case .withdrawalChoice:
+                openWithdrawalChoiceScreen()
             }
         case let .final(action):
             switch action {
             case .success:
                 openTerminationSuccessScreen(
-                    isDeletion: vm.isDeletion,
-                    terminationDate: vm.selectedDate?.displayDateDDMMMYYYYFormat ?? ""
+                    title: vm.successTitle,
+                    body: vm.successBody
                 )
             case let .failure(message):
                 openTerminationFailScreen(message: message)
@@ -479,6 +656,11 @@ struct TerminationFlowNavigation: View {
             )
         )
         .withDismissButton()
+    }
+
+    private func openWithdrawalChoiceScreen() -> some View {
+        TerminationWithdrawalChoiceScreen()
+            .withDismissButton()
     }
 
     private func openSetTerminationDateLandingScreen() -> some View {
@@ -524,15 +706,10 @@ struct TerminationFlowNavigation: View {
         TerminationProcessingScreen(terminationNavigationVm: vm)
     }
 
-    private func openTerminationSuccessScreen(
-        isDeletion: Bool,
-        terminationDate: String
-    ) -> some View {
+    private func openTerminationSuccessScreen(title: String, body: String) -> some View {
         SuccessScreen(
-            successViewTitle: L10n.terminationFlowSuccessTitle,
-            successViewBody: isDeletion
-                ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate(terminationDate),
+            successViewTitle: title,
+            successViewBody: body,
 
         )
         .hStateViewButtonConfig(
@@ -574,11 +751,18 @@ struct TerminationFlowNavigation: View {
 
 // MARK: - Router Action Enums
 
+private enum TerminationSubmission {
+    case withdrawal
+    case deletion(optionId: String)
+    case termination(optionId: String)
+}
+
 public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case survey
     case datePicker
     case confirmation
+    case withdrawalChoice
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
@@ -592,6 +776,8 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: SetTerminationDateLandingScreen.self)
         case .confirmation:
             return .init(describing: TerminationSummaryScreen.self)
+        case .withdrawalChoice:
+            return .init(describing: TerminationWithdrawalChoiceScreen.self)
         }
     }
 }

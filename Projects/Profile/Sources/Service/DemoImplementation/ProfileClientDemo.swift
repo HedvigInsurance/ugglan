@@ -45,6 +45,10 @@ public class ProfileClientDemo: ProfileClient {
         (email, phone)
     }
 
+    public func update(email: String) async throws -> String {
+        email
+    }
+
     public func update(phone: String) async throws {}
 
     public func updateSubscriptionPreference(to _: Bool) async throws {}

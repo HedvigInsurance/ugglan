@@ -1,0 +1,11 @@
+query ContractWithdrawal($contractId: UUID!) {
+  currentMember {
+    email
+    contractWithdrawal(contractId: $contractId) {
+      statusText
+      action {
+        ...TerminationFlowActionFragment
+      }
+    }
+  }
+}

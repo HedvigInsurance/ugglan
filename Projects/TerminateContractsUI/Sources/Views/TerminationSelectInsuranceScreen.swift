@@ -32,7 +32,9 @@ struct TerminationSelectInsuranceScreen: View {
                         contractDisplayName: selectedContract.contractDisplayName,
                         contractExposureName: selectedContract.contractExposureName,
                         activeFrom: selectedContract.activeFrom,
-                        typeOfContract: selectedContract.typeOfContract
+                        typeOfContract: selectedContract.typeOfContract,
+                        supportsWithdrawal: selectedContract.supportsWithdrawal,
+                        supportsTermination: selectedContract.supportsTermination
                     )
                     Task {
                         vm?.hasSelectInsuranceStep = true

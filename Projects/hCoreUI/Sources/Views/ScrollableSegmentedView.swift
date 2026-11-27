@@ -173,15 +173,21 @@ public struct ScrollableSegmentedView<Content: View>: View {
         GeometryReader { geo in
             HStack(spacing: 0) {
                 edgeBlur(at: .leading)
-                    .frame(width: geo.safeAreaInsets.leading)
+                    .frame(width: validInset(geo.safeAreaInsets.leading))
                 Spacer(minLength: 0)
                 edgeBlur(at: .trailing)
-                    .frame(width: geo.safeAreaInsets.trailing)
+                    .frame(width: validInset(geo.safeAreaInsets.trailing))
             }
             .ignoresSafeArea(.container, edges: .horizontal)
         }
         .allowsHitTesting(false)
         .accessibilityHidden(true)
+    }
+
+    /// Safe area insets can transiently be negative or non-finite (e.g. during presentation transitions),
+    /// which SwiftUI rejects as a frame dimension.
+    private func validInset(_ inset: CGFloat) -> CGFloat {
+        inset.isFinite ? max(inset, 0) : 0
     }
 
     private func edgeBlur(at edge: HorizontalEdge) -> some View {

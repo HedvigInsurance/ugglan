@@ -13,18 +13,7 @@ query TerminationSurvey($contractId: UUID!, $redirectionEnabled: Boolean!) {
       }
     }
     action {
-      ... on TerminationFlowActionTerminateWithDate {
-        minDate
-        maxDate
-        extraCoverage {
-          ...TerminationExtraCoverageItemFragment
-        }
-      }
-      ... on TerminationFlowActionDeleteInsurance {
-        extraCoverage {
-          ...TerminationExtraCoverageItemFragment
-        }
-      }
+      ...TerminationFlowActionFragment
     }
   }
 }
@@ -62,4 +51,19 @@ fragment TerminationSurveyOptionSuggestionFragment on TerminationFlowSurveyOptio
 fragment TerminationExtraCoverageItemFragment on TerminationFlowExtraCoverageItem {
   displayName
   displayValue
+}
+
+fragment TerminationFlowActionFragment on TerminationFlowAction {
+  ... on TerminationFlowActionTerminateWithDate {
+    minDate
+    maxDate
+    extraCoverage {
+      ...TerminationExtraCoverageItemFragment
+    }
+  }
+  ... on TerminationFlowActionDeleteInsurance {
+    extraCoverage {
+      ...TerminationExtraCoverageItemFragment
+    }
+  }
 }
