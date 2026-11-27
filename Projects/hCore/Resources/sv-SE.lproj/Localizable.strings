@@ -735,14 +735,14 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_CANCELLATION_TITLE" = "Säg upp försäkring";
 "TERMINATION_FLOW_CANCEL_INFO_TEXT" = "Du kan närsomhelst avsluta din försäkring. Avslutar du din försäkring kommer du endast att debiteras för den tid du varit aktiv medlem hos Hedvig. När du avslutat din försäkring kan du se din sista betalning under fliken \"Betalningar\" här i appen.";
 "TERMINATION_FLOW_CANCEL_INFO_TITLE" = "Avsluta din försäkring";
-"TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE" = "Försäkringen gäller tills det datum du väljer.";
+"TERMINATION_FLOW_CHOICE_CANCELLATION_SUBTITLE" = "Försäkring gäller tills det datum du väljer.";
 "TERMINATION_FLOW_CHOICE_SUBTITLE" = "Vad vill du göra?";
-"TERMINATION_FLOW_CHOICE_TITLE" = "Avsluta försäkringen";
-"TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE" = "Försäkringen avslutas idag. Du betalar bara för dagarna du har varit försäkrad.";
+"TERMINATION_FLOW_CHOICE_TITLE" = "Avsluta försäkring";
+"TERMINATION_FLOW_CHOICE_WITHDRAWAL_SUBTITLE" = "Din försäkring avslutas idag. Du betalar bara för dagarna du har varit försäkrad.";
 "TERMINATION_FLOW_CONFIRMATION" = "Din försäkring kommer avlutas direkt";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23280&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION" = "Din försäkring kommer att avslutas den %@";
-"TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY" = "Din försäkring avslutas idag, %@.";
+"TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY" = "Din försäkring avslutas idag, \n%@.";
 /* https://www.figma.com/file/WlwFCAWywXNcXVgPfYVmWu/Final-Design?type=design&node-id=11163-23284&mode=design&t=EIJ94dApw3spZjum-4 */
 "TERMINATION_FLOW_CONFIRM_BUTTON" = "Ja, avsluta";
 "TERMINATION_FLOW_CONTINUE_CANCELLING" = "Nej tack, fortsätt";
@@ -759,17 +759,16 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_SUMMARY_SUBTITLE" = "Granska och bekräfta";
 "TERMINATION_FLOW_TITLE" = "Säg upp försäkring";
 "TERMINATION_FLOW_TODAY" = "Idag";
-"TERMINATION_FLOW_WITHDRAWAL_BUTTON" = "Ångra försäkringen";
+"TERMINATION_FLOW_WITHDRAWAL_BUTTON" = "Ångra försäkring";
 "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1" = "Om du behöver ändra e-postadressen som bekräftelsen skickas till kan du ändra den %@. Observera att det ändrar din email för alla framtida utskick.";
 "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2" = "här";
 "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE" = "Vill du ändra e-post?";
 "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "Bekräftelsen skickas till";
-"TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON" = "Ja, ångra försäkringen";
+"TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON" = "Ja, ångra försäkring";
 "TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL" = "Bekräftelse skickas till";
-"TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Du har ångrat försäkringen";
-"TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Ångra försäkringen";
+"TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Du har ångrat försäkring";
+"TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Ångra försäkring";
 "TERMINATION_KEEP_INSURANCE_BUTTON" = "Behåll försäkring";
-"TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "Bekräftelsen skickas till";
 "TERMINATION_NOT_SUCCESSFUL_TITLE" = "Uppsägningen misslyckades";
 /* slack: https://hedviginsurance.slack.com/archives/C07MM6F0DK2/p1727943801522449 */
 "TERMINATION_NO_TIER_QUOTES_SUBTITLE" = "Du har redan det bästa skyddet och priset för den här försäkringen";

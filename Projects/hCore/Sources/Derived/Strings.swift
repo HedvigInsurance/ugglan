@@ -1559,7 +1559,7 @@ public enum L10n {
   public static func terminationFlowConfirmationSubtitleTermination(_ p1: String) -> String {
     return L10n.tr("Localizable", "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TERMINATION", p1)
   }
-  /// Your insurance ends today, %@.
+  /// Your insurance ends today, \n%@.
   public static func terminationFlowConfirmationSubtitleToday(_ p1: String) -> String {
     return L10n.tr("Localizable", "TERMINATION_FLOW_CONFIRMATION_SUBTITLE_TODAY", p1)
   }
