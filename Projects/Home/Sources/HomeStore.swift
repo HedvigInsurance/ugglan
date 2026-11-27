@@ -305,6 +305,9 @@ public final class HomeStore: AppStore {
 
         types.append(.chat(hasUnread: showChatNotification))
 
+        // Every Home refresh lands here several times; skip unchanged writes so they don't
+        // invalidate the toolbar each time.
+        guard types != toolbarOptionTypes else { return }
         toolbarOptionTypes = types
     }
 }

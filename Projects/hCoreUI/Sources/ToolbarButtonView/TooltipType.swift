@@ -89,7 +89,7 @@ public enum ToolbarOptionType: Hashable, Codable, Equatable, Sendable {
         }
     }
 
-    var toolbarItemId: String {
+    public var toolbarItemId: String {
         switch self {
         case .crossSell:
             return "crossSell"

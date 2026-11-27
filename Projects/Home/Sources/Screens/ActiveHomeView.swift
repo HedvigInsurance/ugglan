@@ -266,7 +266,9 @@ private struct HomeNavigationBar: View {
 
     private func toolbar() -> some View {
         HStack(spacing: .padding8) {
-            ForEach(homeStore.toolbarOptionTypes, id: \.self) { type in
+            // Keyed by the option alone, not its badge state: a badge flipping on refresh must
+            // update the button in place, not rebuild it and re-morph the whole glass group.
+            ForEach(homeStore.toolbarOptionTypes, id: \.toolbarItemId) { type in
                 barButton(for: type)
             }
         }
