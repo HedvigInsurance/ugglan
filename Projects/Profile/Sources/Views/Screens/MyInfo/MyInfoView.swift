@@ -189,12 +189,9 @@ public class MyInfoViewModel {
     }
 
     private func validateAndUpdateContactInfo() async throws {
-        if fields == .emailOnly, currentPhoneInput.isEmpty {
-            // The update needs the phone number too: fetch it if the profile hasn't been loaded yet.
-            await profileStore.fetchMemberDetails()
-            currentPhoneInput = profileStore.memberDetails?.phone ?? ""
-        }
-        if currentPhoneInput.isEmpty {
+        let isEmailOnly = fields == .emailOnly
+        // When only editing the email the phone number is ignored and only the email is updated.
+        if !isEmailOnly, currentPhoneInput.isEmpty {
             throw MyInfoSaveError.phoneNumberEmpty
         }
         if currentEmailInput.isEmpty {
@@ -203,15 +200,18 @@ public class MyInfoViewModel {
         if !Masking(type: .email).isValid(text: currentEmailInput) {
             throw MyInfoSaveError.emailMalformed
         }
-        let updatedContactData = try await profileService.update(
-            email: currentEmailInput,
-            phone: currentPhoneInput
-        )
 
-        let newPhone = updatedContactData.phone
-        let newEmail = updatedContactData.email
-
-        profileStore.setMemberPhone(newPhone)
+        let newEmail: String
+        if isEmailOnly {
+            newEmail = try await profileService.update(email: currentEmailInput)
+        } else {
+            let updatedContactData = try await profileService.update(
+                email: currentEmailInput,
+                phone: currentPhoneInput
+            )
+            newEmail = updatedContactData.email
+            profileStore.setMemberPhone(updatedContactData.phone)
+        }
         profileStore.setMemberEmail(newEmail)
         NotificationCenter.default.post(name: .memberEmailUpdated, object: newEmail)
     }

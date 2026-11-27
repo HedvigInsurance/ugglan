@@ -33,6 +33,11 @@ struct ConfirmTerminationScreen: View {
                 )
             )
         )
+        .hStateViewContentBottomAttachedView {
+            if terminationNavigationVm.isWithdrawal, let notification = terminationNavigationVm.notification {
+                TerminationNotificationCard(notification: notification)
+            }
+        }
         .hExtraTopPadding
     }
 

@@ -126,25 +126,18 @@ struct TerminationSummaryScreen: View {
     private var withdrawalInfoCard: some View {
         if let statusText = terminationNavigationVm.withdrawal?.statusText, !statusText.isEmpty {
             hSection {
-                InfoCard(text: statusText, type: .info)
+                InfoCard(text: statusText, type: .neutral)
             }
             .accessibilitySortPriority(1)
         }
     }
 
+    /// For a withdrawal the notification is shown in the confirmation sheet instead.
     @ViewBuilder
     private var infoCard: some View {
-        if let notification = terminationNavigationVm.notification {
-            let type: NotificationType = {
-                switch notification.type {
-                case .info:
-                    return .info
-                case .warning:
-                    return .attention
-                }
-            }()
+        if !terminationNavigationVm.isWithdrawal, let notification = terminationNavigationVm.notification {
             hSection {
-                InfoCard(text: notification.message, type: type)
+                TerminationNotificationCard(notification: notification)
             }
             .accessibilitySortPriority(1)
         }
@@ -181,6 +174,23 @@ struct TerminationSummaryScreen: View {
                     ) {}
                 }
             }
+        }
+    }
+}
+
+struct TerminationNotificationCard: View {
+    let notification: TerminationNotification
+
+    var body: some View {
+        InfoCard(text: notification.message, type: type)
+    }
+
+    private var type: NotificationType {
+        switch notification.type {
+        case .info:
+            return .info
+        case .warning:
+            return .attention
         }
     }
 }
