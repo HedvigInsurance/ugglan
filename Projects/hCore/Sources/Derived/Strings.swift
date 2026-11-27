@@ -1605,6 +1605,8 @@ public enum L10n {
   public static var terminationFlowWithdrawalConfirmButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON") }
   /// The confirmation is sent to
   public static var terminationFlowWithdrawalConfirmationSentTo: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO") }
+  /// Confirmation will be sent to
+  public static var terminationFlowWithdrawalEmailLabel: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL") }
   /// Your insurance is cancelled
   public static var terminationFlowWithdrawalSuccessTitle: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE") }
   /// Withdraw insurance

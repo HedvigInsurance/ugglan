@@ -765,6 +765,7 @@ A message is then appended under the image next to the timestamp to indicate tha
 "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE" = "Vill du ändra e-post?";
 "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO" = "Bekräftelsen skickas till";
 "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON" = "Ja, ångra försäkringen";
+"TERMINATION_FLOW_WITHDRAWAL_EMAIL_LABEL" = "Bekräftelse skickas till";
 "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE" = "Du har ångrat försäkringen";
 "TERMINATION_FLOW_WITHDRAWAL_TITLE" = "Ångra försäkringen";
 "TERMINATION_KEEP_INSURANCE_BUTTON" = "Behåll försäkring";
