@@ -933,6 +933,10 @@ public enum L10n {
   public static var legalPrivacyPolicyApp: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP") }
   /// Privacy notice
   public static var legalPrivacyPolicyAppShort: String { L10n.tr("Localizable", "LEGAL_PRIVACY_POLICY_APP_SHORT") }
+  /// We couldn't verify that it's you. Please try again.
+  public static var localAuthFailed: String { L10n.tr("Localizable", "LOCAL_AUTH_FAILED") }
+  /// Confirm it's you to make changes to your insurance
+  public static var localAuthReason: String { L10n.tr("Localizable", "LOCAL_AUTH_REASON") }
   /// Choose your preferred language
   public static var loginLanguagePreferences: String { L10n.tr("Localizable", "LOGIN_LANGUAGE_PREFERENCES") }
   /// Cancel
@@ -1589,8 +1593,18 @@ public enum L10n {
   public static var terminationFlowToday: String { L10n.tr("Localizable", "TERMINATION_FLOW_TODAY") }
   /// Withdraw insurance
   public static var terminationFlowWithdrawalButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_BUTTON") }
+  /// If you need to change the email address the confirmation is sent to, you can change it %@. Please note that this changes your email address for all future communications.
+  public static func terminationFlowWithdrawalChangeEmailBody1(_ p1: String) -> String {
+    return L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_1", p1)
+  }
+  /// here
+  public static var terminationFlowWithdrawalChangeEmailBody2: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_BODY_2") }
+  /// Do you want to change email?
+  public static var terminationFlowWithdrawalChangeEmailTitle: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CHANGE_EMAIL_TITLE") }
   /// Yes, withdraw insurance
   public static var terminationFlowWithdrawalConfirmButton: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRM_BUTTON") }
+  /// The confirmation is sent to
+  public static var terminationFlowWithdrawalConfirmationSentTo: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_CONFIRMATION_SENT_TO") }
   /// Your insurance is cancelled
   public static var terminationFlowWithdrawalSuccessTitle: String { L10n.tr("Localizable", "TERMINATION_FLOW_WITHDRAWAL_SUCCESS_TITLE") }
   /// Withdraw insurance
@@ -1785,6 +1799,8 @@ public enum L10n {
   public static func voiceoverTierComparisionClick(_ p1: String) -> String {
     return L10n.tr("Localizable", "VOICEOVER_TIER_COMPARISION_CLICK", p1)
   }
+  /// Year in review
+  public static var yearInReviewTitle: String { L10n.tr("Localizable", "YEAR_IN_REVIEW_TITLE") }
 
   public enum Certificates {
     /// Create certificate
