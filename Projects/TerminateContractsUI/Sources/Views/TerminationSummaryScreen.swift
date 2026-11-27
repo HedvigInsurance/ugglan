@@ -14,7 +14,7 @@ struct TerminationSummaryScreen: View {
                 title: .init(
                     .small,
                     .heading2,
-                    L10n.terminationFlowCancellationTitle,
+                    titleText,
                     alignment: .leading
                 ),
                 subTitle: .init(
@@ -28,6 +28,8 @@ struct TerminationSummaryScreen: View {
                     VStack(spacing: .padding4) {
                         insuranceDetailsView
                         terminationDateView
+                        withdrawalEmailView
+                        withdrawalInfoCard
                         infoCard
                     }
 
@@ -36,7 +38,7 @@ struct TerminationSummaryScreen: View {
                             hButton(
                                 .large,
                                 .primary,
-                                content: .init(title: L10n.terminationButton)
+                                content: .init(title: terminateButtonTitle)
                             ) {
                                 terminationNavigationVm.isConfirmTerminationPresented = true
                             }
@@ -50,6 +52,20 @@ struct TerminationSummaryScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .onReceive(NotificationCenter.default.publisher(for: .memberEmailUpdated)) { notification in
+                if let email = notification.object as? String {
+                    terminationNavigationVm.updateWithdrawalEmail(email)
+                }
+            }
+    }
+
+    private var titleText: String {
+        terminationNavigationVm.isWithdrawal
+            ? L10n.terminationFlowWithdrawalTitle : L10n.terminationFlowCancellationTitle
+    }
+
+    private var terminateButtonTitle: String {
+        terminationNavigationVm.isWithdrawal ? L10n.terminationFlowWithdrawalButton : L10n.terminationButton
     }
 
     @ViewBuilder
@@ -90,19 +106,38 @@ struct TerminationSummaryScreen: View {
         .foregroundColor(hTextColor.Translucent.secondary)
     }
 
+    /// The member's email, where the withdrawal confirmation is sent.
+    @ViewBuilder
+    private var withdrawalEmailView: some View {
+        if let email = terminationNavigationVm.withdrawal?.email, !email.isEmpty {
+            hSection {
+                LockedTerminationField(
+                    value: email,
+                    placeholder: L10n.terminationFlowWithdrawalConfirmationSentTo
+                ) {
+                    terminationNavigationVm.isChangeEmailInfoPresented = true
+                }
+            }
+        }
+    }
+
+    /// The status text returned when the withdrawal was started.
+    @ViewBuilder
+    private var withdrawalInfoCard: some View {
+        if let statusText = terminationNavigationVm.withdrawal?.statusText, !statusText.isEmpty {
+            hSection {
+                InfoCard(text: statusText, type: .neutral)
+            }
+            .accessibilitySortPriority(1)
+        }
+    }
+
+    /// For a withdrawal the notification is shown in the confirmation sheet instead.
     @ViewBuilder
     private var infoCard: some View {
-        if let notification = terminationNavigationVm.notification {
-            let type: NotificationType = {
-                switch notification.type {
-                case .info:
-                    return .info
-                case .warning:
-                    return .attention
-                }
-            }()
+        if !terminationNavigationVm.isWithdrawal, let notification = terminationNavigationVm.notification {
             hSection {
-                InfoCard(text: notification.message, type: type)
+                TerminationNotificationCard(notification: notification)
             }
             .accessibilitySortPriority(1)
         }
@@ -129,11 +164,33 @@ struct TerminationSummaryScreen: View {
     private var terminationDateView: some View {
         if let date = terminationNavigationVm.selectedDate {
             hSection {
-                hFloatingField(
-                    value: date.displayDateDDMMMYYYYFormat,
-                    placeholder: L10n.terminationFlowDateFieldText
-                ) {}
+                if terminationNavigationVm.isWithdrawal {
+                    // A withdrawal ends on a date set by the backend, so the member can't change it.
+                    LockedTerminationField(value: date.displayDateDDMMMYYYYFormat)
+                } else {
+                    hFloatingField(
+                        value: date.displayDateDDMMMYYYYFormat,
+                        placeholder: L10n.terminationFlowDateFieldText
+                    ) {}
+                }
             }
+        }
+    }
+}
+
+struct TerminationNotificationCard: View {
+    let notification: TerminationNotification
+
+    var body: some View {
+        InfoCard(text: notification.message, type: type)
+    }
+
+    private var type: NotificationType {
+        switch notification.type {
+        case .info:
+            return .info
+        case .warning:
+            return .attention
         }
     }
 }
@@ -176,4 +233,17 @@ private func previewNavigationModel(contractId: String) -> TerminationFlowNaviga
 #Preview {
     TerminationSummaryScreen()
         .environment(previewNavigationModel(contractId: ""))
+}
+
+#Preview("Withdrawal") {
+    let navigationModel = previewNavigationModel(contractId: "2")
+    navigationModel.withdrawal = .init(
+        statusText: "You can withdraw your insurance within 14 days of purchase.",
+        action: .terminateWithDate(minDate: "2024-12-15", maxDate: "2024-12-15", extraCoverage: []),
+        email: "member@hedvig.com"
+    )
+    navigationModel.selectedDate = Date()
+
+    return TerminationSummaryScreen()
+        .environment(navigationModel)
 }

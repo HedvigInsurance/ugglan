@@ -8,9 +8,26 @@ class MockTerminateContractsClient: TerminateContractsClient {
     var terminateResultToReturn: TerminationContractResult = .success
     var deleteResultToReturn: TerminationContractResult = .success
     var notificationToReturn: TerminationNotification?
+    var withdrawalDataToReturn = ContractWithdrawalData(
+        statusText: "Active since today",
+        action: .terminateWithDate(minDate: "2026-11-24", maxDate: "2026-11-24", extraCoverage: []),
+        email: "member@hedvig.com"
+    )
+    var withdrawResultToReturn: TerminationContractResult = .success
     var errorToThrow: Error?
+    var events = [Event]()
+
+    enum Event: Equatable {
+        case getTerminationSurvey(contractId: String)
+        case terminateContract(contractId: String, terminationDate: String, surveyOptionId: String)
+        case deleteContract(contractId: String, surveyOptionId: String)
+        case getContractWithdrawal(contractId: String)
+        case withdrawContract(contractId: String)
+        case getNotification(contractId: String)
+    }
 
     func getTerminationSurvey(contractId: String) async throws -> TerminationSurveyData {
+        events.append(.getTerminationSurvey(contractId: contractId))
         if let error = errorToThrow { throw error }
         return surveyDataToReturn
     }
@@ -21,6 +38,9 @@ class MockTerminateContractsClient: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
+        events.append(
+            .terminateContract(contractId: contractId, terminationDate: terminationDate, surveyOptionId: surveyOptionId)
+        )
         if let error = errorToThrow { throw error }
         return terminateResultToReturn
     }
@@ -30,11 +50,25 @@ class MockTerminateContractsClient: TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult {
+        events.append(.deleteContract(contractId: contractId, surveyOptionId: surveyOptionId))
         if let error = errorToThrow { throw error }
         return deleteResultToReturn
     }
 
+    func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData {
+        events.append(.getContractWithdrawal(contractId: contractId))
+        if let error = errorToThrow { throw error }
+        return withdrawalDataToReturn
+    }
+
+    func withdrawContract(contractId: String) async throws -> TerminationContractResult {
+        events.append(.withdrawContract(contractId: contractId))
+        if let error = errorToThrow { throw error }
+        return withdrawResultToReturn
+    }
+
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification? {
+        events.append(.getNotification(contractId: contractId))
         if let error = errorToThrow { throw error }
         return notificationToReturn
     }

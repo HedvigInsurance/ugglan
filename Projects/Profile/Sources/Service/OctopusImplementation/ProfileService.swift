@@ -36,6 +36,11 @@ class ProfileService {
         try await client.update(email: email ?? "", phone: phone ?? "")
     }
 
+    @Log(.error, masked: ["email"])
+    func update(email: String) async throws -> String {
+        try await client.update(email: email)
+    }
+
     @Log(masked: ["eurobonus"])
     func update(eurobonus: String) async throws -> PartnerData {
         try await client.update(eurobonus: eurobonus)

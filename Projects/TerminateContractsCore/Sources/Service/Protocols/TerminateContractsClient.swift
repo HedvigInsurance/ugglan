@@ -15,5 +15,7 @@ public protocol TerminateContractsClient {
         surveyOptionId: String,
         comment: String?
     ) async throws -> TerminationContractResult
+    func getContractWithdrawal(contractId: String) async throws -> ContractWithdrawalData
+    func withdrawContract(contractId: String) async throws -> TerminationContractResult
     func getNotification(contractId: String, date: Date) async throws -> TerminationNotification?
 }

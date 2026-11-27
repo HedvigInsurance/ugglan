@@ -84,6 +84,22 @@ class ProfileClientOctopus: ProfileClient {
         throw ProfileError.error(message: L10n.General.errorBody)
     }
 
+    func update(email: String) async throws -> String {
+        let input = OctopusGraphQL.MemberUpdateEmailInput(email: email)
+        let mutation = OctopusGraphQL.MemberUpdateEmailMutation(input: input)
+        let data = try await octopus.client.mutation(mutation: mutation)
+
+        if let userError = data?.memberUpdateEmail.userError?.message {
+            throw ProfileError.error(message: userError)
+        }
+
+        if let email = data?.memberUpdateEmail.member?.email {
+            return email
+        }
+
+        throw ProfileError.error(message: L10n.General.errorBody)
+    }
+
     func update(phone: String) async throws {
         let input = OctopusGraphQL.MemberUpdatePhoneNumberInput(phoneNumber: phone)
         let mutation = OctopusGraphQL.MemberUpdatePhoneNumberMutation(input: input)

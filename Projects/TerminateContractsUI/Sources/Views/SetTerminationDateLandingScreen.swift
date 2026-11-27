@@ -67,17 +67,7 @@ struct SetTerminationDateLandingScreen: View {
     private var displayDeletionDateField: some View {
         hSection {
             VStack(spacing: 4) {
-                hFloatingField(
-                    value: L10n.terminationFlowToday,
-                    placeholder: L10n.terminationFlowDateFieldText,
-                    onTap: {}
-                )
-                .hFieldTrailingView {
-                    hCoreUIAssets.lock.view
-                        .frame(width: 24, height: 24)
-                }
-                .hBackgroundOption(option: [.locked, .withoutDisabled])
-                .disabled(true)
+                LockedTerminationField(value: L10n.terminationFlowToday)
 
                 InfoCard(
                     text: L10n.terminationFlowDeletionInfoCard,
@@ -112,6 +102,35 @@ struct SetTerminationDateLandingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+    }
+}
+
+/// Termination value the member can't change here, e.g. a deletion date (today), a withdrawal date (set by the
+/// backend) or the email a withdrawal confirmation is sent to. Pass `onTap` to explain how to change it elsewhere.
+struct LockedTerminationField: View {
+    let value: String
+    var placeholder: String = L10n.terminationFlowDateFieldText
+    var onTap: (@MainActor () -> Void)?
+
+    var body: some View {
+        hFloatingField(
+            value: value,
+            placeholder: placeholder,
+            onTap: { onTap?() }
+        )
+        .hFieldTrailingView {
+            hCoreUIAssets.lock.view
+                .foregroundColor(hTextColor.Opaque.tertiary)
+                .frame(width: 24, height: 24)
+        }
+        .hBackgroundOption(option: [.locked, .withoutDisabled])
+        .disabled(onTap == nil)
+        // Replaces hFloatingField's "press to change value": the value can't be changed here.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(value.isEmpty ? placeholder : "\(placeholder). \(value)")
+        .accessibilityHint(onTap == nil ? "" : L10n.voiceoverMoreInfo)
+        .accessibilityAddTraits(onTap == nil ? [] : .isButton)
+        .accessibilityAction { onTap?() }
     }
 }
 

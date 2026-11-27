@@ -94,7 +94,7 @@ public struct StateView: View {
                         content: .init(title: button.buttonTitle ?? type.buttonText)
                     ) { button.buttonAction() }
                 }
-                if let contentAttachedView {
+                if let contentAttachedView, !attachContentToBottom {
                     contentAttachedView
                         .padding(.top, .padding16)
                 }
@@ -110,6 +110,11 @@ public struct StateView: View {
                     centralContent
                         .padding(.bottom, .padding40)
                         .padding(.top, extraTopPadding ? 32 : 0)
+                    // With content attached to bottom, the extra content sits directly above the buttons
+                    if let contentAttachedView {
+                        contentAttachedView
+                            .padding(.bottom, .padding8)
+                    }
                 }
                 if let actionButton = buttonConfig?.actionButtonAttachedToBottom {
                     hButton(

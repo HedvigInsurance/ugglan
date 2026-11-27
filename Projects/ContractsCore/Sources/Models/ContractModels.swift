@@ -21,6 +21,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         supportsTravelCertificate: Bool,
         supportsChangeTier: Bool,
         supportsTermination: Bool,
+        supportsWithdrawal: Bool = false,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
         firstName: String,
@@ -44,6 +45,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.supportsTravelCertificate = supportsTravelCertificate
         self.supportsChangeTier = supportsChangeTier
         self.supportsTermination = supportsTermination
+        self.supportsWithdrawal = supportsWithdrawal
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -68,6 +70,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let supportsCoOwners: Bool
     public let supportsTravelCertificate: Bool
     public let supportsTermination: Bool
+    public let supportsWithdrawal: Bool
     public let upcomingChangedAgreement: Agreement?
     public let upcomingRenewal: ContractRenewal?
     public let typeOfContract: TypeOfContract
@@ -443,7 +446,9 @@ extension Contract {
             activeFrom: currentAgreement?.agreementDate.activeFrom,
             typeOfContract: TypeOfContract.resolve(
                 for: currentAgreement?.productVariant.typeOfContract ?? ""
-            )
+            ),
+            supportsWithdrawal: supportsWithdrawal,
+            supportsTermination: supportsTermination
         )
     }
 }
