@@ -35,16 +35,18 @@ extension ProfileDependencySuite {
         @discardableResult
         private func setUpMockService(
             fetchMemberDetails: FetchMemberDetails? = nil,
-            memberUpdate: @escaping MemberUpdate = { email, phone in (email, phone) }
+            memberUpdate: @escaping MemberUpdate = { email, phone in (email, phone) },
+            emailUpdate: @escaping EmailUpdate = { email in email }
         ) -> MockProfileService {
             let service =
                 if let fetchMemberDetails {
                     MockData.createMockProfileService(
                         fetchMemberDetails: fetchMemberDetails,
-                        memberUpdate: memberUpdate
+                        memberUpdate: memberUpdate,
+                        emailUpdate: emailUpdate
                     )
                 } else {
-                    MockData.createMockProfileService(memberUpdate: memberUpdate)
+                    MockData.createMockProfileService(memberUpdate: memberUpdate, emailUpdate: emailUpdate)
                 }
             sut = service
             return service
@@ -324,13 +326,13 @@ extension ProfileDependencySuite {
         }
 
         @Test
-        func saveInEmailOnlyModeSendsStoredPhoneWithNewEmailSuccess() async {
+        func saveInEmailOnlyModeUpdatesOnlyEmailSuccess() async {
             do {
-                let sentValues = SentValues()
+                let sentEmails = SentEmails()
                 let mockService = setUpMockService(
-                    memberUpdate: { email, phone in
-                        sentValues.values.append((email, phone))
-                        return (email, phone)
+                    emailUpdate: { email in
+                        sentEmails.values.append(email)
+                        return email
                     }
                 )
                 let store = await setUpStore(email: "old@email.com")
@@ -348,10 +350,8 @@ extension ProfileDependencySuite {
                 }
 
                 #expect(success)
-                #expect(sentValues.values.count == 1)
-                #expect(sentValues.values.first?.email == newEmail)
-                #expect(sentValues.values.first?.phone == phone)
-                #expect(mockService.events == [.memberUpdate], "the stored phone is used, so nothing is fetched")
+                #expect(sentEmails.values == [newEmail])
+                #expect(mockService.events == [.updateEmail], "only the email mutation is used")
                 #expect(store.memberDetails?.email == newEmail)
                 #expect(store.memberDetails?.phone == phone)
                 #expect(recorder.objects == [newEmail])
@@ -361,27 +361,9 @@ extension ProfileDependencySuite {
         }
 
         @Test
-        func saveInEmailOnlyModeWithEmptyStoredPhoneFetchesMemberDetailsSuccess() async {
+        func saveInEmailOnlyModeWithEmptyStoredPhoneIgnoresPhoneSuccess() async {
             do {
-                let fetchedPhone = "0701234567"
-                let sentValues = SentValues()
-                let mockService = setUpMockService(
-                    fetchMemberDetails: {
-                        .init(
-                            id: "memberId",
-                            firstName: "first name",
-                            lastName: "last name",
-                            phone: fetchedPhone,
-                            email: "old@email.com",
-                            hasTravelCertificate: true,
-                            isContactInfoUpdateNeeded: false
-                        )
-                    },
-                    memberUpdate: { email, phone in
-                        sentValues.values.append((email, phone))
-                        return (email, phone)
-                    }
-                )
+                let mockService = setUpMockService()
                 let store = await setUpStore(phone: "", email: "old@email.com")
                 let homeStore = HomeStore()
                 globalAppStateContainer.register(homeStore)
@@ -397,12 +379,10 @@ extension ProfileDependencySuite {
                 }
 
                 #expect(success)
-                #expect(mockService.events == [.getMemberDetails, .memberUpdate])
-                #expect(sentValues.values.count == 1)
-                #expect(sentValues.values.first?.email == newEmail)
-                #expect(sentValues.values.first?.phone == fetchedPhone)
+                #expect(model.phoneError == nil)
+                #expect(mockService.events == [.updateEmail], "the phone is ignored, so nothing is fetched")
                 #expect(store.memberDetails?.email == newEmail)
-                #expect(store.memberDetails?.phone == fetchedPhone)
+                #expect(store.memberDetails?.phone == "", "only the email is updated")
                 #expect(recorder.objects == [newEmail])
             }
 
@@ -410,22 +390,13 @@ extension ProfileDependencySuite {
         }
 
         @Test
-        func saveInEmailOnlyModeWhenFetchedPhoneIsEmptyFailsWithPhoneEmptyError() async {
+        func saveInEmailOnlyModeWhenAPIThrowsFailsWithErrorMessage() async {
             do {
+                let errorMessage = "email error"
                 let mockService = setUpMockService(
-                    fetchMemberDetails: {
-                        .init(
-                            id: "memberId",
-                            firstName: "first name",
-                            lastName: "last name",
-                            phone: "",
-                            email: "old@email.com",
-                            hasTravelCertificate: true,
-                            isContactInfoUpdateNeeded: false
-                        )
-                    }
+                    emailUpdate: { _ in throw ProfileError.error(message: errorMessage) }
                 )
-                _ = await setUpStore(phone: "", email: "old@email.com")
+                let store = await setUpStore(email: "old@email.com")
                 let (recorder, cancellable) = observeEmailUpdates()
 
                 let model = MyInfoViewModel(fields: .emailOnly)
@@ -434,8 +405,9 @@ extension ProfileDependencySuite {
                 cancellable.cancel()
 
                 #expect(success == false)
-                #expect(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
-                #expect(mockService.events == [.getMemberDetails])
+                #expect(model.error == errorMessage)
+                #expect(mockService.events == [.updateEmail])
+                #expect(store.memberDetails?.email == "old@email.com")
                 #expect(recorder.objects.isEmpty)
             }
 
@@ -448,6 +420,6 @@ private final class NotificationRecorder {
     var objects: [String?] = []
 }
 
-private final class SentValues {
-    var values: [(email: String, phone: String)] = []
+private final class SentEmails {
+    var values: [String] = []
 }
