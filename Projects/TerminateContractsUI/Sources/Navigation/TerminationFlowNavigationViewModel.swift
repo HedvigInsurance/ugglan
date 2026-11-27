@@ -116,6 +116,15 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
     let router = NavigationRouter()
     let initialStep: TerminationFlowActions
 
+    /// The cancellation info button is only shown when the flow starts directly on cancelling, not when it starts
+    /// on the withdraw-or-cancel choice (or straight on a withdrawal).
+    var showsCancelInfoButton: Bool {
+        switch initialStep {
+        case .router(action: .survey), .router(action: .selectInsurance): return true
+        default: return false
+        }
+    }
+
     // MARK: - Configuration
     var config: TerminationConfirmConfig?
     var hasSelectInsuranceStep: Bool = false
@@ -288,6 +297,7 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
             // never fetches the notification for its date: it has to be fetched here.
             fetchNotification(for: selectedDate)
         }
+        updateProgress()
     }
 
     /// Shows the member's new email as where the withdrawal confirmation is sent, after they changed it.
@@ -469,7 +479,9 @@ class TerminationFlowNavigationViewModel: @MainActor Equatable, @MainActor Ident
 
     private func updateProgress() {
         let pushedTypes = router.routeTypes
-        if pushedTypes.last == TerminationFlowFinalRouterActions.self
+        // A withdrawal goes straight to review and confirm, so there are no steps to show progress for.
+        if isWithdrawal
+            || pushedTypes.last == TerminationFlowFinalRouterActions.self
             || pushedTypes.last == DeflectScreenContent.self
         {
             progress = nil
@@ -516,11 +528,7 @@ struct TerminationFlowNavigation: View {
             ],
             tracking: vm.initialStep
         ) {
-            getView(for: vm.initialStep)
-                .addNavigationInfoButton(
-                    title: L10n.terminationFlowCancelInfoTitle,
-                    description: L10n.terminationFlowCancelInfoText
-                )
+            initialView
                 .routerDestination(for: [TerminationSurveyOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                         .withDismissButton()
@@ -594,6 +602,19 @@ struct TerminationFlowNavigation: View {
             openProgressScreen()
         }
         .showInfoScreen(text: $vm.infoText, dismissButtonTitle: L10n.embarkGoBackButton)
+    }
+
+    @ViewBuilder
+    private var initialView: some View {
+        if vm.showsCancelInfoButton {
+            getView(for: vm.initialStep)
+                .addNavigationInfoButton(
+                    title: L10n.terminationFlowCancelInfoTitle,
+                    description: L10n.terminationFlowCancelInfoText
+                )
+        } else {
+            getView(for: vm.initialStep)
+        }
     }
 
     @ViewBuilder
