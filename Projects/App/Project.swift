@@ -204,7 +204,15 @@ let project = Project(
                 ]
             ]
             .flatMap { $0 },
-            settings: .settings(base: .generatedInfoPlist, configurations: testsConfigurations)
+            settings: .settings(
+                // HedvigShared is a static archive already linked into AppDependencies, which the host app loads.
+                // Autolinking it here too would put a second Kotlin runtime in the process and crash the test host.
+                base: SettingsDictionary.generatedInfoPlist.merging([
+                    "OTHER_SWIFT_FLAGS": "$(inherited) -Xfrontend -disable-autolink-framework -Xfrontend HedvigShared",
+                    "OTHER_LDFLAGS": "$(inherited) -framework AppDependencies",
+                ]) { _, new in new },
+                configurations: testsConfigurations
+            )
         ),
         Target.target(
             name: "AppUITests",

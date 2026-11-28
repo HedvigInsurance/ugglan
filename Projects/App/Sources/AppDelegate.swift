@@ -178,7 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self?.isForcingLogout = false
             }
         }
-        IosLogcatLogger.companion.install()
+        IosLogcatLogger.companion.install(sink: AppLogSink.shared, minimumPriority: .minimumForKotlin())
         ApolloClient.bundle = Bundle.main
 
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
@@ -204,6 +204,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let datadogLogger = Logger.create(with: config)
         hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
         log = DatadogLogger(datadogLogger: datadogLogger)
+        AppLogSink.shared.logIsReady()
         AutomaticLog.loginClosure = { message in
             Task { @MainActor in
                 log.info(message, error: nil, attributes: nil)
