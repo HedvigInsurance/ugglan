@@ -31,7 +31,7 @@ enum DI {
     /// created, so registering the client any later crashes at launch.
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
-        let publicImportantMessagesClient = PublicImportantMessagesClientShared()
+        let publicImportantMessagesClient = PublicImportantMessagesClientOctopus()
         Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in publicImportantMessagesClient })
     }
 
