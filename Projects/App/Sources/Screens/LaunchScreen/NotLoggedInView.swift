@@ -1,3 +1,4 @@
+import AuthenticationCore
 import AuthenticationUI
 import Combine
 import Environment
@@ -9,6 +10,11 @@ import hCoreUI
 
 struct NotLoggedInView: View {
     let vm: NotLoggedViewModel
+    @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
+    @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @SwiftUI.Environment(\.scenePhase) private var scenePhase
+    @State private var locale = Localization.Locale.currentLocale.value
+
     init(
         vm: NotLoggedViewModel
     ) {
@@ -28,6 +34,12 @@ struct NotLoggedInView: View {
             .sectionContainerStyle(.transparent)
         }
         .modifier(BankIDSandboxToggle())
+        .onReceive(Localization.Locale.currentLocale) { locale = $0 }
+        // Nil while the app is not active, so the app becoming active reloads once, at launch too.
+        .task(id: scenePhase == .active ? locale : nil) {
+            guard scenePhase == .active else { return }
+            await vm.loadImportantMessages()
+        }
     }
 
     @ViewBuilder
@@ -40,10 +52,17 @@ struct NotLoggedInView: View {
         }
     }
 
+    static func needsTheWholeHeight(
+        verticalSizeClass: UserInterfaceSizeClass?,
+        dynamicTypeSize: DynamicTypeSize
+    ) -> Bool {
+        verticalSizeClass == .compact || dynamicTypeSize.isAccessibilitySize
+    }
+
     @ViewBuilder
     var languageView: some View {
-        ZStack {
-            VStack {
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
                 HStack {
                     Spacer()
                     Button {
@@ -54,22 +73,76 @@ struct NotLoggedInView: View {
                             .accessibilityLabel(L10n.voiceoverSelectLanguage)
                     }
                 }
-                Spacer()
-                VStack {
-                    hButton(
-                        .large,
-                        .primary,
-                        content: .init(title: L10n.bankidLoginTitle)
-                    ) { vm.showLogin = true }
-                    hButton(
-                        .large,
-                        .ghost,
-                        content: .init(title: L10n.marketingGetHedvig)
-                    ) { vm.onOnBoardPressed() }
-                    .accessibilityAddTraits(.isLink)
+                if verticalSizeClass == .compact {
+                    HStack(alignment: .bottom, spacing: .padding16) {
+                        messages
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        ViewThatFits(in: .vertical) {
+                            buttons
+                            ScrollView {
+                                buttons
+                            }
+                            .scrollIndicators(.visible)
+                            .scrollIndicatorsFlash(onAppear: true)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                    }
+                } else {
+                    VStack {
+                        messages
+                        buttons
+                    }
+                    .frame(maxHeight: maxContentHeight(in: proxy.size.height), alignment: .bottom)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
                 }
             }
         }
+    }
+
+    private func maxContentHeight(in height: CGFloat) -> CGFloat {
+        if Self.needsTheWholeHeight(verticalSizeClass: verticalSizeClass, dynamicTypeSize: dynamicTypeSize) {
+            return .infinity
+        }
+        return max(height / 2 - .padding16, 0)
+    }
+
+    private var messages: some View {
+        PublicImportantMessagesView(messages: vm.importantMessages)
+    }
+
+    private var buttons: some View {
+        VStack {
+            hButton(
+                .large,
+                .primary,
+                content: .init(title: L10n.bankidLoginTitle)
+            ) { vm.showLogin = true }
+            hButton(
+                .large,
+                .ghost,
+                content: .init(title: L10n.marketingGetHedvig)
+            ) { vm.onOnBoardPressed() }
+            .accessibilityAddTraits(.isLink)
+        }
+    }
+}
+
+/// Hides the logo `MainNavigation` draws over the logged-out screen when the screen needs the whole height.
+struct HiddenLogoWhenLoggedOutNeedsTheHeight: ViewModifier {
+    let isLaunching: Bool
+    @SwiftUI.Environment(\.verticalSizeClass) private var verticalSizeClass
+    @SwiftUI.Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    func body(content: Content) -> some View {
+        let isHidden =
+            !isLaunching
+            && NotLoggedInView.needsTheWholeHeight(
+                verticalSizeClass: verticalSizeClass,
+                dynamicTypeSize: dynamicTypeSize
+            )
+        content
+            .opacity(isHidden ? 0 : 1)
+            .animation(.easeInOut, value: isHidden)
     }
 }
 
@@ -99,7 +172,7 @@ private struct BankIDSandboxToggle: ViewModifier {
 
 struct NotLoggedInView_Previews: PreviewProvider {
     static var previews: some View {
-        NotLoggedInView(vm: .init())
+        NotLoggedInView(vm: .init(publicImportantMessagesClient: PublicImportantMessagesClientDemo()))
     }
 }
 
@@ -109,11 +182,15 @@ class NotLoggedViewModel {
     var viewState: ViewState = .loading
     var showLanguagePicker = false
     var showLogin = false
+    /// There is no error state before login: a failed first load shows nothing.
+    var importantMessages: [PublicImportantMessage] = []
     let router = NavigationRouter()
     @ObservationIgnored var onLoad: () -> Void = {}
     @ObservationIgnored var cancellables = Set<AnyCancellable>()
+    @ObservationIgnored private let publicImportantMessagesClient: PublicImportantMessagesClient
 
-    init() {
+    init(publicImportantMessagesClient: PublicImportantMessagesClient = Dependencies.shared.resolve()) {
+        self.publicImportantMessagesClient = publicImportantMessagesClient
         // Deferred one main-actor turn so the owner can set `onLoad` after init.
         Task { @MainActor [weak self] in
             self?.viewState = .language
@@ -138,6 +215,13 @@ class NotLoggedViewModel {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    /// A failure keeps the list shown; the Kotlin read logs it. The answer to a cancelled load is dropped, as it may be
+    /// in the previous language.
+    func loadImportantMessages() async {
+        guard let messages = try? await publicImportantMessagesClient.getMessages(), !Task.isCancelled else { return }
+        importantMessages = messages
     }
 
     @MainActor

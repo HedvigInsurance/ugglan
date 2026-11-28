@@ -37,6 +37,7 @@ struct MainNavigation: App {
                 {
                     LaunchScreen()
                         .foregroundColor(logoColor)
+                        .modifier(HiddenLogoWhenLoggedOutNeedsTheHeight(isLaunching: vm.showLaunchScreen))
                         .zIndex(2)
                 }
             }

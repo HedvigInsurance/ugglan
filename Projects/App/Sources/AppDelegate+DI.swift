@@ -27,8 +27,12 @@ import hGraphQL
 
 @MainActor
 enum DI {
+    /// Runs before any view is built. The logged-out view model resolves the important messages client when it is
+    /// created, so registering the client any later crashes at launch.
     static func initServices() {
         Dependencies.shared.add(module: Module { () -> URLOpener in DefaultURLOpener() })
+        let publicImportantMessagesClient = PublicImportantMessagesClientOctopus()
+        Dependencies.shared.add(module: Module { () -> PublicImportantMessagesClient in publicImportantMessagesClient })
     }
 
     static func initAndRegisterClient() {

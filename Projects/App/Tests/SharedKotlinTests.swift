@@ -1,3 +1,4 @@
+import AuthenticationCore
 import Environment
 import Foundation
 @preconcurrency import HedvigShared
@@ -77,6 +78,68 @@ extension AppDependencySuite {
                 Issue.record("expected the read to throw")
             } catch {
                 #expect(error is CancellationError)
+            }
+        }
+
+        @Test
+        func publicImportantMessagesMapToTheSwiftModel() async throws {
+            let items = [
+                PublicImportantMessageItem(
+                    id: "error-1",
+                    message: "a",
+                    severity: .error,
+                    linkUrl: "https://example.test/status",
+                    linkButtonText: "Status"
+                ),
+                PublicImportantMessageItem(
+                    id: "info-1",
+                    message: "b",
+                    severity: .info,
+                    linkUrl: nil,
+                    linkButtonText: nil
+                ),
+                PublicImportantMessageItem(
+                    id: "warning-1",
+                    message: "c",
+                    severity: .warning,
+                    linkUrl: "hedvig://chat",
+                    linkButtonText: "Chat"
+                ),
+            ]
+
+            let messages = try await kotlinRead { Self.succeeding(items) }.map(PublicImportantMessage.init(item:))
+
+            #expect(
+                messages == [
+                    PublicImportantMessage(
+                        id: "error-1",
+                        message: "a",
+                        severity: .error,
+                        link: .init(url: URL(string: "https://example.test/status")!, text: "Status")
+                    ),
+                    PublicImportantMessage(id: "info-1", message: "b", severity: .info, link: nil),
+                    PublicImportantMessage(id: "warning-1", message: "c", severity: .warning, link: nil),
+                ]
+            )
+        }
+
+        @Test
+        func aFailedPublicImportantMessagesReadThrowsAGraphQLError() async {
+            let networkFailure = NSError(
+                domain: "KotlinException",
+                code: 0,
+                userInfo: ["KotlinException": ReadFailure(kind: .network, cause: nil, memberFacingMessage: nil)]
+            )
+            do {
+                let _: [PublicImportantMessageItem] = try await kotlinRead { Self.failing(networkFailure) }
+                Issue.record("expected the read to throw")
+            } catch let error as GraphQLError {
+                guard case .otherError = error else {
+                    Issue.record("expected .otherError for a network failure")
+                    return
+                }
+            } catch {
+                Issue.record("expected a GraphQLError")
             }
         }
 
