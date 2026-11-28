@@ -39,7 +39,7 @@ extension AppDependencySuite {
             let kotlinError = NSError(
                 domain: "KotlinException",
                 code: 0,
-                userInfo: ["KotlinException": ReadFailure(kind: kind, cause: nil)]
+                userInfo: ["KotlinException": ReadFailure(kind: kind, cause: nil, memberFacingMessage: nil)]
             )
             do {
                 let _: String = try await kotlinRead { Self.failing(kotlinError) }
@@ -49,6 +49,34 @@ extension AppDependencySuite {
                 return false
             } catch {
                 return nil
+            }
+        }
+
+        @Test
+        func aFailureWithAMemberFacingMessageThrowsThatMessageAsItsDescription() async {
+            let kotlinError = NSError(
+                domain: "KotlinException",
+                code: 0,
+                userInfo: [
+                    "KotlinException": ReadFailure(kind: .other, cause: nil, memberFacingMessage: "Your pet is too old")
+                ]
+            )
+            do {
+                let _: String = try await kotlinRead { Self.failing(kotlinError) }
+                Issue.record("expected the read to throw")
+            } catch {
+                #expect(error is MemberFacingError)
+                #expect(error.localizedDescription == "Your pet is too old")
+            }
+        }
+
+        @Test
+        func aCancelledReadThrowsCancellationError() async {
+            do {
+                let _: String = try await kotlinRead { Self.cancelled() }
+                Issue.record("expected the read to throw")
+            } catch {
+                #expect(error is CancellationError)
             }
         }
 
@@ -135,6 +163,13 @@ extension AppDependencySuite {
         private static func failing<T>(_ error: Error) -> NativeSuspend<T, Error, KotlinUnit> {
             { _, onError, _ in
                 _ = onError(error, KotlinUnit())
+                return { KotlinUnit() }
+            }
+        }
+
+        private static func cancelled<T>() -> NativeSuspend<T, Error, KotlinUnit> {
+            { _, _, onCancelled in
+                _ = onCancelled(NSError(domain: "KotlinException", code: 0), KotlinUnit())
                 return { KotlinUnit() }
             }
         }
