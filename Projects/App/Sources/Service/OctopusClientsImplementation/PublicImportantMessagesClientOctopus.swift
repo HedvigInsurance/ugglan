@@ -5,11 +5,11 @@ import hCore
 import hGraphQL
 
 @MainActor
-final class PublicImportantMessagesClientShared: PublicImportantMessagesClient {
+final class PublicImportantMessagesClientOctopus: PublicImportantMessagesClient {
     @Inject private var graph: IosGraphHolder
 
     func getMessages() async throws -> [PublicImportantMessage] {
-        try await kotlinRead { graph.publicImportantMessagesReads().messages() }
+        try await kotlinRead { graph.publicImportantMessagesService().messages() }
             .map(PublicImportantMessage.init(item:))
     }
 }

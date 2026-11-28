@@ -128,7 +128,7 @@ extension AppDependencySuite {
             let networkFailure = NSError(
                 domain: "KotlinException",
                 code: 0,
-                userInfo: ["KotlinException": ReadFailure(kind: .network, cause: nil)]
+                userInfo: ["KotlinException": ReadFailure(kind: .network, cause: nil, memberFacingMessage: nil)]
             )
             do {
                 let _: [PublicImportantMessageItem] = try await kotlinRead { Self.failing(networkFailure) }
