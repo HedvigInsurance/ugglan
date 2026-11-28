@@ -113,3 +113,51 @@ scripts/use-released-umbrella.sh
 Both scripts wipe Ugglan's DerivedData (mixing artifacts from both modes silently corrupts signatures) and refuse to run if Xcode is open. Run `scripts/umbrella-status.sh` to see which mode you're currently in.
 
 `scripts/post-build-action.sh` does the iOS-side surgery that makes both modes work — removes the static `HedvigShared.framework` from the bundle and re-signs the app. Read the comments in the script if you ever debug an install error.
+
+### Reading shared Kotlin data in a feature
+
+Steps for an iOS engineer consuming a shared read, such as `PublicImportantMessagesService`:
+
+- **Only App links `HedvigShared`** (statically, through `AppDependencies`). A feature module never imports it: declare
+  a `@MainActor` client protocol and a thin Swift model in the feature's Core module, as for an Octopus client. The
+  feature then only ever sees that protocol.
+- **Wrap the Kotlin service in a client class** in
+  `Projects/App/Sources/Service/OctopusClientsImplementation/<Name>ClientOctopus.swift`, named and placed like any
+  Octopus client, and await the read with `kotlinRead` (`Service/SharedKotlin/GraphQLError+ReadFailure.swift`):
+  ```swift
+  @MainActor
+  final class PublicImportantMessagesClientOctopus: PublicImportantMessagesClient {
+      @Inject private var graph: IosGraphHolder
+
+      func getMessages() async throws -> [PublicImportantMessage] {
+          try await kotlinRead { graph.publicImportantMessagesService().messages() }
+              .map(PublicImportantMessage.init(item:))
+      }
+  }
+  ```
+  `DI.initNetworkClients` registers the one `IosGraphHolder` per process. A new file needs `scripts/generate.sh`. A
+  failure is thrown as the `GraphQLError` an Octopus client would throw (`.otherError` when no answer arrived,
+  `.graphQLError` otherwise), a failure Kotlin raised with text the backend wrote for the member as a
+  `MemberFacingError` whose `localizedDescription` is that text, and a cancelled read as `CancellationError`. Views
+  show `error.localizedDescription` either way. A feature with its own error type maps the member's text into it, as in
+  `catch let error as MemberFacingError { throw AddonsError.errorMessage(message: error.message) }`.
+- **Map the Kotlin type to the Swift model** in the same file.
+- **Register the client** in `DI` like any Octopus client. Creating it builds nothing: the Kotlin graph is built on
+  the first read.
+- **Do not log a failure again.** Kotlin logs failed reads, and `AppLogSink` writes its lines to the app's `log`.
+- **Read the fresh header** after a Kotlin change: `./gradlew :umbrella:linkDebugFrameworkIosSimulatorArm64` in
+  `android/`, then `android/app/umbrella/build/bin/iosSimulatorArm64/debugFramework/HedvigShared.framework/Headers/HedvigShared.h`.
+  The copy under `build/xcode-frameworks/<Configuration>/<sdk>/` is rewritten only when an Xcode build runs the
+  pre-build phase for that configuration and SDK, so it can be older than the Kotlin you are reading.
+- **Test it in `Projects/App/Tests`**, which runs hosted by the app against the real framework. The test file list is
+  generated, so a new test file needs `scripts/generate.sh`.
+
+Two tooling traps:
+
+- **The pre-commit hook** formats each staged Swift file with the `swift-format` it finds inside the repo
+  (`scripts/install-swift-format.sh`), then runs a `sed` that deletes `//` lines from line 1 up to the first `import`
+  after it. In a file whose only `import` is on line 1, that range runs to the end of the file and removes every
+  comment line starting in the first column, doc comments included. Check the staged diff of such files.
+- **Do not run `scripts/codegen.sh`** (or `post-checkout.sh`, which calls it) to refresh things in local mode. It
+  downloads the live GraphQL schema and rewrites the committed `Derived/` output, a diff unrelated to your change;
+  `use-local-umbrella.sh` runs only `scripts/generate.sh` for that reason.
